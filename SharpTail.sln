@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpTail", "SharpTail\SharpTail.csproj", "{799F74C7-6DE8-455D-936D-E11D7525AB36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpTail.Test", "SharpTail.Test\SharpTail.Test.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{799F74C7-6DE8-455D-936D-E11D7525AB36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{799F74C7-6DE8-455D-936D-E11D7525AB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{799F74C7-6DE8-455D-936D-E11D7525AB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{799F74C7-6DE8-455D-936D-E11D7525AB36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{284845FB-EFF7-434E-9006-E789AB95F2F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{284845FB-EFF7-434E-9006-E789AB95F2F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{284845FB-EFF7-434E-9006-E789AB95F2F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{284845FB-EFF7-434E-9006-E789AB95F2F2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
