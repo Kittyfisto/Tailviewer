@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -60,13 +61,26 @@
     <Compile Include="BusinessLogic\LogFileListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFileSection.cs" />
+    <Compile Include="MainWindowConfiguration.cs" />
+    <Compile Include="Ui\Controls\AlertControl.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
+    <Compile Include="Ui\Converters\BoolFalseToCollapsedConverter.cs" />
+    <Compile Include="Ui\Converters\BoolTrueToCollapsedConverter.cs" />
     <Compile Include="Ui\IDispatcher.cs" />
     <Compile Include="Ui\UiDispatcher.cs" />
     <Compile Include="BusinessLogic\LogFile.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
+    <Compile Include="WindowConfiguration.cs" />
+    <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\AlertControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\LogViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -110,6 +124,7 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>

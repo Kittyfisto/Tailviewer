@@ -6,9 +6,48 @@
         xmlns:controls="clr-namespace:SharpTail.Ui.Controls" xmlns:ide="clr-namespace:SharpTail"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ide:MainWindowViewModel, IsDesignTimeCreatable=True}"
-        Title="SharpTail" Height="350" Width="525">
+        Title="{Binding WindowTitle}"
+        AllowDrop="True"
+        DragEnter="OnDragEnter"
+        Drop="MainWindow_OnDrop"
+        MinWidth="640"
+        MinHeight="480"
+        >
+
+    <Window.Resources>
+        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Themes/Converters.xaml" />
+    </Window.Resources>
+
     <Grid>
-        <controls:LogViewerControl
-            DataContext="{Binding LogViewModel}" />
+
+        <controls:AlertControl
+                Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                ErrorMessage="{Binding ErrorMessage}"
+                />
+        
+        <Grid Width="200"
+              Height="150"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              >
+            <TextBlock Text="Drag n' drop a file here in order to view it and / or start monitoring it"
+                       TextWrapping="Wrap"
+                       FontSize="16"
+                       Margin="10"
+                       Foreground="DodgerBlue"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center" />
+            <Rectangle StrokeDashArray="4 4"
+                       Stroke="DodgerBlue"
+                       StrokeThickness="2"
+                       RadiusX="10"
+                       RadiusY="10" />
+        </Grid>
+
+        <Grid
+            Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+            <controls:LogViewerControl
+                DataContext="{Binding LogViewModel}" />
+        </Grid>
     </Grid>
 </Window>
