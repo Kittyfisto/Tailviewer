@@ -70,7 +70,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestData\2Lines.txt" />
     <None Include="packages.config" />
+    <Content Include="TestData\20Mb.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpTail\SharpTail.csproj">

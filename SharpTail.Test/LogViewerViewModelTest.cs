@@ -21,7 +21,7 @@ namespace SharpTail.Test
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestFilter1()
 		{
-			using (var file = LogFile.FromFile(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.log"))
+			using (var file = LogFile.FromFile(LogFileTest.File20Mb))
 			{
 				var model = new LogViewerViewModel(_dispatcher, file);
 				file.Wait();

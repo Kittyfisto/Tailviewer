@@ -14,7 +14,8 @@ namespace SharpTail.Test
 	[TestFixture]
 	public sealed class LogFileTest
 	{
-		public const string File20Mb = @"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.log";
+		public const string File20Mb = @"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.txt";
+		public const string File2Lines = @"E:\Code\SharpTail\SharpTail.Test\TestData\2Lines.txt";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -68,6 +69,29 @@ namespace SharpTail.Test
 					change.Index.Should().Be(i);
 					change.Count.Should().Be(1);
 				}
+			}
+		}
+
+		[Test]
+		public void TestRead2Lines()
+		{
+			using (var file = LogFile.FromFile(File2Lines))
+			{
+				var listener = new Mock<ILogFileListener>();
+				var changes = new List<LogFileSection>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
+						.Callback((LogFileSection section) => changes.Add(section));
+
+				file.AddListener(listener.Object, TimeSpan.Zero, 1);
+				file.Start();
+				file.Wait();
+
+				changes.Count.Should().Be(2);
+				changes.Should().Equal(new[]
+					{
+						new LogFileSection(0, 1),
+						new LogFileSection(1, 1)
+					});
 			}
 		}
 

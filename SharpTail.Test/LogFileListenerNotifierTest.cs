@@ -26,10 +26,10 @@ namespace SharpTail.Test
 		public void TestCurrentLineChanged1()
 		{
 			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.Zero, 1);
-			notifier.OnLineRead(0);
-			notifier.OnLineRead(1);
-			notifier.OnLineRead(2);
-			notifier.OnLineRead(3);
+			notifier.OnRead(1);
+			notifier.OnRead(2);
+			notifier.OnRead(3);
+			notifier.OnRead(4);
 
 			_changes.Should().Equal(new[]
 				{
@@ -44,15 +44,14 @@ namespace SharpTail.Test
 		public void TestCurrentLineChanged2()
 		{
 			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 4);
-			notifier.OnLineRead(0);
+			notifier.OnRead(1);
 			_changes.Should().BeEmpty();
-			notifier.OnLineRead(1);
+			notifier.OnRead(2);
 			_changes.Should().BeEmpty();
-			notifier.OnLineRead(2);
+			notifier.OnRead(3);
 			_changes.Should().BeEmpty();
 
-
-			notifier.OnLineRead(3);
+			notifier.OnRead(4);
 			_changes.Should().Equal(new[]
 				{
 					new LogFileSection(0, 4)
@@ -63,7 +62,7 @@ namespace SharpTail.Test
 		public void TestCurrentLineChanged3()
 		{
 			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 4);
-			notifier.OnLineRead(3);
+			notifier.OnRead(4);
 			_changes.Should().Equal(new[]
 				{
 					new LogFileSection(0, 4)
@@ -74,12 +73,12 @@ namespace SharpTail.Test
 		public void TestCurrentLineChanged4()
 		{
 			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
-			notifier.OnLineRead(999);
+			notifier.OnRead(1000);
 			_changes.Should().Equal(new[]
 				{
 					new LogFileSection(0, 1000)
 				});
-			notifier.OnLineRead(1999);
+			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
 					new LogFileSection(0, 1000),
@@ -91,7 +90,7 @@ namespace SharpTail.Test
 		public void TestCurrentLineChanged5()
 		{
 			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
-			notifier.OnLineRead(1999);
+			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
 					new LogFileSection(0, 1000),

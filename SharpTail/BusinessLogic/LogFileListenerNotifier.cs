@@ -8,7 +8,7 @@ namespace SharpTail.BusinessLogic
 		private readonly TimeSpan _maximumTime;
 		private readonly int _maximumCount;
 		private DateTime _lastReportedTime;
-		private int _lastReportedLine;
+		private int _lastNumberOfLines;
 
 		public LogFileListenerNotifier(ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
 		{
@@ -16,36 +16,36 @@ namespace SharpTail.BusinessLogic
 			_maximumTime = maximumTime;
 			_maximumCount = maximumCount;
 
-			_lastReportedLine = -1;
+			_lastNumberOfLines = 0;
 			_lastReportedTime = DateTime.Now;
 		}
 
-		public void OnLineRead(int currentLineIndex)
+		public void OnRead(int numberOfLinesRead)
 		{
 			var now = DateTime.Now;
 			if (now - _lastReportedTime >= _maximumTime)
 			{
-				Report(currentLineIndex, now);
+				Report(numberOfLinesRead, now);
 			}
-			else if (currentLineIndex - _lastReportedLine >= _maximumCount)
+			else if (numberOfLinesRead - _lastNumberOfLines >= _maximumCount)
 			{
-				Report(currentLineIndex, now);
+				Report(numberOfLinesRead, now);
 			}
 		}
 
-		private void Report(int currentLineIndex, DateTime now)
+		private void Report(int numberOfLinesRead, DateTime now)
 		{
 			// We may never report all lines in one go if the listener specified
 			// that he only wants to receive batches of N.
 			// Therefore we invoke the listener multiple times.
 			int count;
-			while ((count = currentLineIndex - _lastReportedLine) > 0)
+			while ((count = numberOfLinesRead - _lastNumberOfLines) > 0)
 			{
 				count = Math.Min(count, _maximumCount);
-				var section = new LogFileSection(_lastReportedLine + 1, count);
+				var section = new LogFileSection(_lastNumberOfLines, count);
 				_listener.OnLogFileModified(section);
 
-				_lastReportedLine += count;
+				_lastNumberOfLines += count;
 				_lastReportedTime = now;
 			}
 		}

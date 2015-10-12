@@ -20,7 +20,7 @@ namespace SharpTail.BusinessLogic
 		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly Task _task;
+		private readonly Task _readTask;
 		private LogFileSection _fullSection;
 
 		public FilteredLogFile(ILogFile source, string filterString)
@@ -31,7 +31,7 @@ namespace SharpTail.BusinessLogic
 			_filterString = filterString ?? string.Empty;
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
-			_task = new Task(Filter,
+			_readTask = new Task(Filter,
 			                 _cancellationTokenSource.Token,
 			                 _cancellationTokenSource.Token);
 			_listeners = new LogFileListenerCollection();
@@ -42,22 +42,29 @@ namespace SharpTail.BusinessLogic
 		public void Dispose()
 		{
 			_cancellationTokenSource.Cancel();
-			_task.Wait();
-			_task.Dispose();
+			_readTask.Wait();
+			_readTask.Dispose();
 		}
 
 		public void Start()
 		{
-			if (_task.Status == TaskStatus.Created)
+			if (_readTask.Status == TaskStatus.Created)
 			{
 				_source.AddListener(this, TimeSpan.FromMilliseconds(10), BatchSize);
-				_task.Start();
+				_readTask.Start();
 			}
 		}
 
 		public void Wait()
 		{
-			_endOfSectionHandle.WaitOne();
+			while (true)
+			{
+				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
+					break;
+
+				if (_readTask.IsFaulted)
+					throw _readTask.Exception;
+			}
 		}
 
 		public int Count
@@ -133,7 +140,7 @@ namespace SharpTail.BusinessLogic
 				{
 					_endOfSectionHandle.Set();
 
-					_listeners.OnLineRead(_indices.Count - 1);
+					_listeners.OnRead(_indices.Count);
 
 					// There's no more data, let's wait for more (or until we're disposed)
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));
@@ -152,7 +159,7 @@ namespace SharpTail.BusinessLogic
 						{
 							int sourceIndex = nextSection.Index + i;
 							_indices.Add(sourceIndex);
-							_listeners.OnLineRead(_indices.Count - 1);
+							_listeners.OnRead(_indices.Count);
 						}
 					}
 

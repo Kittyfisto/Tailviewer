@@ -13,7 +13,7 @@ namespace SharpTail.BusinessLogic
 		#region Reading
 
 		private readonly CancellationTokenSource _cancellationTokenSource;
-		private readonly ManualResetEvent _readEntireFileEvent;
+		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly Task _readTask;
 		private readonly StreamReader _reader;
 		private readonly Stream _stream;
@@ -42,7 +42,7 @@ namespace SharpTail.BusinessLogic
 
 			_stream = stream;
 			_reader = new StreamReader(stream);
-			_readEntireFileEvent = new ManualResetEvent(false);
+			_endOfSectionHandle = new ManualResetEvent(false);
 
 			_entries = new List<string>();
 			_syncRoot = new object();
@@ -119,7 +119,14 @@ namespace SharpTail.BusinessLogic
 		/// </summary>
 		public void Wait()
 		{
-			_readEntireFileEvent.WaitOne();
+			while (true)
+			{
+				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
+					break;
+
+				if (_readTask.IsFaulted)
+					throw _readTask.Exception;
+			}
 		}
 
 		public int Count
@@ -133,36 +140,41 @@ namespace SharpTail.BusinessLogic
 		private void ReadFile(object parameter)
 		{
 			var token = (CancellationToken)parameter;
-			int currentLineIndex = 0;
+			int numberOfLinesRead = 0;
 
 			while (!token.IsCancellationRequested)
 			{
 				var line = _reader.ReadLine();
 				if (line == null)
 				{
-					_listeners.OnLineRead(currentLineIndex);
-					_readEntireFileEvent.Set();
+					_listeners.OnRead(numberOfLinesRead);
+					_endOfSectionHandle.Set();
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
 				}
 				else
 				{
-					_readEntireFileEvent.Reset();
-					++currentLineIndex;
+					_endOfSectionHandle.Reset();
+					++numberOfLinesRead;
+
+					if (numberOfLinesRead == 165342)
+					{
+						int n = 0;
+					}
 
 					DetermineDateTimeFormat(line);
-					Add(line, currentLineIndex);
+					Add(line, numberOfLinesRead);
 				}
 			}
 		}
 
-		private void Add(string line, int currentLineIndex)
+		private void Add(string line, int numberOfLinesRead)
 		{
 			lock (_syncRoot)
 			{
 				_entries.Add(line);
 			}
 
-			_listeners.OnLineRead(currentLineIndex);
+			_listeners.OnRead(numberOfLinesRead);
 		}
 
 		private void DetermineDateTimeFormat(string line)

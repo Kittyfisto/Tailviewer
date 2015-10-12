@@ -22,7 +22,7 @@ namespace SharpTail.Test
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
 			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).ShouldNotThrow();
 
-			collection.OnLineRead(9);
+			collection.OnRead(10);
 			invoked.Should().Be(1, "Because even though we added the listener twice, it should never be invoked twice");
 		}
 	}

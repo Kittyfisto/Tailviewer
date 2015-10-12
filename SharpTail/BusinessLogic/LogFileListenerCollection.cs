@@ -22,7 +22,7 @@ namespace SharpTail.BusinessLogic
 				{
 					var notifier = new LogFileListenerNotifier(listener, maximumWaitTime, maximumLineCount);
 					_listeners.Add(listener, notifier);
-					notifier.OnLineRead(_currentLineIndex);
+					notifier.OnRead(_currentLineIndex);
 				}
 			}
 		}
@@ -35,16 +35,16 @@ namespace SharpTail.BusinessLogic
 			}
 		}
 
-		public void OnLineRead(int currentLineIndex)
+		public void OnRead(int numberOfLinesRead)
 		{
 			lock (_listeners)
 			{
 				foreach (var notifier in _listeners.Values)
 				{
-					notifier.OnLineRead(currentLineIndex);
+					notifier.OnRead(numberOfLinesRead);
 				}
 			}
-			_currentLineIndex = currentLineIndex;
+			_currentLineIndex = numberOfLinesRead;
 		}
 	}
 }
