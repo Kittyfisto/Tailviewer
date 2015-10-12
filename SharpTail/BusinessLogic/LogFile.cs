@@ -134,13 +134,10 @@ namespace SharpTail.BusinessLogic
 		{
 			var token = (CancellationToken)parameter;
 			int currentLineIndex = 0;
-			string line = _reader.ReadLine();
-			DetermineDateTimeFormat(line);
-			Add(line, currentLineIndex);
 
 			while (!token.IsCancellationRequested)
 			{
-				line = _reader.ReadLine();
+				var line = _reader.ReadLine();
 				if (line == null)
 				{
 					_listeners.OnLineRead(currentLineIndex);
@@ -151,6 +148,8 @@ namespace SharpTail.BusinessLogic
 				{
 					_readEntireFileEvent.Reset();
 					++currentLineIndex;
+
+					DetermineDateTimeFormat(line);
 					Add(line, currentLineIndex);
 				}
 			}
@@ -168,7 +167,10 @@ namespace SharpTail.BusinessLogic
 
 		private void DetermineDateTimeFormat(string line)
 		{
-			DetermineDateTimePart(line, out _dateTimeColumn, out _dateTimeLength);
+			if (_dateTimeColumn == null || _dateTimeLength == null)
+			{
+				DetermineDateTimePart(line, out _dateTimeColumn, out _dateTimeLength);
+			}
 		}
 
 		public static void DetermineDateTimePart(string line, out int? currentColumn, out int? currentLength)

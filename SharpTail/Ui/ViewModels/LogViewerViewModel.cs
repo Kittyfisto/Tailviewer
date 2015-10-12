@@ -20,6 +20,7 @@ namespace SharpTail.Ui.ViewModels
 		private ILogFile _currentLogFile;
 		private string _filterString;
 		private int _logEntryCount;
+		private bool _followTail;
 
 		public LogViewerViewModel(IDispatcher dispatcher, LogFile logFile)
 		{
@@ -81,7 +82,7 @@ namespace SharpTail.Ui.ViewModels
 
 				var file = string.IsNullOrEmpty(value)
 					           ? (ILogFile)_fullLogFile
-					           : (ILogFile)_fullLogFile.Filter(value);
+					           : _fullLogFile.Filter(value);
 
 				SetCurrentLogFile(file);
 
@@ -118,6 +119,19 @@ namespace SharpTail.Ui.ViewModels
 		public ObservableCollection<LogEntryViewModel> LogEntries
 		{
 			get { return _logEntries; }
+		}
+
+		public bool FollowTail
+		{
+			get { return _followTail; }
+			set
+			{
+				if (value == _followTail)
+					return;
+
+				_followTail = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -132,6 +132,9 @@ namespace SharpTail.BusinessLogic
 				if (_fullSection.IsEndOfSection(currentSourceIndex))
 				{
 					_endOfSectionHandle.Set();
+
+					_listeners.OnLineRead(_indices.Count - 1);
+
 					// There's no more data, let's wait for more (or until we're disposed)
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));
 				}

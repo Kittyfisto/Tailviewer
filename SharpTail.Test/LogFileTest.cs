@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SharpTail.BusinessLogic;
+using log4net;
 
 namespace SharpTail.Test
 {
@@ -12,6 +15,8 @@ namespace SharpTail.Test
 	public sealed class LogFileTest
 	{
 		public const string File20Mb = @"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.log";
+
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		[Test]
 		public void TestDetermineDateTime()
@@ -145,6 +150,35 @@ namespace SharpTail.Test
 						});
 				}
 			}
+		}
+
+		[Test]
+		public void TestLive1()
+		{
+			const string fname = "TestLive1.log";
+			using (var logger = new Logger(fname))
+			using (var logFile = LogFile.FromFile(fname))
+			{
+				logFile.Start();
+				logFile.Count.Should().Be(0);
+
+				Log.Info("Test");
+				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
+			}
+		}
+
+		public static bool WaitUntil(Func<bool> fn, TimeSpan timeout)
+		{
+			var started = DateTime.UtcNow;
+			while ((DateTime.UtcNow - started) < timeout)
+			{
+				if (fn())
+					return true;
+
+				Thread.Sleep(TimeSpan.FromMilliseconds(10));
+			}
+
+			return false;
 		}
 	}
 }

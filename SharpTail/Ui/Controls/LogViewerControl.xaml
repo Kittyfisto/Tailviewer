@@ -38,13 +38,14 @@
                             <TextBlock Text=" entries" />
                         </StackPanel>
 
-                        <ListBox
+                      <ListView
+                        x:Name="PART_ListView"
                             Grid.Row="2"
                             ItemsSource="{Binding LogEntries}"
                             VirtualizingPanel.IsVirtualizing="True"
                             ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-                            <ListBox.ItemTemplate>
+                        <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal"
                                                 >
@@ -59,9 +60,9 @@
                                             FilterString="{Binding FilterString}" />
                                     </StackPanel>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>
+                            </ListView.ItemTemplate>
 
-                        </ListBox>
+                        </ListView>
 
                     </Grid>
                 </ControlTemplate>
