@@ -93,6 +93,11 @@ namespace SharpTail.BusinessLogic
 			}
 		}
 
+		public Size FileSize
+		{
+			get { return Size.FromBytes(_stream.Length); }
+		}
+
 		public string GetEntry(int index)
 		{
 			lock (_syncRoot)

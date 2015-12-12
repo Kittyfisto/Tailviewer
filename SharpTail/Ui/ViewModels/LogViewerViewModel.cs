@@ -21,6 +21,7 @@ namespace SharpTail.Ui.ViewModels
 		private string _filterString;
 		private int _logEntryCount;
 		private bool _followTail;
+		private Size _fileSize;
 
 		public LogViewerViewModel(IDispatcher dispatcher, LogFile logFile)
 		{
@@ -103,6 +104,18 @@ namespace SharpTail.Ui.ViewModels
 			}
 		}
 
+		public Size FileSize
+		{
+			get { return _fileSize; }
+			private set
+			{
+				if (value == _fileSize)
+					return;
+				_fileSize = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public int AllLogEntryCount
 		{
 			get { return _allLogEntryCount; }
@@ -180,6 +193,7 @@ namespace SharpTail.Ui.ViewModels
 		{
 			LogEntryCount = _currentLogFile.Count;
 			AllLogEntryCount = _fullLogFile.Count;
+			FileSize = _fullLogFile.FileSize;
 		}
 	}
 }

@@ -7,7 +7,7 @@ using log4net.Repository.Hierarchy;
 
 namespace SharpTail.Test
 {
-	internal sealed class Logger
+	public sealed class Logger
 		: IDisposable
 	{
 		private readonly Hierarchy _hierarchy;

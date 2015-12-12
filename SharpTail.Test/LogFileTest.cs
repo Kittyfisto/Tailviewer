@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -187,6 +188,44 @@ namespace SharpTail.Test
 				logFile.Count.Should().Be(0);
 
 				Log.Info("Test");
+				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
+			}
+		}
+
+		[Test]
+		public void TestLive2()
+		{
+			const string fname = "TestLive2.log";
+			using (var logger = new Logger(fname))
+			using (var logFile = LogFile.FromFile(fname))
+			{
+				logFile.Start();
+				logFile.Count.Should().Be(0);
+
+				Log.Info("Hello");
+				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
+
+				Log.Info("world!");
+				WaitUntil(() => logFile.Count == 2, TimeSpan.FromSeconds(1));
+			}
+		}
+
+		[Test]
+		public void TestDelete1()
+		{
+			const string fname = "TestDelete1.log";
+			using (new Logger(fname))
+			{
+				Log.Info("Test");
+			}
+
+			using (var logFile = LogFile.FromFile(fname))
+			{
+				logFile.Start();
+				logFile.Wait();
+				logFile.Count.Should().Be(1);
+
+				File.Delete(fname);
 				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
 			}
 		}

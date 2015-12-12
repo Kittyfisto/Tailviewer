@@ -73,7 +73,13 @@
         <Grid
             Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
           <controls:LogViewerControl
-              DataContext="{Binding LogViewModel}" />
+              ItemsSource="{Binding LogViewModel.LogEntries}"
+              FollowTail="{Binding LogViewModel.FollowTail}"
+              FilterString="{Binding LogViewModel.FilterString, Mode=TwoWay}"
+              LogEntryCount="{Binding LogViewModel.LogEntryCount}"
+              AllLogEntryCount="{Binding LogViewModel.AllLogEntryCount}"
+              FileSize="{Binding LogViewModel.FileSize}"
+              />
         </Grid>
       </Grid>
     </Grid>

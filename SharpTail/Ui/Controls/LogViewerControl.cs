@@ -1,34 +1,75 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using SharpTail.Ui.ViewModels;
 
 namespace SharpTail.Ui.Controls
 {
 	public class LogViewerControl : Control
 	{
-		private ListView _partListView;
+		public static readonly DependencyProperty ItemsSourceProperty =
+			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<LogEntryViewModel>), typeof (LogViewerControl),
+			                            new PropertyMetadata(null, OnItemsSourceChanged));
+
+		public static readonly DependencyProperty LogEntryCountProperty =
+			DependencyProperty.Register("LogEntryCount", typeof (int), typeof (LogViewerControl),
+			                            new PropertyMetadata(0));
+
+		public static readonly DependencyProperty AllLogEntryCountProperty =
+			DependencyProperty.Register("AllLogEntryCount", typeof (int), typeof (LogViewerControl),
+			                            new PropertyMetadata(0));
+
+		public static readonly DependencyProperty FilterStringProperty =
+			DependencyProperty.Register("FilterString", typeof (string), typeof (LogViewerControl),
+			                            new PropertyMetadata(null));
 
 		public static readonly DependencyProperty FollowTailProperty =
 			DependencyProperty.Register("FollowTail", typeof (bool),
-			typeof (LogViewerControl),
-			new PropertyMetadata(false, OnFollowTailChanged));
+			                            typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnFollowTailChanged));
 
-		private static void OnFollowTailChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		public static readonly DependencyProperty FileSizeProperty =
+			DependencyProperty.Register("FileSize", typeof (Size), typeof (LogViewerControl), new PropertyMetadata(default(Size)));
+
+		public Size FileSize
 		{
-			((LogViewerControl) dependencyObject).OnFollowTailChanged((bool) e.NewValue);
+			get { return (Size) GetValue(FileSizeProperty); }
+			set { SetValue(FileSizeProperty, value); }
 		}
 
-		private void OnFollowTailChanged(bool followTail)
+		private ListView _partListView;
+		private ScrollViewer _scrollViewer;
+
+		static LogViewerControl()
 		{
-			var view = _partListView;
-			if (view != null)
-			{
-				if (followTail)
-				{
-					var items = view.Items;
-					view.SelectedItem = items.GetItemAt(items.Count - 1);
-					view.ScrollIntoView(view.SelectedItem);
-				}
-			}
+			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
+			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
+		}
+
+		public string FilterString
+		{
+			get { return (string) GetValue(FilterStringProperty); }
+			set { SetValue(FilterStringProperty, value); }
+		}
+
+		public int AllLogEntryCount
+		{
+			get { return (int) GetValue(AllLogEntryCountProperty); }
+			set { SetValue(AllLogEntryCountProperty, value); }
+		}
+
+		public int LogEntryCount
+		{
+			get { return (int) GetValue(LogEntryCountProperty); }
+			set { SetValue(LogEntryCountProperty, value); }
+		}
+
+		public IEnumerable<LogEntryViewModel> ItemsSource
+		{
+			get { return (IEnumerable<LogEntryViewModel>) GetValue(ItemsSourceProperty); }
+			set { SetValue(ItemsSourceProperty, value); }
 		}
 
 		public bool FollowTail
@@ -37,17 +78,79 @@ namespace SharpTail.Ui.Controls
 			set { SetValue(FollowTailProperty, value); }
 		}
 
-		static LogViewerControl()
+		private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
-			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
+			((LogViewerControl) d).OnItemsSourceChanged(e.OldValue as INotifyCollectionChanged,
+			                                            e.NewValue as INotifyCollectionChanged);
+		}
+
+		private void OnItemsSourceChanged(INotifyCollectionChanged oldValue, INotifyCollectionChanged newValue)
+		{
+			if (oldValue != null)
+			{
+				oldValue.CollectionChanged -= ItemsSourceOnCollectionChanged;
+			}
+			if (newValue != null)
+			{
+				newValue.CollectionChanged += ItemsSourceOnCollectionChanged;
+			}
+		}
+
+		private void ItemsSourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (FollowTail)
+			{
+				ScrollToTail();
+			}
+		}
+
+		private static void OnFollowTailChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		{
+			((LogViewerControl) dependencyObject).OnFollowTailChanged((bool) e.NewValue);
+		}
+
+		private void OnFollowTailChanged(bool followTail)
+		{
+			if (followTail)
+			{
+				ScrollToTail();
+			}
+		}
+
+		private void ScrollToTail()
+		{
+			if (_scrollViewer == null)
+			{
+				if (VisualTreeHelper.GetChildrenCount(_partListView) > 0)
+				{
+					var border = (Border)VisualTreeHelper.GetChild(_partListView, 0);
+					_scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+					_scrollViewer.ScrollChanged += OnScrollChanged;
+				}
+			}
+
+			if (_scrollViewer != null)
+			{
+				_scrollViewer.ScrollToBottom();
+			}
 		}
 
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
-			_partListView = (ListView)GetTemplateChild("PART_ListView");
+			_partListView = (ListView) GetTemplateChild("PART_ListView");
+			if (_partListView != null)
+			{
+			}
+		}
+
+		private void OnScrollChanged(object sender, ScrollChangedEventArgs args)
+		{
+			if (args.VerticalChange < 0)
+			{
+				FollowTail = false;
+			}
 		}
 	}
 }
