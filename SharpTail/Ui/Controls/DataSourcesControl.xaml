@@ -77,12 +77,15 @@
                                             </Setter.Value>
                                         </Setter>
                                         <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter Property="Background" Value="#3998D6" />
+                                            </Trigger>
                                             <MultiTrigger>
                                                 <MultiTrigger.Conditions>
-                                                    <Condition Property="IsSelected" Value="true" />
-                                                    <!--<Condition Property="Selector.IsSelectionActive" Value="true" />-->
+                                                    <Condition Property="IsMouseOver" Value="True" />
+                                                    <Condition Property="IsSelected" Value="False" />
                                                 </MultiTrigger.Conditions>
-                                                <Setter Property="Background" Value="#3998D6" />
+                                                <Setter Property="Background" Value="#F2F2F2" />
                                             </MultiTrigger>
                                         </Style.Triggers>
                                     </Style>

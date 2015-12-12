@@ -28,8 +28,7 @@
                                 Margin="8"
                                 Grid.Column="1"
                                 FilterText="{Binding StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Search (Ctrl+E)"
-                                />
+                                Watermark="Search (Ctrl+E)" />
 
                         </Grid>
 
@@ -41,7 +40,8 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Orientation="Horizontal" Margin="8" Grid.Column="0">
+                            <StackPanel Orientation="Horizontal" Margin="8" Grid.Column="0"
+                                        VerticalAlignment="Center">
                                 <TextBlock Text="Displaying " />
                                 <TextBlock
                                     Text="{Binding LogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -54,13 +54,14 @@
                                 <TextBlock Text=")" />
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Margin="8" Orientation="Horizontal">
-                                <CheckBox
-                                    x:Name="PART_FollowTail"
-                                    Content="Follow Tail"
-                                    VerticalAlignment="Center"
-                                    IsChecked="{Binding FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </StackPanel>
+                            <ToggleButton
+                                Grid.Column="1"
+                                Margin="8"
+                                Padding="4"
+                                x:Name="PART_FollowTail"
+                                Content="Follow Tail"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:LevelFilterControl
                                 Grid.Column="2"
@@ -77,14 +78,32 @@
                             VirtualizingPanel.IsVirtualizing="True"
                             ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-                            <ListView.ItemTemplate>
-                                <DataTemplate DataType="{x:Type viewModels:LogEntryViewModel}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Message}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-
+                            <ListView.Resources>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <TextBlock Text="{Binding Message}" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter Property="Background" Value="#3998D6" />
+                                            <Setter Property="TextElement.Foreground" Value="White"></Setter>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="True" />
+                                                <Condition Property="IsSelected" Value="False" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Background" Value="#F2F2F2" />
+                                        </MultiTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.Resources>
                         </ListView>
 
                     </Grid>
