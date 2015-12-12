@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SharpTail.BusinessLogic;
 using SharpTail.Ui.ViewModels;
 
-namespace SharpTail.Test
+namespace SharpTail.Test.Ui
 {
 	[TestFixture]
 	public sealed class DataSourceViewModelTest

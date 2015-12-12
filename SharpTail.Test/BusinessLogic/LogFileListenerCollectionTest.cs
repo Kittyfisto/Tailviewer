@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using SharpTail.BusinessLogic;
 
-namespace SharpTail.Test
+namespace SharpTail.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class LogFileListenerCollectionTest

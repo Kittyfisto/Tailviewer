@@ -10,7 +10,7 @@ using NUnit.Framework;
 using SharpTail.BusinessLogic;
 using log4net;
 
-namespace SharpTail.Test
+namespace SharpTail.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class LogFileTest

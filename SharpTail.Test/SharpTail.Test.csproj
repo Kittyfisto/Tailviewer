@@ -60,13 +60,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataSourceViewModelTest.cs" />
-    <Compile Include="HighlightableTextBlockTest.cs" />
+    <Compile Include="Ui\DataSourceViewModelTest.cs" />
+    <Compile Include="Ui\HighlightableTextBlockTest.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="LogFileListenerCollectionTest.cs" />
-    <Compile Include="LogFileListenerNotifierTest.cs" />
-    <Compile Include="LogFileTest.cs" />
-    <Compile Include="LogViewerViewModelTest.cs" />
+    <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
+    <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
+    <Compile Include="BusinessLogic\LogFileTest.cs" />
+    <Compile Include="Ui\LogViewerViewModelTest.cs" />
     <Compile Include="ManualDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
