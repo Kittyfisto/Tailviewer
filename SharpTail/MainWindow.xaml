@@ -11,76 +11,87 @@
         DragEnter="OnDragEnter"
         Drop="MainWindow_OnDrop"
         MinWidth="640"
-        MinHeight="480"
-        >
+        MinHeight="480">
 
     <Window.Resources>
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Themes/Converters.xaml" />
     </Window.Resources>
 
     <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition />
-      </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
-      <controls:AlertControl
-        Grid.RowSpan="2"
-                Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                ErrorMessage="{Binding ErrorMessage}"
-                />
+        <controls:AlertControl
+            Grid.RowSpan="2"
+            Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+            ErrorMessage="{Binding ErrorMessage}" />
 
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-          <Button Content="Open File" />
-        </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Open File" />
+            </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Column="1"
-                    DataContext="{Binding LogViewModel}">
-          <ToggleButton Content="Open File"
-                        IsChecked="{Binding FollowTail, Mode=TwoWay}"
-                  />
-        </StackPanel>
-        
-      </Grid>
-
-      <Grid Grid.Row="1">
-        <Grid Width="200"
-              Height="150"
-              VerticalAlignment="Center"
-              HorizontalAlignment="Center"
-              >
-          <TextBlock Text="Drag n' drop a file here in order to view it and / or start monitoring it"
-                     TextWrapping="Wrap"
-                     FontSize="16"
-                     Margin="10"
-                     Foreground="DodgerBlue"
-                     VerticalAlignment="Center"
-                     HorizontalAlignment="Center" />
-          <Rectangle StrokeDashArray="4 4"
-                     Stroke="DodgerBlue"
-                     StrokeThickness="2"
-                     RadiusX="10"
-                     RadiusY="10" />
+            <StackPanel Orientation="Horizontal" Grid.Column="1"
+                        DataContext="{Binding LogViewModel}">
+                <ToggleButton Content="Open File"
+                              IsChecked="{Binding FollowTail, Mode=TwoWay}" />
+            </StackPanel>
         </Grid>
 
-        <Grid
-            Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-          <controls:LogViewerControl
-              ItemsSource="{Binding LogViewModel.LogEntries}"
-              FollowTail="{Binding LogViewModel.FollowTail}"
-              FilterString="{Binding LogViewModel.FilterString, Mode=TwoWay}"
-              LogEntryCount="{Binding LogViewModel.LogEntryCount}"
-              AllLogEntryCount="{Binding LogViewModel.AllLogEntryCount}"
-              FileSize="{Binding LogViewModel.FileSize}"
-              />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <controls:DataSourcesControl
+                Width="200"
+                ItemsSource="{Binding RecentFiles}" />
+
+            <Grid Grid.Column="1"
+                  Width="1"
+                  Background="#E5E5E5" />
+
+            <Grid Grid.Column="2">
+                <Grid Width="200"
+                      Height="150"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center">
+                    <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
+                               TextWrapping="Wrap"
+                               FontSize="16"
+                               Margin="10"
+                               Foreground="DodgerBlue"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                    <Rectangle StrokeDashArray="4 4"
+                               Stroke="DodgerBlue"
+                               StrokeThickness="2"
+                               RadiusX="10"
+                               RadiusY="10" />
+                </Grid>
+
+                <Grid
+                    Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                    <controls:LogViewerControl
+                        ItemsSource="{Binding LogViewModel.LogEntries}"
+                        FollowTail="{Binding LogViewModel.FollowTail}"
+                        FilterString="{Binding LogViewModel.FilterString, Mode=TwoWay}"
+                        LogEntryCount="{Binding LogViewModel.LogEntryCount}"
+                        AllLogEntryCount="{Binding LogViewModel.AllLogEntryCount}"
+                        FileSize="{Binding LogViewModel.FileSize}" />
+                </Grid>
+            </Grid>
         </Grid>
-      </Grid>
+
     </Grid>
 </Window>

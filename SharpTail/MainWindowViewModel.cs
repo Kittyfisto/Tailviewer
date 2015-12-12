@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -18,6 +19,7 @@ namespace SharpTail
 		private string _windowTitle;
 		private bool _hasError;
 		private string _errorMessage;
+		private readonly ObservableCollection<DataSourceViewModel> _recentFiles;
 
 		public const string ApplicationName = "SharpTail";
 
@@ -26,6 +28,13 @@ namespace SharpTail
 
 		public MainWindowViewModel(Dispatcher dispatcher)
 		{
+			_recentFiles = new ObservableCollection<DataSourceViewModel>
+				{
+					new DataSourceViewModel(new DataSource
+						{
+							FileName = @"E:\Code\SharpTail\bin\Debug\Slow.log"
+						})
+				};
 			_dispatcher = new UiDispatcher(dispatcher);
 			WindowTitle = ApplicationName;
 			dispatcher.UnhandledException += DispatcherOnUnhandledException;
@@ -103,6 +112,11 @@ namespace SharpTail
 				IsLogFileOpen = value != null;
 				EmitPropertyChanged();
 			}
+		}
+
+		public IEnumerable<DataSourceViewModel> RecentFiles
+		{
+			get { return _recentFiles; }
 		}
 
 		public void OpenFiles(string[] files)

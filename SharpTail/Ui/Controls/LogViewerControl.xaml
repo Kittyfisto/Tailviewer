@@ -65,12 +65,6 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal"
                                                 >
-                                        <!--<Border
-                                            Background="LightBlue">
-                                            <TextBlock
-                                                Text="{Binding Index}"
-                                                Margin="8,0,8,0" />
-                                        </Border>-->
                                         <local:HighlightableTextBlock
                                             LogEntry="{Binding}"
                                             FilterString="{Binding FilterString}" />
