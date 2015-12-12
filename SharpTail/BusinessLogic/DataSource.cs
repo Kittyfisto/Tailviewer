@@ -22,6 +22,7 @@ namespace SharpTail.BusinessLogic
 		public DataSource(string file)
 		{
 			FullFileName = Path.GetFullPath(file);
+			Levels = LevelFlags.All;
 		}
 	}
 }
