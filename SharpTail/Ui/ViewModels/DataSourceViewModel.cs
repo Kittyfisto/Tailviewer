@@ -16,6 +16,20 @@ namespace SharpTail.Ui.ViewModels
 		private readonly string _fileName;
 		private readonly string _folder;
 		private bool _isOpen;
+		private DateTime _lastWritten;
+
+		public DateTime LastWritten
+		{
+			get { return _lastWritten; }
+			private set
+			{
+				if (value == _lastWritten)
+					return;
+
+				_lastWritten = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public bool FollowTail
 		{
@@ -30,15 +44,15 @@ namespace SharpTail.Ui.ViewModels
 			}
 		}
 
-		public string FilterString
+		public string StringFilter
 		{
-			get { return _dataSource.FilterString; }
+			get { return _dataSource.StringFilter; }
 			set
 			{
-				if (value == FilterString)
+				if (value == StringFilter)
 					return;
 
-				_dataSource.FilterString = value;
+				_dataSource.StringFilter = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -46,6 +60,14 @@ namespace SharpTail.Ui.ViewModels
 		public DateTime LastOpened
 		{
 			get { return _dataSource.LastOpened; }
+			set
+			{
+				if (value == LastOpened)
+					return;
+
+				_dataSource.LastOpened = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public bool IsOpen
@@ -68,9 +90,12 @@ namespace SharpTail.Ui.ViewModels
 
 		public DataSourceViewModel(DataSource dataSource)
 		{
+			if (dataSource == null) throw new ArgumentNullException("dataSource");
+
 			_dataSource = dataSource;
-			_fileName = Path.GetFileName(dataSource.FileName);
-			_folder = Path.GetDirectoryName(dataSource.FileName);
+			_fileName = Path.GetFileName(dataSource.FullFileName);
+			_folder = Path.GetDirectoryName(dataSource.FullFileName);
+			_lastWritten = dataSource.LastWritten;
 		}
 
 		public string FileName
@@ -83,12 +108,40 @@ namespace SharpTail.Ui.ViewModels
 			get { return _folder; }
 		}
 
+		public string FullName
+		{
+			get { return _dataSource.FullFileName; }
+		}
+
+		public DataSource DataSource
+		{
+			get { return _dataSource; }
+		}
+
+		public LevelFlags LevelsFilter
+		{
+			get { return _dataSource.Levels; }
+			set
+			{
+				if (value == LevelsFilter)
+					return;
+
+				_dataSource.Levels = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public void UpdateLastWritten()
+		{
+			LastWritten = _dataSource.LastWritten;
 		}
 	}
 }

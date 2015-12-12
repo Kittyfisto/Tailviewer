@@ -32,14 +32,17 @@ namespace SharpTail.BusinessLogic
 		#region Listeners
 
 		private readonly LogFileListenerCollection _listeners;
+		private readonly DataSource _dataSource;
 
 		#endregion
 
-		private LogFile(FileStream stream)
+		private LogFile(DataSource dataSource, FileStream stream)
 		{
-			if (stream == null)
-				throw new ArgumentNullException("stream");
+			if (dataSource == null) throw new ArgumentNullException("dataSource");
+			if (stream == null) throw new ArgumentNullException("stream");
 
+			_dataSource = dataSource;
+			_dataSource.LastWritten = File.GetLastWriteTime(dataSource.FullFileName);
 			_stream = stream;
 			_reader = new StreamReader(stream);
 			_endOfSectionHandle = new ManualResetEvent(false);
@@ -152,6 +155,7 @@ namespace SharpTail.BusinessLogic
 				var line = _reader.ReadLine();
 				if (line == null)
 				{
+					_dataSource.LastWritten = File.GetLastWriteTime(_dataSource.FullFileName);
 					_listeners.OnRead(numberOfLinesRead);
 					_endOfSectionHandle.Set();
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
@@ -160,11 +164,6 @@ namespace SharpTail.BusinessLogic
 				{
 					_endOfSectionHandle.Reset();
 					++numberOfLinesRead;
-
-					if (numberOfLinesRead == 165342)
-					{
-						int n = 0;
-					}
 
 					DetermineDateTimeFormat(line);
 					Add(line, numberOfLinesRead);
@@ -215,14 +214,19 @@ namespace SharpTail.BusinessLogic
 
 		public static LogFile FromFile(string fname)
 		{
+			return FromFile(new DataSource(fname));
+		}
+
+		public static LogFile FromFile(DataSource dataSource)
+		{
 			FileStream stream = null;
 			try
 			{
-				stream = new FileStream(fname,
+				stream = new FileStream(dataSource.FullFileName,
 				                        FileMode.Open,
 				                        FileAccess.Read,
 				                        FileShare.ReadWrite);
-				return new LogFile(stream);
+				return new LogFile(dataSource, stream);
 			}
 			catch (Exception)
 			{
@@ -233,9 +237,19 @@ namespace SharpTail.BusinessLogic
 			}
 		}
 
-		public FilteredLogFile Filter(string filterString)
+		public FilteredLogFile Filter(LevelFlags levelFilter)
 		{
-			var file = new FilteredLogFile(this, filterString);
+			return Filter(null, levelFilter);
+		}
+
+		public FilteredLogFile Filter(string stringFilter)
+		{
+			return Filter(stringFilter, LevelFlags.All);
+		}
+
+		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter)
+		{
+			var file = new FilteredLogFile(this, stringFilter, levelFilter);
 			file.Start();
 			return file;
 		}

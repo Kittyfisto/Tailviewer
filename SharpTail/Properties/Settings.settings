@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SharpTail.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="Left" Type="System.Double" Scope="User">
@@ -19,6 +19,12 @@
     </Setting>
     <Setting Name="IsMinimized" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DataSources" Type="System.Collections.Generic.List&lt;SharpTail.BusinessLogic.DataSource&gt;" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Setting" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

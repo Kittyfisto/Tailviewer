@@ -11,7 +11,7 @@ namespace SharpTail.Ui.Controls
 		: TextBlock
 	{
 		public static readonly DependencyProperty FilterStringProperty =
-			DependencyProperty.Register("FilterString", typeof(string), typeof(HighlightableTextBlock),
+			DependencyProperty.Register("StringFilter", typeof(string), typeof(HighlightableTextBlock),
 										new PropertyMetadata(default(string), OnFilterStringChanged));
 
 		public static readonly DependencyProperty LogEntryProperty =

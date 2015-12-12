@@ -23,7 +23,8 @@
                                        Margin="8" />
 
                             <TextBox
-                                Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
+                                x:Name="PART_StringFilter"
+                                Text="{Binding StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                 Margin="8"
                                 Grid.Column="1" />
                         </Grid>
@@ -31,16 +32,21 @@
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal" Margin="8" Grid.Column="0">
                                 <TextBlock Text="Displaying " />
-                                <TextBlock Text="{Binding LogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock
+                                    Text="{Binding LogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <TextBlock Text=" out of " />
-                                <TextBlock Text="{Binding AllLogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock
+                                    Text="{Binding AllLogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <TextBlock Text=" entries (" />
-                                <TextBlock Text="{Binding FileSize, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                <TextBlock
+                                    Text="{Binding FileSize, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <TextBlock Text=")" />
                             </StackPanel>
 
@@ -48,26 +54,33 @@
                                 <CheckBox
                                     x:Name="PART_FollowTail"
                                     Content="Follow Tail"
-                                    IsChecked="{Binding FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                    />
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
                             </StackPanel>
+
+                            <local:LevelFilterControl
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Margin="8"
+                                LevelsFilter="{Binding LevelsFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                />
                             
                         </Grid>
-                        
-                      <ListView
-                        x:Name="PART_ListView"
+
+                        <ListView
+                            x:Name="PART_ListView"
                             Grid.Row="2"
                             ItemsSource="{TemplateBinding ItemsSource}"
+                            BorderThickness="0"
                             VirtualizingPanel.IsVirtualizing="True"
                             ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-                        <ListView.ItemTemplate>
+                            <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal"
-                                                >
+                                    <StackPanel Orientation="Horizontal">
                                         <local:HighlightableTextBlock
                                             LogEntry="{Binding}"
-                                            FilterString="{Binding FilterString}" />
+                                             />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

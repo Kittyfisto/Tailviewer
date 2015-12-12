@@ -53,6 +53,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BusinessLogic\LevelFlags.cs" />
+    <Compile Include="Ui\Controls\LevelFilterControl.cs" />
+    <Compile Include="Ui\ViewModels\DataSourceCollection.cs" />
     <Compile Include="BusinessLogic\LogFileStream.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\ILogFile.cs" />
@@ -82,6 +85,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\AlertControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\LevelFilterControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

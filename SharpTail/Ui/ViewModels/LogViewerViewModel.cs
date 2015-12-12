@@ -16,24 +16,24 @@ namespace SharpTail.Ui.ViewModels
 		private readonly LogFile _fullLogFile;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
+		private readonly DataSourceViewModel _dataSource;
 		private int _allLogEntryCount;
 		private ILogFile _currentLogFile;
-		private string _filterString;
 		private int _logEntryCount;
-		private bool _followTail;
 		private Size _fileSize;
 
-		public LogViewerViewModel(IDispatcher dispatcher, LogFile logFile)
+		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher, LogFile logFile)
 		{
+			if (dataSource == null) throw new ArgumentNullException("dataSource");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 			if (logFile == null) throw new ArgumentNullException("logFile");
 
+			_dataSource = dataSource;
 			_dispatcher = dispatcher;
 			_fullLogFile = logFile;
 			_fullLogFile.Start();
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
-
 			_logEntries = new ObservableCollection<LogEntryViewModel>();
 
 			SetCurrentLogFile(_fullLogFile);
@@ -71,24 +71,35 @@ namespace SharpTail.Ui.ViewModels
 			AllLogEntryCount = 0;
 		}
 
-		public string FilterString
+		public string StringFilter
 		{
-			get { return _filterString; }
+			get { return _dataSource.StringFilter; }
 			set
 			{
-				if (value == _filterString)
+				if (value == StringFilter)
 					return;
 
-				_filterString = value;
-
-				var file = string.IsNullOrEmpty(value)
-					           ? (ILogFile)_fullLogFile
-					           : _fullLogFile.Filter(value);
-
-				SetCurrentLogFile(file);
-
+				_dataSource.StringFilter = value;
+				UpdateCurrentLogFile();
 				EmitPropertyChanged();
 			}
+		}
+
+		private void UpdateCurrentLogFile()
+		{
+			var stringFilter = StringFilter;
+			var levels = LevelsFilter;
+			ILogFile logFile;
+			if (!string.IsNullOrEmpty(stringFilter) || levels != LevelFlags.All)
+			{
+				logFile = _fullLogFile.Filter(stringFilter, levels);
+			}
+			else
+			{
+				logFile = _fullLogFile;
+			}
+
+			SetCurrentLogFile(logFile);
 		}
 
 		public int LogEntryCount
@@ -111,6 +122,7 @@ namespace SharpTail.Ui.ViewModels
 			{
 				if (value == _fileSize)
 					return;
+
 				_fileSize = value;
 				EmitPropertyChanged();
 			}
@@ -136,13 +148,27 @@ namespace SharpTail.Ui.ViewModels
 
 		public bool FollowTail
 		{
-			get { return _followTail; }
+			get { return _dataSource.FollowTail; }
 			set
 			{
-				if (value == _followTail)
+				if (value == FollowTail)
 					return;
 
-				_followTail = value;
+				_dataSource.FollowTail = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public LevelFlags LevelsFilter
+		{
+			get { return _dataSource.LevelsFilter; }
+			set
+			{
+				if (value == LevelsFilter)
+					return;
+
+				_dataSource.LevelsFilter = value;
+				UpdateCurrentLogFile();
 				EmitPropertyChanged();
 			}
 		}
@@ -178,12 +204,13 @@ namespace SharpTail.Ui.ViewModels
 					var entries = _currentLogFile.GetSection(section);
 					for(int i = 0; i < entries.Length; ++i)
 					{
-						var model = new LogEntryViewModel(section.Index + i, entries[i], _filterString);
+						var model = new LogEntryViewModel(section.Index + i, entries[i], StringFilter);
 						_logEntries.Add(model);
 					}
 				}
 
 				_pendingSections.Clear();
+				_dataSource.UpdateLastWritten();
 			}
 
 			UpdateCounts();

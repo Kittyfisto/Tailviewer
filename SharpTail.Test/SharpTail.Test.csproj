@@ -60,6 +60,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSourceViewModelTest.cs" />
     <Compile Include="HighlightableTextBlockTest.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LogFileListenerCollectionTest.cs" />

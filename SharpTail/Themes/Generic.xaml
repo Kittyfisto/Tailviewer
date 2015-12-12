@@ -4,8 +4,10 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/AlertControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/LogViewerControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/DataSourcesControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/LevelFilterControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/LogViewerControl.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
 
 </ResourceDictionary>

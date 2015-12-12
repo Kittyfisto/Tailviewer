@@ -16,6 +16,7 @@ namespace SharpTail.BusinessLogic
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly string _filterString;
+		private readonly string[] _levels;
 		private readonly List<int> _indices;
 		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -23,12 +24,13 @@ namespace SharpTail.BusinessLogic
 		private readonly Task _readTask;
 		private LogFileSection _fullSection;
 
-		public FilteredLogFile(ILogFile source, string filterString)
+		public FilteredLogFile(ILogFile source, string stringFilter, LevelFlags levelFilter)
 		{
 			if (source == null) throw new ArgumentNullException("source");
 
 			_source = source;
-			_filterString = filterString ?? string.Empty;
+			_levels = GetLevelStrings(levelFilter, stringFilter);
+			_filterString = stringFilter ?? string.Empty;
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
 			_readTask = new Task(Filter,
@@ -37,6 +39,27 @@ namespace SharpTail.BusinessLogic
 			_listeners = new LogFileListenerCollection();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
+		}
+
+		private string[] GetLevelStrings(LevelFlags levelFilter, string stringFilter)
+		{
+			var ret = new List<string>();
+
+			if (levelFilter.HasFlag(LevelFlags.Debug))
+				ret.Add("DEBUG");
+			if (levelFilter.HasFlag(LevelFlags.Info))
+				ret.Add("INFO");
+			if (levelFilter.HasFlag(LevelFlags.Warning))
+				ret.Add("WARN");
+			if (levelFilter.HasFlag(LevelFlags.Error))
+				ret.Add("ERROR");
+			if (levelFilter.HasFlag(LevelFlags.Fatal))
+				ret.Add("FATAL");
+
+			if (!string.IsNullOrEmpty(stringFilter))
+				ret.Add(stringFilter);
+
+			return ret.ToArray();
 		}
 
 		public void Dispose()
@@ -171,12 +194,23 @@ namespace SharpTail.BusinessLogic
 		[Pure]
 		private bool PassesFilter(string entry)
 		{
-			string filter = _filterString;
-			if (string.IsNullOrEmpty(filter))
-				return true;
+			int idx = entry.IndexOf(_filterString, StringComparison.InvariantCultureIgnoreCase);
+			if (idx == -1)
+				return false;
 
-			int idx = entry.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
-			return idx != -1;
+// ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable ForCanBeConvertedToForeach
+			for (int i = 0; i < _levels.Length; ++i)
+// ReSharper restore ForCanBeConvertedToForeach
+// ReSharper restore LoopCanBeConvertedToQuery
+			{
+				var filter = _levels[i];
+				idx = entry.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
+				if (idx != -1)
+					return true;
+			}
+
+			return false;
 		}
 	}
 }

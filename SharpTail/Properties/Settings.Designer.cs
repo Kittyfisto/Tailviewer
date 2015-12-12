@@ -94,5 +94,28 @@ namespace SharpTail.Properties {
                 this["IsMinimized"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<SharpTail.BusinessLogic.DataSource> DataSources {
+            get {
+                return ((global::System.Collections.Generic.List<SharpTail.BusinessLogic.DataSource>)(this["DataSources"]));
+            }
+            set {
+                this["DataSources"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+            set {
+                this["Setting"] = value;
+            }
+        }
     }
 }

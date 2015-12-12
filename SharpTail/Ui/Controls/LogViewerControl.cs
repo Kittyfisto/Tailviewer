@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using SharpTail.BusinessLogic;
 using SharpTail.Ui.ViewModels;
 
 namespace SharpTail.Ui.Controls
@@ -21,8 +22,8 @@ namespace SharpTail.Ui.Controls
 			DependencyProperty.Register("AllLogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(0));
 
-		public static readonly DependencyProperty FilterStringProperty =
-			DependencyProperty.Register("FilterString", typeof (string), typeof (LogViewerControl),
+		public static readonly DependencyProperty StringFilterProperty =
+			DependencyProperty.Register("StringFilter", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(null));
 
 		public static readonly DependencyProperty FollowTailProperty =
@@ -33,11 +34,9 @@ namespace SharpTail.Ui.Controls
 		public static readonly DependencyProperty FileSizeProperty =
 			DependencyProperty.Register("FileSize", typeof (Size), typeof (LogViewerControl), new PropertyMetadata(default(Size)));
 
-		public Size FileSize
-		{
-			get { return (Size) GetValue(FileSizeProperty); }
-			set { SetValue(FileSizeProperty, value); }
-		}
+		public static readonly DependencyProperty LevelsFilterProperty =
+			DependencyProperty.Register("LevelsFilter", typeof (LevelFlags), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(LevelFlags)));
 
 		private ListView _partListView;
 		private ScrollViewer _scrollViewer;
@@ -48,10 +47,22 @@ namespace SharpTail.Ui.Controls
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
 		}
 
-		public string FilterString
+		public LevelFlags LevelsFilter
 		{
-			get { return (string) GetValue(FilterStringProperty); }
-			set { SetValue(FilterStringProperty, value); }
+			get { return (LevelFlags) GetValue(LevelsFilterProperty); }
+			set { SetValue(LevelsFilterProperty, value); }
+		}
+
+		public Size FileSize
+		{
+			get { return (Size) GetValue(FileSizeProperty); }
+			set { SetValue(FileSizeProperty, value); }
+		}
+
+		public string StringFilter
+		{
+			get { return (string) GetValue(StringFilterProperty); }
+			set { SetValue(StringFilterProperty, value); }
 		}
 
 		public int AllLogEntryCount
@@ -119,12 +130,12 @@ namespace SharpTail.Ui.Controls
 
 		private void ScrollToTail()
 		{
-			if (_scrollViewer == null)
+			if (_partListView != null && _scrollViewer == null)
 			{
 				if (VisualTreeHelper.GetChildrenCount(_partListView) > 0)
 				{
-					var border = (Border)VisualTreeHelper.GetChild(_partListView, 0);
-					_scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+					var border = (Border) VisualTreeHelper.GetChild(_partListView, 0);
+					_scrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(border, 0);
 					_scrollViewer.ScrollChanged += OnScrollChanged;
 				}
 			}

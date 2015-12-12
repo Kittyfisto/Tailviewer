@@ -23,17 +23,17 @@ namespace SharpTail.Test
 		{
 			using (var file = LogFile.FromFile(LogFileTest.File20Mb))
 			{
-				var model = new LogViewerViewModel(_dispatcher, file);
+				var model = new LogViewerViewModel(new DataSourceViewModel(new DataSource()), _dispatcher, file);
 				file.Wait();
 
-				model.FilterString = "i";
+				model.StringFilter = "i";
 				model.CurrentLogFile.Wait();
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
-				model.FilterString = "in";
-				model.FilterString = "inf";
-				model.FilterString = "info";
+				model.StringFilter = "in";
+				model.StringFilter = "inf";
+				model.StringFilter = "info";
 
 				// Now we wait for the very last filter operation to complete
 				model.CurrentLogFile.Wait();

@@ -35,6 +35,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
+            <!--
             <StackPanel Orientation="Horizontal">
                 <Button Content="Open File" />
             </StackPanel>
@@ -44,6 +45,7 @@
                 <ToggleButton Content="Open File"
                               IsChecked="{Binding FollowTail, Mode=TwoWay}" />
             </StackPanel>
+            -->
         </Grid>
 
         <Grid Grid.Row="1">
@@ -55,7 +57,9 @@
 
             <controls:DataSourcesControl
                 Width="200"
-                ItemsSource="{Binding RecentFiles}" />
+                ItemsSource="{Binding RecentFiles}"
+                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}"
+                />
 
             <Grid Grid.Column="1"
                   Width="1"
@@ -83,12 +87,13 @@
                 <Grid
                     Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                     <controls:LogViewerControl
-                        ItemsSource="{Binding LogViewModel.LogEntries}"
-                        FollowTail="{Binding LogViewModel.FollowTail}"
-                        FilterString="{Binding LogViewModel.FilterString, Mode=TwoWay}"
-                        LogEntryCount="{Binding LogViewModel.LogEntryCount}"
-                        AllLogEntryCount="{Binding LogViewModel.AllLogEntryCount}"
-                        FileSize="{Binding LogViewModel.FileSize}" />
+                        ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
+                        FollowTail="{Binding CurrentDataSourceLogView.FollowTail, Mode=TwoWay}"
+                        StringFilter="{Binding CurrentDataSourceLogView.StringFilter, Mode=TwoWay}"
+                        LevelsFilter="{Binding CurrentDataSourceLogView.LevelsFilter, Mode=TwoWay}"
+                        LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                        AllLogEntryCount="{Binding CurrentDataSourceLogView.AllLogEntryCount}"
+                        FileSize="{Binding CurrentDataSourceLogView.FileSize}" />
                 </Grid>
             </Grid>
         </Grid>
