@@ -204,7 +204,7 @@ namespace SharpTail.Ui.ViewModels
 					var entries = _currentLogFile.GetSection(section);
 					for(int i = 0; i < entries.Length; ++i)
 					{
-						var model = new LogEntryViewModel(section.Index + i, entries[i], StringFilter);
+						var model = new LogEntryViewModel(section.Index + i, entries[i]);
 						_logEntries.Add(model);
 					}
 				}

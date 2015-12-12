@@ -66,6 +66,7 @@
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
     <Compile Include="BusinessLogic\LogFileTest.cs" />
+    <Compile Include="Ui\LevelFilterControlTest.cs" />
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
     <Compile Include="ManualDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
