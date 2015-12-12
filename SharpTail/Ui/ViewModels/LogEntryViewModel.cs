@@ -25,5 +25,10 @@
 		{
 			get { return _message; }
 		}
+
+		public override string ToString()
+		{
+			return _message;
+		}
 	}
 }

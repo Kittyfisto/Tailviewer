@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Threading;
 using SharpTail.Ui;
 
@@ -17,16 +18,23 @@ namespace SharpTail.Test
 
 		public void InvokeAll()
 		{
+			List<KeyValuePair<DispatcherPriority, List<Action>>> pendingInvokes;
+
 			lock (_pendingInvokes)
 			{
-				foreach (var pair in _pendingInvokes)
+				pendingInvokes = _pendingInvokes.Select(x =>
+				                                        new KeyValuePair<DispatcherPriority, List<Action>>(
+					                                        x.Key, x.Value.ToList()
+					                                        )).ToList();
+				_pendingInvokes.Clear();
+			}
+
+			foreach (var pair in pendingInvokes)
+			{
+				var invokes = pair.Value;
+				foreach (var invoke in invokes)
 				{
-					var invokes = pair.Value;
-					foreach (var invoke in invokes)
-					{
-						invoke();
-					}
-					invokes.Clear();
+					invoke();
 				}
 			}
 		}
