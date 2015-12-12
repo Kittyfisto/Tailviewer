@@ -27,6 +27,11 @@
                                             <Setter Property="Visibility" Value="Visible" />
                                         </DataTrigger>
                                         <DataTrigger
+                                            Binding="{Binding FilterText, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
+                                            Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger
                                             Binding="{Binding IsFocused,ElementName=PART_FilterInput}"
                                             Value="True">
                                             <Setter Property="Visibility" Value="Hidden" />
