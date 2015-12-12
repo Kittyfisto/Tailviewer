@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using SharpTail.BusinessLogic;
 using SharpTail.Ui.ViewModels;
@@ -42,6 +42,7 @@ namespace SharpTail.Ui.Controls
 		private ListView _partListView;
 		private ScrollViewer _scrollViewer;
 		private FilterTextBox _partStringFilter;
+		private bool _scrollByUser;
 
 		static LogViewerControl()
 		{
@@ -144,8 +145,32 @@ namespace SharpTail.Ui.Controls
 
 			if (_scrollViewer != null)
 			{
+				_scrollByUser = false;
 				_scrollViewer.ScrollToBottom();
 			}
+		}
+
+		private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
+		{
+			if (e.VerticalChange == 0.0)
+				return;
+
+			if (_scrollByUser)
+			{
+				if (e.VerticalChange > 0.0)
+				{
+					double scrollerOffset = e.VerticalOffset + e.ViewportHeight;
+					if (Math.Abs(scrollerOffset - e.ExtentHeight) < 5.0)
+					{
+						FollowTail = true;
+					}
+				}
+				else
+				{
+					FollowTail = false;
+				}
+			}
+			_scrollByUser = true;
 		}
 
 		public override void OnApplyTemplate()
@@ -154,14 +179,6 @@ namespace SharpTail.Ui.Controls
 
 			_partListView = (ListView) GetTemplateChild("PART_ListView");
 			_partStringFilter = (FilterTextBox) GetTemplateChild("PART_StringFilter");
-		}
-
-		private void OnScrollChanged(object sender, ScrollChangedEventArgs args)
-		{
-			if (args.VerticalChange < 0)
-			{
-				FollowTail = false;
-			}
 		}
 
 		public void FocusStringFilter()
