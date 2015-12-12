@@ -23,11 +23,14 @@
                             <TextBlock Text="Filter:"
                                        Margin="8" />
 
-                            <TextBox
+                            <local:FilterTextBox
                                 x:Name="PART_StringFilter"
-                                Text="{Binding StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                 Margin="8"
-                                Grid.Column="1" />
+                                Grid.Column="1"
+                                FilterText="{Binding StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
+                                Watermark="Search (Ctrl+E)"
+                                />
+
                         </Grid>
 
                         <Grid Grid.Row="1">
@@ -63,8 +66,7 @@
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 Margin="8"
-                                LevelsFilter="{Binding LevelsFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                />
+                                LevelsFilter="{Binding LevelsFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
                         </Grid>
 
                         <ListView

@@ -53,7 +53,8 @@ namespace SharpTail.BusinessLogic
 			_cancellationTokenSource = new CancellationTokenSource();
 			_readTask = new Task(ReadFile,
 			                     _cancellationTokenSource.Token,
-			                     _cancellationTokenSource.Token);
+			                     _cancellationTokenSource.Token,
+			                     TaskCreationOptions.LongRunning);
 
 			_listeners = new LogFileListenerCollection();
 		}

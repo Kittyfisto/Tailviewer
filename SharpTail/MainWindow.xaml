@@ -7,12 +7,19 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ide:MainWindowViewModel, IsDesignTimeCreatable=True}"
         Title="{Binding WindowTitle}"
+        x:Name="This"
         AllowDrop="True"
         DragEnter="OnDragEnter"
         Drop="MainWindow_OnDrop"
         MinWidth="640"
         MinHeight="480">
 
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="E"
+                    Command="{Binding FocusLogFileSearchCommand, ElementName=This}"
+                    />
+    </Window.InputBindings>
+    
     <Window.Resources>
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Themes/Converters.xaml" />
     </Window.Resources>
@@ -87,6 +94,7 @@
                 <Grid
                     Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                     <controls:LogViewerControl
+                        x:Name="PART_LogFileView"
                         ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
                         FollowTail="{Binding CurrentDataSourceLogView.FollowTail, Mode=TwoWay}"
                         StringFilter="{Binding CurrentDataSourceLogView.StringFilter, Mode=TwoWay}"

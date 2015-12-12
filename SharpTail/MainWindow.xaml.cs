@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SharpTail
 {
@@ -10,6 +11,15 @@ namespace SharpTail
 	{
 		private readonly MainWindowViewModel _viewModel;
 
+		public static readonly DependencyProperty FocusLogFileSearchCommandProperty =
+			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow), new PropertyMetadata(default(ICommand)));
+
+		public ICommand FocusLogFileSearchCommand
+		{
+			get { return (ICommand) GetValue(FocusLogFileSearchCommandProperty); }
+			set { SetValue(FocusLogFileSearchCommandProperty, value); }
+		}
+
 		public MainWindow()
 		{
 			WindowConfiguration config = MainWindowConfiguration.Restore();
@@ -19,9 +29,16 @@ namespace SharpTail
 			}
 			DataContext = _viewModel = new MainWindowViewModel(Dispatcher);
 
+			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
+
 			InitializeComponent();
 			Loaded += OnLoaded;
 			Closing += OnClosing;
+		}
+
+		private void FocusLogFileSearch()
+		{
+			PART_LogFileView.FocusStringFilter();
 		}
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)

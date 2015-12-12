@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using SharpTail.BusinessLogic;
 using SharpTail.Ui.ViewModels;
@@ -40,6 +41,7 @@ namespace SharpTail.Ui.Controls
 
 		private ListView _partListView;
 		private ScrollViewer _scrollViewer;
+		private FilterTextBox _partStringFilter;
 
 		static LogViewerControl()
 		{
@@ -151,9 +153,7 @@ namespace SharpTail.Ui.Controls
 			base.OnApplyTemplate();
 
 			_partListView = (ListView) GetTemplateChild("PART_ListView");
-			if (_partListView != null)
-			{
-			}
+			_partStringFilter = (FilterTextBox) GetTemplateChild("PART_StringFilter");
 		}
 
 		private void OnScrollChanged(object sender, ScrollChangedEventArgs args)
@@ -161,6 +161,15 @@ namespace SharpTail.Ui.Controls
 			if (args.VerticalChange < 0)
 			{
 				FollowTail = false;
+			}
+		}
+
+		public void FocusStringFilter()
+		{
+			var element = _partStringFilter;
+			if (element != null)
+			{
+				element.Focus();
 			}
 		}
 	}

@@ -34,8 +34,9 @@ namespace SharpTail.BusinessLogic
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
 			_readTask = new Task(Filter,
-			                 _cancellationTokenSource.Token,
-			                 _cancellationTokenSource.Token);
+			                     _cancellationTokenSource.Token,
+			                     _cancellationTokenSource.Token,
+			                     TaskCreationOptions.LongRunning);
 			_listeners = new LogFileListenerCollection();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();

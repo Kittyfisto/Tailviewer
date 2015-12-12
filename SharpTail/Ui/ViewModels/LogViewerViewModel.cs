@@ -36,7 +36,7 @@ namespace SharpTail.Ui.ViewModels
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 			_logEntries = new ObservableCollection<LogEntryViewModel>();
 
-			SetCurrentLogFile(_fullLogFile);
+			UpdateCurrentLogFile();
 		}
 
 		public ILogFile CurrentLogFile
