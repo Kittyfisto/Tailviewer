@@ -12,14 +12,14 @@
         DragEnter="OnDragEnter"
         Drop="MainWindow_OnDrop"
         MinWidth="640"
-        MinHeight="480">
+        MinHeight="480"
+        Icon="Resources/ic_find_in_page_black_48dp.png">
 
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="E"
-                    Command="{Binding FocusLogFileSearchCommand, ElementName=This}"
-                    />
+                    Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
     </Window.InputBindings>
-    
+
     <Window.Resources>
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Themes/Converters.xaml" />
     </Window.Resources>
@@ -65,8 +65,7 @@
             <controls:DataSourcesControl
                 Width="200"
                 ItemsSource="{Binding RecentFiles}"
-                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}"
-                />
+                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
             <Grid Grid.Column="1"
                   Width="1"
