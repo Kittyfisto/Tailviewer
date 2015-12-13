@@ -137,11 +137,19 @@ namespace Tailviewer.Ui.ViewModels
 						continue; //< This message belongs to an old change and must be ignored
 
 					var section = pair.Value;
-					var entries = _currentLogFile.GetSection(section);
-					for(int i = 0; i < entries.Length; ++i)
+					if (section == LogFileSection.Reset)
 					{
-						var model = new LogEntryViewModel(section.Index + i, entries[i]);
-						_logEntries.Add(model);
+						_logEntries.Clear();
+						LogEntryCount = 0;
+					}
+					else
+					{
+						var entries = _currentLogFile.GetSection(section);
+						for (int i = 0; i < entries.Length; ++i)
+						{
+							var model = new LogEntryViewModel(section.Index + i, entries[i]);
+							_logEntries.Add(model);
+						}
 					}
 				}
 

@@ -184,10 +184,23 @@ namespace Tailviewer.BusinessLogic
 						var line = reader.ReadLine();
 						if (line == null)
 						{
-							//_dataSource.LastWritten = File.GetLastWriteTime(_dataSource.FullFileName);
 							_listeners.OnRead(numberOfLinesRead);
 							_endOfSectionHandle.Set();
 							token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
+
+							if (stream.Length < stream.Position) //< Somebody cleared the file
+							{
+								stream.Position = 0;
+								numberOfLinesRead = 0;
+								_debugCount = 0;
+								_infoCount = 0;
+								_warningCount = 0;
+								_errorCount = 0;
+								_fatalCount = 0;
+
+								_entries.Clear();
+								_listeners.OnRead(-1);
+							}
 						}
 						else
 						{
@@ -287,11 +300,6 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public FilteredLogFile Filter(LevelFlags levelFilter)
-		{
-			return Filter(null, levelFilter);
-		}
-
 		public FilteredLogFile Filter(string stringFilter)
 		{
 			return Filter(stringFilter, LevelFlags.All);
@@ -299,8 +307,13 @@ namespace Tailviewer.BusinessLogic
 
 		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter)
 		{
+			return Filter(stringFilter, levelFilter, TimeSpan.FromMilliseconds(10));
+		}
+
+		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, TimeSpan maximumWaitTime)
+		{
 			var file = new FilteredLogFile(this, stringFilter, levelFilter);
-			file.Start();
+			file.Start(maximumWaitTime);
 			return file;
 		}
 	}

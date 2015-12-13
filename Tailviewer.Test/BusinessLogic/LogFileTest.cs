@@ -61,19 +61,20 @@ namespace Tailviewer.Test.BusinessLogic
 			using (var file = new LogFile(File20Mb))
 			{
 				var listener = new Mock<ILogFileListener>();
-				var changes = new List<LogFileSection>();
+				var sections = new List<LogFileSection>();
 				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-				        .Callback((LogFileSection section) => changes.Add(section));
+				        .Callback((LogFileSection section) => sections.Add(section));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
 				file.Wait();
 
-				changes.Count.Should().Be(165342);
-				for (int i = 0; i < changes.Count; ++i)
+				sections.Count.Should().Be(165343);
+				sections[0].Should().Be(LogFileSection.Reset);
+				for (int i = 1; i < sections.Count; ++i)
 				{
-					var change = changes[i];
-					change.Index.Should().Be(i);
+					var change = sections[i];
+					change.Index.Should().Be(i-1);
 					change.Count.Should().Be(1);
 				}
 			}
@@ -93,9 +94,9 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Start();
 				file.Wait();
 
-				changes.Count.Should().Be(2);
 				changes.Should().Equal(new[]
 					{
+						LogFileSection.Reset, 
 						new LogFileSection(0, 1),
 						new LogFileSection(1, 1)
 					});
@@ -190,6 +191,48 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestFilter3()
+		{
+			const string fname = "TestFilter3.log";
+			using (var stream = File.OpenWrite(fname))
+			using (var writer = new StreamWriter(stream))
+			{
+				stream.SetLength(0);
+				writer.WriteLine("INFO - Test");
+			}
+
+			using (var file = new LogFile(fname))
+			{
+				file.Start();
+				file.Wait();
+				file.Count.Should().Be(1);
+
+				using (var filtered = file.Filter("e", LevelFlags.All, TimeSpan.Zero))
+				{
+					filtered.Wait();
+					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
+						{
+							new LogEntry("INFO - Test", LevelFlags.Info)
+						});
+
+					var listener = new Mock<ILogFileListener>();
+					var sections = new List<LogFileSection>();
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
+							.Callback((LogFileSection section) => sections.Add(section));
+					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+
+					using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+					{
+						stream.SetLength(0);
+					}
+
+					WaitUntil(() => filtered.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					sections.Should().Equal(new[] {LogFileSection.Reset});
+				}
+			}
+		}
+
+		[Test]
 		public void TestLive1()
 		{
 			const string fname = "TestLive1.log";
@@ -237,9 +280,83 @@ namespace Tailviewer.Test.BusinessLogic
 				logFile.Start();
 				logFile.Wait();
 				logFile.Count.Should().Be(1);
-
-				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
 				File.Delete(fname);
+			}
+		}
+
+		[Test]
+		public void TestClear1()
+		{
+			const string fname = "TestClear1.log";
+			using (var stream = File.OpenWrite(fname))
+			using (var writer = new StreamWriter(stream))
+			{
+				stream.SetLength(0);
+				writer.WriteLine("Test");
+			}
+
+			using (var logFile = new LogFile(fname))
+			{
+				logFile.Start();
+				logFile.Wait();
+				logFile.Count.Should().Be(1);
+
+				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+				using (var writer = new StreamWriter(stream))
+				{
+					stream.SetLength(0);
+
+					WaitUntil(() => logFile.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					logFile.Count.Should().Be(0);
+
+					writer.WriteLine("Hello World!");
+					writer.Flush();
+
+					WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					logFile.Entries.Should().Equal(new[]
+						{
+							new LogEntry("Hello World!", LevelFlags.None)
+						});
+				}
+			}
+		}
+
+		[Test]
+		public void TestClear2()
+		{
+			const string fname = "TestClear2.log";
+			using (var stream = File.OpenWrite(fname))
+			using (var writer = new StreamWriter(stream))
+			{
+				stream.SetLength(0);
+				writer.WriteLine("Test");
+			}
+
+			using (var logFile = new LogFile(fname))
+			{
+				var listener = new Mock<ILogFileListener>();
+				var sections = new List<LogFileSection>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
+						.Callback((LogFileSection section) => sections.Add(section));
+				logFile.AddListener(listener.Object, TimeSpan.Zero, 2);
+
+				logFile.Start();
+				logFile.Wait();
+				logFile.Count.Should().Be(1);
+
+				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+				{
+					stream.SetLength(0);
+
+					WaitUntil(() => logFile.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					logFile.Count.Should().Be(0);
+					sections.Should().Equal(new[]
+						{
+							new LogFileSection(-1, 0),
+							new LogFileSection(0, 1),
+							new LogFileSection(-1, 0)
+						});
+				}
 			}
 		}
 

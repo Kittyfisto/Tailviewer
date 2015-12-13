@@ -10,9 +10,6 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class LogFileListenerNotifierTest
 	{
-		private Mock<ILogFileListener> _listener;
-		private List<LogFileSection> _changes;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -21,6 +18,9 @@ namespace Tailviewer.Test.BusinessLogic
 			_listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
 			         .Callback((LogFileSection section) => _changes.Add(section));
 		}
+
+		private Mock<ILogFileListener> _listener;
+		private List<LogFileSection> _changes;
 
 		[Test]
 		public void TestCurrentLineChanged1()
@@ -95,6 +95,17 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					new LogFileSection(0, 1000),
 					new LogFileSection(1000, 1000)
+				});
+		}
+
+		[Test]
+		public void TestCurrentLineChanged6()
+		{
+			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
+			notifier.OnRead(-1);
+			_changes.Should().Equal(new[]
+				{
+					LogFileSection.Reset
 				});
 		}
 	}

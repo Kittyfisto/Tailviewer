@@ -49,11 +49,11 @@ namespace Tailviewer.BusinessLogic
 			_readTask.Dispose();
 		}
 
-		public void Start()
+		public void Start(TimeSpan maximumWaitTime)
 		{
 			if (_readTask.Status == TaskStatus.Created)
 			{
-				_source.AddListener(this, TimeSpan.FromMilliseconds(10), BatchSize);
+				_source.AddListener(this, maximumWaitTime, BatchSize);
 				_readTask.Start();
 			}
 		}
@@ -136,7 +136,17 @@ namespace Tailviewer.BusinessLogic
 				LogFileSection section;
 				while (_pendingModifications.TryDequeue(out section))
 				{
-					_fullSection = LogFileSection.MinimumBoundingLine(_fullSection, section);
+					if (section == LogFileSection.Reset)
+					{
+						_fullSection = new LogFileSection();
+						_indices.Clear();
+						currentSourceIndex = 0;
+						_listeners.OnRead(-1);
+					}
+					else
+					{
+						_fullSection = LogFileSection.MinimumBoundingLine(_fullSection, section);
+					}
 				}
 
 				if (_fullSection.IsEndOfSection(currentSourceIndex))

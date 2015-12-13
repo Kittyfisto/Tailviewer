@@ -6,7 +6,6 @@ namespace Tailviewer.BusinessLogic
 	public interface ILogFile
 		: IDisposable
 	{
-		void Start();
 		void Wait();
 
 		int Count { get; }

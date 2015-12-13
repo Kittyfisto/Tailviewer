@@ -11,6 +11,13 @@ namespace Tailviewer.BusinessLogic
 		public readonly int Count;
 		public readonly int Index;
 
+		public static readonly LogFileSection Reset;
+
+		static LogFileSection()
+		{
+			Reset = new LogFileSection(-1, 0);
+		}
+
 		public LogFileSection(int index, int count)
 		{
 			Index = index;
@@ -24,6 +31,9 @@ namespace Tailviewer.BusinessLogic
 
 		public override string ToString()
 		{
+			if (Index == -1 && Count == 0)
+				return "Reset";
+
 			return string.Format("[{0}, #{1}]", Index, Count);
 		}
 

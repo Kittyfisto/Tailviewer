@@ -16,20 +16,33 @@ namespace Tailviewer.BusinessLogic
 			_maximumTime = maximumTime;
 			_maximumCount = maximumCount;
 
+			Reset();
+		}
+
+		private void Reset()
+		{
 			_lastNumberOfLines = 0;
 			_lastReportedTime = DateTime.Now;
 		}
 
 		public void OnRead(int numberOfLinesRead)
 		{
-			var now = DateTime.Now;
-			if (now - _lastReportedTime >= _maximumTime)
+			if (numberOfLinesRead >= 0)
 			{
-				Report(numberOfLinesRead, now);
+				var now = DateTime.Now;
+				if (now - _lastReportedTime >= _maximumTime)
+				{
+					Report(numberOfLinesRead, now);
+				}
+				else if (numberOfLinesRead - _lastNumberOfLines >= _maximumCount)
+				{
+					Report(numberOfLinesRead, now);
+				}
 			}
-			else if (numberOfLinesRead - _lastNumberOfLines >= _maximumCount)
+			else
 			{
-				Report(numberOfLinesRead, now);
+				Reset();
+				_listener.OnLogFileModified(LogFileSection.Reset);
 			}
 		}
 

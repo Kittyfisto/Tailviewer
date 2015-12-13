@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -15,15 +16,19 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var collection = new LogFileListenerCollection();
 			var listener = new Mock<ILogFileListener>();
-			int invoked = 0;
+			var sections = new List<LogFileSection>();
 			listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-			        .Callback(() => ++invoked);
+			        .Callback((LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
 			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).ShouldNotThrow();
 
 			collection.OnRead(10);
-			invoked.Should().Be(1, "Because even though we added the listener twice, it should never be invoked twice");
+			sections.Should().Equal(new[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 10)
+				}, "Because even though we added the listener twice, it should never be invoked twice");
 		}
 	}
 }
