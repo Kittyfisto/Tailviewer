@@ -2,9 +2,9 @@
 
 Master: [![Build status](https://ci.appveyor.com/api/projects/status/mripd18s222ue6gm?svg=true)](https://ci.appveyor.com/project/Kittyfisto/sharptail)  
 
-SharpTail is a free and active open-source log file viewer.
+Tailviewer is a free and active open-source log file viewer.
 
-SharpTail is supported on Windows 7, 8 and 10 and requires .NET 4.5 or higher.
+Tailviewer is supported on Windows 7, 8 and 10 and requires .NET 4.5 or higher.
 
 You can download the newest setup from https://ci.appveyor.com/project/Kittyfisto/sharptail/build/artifacts.
 
