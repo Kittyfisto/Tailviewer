@@ -120,6 +120,9 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnOtherFilterChanged()
 		{
+			if (DataSource == null)
+				return;
+
 			ShowOther = !DataSource.OtherFilter;
 		}
 
