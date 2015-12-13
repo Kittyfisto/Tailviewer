@@ -37,9 +37,6 @@
     <ApplicationIcon>Resources\ic_find_in_page_black_48dp.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
@@ -61,7 +58,6 @@
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
     <Compile Include="Ui\ViewModels\DataSourceCollection.cs" />
-    <Compile Include="BusinessLogic\LogFileStream.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\ILogFile.cs" />
     <Compile Include="BusinessLogic\ILogFileListener.cs" />
@@ -161,6 +157,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_find_in_page_black_48dp.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ThirdParty\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,7 +12,6 @@ Section
     # set the installation directory as the destination for the following actions
     SetOutPath $INSTDIR
 		File "bin\Release\SharpTail.exe"
-		File "bin\Release\log4net.dll"
  
     # create the uninstaller
     WriteUninstaller "$INSTDIR\uninstall.exe"
