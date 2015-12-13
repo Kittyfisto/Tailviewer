@@ -56,6 +56,7 @@
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
+    <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
     <Compile Include="Ui\ViewModels\DataSourceCollection.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
@@ -90,6 +91,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\FilterTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\RemoveButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -160,6 +165,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ThirdParty\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_clear_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_clear_white_18dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

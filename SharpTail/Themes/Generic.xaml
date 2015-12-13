@@ -8,7 +8,10 @@
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/FilterTextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/LevelFilterControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/LogViewerControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Ui/Controls/RemoveButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+
 
 
 </ResourceDictionary>

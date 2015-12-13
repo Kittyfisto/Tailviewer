@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using SharpTail.BusinessLogic;
 
 namespace SharpTail.Ui.ViewModels
@@ -15,6 +16,13 @@ namespace SharpTail.Ui.ViewModels
 		private readonly DataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
+		private readonly ICommand _removeCommand;
+
+		public ICommand RemoveCommand
+		{
+			get { return _removeCommand; }
+		}
+
 		private bool _isOpen;
 		private DateTime _lastWritten;
 
@@ -96,6 +104,16 @@ namespace SharpTail.Ui.ViewModels
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_folder = Path.GetDirectoryName(dataSource.FullFileName);
 			_lastWritten = dataSource.LastWritten;
+			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+		}
+
+		public event Action<DataSourceViewModel> Remove;
+
+		private void OnRemoveDataSource()
+		{
+			var fn = Remove;
+			if (fn != null)
+				fn(this);
 		}
 
 		public string FileName

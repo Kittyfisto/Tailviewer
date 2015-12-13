@@ -33,45 +33,52 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListViewItem">
                                                     <Border Background="{TemplateBinding Background}"
-                                                            MaxWidth="200"
-                                                            >
-                                                        <StackPanel Orientation="Vertical"
-                                                                    VerticalAlignment="Center"
-                                                                    Margin="8,4,4,4">
-                                                            <TextBlock Text="{Binding FileName}">
-                                                                <TextBlock.Style>
-                                                                    <Style TargetType="TextBlock">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding IsOpen}"
-                                                                                         Value="True">
-                                                                                <Setter Property="Foreground"
-                                                                                        Value="White" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Style>
-                                                            </TextBlock>
-                                                            <TextBlock Text="{Binding Folder}"
-                                                                       TextTrimming="CharacterEllipsis"
-                                                                       >
-                                                                <TextBlock.Style>
-                                                                    <Style TargetType="TextBlock">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding IsOpen}"
-                                                                                         Value="True">
-                                                                                <Setter Property="Foreground"
-                                                                                        Value="#DAECF7" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding IsOpen}"
-                                                                                         Value="False">
-                                                                                <Setter Property="Foreground"
-                                                                                        Value="#B7B7B7" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Style>
-                                                            </TextBlock>
-                                                        </StackPanel>
+                                                            MaxWidth="200">
+                                                        <Grid>
+                                                            <StackPanel Orientation="Vertical"
+                                                                        VerticalAlignment="Center"
+                                                                        Margin="8,4,16,4"
+                                                                        >
+                                                                <TextBlock Text="{Binding FileName}">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                                             Value="True">
+                                                                                    <Setter Property="Foreground"
+                                                                                            Value="White" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                                <TextBlock Text="{Binding Folder}"
+                                                                           TextTrimming="CharacterEllipsis">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                                             Value="True">
+                                                                                    <Setter Property="Foreground"
+                                                                                            Value="#DAECF7" />
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                                             Value="False">
+                                                                                    <Setter Property="Foreground"
+                                                                                            Value="#B7B7B7" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </StackPanel>
+
+                                                            <local:RemoveButton VerticalAlignment="Stretch"
+                                                                                HorizontalAlignment="Right"
+                                                                                IsInverted="{Binding IsOpen}"
+                                                                                Command="{Binding RemoveDataSourceCommand}"
+                                                                                />
+                                                        </Grid>
                                                     </Border>
                                                 </ControlTemplate>
                                             </Setter.Value>

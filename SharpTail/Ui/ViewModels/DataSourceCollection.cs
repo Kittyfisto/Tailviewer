@@ -22,7 +22,7 @@ namespace SharpTail.Ui.ViewModels
 				{
 					if (dataSource != null)
 					{
-						_dataSources.Add(new DataSourceViewModel(dataSource));
+						Add(dataSource);
 					}
 				}
 			}
@@ -40,12 +40,25 @@ namespace SharpTail.Ui.ViewModels
 				_dataSources.FirstOrDefault(x => string.Equals(x.FullName, fullName, StringComparison.InvariantCultureIgnoreCase));
 			if (viewModel == null)
 			{
-				viewModel = new DataSourceViewModel(new DataSource(fileName));
-				_dataSources.Add(viewModel);
-				Save();
+				viewModel = Add(new DataSource(fileName));
 			}
 
 			return viewModel;
+		}
+
+		private DataSourceViewModel Add(DataSource dataSource)
+		{
+			var viewModel = new DataSourceViewModel(dataSource);
+			viewModel.Remove += OnRemove;
+			_dataSources.Add(viewModel);
+			Save();
+			return viewModel;
+		}
+
+		private void OnRemove(DataSourceViewModel viewModel)
+		{
+			_dataSources.Remove(viewModel);
+			Save();
 		}
 
 		private void Save()
