@@ -1,17 +1,31 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SharpTail.Ui.Controls
 {
 	public class FilterTextBox : Control
 	{
 		public static readonly DependencyProperty FilterTextProperty =
-			DependencyProperty.Register("FilterText", typeof (string), typeof (FilterTextBox), new PropertyMetadata(default(string)));
+			DependencyProperty.Register("FilterText", typeof (string), typeof (FilterTextBox),
+			                            new PropertyMetadata(default(string)));
 
 		public static readonly DependencyProperty WatermarkProperty =
-			DependencyProperty.Register("Watermark", typeof (string), typeof (FilterTextBox), new PropertyMetadata(default(string)));
+			DependencyProperty.Register("Watermark", typeof (string), typeof (FilterTextBox),
+			                            new PropertyMetadata(default(string)));
 
 		private TextBox _filterInput;
+
+		static FilterTextBox()
+		{
+			DefaultStyleKeyProperty.OverrideMetadata(typeof (FilterTextBox),
+			                                         new FrameworkPropertyMetadata(typeof (FilterTextBox)));
+		}
+
+		public FilterTextBox()
+		{
+			GotFocus += OnGotFocus;
+		}
 
 		public string Watermark
 		{
@@ -25,21 +39,22 @@ namespace SharpTail.Ui.Controls
 			set { SetValue(FilterTextProperty, value); }
 		}
 
-		static FilterTextBox()
+		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(FilterTextBox), new FrameworkPropertyMetadata(typeof(FilterTextBox)));
-		}
-
-		public FilterTextBox()
-		{
-			GotFocus += OnGotFocus;
+			if (e.Key == Key.Escape)
+			{
+				var scope = FocusManager.GetFocusScope(_filterInput);
+				FocusManager.SetFocusedElement(scope, null);
+				Application.Current.MainWindow.Focus();
+			}
+			base.OnKeyDown(e);
 		}
 
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
-			_filterInput = (TextBox)GetTemplateChild("PART_FilterInput");
+			_filterInput = (TextBox) GetTemplateChild("PART_FilterInput");
 		}
 
 		private void OnGotFocus(object sender, RoutedEventArgs routedEventArgs)
