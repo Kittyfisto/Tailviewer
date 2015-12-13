@@ -191,6 +191,9 @@ namespace Tailviewer.BusinessLogic
 			if ((entry.Level & _levelFilter) != 0)
 				return true;
 
+			if (entry.Level == LevelFlags.None)
+				return true;
+
 			return false;
 		}
 	}

@@ -82,11 +82,16 @@
 
                         <Border Grid.Row="2"
                                 Background="#D8D8D8">
-                            <TextBlock
-                                Margin="4"
-                                Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=Showing {0} entries}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="4,4,0,4"
+                                    Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=Showing {0} entries}" />
+                                <TextBlock
+                                    Margin="4"
+                                    Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </StackPanel>
                         </Border>
-                        
+
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

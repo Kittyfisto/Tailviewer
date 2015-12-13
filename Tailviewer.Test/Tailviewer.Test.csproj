@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSourceTest.cs" />
+    <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Ui\DataSourceViewModelTest.cs" />

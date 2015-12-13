@@ -168,11 +168,13 @@ namespace Tailviewer
 				CurrentDataSourceLogView = new LogViewerViewModel(
 					dataSource,
 					_dispatcher);
+				WindowTitle = string.Format("{0} - {1}", ApplicationName, dataSource.FileName);
 			}
 			else
 			{
 				CurrentDataSource = null;
 				CurrentDataSourceLogView = null;
+				WindowTitle = ApplicationName;
 			}
 		}
 

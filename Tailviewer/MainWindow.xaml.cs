@@ -24,7 +24,6 @@ namespace Tailviewer
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 
 			InitializeComponent();
-			Loaded += OnLoaded;
 			Closing += OnClosing;
 		}
 
@@ -37,11 +36,6 @@ namespace Tailviewer
 		{
 			ApplicationSettings.Current.MainWindow.UpdateFrom(this);
 			ApplicationSettings.Current.Save();
-		}
-
-		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-		{
-			
 		}
 
 		private void MainWindow_OnDrop(object sender, DragEventArgs e)
