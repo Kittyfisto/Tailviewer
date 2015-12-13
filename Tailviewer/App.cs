@@ -13,6 +13,7 @@ namespace Tailviewer
 		[STAThread]
 		public static int Main()
 		{
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 			ApplicationSettings.Current.Restore();
 
@@ -29,6 +30,12 @@ namespace Tailviewer
 				window.Show();
 				return application.Run();
 			}
+		}
+
+		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+		{
+			MessageBox.Show(string.Format("Oops, something went wrong:\r\n{0}", args.ExceptionObject),
+			                Constants.ApplicationTitle);
 		}
 
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
