@@ -20,10 +20,15 @@ namespace Tailviewer.BusinessLogic
 
 		#region Data
 
-		private readonly List<string> _entries;
+		private readonly List<LogEntry> _entries;
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
+		private int _fatalCount;
+		private int _errorCount;
+		private int _warningCount;
+		private int _infoCount;
+		private int _debugCount;
 
 		#endregion
 
@@ -41,7 +46,7 @@ namespace Tailviewer.BusinessLogic
 			_fileName = fileName;
 			_endOfSectionHandle = new ManualResetEvent(false);
 
-			_entries = new List<string>();
+			_entries = new List<LogEntry>();
 			_syncRoot = new object();
 			_cancellationTokenSource = new CancellationTokenSource();
 			_readTask = new Task(ReadFile,
@@ -49,6 +54,31 @@ namespace Tailviewer.BusinessLogic
 									_cancellationTokenSource.Token,
 									TaskCreationOptions.LongRunning);
 			_listeners = new LogFileListenerCollection();
+		}
+
+		public int DebugCount
+		{
+			get { return _debugCount; }
+		}
+
+		public int InfoCount
+		{
+			get { return _infoCount; }
+		}
+
+		public int WarningCount
+		{
+			get { return _warningCount; }
+		}
+
+		public int ErrorCount
+		{
+			get { return _errorCount; }
+		}
+
+		public int FatalCount
+		{
+			get { return _fatalCount; }
 		}
 
 		public void Start()
@@ -69,7 +99,7 @@ namespace Tailviewer.BusinessLogic
 			_listeners.RemoveListener(listener);
 		}
 
-		public void GetSection(LogFileSection section, string[] dest)
+		public void GetSection(LogFileSection section, LogEntry[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -94,7 +124,7 @@ namespace Tailviewer.BusinessLogic
 			get { return Size.FromBytes(new FileInfo(_fileName).Length); }
 		}
 
-		public string GetEntry(int index)
+		public LogEntry GetEntry(int index)
 		{
 			lock (_syncRoot)
 			{
@@ -102,7 +132,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public IEnumerable<string> Entries
+		public IEnumerable<LogEntry> Entries
 		{
 			get { return _entries; }
 		}
@@ -165,7 +195,8 @@ namespace Tailviewer.BusinessLogic
 							++numberOfLinesRead;
 
 							DetermineDateTimeFormat(line);
-							Add(line, numberOfLinesRead);
+							var level = DetermineLevel(line);
+							Add(line, level, numberOfLinesRead);
 						}
 					}
 				}
@@ -184,11 +215,42 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		private void Add(string line, int numberOfLinesRead)
+		private LevelFlags DetermineLevel(string line)
+		{
+			var level = LevelFlags.None;
+			if (line.IndexOf("debug", StringComparison.InvariantCultureIgnoreCase) != -1)
+			{
+				level |= LevelFlags.Debug;
+				Interlocked.Increment(ref _debugCount);
+			}
+			if (line.IndexOf("info", StringComparison.InvariantCultureIgnoreCase) != -1)
+			{
+				level |= LevelFlags.Info;
+				Interlocked.Increment(ref _infoCount);
+			}
+			if (line.IndexOf("warn", StringComparison.InvariantCultureIgnoreCase) != -1)
+			{
+				level |= LevelFlags.Warning;
+				Interlocked.Increment(ref _warningCount);
+			}
+			if (line.IndexOf("error", StringComparison.InvariantCultureIgnoreCase) != -1)
+			{
+				level |= LevelFlags.Error;
+				Interlocked.Increment(ref _errorCount);
+			}
+			if (line.IndexOf("fatal", StringComparison.InvariantCultureIgnoreCase) != -1)
+			{
+				level |= LevelFlags.Fatal;
+				Interlocked.Increment(ref _fatalCount);
+			}
+			return level;
+		}
+
+		private void Add(string line, LevelFlags level, int numberOfLinesRead)
 		{
 			lock (_syncRoot)
 			{
-				_entries.Add(line);
+				_entries.Add(new LogEntry(line, level));
 			}
 
 			_listeners.OnRead(numberOfLinesRead);

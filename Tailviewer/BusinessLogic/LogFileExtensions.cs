@@ -2,9 +2,9 @@ namespace Tailviewer.BusinessLogic
 {
 	public static class LogFileExtensions
 	{
-		public static string[] GetSection(this ILogFile logFile, LogFileSection section)
+		public static LogEntry[] GetSection(this ILogFile logFile, LogFileSection section)
 		{
-			var entries = new string[section.Count];
+			var entries = new LogEntry[section.Count];
 			logFile.GetSection(section, entries);
 			return entries;
 		}

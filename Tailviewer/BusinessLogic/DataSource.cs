@@ -21,6 +21,31 @@ namespace Tailviewer.BusinessLogic
 			_logFile.Start();
 		}
 
+		public int DebugCount
+		{
+			get { return _logFile.DebugCount; }
+		}
+
+		public int InfoCount
+		{
+			get { return _logFile.InfoCount; }
+		}
+
+		public int WarningCount
+		{
+			get { return _logFile.WarningCount; }
+		}
+
+		public int ErrorCount
+		{
+			get { return _logFile.ErrorCount; }
+		}
+
+		public int FatalCount
+		{
+			get { return _logFile.FatalCount; }
+		}
+
 		public LogFile LogFile
 		{
 			get { return _logFile; }
@@ -59,6 +84,16 @@ namespace Tailviewer.BusinessLogic
 		internal DataSourceSettings Settings
 		{
 			get { return _settings; }
+		}
+
+		public int TotalCount
+		{
+			get { return _logFile.Count; }
+		}
+
+		public Size FileSize
+		{
+			get { return _logFile.FileSize; }
 		}
 
 		public void Dispose()

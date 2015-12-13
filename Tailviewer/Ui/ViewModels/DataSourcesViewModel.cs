@@ -24,6 +24,14 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public void Update()
+		{
+			foreach (var dataSource in _viewModels)
+			{
+				dataSource.Update();
+			}
+		}
+
 		public ObservableCollection<DataSourceViewModel> Observable
 		{
 			get { return _viewModels; }

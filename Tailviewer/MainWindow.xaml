@@ -95,12 +95,8 @@
                     <controls:LogViewerControl
                         x:Name="PART_LogFileView"
                         ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
-                        FollowTail="{Binding CurrentDataSourceLogView.FollowTail, Mode=TwoWay}"
-                        StringFilter="{Binding CurrentDataSourceLogView.StringFilter, Mode=TwoWay}"
-                        LevelsFilter="{Binding CurrentDataSourceLogView.LevelsFilter, Mode=TwoWay}"
                         LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                        AllLogEntryCount="{Binding CurrentDataSourceLogView.AllLogEntryCount}"
-                        FileSize="{Binding CurrentDataSourceLogView.FileSize}" />
+                        DataSource="{Binding CurrentDataSource}" />
                 </Grid>
             </Grid>
         </Grid>

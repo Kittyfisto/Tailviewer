@@ -11,16 +11,15 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class LogViewerViewModel
 		: INotifyPropertyChanged
 		  , ILogFileListener
+		, IDisposable
 	{
 		private readonly IDispatcher _dispatcher;
 		private readonly LogFile _fullLogFile;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
 		private readonly DataSourceViewModel _dataSource;
-		private int _allLogEntryCount;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
-		private Size _fileSize;
 
 		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
 		{
@@ -28,6 +27,8 @@ namespace Tailviewer.Ui.ViewModels
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 
 			_dataSource = dataSource;
+			_dataSource.PropertyChanged += DataSourceOnPropertyChanged;
+
 			_dispatcher = dispatcher;
 			_fullLogFile = dataSource.DataSource.LogFile;
 
@@ -66,27 +67,12 @@ namespace Tailviewer.Ui.ViewModels
 		private void ClearAllEntries()
 		{
 			_logEntries.Clear();
-			AllLogEntryCount = 0;
-		}
-
-		public string StringFilter
-		{
-			get { return _dataSource.StringFilter; }
-			set
-			{
-				if (value == StringFilter)
-					return;
-
-				_dataSource.StringFilter = value;
-				UpdateCurrentLogFile();
-				EmitPropertyChanged();
-			}
 		}
 
 		private void UpdateCurrentLogFile()
 		{
-			var stringFilter = StringFilter;
-			var levels = LevelsFilter;
+			var stringFilter = DataSource.StringFilter;
+			var levels = DataSource.LevelsFilter;
 			ILogFile logFile;
 			if (!string.IsNullOrEmpty(stringFilter) || levels != LevelFlags.All)
 			{
@@ -113,62 +99,14 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public Size FileSize
-		{
-			get { return _fileSize; }
-			private set
-			{
-				if (value == _fileSize)
-					return;
-
-				_fileSize = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public int AllLogEntryCount
-		{
-			get { return _allLogEntryCount; }
-			private set
-			{
-				if (value == _allLogEntryCount)
-					return;
-
-				_allLogEntryCount = value;
-				EmitPropertyChanged();
-			}
-		}
-
 		public ObservableCollection<LogEntryViewModel> LogEntries
 		{
 			get { return _logEntries; }
 		}
 
-		public bool FollowTail
+		public DataSourceViewModel DataSource
 		{
-			get { return _dataSource.FollowTail; }
-			set
-			{
-				if (value == FollowTail)
-					return;
-
-				_dataSource.FollowTail = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public LevelFlags LevelsFilter
-		{
-			get { return _dataSource.LevelsFilter; }
-			set
-			{
-				if (value == LevelsFilter)
-					return;
-
-				_dataSource.LevelsFilter = value;
-				UpdateCurrentLogFile();
-				EmitPropertyChanged();
-			}
+			get { return _dataSource; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -217,8 +155,22 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCounts()
 		{
 			LogEntryCount = _currentLogFile.Count;
-			AllLogEntryCount = _fullLogFile.Count;
-			FileSize = _fullLogFile.FileSize;
+		}
+
+		public void Dispose()
+		{
+			_dataSource.PropertyChanged -= DataSourceOnPropertyChanged;
+		}
+
+		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case "StringFilter":
+				case "LevelsFilter":
+					UpdateCurrentLogFile();
+					break;
+			}
 		}
 	}
 }

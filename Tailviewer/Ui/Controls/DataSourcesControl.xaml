@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls">
+
     <Style TargetType="{x:Type local:DataSourcesControl}">
         <Setter Property="Template">
             <Setter.Value>
@@ -37,8 +38,7 @@
                                                         <Grid>
                                                             <StackPanel Orientation="Vertical"
                                                                         VerticalAlignment="Center"
-                                                                        Margin="8,4,16,4"
-                                                                        >
+                                                                        Margin="8,4,16,4">
                                                                 <TextBlock Text="{Binding FileName}">
                                                                     <TextBlock.Style>
                                                                         <Style TargetType="TextBlock">
@@ -71,13 +71,15 @@
                                                                         </Style>
                                                                     </TextBlock.Style>
                                                                 </TextBlock>
+                                                                <StackPanel Orientation="Horizontal">
+
+                                                                </StackPanel>
                                                             </StackPanel>
 
                                                             <local:RemoveButton VerticalAlignment="Stretch"
                                                                                 HorizontalAlignment="Right"
                                                                                 IsInverted="{Binding IsOpen}"
-                                                                                Command="{Binding RemoveCommand}"
-                                                                                />
+                                                                                Command="{Binding RemoveCommand}" />
                                                         </Grid>
                                                     </Border>
                                                 </ControlTemplate>

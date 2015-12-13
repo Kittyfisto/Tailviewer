@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic;
 namespace Tailviewer.Ui.ViewModels
 {
 	/// <summary>
-	/// Represents a data source and is capable
+	///     Represents a data source and is capable
 	/// </summary>
 	internal sealed class DataSourceViewModel
 		: INotifyPropertyChanged
@@ -17,14 +17,113 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly string _fileName;
 		private readonly string _folder;
 		private readonly ICommand _removeCommand;
+		private int _debugCount;
+		private int _errorCount;
+		private int _fatalCount;
+		private int _infoCount;
+		private bool _isOpen;
+		private DateTime _lastWritten;
+		private int _warningCount;
+		private int _totalCount;
+
+		public DataSourceViewModel(DataSource dataSource)
+		{
+			if (dataSource == null) throw new ArgumentNullException("dataSource");
+
+			_dataSource = dataSource;
+			_fileName = Path.GetFileName(dataSource.FullFileName);
+			_folder = Path.GetDirectoryName(dataSource.FullFileName);
+			_lastWritten = dataSource.LastWritten;
+			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+		}
+
+		public int TotalCount
+		{
+			get { return _totalCount; }
+			set
+			{
+				if (value == _totalCount)
+					return;
+
+				_totalCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int DebugCount
+		{
+			get { return _debugCount; }
+			set
+			{
+				if (value == _debugCount)
+					return;
+
+				_debugCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int InfoCount
+		{
+			get { return _infoCount; }
+			set
+			{
+				if (value == _infoCount)
+					return;
+
+				_infoCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int WarningCount
+		{
+			get { return _warningCount; }
+			set
+			{
+				if (value == _warningCount)
+					return;
+
+				_warningCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int ErrorCount
+		{
+			get { return _errorCount; }
+			set
+			{
+				if (value == _errorCount)
+					return;
+
+				_errorCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int FatalCount
+		{
+			get { return _fatalCount; }
+			set
+			{
+				if (value == _fatalCount)
+					return;
+
+				_fatalCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public Size FileSize
+		{
+			get { return _dataSource.FileSize; }
+		}
 
 		public ICommand RemoveCommand
 		{
 			get { return _removeCommand; }
 		}
-
-		private bool _isOpen;
-		private DateTime _lastWritten;
 
 		public DateTime LastWritten
 		{
@@ -96,26 +195,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public DataSourceViewModel(DataSource dataSource)
-		{
-			if (dataSource == null) throw new ArgumentNullException("dataSource");
-
-			_dataSource = dataSource;
-			_fileName = Path.GetFileName(dataSource.FullFileName);
-			_folder = Path.GetDirectoryName(dataSource.FullFileName);
-			_lastWritten = dataSource.LastWritten;
-			_removeCommand = new DelegateCommand(OnRemoveDataSource);
-		}
-
-		public event Action<DataSourceViewModel> Remove;
-
-		private void OnRemoveDataSource()
-		{
-			var fn = Remove;
-			if (fn != null)
-				fn(this);
-		}
-
 		public string FileName
 		{
 			get { return _fileName; }
@@ -150,6 +229,25 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void Update()
+		{
+			DebugCount = _dataSource.DebugCount;
+			InfoCount = _dataSource.InfoCount;
+			WarningCount = _dataSource.WarningCount;
+			ErrorCount = _dataSource.ErrorCount;
+			FatalCount = _dataSource.FatalCount;
+			TotalCount = _dataSource.TotalCount;
+		}
+
+		public event Action<DataSourceViewModel> Remove;
+
+		private void OnRemoveDataSource()
+		{
+			Action<DataSourceViewModel> fn = Remove;
+			if (fn != null)
+				fn(this);
+		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{

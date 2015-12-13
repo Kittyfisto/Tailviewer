@@ -15,8 +15,8 @@ namespace Tailviewer.BusinessLogic
 
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
-		private readonly string _filterString;
-		private readonly string[] _levels;
+		private readonly string _stringFilter;
+		private readonly LevelFlags _levelFilter;
 		private readonly List<int> _indices;
 		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -29,8 +29,8 @@ namespace Tailviewer.BusinessLogic
 			if (source == null) throw new ArgumentNullException("source");
 
 			_source = source;
-			_levels = GetLevelStrings(levelFilter, stringFilter);
-			_filterString = stringFilter ?? string.Empty;
+			_levelFilter = levelFilter;
+			_stringFilter = stringFilter ?? string.Empty;
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
 			_readTask = new Task(Filter,
@@ -40,27 +40,6 @@ namespace Tailviewer.BusinessLogic
 			_listeners = new LogFileListenerCollection();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
-		}
-
-		private string[] GetLevelStrings(LevelFlags levelFilter, string stringFilter)
-		{
-			var ret = new List<string>();
-
-			if (levelFilter.HasFlag(LevelFlags.Debug))
-				ret.Add("DEBUG");
-			if (levelFilter.HasFlag(LevelFlags.Info))
-				ret.Add("INFO");
-			if (levelFilter.HasFlag(LevelFlags.Warning))
-				ret.Add("WARN");
-			if (levelFilter.HasFlag(LevelFlags.Error))
-				ret.Add("ERROR");
-			if (levelFilter.HasFlag(LevelFlags.Fatal))
-				ret.Add("FATAL");
-
-			if (!string.IsNullOrEmpty(stringFilter))
-				ret.Add(stringFilter);
-
-			return ret.ToArray();
 		}
 
 		public void Dispose()
@@ -106,7 +85,7 @@ namespace Tailviewer.BusinessLogic
 			_listeners.RemoveListener(listener);
 		}
 
-		public void GetSection(LogFileSection section, string[] dest)
+		public void GetSection(LogFileSection section, LogEntry[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -132,7 +111,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public string GetEntry(int index)
+		public LogEntry GetEntry(int index)
 		{
 			lock (_indices)
 			{
@@ -149,7 +128,7 @@ namespace Tailviewer.BusinessLogic
 		private void Filter(object parameter)
 		{
 			CancellationToken token = _cancellationTokenSource.Token;
-			var entries = new string[BatchSize];
+			var entries = new LogEntry[BatchSize];
 			int currentSourceIndex = 0;
 
 			while (!token.IsCancellationRequested)
@@ -178,7 +157,7 @@ namespace Tailviewer.BusinessLogic
 
 					for (int i = 0; i < nextCount; ++i)
 					{
-						string entry = entries[i];
+						LogEntry entry = entries[i];
 						if (PassesFilter(entry))
 						{
 							int sourceIndex = nextSection.Index + i;
@@ -193,23 +172,14 @@ namespace Tailviewer.BusinessLogic
 		}
 
 		[Pure]
-		private bool PassesFilter(string entry)
+		private bool PassesFilter(LogEntry entry)
 		{
-			int idx = entry.IndexOf(_filterString, StringComparison.InvariantCultureIgnoreCase);
+			int idx = entry.Message.IndexOf(_stringFilter, StringComparison.InvariantCultureIgnoreCase);
 			if (idx == -1)
 				return false;
 
-// ReSharper disable LoopCanBeConvertedToQuery
-// ReSharper disable ForCanBeConvertedToForeach
-			for (int i = 0; i < _levels.Length; ++i)
-// ReSharper restore ForCanBeConvertedToForeach
-// ReSharper restore LoopCanBeConvertedToQuery
-			{
-				var filter = _levels[i];
-				idx = entry.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
-				if (idx != -1)
-					return true;
-			}
+			if ((entry.Level & _levelFilter) != 0)
+				return true;
 
 			return false;
 		}

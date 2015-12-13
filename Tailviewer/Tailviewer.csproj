@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="BusinessLogic\LogEntry.cs" />
     <Compile Include="Settings\DataSourceSettings.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
+    <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\ILogFile.cs" />

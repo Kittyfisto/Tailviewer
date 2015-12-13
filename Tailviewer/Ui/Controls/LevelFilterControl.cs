@@ -1,10 +1,12 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
 {
-	public class LevelFilterControl : Control
+	internal class LevelFilterControl : Control
 	{
 		public static readonly DependencyProperty ShowFatalProperty =
 			DependencyProperty.Register("ShowFatal", typeof (bool), typeof (LevelFilterControl),
@@ -24,11 +26,11 @@ namespace Tailviewer.Ui.Controls
 
 		public static readonly DependencyProperty ShowDebugProperty =
 			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LevelFilterControl),
-										new PropertyMetadata(false, OnDebugChanged));
+			                            new PropertyMetadata(false, OnDebugChanged));
 
-		public static readonly DependencyProperty LevelsFilterProperty =
-			DependencyProperty.Register("LevelsFilter", typeof (LevelFlags), typeof (LevelFilterControl),
-			                            new PropertyMetadata(default(LevelFlags), OnLevelsChanged));
+		public static readonly DependencyProperty DataSourceProperty =
+			DependencyProperty.Register("DataSource", typeof (DataSourceViewModel), typeof (LevelFilterControl),
+			                            new PropertyMetadata(null, OnDataSourceChanged));
 
 		static LevelFilterControl()
 		{
@@ -36,10 +38,10 @@ namespace Tailviewer.Ui.Controls
 			                                         new FrameworkPropertyMetadata(typeof (LevelFilterControl)));
 		}
 
-		public LevelFlags LevelsFilter
+		public DataSourceViewModel DataSource
 		{
-			get { return (LevelFlags) GetValue(LevelsFilterProperty); }
-			set { SetValue(LevelsFilterProperty, value); }
+			get { return (DataSourceViewModel) GetValue(DataSourceProperty); }
+			set { SetValue(DataSourceProperty, value); }
 		}
 
 		public bool ShowDebug
@@ -72,6 +74,35 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(ShowFatalProperty, value); }
 		}
 
+		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LevelFilterControl) dependencyObject).OnDataSourceChanged(args.OldValue as DataSourceViewModel,
+			                                                            args.NewValue as DataSourceViewModel);
+		}
+
+		private void OnDataSourceChanged(DataSourceViewModel oldValue, DataSourceViewModel newValue)
+		{
+			if (oldValue != null)
+			{
+				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
+			}
+			if (newValue != null)
+			{
+				newValue.PropertyChanged += DataSourceOnPropertyChanged;
+			}
+			OnLevelsChanged();
+		}
+
+		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case "LevelsFilter":
+					OnLevelsChanged();
+					break;
+			}
+		}
+
 		private static void OnFatalChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LevelFilterControl) dependencyObject).OnFatalChanged((bool) args.NewValue);
@@ -79,14 +110,17 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnFatalChanged(bool isChecked)
 		{
+			if (DataSource == null)
+				return;
+
 			const LevelFlags level = LevelFlags.Fatal;
 			if (isChecked)
 			{
-				LevelsFilter |= level;
+				DataSource.LevelsFilter |= level;
 			}
 			else
 			{
-				LevelsFilter &= ~level;
+				DataSource.LevelsFilter &= ~level;
 			}
 		}
 
@@ -97,14 +131,17 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnErrorChanged(bool isChecked)
 		{
+			if (DataSource == null)
+				return;
+
 			const LevelFlags level = LevelFlags.Error;
 			if (isChecked)
 			{
-				LevelsFilter |= level;
+				DataSource.LevelsFilter |= level;
 			}
 			else
 			{
-				LevelsFilter &= ~level;
+				DataSource.LevelsFilter &= ~level;
 			}
 		}
 
@@ -115,14 +152,17 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnWarningChanged(bool isChecked)
 		{
+			if (DataSource == null)
+				return;
+
 			const LevelFlags level = LevelFlags.Warning;
 			if (isChecked)
 			{
-				LevelsFilter |= level;
+				DataSource.LevelsFilter |= level;
 			}
 			else
 			{
-				LevelsFilter &= ~level;
+				DataSource.LevelsFilter &= ~level;
 			}
 		}
 
@@ -133,14 +173,17 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnInfoChanged(bool isChecked)
 		{
+			if (DataSource == null)
+				return;
+
 			const LevelFlags level = LevelFlags.Info;
 			if (isChecked)
 			{
-				LevelsFilter |= level;
+				DataSource.LevelsFilter |= level;
 			}
 			else
 			{
-				LevelsFilter &= ~level;
+				DataSource.LevelsFilter &= ~level;
 			}
 		}
 
@@ -151,24 +194,26 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnDebugChanged(bool isChecked)
 		{
+			if (DataSource == null)
+				return;
+
 			const LevelFlags level = LevelFlags.Debug;
 			if (isChecked)
 			{
-				LevelsFilter |= level;
+				DataSource.LevelsFilter |= level;
 			}
 			else
 			{
-				LevelsFilter &= ~level;
+				DataSource.LevelsFilter &= ~level;
 			}
 		}
 
-		private static void OnLevelsChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		private void OnLevelsChanged()
 		{
-			((LevelFilterControl) dependencyObject).OnLevelsChanged((LevelFlags) args.NewValue);
-		}
+			if (DataSource == null)
+				return;
 
-		private void OnLevelsChanged(LevelFlags levels)
-		{
+			var levels = DataSource.LevelsFilter;
 			ShowFatal = levels.HasFlag(LevelFlags.Fatal);
 			ShowError = levels.HasFlag(LevelFlags.Error);
 			ShowWarning = levels.HasFlag(LevelFlags.Warning);

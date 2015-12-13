@@ -1,48 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
 {
-	public class LogViewerControl : Control
+	internal class LogViewerControl : Control
 	{
 		public static readonly DependencyProperty ItemsSourceProperty =
 			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<LogEntryViewModel>), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnItemsSourceChanged));
 
+		public static readonly DependencyProperty DataSourceProperty =
+			DependencyProperty.Register("DataSource", typeof (DataSourceViewModel), typeof (LogViewerControl),
+			                            new PropertyMetadata(null, OnDataSourceChanged));
+
 		public static readonly DependencyProperty LogEntryCountProperty =
 			DependencyProperty.Register("LogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(0));
 
-		public static readonly DependencyProperty AllLogEntryCountProperty =
-			DependencyProperty.Register("AllLogEntryCount", typeof (int), typeof (LogViewerControl),
-			                            new PropertyMetadata(0));
-
-		public static readonly DependencyProperty StringFilterProperty =
-			DependencyProperty.Register("StringFilter", typeof (string), typeof (LogViewerControl),
-			                            new PropertyMetadata(null));
-
-		public static readonly DependencyProperty FollowTailProperty =
-			DependencyProperty.Register("FollowTail", typeof (bool),
-			                            typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnFollowTailChanged));
-
-		public static readonly DependencyProperty FileSizeProperty =
-			DependencyProperty.Register("FileSize", typeof (Size), typeof (LogViewerControl), new PropertyMetadata(default(Size)));
-
-		public static readonly DependencyProperty LevelsFilterProperty =
-			DependencyProperty.Register("LevelsFilter", typeof (LevelFlags), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(LevelFlags)));
-
 		private ListView _partListView;
-		private ScrollViewer _scrollViewer;
 		private FilterTextBox _partStringFilter;
 		private bool _scrollByUser;
+		private ScrollViewer _scrollViewer;
 
 		static LogViewerControl()
 		{
@@ -50,28 +34,10 @@ namespace Tailviewer.Ui.Controls
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
 		}
 
-		public LevelFlags LevelsFilter
+		public DataSourceViewModel DataSource
 		{
-			get { return (LevelFlags) GetValue(LevelsFilterProperty); }
-			set { SetValue(LevelsFilterProperty, value); }
-		}
-
-		public Size FileSize
-		{
-			get { return (Size) GetValue(FileSizeProperty); }
-			set { SetValue(FileSizeProperty, value); }
-		}
-
-		public string StringFilter
-		{
-			get { return (string) GetValue(StringFilterProperty); }
-			set { SetValue(StringFilterProperty, value); }
-		}
-
-		public int AllLogEntryCount
-		{
-			get { return (int) GetValue(AllLogEntryCountProperty); }
-			set { SetValue(AllLogEntryCountProperty, value); }
+			get { return (DataSourceViewModel) GetValue(DataSourceProperty); }
+			set { SetValue(DataSourceProperty, value); }
 		}
 
 		public int LogEntryCount
@@ -86,10 +52,32 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(ItemsSourceProperty, value); }
 		}
 
-		public bool FollowTail
+		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			get { return (bool) GetValue(FollowTailProperty); }
-			set { SetValue(FollowTailProperty, value); }
+			((LogViewerControl) dependencyObject).OnDataSourceChanged(args.OldValue as DataSourceViewModel,
+			                                                          args.NewValue as DataSourceViewModel);
+		}
+
+		private void OnDataSourceChanged(DataSourceViewModel oldValue, DataSourceViewModel newValue)
+		{
+			if (oldValue != null)
+			{
+				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
+			}
+			if (newValue != null)
+			{
+				newValue.PropertyChanged += DataSourceOnPropertyChanged;
+			}
+		}
+
+		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case "FollowTail":
+					OnFollowTailChanged();
+					break;
+			}
 		}
 
 		private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -112,20 +100,15 @@ namespace Tailviewer.Ui.Controls
 
 		private void ItemsSourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (FollowTail)
+			if (DataSource != null && DataSource.FollowTail)
 			{
 				ScrollToTail();
 			}
 		}
 
-		private static void OnFollowTailChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		private void OnFollowTailChanged()
 		{
-			((LogViewerControl) dependencyObject).OnFollowTailChanged((bool) e.NewValue);
-		}
-
-		private void OnFollowTailChanged(bool followTail)
-		{
-			if (followTail)
+			if (DataSource != null && DataSource.FollowTail)
 			{
 				ScrollToTail();
 			}
@@ -162,12 +145,12 @@ namespace Tailviewer.Ui.Controls
 					double scrollerOffset = e.VerticalOffset + e.ViewportHeight;
 					if (Math.Abs(scrollerOffset - e.ExtentHeight) < 5.0)
 					{
-						FollowTail = true;
+						DataSource.FollowTail = true;
 					}
 				}
 				else
 				{
-					FollowTail = false;
+					DataSource.FollowTail = false;
 				}
 			}
 			_scrollByUser = true;
@@ -183,7 +166,7 @@ namespace Tailviewer.Ui.Controls
 
 		public void FocusStringFilter()
 		{
-			var element = _partStringFilter;
+			FilterTextBox element = _partStringFilter;
 			if (element != null)
 			{
 				element.Focus();

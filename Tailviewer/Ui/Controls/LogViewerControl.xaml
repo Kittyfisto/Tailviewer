@@ -10,52 +10,36 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition MinWidth="200" />
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="8"
-                                        VerticalAlignment="Center">
-                                <TextBlock Text="Showing " />
-                                <TextBlock
-                                    Text="{Binding LogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                <TextBlock Text=" of " />
-                                <TextBlock
-                                    Text="{Binding AllLogEntryCount, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                <TextBlock Text=" entries (" />
-                                <TextBlock
-                                    Text="{Binding FileSize, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                                <TextBlock Text=")" />
-                            </StackPanel>
-
                             <ToggleButton
-                                Grid.Column="2"
                                 Margin="8"
                                 Padding="4"
                                 x:Name="PART_FollowTail"
                                 Content="Follow Tail"
                                 VerticalAlignment="Center"
-                                IsChecked="{Binding FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:LevelFilterControl
-                                Grid.Column="3"
+                                Grid.Column="1"
                                 VerticalAlignment="Center"
                                 Margin="8"
-                                LevelsFilter="{Binding LevelsFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                DataSource="{Binding DataSource, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:FilterTextBox
                                 x:Name="PART_StringFilter"
                                 Margin="8"
-                                Grid.Column="4"
-                                FilterText="{Binding StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
+                                Grid.Column="3"
+                                FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                 Watermark="Search (Ctrl+E)" />
 
                         </Grid>
@@ -96,6 +80,13 @@
                             </ListView.Resources>
                         </ListView>
 
+                        <Border Grid.Row="2"
+                                Background="#D8D8D8">
+                            <TextBlock
+                                Margin="4"
+                                Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=Showing {0} entries}" />
+                        </Border>
+                        
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -16,6 +16,8 @@ namespace Tailviewer
 		private readonly DataSources _dataSources;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly UiDispatcher _dispatcher;
+		private readonly DispatcherTimer _timer;
+
 		private DataSourceViewModel _currentDataSource;
 		private LogViewerViewModel _currentDataSourceLogView;
 		private string _errorMessage;
@@ -34,10 +36,21 @@ namespace Tailviewer
 
 			_dataSources = dataSources;
 			_dataSourcesViewModel = new DataSourcesViewModel(_dataSources);
+			_timer = new DispatcherTimer
+				{
+					Interval = TimeSpan.FromMilliseconds(100)
+				};
+			_timer.Tick += TimerOnTick;
+			_timer.Start();
 
 			_dispatcher = new UiDispatcher(dispatcher);
 			WindowTitle = ApplicationName;
 			dispatcher.UnhandledException += DispatcherOnUnhandledException;
+		}
+
+		private void TimerOnTick(object sender, EventArgs eventArgs)
+		{
+			_dataSourcesViewModel.Update();
 		}
 
 		public bool HasError

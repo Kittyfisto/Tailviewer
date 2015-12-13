@@ -3,7 +3,7 @@
 namespace Tailviewer.BusinessLogic
 {
 	[Flags]
-	public enum LevelFlags
+	public enum LevelFlags : byte
 	{
 		Fatal   = 0x01,
 		Error   = 0x02,

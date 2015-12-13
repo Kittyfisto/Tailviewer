@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.Ui.ViewModels
+﻿using Tailviewer.BusinessLogic;
+
+namespace Tailviewer.Ui.ViewModels
 {
 	public sealed class LogEntryViewModel
 	{
@@ -10,10 +12,10 @@
 			_message = message;
 		}
 
-		public LogEntryViewModel(int index, string message)
+		public LogEntryViewModel(int index, LogEntry entry)
 		{
 			_index = index;
-			_message = message;
+			_message = entry.Message;
 		}
 
 		public int Index
