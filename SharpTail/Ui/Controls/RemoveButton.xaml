@@ -15,7 +15,7 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}"
                             Padding="{TemplateBinding Padding}">
-                        <Grid>
+                        <Grid Background="Transparent">
                             <Image
                                 Width="16" Height="16"
                                 Source="pack://application:,,,/Resources/ic_clear_black_18dp.png"

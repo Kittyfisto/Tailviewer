@@ -76,7 +76,7 @@
                                                             <local:RemoveButton VerticalAlignment="Stretch"
                                                                                 HorizontalAlignment="Right"
                                                                                 IsInverted="{Binding IsOpen}"
-                                                                                Command="{Binding RemoveDataSourceCommand}"
+                                                                                Command="{Binding RemoveCommand}"
                                                                                 />
                                                         </Grid>
                                                     </Border>
