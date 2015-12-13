@@ -122,7 +122,21 @@ namespace Tailviewer.BusinessLogic
 
 		public Size FileSize
 		{
-			get { return Size.FromBytes(new FileInfo(_fileName).Length); }
+			get
+			{
+				if (!File.Exists(_fileName))
+					return Size.Zero;
+
+				try
+				{
+					return Size.FromBytes(new FileInfo(_fileName).Length);
+				}
+				catch (Exception)
+				{
+					return Size.Zero;
+				}
+				
+			}
 		}
 
 		public LogEntry GetEntry(int index)

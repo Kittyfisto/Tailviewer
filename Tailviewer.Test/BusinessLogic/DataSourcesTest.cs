@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.BusinessLogic
 {

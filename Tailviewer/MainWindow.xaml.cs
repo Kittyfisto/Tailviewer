@@ -11,7 +11,27 @@ namespace Tailviewer
 	public partial class MainWindow
 	{
 		public static readonly DependencyProperty FocusLogFileSearchCommandProperty =
-			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow), new PropertyMetadata(default(ICommand)));
+			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow),
+			                            new PropertyMetadata(default(ICommand)));
+
+		public static readonly DependencyProperty FocusDataSourceSearchCommandProperty =
+			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof (ICommand), typeof (MainWindow),
+			                            new PropertyMetadata(default(ICommand)));
+
+		public MainWindow()
+		{
+			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
+			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
+
+			InitializeComponent();
+			Closing += OnClosing;
+		}
+
+		public ICommand FocusDataSourceSearchCommand
+		{
+			get { return (ICommand) GetValue(FocusDataSourceSearchCommandProperty); }
+			set { SetValue(FocusDataSourceSearchCommandProperty, value); }
+		}
 
 		public ICommand FocusLogFileSearchCommand
 		{
@@ -19,17 +39,14 @@ namespace Tailviewer
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
 		}
 
-		public MainWindow()
-		{
-			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
-
-			InitializeComponent();
-			Closing += OnClosing;
-		}
-
 		private void FocusLogFileSearch()
 		{
 			PART_LogFileView.FocusStringFilter();
+		}
+
+		private void FocusDataSourceSearch()
+		{
+			PART_DataSources.FocusSearch();
 		}
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
@@ -43,11 +60,11 @@ namespace Tailviewer
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				// Note that you can have more than one file.
-				var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+				var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
 
 				// Assuming you have one file that you care about, pass it off to whatever
 				// handling code you have defined.
-				((MainWindowViewModel)DataContext).OpenFiles(files);
+				((MainWindowViewModel) DataContext).OpenFiles(files);
 			}
 		}
 

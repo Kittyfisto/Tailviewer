@@ -150,8 +150,10 @@ namespace Tailviewer
 
 		public void OpenFiles(string[] files)
 		{
-			string file = files[0];
-			OpenFile(file);
+			foreach (var file in files)
+			{
+				OpenFile(file);
+			}
 		}
 
 		private void OpenFile(string file)

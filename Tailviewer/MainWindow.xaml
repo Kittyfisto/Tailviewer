@@ -18,6 +18,8 @@
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="E"
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
+        <KeyBinding Modifiers="Control" Key="F"
+                    Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -41,18 +43,6 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-
-            <!--
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Open File" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Grid.Column="1"
-                        DataContext="{Binding LogViewModel}">
-                <ToggleButton Content="Open File"
-                              IsChecked="{Binding FollowTail, Mode=TwoWay}" />
-            </StackPanel>
-            -->
         </Grid>
 
         <Grid Grid.Row="1">
@@ -64,6 +54,7 @@
 
             <controls:DataSourcesControl
                 Width="200"
+                x:Name="PART_DataSources"
                 ItemsSource="{Binding RecentFiles}"
                 SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 

@@ -65,6 +65,7 @@
     <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
+    <Compile Include="Ui\DataSourcesControlTest.cs" />
     <Compile Include="Ui\DataSourceViewModelTest.cs" />
     <Compile Include="Ui\HighlightableTextBlockTest.cs" />
     <Compile Include="Logger.cs" />
