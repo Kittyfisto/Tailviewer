@@ -52,7 +52,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpTail.Test\SharpTail.Test.csproj">
+    <ProjectReference Include="..\Tailviewer.Test\Tailviewer.Test.csproj">
       <Project>{284845fb-eff7-434e-9006-e789ab95f2f2}</Project>
       <Name>SharpTail.Test</Name>
     </ProjectReference>

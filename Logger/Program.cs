@@ -11,7 +11,7 @@ namespace Logger
 
 		static void Main(string[] args)
 		{
-			using (var logger = new SharpTail.Test.Logger("Slow.log"))
+			using (var logger = new Tailviewer.Test.Logger("Slow.log"))
 			{
 				while (true)
 				{
