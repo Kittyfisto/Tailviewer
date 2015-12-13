@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Tailviewer.Settings;
 
 namespace Tailviewer
 {
@@ -22,7 +23,7 @@ namespace Tailviewer
 
 		public MainWindow()
 		{
-			WindowConfiguration config = MainWindowConfiguration.Restore();
+			WindowSettings config = ApplicationSettings.Current.MainWindow;
 			if (config != null)
 			{
 				config.RestoreTo(this);
@@ -43,8 +44,8 @@ namespace Tailviewer
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
 		{
-			WindowConfiguration config = WindowConfiguration.From(this);
-			MainWindowConfiguration.Store(config);
+			ApplicationSettings.Current.MainWindow.UpdateFrom(this);
+			ApplicationSettings.Current.Save();
 		}
 
 		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)

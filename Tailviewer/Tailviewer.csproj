@@ -53,12 +53,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Settings\DataSourceSettings.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="BusinessLogic\DataSources.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Settings\ApplicationSettings.cs" />
+    <Compile Include="Settings\DataSourcesSettings.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
-    <Compile Include="Ui\ViewModels\DataSourceCollection.cs" />
+    <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\ILogFile.cs" />
     <Compile Include="BusinessLogic\ILogFileListener.cs" />
@@ -66,7 +71,6 @@
     <Compile Include="BusinessLogic\LogFileListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFileSection.cs" />
-    <Compile Include="MainWindowConfiguration.cs" />
     <Compile Include="Size.cs" />
     <Compile Include="Ui\Controls\AlertControl.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
@@ -81,7 +85,7 @@
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
     <Compile Include="Ui\ViewModels\DataSourceViewModel.cs" />
-    <Compile Include="WindowConfiguration.cs" />
+    <Compile Include="Settings\WindowSettings.cs" />
     <Page Include="Themes\Converters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

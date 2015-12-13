@@ -4,46 +4,38 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
 using Tailviewer.Ui;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer
 {
-	public sealed class MainWindowViewModel
+	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		private LogViewerViewModel _currentDataSourceLogView;
+		public const string ApplicationName = "SharpTail";
+		private readonly DataSources _dataSources;
+		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly UiDispatcher _dispatcher;
+		private DataSourceViewModel _currentDataSource;
+		private LogViewerViewModel _currentDataSourceLogView;
+		private string _errorMessage;
+		private bool _hasError;
 		private bool _isLogFileOpen;
 		private string _windowTitle;
-		private bool _hasError;
-		private string _errorMessage;
-		private readonly DataSourceCollection _dataSources;
-		private DataSourceViewModel _currentDataSource;
-
-		public const string ApplicationName = "SharpTail";
 
 		public MainWindowViewModel()
-		{}
+		{
+		}
 
 		public MainWindowViewModel(Dispatcher dispatcher)
 		{
-			_dataSources = new DataSourceCollection();
+			_dataSources = new DataSources(ApplicationSettings.Current.DataSources);
+			_dataSourcesViewModel = new DataSourcesViewModel(_dataSources);
 
 			_dispatcher = new UiDispatcher(dispatcher);
 			WindowTitle = ApplicationName;
 			dispatcher.UnhandledException += DispatcherOnUnhandledException;
-		}
-
-		private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
-		{
-			var exception = args.Exception;
-			if (exception != null)
-			{
-				HasError = true;
-				ErrorMessage = exception.Message;
-			}
-			args.Handled = true;
 		}
 
 		public bool HasError
@@ -111,7 +103,7 @@ namespace Tailviewer
 
 		public IEnumerable<DataSourceViewModel> RecentFiles
 		{
-			get { return _dataSources.Observable; }
+			get { return _dataSourcesViewModel.Observable; }
 		}
 
 		public DataSourceViewModel CurrentDataSource
@@ -128,15 +120,28 @@ namespace Tailviewer
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+		{
+			Exception exception = args.Exception;
+			if (exception != null)
+			{
+				HasError = true;
+				ErrorMessage = exception.Message;
+			}
+			args.Handled = true;
+		}
+
 		public void OpenFiles(string[] files)
 		{
-			var file = files[0];
+			string file = files[0];
 			OpenFile(file);
 		}
 
 		private void OpenFile(string file)
 		{
-			var dataSource = _dataSources.GetOrAdd(file);
+			DataSourceViewModel dataSource = _dataSourcesViewModel.GetOrAdd(file);
 			OpenFile(dataSource);
 		}
 
@@ -179,8 +184,6 @@ namespace Tailviewer
 			logFile = null;
 			return false;
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{

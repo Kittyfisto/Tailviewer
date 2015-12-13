@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.ViewModels
 	/// <summary>
 	/// Represents a data source and is capable
 	/// </summary>
-	public sealed class DataSourceViewModel
+	internal sealed class DataSourceViewModel
 		: INotifyPropertyChanged
 	{
 		private readonly DataSource _dataSource;
@@ -138,13 +138,13 @@ namespace Tailviewer.Ui.ViewModels
 
 		public LevelFlags LevelsFilter
 		{
-			get { return _dataSource.Levels; }
+			get { return _dataSource.LevelFilter; }
 			set
 			{
 				if (value == LevelsFilter)
 					return;
 
-				_dataSource.Levels = value;
+				_dataSource.LevelFilter = value;
 				EmitPropertyChanged();
 			}
 		}

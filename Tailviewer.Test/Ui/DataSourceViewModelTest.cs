@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.Ui
@@ -14,7 +15,7 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor()
 		{
 			var now = DateTime.Now;
-			var source = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
+			var source = new DataSource(new DataSourceSettings(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"))
 				{
 					LastWritten = now
 				};
@@ -25,7 +26,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRemoveCommand1()
 		{
-			var source = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
+			var source = new DataSource(new DataSourceSettings(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"));
 			var model = new DataSourceViewModel(source);
 			model.RemoveCommand.Should().NotBeNull();
 			model.RemoveCommand.CanExecute(null).Should().BeTrue();
@@ -35,7 +36,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRemoveCommand2()
 		{
-			var source = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
+			var source = new DataSource(new DataSourceSettings(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"));
 			var model = new DataSourceViewModel(source);
 			var calls = new List<DataSourceViewModel>();
 			model.Remove += calls.Add;

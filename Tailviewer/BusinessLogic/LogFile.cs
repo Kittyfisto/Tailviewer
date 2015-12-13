@@ -4,10 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
-	public sealed class LogFile
+	internal sealed class LogFile
 		: ILogFile
 	{
 		#region Reading
@@ -215,7 +216,7 @@ namespace Tailviewer.BusinessLogic
 
 		public static LogFile FromFile(string fname)
 		{
-			return FromFile(new DataSource(fname));
+			return FromFile(new DataSource(new DataSourceSettings{File = fname}));
 		}
 
 		public static LogFile FromFile(DataSource dataSource)

@@ -5,7 +5,7 @@ using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
 {
-	public class DataSourcesControl : Control
+	internal class DataSourcesControl : Control
 	{
 		public static readonly DependencyProperty ItemsSourceProperty =
 			DependencyProperty.Register("ItemsSource", typeof(IEnumerable<DataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(null));

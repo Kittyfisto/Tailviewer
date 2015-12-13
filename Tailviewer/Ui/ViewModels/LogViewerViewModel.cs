@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	public sealed class LogViewerViewModel
+	internal sealed class LogViewerViewModel
 		: INotifyPropertyChanged
 		  , ILogFileListener
 	{

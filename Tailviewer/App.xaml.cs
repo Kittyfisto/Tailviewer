@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Tailviewer.Settings;
 
 namespace Tailviewer
 {
@@ -12,6 +13,7 @@ namespace Tailviewer
 		public App()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+			ApplicationSettings.Current.Restore();
 		}
 
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
 using Tailviewer.Test.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
 
@@ -23,9 +24,10 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestFilter1()
 		{
-			using (var file = LogFile.FromFile(LogFileTest.File20Mb))
+			var dataSource = new DataSource(new DataSourceSettings(LogFileTest.File20Mb));
+			using (var file = LogFile.FromFile(dataSource))
 			{
-				var model = new LogViewerViewModel(new DataSourceViewModel(new DataSource()), _dispatcher, file);
+				var model = new LogViewerViewModel(new DataSourceViewModel(dataSource), _dispatcher, file);
 				file.Wait();
 
 				model.StringFilter = "i";

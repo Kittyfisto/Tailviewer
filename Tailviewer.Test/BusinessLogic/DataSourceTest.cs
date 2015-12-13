@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -8,22 +9,11 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class DataSourceTest
 	{
 		[Test]
-		public void TestCtor1()
+		public void TestCtor()
 		{
-			var source = new DataSource();
-			source.FullFileName.Should().BeNull();
-			source.Levels.Should().Be(LevelFlags.All);
-			source.StringFilter.Should().BeNull();
-			source.IsOpen.Should().BeFalse();
-			source.FollowTail.Should().BeFalse();
-		}
-
-		[Test]
-		public void TestCtor2()
-		{
-			var source = new DataSource(@"E:\somelogfile.txt");
+			var source = new DataSource(new DataSourceSettings(@"E:\somelogfile.txt"));
 			source.FullFileName.Should().Be(@"E:\somelogfile.txt");
-			source.Levels.Should().Be(LevelFlags.All);
+			source.LevelFilter.Should().Be(LevelFlags.All);
 			source.StringFilter.Should().BeNull();
 			source.IsOpen.Should().BeFalse();
 			source.FollowTail.Should().BeFalse();

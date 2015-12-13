@@ -10,8 +10,4 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogViewerControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/RemoveButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
-
-
-
 </ResourceDictionary>

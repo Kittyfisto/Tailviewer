@@ -8,8 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using Tailviewer.BusinessLogic;
-
 namespace Tailviewer.Properties {
     
     
@@ -22,101 +20,6 @@ namespace Tailviewer.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double Left {
-            get {
-                return ((double)(this["Left"]));
-            }
-            set {
-                this["Left"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double Top {
-            get {
-                return ((double)(this["Top"]));
-            }
-            set {
-                this["Top"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double Width {
-            get {
-                return ((double)(this["Width"]));
-            }
-            set {
-                this["Width"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public double Height {
-            get {
-                return ((double)(this["Height"]));
-            }
-            set {
-                this["Height"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsMaximized {
-            get {
-                return ((bool)(this["IsMaximized"]));
-            }
-            set {
-                this["IsMaximized"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IsMinimized {
-            get {
-                return ((bool)(this["IsMinimized"]));
-            }
-            set {
-                this["IsMinimized"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<DataSource> DataSources {
-            get {
-                return ((global::System.Collections.Generic.List<DataSource>)(this["DataSources"]));
-            }
-            set {
-                this["DataSources"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
-            get {
-                return ((string)(this["Setting"]));
-            }
-            set {
-                this["Setting"] = value;
             }
         }
     }
