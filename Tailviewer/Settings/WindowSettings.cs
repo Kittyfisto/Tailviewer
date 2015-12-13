@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Xml;
+using Tailviewer.Ui.Controls;
 
 namespace Tailviewer.Settings
 {

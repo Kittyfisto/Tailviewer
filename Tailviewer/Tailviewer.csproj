@@ -55,7 +55,7 @@
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources.cs" />
-    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Ui\DelegateCommand.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSourcesSettings.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
@@ -82,7 +82,7 @@
     <Compile Include="BusinessLogic\LogFile.cs" />
     <Compile Include="BusinessLogic\DataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
-    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
     <Compile Include="Ui\ViewModels\DataSourceViewModel.cs" />
     <Compile Include="Settings\WindowSettings.cs" />
@@ -110,12 +110,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Ui\Controls\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Ui\Controls\LogViewerControl.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Ui\Controls\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>

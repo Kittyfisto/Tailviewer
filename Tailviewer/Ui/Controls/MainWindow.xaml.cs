@@ -2,8 +2,9 @@
 using System.Windows;
 using System.Windows.Input;
 using Tailviewer.Settings;
+using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer
+namespace Tailviewer.Ui.Controls
 {
 	/// <summary>
 	///     Interaction logic for MainWindow.xaml

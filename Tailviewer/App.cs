@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer
 {
@@ -35,7 +37,7 @@ namespace Tailviewer
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
 		{
 			MessageBox.Show(string.Format("Oops, something went wrong:\r\n{0}", args.ExceptionObject),
-			                Constants.ApplicationTitle);
+			                Constants.MainWindowTitle);
 		}
 
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)

@@ -4,15 +4,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
-using Tailviewer.Ui;
-using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer
+namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		public const string ApplicationName = "SharpTail";
 		private readonly DataSources _dataSources;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly UiDispatcher _dispatcher;
@@ -44,7 +41,7 @@ namespace Tailviewer
 			_timer.Start();
 
 			_dispatcher = new UiDispatcher(dispatcher);
-			WindowTitle = ApplicationName;
+			WindowTitle = Constants.MainWindowTitle;
 			dispatcher.UnhandledException += DispatcherOnUnhandledException;
 		}
 
@@ -170,13 +167,13 @@ namespace Tailviewer
 				CurrentDataSourceLogView = new LogViewerViewModel(
 					dataSource,
 					_dispatcher);
-				WindowTitle = string.Format("{0} - {1}", ApplicationName, dataSource.FileName);
+				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.FileName);
 			}
 			else
 			{
 				CurrentDataSource = null;
 				CurrentDataSourceLogView = null;
-				WindowTitle = ApplicationName;
+				WindowTitle = Constants.MainWindowTitle;
 			}
 		}
 

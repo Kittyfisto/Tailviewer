@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Tailviewer
+namespace Tailviewer.Ui
 {
 	public class DelegateCommand : ICommand
 	{
