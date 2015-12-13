@@ -21,7 +21,7 @@
     </Window.InputBindings>
 
     <Window.Resources>
-        <ResourceDictionary Source="pack://application:,,,/SharpTail;component/Themes/Converters.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
     </Window.Resources>
 
     <Grid>
