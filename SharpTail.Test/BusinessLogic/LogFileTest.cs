@@ -15,8 +15,8 @@ namespace SharpTail.Test.BusinessLogic
 	[TestFixture]
 	public sealed class LogFileTest
 	{
-		public const string File20Mb = @"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.txt";
-		public const string File2Lines = @"E:\Code\SharpTail\SharpTail.Test\TestData\2Lines.txt";
+		public const string File20Mb = @"TestData\20Mb.txt";
+		public const string File2Lines = @"TestData\2Lines.txt";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
