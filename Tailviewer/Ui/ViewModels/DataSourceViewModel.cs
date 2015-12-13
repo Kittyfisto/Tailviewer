@@ -25,6 +25,7 @@ namespace Tailviewer.Ui.ViewModels
 		private int _warningCount;
 		private int _totalCount;
 		private TimeSpan _lastWrittenAge;
+		private Size _fileSize;
 
 		public DataSourceViewModel(DataSource dataSource)
 		{
@@ -117,7 +118,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		public Size FileSize
 		{
-			get { return _dataSource.FileSize; }
+			get { return _fileSize; }
+			set
+			{
+				if (value == _fileSize)
+					return;
+
+				_fileSize = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public TimeSpan LastWrittenAge
@@ -238,6 +247,7 @@ namespace Tailviewer.Ui.ViewModels
 			ErrorCount = _dataSource.ErrorCount;
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
+			FileSize = _dataSource.FileSize;
 			LastWrittenAge = DateTime.Now - _dataSource.LastWritten;
 		}
 

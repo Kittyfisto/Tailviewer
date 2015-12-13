@@ -36,6 +36,7 @@ namespace Tailviewer.BusinessLogic
 
 		private readonly LogFileListenerCollection _listeners;
 		private readonly string _fileName;
+		private DateTime _lastWritten;
 
 		#endregion
 
@@ -168,16 +169,19 @@ namespace Tailviewer.BusinessLogic
 
 		public DateTime LastWritten
 		{
-			get { return new FileInfo(_fileName).LastWriteTime; }
+			get { return _lastWritten; }
 		}
 
 		private void ReadFile(object parameter)
 		{
 			var token = (CancellationToken)parameter;
 			int numberOfLinesRead = 0;
+			bool reachedEof = false;
 
 			try
 			{
+				_lastWritten = File.GetLastWriteTime(_fileName);
+
 				using (var stream = new FileStream(_fileName,
 				                                   FileMode.Open,
 				                                   FileAccess.Read,
@@ -189,6 +193,7 @@ namespace Tailviewer.BusinessLogic
 						var line = reader.ReadLine();
 						if (line == null)
 						{
+							reachedEof = true;
 							_listeners.OnRead(numberOfLinesRead);
 							_endOfSectionHandle.Set();
 							token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
@@ -209,6 +214,10 @@ namespace Tailviewer.BusinessLogic
 						}
 						else
 						{
+							if (reachedEof)
+								_lastWritten = DateTime.Now;
+							reachedEof = false;
+
 							_endOfSectionHandle.Reset();
 							++numberOfLinesRead;
 

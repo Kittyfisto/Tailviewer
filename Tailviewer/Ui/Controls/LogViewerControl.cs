@@ -114,6 +114,18 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
+		public LogViewerControl()
+		{
+			SizeChanged += OnSizeChanged;
+		}
+
+		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			// We don't want to disable auto scroll because the user resized
+			// the window which in turn caused the scroll to change by a negative value...
+			_scrollByUser = false;
+		}
+
 		private void ScrollToTail()
 		{
 			if (_partListView != null && _scrollViewer == null)
