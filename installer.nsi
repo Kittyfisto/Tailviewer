@@ -3,8 +3,8 @@ OutFile "SharpTail-setup.exe"
 
 InstallDir "$PROGRAMFILES\SharpTail ALPHA"
  
-# For removing Start Menu shortcut in Windows 7
-RequestExecutionLevel user
+; Request application privileges for Windows Vista
+RequestExecutionLevel admin
  
 # start default section
 Section
