@@ -92,7 +92,7 @@ namespace SharpTail
 				return string.Format("{0:F2} Kb", this/OneKilobyte);
 			}
 
-			return string.Format("{0} b", _numBytes);
+			return string.Format("{0} bytes", _numBytes);
 		}
 
 		[Pure]
