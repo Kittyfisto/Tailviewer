@@ -8,6 +8,12 @@ Tailviewer is supported on Windows 7, 8 and 10 and requires .NET 4.5 or higher.
 
 You can download the newest setup from https://ci.appveyor.com/project/Kittyfisto/sharptail/build/artifacts.
 
+![Tailviewer application](/Screenshot1.png?raw=true)  
+
+Tailviewer supports live filtering on medium to large (< 1Gb) log files.
+
+![Live filtering](/Screenshot2.png?raw=true)
+
 ## Installation
 
 TBD
