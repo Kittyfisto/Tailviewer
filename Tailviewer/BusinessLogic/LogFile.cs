@@ -166,6 +166,11 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
+		public DateTime LastWritten
+		{
+			get { return new FileInfo(_fileName).LastWriteTime; }
+		}
+
 		private void ReadFile(object parameter)
 		{
 			var token = (CancellationToken)parameter;

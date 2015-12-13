@@ -1,7 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
+                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
+    <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
+    
     <Style TargetType="{x:Type local:LogViewerControl}">
         <Setter Property="Template">
             <Setter.Value>
@@ -84,11 +87,14 @@
                                 Background="#D8D8D8">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock
-                                    Margin="4,4,0,4"
-                                    Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=Showing {0} entries}" />
+                                    Margin="4"
+                                    Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=lines: {0}}" />
                                 <TextBlock
                                     Margin="4"
-                                    Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}, StringFormat=size: {0}}" />
+                                <TextBlock
+                                    Margin="4"
+                                    Text="{Binding DataSource.LastWrittenAge, RelativeSource={RelativeSource TemplatedParent}, StringFormat=last written: {0}, Converter={StaticResource TimeSpanConverter}}" />
                             </StackPanel>
                         </Border>
 

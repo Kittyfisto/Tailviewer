@@ -14,14 +14,10 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor()
 		{
-			var now = DateTime.Now;
-			using (var source = new DataSource(new DataSourceSettings(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"))
-				{
-					LastWritten = now
-				})
+			using (var source = new DataSource(new DataSourceSettings(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")))
 			{
 				var model = new DataSourceViewModel(source);
-				model.LastWritten.Should().Be(now);
+				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 			}
 		}
 

@@ -62,6 +62,7 @@
     <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
+    <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
     <Compile Include="BusinessLogic\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\ILogFile.cs" />

@@ -154,7 +154,6 @@ namespace Tailviewer.Ui.ViewModels
 				}
 
 				_pendingSections.Clear();
-				_dataSource.UpdateLastWritten();
 			}
 
 			UpdateCounts();

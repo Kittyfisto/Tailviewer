@@ -10,7 +10,7 @@ namespace Tailviewer.BusinessLogic
 		private readonly DataSourceSettings _settings;
 
 		public DateTime LastOpened;
-		public DateTime LastWritten;
+		public DateTime LastWritten { get { return _logFile.LastWritten; } }
 
 		public DataSource(DataSourceSettings settings)
 		{

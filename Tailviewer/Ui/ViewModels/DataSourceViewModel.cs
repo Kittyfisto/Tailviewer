@@ -22,9 +22,9 @@ namespace Tailviewer.Ui.ViewModels
 		private int _fatalCount;
 		private int _infoCount;
 		private bool _isOpen;
-		private DateTime _lastWritten;
 		private int _warningCount;
 		private int _totalCount;
+		private TimeSpan _lastWrittenAge;
 
 		public DataSourceViewModel(DataSource dataSource)
 		{
@@ -33,8 +33,8 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_folder = Path.GetDirectoryName(dataSource.FullFileName);
-			_lastWritten = dataSource.LastWritten;
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+			Update();
 		}
 
 		public int TotalCount
@@ -120,22 +120,22 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _dataSource.FileSize; }
 		}
 
+		public TimeSpan LastWrittenAge
+		{
+			get { return _lastWrittenAge; }
+			private set
+			{
+				if (value == _lastWrittenAge)
+					return;
+
+				_lastWrittenAge = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public ICommand RemoveCommand
 		{
 			get { return _removeCommand; }
-		}
-
-		public DateTime LastWritten
-		{
-			get { return _lastWritten; }
-			private set
-			{
-				if (value == _lastWritten)
-					return;
-
-				_lastWritten = value;
-				EmitPropertyChanged();
-			}
 		}
 
 		public bool FollowTail
@@ -238,6 +238,7 @@ namespace Tailviewer.Ui.ViewModels
 			ErrorCount = _dataSource.ErrorCount;
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
+			LastWrittenAge = DateTime.Now - _dataSource.LastWritten;
 		}
 
 		public event Action<DataSourceViewModel> Remove;
@@ -253,11 +254,6 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		public void UpdateLastWritten()
-		{
-			LastWritten = _dataSource.LastWritten;
 		}
 	}
 }
