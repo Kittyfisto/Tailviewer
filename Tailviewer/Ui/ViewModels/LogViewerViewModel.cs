@@ -22,16 +22,14 @@ namespace Tailviewer.Ui.ViewModels
 		private int _logEntryCount;
 		private Size _fileSize;
 
-		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher, LogFile logFile)
+		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
 		{
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
-			if (logFile == null) throw new ArgumentNullException("logFile");
 
 			_dataSource = dataSource;
 			_dispatcher = dispatcher;
-			_fullLogFile = logFile;
-			_fullLogFile.Start();
+			_fullLogFile = dataSource.DataSource.LogFile;
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 			_logEntries = new ObservableCollection<LogEntryViewModel>();

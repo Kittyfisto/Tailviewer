@@ -9,6 +9,7 @@ namespace Tailviewer.BusinessLogic
 {
 	internal sealed class DataSources
 		: IEnumerable<DataSource>
+		, IDisposable
 	{
 		private readonly DataSourcesSettings _settings;
 		private readonly object _syncRoot;
@@ -25,7 +26,6 @@ namespace Tailviewer.BusinessLogic
 			{
 				Add(dataSource);
 			}
-
 		}
 
 		public int Count
@@ -82,7 +82,13 @@ namespace Tailviewer.BusinessLogic
 			lock (_syncRoot)
 			{
 				_settings.Remove(dataSource.Settings);
-				return _dataSources.Remove(dataSource);
+				if (_dataSources.Remove(dataSource))
+				{
+					dataSource.Dispose();
+					return true;
+				}
+
+				return false;
 			}
 		}
 
@@ -97,6 +103,17 @@ namespace Tailviewer.BusinessLogic
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
+		}
+
+		public void Dispose()
+		{
+			lock (_syncRoot)
+			{
+				foreach (var dataSource in _dataSources)
+				{
+					dataSource.Dispose();
+				}
+			}
 		}
 	}
 }

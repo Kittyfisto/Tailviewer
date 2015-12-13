@@ -1,19 +1,34 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Windows;
+using System.Windows.Threading;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 
 namespace Tailviewer
 {
-	/// <summary>
-	/// Interaction logic for App.xaml
-	/// </summary>
-	public partial class App
+	public static class App
 	{
-		public App()
+		[STAThread]
+		public static int Main()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 			ApplicationSettings.Current.Restore();
+
+			using (var dataSources = new DataSources(ApplicationSettings.Current.DataSources))
+			{
+				var application = new Application();
+				var window = new MainWindow
+					{
+						DataContext = new MainWindowViewModel(dataSources, Dispatcher.CurrentDispatcher)
+					};
+
+				ApplicationSettings.Current.MainWindow.RestoreTo(window);
+
+				window.Show();
+				return application.Run();
+			}
 		}
 
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)

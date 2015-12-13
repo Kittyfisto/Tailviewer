@@ -36,7 +36,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestReadAll1()
 		{
-			using (var file = LogFile.FromFile(File20Mb))
+			using (var file = new LogFile(File20Mb))
 			{
 				file.Start();
 				file.Wait();
@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestReadAll2()
 		{
-			using (var file = LogFile.FromFile(File20Mb))
+			using (var file = new LogFile(File20Mb))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -76,7 +76,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestRead2Lines()
 		{
-			using (var file = LogFile.FromFile(File2Lines))
+			using (var file = new LogFile(File2Lines))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestGetSection1()
 		{
-			using (var file = LogFile.FromFile(File20Mb))
+			using (var file = new LogFile(File20Mb))
 			{
 				file.Start();
 				file.Wait();
@@ -124,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestFilter1()
 		{
-			using (var file = LogFile.FromFile(File20Mb))
+			using (var file = new LogFile(File20Mb))
 			{
 				file.Start();
 				file.Wait();
@@ -150,7 +150,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestFilter2()
 		{
-			using (var file = LogFile.FromFile(File20Mb))
+			using (var file = new LogFile(File20Mb))
 			{
 				file.Start();
 				file.Wait();
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			const string fname = "TestLive1.log";
 			using (var logger = new Logger(fname))
-			using (var logFile = LogFile.FromFile(fname))
+			using (var logFile = new LogFile(fname))
 			{
 				logFile.Start();
 				logFile.Count.Should().Be(0);
@@ -197,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			const string fname = "TestLive2.log";
 			using (var logger = new Logger(fname))
-			using (var logFile = LogFile.FromFile(fname))
+			using (var logFile = new LogFile(fname))
 			{
 				logFile.Start();
 				logFile.Count.Should().Be(0);
@@ -220,7 +220,7 @@ namespace Tailviewer.Test.BusinessLogic
 				Log.Info("Test");
 			}
 
-			using (var logFile = LogFile.FromFile(fname))
+			using (var logFile = new LogFile(fname))
 			{
 				logFile.Start();
 				logFile.Wait();

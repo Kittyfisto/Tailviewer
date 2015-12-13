@@ -10,8 +10,6 @@ namespace Tailviewer
 	/// </summary>
 	public partial class MainWindow
 	{
-		private readonly MainWindowViewModel _viewModel;
-
 		public static readonly DependencyProperty FocusLogFileSearchCommandProperty =
 			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow), new PropertyMetadata(default(ICommand)));
 
@@ -23,13 +21,6 @@ namespace Tailviewer
 
 		public MainWindow()
 		{
-			WindowSettings config = ApplicationSettings.Current.MainWindow;
-			if (config != null)
-			{
-				config.RestoreTo(this);
-			}
-			DataContext = _viewModel = new MainWindowViewModel(Dispatcher);
-
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 
 			InitializeComponent();
@@ -62,7 +53,7 @@ namespace Tailviewer
 
 				// Assuming you have one file that you care about, pass it off to whatever
 				// handling code you have defined.
-				_viewModel.OpenFiles(files);
+				((MainWindowViewModel)DataContext).OpenFiles(files);
 			}
 		}
 

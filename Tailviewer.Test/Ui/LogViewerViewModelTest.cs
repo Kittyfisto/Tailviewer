@@ -24,11 +24,10 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestFilter1()
 		{
-			var dataSource = new DataSource(new DataSourceSettings(LogFileTest.File20Mb));
-			using (var file = LogFile.FromFile(dataSource))
+			using (var dataSource = new DataSource(new DataSourceSettings(LogFileTest.File20Mb)))
 			{
-				var model = new LogViewerViewModel(new DataSourceViewModel(dataSource), _dispatcher, file);
-				file.Wait();
+				var model = new LogViewerViewModel(new DataSourceViewModel(dataSource), _dispatcher);
+				dataSource.LogFile.Wait();
 
 				model.StringFilter = "i";
 				model.CurrentLogFile.Wait();

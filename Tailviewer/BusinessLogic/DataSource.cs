@@ -4,7 +4,9 @@ using Tailviewer.Settings;
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class DataSource
+		: IDisposable
 	{
+		private readonly LogFile _logFile;
 		private readonly DataSourceSettings _settings;
 
 		public DateTime LastOpened;
@@ -15,6 +17,13 @@ namespace Tailviewer.BusinessLogic
 			if (settings == null) throw new ArgumentNullException("settings");
 
 			_settings = settings;
+			_logFile = new LogFile(settings.File);
+			_logFile.Start();
+		}
+
+		public LogFile LogFile
+		{
+			get { return _logFile; }
 		}
 
 		public string FullFileName
@@ -50,6 +59,11 @@ namespace Tailviewer.BusinessLogic
 		internal DataSourceSettings Settings
 		{
 			get { return _settings; }
+		}
+
+		public void Dispose()
+		{
+			_logFile.Dispose();
 		}
 	}
 }

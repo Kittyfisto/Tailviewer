@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
-using Tailviewer.Settings;
 using Tailviewer.Ui;
 using Tailviewer.Ui.ViewModels;
 
@@ -28,9 +27,12 @@ namespace Tailviewer
 		{
 		}
 
-		public MainWindowViewModel(Dispatcher dispatcher)
+		public MainWindowViewModel(DataSources dataSources, Dispatcher dispatcher)
 		{
-			_dataSources = new DataSources(ApplicationSettings.Current.DataSources);
+			if (dataSources == null) throw new ArgumentNullException("dataSources");
+			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+
+			_dataSources = dataSources;
 			_dataSourcesViewModel = new DataSourcesViewModel(_dataSources);
 
 			_dispatcher = new UiDispatcher(dispatcher);
@@ -147,42 +149,18 @@ namespace Tailviewer
 
 		private void OpenFile(DataSourceViewModel dataSource)
 		{
-			LogFile logFile;
-			if (TryOpenFile(dataSource, out logFile))
+			if (dataSource != null)
 			{
 				CurrentDataSource = dataSource;
 				CurrentDataSourceLogView = new LogViewerViewModel(
 					dataSource,
-					_dispatcher,
-					logFile);
-
-				WindowTitle = string.Format("{0} - {1}", ApplicationName, dataSource.FileName);
+					_dispatcher);
 			}
 			else
 			{
+				CurrentDataSource = null;
 				CurrentDataSourceLogView = null;
-				WindowTitle = ApplicationName;
 			}
-		}
-
-		private bool TryOpenFile(DataSourceViewModel source, out LogFile logFile)
-		{
-			if (source != null)
-			{
-				try
-				{
-					logFile = LogFile.FromFile(source.DataSource);
-					source.LastOpened = DateTime.Now;
-					return true;
-				}
-				catch (Exception e)
-				{
-					// TODO: Log & display this problem
-				}
-			}
-
-			logFile = null;
-			return false;
 		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)

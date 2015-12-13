@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -16,8 +15,6 @@ namespace Tailviewer.BusinessLogic
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly Task _readTask;
-		private readonly StreamReader _reader;
-		private readonly Stream _stream;
 
 		#endregion
 
@@ -33,30 +30,24 @@ namespace Tailviewer.BusinessLogic
 		#region Listeners
 
 		private readonly LogFileListenerCollection _listeners;
-		private readonly DataSource _dataSource;
+		private readonly string _fileName;
 
 		#endregion
 
-		private LogFile(DataSource dataSource, FileStream stream)
+		public LogFile(string fileName)
 		{
-			if (dataSource == null) throw new ArgumentNullException("dataSource");
-			if (stream == null) throw new ArgumentNullException("stream");
+			if (fileName == null) throw new ArgumentNullException("fileName");
 
-			_dataSource = dataSource;
-			_dataSource.LastWritten = File.GetLastWriteTime(dataSource.FullFileName);
-			_stream = stream;
-			_reader = new StreamReader(stream);
+			_fileName = fileName;
 			_endOfSectionHandle = new ManualResetEvent(false);
 
 			_entries = new List<string>();
 			_syncRoot = new object();
-
 			_cancellationTokenSource = new CancellationTokenSource();
 			_readTask = new Task(ReadFile,
-			                     _cancellationTokenSource.Token,
-			                     _cancellationTokenSource.Token,
-			                     TaskCreationOptions.LongRunning);
-
+									_cancellationTokenSource.Token,
+									_cancellationTokenSource.Token,
+									TaskCreationOptions.LongRunning);
 			_listeners = new LogFileListenerCollection();
 		}
 
@@ -100,7 +91,7 @@ namespace Tailviewer.BusinessLogic
 
 		public Size FileSize
 		{
-			get { return Size.FromBytes(_stream.Length); }
+			get { return Size.FromBytes(new FileInfo(_fileName).Length); }
 		}
 
 		public string GetEntry(int index)
@@ -120,8 +111,6 @@ namespace Tailviewer.BusinessLogic
 		{
 			_cancellationTokenSource.Cancel();
 			_readTask.Wait();
-			_stream.Dispose();
-			_reader.Dispose();
 		}
 
 		/// <summary>
@@ -152,24 +141,46 @@ namespace Tailviewer.BusinessLogic
 			var token = (CancellationToken)parameter;
 			int numberOfLinesRead = 0;
 
-			while (!token.IsCancellationRequested)
+			try
 			{
-				var line = _reader.ReadLine();
-				if (line == null)
+				using (var stream = new FileStream(_fileName,
+				                                   FileMode.Open,
+				                                   FileAccess.Read,
+				                                   FileShare.ReadWrite))
+				using (var reader = new StreamReader(stream))
 				{
-					_dataSource.LastWritten = File.GetLastWriteTime(_dataSource.FullFileName);
-					_listeners.OnRead(numberOfLinesRead);
-					_endOfSectionHandle.Set();
-					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
-				}
-				else
-				{
-					_endOfSectionHandle.Reset();
-					++numberOfLinesRead;
+					while (!token.IsCancellationRequested)
+					{
+						var line = reader.ReadLine();
+						if (line == null)
+						{
+							//_dataSource.LastWritten = File.GetLastWriteTime(_dataSource.FullFileName);
+							_listeners.OnRead(numberOfLinesRead);
+							_endOfSectionHandle.Set();
+							token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
+						}
+						else
+						{
+							_endOfSectionHandle.Reset();
+							++numberOfLinesRead;
 
-					DetermineDateTimeFormat(line);
-					Add(line, numberOfLinesRead);
+							DetermineDateTimeFormat(line);
+							Add(line, numberOfLinesRead);
+						}
+					}
 				}
+			}
+			catch (FileNotFoundException)
+			{
+
+			}
+			catch (DirectoryNotFoundException)
+			{
+
+			}
+			catch (Exception)
+			{
+				
 			}
 		}
 
@@ -211,31 +222,6 @@ namespace Tailviewer.BusinessLogic
 						}
 					}
 				}
-			}
-		}
-
-		public static LogFile FromFile(string fname)
-		{
-			return FromFile(new DataSource(new DataSourceSettings{File = fname}));
-		}
-
-		public static LogFile FromFile(DataSource dataSource)
-		{
-			FileStream stream = null;
-			try
-			{
-				stream = new FileStream(dataSource.FullFileName,
-				                        FileMode.Open,
-				                        FileAccess.Read,
-				                        FileShare.ReadWrite);
-				return new LogFile(dataSource, stream);
-			}
-			catch (Exception)
-			{
-				if (stream != null)
-					stream.Dispose();
-
-				throw;
 			}
 		}
 
