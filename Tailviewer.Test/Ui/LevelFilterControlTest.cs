@@ -25,6 +25,40 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[STAThread]
+		public void TestCtor()
+		{
+			var source = new DataSourceViewModel(new DataSource(new DataSourceSettings("Foobar")));
+			source.OtherFilter = true;
+			source.LevelsFilter = LevelFlags.All;
+
+			var control = new LevelFilterControl
+			{
+				DataSource = source
+			};
+			control.ShowOther.Should().BeFalse();
+			control.ShowDebug.Should().BeTrue();
+			control.ShowInfo.Should().BeTrue();
+			control.ShowWarning.Should().BeTrue();
+			control.ShowError.Should().BeTrue();
+			control.ShowFatal.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestChangeShowOther()
+		{
+			_control.DataSource.OtherFilter = true;
+			_control.ShowOther.Should().BeFalse();
+
+			_control.ShowOther = true;
+			_control.DataSource.OtherFilter.Should().BeFalse();
+
+			_control.ShowOther = false;
+			_control.DataSource.OtherFilter.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
 		public void TestChangeShowDebug()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;

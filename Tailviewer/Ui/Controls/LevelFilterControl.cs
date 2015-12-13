@@ -28,6 +28,10 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LevelFilterControl),
 			                            new PropertyMetadata(false, OnDebugChanged));
 
+		public static readonly DependencyProperty ShowOtherProperty =
+			DependencyProperty.Register("ShowOther", typeof(bool), typeof(LevelFilterControl),
+										new PropertyMetadata(false, OnShowOtherChanged));
+
 		public static readonly DependencyProperty DataSourceProperty =
 			DependencyProperty.Register("DataSource", typeof (DataSourceViewModel), typeof (LevelFilterControl),
 			                            new PropertyMetadata(null, OnDataSourceChanged));
@@ -42,6 +46,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (DataSourceViewModel) GetValue(DataSourceProperty); }
 			set { SetValue(DataSourceProperty, value); }
+		}
+
+		public bool ShowOther
+		{
+			get { return (bool)GetValue(ShowOtherProperty); }
+			set { SetValue(ShowOtherProperty, value); }
 		}
 
 		public bool ShowDebug
@@ -91,6 +101,7 @@ namespace Tailviewer.Ui.Controls
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 			}
 			OnLevelsChanged();
+			OnOtherFilterChanged();
 		}
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -100,7 +111,29 @@ namespace Tailviewer.Ui.Controls
 				case "LevelsFilter":
 					OnLevelsChanged();
 					break;
+
+				case "OtherFilter":
+					OnOtherFilterChanged();
+					break;
 			}
+		}
+
+		private void OnOtherFilterChanged()
+		{
+			ShowOther = !DataSource.OtherFilter;
+		}
+
+		private static void OnShowOtherChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LevelFilterControl)dependencyObject).OnShowOtherChanged((bool)args.NewValue);
+		}
+
+		private void OnShowOtherChanged(bool showOther)
+		{
+			if (DataSource == null)
+				return;
+
+			DataSource.OtherFilter = !showOther;
 		}
 
 		private static void OnFatalChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)

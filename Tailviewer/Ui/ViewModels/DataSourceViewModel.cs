@@ -17,6 +17,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly string _fileName;
 		private readonly string _folder;
 		private readonly ICommand _removeCommand;
+		private int _otherCount;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
@@ -47,6 +48,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_totalCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int OtherCount
+		{
+			get { return _otherCount; }
+			set
+			{
+				if (value == _otherCount)
+					return;
+
+				_otherCount = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -237,10 +251,24 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool OtherFilter
+		{
+			get { return _dataSource.OtherFilter; }
+			set
+			{
+				if (value == OtherFilter)
+					return;
+
+				_dataSource.OtherFilter = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void Update()
 		{
+			OtherCount = _dataSource.OtherCount;
 			DebugCount = _dataSource.DebugCount;
 			InfoCount = _dataSource.InfoCount;
 			WarningCount = _dataSource.WarningCount;

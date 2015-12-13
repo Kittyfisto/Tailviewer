@@ -8,6 +8,7 @@
     <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
     <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
     <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
+    <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
 
     <Style TargetType="{x:Type local:LevelFilterControl}">
         <Setter Property="Template">
@@ -32,6 +33,9 @@
                             </ToggleButton>
                             <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <TextBlock Text="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+                            </ToggleButton>
+                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowOther, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <TextBlock Text="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
                             </ToggleButton>
                         </StackPanel>
                         

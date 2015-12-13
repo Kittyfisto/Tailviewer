@@ -150,19 +150,22 @@ namespace Tailviewer.Ui.Controls
 			if (e.VerticalChange == 0.0)
 				return;
 
-			if (_scrollByUser)
+			if (DataSource != null)
 			{
-				if (e.VerticalChange > 0.0)
+				if (_scrollByUser)
 				{
-					double scrollerOffset = e.VerticalOffset + e.ViewportHeight;
-					if (Math.Abs(scrollerOffset - e.ExtentHeight) < 5.0)
+					if (e.VerticalChange > 0.0)
 					{
-						DataSource.FollowTail = true;
+						double scrollerOffset = e.VerticalOffset + e.ViewportHeight;
+						if (Math.Abs(scrollerOffset - e.ExtentHeight) < 5.0)
+						{
+							DataSource.FollowTail = true;
+						}
 					}
-				}
-				else
-				{
-					DataSource.FollowTail = false;
+					else
+					{
+						DataSource.FollowTail = false;
+					}
 				}
 			}
 			_scrollByUser = true;

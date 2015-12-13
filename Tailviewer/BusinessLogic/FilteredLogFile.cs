@@ -15,22 +15,24 @@ namespace Tailviewer.BusinessLogic
 
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
-		private readonly string _stringFilter;
-		private readonly LevelFlags _levelFilter;
 		private readonly List<int> _indices;
+		private readonly LevelFlags _levelFilter;
 		private readonly LogFileListenerCollection _listeners;
+		private readonly bool _otherFilter;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
-		private readonly ILogFile _source;
 		private readonly Task _readTask;
+		private readonly ILogFile _source;
+		private readonly string _stringFilter;
 		private LogFileSection _fullSection;
 
-		public FilteredLogFile(ILogFile source, string stringFilter, LevelFlags levelFilter)
+		public FilteredLogFile(ILogFile source, string stringFilter, LevelFlags levelFilter, bool otherFilter)
 		{
 			if (source == null) throw new ArgumentNullException("source");
 
 			_source = source;
 			_levelFilter = levelFilter;
 			_stringFilter = stringFilter ?? string.Empty;
+			_otherFilter = otherFilter;
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
 			_readTask = new Task(Filter,
@@ -47,15 +49,6 @@ namespace Tailviewer.BusinessLogic
 			_cancellationTokenSource.Cancel();
 			_readTask.Wait();
 			_readTask.Dispose();
-		}
-
-		public void Start(TimeSpan maximumWaitTime)
-		{
-			if (_readTask.Status == TaskStatus.Created)
-			{
-				_source.AddListener(this, maximumWaitTime, BatchSize);
-				_readTask.Start();
-			}
 		}
 
 		public void Wait()
@@ -105,7 +98,7 @@ namespace Tailviewer.BusinessLogic
 				{
 					int index = section.Index + i;
 					int sourceIndex = _indices[index];
-					var entry = _source.GetEntry(sourceIndex);
+					LogEntry entry = _source.GetEntry(sourceIndex);
 					dest[i] = entry;
 				}
 			}
@@ -123,6 +116,15 @@ namespace Tailviewer.BusinessLogic
 		public void OnLogFileModified(LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
+		}
+
+		public void Start(TimeSpan maximumWaitTime)
+		{
+			if (_readTask.Status == TaskStatus.Created)
+			{
+				_source.AddListener(this, maximumWaitTime, BatchSize);
+				_readTask.Start();
+			}
 		}
 
 		private void Filter(object parameter)
@@ -191,7 +193,7 @@ namespace Tailviewer.BusinessLogic
 			if ((entry.Level & _levelFilter) != 0)
 				return true;
 
-			if (entry.Level == LevelFlags.None)
+			if (entry.Level == LevelFlags.None && !_otherFilter)
 				return true;
 
 			return false;

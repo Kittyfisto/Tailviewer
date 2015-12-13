@@ -18,6 +18,7 @@ namespace Tailviewer.Test.BusinessLogic
 				source.StringFilter.Should().BeNull();
 				source.IsOpen.Should().BeFalse();
 				source.FollowTail.Should().BeFalse();
+				source.OtherFilter.Should().BeFalse();
 			}
 		}
 	}

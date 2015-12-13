@@ -72,11 +72,13 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCurrentLogFile()
 		{
 			var stringFilter = DataSource.StringFilter;
-			var levels = DataSource.LevelsFilter;
+			var levelFilter = DataSource.LevelsFilter;
+			var otherFilter = DataSource.OtherFilter;
+
 			ILogFile logFile;
-			if (!string.IsNullOrEmpty(stringFilter) || levels != LevelFlags.All)
+			if (!string.IsNullOrEmpty(stringFilter) || levelFilter != LevelFlags.All || otherFilter)
 			{
-				logFile = _fullLogFile.Filter(stringFilter, levels);
+				logFile = _fullLogFile.Filter(stringFilter, levelFilter, otherFilter);
 			}
 			else
 			{
@@ -175,6 +177,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				case "StringFilter":
 				case "LevelsFilter":
+				case "OtherFilter":
 					UpdateCurrentLogFile();
 					break;
 			}

@@ -24,18 +24,19 @@ namespace Tailviewer.BusinessLogic
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
-		private int _fatalCount;
-		private int _errorCount;
-		private int _warningCount;
-		private int _infoCount;
 		private int _debugCount;
+		private int _errorCount;
+		private int _fatalCount;
+		private int _infoCount;
+		private int _otherCount;
+		private int _warningCount;
 
 		#endregion
 
 		#region Listeners
 
-		private readonly LogFileListenerCollection _listeners;
 		private readonly string _fileName;
+		private readonly LogFileListenerCollection _listeners;
 		private DateTime _lastWritten;
 
 		#endregion
@@ -51,9 +52,9 @@ namespace Tailviewer.BusinessLogic
 			_syncRoot = new object();
 			_cancellationTokenSource = new CancellationTokenSource();
 			_readTask = new Task(ReadFile,
-									_cancellationTokenSource.Token,
-									_cancellationTokenSource.Token,
-									TaskCreationOptions.LongRunning);
+			                     _cancellationTokenSource.Token,
+			                     _cancellationTokenSource.Token,
+			                     TaskCreationOptions.LongRunning);
 			_listeners = new LogFileListenerCollection();
 		}
 
@@ -82,12 +83,37 @@ namespace Tailviewer.BusinessLogic
 			get { return _fatalCount; }
 		}
 
-		public void Start()
+		public Size FileSize
 		{
-			if (_readTask.Status == TaskStatus.Created)
+			get
 			{
-				_readTask.Start();
+				if (!File.Exists(_fileName))
+					return Size.Zero;
+
+				try
+				{
+					return Size.FromBytes(new FileInfo(_fileName).Length);
+				}
+				catch (Exception)
+				{
+					return Size.Zero;
+				}
 			}
+		}
+
+		public IEnumerable<LogEntry> Entries
+		{
+			get { return _entries; }
+		}
+
+		public DateTime LastWritten
+		{
+			get { return _lastWritten; }
+		}
+
+		public int OtherCount
+		{
+			get { return _otherCount; }
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -120,36 +146,12 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public Size FileSize
-		{
-			get
-			{
-				if (!File.Exists(_fileName))
-					return Size.Zero;
-
-				try
-				{
-					return Size.FromBytes(new FileInfo(_fileName).Length);
-				}
-				catch (Exception)
-				{
-					return Size.Zero;
-				}
-				
-			}
-		}
-
 		public LogEntry GetEntry(int index)
 		{
 			lock (_syncRoot)
 			{
 				return _entries[index];
 			}
-		}
-
-		public IEnumerable<LogEntry> Entries
-		{
-			get { return _entries; }
 		}
 
 		public void Dispose()
@@ -175,20 +177,20 @@ namespace Tailviewer.BusinessLogic
 
 		public int Count
 		{
-			get
-			{
-				return _entries.Count;
-			}
+			get { return _entries.Count; }
 		}
 
-		public DateTime LastWritten
+		public void Start()
 		{
-			get { return _lastWritten; }
+			if (_readTask.Status == TaskStatus.Created)
+			{
+				_readTask.Start();
+			}
 		}
 
 		private void ReadFile(object parameter)
 		{
-			var token = (CancellationToken)parameter;
+			var token = (CancellationToken) parameter;
 			int numberOfLinesRead = 0;
 			bool reachedEof = false;
 
@@ -204,7 +206,7 @@ namespace Tailviewer.BusinessLogic
 				{
 					while (!token.IsCancellationRequested)
 					{
-						var line = reader.ReadLine();
+						string line = reader.ReadLine();
 						if (line == null)
 						{
 							reachedEof = true;
@@ -216,6 +218,7 @@ namespace Tailviewer.BusinessLogic
 							{
 								stream.Position = 0;
 								numberOfLinesRead = 0;
+								_otherCount = 0;
 								_debugCount = 0;
 								_infoCount = 0;
 								_warningCount = 0;
@@ -236,7 +239,7 @@ namespace Tailviewer.BusinessLogic
 							++numberOfLinesRead;
 
 							DetermineDateTimeFormat(line);
-							var level = DetermineLevel(line);
+							LevelFlags level = DetermineLevel(line);
 							Add(line, level, numberOfLinesRead);
 						}
 					}
@@ -244,15 +247,12 @@ namespace Tailviewer.BusinessLogic
 			}
 			catch (FileNotFoundException)
 			{
-
 			}
 			catch (DirectoryNotFoundException)
 			{
-
 			}
 			catch (Exception)
 			{
-				
 			}
 		}
 
@@ -284,6 +284,12 @@ namespace Tailviewer.BusinessLogic
 				level |= LevelFlags.Fatal;
 				Interlocked.Increment(ref _fatalCount);
 			}
+
+			if (level == LevelFlags.None)
+			{
+				Interlocked.Increment(ref _otherCount);
+			}
+
 			return level;
 		}
 
@@ -335,12 +341,17 @@ namespace Tailviewer.BusinessLogic
 
 		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter)
 		{
-			return Filter(stringFilter, levelFilter, TimeSpan.FromMilliseconds(10));
+			return Filter(stringFilter, levelFilter, false);
 		}
 
-		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, TimeSpan maximumWaitTime)
+		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, bool otherFilter)
 		{
-			var file = new FilteredLogFile(this, stringFilter, levelFilter);
+			return Filter(stringFilter, levelFilter, otherFilter, TimeSpan.FromMilliseconds(10));
+		}
+
+		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, bool otherFilter, TimeSpan maximumWaitTime)
+		{
+			var file = new FilteredLogFile(this, stringFilter, levelFilter, otherFilter);
 			file.Start(maximumWaitTime);
 			return file;
 		}

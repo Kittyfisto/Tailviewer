@@ -21,6 +21,11 @@ namespace Tailviewer.BusinessLogic
 			_logFile.Start();
 		}
 
+		public int OtherCount
+		{
+			get { return _logFile.OtherCount; }
+		}
+
 		public int DebugCount
 		{
 			get { return _logFile.DebugCount; }
@@ -94,6 +99,12 @@ namespace Tailviewer.BusinessLogic
 		public Size FileSize
 		{
 			get { return _logFile.FileSize; }
+		}
+
+		public bool OtherFilter
+		{
+			get { return _settings.OtherFilter; }
+			set { _settings.OtherFilter = value; }
 		}
 
 		public void Dispose()

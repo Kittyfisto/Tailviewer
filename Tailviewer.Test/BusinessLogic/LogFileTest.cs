@@ -207,7 +207,7 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Wait();
 				file.Count.Should().Be(1);
 
-				using (var filtered = file.Filter("e", LevelFlags.All, TimeSpan.Zero))
+				using (var filtered = file.Filter("e", LevelFlags.All, false, TimeSpan.Zero))
 				{
 					filtered.Wait();
 					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
