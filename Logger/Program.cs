@@ -18,7 +18,7 @@ namespace Logger
 					for (int i = 0; i < 9; ++i)
 					{
 						Log.InfoFormat("Test");
-						Thread.Sleep(10);
+						//Thread.Sleep(10);
 					}
 					Log.WarnFormat("Shit");
 				}

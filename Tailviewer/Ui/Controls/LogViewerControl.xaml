@@ -93,7 +93,7 @@
                                     Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}, StringFormat=size: {0}}" />
                                 <TextBlock
                                     Margin="4"
-                                    Text="{Binding DataSource.LastWrittenAge, RelativeSource={RelativeSource TemplatedParent}, StringFormat=last written: {0}, Converter={StaticResource TimeSpanConverter}}" />
+                                    Text="{Binding DataSource.LastWrittenAge, RelativeSource={RelativeSource TemplatedParent}, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
                             </StackPanel>
                         </Border>
 

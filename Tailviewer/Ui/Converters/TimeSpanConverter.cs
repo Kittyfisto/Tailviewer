@@ -17,6 +17,7 @@ namespace Tailviewer.Ui.Converters
 			var oneWeek = TimeSpan.FromDays(7);
 			var oneDay = TimeSpan.FromDays(1);
 			var oneHour = TimeSpan.FromHours(1);
+			var oneMinute = TimeSpan.FromMinutes(1);
 			var oneSecond = TimeSpan.FromSeconds(1);
 
 			if (age > oneMonth)
@@ -27,6 +28,8 @@ namespace Tailviewer.Ui.Converters
 				return Format(age, oneDay, "day");
 			if (age > oneHour)
 				return Format(age, oneHour, "hour");
+			if (age > oneMinute)
+				return Format(age, oneMinute, "minute");
 
 			return Format(age, oneSecond, "second");
 		}

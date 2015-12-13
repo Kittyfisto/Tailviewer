@@ -107,6 +107,12 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _currentDataSourceLogView; }
 			private set
 			{
+				if (_currentDataSourceLogView == value)
+					return;
+
+				if (_currentDataSourceLogView != null)
+					_currentDataSourceLogView.Dispose();
+
 				_currentDataSourceLogView = value;
 				IsLogFileOpen = value != null;
 				EmitPropertyChanged();
