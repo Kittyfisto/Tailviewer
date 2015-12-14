@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using DataSource = Tailviewer.BusinessLogic.DataSource;
 using DataSources = Tailviewer.BusinessLogic.DataSources;

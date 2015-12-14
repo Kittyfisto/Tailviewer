@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
@@ -28,8 +29,15 @@ namespace Tailviewer.Test.Settings
 					IsOpen = true,
 					FollowTail = true,
 					StringFilter = "foobar",
-					LevelFilter = LevelFlags.Debug
+					LevelFilter = LevelFlags.Debug,
+					ActivatedQuickFilters =
+						{
+							Guid.NewGuid(),
+							Guid.NewGuid(),
+							Guid.NewGuid(),
+						}
 				});
+			var guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
 			settings.QuickFilters.Add(new QuickFilter
 				{
 					Value = "foobar",
@@ -52,6 +60,7 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].StringFilter.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
+			settings.DataSources[0].ActivatedQuickFilters.Should().Equal(guids);
 
 			settings.QuickFilters.Count.Should().Be(1);
 			settings.QuickFilters[0].Id.Should().Be(id);

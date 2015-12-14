@@ -1,5 +1,4 @@
 ﻿using System;
-using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -19,6 +18,22 @@ namespace Tailviewer.BusinessLogic
 			_settings = settings;
 			_logFile = new LogFile(settings.File);
 			_logFile.Start();
+		}
+
+		public void ActivateQuickFilter(Guid id)
+		{
+			// Should I add a sanity check here?
+			_settings.ActivatedQuickFilters.Add(id);
+		}
+
+		public bool DeactivateQuickFilter(Guid id)
+		{
+			return _settings.ActivatedQuickFilters.Remove(id);
+		}
+
+		public bool IsQuickFilterActive(Guid id)
+		{
+			return _settings.ActivatedQuickFilters.Contains(id);
 		}
 
 		public int OtherCount
@@ -103,8 +118,8 @@ namespace Tailviewer.BusinessLogic
 
 		public bool OtherFilter
 		{
-			get { return _settings.OtherFilter; }
-			set { _settings.OtherFilter = value; }
+			get { return _settings.ExcludeOther; }
+			set { _settings.ExcludeOther = value; }
 		}
 
 		public bool ColorByLevel

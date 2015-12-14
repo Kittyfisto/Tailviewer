@@ -50,12 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="BusinessLogic\AndFilterChain.cs" />
+    <Compile Include="BusinessLogic\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filter.cs" />
     <Compile Include="BusinessLogic\IFilter.cs" />
     <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogEntry.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />
+    <Compile Include="BusinessLogic\QuickFilters.cs" />
     <Compile Include="BusinessLogic\SubstringFilter.cs" />
     <Compile Include="Settings\DataSource.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
@@ -64,6 +65,8 @@
     <Compile Include="Settings\QuickFilter.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
+    <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
+    <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />

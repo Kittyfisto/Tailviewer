@@ -65,6 +65,7 @@
     <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
+    <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Ui\DataSourcesControlTest.cs" />
     <Compile Include="Ui\DataSourceViewModelTest.cs" />
     <Compile Include="Ui\HighlightableTextBlockTest.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
     <Compile Include="ManualDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ui\QuickFilterViewModelTest.cs" />
     <Compile Include="Ui\RemoveButtonTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Settings
@@ -10,22 +12,26 @@ namespace Tailviewer.Settings
 		public bool IsOpen;
 		public LevelFlags LevelFilter;
 		public string StringFilter;
-		public bool OtherFilter;
+		public bool ExcludeOther;
 		public bool ColorByLevel;
+		private readonly  List<Guid> _activatedQuickFilters;
+
+		public List<Guid> ActivatedQuickFilters
+		{
+			get { return _activatedQuickFilters; }
+		}
 
 		public DataSource()
 		{
+			_activatedQuickFilters = new List<Guid>();
 			LevelFilter = LevelFlags.All;
-			OtherFilter = false;
 			ColorByLevel = true;
 		}
 
 		public DataSource(string file)
+			: this()
 		{
 			File = file;
-			LevelFilter = LevelFlags.All;
-			OtherFilter = false;
-			ColorByLevel = true;
 		}
 
 
@@ -36,8 +42,17 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
-			writer.WriteAttributeBool("otherfilter", OtherFilter);
+			writer.WriteAttributeBool("otherfilter", ExcludeOther);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
+
+			writer.WriteStartElement("activatedquickfilters");
+			foreach (var guid in ActivatedQuickFilters)
+			{
+				writer.WriteStartElement("quickfilter");
+				writer.WriteAttributeGuid("id", guid);
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
 		}
 
 		public void Restore(XmlReader reader)
@@ -69,7 +84,7 @@ namespace Tailviewer.Settings
 						break;
 
 					case "otherfilter":
-						OtherFilter = reader.ValueAsBool();
+						ExcludeOther = reader.ValueAsBool();
 						break;
 
 					case "colorbylevel":
@@ -77,6 +92,49 @@ namespace Tailviewer.Settings
 						break;
 				}
 			}
+
+			reader.MoveToContent();
+
+			var subtree = reader.ReadSubtree();
+			while (subtree.Read())
+			{
+				switch (subtree.Name)
+				{
+					case "activatedquickfilters":
+						var filters = ReadActivatedQuickFilters(reader);
+						ActivatedQuickFilters.Clear();
+						ActivatedQuickFilters.AddRange(filters);
+						break;
+				}
+			}
+		}
+
+		private IEnumerable<Guid> ReadActivatedQuickFilters(XmlReader reader)
+		{
+			var guids = new List<Guid>();
+			var subtree = reader.ReadSubtree();
+
+			while (subtree.Read())
+			{
+				switch (subtree.Name)
+				{
+					case "quickfilter":
+						int count = reader.AttributeCount;
+						for (int i = 0; i < count; ++i)
+						{
+							reader.MoveToAttribute(i);
+							switch (reader.Name)
+							{
+								case "id":
+									guids.Add(reader.ReadContentAsGuid());
+									break;
+							}
+						}
+						break;
+				}
+			}
+
+			return guids;
 		}
 	}
 }

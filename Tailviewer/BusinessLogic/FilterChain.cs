@@ -8,12 +8,12 @@ namespace Tailviewer.BusinessLogic
 	/// Combines multiple <see cref="IFilter"/>s into one.
 	/// A <see cref="LogEntry"/> passes if it passes *all* individual filters.
 	/// </summary>
-	internal sealed class AndFilterChain
+	internal sealed class FilterChain
 		: IFilter
 	{
 		private readonly IFilter[] _filters;
 
-		public AndFilterChain(IEnumerable<IFilter> filters)
+		public FilterChain(IEnumerable<IFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException("filters");
 

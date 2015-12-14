@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic
 			if (filters.Count == 1)
 				return filters[0];
 
-			return new AndFilterChain(filters);
+			return new FilterChain(filters);
 		}
 	}
 }
