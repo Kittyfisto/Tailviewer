@@ -4,6 +4,9 @@
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
     <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
+    <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
+    <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
+    <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
     
     <Style TargetType="{x:Type local:LogViewerControl}">
         <Setter Property="Template">
@@ -20,6 +23,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                                 <ColumnDefinition MinWidth="200" />
                             </Grid.ColumnDefinitions>
@@ -32,8 +36,18 @@
                                 VerticalAlignment="Center"
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <local:LevelFilterControl
+                            <ToggleButton
+                                Margin="8"
+                                Padding="4"
                                 Grid.Column="1"
+                                x:Name="PART_ColorByLevel"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Color by level"
+                                />
+
+                            <local:LevelFilterControl
+                                Grid.Column="2"
                                 VerticalAlignment="Center"
                                 Margin="8"
                                 DataSource="{Binding DataSource, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -41,7 +55,7 @@
                             <local:FilterTextBox
                                 x:Name="PART_StringFilter"
                                 Margin="8"
-                                Grid.Column="3"
+                                Grid.Column="4"
                                 FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                 Watermark="Search (Ctrl+E)" />
                         </Grid>
@@ -75,7 +89,36 @@
                                                 <Condition Property="IsMouseOver" Value="True" />
                                                 <Condition Property="IsSelected" Value="False" />
                                             </MultiTrigger.Conditions>
-                                            <Setter Property="Background" Value="#F2F2F2" />
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource LevelToHoveredBrushConverter}">
+                                                        <Binding Path="Level" Mode="OneWay" />
+                                                        <Binding Path="IsChecked" ElementName="PART_ColorByLevel"/>
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </MultiTrigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="False" />
+                                                <Condition Property="IsSelected" Value="False" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource LevelToBackgroundBrushConverter}">
+                                                        <Binding Path="Level" Mode="OneWay" />
+                                                        <Binding Path="IsChecked" Mode="OneWay" ElementName="PART_ColorByLevel" />
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="TextElement.Foreground">
+                                                <Setter.Value>
+                                                    <MultiBinding Converter="{StaticResource LevelToForegroundBrushConverter}">
+                                                        <Binding Path="Level" Mode="OneWay" />
+                                                        <Binding Path="IsChecked" Mode="OneWay" ElementName="PART_ColorByLevel" />
+                                                    </MultiBinding>
+                                                </Setter.Value>
+                                            </Setter>
                                         </MultiTrigger>
                                     </Style.Triggers>
                                 </Style>

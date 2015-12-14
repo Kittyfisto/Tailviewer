@@ -107,6 +107,12 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.OtherFilter = value; }
 		}
 
+		public bool ColorByLevel
+		{
+			get { return _settings.ColorByLevel; }
+			set { _settings.ColorByLevel = value; }
+		}
+
 		public void Dispose()
 		{
 			_logFile.Dispose();

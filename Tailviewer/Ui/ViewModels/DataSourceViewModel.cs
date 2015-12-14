@@ -174,6 +174,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ColorByLevel
+		{
+			get { return _dataSource.ColorByLevel; }
+			set
+			{
+				if (value == ColorByLevel)
+					return;
+
+				_dataSource.ColorByLevel = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public string StringFilter
 		{
 			get { return _dataSource.StringFilter; }

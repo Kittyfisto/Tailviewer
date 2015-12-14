@@ -6,6 +6,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly int _index;
 		private readonly string _message;
+		private readonly LevelFlags _level;
 
 		public LogEntryViewModel(string message)
 		{
@@ -16,6 +17,12 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_index = index;
 			_message = entry.Message;
+			_level = entry.Level;
+		}
+
+		public LevelFlags Level
+		{
+			get { return _level; }
 		}
 
 		public int Index

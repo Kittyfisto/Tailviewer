@@ -12,11 +12,13 @@ namespace Tailviewer.Settings
 		public LevelFlags LevelFilter;
 		public string StringFilter;
 		public bool OtherFilter;
+		public bool ColorByLevel;
 
 		public DataSourceSettings()
 		{
 			LevelFilter = LevelFlags.All;
 			OtherFilter = false;
+			ColorByLevel = true;
 		}
 
 		public DataSourceSettings(string file)
@@ -24,7 +26,9 @@ namespace Tailviewer.Settings
 			File = file;
 			LevelFilter = LevelFlags.All;
 			OtherFilter = false;
+			ColorByLevel = true;
 		}
+
 
 		public void Save(XmlWriter writer)
 		{
@@ -34,6 +38,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeString("levelfilter", LevelFilter.ToString());
 			writer.WriteAttributeString("otherfilter", OtherFilter ? "true" : "false");
+			writer.WriteAttributeString("colorbylevel", ColorByLevel ? "true" : "false");
 		}
 
 		public void Restore(XmlReader reader)
@@ -66,6 +71,10 @@ namespace Tailviewer.Settings
 
 					case "otherfilter":
 						OtherFilter = reader.Value == "true";
+						break;
+
+					case "colorbylevel":
+						ColorByLevel = reader.Value == "true";
 						break;
 				}
 			}

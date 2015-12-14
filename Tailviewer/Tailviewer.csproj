@@ -55,6 +55,8 @@
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources.cs" />
+    <Compile Include="Ui\Converters\BrushType.cs" />
+    <Compile Include="Ui\Converters\LevelToBrushConverter.cs" />
     <Compile Include="Ui\DelegateCommand.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSourcesSettings.cs" />

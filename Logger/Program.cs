@@ -13,7 +13,13 @@ namespace Logger
 		{
 			using (var logger = new Tailviewer.Test.Logger("Slow.log"))
 			{
-				while (true)
+				Log.DebugFormat("We");
+				Log.InfoFormat("are");
+				Log.WarnFormat("the");
+				Log.ErrorFormat("borg");
+				Log.FatalFormat("!");
+
+				/*while (true)
 				{
 					for (int i = 0; i < 9; ++i)
 					{
@@ -21,7 +27,7 @@ namespace Logger
 						//Thread.Sleep(10);
 					}
 					Log.WarnFormat("Shit");
-				}
+				}*/
 			}
 		}
 	}
