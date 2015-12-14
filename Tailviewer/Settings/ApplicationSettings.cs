@@ -12,7 +12,8 @@ namespace Tailviewer.Settings
 		private readonly string _fileName;
 
 		private readonly WindowSettings _mainWindow;
-		private readonly DataSourcesSettings _dataSources;
+		private readonly DataSources _dataSources;
+		private readonly QuickFilters _quickFilters;
 
 		static ApplicationSettings()
 		{
@@ -26,7 +27,8 @@ namespace Tailviewer.Settings
 			_fileName += ".xml";
 
 			_mainWindow = new WindowSettings();
-			_dataSources = new DataSourcesSettings();
+			_dataSources = new DataSources();
+			_quickFilters = new QuickFilters();
 		}
 
 		public WindowSettings MainWindow
@@ -34,9 +36,14 @@ namespace Tailviewer.Settings
 			get { return _mainWindow; }
 		}
 
-		public DataSourcesSettings DataSources
+		public DataSources DataSources
 		{
 			get { return _dataSources; }
+		}
+
+		public QuickFilters QuickFilters
+		{
+			get { return _quickFilters; }
 		}
 
 		public bool Save()
@@ -67,6 +74,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("datasources");
 						_dataSources.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("quickfilters");
+						_quickFilters.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -108,6 +119,10 @@ namespace Tailviewer.Settings
 
 							case "datasources":
 								_dataSources.Restore(reader);
+								break;
+
+							case "quickfilters":
+								_quickFilters.Restore(reader);
 								break;
 						}
 					}

@@ -11,11 +11,11 @@ namespace Tailviewer.BusinessLogic
 		: IEnumerable<DataSource>
 		, IDisposable
 	{
-		private readonly DataSourcesSettings _settings;
+		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
 		private readonly List<DataSource> _dataSources;
 
-		public DataSources(DataSourcesSettings settings)
+		public DataSources(Settings.DataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 
@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public DataSource Add(DataSourceSettings settings)
+		public DataSource Add(Settings.DataSource settings)
 		{
 			lock (_syncRoot)
 			{
@@ -61,7 +61,7 @@ namespace Tailviewer.BusinessLogic
 					_dataSources.FirstOrDefault(x => string.Equals(x.FullFileName, key, StringComparison.InvariantCultureIgnoreCase));
 				if (dataSource == null)
 				{
-					var settings = new DataSourceSettings(fullFileName);
+					var settings = new Settings.DataSource(fullFileName);
 					_settings.Add(settings);
 					dataSource = Add(settings);
 				}

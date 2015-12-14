@@ -3,19 +3,19 @@ using System.Xml;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class DataSourcesSettings
-		: List<DataSourceSettings>
+	internal sealed class DataSources
+		: List<DataSource>
 	{
 		public void Restore(XmlReader reader)
 		{
-			var dataSources = new List<DataSourceSettings>();
+			var dataSources = new List<DataSource>();
 			var subtree = reader.ReadSubtree();
 			while (subtree.Read())
 			{
 				switch (subtree.Name)
 				{
 					case "datasource":
-						var dataSource = new DataSourceSettings();
+						var dataSource = new DataSource();
 						dataSource.Restore(subtree);
 						dataSources.Add(dataSource);
 						break;

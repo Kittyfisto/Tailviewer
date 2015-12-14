@@ -351,7 +351,9 @@ namespace Tailviewer.BusinessLogic
 
 		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, bool otherFilter, TimeSpan maximumWaitTime)
 		{
-			var file = new FilteredLogFile(this, stringFilter, levelFilter, otherFilter);
+			var filter = BusinessLogic.Filter.CreateFilter(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter,
+			                                               otherFilter);
+			var file = new FilteredLogFile(this, filter);
 			file.Start(maximumWaitTime);
 			return file;
 		}

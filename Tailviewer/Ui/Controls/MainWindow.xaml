@@ -27,71 +27,65 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
 
-        <controls:AlertControl
-            Grid.RowSpan="2"
-            Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-            ErrorMessage="{Binding ErrorMessage}" />
-
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-        </Grid>
-
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-
-            <controls:DataSourcesControl
+        <controls:DataSourcesControl
                 Width="200"
                 x:Name="PART_DataSources"
                 ItemsSource="{Binding RecentFiles}"
                 SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
-            <Grid Grid.Column="1"
+        <Grid Grid.Column="1"
                   Width="1"
                   Background="#E5E5E5" />
 
-            <Grid Grid.Column="2">
-                <Grid Width="200"
+        <Grid Grid.Column="2">
+            <Grid Width="200"
                       Height="150"
                       VerticalAlignment="Center"
                       HorizontalAlignment="Center">
-                    <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
+                <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
                                TextWrapping="Wrap"
                                FontSize="16"
                                Margin="10"
                                Foreground="DodgerBlue"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
-                    <Rectangle StrokeDashArray="4 4"
+                <Rectangle StrokeDashArray="4 4"
                                Stroke="DodgerBlue"
                                StrokeThickness="2"
                                RadiusX="10"
                                RadiusY="10" />
-                </Grid>
+            </Grid>
 
-                <Grid
-                    Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                    <controls:LogViewerControl
+            <controls:LogViewerControl
+                        Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                         x:Name="PART_LogFileView"
                         ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
                         LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
                         DataSource="{Binding CurrentDataSource}" />
-                </Grid>
-            </Grid>
         </Grid>
 
+        <Grid Grid.Column="3"
+                  Width="1"
+                  Background="#E5E5E5" />
+
+        <controls:QuickFilterControl
+                        Grid.Column="4"
+                Width="200"
+                />
+        
+        <controls:AlertControl
+            Grid.ColumnSpan="5"
+            Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+            ErrorMessage="{Binding ErrorMessage}" />
     </Grid>
+
 </Window>

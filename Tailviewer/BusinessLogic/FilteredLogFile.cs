@@ -1,38 +1,34 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tailviewer.BusinessLogic
 {
-	public sealed class FilteredLogFile
+	internal sealed class FilteredLogFile
 		: ILogFile
 		  , ILogFileListener
 	{
 		private const int BatchSize = 1000;
 
+		private readonly IFilter _filter;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly List<int> _indices;
-		private readonly LevelFlags _levelFilter;
 		private readonly LogFileListenerCollection _listeners;
-		private readonly bool _otherFilter;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly Task _readTask;
 		private readonly ILogFile _source;
-		private readonly string _stringFilter;
 		private LogFileSection _fullSection;
 
-		public FilteredLogFile(ILogFile source, string stringFilter, LevelFlags levelFilter, bool otherFilter)
+		public FilteredLogFile(ILogFile source, IFilter filter)
 		{
 			if (source == null) throw new ArgumentNullException("source");
+			if (filter == null) throw new ArgumentNullException("filter");
 
 			_source = source;
-			_levelFilter = levelFilter;
-			_stringFilter = stringFilter ?? string.Empty;
-			_otherFilter = otherFilter;
+			_filter = filter;
 			_cancellationTokenSource = new CancellationTokenSource();
 			_endOfSectionHandle = new ManualResetEvent(false);
 			_readTask = new Task(Filter,
@@ -170,7 +166,7 @@ namespace Tailviewer.BusinessLogic
 					for (int i = 0; i < nextCount; ++i)
 					{
 						LogEntry entry = entries[i];
-						if (PassesFilter(entry))
+						if (_filter.PassesFilter(entry))
 						{
 							int sourceIndex = nextSection.Index + i;
 							_indices.Add(sourceIndex);
@@ -181,22 +177,6 @@ namespace Tailviewer.BusinessLogic
 					currentSourceIndex += nextCount;
 				}
 			}
-		}
-
-		[Pure]
-		private bool PassesFilter(LogEntry entry)
-		{
-			int idx = entry.Message.IndexOf(_stringFilter, StringComparison.InvariantCultureIgnoreCase);
-			if (idx == -1)
-				return false;
-
-			if ((entry.Level & _levelFilter) != 0)
-				return true;
-
-			if (entry.Level == LevelFlags.None && !_otherFilter)
-				return true;
-
-			return false;
 		}
 	}
 }

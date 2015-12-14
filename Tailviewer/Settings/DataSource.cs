@@ -1,10 +1,9 @@
-﻿using System;
-using System.Xml;
+﻿using System.Xml;
 using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class DataSourceSettings
+	internal sealed class DataSource
 	{
 		public string File;
 		public bool FollowTail;
@@ -14,14 +13,14 @@ namespace Tailviewer.Settings
 		public bool OtherFilter;
 		public bool ColorByLevel;
 
-		public DataSourceSettings()
+		public DataSource()
 		{
 			LevelFilter = LevelFlags.All;
 			OtherFilter = false;
 			ColorByLevel = true;
 		}
 
-		public DataSourceSettings(string file)
+		public DataSource(string file)
 		{
 			File = file;
 			LevelFilter = LevelFlags.All;
@@ -33,12 +32,12 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("file", File);
-			writer.WriteAttributeString("isopen", IsOpen ? "true" : "false");
-			writer.WriteAttributeString("followtail", FollowTail ? "true" : "false");
+			writer.WriteAttributeBool("isopen", IsOpen);
+			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeString("stringfilter", StringFilter);
-			writer.WriteAttributeString("levelfilter", LevelFilter.ToString());
-			writer.WriteAttributeString("otherfilter", OtherFilter ? "true" : "false");
-			writer.WriteAttributeString("colorbylevel", ColorByLevel ? "true" : "false");
+			writer.WriteAttributeEnum("levelfilter", LevelFilter);
+			writer.WriteAttributeBool("otherfilter", OtherFilter);
+			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 		}
 
 		public void Restore(XmlReader reader)
@@ -54,11 +53,11 @@ namespace Tailviewer.Settings
 						break;
 
 					case "isopen":
-						IsOpen = reader.Value == "true";
+						IsOpen = reader.ValueAsBool();
 						break;
 
 					case "followtail":
-						FollowTail = reader.Value == "true";
+						FollowTail = reader.ValueAsBool();
 						break;
 
 					case "stringfilter":
@@ -66,15 +65,15 @@ namespace Tailviewer.Settings
 						break;
 
 					case "levelfilter":
-						LevelFilter = (LevelFlags) Enum.Parse(typeof (LevelFlags), reader.Value);
+						LevelFilter = reader.ReadContentAsEnum<LevelFlags>();
 						break;
 
 					case "otherfilter":
-						OtherFilter = reader.Value == "true";
+						OtherFilter = reader.ValueAsBool();
 						break;
 
 					case "colorbylevel":
-						ColorByLevel = reader.Value == "true";
+						ColorByLevel = reader.ValueAsBool();
 						break;
 				}
 			}

@@ -9,5 +9,8 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LevelFilterControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogViewerControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/RemoveButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterControl.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+
 </ResourceDictionary>

@@ -50,16 +50,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="BusinessLogic\AndFilterChain.cs" />
+    <Compile Include="BusinessLogic\Filter.cs" />
+    <Compile Include="BusinessLogic\IFilter.cs" />
+    <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogEntry.cs" />
-    <Compile Include="Settings\DataSourceSettings.cs" />
+    <Compile Include="BusinessLogic\QuickFilter.cs" />
+    <Compile Include="BusinessLogic\SubstringFilter.cs" />
+    <Compile Include="Settings\DataSource.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources.cs" />
+    <Compile Include="Settings\QuickFilter.cs" />
+    <Compile Include="Settings\QuickFilters.cs" />
+    <Compile Include="Settings\QuickFilterType.cs" />
+    <Compile Include="XmlExtensions.cs" />
+    <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Ui\Converters\LevelToBrushConverter.cs" />
     <Compile Include="Ui\DelegateCommand.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
-    <Compile Include="Settings\DataSourcesSettings.cs" />
+    <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Controls\LevelFilterControl.cs" />
@@ -97,6 +108,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\FilterTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilterControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

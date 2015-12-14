@@ -5,6 +5,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
+using DataSource = Tailviewer.Settings.DataSource;
+using DataSources = Tailviewer.Settings.DataSources;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -14,11 +16,11 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCtor()
 		{
-			var settings = new DataSourcesSettings
+			var settings = new DataSources
 				{
-					new DataSourceSettings(@"E:\Code\test.log")
+					new DataSource(@"E:\Code\test.log")
 				};
-			using (var dataSources = new DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
 			{
 				dataSources.Count.Should().Be(1);
 				var dataSource = dataSources.First();
@@ -32,8 +34,8 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestAdd()
 		{
-			var settings = new DataSourcesSettings();
-			using (var dataSources = new DataSources(settings))
+			var settings = new DataSources();
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
 			{
 				var source = dataSources.Add(@"E:\Code\test.log");
 				source.Should().NotBeNull();
@@ -48,8 +50,8 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestRemove()
 		{
-			var settings = new DataSourcesSettings();
-			using (var dataSources = new DataSources(settings))
+			var settings = new DataSources();
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
 			{
 				var source1 = dataSources.Add(@"E:\Code\test1.log");
 				var source2 = dataSources.Add(@"E:\Code\test2.log");

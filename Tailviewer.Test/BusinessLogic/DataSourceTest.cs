@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using DataSource = Tailviewer.Settings.DataSource;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -11,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCtor()
 		{
-			using (var source = new DataSource(new DataSourceSettings(@"E:\somelogfile.txt")))
+			using (var source = new Tailviewer.BusinessLogic.DataSource(new DataSource(@"E:\somelogfile.txt")))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);

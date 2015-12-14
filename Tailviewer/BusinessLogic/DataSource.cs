@@ -7,12 +7,12 @@ namespace Tailviewer.BusinessLogic
 		: IDisposable
 	{
 		private readonly LogFile _logFile;
-		private readonly DataSourceSettings _settings;
+		private readonly Settings.DataSource _settings;
 
 		public DateTime LastOpened;
 		public DateTime LastWritten { get { return _logFile.LastWritten; } }
 
-		public DataSource(DataSourceSettings settings)
+		public DataSource(Settings.DataSource settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 
@@ -86,7 +86,7 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.LevelFilter = value; }
 		}
 
-		internal DataSourceSettings Settings
+		internal Settings.DataSource Settings
 		{
 			get { return _settings; }
 		}

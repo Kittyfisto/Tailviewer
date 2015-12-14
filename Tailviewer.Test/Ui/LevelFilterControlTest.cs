@@ -5,6 +5,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
+using DataSource = Tailviewer.Settings.DataSource;
 
 namespace Tailviewer.Test.Ui
 {
@@ -19,7 +20,7 @@ namespace Tailviewer.Test.Ui
 		{
 			_control = new LevelFilterControl
 				{
-					DataSource = new DataSourceViewModel(new DataSource(new DataSourceSettings("Foobar")))
+					DataSource = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")))
 				};
 		}
 
@@ -27,7 +28,7 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestCtor()
 		{
-			var source = new DataSourceViewModel(new DataSource(new DataSourceSettings("Foobar")));
+			var source = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")));
 			source.OtherFilter = true;
 			source.LevelsFilter = LevelFlags.All;
 

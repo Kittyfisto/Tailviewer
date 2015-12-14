@@ -5,6 +5,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using Tailviewer.Test.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
+using DataSource = Tailviewer.Settings.DataSource;
 
 namespace Tailviewer.Test.Ui
 {
@@ -24,7 +25,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestFilter1()
 		{
-			using (var dataSource = new DataSource(new DataSourceSettings(LogFileTest.File20Mb)))
+			using (var dataSource = new Tailviewer.BusinessLogic.DataSource(new DataSource(LogFileTest.File20Mb)))
 			{
 				var dataSourceModel = new DataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _dispatcher);

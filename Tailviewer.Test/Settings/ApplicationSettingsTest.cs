@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using DataSource = Tailviewer.Settings.DataSource;
+using QuickFilter = Tailviewer.Settings.QuickFilter;
 
 namespace Tailviewer.Test.Settings
 {
@@ -20,13 +23,20 @@ namespace Tailviewer.Test.Settings
 			settings.MainWindow.Width = 3;
 			settings.MainWindow.Height = 4;
 			settings.MainWindow.State = WindowState.Maximized;
-			settings.DataSources.Add(new DataSourceSettings(@"SharpRemote.Host.1600.log")
+			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1600.log")
 				{
 					IsOpen = true,
 					FollowTail = true,
 					StringFilter = "foobar",
 					LevelFilter = LevelFlags.Debug
 				});
+			settings.QuickFilters.Add(new QuickFilter
+				{
+					Value = "foobar",
+					Comparison = StringComparison.CurrentCultureIgnoreCase,
+					Type = QuickFilterType.RegexpFilter
+				});
+			var id = settings.QuickFilters[0].Id;
 			settings.Save(fileName).Should().BeTrue();
 
 			settings = new ApplicationSettings();
@@ -42,6 +52,12 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].StringFilter.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
+
+			settings.QuickFilters.Count.Should().Be(1);
+			settings.QuickFilters[0].Id.Should().Be(id);
+			settings.QuickFilters[0].Value.Should().Be("foobar");
+			settings.QuickFilters[0].Comparison.Should().Be(StringComparison.CurrentCultureIgnoreCase);
+			settings.QuickFilters[0].Type.Should().Be(QuickFilterType.RegexpFilter);
 		}
 	}
 }

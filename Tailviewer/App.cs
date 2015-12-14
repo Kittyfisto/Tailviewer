@@ -7,6 +7,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
+using DataSources = Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer
 {
