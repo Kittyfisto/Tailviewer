@@ -64,7 +64,7 @@
                                                     Grid.Column="1"
                                                     Height="26"
                                                     FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                    Watermark="Filter log file(s)" />
+                                                    Watermark="Filter log file" />
 
                                                 <local:RemoveButton
                                                     x:Name="PART_RemoveButton"

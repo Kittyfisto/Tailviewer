@@ -20,7 +20,7 @@ namespace Tailviewer
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
-			var settings = new ApplicationSettings();
+			var settings = ApplicationSettings.Create();
 			settings.Restore();
 			using (var dataSources = new DataSources(settings.DataSources))
 			{

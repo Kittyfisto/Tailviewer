@@ -17,12 +17,12 @@ namespace Tailviewer.Test.Ui
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new ApplicationSettings();
+			_settings = new ApplicationSettings("addwa");
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 		}
 
 		[Test]
-		public void TestCtor()
+		public void TestCtor1()
 		{
 			_quickFilters.Add().Value = "foo";
 			_quickFilters.Add().Value = "bar";
@@ -35,6 +35,20 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestCtor2()
+		{
+			var filter1 = _quickFilters.Add();
+			var dataSource = new DataSource(new Tailviewer.Settings.DataSource("daw"));
+			dataSource.ActivateQuickFilter(filter1.Id);
+
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			int changed = 0;
+			model.OnFiltersChanged += () => ++changed;
+			model.CurrentDataSource = new DataSourceViewModel(dataSource);
+			changed.Should().Be(1, "Because changing the current data source MUST apply ");
+		}
+
+		[Test]
 		public void TestAdd()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
@@ -42,6 +56,13 @@ namespace Tailviewer.Test.Ui
 			model.CurrentDataSource = new DataSourceViewModel(dataSource);
 			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
+		}
+
+		[Test]
+		public void TestCreateFilterChain()
+		{
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			model.CreateFilterChain().Should().BeNull();
 		}
 
 		[Test]

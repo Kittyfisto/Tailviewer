@@ -48,7 +48,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var view = _currentDataSourceLogView;
 			if (view != null)
-				view.UpdateFilterChain(_quickFilters.CreateFilterChain());
+				view.QuickFilterChain = _quickFilters.CreateFilterChain();
 		}
 
 		public bool HasError
@@ -115,7 +115,15 @@ namespace Tailviewer.Ui.ViewModels
 					_currentDataSourceLogView.Dispose();
 
 				_currentDataSourceLogView = value;
-				IsLogFileOpen = value != null;
+				if (value != null)
+				{
+					value.QuickFilterChain = _quickFilters.CreateFilterChain();
+					IsLogFileOpen = true;
+				}
+				else
+				{
+					IsLogFileOpen = false;
+				}
 				EmitPropertyChanged();
 			}
 		}

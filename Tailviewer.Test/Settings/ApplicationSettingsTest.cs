@@ -18,7 +18,7 @@ namespace Tailviewer.Test.Settings
 		public void TestStoreRestore()
 		{
 			var fileName = Path.GetTempFileName();
-			var settings = new ApplicationSettings();
+			var settings = new ApplicationSettings("awdawddaw");
 			settings.MainWindow.Left = 1;
 			settings.MainWindow.Top = 2;
 			settings.MainWindow.Width = 3;
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Settings
 			var id = settings.QuickFilters[0].Id;
 			settings.Save(fileName).Should().BeTrue();
 
-			settings = new ApplicationSettings();
+			settings = new ApplicationSettings("adwaaw");
 			settings.Restore(fileName);
 			settings.MainWindow.Left.Should().Be(1);
 			settings.MainWindow.Top.Should().Be(2);

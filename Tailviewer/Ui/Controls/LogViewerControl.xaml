@@ -57,7 +57,7 @@
                                 Margin="8"
                                 Grid.Column="4"
                                 FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Search (Ctrl+E)" />
+                                Watermark="Filter log file (Ctrl+E)" />
                         </Grid>
 
                         <ListView

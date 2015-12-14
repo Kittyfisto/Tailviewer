@@ -73,6 +73,10 @@ namespace Tailviewer.Ui.ViewModels
 				if (filter != null)
 					filters.Add(filter);
 			}
+
+			if (filters.Count == 0)
+				return null;
+
 			return filters;
 		}
 

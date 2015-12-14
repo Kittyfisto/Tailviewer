@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourceViewModel _dataSource;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
-		private IEnumerable<IFilter> _quickFilters;
+		private IEnumerable<IFilter> _quickFilterChain;
 
 		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
 		{
@@ -77,7 +77,7 @@ namespace Tailviewer.Ui.ViewModels
 			var otherFilter = DataSource.OtherFilter;
 
 			ILogFile logFile;
-			var filter = Filter.Create(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter, otherFilter, _quickFilters);
+			var filter = Filter.Create(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter, otherFilter, _quickFilterChain);
 			if (filter != null)
 			{
 				logFile = _fullLogFile.AsFiltered(filter);
@@ -111,6 +111,22 @@ namespace Tailviewer.Ui.ViewModels
 		public DataSourceViewModel DataSource
 		{
 			get { return _dataSource; }
+		}
+
+		/// <summary>
+		/// The list of filters as produced by the "quick filter" panel.
+		/// </summary>
+		public IEnumerable<IFilter> QuickFilterChain
+		{
+			get { return _quickFilterChain; }
+			set
+			{
+				if (value == _quickFilterChain)
+					return;
+
+				_quickFilterChain = value;
+				UpdateCurrentLogFile();
+			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -183,12 +199,6 @@ namespace Tailviewer.Ui.ViewModels
 					UpdateCurrentLogFile();
 					break;
 			}
-		}
-
-		public void UpdateFilterChain(IEnumerable<IFilter> filter)
-		{
-			_quickFilters = filter;
-			UpdateCurrentLogFile();
 		}
 	}
 }

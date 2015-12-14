@@ -6,18 +6,23 @@ namespace Tailviewer.Settings
 {
 	internal sealed class ApplicationSettings
 	{
-		private readonly string _appDataLocal;
 		private readonly string _fileName;
 
 		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
 		private readonly QuickFilters _quickFilters;
 
-		public ApplicationSettings()
+		public static ApplicationSettings Create()
 		{
-			_appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			_fileName = Path.Combine(_appDataLocal, Constants.ApplicationTitle, "settings");
-			_fileName += ".xml";
+			var appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			var fileName = Path.Combine(appDataLocal, Constants.ApplicationTitle, "settings");
+			fileName += ".xml";
+			return new ApplicationSettings(fileName);
+		}
+
+		public ApplicationSettings(string fileName)
+		{
+			_fileName = fileName;
 
 			_mainWindow = new WindowSettings();
 			_dataSources = new DataSources();
