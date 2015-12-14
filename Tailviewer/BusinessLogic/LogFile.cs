@@ -334,25 +334,13 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public FilteredLogFile Filter(string stringFilter)
+		public FilteredLogFile AsFiltered(IFilter filter)
 		{
-			return Filter(stringFilter, LevelFlags.All);
+			return AsFiltered(filter, TimeSpan.FromMilliseconds(10));
 		}
 
-		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter)
+		public FilteredLogFile AsFiltered(IFilter filter, TimeSpan maximumWaitTime)
 		{
-			return Filter(stringFilter, levelFilter, false);
-		}
-
-		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, bool otherFilter)
-		{
-			return Filter(stringFilter, levelFilter, otherFilter, TimeSpan.FromMilliseconds(10));
-		}
-
-		public FilteredLogFile Filter(string stringFilter, LevelFlags levelFilter, bool otherFilter, TimeSpan maximumWaitTime)
-		{
-			var filter = BusinessLogic.Filter.CreateFilter(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter,
-			                                               otherFilter);
 			var file = new FilteredLogFile(this, filter);
 			file.Start(maximumWaitTime);
 			return file;

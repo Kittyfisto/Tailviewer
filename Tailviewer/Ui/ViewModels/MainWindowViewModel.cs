@@ -25,10 +25,6 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isLogFileOpen;
 		private string _windowTitle;
 
-		public MainWindowViewModel()
-		{
-		}
-
 		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters, IDispatcher dispatcher)
 		{
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
@@ -36,6 +32,7 @@ namespace Tailviewer.Ui.ViewModels
 
 			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
+			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
 			_timer = new DispatcherTimer
 				{
 					Interval = TimeSpan.FromMilliseconds(100)
@@ -45,6 +42,13 @@ namespace Tailviewer.Ui.ViewModels
 
 			_dispatcher = dispatcher;
 			WindowTitle = Constants.MainWindowTitle;
+		}
+
+		private void OnQuickFiltersChanged()
+		{
+			var view = _currentDataSourceLogView;
+			if (view != null)
+				view.UpdateFilterChain(_quickFilters.CreateFilterChain());
 		}
 
 		public bool HasError

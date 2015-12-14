@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using DataSource = Tailviewer.BusinessLogic.DataSource;
 using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
@@ -124,6 +125,14 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public IFilter CreateFilter()
+		{
+			if (!IsActive)
+				return null;
+
+			return _quickFilter.CreateFilter();
 		}
 	}
 }

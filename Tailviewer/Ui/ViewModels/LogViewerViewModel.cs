@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourceViewModel _dataSource;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
+		private IEnumerable<IFilter> _quickFilters;
 
 		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
 		{
@@ -76,9 +77,10 @@ namespace Tailviewer.Ui.ViewModels
 			var otherFilter = DataSource.OtherFilter;
 
 			ILogFile logFile;
-			if (!string.IsNullOrEmpty(stringFilter) || levelFilter != LevelFlags.All || otherFilter)
+			var filter = Filter.Create(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter, otherFilter, _quickFilters);
+			if (filter != null)
 			{
-				logFile = _fullLogFile.Filter(stringFilter, levelFilter, otherFilter);
+				logFile = _fullLogFile.AsFiltered(filter);
 			}
 			else
 			{
@@ -181,6 +183,12 @@ namespace Tailviewer.Ui.ViewModels
 					UpdateCurrentLogFile();
 					break;
 			}
+		}
+
+		public void UpdateFilterChain(IEnumerable<IFilter> filter)
+		{
+			_quickFilters = filter;
+			UpdateCurrentLogFile();
 		}
 	}
 }

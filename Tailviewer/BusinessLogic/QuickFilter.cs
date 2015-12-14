@@ -41,6 +41,15 @@ namespace Tailviewer.BusinessLogic
 		[Pure]
 		public IFilter CreateFilter()
 		{
+			switch (Type)
+			{
+				case QuickFilterType.StringFilter:
+					var value = Value;
+					if (!string.IsNullOrEmpty(value))
+						return new SubstringFilter(value, StringComparison.InvariantCultureIgnoreCase);
+					break;
+			}
+
 			return null;
 		}
 	}

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using DataSource = Tailviewer.BusinessLogic.DataSource;
 using DataSources = Tailviewer.BusinessLogic.DataSources;
@@ -11,8 +13,8 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class DataSourcesViewModel
 	{
 		private readonly DataSources _dataSources;
-		private readonly ObservableCollection<DataSourceViewModel> _viewModels;
 		private readonly ApplicationSettings _settings;
+		private readonly ObservableCollection<DataSourceViewModel> _viewModels;
 
 		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
@@ -22,17 +24,9 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = settings;
 			_viewModels = new ObservableCollection<DataSourceViewModel>();
 			_dataSources = dataSources;
-			foreach (var dataSource in dataSources)
+			foreach (DataSource dataSource in dataSources)
 			{
 				Add(dataSource);
-			}
-		}
-
-		public void Update()
-		{
-			foreach (var dataSource in _viewModels)
-			{
-				dataSource.Update();
 			}
 		}
 
@@ -41,14 +35,22 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _viewModels; }
 		}
 
+		public void Update()
+		{
+			foreach (DataSourceViewModel dataSource in _viewModels)
+			{
+				dataSource.Update();
+			}
+		}
+
 		public DataSourceViewModel GetOrAdd(string fileName)
 		{
-			var fullName = Path.GetFullPath(fileName);
-			var viewModel =
+			string fullName = Path.GetFullPath(fileName);
+			DataSourceViewModel viewModel =
 				_viewModels.FirstOrDefault(x => string.Equals(x.FullName, fullName, StringComparison.InvariantCultureIgnoreCase));
 			if (viewModel == null)
 			{
-				var dataSource = _dataSources.Add(fileName);
+				DataSource dataSource = _dataSources.Add(fileName);
 				viewModel = Add(dataSource);
 				_settings.Save();
 			}

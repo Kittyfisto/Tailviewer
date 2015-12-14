@@ -26,7 +26,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestEntryLevelNone()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.CreateFilter("ello", StringComparison.InvariantCultureIgnoreCase, LevelFlags.All, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("ello", StringComparison.InvariantCultureIgnoreCase, LevelFlags.All, false)))
 			{
 				_entries.Add(new LogEntry("Hello world!", LevelFlags.None));
 				file.OnLogFileModified(new LogFileSection(0, 1));
