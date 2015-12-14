@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -16,6 +17,21 @@ namespace Tailviewer.BusinessLogic
 			_syncRoot = new object();
 			_settings = settings;
 			_quickFilters = new List<QuickFilter>();
+			foreach (var setting in settings)
+			{
+				_quickFilters.Add(new QuickFilter(setting));
+			}
+		}
+
+		public IEnumerable<QuickFilter> Filters
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _quickFilters.ToList();
+				}
+			}
 		}
 
 		/// <summary>

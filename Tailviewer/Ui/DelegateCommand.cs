@@ -14,7 +14,6 @@ namespace Tailviewer.Ui
 			_execute = execute;
 		}
 
-
 		public bool CanExecute(object parameter)
 		{
 			return true;
@@ -25,6 +24,8 @@ namespace Tailviewer.Ui
 			_execute();
 		}
 
+#pragma warning disable 67
 		public event EventHandler CanExecuteChanged;
+#pragma warning restore 67
 	}
 }

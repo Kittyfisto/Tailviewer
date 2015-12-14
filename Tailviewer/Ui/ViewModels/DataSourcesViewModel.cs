@@ -12,11 +12,14 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<DataSourceViewModel> _viewModels;
+		private readonly ApplicationSettings _settings;
 
-		public DataSourcesViewModel(DataSources dataSources)
+		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
+			if (settings == null) throw new ArgumentNullException("settings");
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
 
+			_settings = settings;
 			_viewModels = new ObservableCollection<DataSourceViewModel>();
 			_dataSources = dataSources;
 			foreach (var dataSource in dataSources)
@@ -47,7 +50,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				var dataSource = _dataSources.Add(fileName);
 				viewModel = Add(dataSource);
-				ApplicationSettings.Current.Save();
+				_settings.Save();
 			}
 
 			return viewModel;
@@ -65,7 +68,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_viewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);
-			ApplicationSettings.Current.Save();
+			_settings.Save();
 		}
 	}
 }

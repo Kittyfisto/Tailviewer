@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using Tailviewer.Settings;
@@ -19,8 +20,13 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof (ICommand), typeof (MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
-		public MainWindow()
+		private ApplicationSettings _settings;
+
+		internal MainWindow(ApplicationSettings settings)
 		{
+			if (settings == null) throw new ArgumentNullException("settings");
+
+			_settings = settings;
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 
@@ -52,8 +58,8 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
 		{
-			ApplicationSettings.Current.MainWindow.UpdateFrom(this);
-			ApplicationSettings.Current.Save();
+			_settings.MainWindow.UpdateFrom(this);
+			_settings.Save();
 		}
 
 		private void MainWindow_OnDrop(object sender, DragEventArgs e)

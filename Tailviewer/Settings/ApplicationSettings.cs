@@ -6,19 +6,12 @@ namespace Tailviewer.Settings
 {
 	internal sealed class ApplicationSettings
 	{
-		public static readonly ApplicationSettings Current;
-
 		private readonly string _appDataLocal;
 		private readonly string _fileName;
 
 		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
 		private readonly QuickFilters _quickFilters;
-
-		static ApplicationSettings()
-		{
-			Current = new ApplicationSettings();
-		}
 
 		public ApplicationSettings()
 		{

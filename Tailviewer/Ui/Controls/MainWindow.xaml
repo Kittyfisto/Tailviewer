@@ -37,51 +37,52 @@
         </Grid.ColumnDefinitions>
 
         <controls:DataSourcesControl
-                Width="200"
-                x:Name="PART_DataSources"
-                ItemsSource="{Binding RecentFiles}"
-                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
+            Width="200"
+            x:Name="PART_DataSources"
+            ItemsSource="{Binding RecentFiles}"
+            SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
         <Grid Grid.Column="1"
-                  Width="1"
-                  Background="#E5E5E5" />
+              Width="1"
+              Background="#E5E5E5" />
 
         <Grid Grid.Column="2">
             <Grid Width="200"
-                      Height="150"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Center">
+                  Height="150"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center">
                 <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
-                               TextWrapping="Wrap"
-                               FontSize="16"
-                               Margin="10"
-                               Foreground="DodgerBlue"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center" />
+                           TextWrapping="Wrap"
+                           FontSize="16"
+                           Margin="10"
+                           Foreground="DodgerBlue"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center" />
                 <Rectangle StrokeDashArray="4 4"
-                               Stroke="DodgerBlue"
-                               StrokeThickness="2"
-                               RadiusX="10"
-                               RadiusY="10" />
+                           Stroke="DodgerBlue"
+                           StrokeThickness="2"
+                           RadiusX="10"
+                           RadiusY="10" />
             </Grid>
 
             <controls:LogViewerControl
-                        Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                        x:Name="PART_LogFileView"
-                        ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
-                        LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                        DataSource="{Binding CurrentDataSource}" />
+                Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                x:Name="PART_LogFileView"
+                ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
+                LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                DataSource="{Binding CurrentDataSource}" />
         </Grid>
 
         <Grid Grid.Column="3"
-                  Width="1"
-                  Background="#E5E5E5" />
+              Width="1"
+              Background="#E5E5E5" />
 
         <controls:QuickFilterControl
-                        Grid.Column="4"
-                Width="200"
-                />
-        
+            Grid.Column="4"
+            Width="200"
+            ItemsSource="{Binding QuickFilters}"
+            AddCommand="{Binding AddQuickFilterCommand}" />
+
         <controls:AlertControl
             Grid.ColumnSpan="5"
             Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"

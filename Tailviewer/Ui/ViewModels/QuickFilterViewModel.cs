@@ -12,14 +12,8 @@ namespace Tailviewer.Ui.ViewModels
 		: INotifyPropertyChanged
 	{
 		private readonly QuickFilter _quickFilter;
-
-		public ICommand RemoveCommand
-		{
-			get { return _removeCommand; }
-		}
-
 		private readonly ICommand _removeCommand;
-		private DataSource _dataSource;
+		private DataSource _currentDataSource;
 
 		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
 		{
@@ -30,28 +24,25 @@ namespace Tailviewer.Ui.ViewModels
 			_removeCommand = new DelegateCommand(() => onRemove(this));
 		}
 
-		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove, DataSource dataSource)
-			: this(quickFilter, onRemove)
+		public ICommand RemoveCommand
 		{
-			if (dataSource == null) throw new ArgumentNullException("dataSource");
-
-			_dataSource = dataSource;
+			get { return _removeCommand; }
 		}
 
-		public DataSource DataSource
+		public DataSource CurrentDataSource
 		{
-			get { return _dataSource; }
+			get { return _currentDataSource; }
 			set
 			{
-				if (value == DataSource)
+				if (value == CurrentDataSource)
 					return;
 
-				var hadDataSource = _dataSource;
-				var before = IsActive;
-				_dataSource = value;
-				var after = IsActive;
+				DataSource hadDataSource = _currentDataSource;
+				bool before = IsActive;
+				_currentDataSource = value;
+				bool after = IsActive;
 
-				if ((hadDataSource != null) != (_dataSource != null))
+				if ((hadDataSource != null) != (_currentDataSource != null))
 					EmitPropertyChanged("CanBeActivated");
 
 				if (before != after)
@@ -61,25 +52,25 @@ namespace Tailviewer.Ui.ViewModels
 
 		public bool CanBeActivated
 		{
-			get { return _dataSource != null; }
+			get { return _currentDataSource != null; }
 		}
 
 		public bool IsActive
 		{
 			get
 			{
-				var dataSource = _dataSource;
+				DataSource dataSource = _currentDataSource;
 				if (dataSource == null)
 					return false;
 
-				return _dataSource.IsQuickFilterActive(_quickFilter.Id);
+				return _currentDataSource.IsQuickFilterActive(_quickFilter.Id);
 			}
 			set
 			{
 				if (value == IsActive)
 					return;
 
-				var dataSource = _dataSource;
+				DataSource dataSource = _currentDataSource;
 				if (dataSource == null)
 					throw new InvalidOperationException();
 

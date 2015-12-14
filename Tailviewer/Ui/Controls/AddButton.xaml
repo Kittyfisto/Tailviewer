@@ -1,17 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls">
 
-    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalse2CollapsedConverter" />
-    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrue2CollapsedConverter" />
-
-    <Style TargetType="{x:Type local:RemoveButton}">
+    <Style TargetType="{x:Type local:AddButton}">
         <Setter Property="Control.Background" Value="{x:Null}" />
         <Setter Property="Control.BorderBrush" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:RemoveButton}">
+                <ControlTemplate TargetType="{x:Type local:AddButton}">
                     <Border BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}"
@@ -19,14 +15,8 @@
                         <Grid Background="Transparent">
                             <Image
                                 Width="16" Height="16"
-                                Source="pack://application:,,,/Resources/ic_clear_black_18dp.png"
-                                x:Name="PART_Black"
-                                Visibility="{Binding IsBlack, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolFalse2CollapsedConverter}}" />
-                            <Image
-                                Width="16" Height="16"
-                                Source="pack://application:,,,/Resources/ic_clear_white_18dp.png"
-                                x:Name="PART_White"
-                                Visibility="{Binding IsWhite, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolFalse2CollapsedConverter}}" />
+                                Source="pack://application:,,,/Resources/ic_add_black_18dp.png"
+                                x:Name="PART_Black" />
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -34,10 +24,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#E81123" />
+                <Setter Property="Background" Value="#E5E5E5" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="#F1707A" />
+                <Setter Property="Background" Value="#CCCCCC" />
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using System.Windows.Threading;
-using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
+using DataSources = Tailviewer.BusinessLogic.DataSources;
+using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		private readonly DataSources _dataSources;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
-		private readonly UiDispatcher _dispatcher;
+		private readonly IDispatcher _dispatcher;
+		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly DispatcherTimer _timer;
 
 		private DataSourceViewModel _currentDataSource;
@@ -26,13 +29,13 @@ namespace Tailviewer.Ui.ViewModels
 		{
 		}
 
-		public MainWindowViewModel(DataSources dataSources, Dispatcher dispatcher)
+		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters, IDispatcher dispatcher)
 		{
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 
-			_dataSources = dataSources;
-			_dataSourcesViewModel = new DataSourcesViewModel(_dataSources);
+			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
+			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_timer = new DispatcherTimer
 				{
 					Interval = TimeSpan.FromMilliseconds(100)
@@ -40,20 +43,14 @@ namespace Tailviewer.Ui.ViewModels
 			_timer.Tick += TimerOnTick;
 			_timer.Start();
 
-			_dispatcher = new UiDispatcher(dispatcher);
+			_dispatcher = dispatcher;
 			WindowTitle = Constants.MainWindowTitle;
-			dispatcher.UnhandledException += DispatcherOnUnhandledException;
-		}
-
-		private void TimerOnTick(object sender, EventArgs eventArgs)
-		{
-			_dataSourcesViewModel.Update();
 		}
 
 		public bool HasError
 		{
 			get { return _hasError; }
-			private set
+			set
 			{
 				if (value == _hasError)
 					return;
@@ -66,7 +63,7 @@ namespace Tailviewer.Ui.ViewModels
 		public string ErrorMessage
 		{
 			get { return _errorMessage; }
-			private set
+			set
 			{
 				if (value == _errorMessage)
 					return;
@@ -119,6 +116,16 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public IEnumerable<QuickFilterViewModel> QuickFilters
+		{
+			get { return _quickFilters.Observable; }
+		}
+
+		public ICommand AddQuickFilterCommand
+		{
+			get { return _quickFilters.AddCommand; }
+		}
+
 		public IEnumerable<DataSourceViewModel> RecentFiles
 		{
 			get { return _dataSourcesViewModel.Observable; }
@@ -133,6 +140,8 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_currentDataSource = value;
+				_quickFilters.CurrentDataSource = value;
+
 				OpenFile(value);
 				EmitPropertyChanged();
 			}
@@ -140,29 +149,24 @@ namespace Tailviewer.Ui.ViewModels
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			Exception exception = args.Exception;
-			if (exception != null)
-			{
-				HasError = true;
-				ErrorMessage = exception.Message;
-			}
-			args.Handled = true;
+			_dataSourcesViewModel.Update();
 		}
 
 		public void OpenFiles(string[] files)
 		{
-			foreach (var file in files)
+			foreach (string file in files)
 			{
 				OpenFile(file);
 			}
 		}
 
-		private void OpenFile(string file)
+		public DataSourceViewModel OpenFile(string file)
 		{
 			DataSourceViewModel dataSource = _dataSourcesViewModel.GetOrAdd(file);
 			OpenFile(dataSource);
+			return dataSource;
 		}
 
 		private void OpenFile(DataSourceViewModel dataSource)
@@ -187,6 +191,11 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public QuickFilterViewModel AddQuickFilter()
+		{
+			return _quickFilters.AddQuickFilter();
 		}
 	}
 }

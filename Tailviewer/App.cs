@@ -3,11 +3,12 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using Tailviewer.Ui;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using DataSources = Tailviewer.BusinessLogic.DataSources;
+using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
 
 namespace Tailviewer
 {
@@ -18,21 +19,43 @@ namespace Tailviewer
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-			ApplicationSettings.Current.Restore();
 
-			using (var dataSources = new DataSources(ApplicationSettings.Current.DataSources))
+			var settings = new ApplicationSettings();
+			settings.Restore();
+			using (var dataSources = new DataSources(settings.DataSources))
 			{
+				var quickFilters = new QuickFilters(settings.QuickFilters);
 				var application = new Application();
-				var window = new MainWindow
+				var dispatcher = new UiDispatcher(Dispatcher.CurrentDispatcher);
+				Dispatcher.CurrentDispatcher.UnhandledException += DispatcherOnUnhandledException;
+
+				var window = new MainWindow(settings)
 					{
-						DataContext = new MainWindowViewModel(dataSources, Dispatcher.CurrentDispatcher)
+						DataContext = new MainWindowViewModel(settings, dataSources, quickFilters, dispatcher)
 					};
 
-				ApplicationSettings.Current.MainWindow.RestoreTo(window);
+				settings.MainWindow.RestoreTo(window);
 
 				window.Show();
 				return application.Run();
 			}
+		}
+
+		private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+		{
+			Exception exception = args.Exception;
+			var window = Application.Current.MainWindow;
+			if (window != null)
+			{
+				var model = window.DataContext as MainWindowViewModel;
+				if (model != null && exception != null)
+				{
+					model.HasError = true;
+					model.ErrorMessage = exception.Message;
+				}
+			}
+
+			args.Handled = true;
 		}
 
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)

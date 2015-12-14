@@ -65,6 +65,8 @@
     <Compile Include="Settings\QuickFilter.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
+    <Compile Include="Ui\Controls\AddButton.cs" />
+    <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="XmlExtensions.cs" />
@@ -103,6 +105,10 @@
     <Compile Include="Ui\ViewModels\DataSourceViewModel.cs" />
     <Compile Include="Settings\WindowSettings.cs" />
     <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\AddButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -191,6 +197,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_clear_white_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_add_black_18dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
