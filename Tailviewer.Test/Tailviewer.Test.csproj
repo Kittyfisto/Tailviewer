@@ -63,6 +63,7 @@
     <Compile Include="BusinessLogic\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSourceTest.cs" />
     <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFileBase\LevelsTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
@@ -85,6 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\2Lines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\DifferentLevels.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

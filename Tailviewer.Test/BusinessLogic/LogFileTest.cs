@@ -50,7 +50,7 @@ namespace Tailviewer.Test.BusinessLogic
 				file.DebugCount.Should().Be(165337);
 				file.InfoCount.Should().Be(5);
 				file.WarningCount.Should().Be(0);
-				file.ErrorCount.Should().Be(1);
+				file.ErrorCount.Should().Be(0);
 				file.FatalCount.Should().Be(0);
 			}
 		}

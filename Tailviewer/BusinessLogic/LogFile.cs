@@ -196,6 +196,7 @@ namespace Tailviewer.BusinessLogic
 
 			try
 			{
+				var levels = new List<KeyValuePair<int, LevelFlags>>();
 				_lastWritten = File.GetLastWriteTime(_fileName);
 
 				using (var stream = new FileStream(_fileName,
@@ -239,7 +240,7 @@ namespace Tailviewer.BusinessLogic
 							++numberOfLinesRead;
 
 							DetermineDateTimeFormat(line);
-							LevelFlags level = DetermineLevel(line);
+							LevelFlags level = DetermineLevel(line, levels);
 							Add(line, level, numberOfLinesRead);
 						}
 					}
@@ -256,38 +257,65 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		private LevelFlags DetermineLevel(string line)
+		private LevelFlags DetermineLevel(string line, List<KeyValuePair<int, LevelFlags>> levels)
 		{
 			var level = LevelFlags.None;
-			if (line.IndexOf("debug", StringComparison.InvariantCultureIgnoreCase) != -1)
+			int idx = line.IndexOf("DEBUG", StringComparison.InvariantCulture);
+			if (idx != -1)
+				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Debug));
+
+			idx = line.IndexOf("INFO", StringComparison.InvariantCulture);
+			if (idx != -1)
+				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Info));
+
+			idx = line.IndexOf("WARN", StringComparison.InvariantCulture);
+			if (idx != -1)
+				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Warning));
+
+			idx = line.IndexOf("ERROR", StringComparison.InvariantCulture);
+			if (idx != -1)
+				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Error));
+
+			idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
+			if (idx != -1)
+				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Fatal));
+
+			int prev = int.MaxValue;
+			foreach (var pair in levels)
 			{
-				level |= LevelFlags.Debug;
-				Interlocked.Increment(ref _debugCount);
+				if (pair.Key < prev)
+				{
+					level = pair.Value;
+					prev = pair.Key;
+				}
 			}
-			if (line.IndexOf("info", StringComparison.InvariantCultureIgnoreCase) != -1)
+			levels.Clear();
+
+			if (prev == int.MaxValue)
 			{
-				level |= LevelFlags.Info;
-				Interlocked.Increment(ref _infoCount);
-			}
-			if (line.IndexOf("warn", StringComparison.InvariantCultureIgnoreCase) != -1)
-			{
-				level |= LevelFlags.Warning;
-				Interlocked.Increment(ref _warningCount);
-			}
-			if (line.IndexOf("error", StringComparison.InvariantCultureIgnoreCase) != -1)
-			{
-				level |= LevelFlags.Error;
-				Interlocked.Increment(ref _errorCount);
-			}
-			if (line.IndexOf("fatal", StringComparison.InvariantCultureIgnoreCase) != -1)
-			{
-				level |= LevelFlags.Fatal;
-				Interlocked.Increment(ref _fatalCount);
+				level = LevelFlags.None;
 			}
 
-			if (level == LevelFlags.None)
+			switch (level)
 			{
-				Interlocked.Increment(ref _otherCount);
+				case LevelFlags.Debug:
+					Interlocked.Increment(ref _debugCount);
+					break;
+				case LevelFlags.Info:
+					Interlocked.Increment(ref _infoCount);
+					break;
+				case LevelFlags.Warning:
+					Interlocked.Increment(ref _warningCount);
+					break;
+				case LevelFlags.Error:
+					Interlocked.Increment(ref _errorCount);
+					break;
+				case LevelFlags.Fatal:
+					Interlocked.Increment(ref _fatalCount);
+					break;
+				default:
+					Interlocked.Increment(ref _otherCount);
+					break;
 			}
 
 			return level;
