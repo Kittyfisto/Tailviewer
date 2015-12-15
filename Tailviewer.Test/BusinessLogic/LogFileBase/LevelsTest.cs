@@ -8,6 +8,25 @@ namespace Tailviewer.Test.BusinessLogic.LogFileBase
 	public sealed class LevelsTest
 	{
 		[Test]
+		[Description("Verifies that the levels are counted correctly")]
+		public void TestLevelCount()
+		{
+			using (var logFile = new LogFile(@"TestData\LevelCounts.txt"))
+			{
+				logFile.Start();
+				logFile.Wait();
+
+				logFile.Count.Should().Be(21);
+				logFile.DebugCount.Should().Be(1);
+				logFile.InfoCount.Should().Be(2);
+				logFile.WarningCount.Should().Be(3);
+				logFile.ErrorCount.Should().Be(4);
+				logFile.FatalCount.Should().Be(5);
+				logFile.OtherCount.Should().Be(6);
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the level of a log line is unambigously defined")]
 		public void TestLevelPrecedence()
 		{

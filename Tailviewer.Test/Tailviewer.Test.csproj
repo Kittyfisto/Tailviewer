@@ -91,6 +91,9 @@
     <Content Include="TestData\DifferentLevels.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\LevelCounts.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="TestData\20Mb.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
