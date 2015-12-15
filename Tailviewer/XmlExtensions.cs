@@ -17,10 +17,10 @@ namespace Tailviewer
 			return Guid.Parse(value);
 		}
 
-		public static bool ValueAsBool(this XmlReader reader)
+		public static bool ReadContentAsBool(this XmlReader reader)
 		{
 			string value = reader.Value;
-			return value == "true";
+			return string.Equals(value, "true", StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public static void WriteAttributeGuid(this XmlWriter writer, string localName, Guid value)

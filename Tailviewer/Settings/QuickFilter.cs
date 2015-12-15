@@ -9,11 +9,12 @@ namespace Tailviewer.Settings
 		public Guid Id { get { return _id; } }
 		public QuickFilterType Type;
 		public string Value;
-		public StringComparison Comparison;
+		public bool IgnoreCase;
 
 		public QuickFilter()
 		{
 			_id = Guid.NewGuid();
+			IgnoreCase = true;
 		}
 
 		public bool Restore(XmlReader reader)
@@ -37,8 +38,8 @@ namespace Tailviewer.Settings
 						Value = reader.Value;
 						break;
 
-					case "comparison":
-						Comparison = reader.ReadContentAsEnum<StringComparison>();
+					case "ignorecase":
+						IgnoreCase = reader.ReadContentAsBool();
 						break;
 				}
 			}
@@ -54,7 +55,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeEnum("type", Type);
 			writer.WriteAttributeString("value", Value);
-			writer.WriteAttributeEnum("comparison", Comparison);
+			writer.WriteAttributeBool("ignorecase", IgnoreCase);
 		}
 	}
 }

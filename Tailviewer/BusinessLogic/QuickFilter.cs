@@ -21,10 +21,10 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.Value = value; }
 		}
 
-		public StringComparison Comparison
+		public bool IgnoreCase
 		{
-			get { return _settings.Comparison; }
-			set { _settings.Comparison = value; }
+			get { return _settings.IgnoreCase; }
+			set { _settings.IgnoreCase = value; }
 		}
 
 		public QuickFilterType Type
@@ -41,12 +41,18 @@ namespace Tailviewer.BusinessLogic
 		[Pure]
 		public IFilter CreateFilter()
 		{
+			var value = Value;
 			switch (Type)
 			{
 				case QuickFilterType.StringFilter:
-					var value = Value;
 					if (!string.IsNullOrEmpty(value))
-						return new SubstringFilter(value, StringComparison.InvariantCultureIgnoreCase);
+						return new SubstringFilter(value, IgnoreCase);
+					break;
+
+				case QuickFilterType.WildcardFilter:
+					if (!string.IsNullOrEmpty(value))
+						return new WildcardFilter(value, IgnoreCase);
+						
 					break;
 			}
 

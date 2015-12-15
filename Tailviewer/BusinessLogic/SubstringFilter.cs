@@ -12,10 +12,10 @@ namespace Tailviewer.BusinessLogic
 		public readonly string StringFilter;
 		public readonly StringComparison Comparison;
 
-		public SubstringFilter(string stringFilter, StringComparison comparison)
+		public SubstringFilter(string stringFilter, bool ignoreCase)
 		{
 			StringFilter = stringFilter;
-			Comparison = comparison;
+			Comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
 		}
 
 		[Pure]

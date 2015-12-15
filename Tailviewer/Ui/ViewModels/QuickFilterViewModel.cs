@@ -15,6 +15,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly QuickFilter _quickFilter;
 		private readonly ICommand _removeCommand;
 		private DataSource _currentDataSource;
+		private bool _isEditing;
 
 		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
 		{
@@ -84,6 +85,19 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					dataSource.DeactivateQuickFilter(_quickFilter.Id);
 				}
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsEditing
+		{
+			get { return _isEditing; }
+			set
+			{
+				if (value == _isEditing)
+					return;
+
+				_isEditing = value;
 				EmitPropertyChanged();
 			}
 		}

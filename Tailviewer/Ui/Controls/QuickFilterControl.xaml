@@ -5,6 +5,7 @@
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <Style TargetType="{x:Type local:QuickFilterControl}">
         <Setter Property="Template">
@@ -46,32 +47,55 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type viewModels:QuickFilterViewModel}">
                                             <Grid Margin="8,4,0,4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
 
-                                                <CheckBox
-                                                    x:Name="PART_IsActive"
-                                                    VerticalAlignment="Center"
-                                                    Margin="0,0,8,0"
-                                                    IsChecked="{Binding IsActive}"
-                                                    IsEnabled="{Binding CanBeActivated}" />
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
 
-                                                <local:FilterTextBox
-                                                    x:Name="PART_Value"
-                                                    Grid.Column="1"
-                                                    Height="26"
-                                                    FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                    Watermark="Filter log file" />
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
 
-                                                <local:RemoveButton
-                                                    x:Name="PART_RemoveButton"
-                                                    Grid.Column="2"
-                                                    VerticalAlignment="Stretch"
-                                                    HorizontalAlignment="Right"
-                                                    Command="{Binding RemoveCommand}" />
+                                                    <CheckBox
+                                                        x:Name="PART_IsActive"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0,0,8,0"
+                                                        IsChecked="{Binding IsActive}"
+                                                        IsEnabled="{Binding CanBeActivated}" />
+
+                                                    <local:FilterTextBox
+                                                        x:Name="PART_Value"
+                                                        Grid.Column="1"
+                                                        Height="26"
+                                                        FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                        Watermark="Filter log file" />
+
+                                                    <local:EditToggleButton
+                                                        x:Name="PART_EditToggleButton"
+                                                        Grid.Column="2"
+                                                        VerticalAlignment="Stretch"
+                                                        IsChecked="{Binding IsEditing, Mode=TwoWay}"
+                                                        />
+                                                    
+                                                    <local:RemoveButton
+                                                        x:Name="PART_RemoveButton"
+                                                        Grid.Column="3"
+                                                        VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Right"
+                                                        Command="{Binding RemoveCommand}" />
+                                                </Grid>
+
+                                                <Grid Grid.Row="1">
+                                                    <local:QuickFilterTypeToggleButton
+                                                        Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                                                        QuickFilterType="{Binding Type, Mode=TwoWay}"
+                                                        Margin="0,8,0,8" />
+                                                </Grid>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

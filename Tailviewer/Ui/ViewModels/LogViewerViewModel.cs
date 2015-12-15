@@ -77,7 +77,7 @@ namespace Tailviewer.Ui.ViewModels
 			var otherFilter = DataSource.OtherFilter;
 
 			ILogFile logFile;
-			var filter = Filter.Create(stringFilter, StringComparison.InvariantCultureIgnoreCase, levelFilter, otherFilter, _quickFilterChain);
+			var filter = Filter.Create(stringFilter, true, levelFilter, otherFilter, _quickFilterChain);
 			if (filter != null)
 			{
 				logFile = _fullLogFile.AsFiltered(filter);

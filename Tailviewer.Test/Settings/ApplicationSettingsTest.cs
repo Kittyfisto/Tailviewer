@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using FluentAssertions;
@@ -17,7 +16,6 @@ namespace Tailviewer.Test.Settings
 		[Test]
 		public void TestStoreRestore()
 		{
-			var fileName = Path.GetTempFileName();
 			var settings = new ApplicationSettings("awdawddaw");
 			settings.MainWindow.Left = 1;
 			settings.MainWindow.Top = 2;
@@ -41,10 +39,11 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters.Add(new QuickFilter
 				{
 					Value = "foobar",
-					Comparison = StringComparison.CurrentCultureIgnoreCase,
+					IgnoreCase = true,
 					Type = QuickFilterType.RegexpFilter
 				});
 			var id = settings.QuickFilters[0].Id;
+			var fileName = "applicationsettingstest.xml";
 			settings.Save(fileName).Should().BeTrue();
 
 			settings = new ApplicationSettings("adwaaw");
@@ -65,7 +64,7 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters.Count.Should().Be(1);
 			settings.QuickFilters[0].Id.Should().Be(id);
 			settings.QuickFilters[0].Value.Should().Be("foobar");
-			settings.QuickFilters[0].Comparison.Should().Be(StringComparison.CurrentCultureIgnoreCase);
+			settings.QuickFilters[0].IgnoreCase.Should().BeTrue();
 			settings.QuickFilters[0].Type.Should().Be(QuickFilterType.RegexpFilter);
 		}
 	}

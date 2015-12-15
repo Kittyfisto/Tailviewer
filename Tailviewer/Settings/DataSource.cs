@@ -68,11 +68,11 @@ namespace Tailviewer.Settings
 						break;
 
 					case "isopen":
-						IsOpen = reader.ValueAsBool();
+						IsOpen = reader.ReadContentAsBool();
 						break;
 
 					case "followtail":
-						FollowTail = reader.ValueAsBool();
+						FollowTail = reader.ReadContentAsBool();
 						break;
 
 					case "stringfilter":
@@ -84,11 +84,11 @@ namespace Tailviewer.Settings
 						break;
 
 					case "otherfilter":
-						ExcludeOther = reader.ValueAsBool();
+						ExcludeOther = reader.ReadContentAsBool();
 						break;
 
 					case "colorbylevel":
-						ColorByLevel = reader.ValueAsBool();
+						ColorByLevel = reader.ReadContentAsBool();
 						break;
 				}
 			}

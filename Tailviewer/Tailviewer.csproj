@@ -58,6 +58,7 @@
     <Compile Include="BusinessLogic\QuickFilter.cs" />
     <Compile Include="BusinessLogic\QuickFilters.cs" />
     <Compile Include="BusinessLogic\SubstringFilter.cs" />
+    <Compile Include="BusinessLogic\WildcardFilter.cs" />
     <Compile Include="Settings\DataSource.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
@@ -66,6 +67,9 @@
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
     <Compile Include="Ui\Controls\AddButton.cs" />
+    <Compile Include="Ui\Controls\EditToggleButton.cs" />
+    <Compile Include="Ui\Controls\OneWayToggle.cs" />
+    <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
@@ -115,7 +119,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\EditToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\FilterTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\OneWayToggle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilterTypeToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -198,6 +214,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_open_10_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_mode_edit_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_mode_edit_white_18dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
