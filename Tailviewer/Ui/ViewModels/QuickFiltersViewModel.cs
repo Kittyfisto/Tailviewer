@@ -69,7 +69,14 @@ namespace Tailviewer.Ui.ViewModels
 			foreach (var quickFilter in _viewModels)
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
-				var filter = quickFilter.CreateFilter();
+				IFilter filter = null;
+				try
+				{
+					filter = quickFilter.CreateFilter();
+				}
+				catch (Exception)
+				{}
+
 				if (filter != null)
 					filters.Add(filter);
 			}
@@ -82,10 +89,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void QuickFilterOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			var model = sender as QuickFilterViewModel;
+			if (model == null)
+				return;
+
 			switch (args.PropertyName)
 			{
 				case "Value":
 				case "IsActive":
+				case "Type":
 					if (!_isChangingCurrentDataSource)
 					{
 						var fn = OnFiltersChanged;

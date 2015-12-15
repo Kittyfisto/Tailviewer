@@ -16,6 +16,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _removeCommand;
 		private DataSource _currentDataSource;
 		private bool _isEditing;
+		private bool _isValid;
 
 		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
 		{
@@ -24,6 +25,34 @@ namespace Tailviewer.Ui.ViewModels
 
 			_quickFilter = quickFilter;
 			_removeCommand = new DelegateCommand(() => onRemove(this));
+
+			UpdateValidity();
+		}
+
+		private void UpdateValidity()
+		{
+			try
+			{
+				_quickFilter.CreateFilter();
+				IsValid = true;
+			}
+			catch (ArgumentException)
+			{
+				IsValid = false;
+			}
+		}
+
+		public bool IsValid
+		{
+			get { return _isValid; }
+			private set
+			{
+				if (value == _isValid)
+					return;
+
+				_isValid = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public ICommand RemoveCommand
@@ -111,6 +140,7 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_quickFilter.Value = value;
+				UpdateValidity();
 				EmitPropertyChanged();
 			}
 		}
@@ -124,6 +154,7 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_quickFilter.Type = value;
+				UpdateValidity();
 				EmitPropertyChanged();
 			}
 		}

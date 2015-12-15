@@ -57,6 +57,7 @@
     <Compile Include="BusinessLogic\LogEntry.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />
     <Compile Include="BusinessLogic\QuickFilters.cs" />
+    <Compile Include="BusinessLogic\RegexFilter.cs" />
     <Compile Include="BusinessLogic\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\WildcardFilter.cs" />
     <Compile Include="Settings\DataSource.cs" />

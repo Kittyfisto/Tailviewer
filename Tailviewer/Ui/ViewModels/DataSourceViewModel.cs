@@ -24,7 +24,6 @@ namespace Tailviewer.Ui.ViewModels
 		private int _fatalCount;
 		private Size _fileSize;
 		private int _infoCount;
-		private bool _isOpen;
 		private TimeSpan _lastWrittenAge;
 		private int _otherCount;
 		private int _totalCount;
@@ -223,10 +222,10 @@ namespace Tailviewer.Ui.ViewModels
 
 		public bool IsOpen
 		{
-			get { return _isOpen; }
+			get { return _dataSource.IsOpen; }
 			set
 			{
-				if (value == _isOpen)
+				if (value == IsOpen)
 					return;
 
 				if (value)
@@ -234,7 +233,7 @@ namespace Tailviewer.Ui.ViewModels
 					_dataSource.LastOpened = DateTime.Now;
 				}
 
-				_isOpen = value;
+				_dataSource.IsOpen = value;
 				EmitPropertyChanged();
 			}
 		}

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
+using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
+using DataSource = Tailviewer.BusinessLogic.DataSource;
+using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
 
 namespace Tailviewer.Test.Ui
 {
@@ -21,7 +23,7 @@ namespace Tailviewer.Test.Ui
 		{
 			_quickFilter = new QuickFilter(new Tailviewer.Settings.QuickFilter());
 			_dataSource = new DataSource(_dataSourceSettings = new Tailviewer.Settings.DataSource("nothing"));
-			_model = new QuickFilterViewModel(_quickFilter, x => { })
+			_model = new QuickFilterViewModel(_quickFilter, x => {})
 				{
 					CurrentDataSource = _dataSource
 				};
@@ -75,6 +77,15 @@ namespace Tailviewer.Test.Ui
 
 			_model.IsActive = false;
 			_dataSourceSettings.ActivatedQuickFilters.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestChangeType()
+		{
+			_model.Type = QuickFilterType.RegexpFilter;
+			_changes.Should().Equal(new[] { "Type" });
+			_model.Type = QuickFilterType.RegexpFilter;
+			_changes.Should().Equal(new[] { "Type" });
 		}
 	}
 }

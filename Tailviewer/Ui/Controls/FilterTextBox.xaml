@@ -10,6 +10,8 @@
                         <TextBox
                             x:Name="PART_FilterInput"
                             TabIndex="{TemplateBinding TabIndex}"
+                            Background="{TemplateBinding Background}"
+                            Foreground="{TemplateBinding Foreground}"
                             Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}" />
                         <TextBlock
                             x:Name="PART_Watermark"
@@ -45,5 +47,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsValid" Value="False">
+                <Setter Property="Background" Value="#E81123" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

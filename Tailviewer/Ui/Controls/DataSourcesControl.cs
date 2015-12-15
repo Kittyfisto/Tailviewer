@@ -137,7 +137,13 @@ namespace Tailviewer.Ui.Controls
 				foreach (DataSourceViewModel model in newValue)
 				{
 					if (PassesFilter(model))
+					{
 						FilteredItemsSource.Add(model);
+						if (model.IsOpen)
+						{
+							Dispatcher.BeginInvoke(new Action(() => { SelectedItem = model; }));
+						}
+					}
 				}
 
 				var @new = newValue as INotifyCollectionChanged;

@@ -52,7 +52,11 @@ namespace Tailviewer.BusinessLogic
 				case QuickFilterType.WildcardFilter:
 					if (!string.IsNullOrEmpty(value))
 						return new WildcardFilter(value, IgnoreCase);
-						
+					break;
+
+				case QuickFilterType.RegexpFilter:
+					if (!string.IsNullOrEmpty(value))
+						return new RegexFilter(value, IgnoreCase);
 					break;
 			}
 

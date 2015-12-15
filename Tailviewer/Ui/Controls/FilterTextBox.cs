@@ -14,6 +14,15 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("Watermark", typeof (string), typeof (FilterTextBox),
 			                            new PropertyMetadata(default(string)));
 
+		public static readonly DependencyProperty IsValidProperty =
+			DependencyProperty.Register("IsValid", typeof (bool), typeof (FilterTextBox), new PropertyMetadata(true));
+
+		public bool IsValid
+		{
+			get { return (bool) GetValue(IsValidProperty); }
+			set { SetValue(IsValidProperty, value); }
+		}
+
 		private TextBox _filterInput;
 
 		static FilterTextBox()

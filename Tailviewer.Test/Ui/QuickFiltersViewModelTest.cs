@@ -66,6 +66,23 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestChangeFilterType1()
+		{
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			model.CurrentDataSource = new DataSourceViewModel(new DataSource(new Tailviewer.Settings.DataSource("adw")));
+
+			int numFilterChanges = 0;
+			var filter = model.AddQuickFilter();
+			filter.Type.Should().Be(QuickFilterType.StringFilter);
+			filter.Value = "Foobar";
+			filter.IsActive = true;
+
+			model.OnFiltersChanged += () => ++numFilterChanges;
+			filter.Type = QuickFilterType.WildcardFilter;
+			numFilterChanges.Should().Be(1);
+		}
+
+		[Test]
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
