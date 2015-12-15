@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof (ICommand), typeof (MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
-		private ApplicationSettings _settings;
+		private readonly ApplicationSettings _settings;
 
 		internal MainWindow(ApplicationSettings settings)
 		{

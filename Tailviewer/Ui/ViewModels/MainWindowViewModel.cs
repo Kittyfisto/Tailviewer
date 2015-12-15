@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -16,6 +17,8 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly IDispatcher _dispatcher;
 		private readonly QuickFiltersViewModel _quickFilters;
+		private readonly ICommand _selectNextDataSourceCommand;
+		private readonly ICommand _selectPreviousDataSourceCommand;
 		private readonly DispatcherTimer _timer;
 
 		private DataSourceViewModel _currentDataSource;
@@ -25,7 +28,8 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isLogFileOpen;
 		private string _windowTitle;
 
-		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters, IDispatcher dispatcher)
+		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters,
+		                           IDispatcher dispatcher)
 		{
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
@@ -42,13 +46,19 @@ namespace Tailviewer.Ui.ViewModels
 
 			_dispatcher = dispatcher;
 			WindowTitle = Constants.MainWindowTitle;
+
+			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
+			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 		}
 
-		private void OnQuickFiltersChanged()
+		public ICommand SelectPreviousDataSourceCommand
 		{
-			var view = _currentDataSourceLogView;
-			if (view != null)
-				view.QuickFilterChain = _quickFilters.CreateFilterChain();
+			get { return _selectPreviousDataSourceCommand; }
+		}
+
+		public ICommand SelectNextDataSourceCommand
+		{
+			get { return _selectNextDataSourceCommand; }
 		}
 
 		public bool HasError
@@ -160,6 +170,45 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void SelectNextDataSource()
+		{
+			if (CurrentDataSource == null)
+			{
+				CurrentDataSource = _dataSourcesViewModel.Observable.FirstOrDefault();
+			}
+			else
+			{
+				var dataSources = _dataSourcesViewModel.Observable;
+				var index = dataSources.IndexOf(CurrentDataSource);
+				var nextIndex = (index + 1) % dataSources.Count;
+				CurrentDataSource = dataSources[nextIndex];
+			}
+		}
+
+		private void SelectPreviousDataSource()
+		{
+			if (CurrentDataSource == null)
+			{
+				CurrentDataSource = _dataSourcesViewModel.Observable.LastOrDefault();
+			}
+			else
+			{
+				var dataSources = _dataSourcesViewModel.Observable;
+				var index = dataSources.IndexOf(CurrentDataSource);
+				var nextIndex = index - 1;
+				if (nextIndex < 0)
+					nextIndex = dataSources.Count - 1;
+				CurrentDataSource = dataSources[nextIndex];
+			}
+		}
+
+		private void OnQuickFiltersChanged()
+		{
+			LogViewerViewModel view = _currentDataSourceLogView;
+			if (view != null)
+				view.QuickFilterChain = _quickFilters.CreateFilterChain();
+		}
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{

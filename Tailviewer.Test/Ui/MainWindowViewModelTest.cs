@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
@@ -68,6 +68,34 @@ namespace Tailviewer.Test.Ui
 			_mainWindow.CurrentDataSource = dataSource1;
 			_mainWindow.CurrentDataSourceLogView.Should().NotBeNull();
 			_mainWindow.CurrentDataSourceLogView.QuickFilterChain.Should().NotBeNull();
+		}
+
+		[Test]
+		public void TestNextDataSource()
+		{
+			var dataSource1 = _mainWindow.OpenFile("foo");
+			var dataSource2 = _mainWindow.OpenFile("bar");
+			_mainWindow.CurrentDataSource = null;
+			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1, "Because when no data source is selected, the first should be when navigating forward");
+			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because obvious");
+			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1, "Because selecting the next data source when the last data source is, should simply roundtrip to the first datasource again");
+		}
+
+		[Test]
+		public void TestPreviousDataSource()
+		{
+			var dataSource1 = _mainWindow.OpenFile("foo");
+			var dataSource2 = _mainWindow.OpenFile("bar");
+			_mainWindow.CurrentDataSource = null;
+			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because when no data source is selected, the last should be when navigating backwards");
+			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1);
+			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because selecting the previous data source when the first data source is, should simply roundtrip to the last data source again");
 		}
 	}
 }

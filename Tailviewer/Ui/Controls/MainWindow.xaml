@@ -21,6 +21,10 @@
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
         <KeyBinding Modifiers="Control" Key="F"
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
+        <KeyBinding Modifiers="Control" Key="Tab"
+                    Command="{Binding SelectNextDataSourceCommand}" />
+        <KeyBinding Modifiers="Control+Shift" Key="Tab"
+                    Command="{Binding SelectPreviousDataSourceCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
