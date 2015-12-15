@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
@@ -48,6 +49,15 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("ShowOther", typeof(bool), typeof(LogViewerControl),
 										new PropertyMetadata(false, OnShowOtherChanged));
 
+		public static readonly DependencyProperty CopySelectedLineToClipboardCommandProperty =
+			DependencyProperty.Register("CopySelectedLineToClipboardCommand", typeof (ICommand), typeof (LogViewerControl), new PropertyMetadata(default(ICommand)));
+
+		public ICommand CopySelectedLineToClipboardCommand
+		{
+			get { return (ICommand) GetValue(CopySelectedLineToClipboardCommandProperty); }
+			set { SetValue(CopySelectedLineToClipboardCommandProperty, value); }
+		}
+
 		private ListView _partListView;
 		private FilterTextBox _partStringFilter;
 		private bool _scrollByUser;
@@ -57,6 +67,19 @@ namespace Tailviewer.Ui.Controls
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
+		}
+
+		private void CopySelectedLineToClipboard()
+		{
+			var listViewer = _partListView;
+			if (listViewer != null)
+			{
+				var logEntry = listViewer.SelectedItem as LogEntryViewModel;
+				if (logEntry != null)
+				{
+					Clipboard.SetText(logEntry.Message);
+				}
+			}
 		}
 
 		public bool ShowOther
@@ -325,6 +348,7 @@ namespace Tailviewer.Ui.Controls
 
 		public LogViewerControl()
 		{
+			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
 			SizeChanged += OnSizeChanged;
 		}
 

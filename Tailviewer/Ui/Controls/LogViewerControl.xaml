@@ -116,6 +116,12 @@
                             VirtualizingPanel.IsVirtualizing="True"
                             ScrollViewer.VerticalScrollBarVisibility="Visible">
 
+                            <ListView.InputBindings>
+                                <KeyBinding Modifiers="Control" Key="C"
+                                            Command="{Binding CopySelectedLineToClipboardCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                                            />
+                            </ListView.InputBindings>
+
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Template">
