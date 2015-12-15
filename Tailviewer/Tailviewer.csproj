@@ -78,7 +78,6 @@
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Controls\RemoveButton.cs" />
-    <Compile Include="Ui\Controls\LevelFilterControl.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
@@ -125,10 +124,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\RemoveButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\LevelFilterControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

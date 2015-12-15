@@ -2,7 +2,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
@@ -10,15 +9,15 @@ using DataSource = Tailviewer.Settings.DataSource;
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
-	public sealed class LevelFilterControlTest
+	public sealed class LogViewerControlTest
 	{
-		private LevelFilterControl _control;
+		private LogViewerControl _control;
 
 		[SetUp]
 		[STAThread]
 		public void SetUp()
 		{
-			_control = new LevelFilterControl
+			_control = new LogViewerControl
 				{
 					DataSource = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")))
 				};
@@ -32,7 +31,7 @@ namespace Tailviewer.Test.Ui
 			source.OtherFilter = true;
 			source.LevelsFilter = LevelFlags.All;
 
-			var control = new LevelFilterControl
+			var control = new LogViewerControl
 			{
 				DataSource = source
 			};

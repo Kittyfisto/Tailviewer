@@ -7,7 +7,14 @@
     <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
     <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
     <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
-    
+
+    <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
+    <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
+    <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
+    <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
+    <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
+    <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
+
     <Style TargetType="{x:Type local:LogViewerControl}">
         <Setter Property="Template">
             <Setter.Value>
@@ -15,21 +22,14 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition MinWidth="200" />
-                            </Grid.ColumnDefinitions>
-
+                        <WrapPanel Orientation="Horizontal" Margin="8">
                             <ToggleButton
-                                Margin="8"
+                                Margin="0,0,8,8"
                                 Padding="4"
                                 x:Name="PART_FollowTail"
                                 Content="Follow Tail"
@@ -37,32 +37,69 @@
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <ToggleButton
-                                Margin="8"
+                                Margin="0,0,8,8"
                                 Padding="4"
-                                Grid.Column="1"
                                 x:Name="PART_ColorByLevel"
                                 VerticalAlignment="Center"
                                 IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="Color by level"
-                                />
+                                Content="Color by level" />
 
-                            <local:LevelFilterControl
-                                Grid.Column="2"
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
                                 VerticalAlignment="Center"
-                                Margin="8"
-                                DataSource="{Binding DataSource, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                                IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding ShowError, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding ShowWarning, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding ShowInfo, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <ToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding ShowOther, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:FilterTextBox
+                                Margin="0,0,8,8"
                                 x:Name="PART_StringFilter"
-                                Margin="8"
-                                Grid.Column="4"
                                 FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
                                 Watermark="Filter log file (Ctrl+E)" />
-                        </Grid>
+                        </WrapPanel>
+
+                        <Grid Grid.Row="1"
+                              Height="1"
+                              Background="#E5E5E5" />
 
                         <ListView
                             x:Name="PART_ListView"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             ItemsSource="{TemplateBinding ItemsSource}"
                             BorderThickness="0"
                             VirtualizingPanel.IsVirtualizing="True"
@@ -91,9 +128,10 @@
                                             </MultiTrigger.Conditions>
                                             <Setter Property="Background">
                                                 <Setter.Value>
-                                                    <MultiBinding Converter="{StaticResource LevelToHoveredBrushConverter}">
+                                                    <MultiBinding
+                                                        Converter="{StaticResource LevelToHoveredBrushConverter}">
                                                         <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" ElementName="PART_ColorByLevel"/>
+                                                        <Binding Path="IsChecked" ElementName="PART_ColorByLevel" />
                                                     </MultiBinding>
                                                 </Setter.Value>
                                             </Setter>
@@ -105,17 +143,21 @@
                                             </MultiTrigger.Conditions>
                                             <Setter Property="Background">
                                                 <Setter.Value>
-                                                    <MultiBinding Converter="{StaticResource LevelToBackgroundBrushConverter}">
+                                                    <MultiBinding
+                                                        Converter="{StaticResource LevelToBackgroundBrushConverter}">
                                                         <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" Mode="OneWay" ElementName="PART_ColorByLevel" />
+                                                        <Binding Path="IsChecked" Mode="OneWay"
+                                                                 ElementName="PART_ColorByLevel" />
                                                     </MultiBinding>
                                                 </Setter.Value>
                                             </Setter>
                                             <Setter Property="TextElement.Foreground">
                                                 <Setter.Value>
-                                                    <MultiBinding Converter="{StaticResource LevelToForegroundBrushConverter}">
+                                                    <MultiBinding
+                                                        Converter="{StaticResource LevelToForegroundBrushConverter}">
                                                         <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" Mode="OneWay" ElementName="PART_ColorByLevel" />
+                                                        <Binding Path="IsChecked" Mode="OneWay"
+                                                                 ElementName="PART_ColorByLevel" />
                                                     </MultiBinding>
                                                 </Setter.Value>
                                             </Setter>
@@ -125,7 +167,7 @@
                             </ListView.Resources>
                         </ListView>
 
-                        <Border Grid.Row="2"
+                        <Border Grid.Row="3"
                                 Background="#D8D8D8">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock

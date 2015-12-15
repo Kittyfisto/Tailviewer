@@ -19,24 +19,6 @@
                             BorderThickness="{TemplateBinding BorderThickness}">
                         
                         <StackPanel Orientation="Horizontal">
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowError, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowWarning, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowInfo, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
-                            <ToggleButton Margin="0,0,8,0" Padding="4" IsChecked="{Binding ShowOther, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <TextBlock Text="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ToggleButton>
                         </StackPanel>
                         
                     </Border>
