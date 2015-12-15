@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -16,17 +17,18 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
+		private readonly ICommand _openInExplorerCommand;
 		private readonly ICommand _removeCommand;
-		private int _otherCount;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
+		private Size _fileSize;
 		private int _infoCount;
 		private bool _isOpen;
-		private int _warningCount;
-		private int _totalCount;
 		private TimeSpan _lastWrittenAge;
-		private Size _fileSize;
+		private int _otherCount;
+		private int _totalCount;
+		private int _warningCount;
 
 		public DataSourceViewModel(DataSource dataSource)
 		{
@@ -36,7 +38,13 @@ namespace Tailviewer.Ui.ViewModels
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_folder = Path.GetDirectoryName(dataSource.FullFileName);
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 			Update();
+		}
+
+		public ICommand OpenInExplorerCommand
+		{
+			get { return _openInExplorerCommand; }
 		}
 
 		public int TotalCount
@@ -278,6 +286,12 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void OpenInExplorer()
+		{
+			var argument = string.Format(@"/select, {0}", _dataSource.FullFileName);
+			Process.Start("explorer.exe", argument);
+		}
 
 		public void Update()
 		{

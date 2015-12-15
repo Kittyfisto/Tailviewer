@@ -196,6 +196,9 @@
   <ItemGroup>
     <Resource Include="Resources\ic_add_black_18dp.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_open_10_black_18dp.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

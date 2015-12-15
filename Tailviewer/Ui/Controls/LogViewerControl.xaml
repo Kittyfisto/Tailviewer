@@ -28,6 +28,17 @@
                         </Grid.RowDefinitions>
 
                         <WrapPanel Orientation="Horizontal" Margin="8">
+                            <Button
+                                Margin="0,0,8,8"
+                                Width="26"
+                                Height="26"
+                                VerticalAlignment="Center"
+                                Command="{Binding DataSource.OpenInExplorerCommand, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
+                                       ToolTip="Open folder in explorer"
+                                       />
+                            </Button>
+
                             <ToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
