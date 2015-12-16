@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using FluentAssertions;
@@ -14,9 +15,36 @@ namespace Tailviewer.Test.Settings
 	public sealed class ApplicationSettingsTest
 	{
 		[Test]
+		[Description("Verifies that the folder is created if it doesn't exist")]
+		public void TestStore1()
+		{
+			var path = Path.GetTempPath();
+			const string folderName = "ApplicationSettingsTest";
+			const string fileName = "settings.xml";
+			var fileFolder = Path.Combine(path, folderName);
+			var filePath = Path.Combine(fileFolder, fileName);
+
+			if (File.Exists(filePath))
+				File.Delete(filePath);
+
+			if (Directory.Exists(fileFolder))
+				Directory.Delete(fileFolder);
+
+			var settings = new ApplicationSettings(filePath);
+			settings.QuickFilters.Add(new QuickFilter());
+			settings.Save().Should().BeTrue();
+
+			File.Exists(filePath);
+			var settings2 = new ApplicationSettings(filePath);
+			settings2.Restore();
+			settings2.QuickFilters.Count.Should().Be(1);
+		}
+
+		[Test]
 		public void TestStoreRestore()
 		{
-			var settings = new ApplicationSettings("awdawddaw");
+			const string fileName = "applicationsettingstest.xml";
+			var settings = new ApplicationSettings(fileName);
 			settings.MainWindow.Left = 1;
 			settings.MainWindow.Top = 2;
 			settings.MainWindow.Width = 3;
@@ -43,11 +71,10 @@ namespace Tailviewer.Test.Settings
 					Type = QuickFilterType.RegexpFilter
 				});
 			var id = settings.QuickFilters[0].Id;
-			var fileName = "applicationsettingstest.xml";
-			settings.Save(fileName).Should().BeTrue();
+			settings.Save().Should().BeTrue();
 
-			settings = new ApplicationSettings("adwaaw");
-			settings.Restore(fileName);
+			settings = new ApplicationSettings(fileName);
+			settings.Restore();
 			settings.MainWindow.Left.Should().Be(1);
 			settings.MainWindow.Top.Should().Be(2);
 			settings.MainWindow.Width.Should().Be(3);

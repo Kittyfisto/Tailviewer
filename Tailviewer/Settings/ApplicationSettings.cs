@@ -11,6 +11,7 @@ namespace Tailviewer.Settings
 		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
 		private readonly QuickFilters _quickFilters;
+		private string _fileFolder;
 
 		public static ApplicationSettings Create()
 		{
@@ -22,7 +23,8 @@ namespace Tailviewer.Settings
 
 		public ApplicationSettings(string fileName)
 		{
-			_fileName = fileName;
+			_fileName = Path.GetFullPath(fileName);
+			_fileFolder = Path.GetDirectoryName(_fileName);
 
 			_mainWindow = new WindowSettings();
 			_dataSources = new DataSources();
@@ -45,11 +47,6 @@ namespace Tailviewer.Settings
 		}
 
 		public bool Save()
-		{
-			return Save(_fileName);
-		}
-
-		internal bool Save(string fileName)
 		{
 			try
 			{
@@ -81,9 +78,12 @@ namespace Tailviewer.Settings
 						writer.WriteEndElement();
 					}
 
-					using (var file = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+					if (!Directory.Exists(_fileFolder))
+						Directory.CreateDirectory(_fileFolder);
+
+					using (var file = new FileStream(_fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
 					{
-						var length = (int) stream.Position;
+						var length = (int)stream.Position;
 						file.Write(stream.GetBuffer(), 0, length);
 						file.SetLength(length);
 					}
@@ -97,14 +97,14 @@ namespace Tailviewer.Settings
 			}
 		}
 
-		internal void Restore(string fileName)
+		public void Restore()
 		{
-			if (!File.Exists(fileName))
+			if (!File.Exists(_fileName))
 				return;
 
 			try
 			{
-				using (FileStream stream = File.OpenRead(fileName))
+				using (FileStream stream = File.OpenRead(_fileName))
 				using (XmlReader reader = XmlReader.Create(stream))
 				{
 					while (reader.Read())
@@ -129,11 +129,6 @@ namespace Tailviewer.Settings
 			catch (Exception)
 			{
 			}
-		}
-
-		public void Restore()
-		{
-			Restore(_fileName);
 		}
 	}
 }
