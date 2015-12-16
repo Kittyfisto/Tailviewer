@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 
@@ -15,19 +15,18 @@ namespace LogViewer
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (Viewer),
 			                            new PropertyMetadata(null, OnLogFileChanged));
 
-		const double LineHeight = 14;
-
 		#region Cached data
 
-		private readonly List<LineData> _lines;
+		private readonly List<TextLine> _lines;
 		private int _currentLine;
 		private LogFileSection _currentSection;
+		private TextLine _hoveredLine;
+		private TextLine _selectedLine;
 
 		#endregion
 
 		private ScrollBar _horizontalScrollBar;
 		private ScrollBar _verticalScrollBar;
-		private readonly Typeface _typeface;
 
 		static Viewer()
 		{
@@ -36,24 +35,110 @@ namespace LogViewer
 
 		public Viewer()
 		{
-			_lines = new List<LineData>();
-			_typeface = new Typeface("Segoe UI");
+			_lines = new List<TextLine>();
 
 			SizeChanged += OnSizeChanged;
-		}
-
-		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-		{
-			var previousVisibleSection = _currentSection;
-			_currentSection = VisibleSection;
-			UpdateScrollViewerRegions();
-			UpdateVisibleLines(LogFile, previousVisibleSection, _currentSection);
 		}
 
 		public ILogFile LogFile
 		{
 			get { return (ILogFile) GetValue(LogFileProperty); }
 			set { SetValue(LogFileProperty, value); }
+		}
+
+		/// <summary>
+		///     The section of the log file that is currently visible.
+		/// </summary>
+		public LogFileSection VisibleSection
+		{
+			get
+			{
+				if (LogFile == null)
+					return new LogFileSection(0, 0);
+
+				int maxCount = MaxNumVisibleLines;
+				int linesLeft = LogFile.Count - _currentLine;
+				int count = Math.Min(linesLeft, maxCount);
+				return new LogFileSection(_currentLine, count);
+			}
+		}
+
+		private int MaxNumVisibleLines
+		{
+			get { return (int) Math.Ceiling(ActualHeight/TextLine.LineHeight); }
+		}
+
+		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			LogFileSection previousVisibleSection = _currentSection;
+			_currentSection = VisibleSection;
+			UpdateScrollViewerRegions();
+			UpdateVisibleLines(LogFile, previousVisibleSection, _currentSection);
+		}
+
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			Point relativePos = e.GetPosition(this);
+			var lineIndex = (int) Math.Floor(relativePos.Y/TextLine.LineHeight);
+			if (lineIndex >= 0 && lineIndex < _lines.Count)
+			{
+				TextLine hoveredLine = _lines[lineIndex];
+				if (hoveredLine != _hoveredLine)
+				{
+					hoveredLine.IsHovered = true;
+					if (_hoveredLine != null)
+					{
+						_hoveredLine.IsHovered = false;
+					}
+					_hoveredLine = hoveredLine;
+
+					if (Mouse.LeftButton == MouseButtonState.Pressed)
+						TrySelectLine(_hoveredLine);
+
+					InvalidateVisual();
+				}
+			}
+		}
+
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			base.OnMouseLeave(e);
+
+			if (_hoveredLine != null)
+			{
+				_hoveredLine.IsHovered = false;
+				_hoveredLine = null;
+				InvalidateVisual();
+			}
+		}
+
+		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+		{
+			if (TrySelectLine(_hoveredLine))
+			{
+				e.Handled = true;
+				InvalidateVisual();
+			}
+
+			base.OnMouseLeftButtonDown(e);
+		}
+
+		private bool TrySelectLine(TextLine line)
+		{
+			if (line != null)
+			{
+				if (_selectedLine != null)
+					_selectedLine.IsSelected = false;
+
+				_selectedLine = line;
+				_selectedLine.IsSelected = true;
+
+				return true;
+			}
+
+			return false;
 		}
 
 		private static void OnLogFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -74,23 +159,6 @@ namespace LogViewer
 			}
 		}
 
-		/// <summary>
-		/// The section of the log file that is currently visible.
-		/// </summary>
-		public LogFileSection VisibleSection
-		{
-			get
-			{
-				if (LogFile == null)
-					return new LogFileSection(0, 0);
-
-				int maxCount = MaxNumVisibleLines;
-				int linesLeft = LogFile.Count - _currentLine;
-				int count = Math.Min(linesLeft, maxCount);
-				return new LogFileSection(_currentLine, count);
-			}
-		}
-
 		private void UpdateVisibleLines()
 		{
 			UpdateVisibleLines(LogFile);
@@ -102,18 +170,11 @@ namespace LogViewer
 			if (logFile == null)
 				return;
 
-			var culture = CultureInfo.CurrentUICulture;
 			var data = new LogEntry[_currentSection.Count];
 			logFile.GetSection(_currentSection, data);
 			for (int i = 0; i < _currentSection.Count; ++i)
 			{
-				_lines.Add(new LineData(i, new FormattedText(data[i].Message,
-				                                          culture,
-				                                          FlowDirection.LeftToRight,
-				                                          _typeface,
-				                                          LineHeight,
-				                                          Brushes.Black
-					                        )));
+				_lines.Add(new TextLine(data[i]));
 			}
 
 			InvalidateVisual();
@@ -123,12 +184,11 @@ namespace LogViewer
 		{
 			if (LogFile == null)
 			{
-				
 			}
 			else
 			{
 				int count = LogFile.Count;
-				double totalHeight = count*LineHeight;
+				double totalHeight = count*TextLine.LineHeight;
 				double maximum = Math.Max(totalHeight - ActualHeight, 0);
 				_verticalScrollBar.Minimum = 0;
 				_verticalScrollBar.Maximum = maximum;
@@ -139,14 +199,6 @@ namespace LogViewer
 		private void UpdateVisibleLines(ILogFile logFile, LogFileSection oldSection, LogFileSection newSection)
 		{
 			UpdateVisibleLines(logFile);
-		}
-
-		private int MaxNumVisibleLines
-		{
-			get
-			{
-				return (int)Math.Ceiling(ActualHeight / LineHeight);
-			}
 		}
 
 		public override void OnApplyTemplate()
@@ -165,7 +217,7 @@ namespace LogViewer
 		private void VerticalScrollBarOnScroll(object sender, ScrollEventArgs args)
 		{
 			double pos = args.NewValue;
-			var currentLine = (int)Math.Floor(pos/LineHeight);
+			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
 
 			_currentLine = currentLine;
 			_currentSection = VisibleSection;
@@ -174,7 +226,6 @@ namespace LogViewer
 
 		private void HorizontalScrollBarOnScroll(object sender, ScrollEventArgs args)
 		{
-			
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)
@@ -182,23 +233,10 @@ namespace LogViewer
 			base.OnRender(drawingContext);
 
 			double y = 0;
-			foreach (var data in _lines)
+			foreach (TextLine data in _lines)
 			{
-				var pos = new Point(0, y);
-				drawingContext.DrawText(data.Text, pos);
-				y += LineHeight;
-			}
-		}
-
-		private struct LineData
-		{
-			public readonly int Index;
-			public readonly FormattedText Text;
-
-			public LineData(int index, FormattedText text)
-			{
-				Index = index;
-				Text = text;
+				data.Render(drawingContext, y, ActualWidth);
+				y += TextLine.LineHeight;
 			}
 		}
 	}
