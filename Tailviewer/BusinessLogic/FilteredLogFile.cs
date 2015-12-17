@@ -74,7 +74,7 @@ namespace Tailviewer.BusinessLogic
 			_listeners.RemoveListener(listener);
 		}
 
-		public void GetSection(LogFileSection section, LogEntry[] dest)
+		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -94,13 +94,13 @@ namespace Tailviewer.BusinessLogic
 				{
 					int index = section.Index + i;
 					int sourceIndex = _indices[index];
-					LogEntry entry = _source.GetEntry(sourceIndex);
-					dest[i] = entry;
+					LogLine line = _source.GetEntry(sourceIndex);
+					dest[i] = line;
 				}
 			}
 		}
 
-		public LogEntry GetEntry(int index)
+		public LogLine GetEntry(int index)
 		{
 			lock (_indices)
 			{
@@ -126,7 +126,7 @@ namespace Tailviewer.BusinessLogic
 		private void Filter(object parameter)
 		{
 			CancellationToken token = _cancellationTokenSource.Token;
-			var entries = new LogEntry[BatchSize];
+			var entries = new LogLine[BatchSize];
 			int currentSourceIndex = 0;
 
 			while (!token.IsCancellationRequested)
@@ -165,8 +165,8 @@ namespace Tailviewer.BusinessLogic
 
 					for (int i = 0; i < nextCount; ++i)
 					{
-						LogEntry entry = entries[i];
-						if (_filter.PassesFilter(entry))
+						LogLine line = entries[i];
+						if (_filter.PassesFilter(line))
 						{
 							int sourceIndex = nextSection.Index + i;
 							_indices.Add(sourceIndex);

@@ -13,11 +13,11 @@ namespace Tailviewer.Ui.ViewModels
 			_message = message;
 		}
 
-		public LogEntryViewModel(int index, LogEntry entry)
+		public LogEntryViewModel(int index, LogLine line)
 		{
 			_index = index;
-			_message = entry.Message;
-			_level = entry.Level;
+			_message = line.Message;
+			_level = line.Level;
 		}
 
 		public LevelFlags Level

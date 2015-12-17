@@ -44,8 +44,8 @@ namespace Tailviewer.Test.BusinessLogic
 
 				var entries = file.Entries.ToList();
 				entries.Count.Should().Be(165342);
-				entries[0].Should().Be(new LogEntry("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info));
-				entries[entries.Count - 1].Should().Be(new LogEntry("2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info));
+				entries[0].Should().Be(new LogLine(0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info));
+				entries[entries.Count - 1].Should().Be(new LogLine(165341, "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info));
 
 				file.DebugCount.Should().Be(165337);
 				file.InfoCount.Should().Be(5);
@@ -117,20 +117,40 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Start();
 				file.Wait();
 
-				file.GetSection(new LogFileSection(0, 10))
-					.Should().Equal(new[]
-					    {
-						    new LogEntry("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info),
-							new LogEntry("2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152", LevelFlags.Info),
-						    new LogEntry("2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348", LevelFlags.Info),
-						    new LogEntry("2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat", LevelFlags.Debug),
-						    new LogEntry("2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip", LevelFlags.Debug)
-						});
+				var section = file.GetSection(new LogFileSection(0, 10));
+				section.Should().Equal(new[]
+					{
+						new LogLine(0,
+						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
+						            LevelFlags.Info),
+						new LogLine(1,
+						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
+						            LevelFlags.Debug),
+						new LogLine(2,
+						            "2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'",
+						            LevelFlags.Debug),
+						new LogLine(3,
+						            "2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'",
+						            LevelFlags.Debug),
+						new LogLine(4,
+						            "2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'",
+						            LevelFlags.Debug),
+						new LogLine(5,
+						            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
+						            LevelFlags.Info),
+						new LogLine(6,
+						            "2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...",
+						            LevelFlags.Debug),
+						new LogLine(7,
+						            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
+						            LevelFlags.Info),
+						new LogLine(8,
+						            "2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat",
+						            LevelFlags.Debug),
+						new LogLine(9,
+						            "2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip",
+						            LevelFlags.Debug)
+					});
 			}
 		}
 
@@ -147,15 +167,25 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					filtered.Wait();
 					filtered.Count.Should().Be(5);
-					filtered.GetSection(new LogFileSection(0, 5))
-					        .Should().Equal(new []
-						        {
-							        new LogEntry("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info),
-							        new LogEntry("2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152", LevelFlags.Info),
-							        new LogEntry("2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348", LevelFlags.Info),
-							        new LogEntry("2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure", LevelFlags.Info),
-							        new LogEntry("2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info)
-						        });
+					var section = filtered.GetSection(new LogFileSection(0, 5));
+					section.Should().Equal(new[]
+						{
+							new LogLine(0,
+							            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
+							            LevelFlags.Info),
+							new LogLine(5,
+							            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
+							            LevelFlags.Info),
+							new LogLine(7,
+							            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
+							            LevelFlags.Info),
+							new LogLine(165340,
+							            "2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure",
+							            LevelFlags.Info),
+							new LogLine(165341,
+							            "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...",
+							            LevelFlags.Info)
+						});
 				}
 			}
 		}
@@ -212,7 +242,7 @@ namespace Tailviewer.Test.BusinessLogic
 					filtered.Wait();
 					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
 						{
-							new LogEntry("INFO - Test", LevelFlags.Info)
+							new LogLine(0, "INFO - Test", LevelFlags.Info)
 						});
 
 					var listener = new Mock<ILogFileListener>();
@@ -315,7 +345,7 @@ namespace Tailviewer.Test.BusinessLogic
 					WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1)).Should().BeTrue();
 					logFile.Entries.Should().Equal(new[]
 						{
-							new LogEntry("Hello World!", LevelFlags.None)
+							new LogLine(0, "Hello World!", LevelFlags.None)
 						});
 				}
 			}

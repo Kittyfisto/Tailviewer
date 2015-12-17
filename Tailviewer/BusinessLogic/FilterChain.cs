@@ -6,7 +6,7 @@ namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
 	/// Combines multiple <see cref="IFilter"/>s into one.
-	/// A <see cref="LogEntry"/> passes if it passes *all* individual filters.
+	/// A <see cref="LogLine"/> passes if it passes *all* individual filters.
 	/// </summary>
 	internal sealed class FilterChain
 		: IFilter
@@ -21,7 +21,7 @@ namespace Tailviewer.BusinessLogic
 			if (_filters.Any(x => x == null)) throw new ArgumentNullException("filters");
 		}
 
-		public bool PassesFilter(LogEntry logEntry)
+		public bool PassesFilter(LogLine logLine)
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable ForCanBeConvertedToForeach
@@ -29,7 +29,7 @@ namespace Tailviewer.BusinessLogic
 // ReSharper restore ForCanBeConvertedToForeach
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
-				if (!_filters[i].PassesFilter(logEntry))
+				if (!_filters[i].PassesFilter(logLine))
 					return false;
 			}
 

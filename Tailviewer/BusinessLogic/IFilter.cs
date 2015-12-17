@@ -5,6 +5,6 @@ namespace Tailviewer.BusinessLogic
 	internal interface IFilter
 	{
 		[Pure]
-		bool PassesFilter(LogEntry logEntry);
+		bool PassesFilter(LogLine logLine);
 	}
 }

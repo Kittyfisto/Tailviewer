@@ -54,7 +54,7 @@
     <Compile Include="BusinessLogic\Filter.cs" />
     <Compile Include="BusinessLogic\IFilter.cs" />
     <Compile Include="BusinessLogic\LevelFilter.cs" />
-    <Compile Include="BusinessLogic\LogEntry.cs" />
+    <Compile Include="BusinessLogic\LogLine.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />
     <Compile Include="BusinessLogic\QuickFilters.cs" />
     <Compile Include="BusinessLogic\RegexFilter.cs" />

@@ -16,9 +16,9 @@ namespace Tailviewer.BusinessLogic
 			_regex = new Regex(pattern, options);
 		}
 
-		public bool PassesFilter(LogEntry logEntry)
+		public bool PassesFilter(LogLine logLine)
 		{
-			if (_regex.IsMatch(logEntry.Message))
+			if (_regex.IsMatch(logLine.Message))
 				return true;
 
 			return false;

@@ -15,12 +15,12 @@
 			ExcludeOther = excludeOther;
 		}
 
-		public bool PassesFilter(LogEntry logEntry)
+		public bool PassesFilter(LogLine logLine)
 		{
-			if ((logEntry.Level & Level) != 0)
+			if ((logLine.Level & Level) != 0)
 				return true;
 
-			if (logEntry.Level != LevelFlags.None || ExcludeOther)
+			if (logLine.Level != LevelFlags.None || ExcludeOther)
 				return false;
 
 			return true;

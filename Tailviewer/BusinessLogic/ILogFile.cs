@@ -13,9 +13,9 @@ namespace Tailviewer.BusinessLogic
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		void Remove(ILogFileListener listener);
 
-		void GetSection(LogFileSection section, LogEntry[] dest);
+		void GetSection(LogFileSection section, LogLine[] dest);
 
 		[Pure]
-		LogEntry GetEntry(int index);
+		LogLine GetEntry(int index);
 	}
 }

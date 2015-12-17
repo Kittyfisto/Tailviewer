@@ -16,9 +16,9 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					Value = "foobar"
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("hello foobar!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("FOOBAR", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("FOOBA", LevelFlags.None)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hello foobar!", LevelFlags.None)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBAR", LevelFlags.None)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBA", LevelFlags.None)).Should().BeFalse();
 		}
 
 		[Test]
@@ -30,9 +30,9 @@ namespace Tailviewer.Test.BusinessLogic
 				IgnoreCase = true,
 				Type = QuickFilterType.WildcardFilter
 			};
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("Hello World!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("hELlo wORld!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogEntry("Hello Wold!", LevelFlags.None)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.None)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.None)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello Wold!", LevelFlags.None)).Should().BeFalse();
 		}
 	}
 }

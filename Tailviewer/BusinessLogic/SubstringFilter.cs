@@ -19,9 +19,9 @@ namespace Tailviewer.BusinessLogic
 		}
 
 		[Pure]
-		public bool PassesFilter(LogEntry logEntry)
+		public bool PassesFilter(LogLine logLine)
 		{
-			int idx = logEntry.Message.IndexOf(StringFilter, Comparison);
+			int idx = logLine.Message.IndexOf(StringFilter, Comparison);
 			if (idx == -1)
 				return false;
 

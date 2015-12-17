@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic
 
 		#region Data
 
-		private readonly List<LogEntry> _entries;
+		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
@@ -48,7 +48,7 @@ namespace Tailviewer.BusinessLogic
 			_fileName = fileName;
 			_endOfSectionHandle = new ManualResetEvent(false);
 
-			_entries = new List<LogEntry>();
+			_entries = new List<LogLine>();
 			_syncRoot = new object();
 			_cancellationTokenSource = new CancellationTokenSource();
 			_readTask = new Task(ReadFile,
@@ -101,7 +101,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public IEnumerable<LogEntry> Entries
+		public IEnumerable<LogLine> Entries
 		{
 			get { return _entries; }
 		}
@@ -126,7 +126,7 @@ namespace Tailviewer.BusinessLogic
 			_listeners.RemoveListener(listener);
 		}
 
-		public void GetSection(LogFileSection section, LogEntry[] dest)
+		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -146,7 +146,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public LogEntry GetEntry(int index)
+		public LogLine GetEntry(int index)
 		{
 			lock (_syncRoot)
 			{
@@ -325,7 +325,8 @@ namespace Tailviewer.BusinessLogic
 		{
 			lock (_syncRoot)
 			{
-				_entries.Add(new LogEntry(line, level));
+				int lineIndex = _entries.Count;
+				_entries.Add(new LogLine((uint) lineIndex, line, level));
 			}
 
 			_listeners.OnRead(numberOfLinesRead);

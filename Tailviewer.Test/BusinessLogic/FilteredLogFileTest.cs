@@ -11,15 +11,15 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class FilteredLogFileTest
 	{
 		private Mock<ILogFile> _logFile;
-		private List<LogEntry> _entries;
+		private List<LogLine> _entries;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_entries = new List<LogEntry>();
+			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogEntry[]>()))
-			        .Callback((LogFileSection section, LogEntry[] entries) => _entries.CopyTo(section.Index, entries, 0, section.Count));
+			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
+			        .Callback((LogFileSection section, LogLine[] entries) => _entries.CopyTo(section.Index, entries, 0, section.Count));
 			_logFile.Setup(x => x.GetEntry(It.IsAny<int>())).Returns((int index) => _entries[index]);
 		}
 
@@ -28,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("ello", true, LevelFlags.All, false)))
 			{
-				_entries.Add(new LogEntry("Hello world!", LevelFlags.None));
+				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.None));
 				file.OnLogFileModified(new LogFileSection(0, 1));
 				file.Start(TimeSpan.Zero);
 				file.Wait();
@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic
 				file.GetSection(new LogFileSection(0, 1))
 				    .Should().Equal(new[]
 					    {
-						    new LogEntry("Hello world!", LevelFlags.None)
+						    new LogLine(0, "Hello world!", LevelFlags.None)
 					    });
 			}
 		}
