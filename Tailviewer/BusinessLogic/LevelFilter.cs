@@ -1,10 +1,12 @@
-﻿namespace Tailviewer.BusinessLogic
+﻿using System.Collections.Generic;
+
+namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
 	/// A filter that can be used to exclude entries of certain levels.
 	/// </summary>
 	internal sealed class LevelFilter
-		: IFilter
+		: ILogEntryFilter
 	{
 		public readonly LevelFlags Level;
 		public readonly bool ExcludeOther;
@@ -13,6 +15,19 @@
 		{
 			Level = level;
 			ExcludeOther = excludeOther;
+		}
+
+		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		{
+// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (var logLine in logEntry)
+// ReSharper restore LoopCanBeConvertedToQuery
+			{
+				if (PassesFilter(logLine))
+					return true;
+			}
+
+			return false;
 		}
 
 		public bool PassesFilter(LogLine logLine)

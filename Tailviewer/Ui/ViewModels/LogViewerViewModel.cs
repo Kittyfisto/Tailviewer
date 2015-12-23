@@ -20,13 +20,15 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourceViewModel _dataSource;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
-		private IEnumerable<IFilter> _quickFilterChain;
+		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private readonly TimeSpan _maximumWaitTime;
 
-		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
+		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 
+			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
 			_dataSource.PropertyChanged += DataSourceOnPropertyChanged;
 
@@ -37,6 +39,11 @@ namespace Tailviewer.Ui.ViewModels
 			_logEntries = new ObservableCollection<LogEntryViewModel>();
 
 			UpdateCurrentLogFile();
+		}
+
+		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
+			: this(dataSource, dispatcher, TimeSpan.FromMilliseconds(10))
+		{
 		}
 
 		public ILogFile CurrentLogFile
@@ -61,7 +68,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 
 			_currentLogFile = file;
-			file.AddListener(this, TimeSpan.FromMilliseconds(10), 1000);
+			file.AddListener(this, _maximumWaitTime, 1000);
 			UpdateCounts();
 		}
 
@@ -80,7 +87,7 @@ namespace Tailviewer.Ui.ViewModels
 			var filter = Filter.Create(stringFilter, true, levelFilter, otherFilter, _quickFilterChain);
 			if (filter != null)
 			{
-				logFile = _fullLogFile.AsFiltered(filter);
+				logFile = _fullLogFile.AsFiltered(filter, _maximumWaitTime);
 			}
 			else
 			{
@@ -116,7 +123,7 @@ namespace Tailviewer.Ui.ViewModels
 		/// <summary>
 		/// The list of filters as produced by the "quick filter" panel.
 		/// </summary>
-		public IEnumerable<IFilter> QuickFilterChain
+		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
 			get { return _quickFilterChain; }
 			set
@@ -141,6 +148,9 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			lock (_pendingSections)
 			{
+				if (section == LogFileSection.Reset)
+					_pendingSections.Clear();
+
 				_pendingSections.Add(new KeyValuePair<ILogFile, LogFileSection>(_currentLogFile, section));
 				_dispatcher.BeginInvoke(Synchronize, DispatcherPriority.Background);
 			}

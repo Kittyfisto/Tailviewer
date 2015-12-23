@@ -172,7 +172,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public IFilter CreateFilter()
+		public ILogEntryFilter CreateFilter()
 		{
 			if (!IsActive)
 				return null;

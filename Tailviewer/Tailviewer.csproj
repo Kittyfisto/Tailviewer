@@ -52,7 +52,7 @@
     <Compile Include="App.cs" />
     <Compile Include="BusinessLogic\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filter.cs" />
-    <Compile Include="BusinessLogic\IFilter.cs" />
+    <Compile Include="BusinessLogic\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogLine.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />

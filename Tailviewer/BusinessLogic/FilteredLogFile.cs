@@ -12,7 +12,7 @@ namespace Tailviewer.BusinessLogic
 	{
 		private const int BatchSize = 1000;
 
-		private readonly IFilter _filter;
+		private readonly ILogEntryFilter _filter;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly List<int> _indices;
@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic
 		private readonly ILogFile _source;
 		private LogFileSection _fullSection;
 
-		public FilteredLogFile(ILogFile source, IFilter filter)
+		public FilteredLogFile(ILogFile source, ILogEntryFilter filter)
 		{
 			if (source == null) throw new ArgumentNullException("source");
 			if (filter == null) throw new ArgumentNullException("filter");
@@ -112,6 +112,7 @@ namespace Tailviewer.BusinessLogic
 		public void OnLogFileModified(LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
+			_endOfSectionHandle.Reset();
 		}
 
 		public void Start(TimeSpan maximumWaitTime)
@@ -128,6 +129,7 @@ namespace Tailviewer.BusinessLogic
 			CancellationToken token = _cancellationTokenSource.Token;
 			var entries = new LogLine[BatchSize];
 			int currentSourceIndex = 0;
+			var lastLogEntry = new List<LogLine>();
 
 			while (!token.IsCancellationRequested)
 			{
@@ -138,7 +140,10 @@ namespace Tailviewer.BusinessLogic
 					{
 						_fullSection = new LogFileSection();
 						_indices.Clear();
+
+						lastLogEntry.Clear();
 						currentSourceIndex = 0;
+
 						_listeners.OnRead(-1);
 					}
 					else
@@ -149,9 +154,10 @@ namespace Tailviewer.BusinessLogic
 
 				if (_fullSection.IsEndOfSection(currentSourceIndex))
 				{
-					_endOfSectionHandle.Set();
+					if (!TryAddLogLine(lastLogEntry))
+						_listeners.OnRead(_indices.Count);
 
-					_listeners.OnRead(_indices.Count);
+					_endOfSectionHandle.Set();
 
 					// There's no more data, let's wait for more (or until we're disposed)
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));
@@ -165,18 +171,44 @@ namespace Tailviewer.BusinessLogic
 
 					for (int i = 0; i < nextCount; ++i)
 					{
+						if (token.IsCancellationRequested)
+							break;
+
 						LogLine line = entries[i];
-						if (_filter.PassesFilter(line))
+						if (lastLogEntry.Count == 0 || lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
 						{
-							int sourceIndex = nextSection.Index + i;
-							_indices.Add(sourceIndex);
-							_listeners.OnRead(_indices.Count);
+							lastLogEntry.Add(line);
+						}
+						else if (line.LogEntryIndex != lastLogEntry[0].LogEntryIndex)
+						{
+							TryAddLogLine(lastLogEntry);
+							lastLogEntry.Clear();
+							lastLogEntry.Add(line);
 						}
 					}
 
 					currentSourceIndex += nextCount;
 				}
 			}
+		}
+
+		private bool TryAddLogLine(List<LogLine> logEntry)
+		{
+			if (_indices.Count > 0 && logEntry.Count > 0 &&
+			    _indices[_indices.Count - 1] == logEntry[logEntry.Count - 1].LineIndex)
+				return true;
+
+			if (_filter.PassesFilter(logEntry))
+			{
+				foreach (var line in logEntry)
+				{
+					_indices.Add(line.LineIndex);
+				}
+				_listeners.OnRead(_indices.Count);
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

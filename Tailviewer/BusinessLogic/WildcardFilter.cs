@@ -1,8 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Tailviewer.BusinessLogic
 {
-	internal class WildcardFilter : IFilter
+	internal class WildcardFilter : ILogEntryFilter
 	{
 		private readonly Regex _regex;
 
@@ -16,6 +17,19 @@ namespace Tailviewer.BusinessLogic
 			                        .Replace(@"\*", ".*")
 			                        .Replace(@"\?", ".");
 			_regex = new Regex(regexPattern, options);
+		}
+
+		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		{
+			// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (var logLine in logEntry)
+			// ReSharper restore LoopCanBeConvertedToQuery
+			{
+				if (PassesFilter(logLine))
+					return true;
+			}
+
+			return false;
 		}
 
 		public bool PassesFilter(LogLine logLine)

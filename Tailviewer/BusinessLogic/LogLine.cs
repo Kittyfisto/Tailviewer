@@ -8,24 +8,41 @@ namespace Tailviewer.BusinessLogic
 	public struct LogLine : IEquatable<LogLine>
 	{
 		public readonly LevelFlags Level;
-		public readonly uint LineIndex;
+
+		/// <summary>
+		///     The index of this line in its data source.
+		/// </summary>
+		public readonly int LineIndex;
+
+		/// <summary>
+		///     The index of the log entry this line belongs to.
+		/// </summary>
+		public readonly int LogEntryIndex;
+
 		public readonly string Message;
 
-		public LogLine(uint lineIndex, string message, LevelFlags level)
+		public LogLine(int lineIndex, string message, LevelFlags level)
+			: this(lineIndex, lineIndex, message, level)
+		{
+		}
+
+		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level)
 		{
 			LineIndex = lineIndex;
 			Message = message;
 			Level = level;
+			LogEntryIndex = logEntryIndex;
 		}
 
 		public bool Equals(LogLine other)
 		{
-			return Level == other.Level && LineIndex == other.LineIndex && string.Equals(Message, other.Message);
+			return Level == other.Level && LineIndex == other.LineIndex && LogEntryIndex == other.LogEntryIndex &&
+			       string.Equals(Message, other.Message);
 		}
 
 		public override string ToString()
 		{
-			return string.Format("#{0}: {1}", LineIndex, Message);
+			return string.Format("#{0} (#{1}): {2}", LineIndex, LogEntryIndex, Message);
 		}
 
 		public override bool Equals(object obj)
@@ -39,7 +56,8 @@ namespace Tailviewer.BusinessLogic
 			unchecked
 			{
 				var hashCode = (int) Level;
-				hashCode = (hashCode*397) ^ (int) LineIndex;
+				hashCode = (hashCode*397) ^ LineIndex;
+				hashCode = (hashCode*397) ^ LogEntryIndex;
 				hashCode = (hashCode*397) ^ (Message != null ? Message.GetHashCode() : 0);
 				return hashCode;
 			}

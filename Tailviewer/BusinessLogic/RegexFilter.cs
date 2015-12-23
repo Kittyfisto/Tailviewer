@@ -1,9 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class RegexFilter
-		: IFilter
+		: ILogEntryFilter
 	{
 		private readonly Regex _regex;
 
@@ -14,6 +15,19 @@ namespace Tailviewer.BusinessLogic
 				options |= RegexOptions.IgnoreCase;
 
 			_regex = new Regex(pattern, options);
+		}
+
+		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		{
+			// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (LogLine logLine in logEntry)
+				// ReSharper restore LoopCanBeConvertedToQuery
+			{
+				if (PassesFilter(logLine))
+					return true;
+			}
+
+			return false;
 		}
 
 		public bool PassesFilter(LogLine logLine)

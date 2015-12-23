@@ -192,7 +192,9 @@ namespace Tailviewer.BusinessLogic
 		{
 			var token = (CancellationToken) parameter;
 			int numberOfLinesRead = 0;
+			int nextLogEntryIndex = 0;
 			bool reachedEof = false;
+			LevelFlags flags = LevelFlags.None;
 
 			try
 			{
@@ -241,7 +243,22 @@ namespace Tailviewer.BusinessLogic
 
 							DetermineDateTimeFormat(line);
 							LevelFlags level = DetermineLevel(line, levels);
-							Add(line, level, numberOfLinesRead);
+
+							int logEntryIndex;
+							if (level != LevelFlags.None)
+							{
+								logEntryIndex = nextLogEntryIndex;
+								++nextLogEntryIndex;
+							}
+							else
+							{
+								if (nextLogEntryIndex > 0)
+									logEntryIndex = nextLogEntryIndex - 1;
+								else
+									logEntryIndex = 0;
+							}
+
+							Add(line, level, numberOfLinesRead, logEntryIndex);
 						}
 					}
 				}
@@ -321,12 +338,12 @@ namespace Tailviewer.BusinessLogic
 			return level;
 		}
 
-		private void Add(string line, LevelFlags level, int numberOfLinesRead)
+		private void Add(string line, LevelFlags level, int numberOfLinesRead, int numberOfLogEntriesRead)
 		{
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
-				_entries.Add(new LogLine((uint) lineIndex, line, level));
+				_entries.Add(new LogLine(lineIndex, numberOfLogEntriesRead, line, level));
 			}
 
 			_listeners.OnRead(numberOfLinesRead);
@@ -363,12 +380,12 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public FilteredLogFile AsFiltered(IFilter filter)
+		public FilteredLogFile AsFiltered(ILogEntryFilter filter)
 		{
 			return AsFiltered(filter, TimeSpan.FromMilliseconds(10));
 		}
 
-		public FilteredLogFile AsFiltered(IFilter filter, TimeSpan maximumWaitTime)
+		public FilteredLogFile AsFiltered(ILogEntryFilter filter, TimeSpan maximumWaitTime)
 		{
 			var file = new FilteredLogFile(this, filter);
 			file.Start(maximumWaitTime);

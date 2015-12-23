@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic
@@ -7,7 +8,7 @@ namespace Tailviewer.BusinessLogic
 	/// A filter that looks for a substring in a (possibly) bigger string.
 	/// </summary>
 	internal sealed class SubstringFilter
-		: IFilter
+		: ILogEntryFilter
 	{
 		public readonly string StringFilter;
 		public readonly StringComparison Comparison;
@@ -16,6 +17,19 @@ namespace Tailviewer.BusinessLogic
 		{
 			StringFilter = stringFilter;
 			Comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+		}
+
+		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		{
+			// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (var logLine in logEntry)
+			// ReSharper restore LoopCanBeConvertedToQuery
+			{
+				if (PassesFilter(logLine))
+					return true;
+			}
+
+			return false;
 		}
 
 		[Pure]

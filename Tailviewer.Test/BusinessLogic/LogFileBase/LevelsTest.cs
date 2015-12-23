@@ -53,7 +53,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFileBase
 				lines[4].Level.Should().Be(LevelFlags.Fatal, "Because FATAL is the first level to appear in the line");
 
 				lines[5].Message.Should().Be("fatal error info warn debug");
-				lines[5].Level.Should().Be(LevelFlags.None, "Because no level is mentioned in the line (we are now case sensitive in this regard)");
+				lines[5].Level.Should().Be(LevelFlags.None, "Because no level is mentioned in the line");
+				lines[5].LogEntryIndex.Should().Be(lines[4].LogEntryIndex);
 
 				logFile.DebugCount.Should().Be(1);
 				logFile.InfoCount.Should().Be(1);

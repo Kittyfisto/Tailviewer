@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -28,7 +29,7 @@ namespace Tailviewer.Test.Ui
 			using (var dataSource = new Tailviewer.BusinessLogic.DataSource(new DataSource(LogFileTest.File20Mb)))
 			{
 				var dataSourceModel = new DataSourceViewModel(dataSource);
-				var model = new LogViewerViewModel(dataSourceModel, _dispatcher);
+				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 				dataSource.LogFile.Wait();
 
 				dataSourceModel.StringFilter = "i";

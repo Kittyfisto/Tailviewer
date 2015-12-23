@@ -62,14 +62,14 @@ namespace Tailviewer.Ui.ViewModels
 			return viewModel;
 		}
 
-		public IEnumerable<IFilter> CreateFilterChain()
+		public IEnumerable<ILogEntryFilter> CreateFilterChain()
 		{
-			var filters = new List<IFilter>(_viewModels.Count);
+			var filters = new List<ILogEntryFilter>(_viewModels.Count);
 // ReSharper disable LoopCanBeConvertedToQuery
 			foreach (var quickFilter in _viewModels)
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
-				IFilter filter = null;
+				ILogEntryFilter filter = null;
 				try
 				{
 					filter = quickFilter.CreateFilter();

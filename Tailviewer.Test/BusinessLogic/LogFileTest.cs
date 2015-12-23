@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -14,9 +13,11 @@ namespace Tailviewer.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class LogFileTest
+		: AbstractTest
 	{
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";
+		public const string File2Entries = @"TestData\2LogEntries.txt";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -99,6 +100,50 @@ namespace Tailviewer.Test.BusinessLogic
 						LogFileSection.Reset, 
 						new LogFileSection(0, 1),
 						new LogFileSection(1, 1)
+					});
+
+				file.DebugCount.Should().Be(1);
+				file.InfoCount.Should().Be(1);
+				file.WarningCount.Should().Be(0);
+				file.ErrorCount.Should().Be(0);
+				file.FatalCount.Should().Be(0);
+			}
+		}
+
+		[Test]
+		public void TestRead2LogEntries()
+		{
+			using (var file = new LogFile(File2Entries))
+			{
+				var listener = new Mock<ILogFileListener>();
+				var changes = new List<LogFileSection>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
+						.Callback((LogFileSection section) => changes.Add(section));
+
+				file.AddListener(listener.Object, TimeSpan.Zero, 1);
+				file.Start();
+				file.Wait();
+
+				changes.Should().Equal(new[]
+					{
+						LogFileSection.Reset, 
+						new LogFileSection(0, 1),
+						new LogFileSection(1, 1),
+						new LogFileSection(2, 1),
+						new LogFileSection(3, 1),
+						new LogFileSection(4, 1),
+						new LogFileSection(5, 1)
+					});
+
+				var lines = file.GetSection(new LogFileSection(0, 6));
+				lines.Should().Equal(new[]
+					{
+						new LogLine(0, 0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info),
+						new LogLine(1, 0, "Foobar", LevelFlags.None),
+						new LogLine(2, 0, "Some more info", LevelFlags.None),
+						new LogLine(3, 1, "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1", LevelFlags.Debug),
+						new LogLine(4, 1, "Hey look at me", LevelFlags.None),
+						new LogLine(5, 1, "dwadawdadw", LevelFlags.None)
 					});
 
 				file.DebugCount.Should().Be(1);
@@ -388,20 +433,6 @@ namespace Tailviewer.Test.BusinessLogic
 						});
 				}
 			}
-		}
-
-		public static bool WaitUntil(Func<bool> fn, TimeSpan timeout)
-		{
-			var started = DateTime.UtcNow;
-			while ((DateTime.UtcNow - started) < timeout)
-			{
-				if (fn())
-					return true;
-
-				Thread.Sleep(TimeSpan.FromMilliseconds(10));
-			}
-
-			return false;
 		}
 	}
 }

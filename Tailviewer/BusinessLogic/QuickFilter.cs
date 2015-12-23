@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic
 		}
 
 		[Pure]
-		public IFilter CreateFilter()
+		public ILogEntryFilter CreateFilter()
 		{
 			var value = Value;
 			switch (Type)
