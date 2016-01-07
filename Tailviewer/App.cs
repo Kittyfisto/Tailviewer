@@ -12,7 +12,8 @@ using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
 
 namespace Tailviewer
 {
-	public static class App
+	public class App
+		: Application
 	{
 		[STAThread]
 		public static int Main()
@@ -25,7 +26,7 @@ namespace Tailviewer
 			using (var dataSources = new DataSources(settings.DataSources))
 			{
 				var quickFilters = new QuickFilters(settings.QuickFilters);
-				var application = new Application();
+				var application = new App();
 				var dispatcher = new UiDispatcher(Dispatcher.CurrentDispatcher);
 				Dispatcher.CurrentDispatcher.UnhandledException += DispatcherOnUnhandledException;
 

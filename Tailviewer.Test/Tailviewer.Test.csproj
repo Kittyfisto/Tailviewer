@@ -57,6 +57,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +74,7 @@
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Ui\DataSourcesControlTest.cs" />
     <Compile Include="Ui\DataSourceViewModelTest.cs" />
+    <Compile Include="Ui\FilterTextBoxTest.cs" />
     <Compile Include="Ui\HighlightableTextBlockTest.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
