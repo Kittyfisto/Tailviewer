@@ -28,7 +28,12 @@
     </Window.InputBindings>
 
     <Window.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid Grid.Row="1">
@@ -48,7 +53,7 @@
 
         <Grid Grid.Column="1"
               Width="1"
-              Background="#E5E5E5" />
+              Background="{StaticResource SeparatorBrush}" />
 
         <Grid Grid.Column="2">
             <Grid Width="200"
@@ -79,7 +84,7 @@
 
         <Grid Grid.Column="3"
               Width="1"
-              Background="#E5E5E5" />
+              Background="{StaticResource SeparatorBrush}" />
 
         <controls:QuickFilterControl
             Grid.Column="4"

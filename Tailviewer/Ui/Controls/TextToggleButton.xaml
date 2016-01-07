@@ -1,37 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalse2CollapsedConverter" />
-    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrue2CollapsedConverter" />
-    
-    <Style TargetType="{x:Type local:EditToggleButton}">
-        <Setter Property="Control.Background" Value="{x:Null}" />
-        <Setter Property="Control.BorderBrush" Value="{x:Null}" />
+    <Style TargetType="{x:Type local:TextToggleButton}">
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:EditToggleButton}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                <ControlTemplate TargetType="{x:Type local:TextToggleButton}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}"
-                            Padding="{TemplateBinding Padding}">
-                        <Grid Background="Transparent">
-                            <Image
-                                Width="16" Height="16"
-                                Source="pack://application:,,,/Resources/ic_mode_edit_black_18dp.png"
-                                x:Name="PART_Black"
-                                Visibility="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolTrue2CollapsedConverter}}" />
-                            <Image
-                                Width="16" Height="16"
-                                Source="pack://application:,,,/Resources/ic_mode_edit_white_18dp.png"
-                                x:Name="PART_White"
-                                Visibility="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolFalse2CollapsedConverter}}" />
-                        </Grid>
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter VerticalAlignment="Center"
+                                          HorizontalAlignment="Center" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -39,6 +25,9 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource TextBrushSelected}" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>

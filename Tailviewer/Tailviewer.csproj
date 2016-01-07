@@ -72,6 +72,7 @@
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
+    <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
@@ -109,6 +110,10 @@
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
     <Compile Include="Ui\ViewModels\DataSourceViewModel.cs" />
     <Compile Include="Settings\WindowSettings.cs" />
+    <Page Include="Themes\Constants.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Converters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -163,6 +168,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\DataSourcesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\TextToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

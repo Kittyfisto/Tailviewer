@@ -3,12 +3,16 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
     
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
     
     <Style TargetType="{x:Type local:OneWayToggle}">
-        <Setter Property="BorderBrush" Value="#E5E5E5" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrushHovered}" />
+        <Setter Property="BorderThickness" Value="{StaticResource SlimBorderThickness}" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrushDefault}" />
         <Setter Property="Padding" Value="4" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
@@ -48,15 +52,41 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="#E5E5E5" />
-                <Setter Property="Background" Value="#F2F2F2" />
-            </Trigger>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#3998D6" />
-                <Setter Property="BorderBrush" Value="#3998D6" />
-                <Setter Property="TextElement.Foreground" Value="#FFFBFA" />
-            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsChecked" Value="False" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrushHovered}" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsPressed" Value="True" />
+                    <Condition Property="IsChecked" Value="False" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrushPressed}" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="False" />
+                    <Condition Property="IsChecked" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSelected}" />
+                <Setter Property="TextElement.Foreground" Value="{StaticResource TextBrushSelected}" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True" />
+                    <Condition Property="IsChecked" Value="True" />
+                </MultiTrigger.Conditions>
+                <!-- Given that a one-way toggle cannot be interacted with anymore when it's pressed it's better
+                 to NOT change the background color any further when the user hovers with the mouse over said button. -->
+                <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSelected}" />
+                <Setter Property="TextElement.Foreground" Value="{StaticResource TextBrushSelected}" />
+            </MultiTrigger>
         </Style.Triggers>
     </Style>
 </ResourceDictionary>
