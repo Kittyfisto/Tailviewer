@@ -80,9 +80,8 @@
                                                         x:Name="PART_EditToggleButton"
                                                         Grid.Column="2"
                                                         VerticalAlignment="Stretch"
-                                                        IsChecked="{Binding IsEditing, Mode=TwoWay}"
-                                                        />
-                                                    
+                                                        IsChecked="{Binding IsEditing, Mode=TwoWay}" />
+
                                                     <local:RemoveButton
                                                         x:Name="PART_RemoveButton"
                                                         Grid.Column="3"
@@ -91,11 +90,16 @@
                                                         Command="{Binding RemoveCommand}" />
                                                 </Grid>
 
-                                                <Grid Grid.Row="1">
+                                                <Grid Grid.Row="1"
+                                                      Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition Height="1" />
+                                                    </Grid.RowDefinitions>
                                                     <local:QuickFilterTypeToggleButton
-                                                        Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                                         QuickFilterType="{Binding Type, Mode=TwoWay}"
                                                         Margin="0,8,0,8" />
+                                                    <Rectangle Fill="Black" Grid.Row="1" />
                                                 </Grid>
                                             </Grid>
                                         </DataTemplate>
