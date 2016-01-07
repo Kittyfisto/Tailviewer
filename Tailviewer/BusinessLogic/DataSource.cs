@@ -128,12 +128,6 @@ namespace Tailviewer.BusinessLogic
 			get { return _logFile.FileSize; }
 		}
 
-		public bool OtherFilter
-		{
-			get { return _settings.ExcludeOther; }
-			set { _settings.ExcludeOther = value; }
-		}
-
 		public bool ColorByLevel
 		{
 			get { return _settings.ColorByLevel; }

@@ -12,6 +12,8 @@
     <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
     <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
+    <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
+    
     <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
     <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
     <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
@@ -63,6 +65,14 @@
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
+                                IsChecked="{Binding ShowAll, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}"
+                                />
+
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
+                                Padding="4"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
@@ -93,13 +103,6 @@
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                            <local:TextToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowOther, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:FilterTextBox
                                 Margin="0,0,8,8"

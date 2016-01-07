@@ -283,19 +283,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public bool OtherFilter
-		{
-			get { return _dataSource.OtherFilter; }
-			set
-			{
-				if (value == OtherFilter)
-					return;
-
-				_dataSource.OtherFilter = value;
-				EmitPropertyChanged();
-			}
-		}
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void OpenInExplorer()

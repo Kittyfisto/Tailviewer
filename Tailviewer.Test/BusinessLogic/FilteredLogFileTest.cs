@@ -28,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestEntryLevelNone()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("ello", true, LevelFlags.All, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("ello", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.None));
 				file.OnLogFileModified(new LogFileSection(0, 1));
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestEmptyLogFile()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("Test", true, LevelFlags.All, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("Test", true, LevelFlags.All)))
 			{
 				file.Start(TimeSpan.Zero);
 				file.Wait();
@@ -59,7 +59,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that all lines belonging to an entry pass the filter, even though only one line passes it")]
 		public void TestMultiLineLogEntry1()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("Test", true, LevelFlags.All, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("Test", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
@@ -81,7 +81,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that all lines belonging to an entry pass the filter, even though only the second line passes it")]
 		public void TestMultiLineLogEntry2()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("yikes", true, LevelFlags.All, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
@@ -103,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that the filtered log file correctly listens to a reset event")]
 		public void TestClear()
 		{
-			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Debug, false)))
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));

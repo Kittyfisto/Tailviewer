@@ -74,6 +74,7 @@
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
+    <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="XmlExtensions.cs" />

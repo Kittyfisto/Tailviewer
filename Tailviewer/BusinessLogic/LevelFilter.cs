@@ -9,12 +9,10 @@ namespace Tailviewer.BusinessLogic
 		: ILogEntryFilter
 	{
 		public readonly LevelFlags Level;
-		public readonly bool ExcludeOther;
 
-		public LevelFilter(LevelFlags level, bool excludeOther)
+		public LevelFilter(LevelFlags level)
 		{
 			Level = level;
-			ExcludeOther = excludeOther;
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
@@ -35,7 +33,7 @@ namespace Tailviewer.BusinessLogic
 			if ((logLine.Level & Level) != 0)
 				return true;
 
-			if (logLine.Level != LevelFlags.None || ExcludeOther)
+			if (logLine.Level != LevelFlags.None)
 				return false;
 
 			return true;

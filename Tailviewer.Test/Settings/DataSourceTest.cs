@@ -16,7 +16,6 @@ namespace Tailviewer.Test.Settings
 
 			dataSource.ActivatedQuickFilters.Should().NotBeNull();
 			dataSource.LevelFilter.Should().Be(LevelFlags.All);
-			dataSource.ExcludeOther.Should().BeFalse();
 			dataSource.File.Should().BeNull();
 
 			dataSource.VisibleLogEntry.Should().Be(LogEntryIndex.Invalid);

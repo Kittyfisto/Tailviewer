@@ -81,10 +81,9 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var stringFilter = DataSource.StringFilter;
 			var levelFilter = DataSource.LevelsFilter;
-			var otherFilter = DataSource.OtherFilter;
 
 			ILogFile logFile;
-			var filter = Filter.Create(stringFilter, true, levelFilter, otherFilter, _quickFilterChain);
+			var filter = Filter.Create(stringFilter, true, levelFilter, _quickFilterChain);
 			if (filter != null)
 			{
 				logFile = _fullLogFile.AsFiltered(filter, _maximumWaitTime);

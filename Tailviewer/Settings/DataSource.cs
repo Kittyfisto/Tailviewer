@@ -12,7 +12,6 @@ namespace Tailviewer.Settings
 		public bool IsOpen;
 		public LevelFlags LevelFilter;
 		public string StringFilter;
-		public bool ExcludeOther;
 		public bool ColorByLevel;
 		public LogEntryIndex SelectedLogEntry;
 		public LogEntryIndex VisibleLogEntry;
@@ -45,7 +44,6 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
-			writer.WriteAttributeBool("otherfilter", ExcludeOther);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 			writer.WriteAttributeInt("selectedentryindex", (int)SelectedLogEntry);
 			writer.WriteAttributeInt("visibleentryindex", (int)VisibleLogEntry);
@@ -86,10 +84,6 @@ namespace Tailviewer.Settings
 
 					case "levelfilter":
 						LevelFilter = reader.ReadContentAsEnum<LevelFlags>();
-						break;
-
-					case "otherfilter":
-						ExcludeOther = reader.ReadContentAsBool();
 						break;
 
 					case "colorbylevel":
