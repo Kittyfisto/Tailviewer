@@ -1,0 +1,35 @@
+﻿using FluentAssertions;
+using NUnit.Framework;
+using Tailviewer.BusinessLogic;
+
+namespace Tailviewer.Test.BusinessLogic
+{
+	[TestFixture]
+	public sealed class LogEntryIndexTest
+	{
+		[Test]
+		public void TestEquality()
+		{
+			LogEntryIndex.Invalid.Should().Be(LogEntryIndex.Invalid);
+			LogEntryIndex.Invalid.Equals(LogEntryIndex.Invalid).Should().BeTrue();
+			(LogEntryIndex.Invalid == LogEntryIndex.Invalid).Should().BeTrue();
+			(LogEntryIndex.Invalid != LogEntryIndex.Invalid).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestLessThan()
+		{
+			(new LogEntryIndex(0) < new LogEntryIndex(1)).Should().BeTrue();
+			(new LogEntryIndex(1) < new LogEntryIndex(1)).Should().BeFalse();
+			(new LogEntryIndex(2) < new LogEntryIndex(1)).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestLessThanorEquals()
+		{
+			(new LogEntryIndex(0) <= new LogEntryIndex(1)).Should().BeTrue();
+			(new LogEntryIndex(1) <= new LogEntryIndex(1)).Should().BeTrue();
+			(new LogEntryIndex(2) <= new LogEntryIndex(1)).Should().BeFalse();
+		}
+	}
+}

@@ -64,6 +64,7 @@
     <Compile Include="BusinessLogic\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSourceTest.cs" />
     <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFileBase\LevelsTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />

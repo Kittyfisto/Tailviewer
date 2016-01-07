@@ -75,7 +75,7 @@ namespace Tailviewer.Test.BusinessLogic
 				for (int i = 1; i < sections.Count; ++i)
 				{
 					var change = sections[i];
-					change.Index.Should().Be(i-1);
+					change.Index.Should().Be((LogEntryIndex)(i-1));
 					change.Count.Should().Be(1);
 				}
 			}

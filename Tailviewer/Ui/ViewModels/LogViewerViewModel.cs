@@ -177,7 +177,7 @@ namespace Tailviewer.Ui.ViewModels
 						var entries = _currentLogFile.GetSection(section);
 						for (int i = 0; i < entries.Length; ++i)
 						{
-							var model = new LogEntryViewModel(section.Index + i, entries[i]);
+							var model = new LogEntryViewModel((int) (section.Index + i), entries[i]);
 							_logEntries.Add(model);
 						}
 					}

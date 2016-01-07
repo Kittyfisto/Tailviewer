@@ -142,7 +142,7 @@ namespace Tailviewer.BusinessLogic
 				if (section.Index + section.Count > _entries.Count)
 					throw new ArgumentOutOfRangeException("section");
 
-				_entries.CopyTo(section.Index, dest, 0, section.Count);
+				_entries.CopyTo((int) section.Index, dest, 0, section.Count);
 			}
 		}
 

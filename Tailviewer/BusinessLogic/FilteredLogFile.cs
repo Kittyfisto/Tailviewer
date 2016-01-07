@@ -92,8 +92,8 @@ namespace Tailviewer.BusinessLogic
 
 				for (int i = 0; i < section.Count; ++i)
 				{
-					int index = section.Index + i;
-					int sourceIndex = _indices[index];
+					var index = section.Index + i;
+					int sourceIndex = _indices[(int) index];
 					LogLine line = _source.GetEntry(sourceIndex);
 					dest[i] = line;
 				}

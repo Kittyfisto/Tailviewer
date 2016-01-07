@@ -20,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-			        .Callback((LogFileSection section, LogLine[] entries) => _entries.CopyTo(section.Index, entries, 0, section.Count));
+			        .Callback((LogFileSection section, LogLine[] entries) => _entries.CopyTo((int) section.Index, entries, 0, section.Count));
 			_logFile.Setup(x => x.GetEntry(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Xml;
 
 namespace Tailviewer
@@ -32,6 +33,11 @@ namespace Tailviewer
 		public static void WriteAttributeBool(this XmlWriter writer, string localName, bool value)
 		{
 			writer.WriteAttributeString(localName, value ? "true" : "false");
+		}
+
+		public static void WriteAttributeInt(this XmlWriter writer, string localname, int value)
+		{
+			writer.WriteAttributeString(localname, value.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static void WriteAttributeEnum<T>(this XmlWriter writer, string localName, T value)

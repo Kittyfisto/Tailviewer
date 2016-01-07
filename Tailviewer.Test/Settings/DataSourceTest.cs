@@ -19,6 +19,9 @@ namespace Tailviewer.Test.Settings
 			dataSource.ExcludeOther.Should().BeFalse();
 			dataSource.File.Should().BeNull();
 
+			dataSource.VisibleEntryIndex.Should().Be(LogEntryIndex.Invalid);
+			dataSource.SelectedEntryIndex.Should().Be(LogEntryIndex.Invalid);
+
 			dataSource.FollowTail.Should().BeFalse();
 			dataSource.IsOpen.Should().BeFalse();
 		}
