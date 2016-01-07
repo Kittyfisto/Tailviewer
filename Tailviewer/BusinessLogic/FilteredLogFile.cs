@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -10,6 +12,8 @@ namespace Tailviewer.BusinessLogic
 		: ILogFile
 		  , ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private const int BatchSize = 1000;
 
 		private readonly ILogEntryFilter _filter;
@@ -43,7 +47,14 @@ namespace Tailviewer.BusinessLogic
 		public void Dispose()
 		{
 			_cancellationTokenSource.Cancel();
-			_readTask.Wait();
+			try
+			{
+				_readTask.Wait();
+			}
+			catch (AggregateException e)
+			{
+				Log.DebugFormat("Caught exception while disposing: {0}", e);
+			}
 			_readTask.Dispose();
 		}
 

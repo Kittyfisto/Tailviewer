@@ -9,16 +9,12 @@ namespace Tailviewer.Ui.Converters
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is bool))
-				return null;
-
-			var showAll = (bool) value;
-			if (showAll)
-			{
+			var showAll = value as bool?;
+			if (showAll == true)
 				return "All";
-			}
-
-			return "None";
+			if (showAll == false)
+				return "None";
+			return "Mixed";
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

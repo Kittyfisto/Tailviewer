@@ -55,6 +55,49 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[STAThread]
+		public void TestShowAll3()
+		{
+			_control.ShowAll = true;
+			_control.ShowDebug = false;
+			_control.ShowAll.Should().NotHaveValue();
+
+			_control.ShowDebug.Should().BeFalse();
+			_control.ShowInfo.Should().BeTrue();
+			_control.ShowWarning.Should().BeTrue();
+			_control.ShowError.Should().BeTrue();
+			_control.ShowFatal.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll4()
+		{
+			_control.ShowAll = false;
+			_control.ShowDebug = true;
+			_control.ShowAll.Should().NotHaveValue();
+
+			_control.ShowDebug.Should().BeTrue();
+			_control.ShowInfo.Should().BeFalse();
+			_control.ShowWarning.Should().BeFalse();
+			_control.ShowError.Should().BeFalse();
+			_control.ShowFatal.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll5()
+		{
+			_control.ShowAll = false;
+			_control.ShowDebug = true;
+			_control.ShowInfo = true;
+			_control.ShowWarning = true;
+			_control.ShowError = true;
+			_control.ShowFatal = true;
+			_control.ShowAll.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
 		public void TestCtor()
 		{
 			var source = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")));
