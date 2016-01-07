@@ -150,6 +150,18 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public LogEntryIndex VisibleLogEntry
+		{
+			get { return _dataSource.VisibleLogEntry; }
+			set { _dataSource.VisibleLogEntry = value; }
+		}
+
+		public LogEntryIndex SelectedLogEntry
+		{
+			get { return _dataSource.SelectedLogEntry; }
+			set { _dataSource.SelectedLogEntry = value; }
+		}
+
 		public TimeSpan LastWrittenAge
 		{
 			get { return _lastWrittenAge; }

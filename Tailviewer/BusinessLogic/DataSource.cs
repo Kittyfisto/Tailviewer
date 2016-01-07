@@ -101,6 +101,18 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.LevelFilter = value; }
 		}
 
+		public LogEntryIndex SelectedLogEntry
+		{
+			get { return _settings.SelectedLogEntry; }
+			set { _settings.SelectedLogEntry = value; }
+		}
+
+		public LogEntryIndex VisibleLogEntry
+		{
+			get { return _settings.VisibleLogEntry; }
+			set { _settings.VisibleLogEntry = value; }
+		}
+
 		internal Settings.DataSource Settings
 		{
 			get { return _settings; }

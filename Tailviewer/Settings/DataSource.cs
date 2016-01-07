@@ -14,8 +14,8 @@ namespace Tailviewer.Settings
 		public string StringFilter;
 		public bool ExcludeOther;
 		public bool ColorByLevel;
-		public LogEntryIndex SelectedEntryIndex;
-		public LogEntryIndex VisibleEntryIndex;
+		public LogEntryIndex SelectedLogEntry;
+		public LogEntryIndex VisibleLogEntry;
 		private readonly List<Guid> _activatedQuickFilters;
 
 		public List<Guid> ActivatedQuickFilters
@@ -28,8 +28,8 @@ namespace Tailviewer.Settings
 			_activatedQuickFilters = new List<Guid>();
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
-			SelectedEntryIndex = LogEntryIndex.Invalid;
-			VisibleEntryIndex = LogEntryIndex.Invalid;
+			SelectedLogEntry = LogEntryIndex.Invalid;
+			VisibleLogEntry = LogEntryIndex.Invalid;
 		}
 
 		public DataSource(string file)
@@ -47,8 +47,8 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("otherfilter", ExcludeOther);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
-			writer.WriteAttributeInt("selectedentryindex", (int)SelectedEntryIndex);
-			writer.WriteAttributeInt("visibleentryindex", (int)VisibleEntryIndex);
+			writer.WriteAttributeInt("selectedentryindex", (int)SelectedLogEntry);
+			writer.WriteAttributeInt("visibleentryindex", (int)VisibleLogEntry);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (var guid in ActivatedQuickFilters)
@@ -97,11 +97,11 @@ namespace Tailviewer.Settings
 						break;
 
 					case "selectedentryindex":
-						SelectedEntryIndex = (LogEntryIndex)reader.ReadContentAsInt();
+						SelectedLogEntry = reader.ReadContentAsInt();
 						break;
 
 					case "visibleentryindex":
-						VisibleEntryIndex = (LogEntryIndex)reader.ReadContentAsInt();
+						VisibleLogEntry = reader.ReadContentAsInt();
 						break;
 				}
 			}
