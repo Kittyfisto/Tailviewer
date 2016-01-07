@@ -8,6 +8,7 @@
 
     <Style TargetType="{x:Type local:TextToggleButton}">
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="White" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TextToggleButton}">
