@@ -194,7 +194,7 @@ namespace Tailviewer.BusinessLogic
 			int numberOfLinesRead = 0;
 			int nextLogEntryIndex = 0;
 			bool reachedEof = false;
-			LevelFlags flags = LevelFlags.None;
+			var previousLevel = LevelFlags.None;
 
 			try
 			{
@@ -256,9 +256,15 @@ namespace Tailviewer.BusinessLogic
 									logEntryIndex = nextLogEntryIndex - 1;
 								else
 									logEntryIndex = 0;
+
+								// This line belongs to the previous line and together they form
+								// (part of) a log entry. Even though only a single line mentions
+								// the log level, all lines are given the same log level.
+								level = previousLevel;
 							}
 
 							Add(line, level, numberOfLinesRead, logEntryIndex);
+							previousLevel = level;
 						}
 					}
 				}

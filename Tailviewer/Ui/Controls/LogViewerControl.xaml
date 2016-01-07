@@ -114,7 +114,9 @@
                             ItemsSource="{TemplateBinding ItemsSource}"
                             BorderThickness="0"
                             VirtualizingPanel.IsVirtualizing="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible">
+                            ScrollViewer.VerticalScrollBarVisibility="Visible"
+                            SnapsToDevicePixels="True"
+                            >
 
                             <ListView.InputBindings>
                                 <KeyBinding Modifiers="Control" Key="C"
@@ -127,7 +129,9 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListViewItem">
-                                                <Border Background="{TemplateBinding Background}">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderThickness="0"
+                                                        >
                                                     <TextBlock Text="{Binding Message}" />
                                                 </Border>
                                             </ControlTemplate>
