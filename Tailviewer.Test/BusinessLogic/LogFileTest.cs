@@ -139,11 +139,11 @@ namespace Tailviewer.Test.BusinessLogic
 				lines.Should().Equal(new[]
 					{
 						new LogLine(0, 0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info),
-						new LogLine(1, 0, "Foobar", LevelFlags.None),
-						new LogLine(2, 0, "Some more info", LevelFlags.None),
+						new LogLine(1, 0, "Foobar", LevelFlags.Info),
+						new LogLine(2, 0, "Some more info", LevelFlags.Info),
 						new LogLine(3, 1, "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1", LevelFlags.Debug),
-						new LogLine(4, 1, "Hey look at me", LevelFlags.None),
-						new LogLine(5, 1, "dwadawdadw", LevelFlags.None)
+						new LogLine(4, 1, "Hey look at me", LevelFlags.Debug),
+						new LogLine(5, 1, "dwadawdadw", LevelFlags.Debug)
 					});
 
 				file.DebugCount.Should().Be(1);
