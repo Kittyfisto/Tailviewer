@@ -70,6 +70,11 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
+		public DateTime? StartTimestamp
+		{
+			get { return _source.StartTimestamp; }
+		}
+
 		public int Count
 		{
 			get { return _indices.Count; }
@@ -165,8 +170,8 @@ namespace Tailviewer.BusinessLogic
 
 				if (_fullSection.IsEndOfSection(currentSourceIndex))
 				{
-					if (!TryAddLogLine(lastLogEntry))
-						_listeners.OnRead(_indices.Count);
+					TryAddLogLine(lastLogEntry);
+					_listeners.OnRead(_indices.Count);
 
 					_endOfSectionHandle.Set();
 

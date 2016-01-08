@@ -8,6 +8,8 @@ namespace Tailviewer.BusinessLogic
 	{
 		void Wait();
 
+		DateTime? StartTimestamp { get; }
+
 		int Count { get; }
 
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);

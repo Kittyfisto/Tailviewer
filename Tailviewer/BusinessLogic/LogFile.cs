@@ -24,6 +24,7 @@ namespace Tailviewer.BusinessLogic
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
+		private DateTime? _startTimestamp;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
@@ -104,6 +105,11 @@ namespace Tailviewer.BusinessLogic
 		public IEnumerable<LogLine> Entries
 		{
 			get { return _entries; }
+		}
+
+		public DateTime? StartTimestamp
+		{
+			get { return _startTimestamp; }
 		}
 
 		public DateTime LastWritten
@@ -195,6 +201,7 @@ namespace Tailviewer.BusinessLogic
 			int nextLogEntryIndex = 0;
 			bool reachedEof = false;
 			var previousLevel = LevelFlags.None;
+			DateTime? previousTimestamp = null;
 
 			try
 			{
@@ -227,6 +234,7 @@ namespace Tailviewer.BusinessLogic
 								_warningCount = 0;
 								_errorCount = 0;
 								_fatalCount = 0;
+								_startTimestamp = null;
 
 								_entries.Clear();
 								_listeners.OnRead(-1);
@@ -236,35 +244,45 @@ namespace Tailviewer.BusinessLogic
 						{
 							if (reachedEof)
 								_lastWritten = DateTime.Now;
+
 							reachedEof = false;
 
 							_endOfSectionHandle.Reset();
 							++numberOfLinesRead;
 
-							DetermineDateTimeFormat(line);
 							LevelFlags level = DetermineLevel(line, levels);
 
+							DateTime? timestamp;
 							int logEntryIndex;
 							if (level != LevelFlags.None)
 							{
+								timestamp = ParseTimestamp(line);
 								logEntryIndex = nextLogEntryIndex;
 								++nextLogEntryIndex;
 							}
 							else
 							{
 								if (nextLogEntryIndex > 0)
+								{
 									logEntryIndex = nextLogEntryIndex - 1;
+								}
 								else
+								{
 									logEntryIndex = 0;
+								}
 
 								// This line belongs to the previous line and together they form
 								// (part of) a log entry. Even though only a single line mentions
 								// the log level, all lines are given the same log level.
 								level = previousLevel;
+								timestamp = previousTimestamp;
 							}
 
-							Add(line, level, numberOfLinesRead, logEntryIndex);
+							
+
+							Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
 							previousLevel = level;
+							previousTimestamp = timestamp;
 						}
 					}
 				}
@@ -344,23 +362,41 @@ namespace Tailviewer.BusinessLogic
 			return level;
 		}
 
-		private void Add(string line, LevelFlags level, int numberOfLinesRead, int numberOfLogEntriesRead)
+		private void Add(string line, LevelFlags level, int numberOfLinesRead, int numberOfLogEntriesRead, DateTime? timestamp)
 		{
+			if (_startTimestamp == null)
+				_startTimestamp = timestamp;
+
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
-				_entries.Add(new LogLine(lineIndex, numberOfLogEntriesRead, line, level));
+				_entries.Add(new LogLine(lineIndex, numberOfLogEntriesRead, line, level, timestamp));
 			}
 
 			_listeners.OnRead(numberOfLinesRead);
 		}
 
-		private void DetermineDateTimeFormat(string line)
+		private DateTime? ParseTimestamp(string line)
 		{
 			if (_dateTimeColumn == null || _dateTimeLength == null)
 			{
 				DetermineDateTimePart(line, out _dateTimeColumn, out _dateTimeLength);
 			}
+
+			if (_dateTimeColumn != null && _dateTimeLength != null)
+			{
+				var start = _dateTimeColumn.Value;
+				var length = _dateTimeLength.Value;
+				if (line.Length >= start + length)
+				{
+					var timestampValue = line.Substring(start, length);
+					DateTime timestamp;
+					if (DateTime.TryParse(timestampValue, out timestamp))
+						return timestamp;
+				}
+			}
+
+			return null;
 		}
 
 		public static void DetermineDateTimePart(string line, out int? currentColumn, out int? currentLength)
