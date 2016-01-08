@@ -98,7 +98,7 @@
                                 Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:TextToggleButton
-                                Margin="0,0,0,8"
+                                Margin="0,0,8,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
