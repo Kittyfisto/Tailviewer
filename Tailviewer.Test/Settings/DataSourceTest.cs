@@ -18,8 +18,8 @@ namespace Tailviewer.Test.Settings
 			dataSource.LevelFilter.Should().Be(LevelFlags.All);
 			dataSource.File.Should().BeNull();
 
-			dataSource.VisibleLogEntry.Should().Be(LogEntryIndex.Invalid);
-			dataSource.SelectedLogEntry.Should().Be(LogEntryIndex.Invalid);
+			dataSource.VisibleLogLine.Should().Be(LogLineIndex.Invalid);
+			dataSource.SelectedLogLine.Should().Be(LogLineIndex.Invalid);
 
 			dataSource.FollowTail.Should().BeFalse();
 			dataSource.IsOpen.Should().BeFalse();

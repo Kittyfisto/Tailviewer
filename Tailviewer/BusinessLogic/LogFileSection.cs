@@ -9,29 +9,29 @@ namespace Tailviewer.BusinessLogic
 	public struct LogFileSection : IEquatable<LogFileSection>
 	{
 		public readonly int Count;
-		public readonly LogEntryIndex Index;
+		public readonly LogLineIndex Index;
 
 		public static readonly LogFileSection Reset;
 
 		static LogFileSection()
 		{
-			Reset = new LogFileSection(LogEntryIndex.Invalid, 0);
+			Reset = new LogFileSection(LogLineIndex.Invalid, 0);
 		}
 
-		public LogFileSection(LogEntryIndex index, int count)
+		public LogFileSection(LogLineIndex index, int count)
 		{
 			Index = index;
 			Count = count;
 		}
 
-		public bool IsEndOfSection(LogEntryIndex index)
+		public bool IsEndOfSection(LogLineIndex index)
 		{
 			return index >= Index + Count;
 		}
 
 		public override string ToString()
 		{
-			if (Index == LogEntryIndex.Invalid && Count == 0)
+			if (Index == LogLineIndex.Invalid && Count == 0)
 				return "Reset";
 
 			return string.Format("[{0}, #{1}]", Index, Count);
@@ -39,8 +39,8 @@ namespace Tailviewer.BusinessLogic
 
 		public static LogFileSection MinimumBoundingLine(LogFileSection lhs, LogFileSection rhs)
 		{
-			var minIndex = LogEntryIndex.Min(lhs.Index, rhs.Index);
-			var maxIndex = LogEntryIndex.Max(lhs.Index + lhs.Count, rhs.Index + rhs.Count);
+			var minIndex = LogLineIndex.Min(lhs.Index, rhs.Index);
+			var maxIndex = LogLineIndex.Max(lhs.Index + lhs.Count, rhs.Index + rhs.Count);
 			var count = maxIndex - minIndex;
 
 			return new LogFileSection(minIndex, count);

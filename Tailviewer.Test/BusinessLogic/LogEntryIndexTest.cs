@@ -10,26 +10,26 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestEquality()
 		{
-			LogEntryIndex.Invalid.Should().Be(LogEntryIndex.Invalid);
-			LogEntryIndex.Invalid.Equals(LogEntryIndex.Invalid).Should().BeTrue();
-			(LogEntryIndex.Invalid == LogEntryIndex.Invalid).Should().BeTrue();
-			(LogEntryIndex.Invalid != LogEntryIndex.Invalid).Should().BeFalse();
+			LogLineIndex.Invalid.Should().Be(LogLineIndex.Invalid);
+			LogLineIndex.Invalid.Equals(LogLineIndex.Invalid).Should().BeTrue();
+			(LogLineIndex.Invalid == LogLineIndex.Invalid).Should().BeTrue();
+			(LogLineIndex.Invalid != LogLineIndex.Invalid).Should().BeFalse();
 		}
 
 		[Test]
 		public void TestLessThan()
 		{
-			(new LogEntryIndex(0) < new LogEntryIndex(1)).Should().BeTrue();
-			(new LogEntryIndex(1) < new LogEntryIndex(1)).Should().BeFalse();
-			(new LogEntryIndex(2) < new LogEntryIndex(1)).Should().BeFalse();
+			(new LogLineIndex(0) < new LogLineIndex(1)).Should().BeTrue();
+			(new LogLineIndex(1) < new LogLineIndex(1)).Should().BeFalse();
+			(new LogLineIndex(2) < new LogLineIndex(1)).Should().BeFalse();
 		}
 
 		[Test]
 		public void TestLessThanorEquals()
 		{
-			(new LogEntryIndex(0) <= new LogEntryIndex(1)).Should().BeTrue();
-			(new LogEntryIndex(1) <= new LogEntryIndex(1)).Should().BeTrue();
-			(new LogEntryIndex(2) <= new LogEntryIndex(1)).Should().BeFalse();
+			(new LogLineIndex(0) <= new LogLineIndex(1)).Should().BeTrue();
+			(new LogLineIndex(1) <= new LogLineIndex(1)).Should().BeTrue();
+			(new LogLineIndex(2) <= new LogLineIndex(1)).Should().BeFalse();
 		}
 	}
 }

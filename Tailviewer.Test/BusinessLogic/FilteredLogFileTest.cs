@@ -119,5 +119,30 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Count.Should().Be(0);
 			}
 		}
+
+		[Test]
+		[Description("Verifies that the filtered log file repeatedly calls the listener when the source has been fully read")]
+		public void TestWait()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Debug)))
+			{
+				var sections = new List<LogFileSection>();
+				var listener = new Mock<ILogFileListener>();
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
+				        .Callback((LogFileSection section) => sections.Add(section));
+				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
+
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
+				file.OnLogFileModified(new LogFileSection(0, 2));
+
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				WaitUntil(() => sections.Count > 1, TimeSpan.FromMilliseconds(1000)).Should().BeTrue();
+				sections[0].Should().Be(LogFileSection.Reset);
+				sections[1].Should().Be(new LogFileSection(new LogLineIndex(0), 2));
+			}
+		}
 	}
 }
