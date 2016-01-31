@@ -25,36 +25,93 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[STAThread]
+		public void TestShowAll1()
+		{
+			_control.ShowAll = true;
+			_control.ShowDebug.Should().BeTrue();
+			_control.ShowInfo.Should().BeTrue();
+			_control.ShowWarning.Should().BeTrue();
+			_control.ShowError.Should().BeTrue();
+			_control.ShowFatal.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll2()
+		{
+			_control.ShowDebug = true;
+			_control.ShowInfo = true;
+			_control.ShowWarning = true;
+			_control.ShowError = true;
+			_control.ShowFatal = true;
+			_control.ShowAll = false;
+
+			_control.ShowDebug.Should().BeFalse();
+			_control.ShowInfo.Should().BeFalse();
+			_control.ShowWarning.Should().BeFalse();
+			_control.ShowError.Should().BeFalse();
+			_control.ShowFatal.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll3()
+		{
+			_control.ShowAll = true;
+			_control.ShowDebug = false;
+			_control.ShowAll.Should().NotHaveValue();
+
+			_control.ShowDebug.Should().BeFalse();
+			_control.ShowInfo.Should().BeTrue();
+			_control.ShowWarning.Should().BeTrue();
+			_control.ShowError.Should().BeTrue();
+			_control.ShowFatal.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll4()
+		{
+			_control.ShowAll = false;
+			_control.ShowDebug = true;
+			_control.ShowAll.Should().NotHaveValue();
+
+			_control.ShowDebug.Should().BeTrue();
+			_control.ShowInfo.Should().BeFalse();
+			_control.ShowWarning.Should().BeFalse();
+			_control.ShowError.Should().BeFalse();
+			_control.ShowFatal.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		public void TestShowAll5()
+		{
+			_control.ShowAll = false;
+			_control.ShowDebug = true;
+			_control.ShowInfo = true;
+			_control.ShowWarning = true;
+			_control.ShowError = true;
+			_control.ShowFatal = true;
+			_control.ShowAll.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
 		public void TestCtor()
 		{
 			var source = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")));
-			source.OtherFilter = true;
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl
 			{
 				DataSource = source
 			};
-			control.ShowOther.Should().BeFalse();
 			control.ShowDebug.Should().BeTrue();
 			control.ShowInfo.Should().BeTrue();
 			control.ShowWarning.Should().BeTrue();
 			control.ShowError.Should().BeTrue();
 			control.ShowFatal.Should().BeTrue();
-		}
-
-		[Test]
-		[STAThread]
-		public void TestChangeShowOther()
-		{
-			_control.DataSource.OtherFilter = true;
-			_control.ShowOther.Should().BeFalse();
-
-			_control.ShowOther = true;
-			_control.DataSource.OtherFilter.Should().BeFalse();
-
-			_control.ShowOther = false;
-			_control.DataSource.OtherFilter.Should().BeTrue();
 		}
 
 		[Test]

@@ -56,6 +56,8 @@ namespace Tailviewer.Test.Settings
 					FollowTail = true,
 					StringFilter = "foobar",
 					LevelFilter = LevelFlags.Debug,
+					SelectedLogLine = new LogLineIndex(2),
+					VisibleLogLine = new LogLineIndex(1),
 					ActivatedQuickFilters =
 						{
 							Guid.NewGuid(),
@@ -86,6 +88,8 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].StringFilter.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
+			settings.DataSources[0].SelectedLogLine.Should().Be(new LogLineIndex(2));
+			settings.DataSources[0].VisibleLogLine.Should().Be(new LogLineIndex(1));
 			settings.DataSources[0].ActivatedQuickFilters.Should().Equal(guids);
 
 			settings.QuickFilters.Count.Should().Be(1);

@@ -26,37 +26,32 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(0));
 
 		public static readonly DependencyProperty ShowFatalProperty =
-			DependencyProperty.Register("ShowFatal", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnFatalChanged));
+			DependencyProperty.Register("ShowFatal", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnFatalChanged));
 
 		public static readonly DependencyProperty ShowErrorProperty =
-			DependencyProperty.Register("ShowError", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnErrorChanged));
+			DependencyProperty.Register("ShowError", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnErrorChanged));
 
 		public static readonly DependencyProperty ShowWarningProperty =
-			DependencyProperty.Register("ShowWarning", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnWarningChanged));
+			DependencyProperty.Register("ShowWarning", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnWarningChanged));
 
 		public static readonly DependencyProperty ShowInfoProperty =
-			DependencyProperty.Register("ShowInfo", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnInfoChanged));
+			DependencyProperty.Register("ShowInfo", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnInfoChanged));
 
 		public static readonly DependencyProperty ShowDebugProperty =
-			DependencyProperty.Register("ShowDebug", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnDebugChanged));
-
-		public static readonly DependencyProperty ShowOtherProperty =
-			DependencyProperty.Register("ShowOther", typeof(bool), typeof(LogViewerControl),
-										new PropertyMetadata(false, OnShowOtherChanged));
+			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(false, OnDebugChanged));
 
 		public static readonly DependencyProperty CopySelectedLineToClipboardCommandProperty =
-			DependencyProperty.Register("CopySelectedLineToClipboardCommand", typeof (ICommand), typeof (LogViewerControl), new PropertyMetadata(default(ICommand)));
+			DependencyProperty.Register("CopySelectedLineToClipboardCommand", typeof (ICommand), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(ICommand)));
 
-		public ICommand CopySelectedLineToClipboardCommand
-		{
-			get { return (ICommand) GetValue(CopySelectedLineToClipboardCommandProperty); }
-			set { SetValue(CopySelectedLineToClipboardCommandProperty, value); }
-		}
+		public static readonly DependencyProperty ShowAllProperty =
+			DependencyProperty.Register("ShowAll", typeof (bool?), typeof (LogViewerControl),
+			new PropertyMetadata(false, OnShowAllChanged));
 
 		private ListView _partListView;
 		private FilterTextBox _partStringFilter;
@@ -69,52 +64,51 @@ namespace Tailviewer.Ui.Controls
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
 		}
 
-		private void CopySelectedLineToClipboard()
+		public LogViewerControl()
 		{
-			var listViewer = _partListView;
-			if (listViewer != null)
-			{
-				var logEntry = listViewer.SelectedItem as LogEntryViewModel;
-				if (logEntry != null)
-				{
-					Clipboard.SetText(logEntry.Message);
-				}
-			}
+			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
+			SizeChanged += OnSizeChanged;
 		}
 
-		public bool ShowOther
+		public bool? ShowAll
 		{
-			get { return (bool)GetValue(ShowOtherProperty); }
-			set { SetValue(ShowOtherProperty, value); }
+			get { return (bool?) GetValue(ShowAllProperty); }
+			set { SetValue(ShowAllProperty, value); }
+		}
+
+		public ICommand CopySelectedLineToClipboardCommand
+		{
+			get { return (ICommand) GetValue(CopySelectedLineToClipboardCommandProperty); }
+			set { SetValue(CopySelectedLineToClipboardCommandProperty, value); }
 		}
 
 		public bool ShowDebug
 		{
-			get { return (bool)GetValue(ShowDebugProperty); }
+			get { return (bool) GetValue(ShowDebugProperty); }
 			set { SetValue(ShowDebugProperty, value); }
 		}
 
 		public bool ShowInfo
 		{
-			get { return (bool)GetValue(ShowInfoProperty); }
+			get { return (bool) GetValue(ShowInfoProperty); }
 			set { SetValue(ShowInfoProperty, value); }
 		}
 
 		public bool ShowWarning
 		{
-			get { return (bool)GetValue(ShowWarningProperty); }
+			get { return (bool) GetValue(ShowWarningProperty); }
 			set { SetValue(ShowWarningProperty, value); }
 		}
 
 		public bool ShowError
 		{
-			get { return (bool)GetValue(ShowErrorProperty); }
+			get { return (bool) GetValue(ShowErrorProperty); }
 			set { SetValue(ShowErrorProperty, value); }
 		}
 
 		public bool ShowFatal
 		{
-			get { return (bool)GetValue(ShowFatalProperty); }
+			get { return (bool) GetValue(ShowFatalProperty); }
 			set { SetValue(ShowFatalProperty, value); }
 		}
 
@@ -136,36 +130,53 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(ItemsSourceProperty, value); }
 		}
 
+		private void CopySelectedLineToClipboard()
+		{
+			ListView listViewer = _partListView;
+			if (listViewer != null)
+			{
+				var logEntry = listViewer.SelectedItem as LogEntryViewModel;
+				if (logEntry != null)
+				{
+					Clipboard.SetText(logEntry.Message);
+				}
+			}
+		}
+
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnDataSourceChanged(args.OldValue as DataSourceViewModel,
 			                                                          args.NewValue as DataSourceViewModel);
 		}
 
-		private void OnOtherFilterChanged()
+		private void OnShowAllChanged(bool? showAll)
 		{
-			if (DataSource == null)
-				return;
-
-			ShowOther = !DataSource.OtherFilter;
+			if (showAll == true)
+			{
+				ShowDebug = true;
+				ShowInfo = true;
+				ShowWarning = true;
+				ShowError = true;
+				ShowFatal = true;
+			}
+			else if (showAll == false)
+			{
+				ShowDebug = false;
+				ShowInfo = false;
+				ShowWarning = false;
+				ShowError = false;
+				ShowFatal = false;
+			}
 		}
 
-		private static void OnShowOtherChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		private static void OnShowAllChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnShowOtherChanged((bool)args.NewValue);
-		}
-
-		private void OnShowOtherChanged(bool showOther)
-		{
-			if (DataSource == null)
-				return;
-
-			DataSource.OtherFilter = !showOther;
+			((LogViewerControl)dependencyObject).OnShowAllChanged((bool?)args.NewValue);
 		}
 
 		private static void OnFatalChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnFatalChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnFatalChanged((bool) args.NewValue);
 		}
 
 		private void OnFatalChanged(bool isChecked)
@@ -186,7 +197,7 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnErrorChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnErrorChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnErrorChanged((bool) args.NewValue);
 		}
 
 		private void OnErrorChanged(bool isChecked)
@@ -207,7 +218,7 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnWarningChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnWarningChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnWarningChanged((bool) args.NewValue);
 		}
 
 		private void OnWarningChanged(bool isChecked)
@@ -228,7 +239,7 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnInfoChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnInfoChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnInfoChanged((bool) args.NewValue);
 		}
 
 		private void OnInfoChanged(bool isChecked)
@@ -249,7 +260,7 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnDebugChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnDebugChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnDebugChanged((bool) args.NewValue);
 		}
 
 		private void OnDebugChanged(bool isChecked)
@@ -273,13 +284,28 @@ namespace Tailviewer.Ui.Controls
 			if (DataSource == null)
 				return;
 
-			var levels = DataSource.LevelsFilter;
+			LevelFlags levels = DataSource.LevelsFilter;
+
 			ShowFatal = levels.HasFlag(LevelFlags.Fatal);
 			ShowError = levels.HasFlag(LevelFlags.Error);
 			ShowWarning = levels.HasFlag(LevelFlags.Warning);
 			ShowInfo = levels.HasFlag(LevelFlags.Info);
 			ShowDebug = levels.HasFlag(LevelFlags.Debug);
+
+			if (levels == LevelFlags.All)
+			{
+				ShowAll = true;
+			}
+			else if (levels == LevelFlags.None)
+			{
+				ShowAll = false;
+			}
+			else
+			{
+				ShowAll = null;
+			}
 		}
+
 		private void OnDataSourceChanged(DataSourceViewModel oldValue, DataSourceViewModel newValue)
 		{
 			if (oldValue != null)
@@ -291,7 +317,6 @@ namespace Tailviewer.Ui.Controls
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 			}
 			OnLevelsChanged();
-			OnOtherFilterChanged();
 		}
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -304,10 +329,6 @@ namespace Tailviewer.Ui.Controls
 
 				case "LevelsFilter":
 					OnLevelsChanged();
-					break;
-
-				case "OtherFilter":
-					OnOtherFilterChanged();
 					break;
 			}
 		}
@@ -344,12 +365,6 @@ namespace Tailviewer.Ui.Controls
 			{
 				ScrollToTail();
 			}
-		}
-
-		public LogViewerControl()
-		{
-			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
-			SizeChanged += OnSizeChanged;
 		}
 
 		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

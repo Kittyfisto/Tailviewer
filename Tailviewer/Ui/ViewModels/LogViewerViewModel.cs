@@ -81,10 +81,9 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var stringFilter = DataSource.StringFilter;
 			var levelFilter = DataSource.LevelsFilter;
-			var otherFilter = DataSource.OtherFilter;
 
 			ILogFile logFile;
-			var filter = Filter.Create(stringFilter, true, levelFilter, otherFilter, _quickFilterChain);
+			var filter = Filter.Create(stringFilter, true, levelFilter, _quickFilterChain);
 			if (filter != null)
 			{
 				logFile = _fullLogFile.AsFiltered(filter, _maximumWaitTime);
@@ -177,7 +176,7 @@ namespace Tailviewer.Ui.ViewModels
 						var entries = _currentLogFile.GetSection(section);
 						for (int i = 0; i < entries.Length; ++i)
 						{
-							var model = new LogEntryViewModel(section.Index + i, entries[i]);
+							var model = new LogEntryViewModel((int) (section.Index + i), entries[i]);
 							_logEntries.Add(model);
 						}
 					}

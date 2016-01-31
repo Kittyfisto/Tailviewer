@@ -101,6 +101,18 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.LevelFilter = value; }
 		}
 
+		public LogLineIndex SelectedLogLine
+		{
+			get { return _settings.SelectedLogLine; }
+			set { _settings.SelectedLogLine = value; }
+		}
+
+		public LogLineIndex VisibleLogLine
+		{
+			get { return _settings.VisibleLogLine; }
+			set { _settings.VisibleLogLine = value; }
+		}
+
 		internal Settings.DataSource Settings
 		{
 			get { return _settings; }
@@ -114,12 +126,6 @@ namespace Tailviewer.BusinessLogic
 		public Size FileSize
 		{
 			get { return _logFile.FileSize; }
-		}
-
-		public bool OtherFilter
-		{
-			get { return _settings.ExcludeOther; }
-			set { _settings.ExcludeOther = value; }
 		}
 
 		public bool ColorByLevel

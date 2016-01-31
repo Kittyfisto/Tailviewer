@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    
+    <!-- COLORS -->
+    
+    <SolidColorBrush x:Key="TextBrushDefault" Color="Black" />
+    <SolidColorBrush x:Key="TextBrushSelected" Color="#FFFBFA" />
+    
+    <SolidColorBrush x:Key="BackgroundBrushDefault" Color="White" />
+    <SolidColorBrush x:Key="BackgroundBrushHovered" Color="#F2F2F2" />
+    <SolidColorBrush x:Key="BackgroundBrushPressed" Color="#CCCCCC" />
+    <SolidColorBrush x:Key="BackgroundBrushSelected" Color="#3998D6" />
+    <SolidColorBrush x:Key="BackgroundBrushSelectedAndHovered" Color="#348BC1" />
+    
+    <SolidColorBrush x:Key="SeparatorBrush" Color="#E5E5E5" />
+    
+    <SolidColorBrush x:Key="BorderBrushPressed" Color="#CCCCCC" />
+    <SolidColorBrush x:Key="BorderBrushHovered" Color="#E5E5E5" />
+    <SolidColorBrush x:Key="BorderBrushSelected" Color="#3998D6" />
+    <SolidColorBrush x:Key="BorderBrushSelectedAndHovered" Color="#3998D6" />
+    
+    <!-- BORDER THICKNESSES -->
+    
+    <system:Double x:Key="SlimBorder">1</system:Double>
+    <Thickness x:Key="SlimBorderThickness" Bottom="1" Left="1" Right="1" Top="1" />
+    
+</ResourceDictionary>

@@ -1,0 +1,9 @@
+﻿2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): "14056", without custom type resolver
+Foobar
+Some more info
+2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1
+Hey look at me
+dwadawdadw
+2015-12-08 10:14:53,860 [  1] WARN  ServiceRepository WPF Sample: Adding service Service: RohdeSchwarz.Tools.Plugins.IPluginFactory (PluginFactory) = Active
+Additional information
+Yes!

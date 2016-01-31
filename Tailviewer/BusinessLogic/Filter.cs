@@ -23,32 +23,29 @@ namespace Tailviewer.BusinessLogic
 		}
 
 		public static ILogEntryFilter Create(string substringFilter,
-		                             LevelFlags levelFilter,
-		                             bool excludeOther)
+		                             LevelFlags levelFilter)
 		{
-			return Create(CreateFilters(substringFilter, true, levelFilter, excludeOther));
+			return Create(CreateFilters(substringFilter, true, levelFilter));
 		}
 
 		public static List<ILogEntryFilter> CreateFilters(string substringFilter,
 		                                          bool ignoreCase,
-		                                          LevelFlags levelFilter,
-		                                          bool excludeOther)
+		                                          LevelFlags levelFilter)
 		{
 			var filters = new List<ILogEntryFilter>();
 			if (!string.IsNullOrEmpty(substringFilter))
 				filters.Add(new SubstringFilter(substringFilter, ignoreCase));
-			if (levelFilter != LevelFlags.All || excludeOther)
-				filters.Add(new LevelFilter(levelFilter, excludeOther));
+			if (levelFilter != LevelFlags.All)
+				filters.Add(new LevelFilter(levelFilter));
 			return filters;
 		}
 
 		public static ILogEntryFilter Create(string substringFilter,
 		                             bool ignoreCase,
 		                             LevelFlags levelFilter,
-		                             bool excludeOther,
 		                             IEnumerable<ILogEntryFilter> additionalFilters = null)
 		{
-			List<ILogEntryFilter> filters = CreateFilters(substringFilter, ignoreCase, levelFilter, excludeOther);
+			List<ILogEntryFilter> filters = CreateFilters(substringFilter, ignoreCase, levelFilter);
 			if (additionalFilters != null)
 				filters.AddRange(additionalFilters);
 			return Create(filters);

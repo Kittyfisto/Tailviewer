@@ -4,6 +4,10 @@
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
@@ -77,12 +81,12 @@
                                                         Watermark="Filter log file" />
 
                                                     <local:EditToggleButton
+                                                        SnapsToDevicePixels="True"
                                                         x:Name="PART_EditToggleButton"
                                                         Grid.Column="2"
                                                         VerticalAlignment="Stretch"
-                                                        IsChecked="{Binding IsEditing, Mode=TwoWay}"
-                                                        />
-                                                    
+                                                        IsChecked="{Binding IsEditing, Mode=TwoWay}" />
+
                                                     <local:RemoveButton
                                                         x:Name="PART_RemoveButton"
                                                         Grid.Column="3"
@@ -91,11 +95,16 @@
                                                         Command="{Binding RemoveCommand}" />
                                                 </Grid>
 
-                                                <Grid Grid.Row="1">
+                                                <Grid Grid.Row="1"
+                                                      Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition Height="1" />
+                                                    </Grid.RowDefinitions>
                                                     <local:QuickFilterTypeToggleButton
-                                                        Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                                         QuickFilterType="{Binding Type, Mode=TwoWay}"
                                                         Margin="0,8,0,8" />
+                                                    <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="1" />
                                                 </Grid>
                                             </Grid>
                                         </DataTemplate>

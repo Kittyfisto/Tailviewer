@@ -7,6 +7,9 @@ namespace Tailviewer.BusinessLogic
 	/// </summary>
 	public struct LogLine : IEquatable<LogLine>
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly LevelFlags Level;
 
 		/// <summary>
@@ -21,23 +24,39 @@ namespace Tailviewer.BusinessLogic
 
 		public readonly string Message;
 
+		/// <summary>
+		///     The timestamp associated with this log-entry.
+		/// </summary>
+		public readonly DateTime? Timestamp;
+
 		public LogLine(int lineIndex, string message, LevelFlags level)
 			: this(lineIndex, lineIndex, message, level)
 		{
 		}
 
+		public LogLine(int lineIndex, string message, LevelFlags level, DateTime? timestamp)
+			: this(lineIndex, lineIndex, message, level, timestamp)
+		{}
+
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level)
+			: this(lineIndex, logEntryIndex, message, level, null)
+		{
+		}
+
+		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 		{
 			LineIndex = lineIndex;
 			Message = message;
 			Level = level;
 			LogEntryIndex = logEntryIndex;
+			Timestamp = timestamp;
 		}
 
 		public bool Equals(LogLine other)
 		{
 			return Level == other.Level && LineIndex == other.LineIndex && LogEntryIndex == other.LogEntryIndex &&
-			       string.Equals(Message, other.Message);
+			       string.Equals(Message, other.Message) &&
+			       Equals(Timestamp, other.Timestamp);
 		}
 
 		public override string ToString()
@@ -59,6 +78,7 @@ namespace Tailviewer.BusinessLogic
 				hashCode = (hashCode*397) ^ LineIndex;
 				hashCode = (hashCode*397) ^ LogEntryIndex;
 				hashCode = (hashCode*397) ^ (Message != null ? Message.GetHashCode() : 0);
+				hashCode = (hashCode*397) ^ Timestamp.GetHashCode();
 				return hashCode;
 			}
 		}

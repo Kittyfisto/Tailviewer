@@ -3,17 +3,22 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
     <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
     <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
     <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
+    <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
+    
     <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
     <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
     <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
     <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
     <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
-    <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
 
     <Style TargetType="{x:Type local:LogViewerControl}">
         <Setter Property="Template">
@@ -39,63 +44,65 @@
                                        />
                             </Button>
 
-                            <ToggleButton
+                            <local:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
                                 x:Name="PART_FollowTail"
                                 Content="Follow Tail"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                            <ToggleButton
+ 
+                            <local:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
                                 x:Name="PART_ColorByLevel"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="Color by level" />
 
-                            <ToggleButton
-                                Margin="0,0,8,8"
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
                                 Padding="4"
-                                VerticalAlignment="Center"
+                                Width="41"
+                                VerticalAlignment="Stretch"
+                                IsChecked="{Binding ShowAll, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}"
+                                />
+
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
+                                Padding="4"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <ToggleButton
-                                Margin="0,0,8,8"
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
                                 Padding="4"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowError, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <ToggleButton
-                                Margin="0,0,8,8"
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
                                 Padding="4"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowWarning, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <ToggleButton
-                                Margin="0,0,8,8"
+                            <local:TextToggleButton
+                                Margin="0,0,0,8"
                                 Padding="4"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowInfo, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <ToggleButton
+                            <local:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                            <ToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                VerticalAlignment="Center"
-                                IsChecked="{Binding ShowOther, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <local:FilterTextBox
                                 Margin="0,0,8,8"
@@ -106,7 +113,7 @@
 
                         <Grid Grid.Row="1"
                               Height="1"
-                              Background="#E5E5E5" />
+                              Background="{StaticResource SeparatorBrush}" />
 
                         <ListView
                             x:Name="PART_ListView"
@@ -114,7 +121,9 @@
                             ItemsSource="{TemplateBinding ItemsSource}"
                             BorderThickness="0"
                             VirtualizingPanel.IsVirtualizing="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible">
+                            ScrollViewer.VerticalScrollBarVisibility="Visible"
+                            SnapsToDevicePixels="True"
+                            >
 
                             <ListView.InputBindings>
                                 <KeyBinding Modifiers="Control" Key="C"
@@ -127,7 +136,9 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListViewItem">
-                                                <Border Background="{TemplateBinding Background}">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderThickness="0"
+                                                        >
                                                     <TextBlock Text="{Binding Message}" />
                                                 </Border>
                                             </ControlTemplate>
@@ -135,8 +146,8 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="true">
-                                            <Setter Property="Background" Value="#3998D6" />
-                                            <Setter Property="TextElement.Foreground" Value="White"></Setter>
+                                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                                            <Setter Property="TextElement.Foreground" Value="{StaticResource TextBrushSelected}" />
                                         </Trigger>
                                         <MultiTrigger>
                                             <MultiTrigger.Conditions>

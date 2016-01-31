@@ -150,6 +150,18 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public LogLineIndex VisibleLogLine
+		{
+			get { return _dataSource.VisibleLogLine; }
+			set { _dataSource.VisibleLogLine = value; }
+		}
+
+		public LogLineIndex SelectedLogLine
+		{
+			get { return _dataSource.SelectedLogLine; }
+			set { _dataSource.SelectedLogLine = value; }
+		}
+
 		public TimeSpan LastWrittenAge
 		{
 			get { return _lastWrittenAge; }
@@ -267,19 +279,6 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_dataSource.LevelFilter = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public bool OtherFilter
-		{
-			get { return _dataSource.OtherFilter; }
-			set
-			{
-				if (value == OtherFilter)
-					return;
-
-				_dataSource.OtherFilter = value;
 				EmitPropertyChanged();
 			}
 		}

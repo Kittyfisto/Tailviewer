@@ -12,9 +12,10 @@ namespace Tailviewer.Settings
 		public bool IsOpen;
 		public LevelFlags LevelFilter;
 		public string StringFilter;
-		public bool ExcludeOther;
 		public bool ColorByLevel;
-		private readonly  List<Guid> _activatedQuickFilters;
+		public LogLineIndex SelectedLogLine;
+		public LogLineIndex VisibleLogLine;
+		private readonly List<Guid> _activatedQuickFilters;
 
 		public List<Guid> ActivatedQuickFilters
 		{
@@ -26,6 +27,8 @@ namespace Tailviewer.Settings
 			_activatedQuickFilters = new List<Guid>();
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
+			SelectedLogLine = LogLineIndex.Invalid;
+			VisibleLogLine = LogLineIndex.Invalid;
 		}
 
 		public DataSource(string file)
@@ -34,7 +37,6 @@ namespace Tailviewer.Settings
 			File = file;
 		}
 
-
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("file", File);
@@ -42,8 +44,9 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
-			writer.WriteAttributeBool("otherfilter", ExcludeOther);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
+			writer.WriteAttributeInt("selectedentryindex", (int)SelectedLogLine);
+			writer.WriteAttributeInt("visibleentryindex", (int)VisibleLogLine);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (var guid in ActivatedQuickFilters)
@@ -83,12 +86,16 @@ namespace Tailviewer.Settings
 						LevelFilter = reader.ReadContentAsEnum<LevelFlags>();
 						break;
 
-					case "otherfilter":
-						ExcludeOther = reader.ReadContentAsBool();
-						break;
-
 					case "colorbylevel":
 						ColorByLevel = reader.ReadContentAsBool();
+						break;
+
+					case "selectedentryindex":
+						SelectedLogLine = reader.ReadContentAsInt();
+						break;
+
+					case "visibleentryindex":
+						VisibleLogLine = reader.ReadContentAsInt();
 						break;
 				}
 			}
