@@ -154,8 +154,8 @@ namespace Tailviewer.BusinessLogic
 
 				if (_fullSection.IsEndOfSection(currentSourceIndex))
 				{
-					if (!TryAddLogLine(lastLogEntry))
-						_listeners.OnRead(_indices.Count);
+					TryAddLogLine(lastLogEntry);
+					_listeners.OnRead(_indices.Count);
 
 					_endOfSectionHandle.Set();
 

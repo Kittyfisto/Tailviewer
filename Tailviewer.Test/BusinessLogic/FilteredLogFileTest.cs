@@ -100,6 +100,39 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		[Description("Verifies that listeners are notified eventually, even when the # of filtered entries is less than the minimum batch size")]
+		public void TestListener()
+		{
+			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+			_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("yikes", true, LevelFlags.All, false)))
+			{
+				var sections = new List<LogFileSection>();
+				var listener = new Mock<ILogFileListener>();
+
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>())).Callback((LogFileSection s) => sections.Add(s));
+				// We deliberately set the batchSize to be greater than the amount of entries that will be matched.
+				// If the FilteredLogFile is implemented correctly, then it will continously notifiy the listener until
+				// the maximum wait time is elapsed.
+				const int batchSize = 10;
+				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), batchSize);
+				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				file.Count.Should().Be(2);
+				WaitUntil(() => sections.Count == 2, TimeSpan.FromSeconds(1))
+					.Should().BeTrue("Because the FilteredLogFile should've notified the listener eventually");
+
+				sections.Should().Equal(new[]
+					{
+						LogFileSection.Reset,
+						new LogFileSection(0, 2)
+					});
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the filtered log file correctly listens to a reset event")]
 		public void TestClear()
 		{
