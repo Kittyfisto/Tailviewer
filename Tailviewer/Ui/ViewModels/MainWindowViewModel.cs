@@ -140,7 +140,10 @@ namespace Tailviewer.Ui.ViewModels
 
 		public IEnumerable<QuickFilterViewModel> QuickFilters
 		{
-			get { return _quickFilters.Observable; }
+			get
+			{
+				return _quickFilters.Observable;
+			}
 		}
 
 		public ICommand AddQuickFilterCommand

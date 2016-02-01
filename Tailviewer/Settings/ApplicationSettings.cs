@@ -11,7 +11,7 @@ namespace Tailviewer.Settings
 		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
 		private readonly QuickFilters _quickFilters;
-		private string _fileFolder;
+		private readonly string _fileFolder;
 
 		public static ApplicationSettings Create()
 		{

@@ -36,13 +36,15 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\ic_find_in_page_black_48dp.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Tailviewer.Bootstrapper</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -54,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filter.cs" />
     <Compile Include="BusinessLogic\ILogEntryFilter.cs" />
@@ -216,9 +219,7 @@
   <ItemGroup>
     <Resource Include="Resources\ic_find_in_page_black_48dp.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ThirdParty\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\ic_clear_black_18dp.png" />
   </ItemGroup>
@@ -236,6 +237,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_mode_edit_white_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\packages\log4net.2.0.3\lib\net20-full\log4net.dll">
+      <Link>ThirdParty\log4net.dll</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
