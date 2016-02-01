@@ -8,21 +8,99 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:AlertControl}">
                     <Border Background="#64000000">
-                        <StackPanel VerticalAlignment="Center"
-                                    HorizontalAlignment="Stretch"
-                                    Background="DodgerBlue"
-                                    MinHeight="300">
+                        <Grid Background="DodgerBlue"
+                              Height="300">
+                            <Grid Margin="10">
 
-                            <TextBlock
-                                Margin="10"
-                                Text="Sorry, something went wrong. A team of highly trained monkeys has been dispatched to deal with this situation."
-                                FontSize="16" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <TextBlock TextWrapping="Wrap"
-                                       Text="{TemplateBinding ErrorMessage}"
-                                       FontSize="16"
-                                    Margin="10" />
-                        </StackPanel>
+                                <TextBlock
+                                    Text="Sorry, something went wrong."
+                                    FontSize="16" />
+
+                                <TextBlock
+                                    Grid.Row="1"
+                                    Text="If you choose to send bug report, a team of highly trained monkeys will be dispatched to deal with this problem."
+                                    FontSize="12" />
+
+                                <Expander
+                                    Grid.Row="2"
+                                    Padding="10"
+                                    TextElement.FontSize="12"
+                                    TextElement.Foreground="White">
+                                    <Expander.Header>
+                                        <TextBlock Text="Show me the gory details!" />
+                                    </Expander.Header>
+
+                                    <ScrollViewer
+                                        VerticalScrollBarVisibility="Auto"
+                                        HorizontalScrollBarVisibility="Auto">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="Message:"
+                                                       Margin="0,2,6,2" />
+                                            <TextBlock TextWrapping="Wrap"
+                                                       Grid.Column="1"
+                                                       Text="{Binding Exception.Message, RelativeSource={RelativeSource TemplatedParent}}"
+                                                       Margin="0,2,2,2" />
+
+                                            <TextBlock Grid.Row="1"
+                                                       Text="Type:"
+                                                       Margin="0,2,6,2" />
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="1"
+                                                       Text="{Binding ExceptionType.FullName, RelativeSource={RelativeSource TemplatedParent}}"
+                                                       Margin="0,2,2,2" />
+
+                                            <TextBlock Grid.Row="2"
+                                                       Text="ExceptionStackTrace:"
+                                                       Margin="0,2,6,2" />
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="1"
+                                                       Text="{Binding Exception.StackTrace, RelativeSource={RelativeSource TemplatedParent}}"
+                                                       Margin="0,2,2,2" />
+                                        </Grid>
+                                    </ScrollViewer>
+                                </Expander>
+
+
+                                <StackPanel
+                                    Grid.Row="4"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal">
+                                    <Button Content="Ok"
+                                            Margin="6"
+                                            Padding="6"
+                                            Command="{TemplateBinding CloseCommand}" />
+
+                                    <Button Content="Send bug report"
+                                            IsEnabled="False"
+                                            Margin="6"
+                                            Padding="6" />
+                                </StackPanel>
+
+
+                            </Grid>
+
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

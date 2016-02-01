@@ -81,7 +81,7 @@ namespace Tailviewer
 				if (model != null && exception != null)
 				{
 					model.HasError = true;
-					model.ErrorMessage = exception.Message;
+					model.Exception = exception;
 				}
 			}
 

@@ -96,7 +96,9 @@
         <controls:AlertControl
             Grid.ColumnSpan="5"
             Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-            ErrorMessage="{Binding ErrorMessage}" />
+            Exception="{Binding Exception}"
+            CloseCommand="{Binding CloseErrorDialogCommand}"
+            />
     </Grid>
 
 </Window>

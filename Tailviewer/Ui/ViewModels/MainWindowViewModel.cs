@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -23,10 +24,11 @@ namespace Tailviewer.Ui.ViewModels
 
 		private DataSourceViewModel _currentDataSource;
 		private LogViewerViewModel _currentDataSourceLogView;
-		private string _errorMessage;
+		private Exception _exception;
 		private bool _hasError;
 		private bool _isLogFileOpen;
 		private string _windowTitle;
+		private readonly ICommand _closeErrorDialogCommand;
 
 		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters,
 		                           IDispatcher dispatcher)
@@ -49,6 +51,13 @@ namespace Tailviewer.Ui.ViewModels
 
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
+			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
+		}
+
+		private void CloseErrorDialog()
+		{
+			Exception = null;
+			HasError = false;
 		}
 
 		public ICommand SelectPreviousDataSourceCommand
@@ -74,15 +83,20 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public string ErrorMessage
+		public ICommand CloseErrorDialogCommand
 		{
-			get { return _errorMessage; }
+			get { return _closeErrorDialogCommand; }
+		}
+
+		public Exception Exception
+		{
+			get { return _exception; }
 			set
 			{
-				if (value == _errorMessage)
+				if (value == _exception)
 					return;
 
-				_errorMessage = value;
+				_exception = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -140,10 +154,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public IEnumerable<QuickFilterViewModel> QuickFilters
 		{
-			get
-			{
-				return _quickFilters.Observable;
-			}
+			get { return _quickFilters.Observable; }
 		}
 
 		public ICommand AddQuickFilterCommand
@@ -182,9 +193,9 @@ namespace Tailviewer.Ui.ViewModels
 			}
 			else
 			{
-				var dataSources = _dataSourcesViewModel.Observable;
-				var index = dataSources.IndexOf(CurrentDataSource);
-				var nextIndex = (index + 1) % dataSources.Count;
+				ObservableCollection<DataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				int index = dataSources.IndexOf(CurrentDataSource);
+				int nextIndex = (index + 1)%dataSources.Count;
 				CurrentDataSource = dataSources[nextIndex];
 			}
 		}
@@ -197,9 +208,9 @@ namespace Tailviewer.Ui.ViewModels
 			}
 			else
 			{
-				var dataSources = _dataSourcesViewModel.Observable;
-				var index = dataSources.IndexOf(CurrentDataSource);
-				var nextIndex = index - 1;
+				ObservableCollection<DataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				int index = dataSources.IndexOf(CurrentDataSource);
+				int nextIndex = index - 1;
 				if (nextIndex < 0)
 					nextIndex = dataSources.Count - 1;
 				CurrentDataSource = dataSources[nextIndex];
