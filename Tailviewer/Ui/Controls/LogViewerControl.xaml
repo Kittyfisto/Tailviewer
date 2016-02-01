@@ -203,6 +203,9 @@
                                     Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=lines: {0}}" />
                                 <TextBlock
                                     Margin="4"
+                                    Text="{Binding TotalLogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=of {0}}" />
+                                <TextBlock
+                                    Margin="4"
                                     Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}, StringFormat=size: {0}}" />
                                 <TextBlock
                                     Margin="4"

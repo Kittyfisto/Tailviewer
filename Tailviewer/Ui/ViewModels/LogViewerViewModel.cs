@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourceViewModel _dataSource;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
+		private int _totalLogEntryCount;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private readonly TimeSpan _maximumWaitTime;
 
@@ -109,6 +110,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public int TotalLogEntryCount
+		{
+			get { return _totalLogEntryCount; }
+			private set
+			{
+				if (value == _totalLogEntryCount)
+					return;
+
+				_totalLogEntryCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public ObservableCollection<LogEntryViewModel> LogEntries
 		{
 			get { return _logEntries; }
@@ -170,6 +184,7 @@ namespace Tailviewer.Ui.ViewModels
 					{
 						_logEntries.Clear();
 						LogEntryCount = 0;
+						TotalLogEntryCount = 0;
 					}
 					else
 					{
@@ -191,6 +206,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCounts()
 		{
 			LogEntryCount = _currentLogFile.Count;
+			TotalLogEntryCount = _fullLogFile.Count;
 		}
 
 		public void Dispose()

@@ -51,7 +51,11 @@ namespace Tailviewer.Ui.Controls
 
 		public static readonly DependencyProperty ShowAllProperty =
 			DependencyProperty.Register("ShowAll", typeof (bool?), typeof (LogViewerControl),
-			new PropertyMetadata(false, OnShowAllChanged));
+			                            new PropertyMetadata(false, OnShowAllChanged));
+
+		public static readonly DependencyProperty TotalLogEntryCountProperty =
+			DependencyProperty.Register("TotalLogEntryCount", typeof (int), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(int)));
 
 		private ListView _partListView;
 		private FilterTextBox _partStringFilter;
@@ -118,6 +122,12 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(DataSourceProperty, value); }
 		}
 
+		public int TotalLogEntryCount
+		{
+			get { return (int) GetValue(TotalLogEntryCountProperty); }
+			set { SetValue(TotalLogEntryCountProperty, value); }
+		}
+
 		public int LogEntryCount
 		{
 			get { return (int) GetValue(LogEntryCountProperty); }
@@ -171,7 +181,7 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnShowAllChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnShowAllChanged((bool?)args.NewValue);
+			((LogViewerControl) dependencyObject).OnShowAllChanged((bool?) args.NewValue);
 		}
 
 		private static void OnFatalChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)

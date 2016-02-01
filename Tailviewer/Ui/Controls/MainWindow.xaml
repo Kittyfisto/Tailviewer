@@ -79,6 +79,7 @@
                 x:Name="PART_LogFileView"
                 ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
                 LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                 DataSource="{Binding CurrentDataSource}" />
         </Grid>
 
