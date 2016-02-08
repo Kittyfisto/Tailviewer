@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
+using log4net;
 
 namespace Tailviewer.Ui.Controls
 {
 	internal class LogViewerControl : Control
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public static readonly DependencyProperty ItemsSourceProperty =
 			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<LogEntryViewModel>), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnItemsSourceChanged));
@@ -61,6 +66,7 @@ namespace Tailviewer.Ui.Controls
 		private FilterTextBox _partStringFilter;
 		private bool _scrollByUser;
 		private ScrollViewer _scrollViewer;
+		private bool _logged;
 
 		static LogViewerControl()
 		{
@@ -390,9 +396,21 @@ namespace Tailviewer.Ui.Controls
 			{
 				if (VisualTreeHelper.GetChildrenCount(_partListView) > 0)
 				{
-					var border = (Border) VisualTreeHelper.GetChild(_partListView, 0);
-					_scrollViewer = (ScrollViewer) VisualTreeHelper.GetChild(border, 0);
-					_scrollViewer.ScrollChanged += OnScrollChanged;
+					var border = VisualTreeHelper.GetChild(_partListView, 0);
+					var child = VisualTreeHelper.GetChild(border, 0);
+					_scrollViewer = child as ScrollViewer;
+					if (_scrollViewer != null)
+					{
+						_scrollViewer.ScrollChanged += OnScrollChanged;
+					}
+					else
+					{
+						if (!_logged)
+						{
+							Log.ErrorFormat("Unable to find ScrollViewer in visual tree - can't scroll to bottom");
+							_logged = true;
+						}
+					}
 				}
 			}
 
