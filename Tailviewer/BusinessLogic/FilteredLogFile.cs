@@ -12,13 +12,12 @@ namespace Tailviewer.BusinessLogic
 		: ILogFile
 		  , ILogFileListener
 	{
+		private const int BatchSize = 1000;
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private const int BatchSize = 1000;
-
-		private readonly ILogEntryFilter _filter;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ManualResetEvent _endOfSectionHandle;
+		private readonly ILogEntryFilter _filter;
 		private readonly List<int> _indices;
 		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -77,7 +76,13 @@ namespace Tailviewer.BusinessLogic
 
 		public int Count
 		{
-			get { return _indices.Count; }
+			get
+			{
+				lock (_indices)
+				{
+					return _indices.Count;
+				}
+			}
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -108,7 +113,7 @@ namespace Tailviewer.BusinessLogic
 
 				for (int i = 0; i < section.Count; ++i)
 				{
-					var index = section.Index + i;
+					LogLineIndex index = section.Index + i;
 					int sourceIndex = _indices[(int) index];
 					LogLine line = _source.GetLine(sourceIndex);
 					dest[i] = line;
@@ -157,13 +162,9 @@ namespace Tailviewer.BusinessLogic
 				{
 					if (section == LogFileSection.Reset)
 					{
-						_fullSection = new LogFileSection();
-						_indices.Clear();
-
+						Clear();
 						lastLogEntry.Clear();
 						currentSourceIndex = 0;
-
-						_listeners.OnRead(-1);
 					}
 					else
 					{
@@ -211,6 +212,16 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
+		private void Clear()
+		{
+			_fullSection = new LogFileSection();
+			lock (_indices)
+			{
+				_indices.Clear();
+			}
+			_listeners.OnRead(-1);
+		}
+
 		private bool TryAddLogLine(List<LogLine> logEntry)
 		{
 			if (_indices.Count > 0 && logEntry.Count > 0 &&
@@ -219,9 +230,12 @@ namespace Tailviewer.BusinessLogic
 
 			if (_filter.PassesFilter(logEntry))
 			{
-				foreach (var line in logEntry)
+				lock (_indices)
 				{
-					_indices.Add(line.LineIndex);
+					foreach (LogLine line in logEntry)
+					{
+						_indices.Add(line.LineIndex);
+					}
 				}
 				_listeners.OnRead(_indices.Count);
 				return true;
