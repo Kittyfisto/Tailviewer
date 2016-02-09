@@ -9,9 +9,14 @@ namespace Tailviewer.BusinessLogic
 		private readonly int _maximumCount;
 		private DateTime _lastReportedTime;
 		private int _lastNumberOfLines;
+		private readonly ILogFile _logFile;
 
-		public LogFileListenerNotifier(ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
+		public LogFileListenerNotifier(ILogFile logFile, ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
 		{
+			if (logFile == null) throw new ArgumentNullException("logFile");
+			if (listener == null) throw new ArgumentNullException("listener");
+
+			_logFile = logFile;
 			_listener = listener;
 			_maximumTime = maximumTime;
 			_maximumCount = maximumCount;
@@ -42,7 +47,7 @@ namespace Tailviewer.BusinessLogic
 			else
 			{
 				Reset();
-				_listener.OnLogFileModified(LogFileSection.Reset);
+				_listener.OnLogFileModified(_logFile, LogFileSection.Reset);
 			}
 		}
 
@@ -56,7 +61,7 @@ namespace Tailviewer.BusinessLogic
 			{
 				count = Math.Min(count, _maximumCount);
 				var section = new LogFileSection(_lastNumberOfLines, count);
-				_listener.OnLogFileModified(section);
+				_listener.OnLogFileModified(_logFile, section);
 
 				_lastNumberOfLines += count;
 				_lastReportedTime = now;

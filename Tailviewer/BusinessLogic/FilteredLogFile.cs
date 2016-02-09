@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic
 			                     _cancellationTokenSource.Token,
 			                     _cancellationTokenSource.Token,
 			                     TaskCreationOptions.LongRunning);
-			_listeners = new LogFileListenerCollection();
+			_listeners = new LogFileListenerCollection(this);
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
 		}
@@ -125,7 +125,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public void OnLogFileModified(LogFileSection section)
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
 			_endOfSectionHandle.Reset();

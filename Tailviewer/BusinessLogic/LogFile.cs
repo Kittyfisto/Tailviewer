@@ -56,7 +56,7 @@ namespace Tailviewer.BusinessLogic
 			                     _cancellationTokenSource.Token,
 			                     _cancellationTokenSource.Token,
 			                     TaskCreationOptions.LongRunning);
-			_listeners = new LogFileListenerCollection();
+			_listeners = new LogFileListenerCollection(this);
 		}
 
 		public int DebugCount

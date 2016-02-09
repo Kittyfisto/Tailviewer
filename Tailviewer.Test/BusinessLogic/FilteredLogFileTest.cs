@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic
 			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("ello", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.None));
-				file.OnLogFileModified(new LogFileSection(0, 1));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 				file.Start(TimeSpan.Zero);
 				file.Wait();
 
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
-				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 				file.Start(TimeSpan.Zero);
 				file.Wait();
 
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
-				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 				file.Start(TimeSpan.Zero);
 				file.Wait();
 
@@ -110,13 +110,13 @@ namespace Tailviewer.Test.BusinessLogic
 				var sections = new List<LogFileSection>();
 				var listener = new Mock<ILogFileListener>();
 
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>())).Callback((LogFileSection s) => sections.Add(s));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>())).Callback((ILogFile l, LogFileSection s) => sections.Add(s));
 				// We deliberately set the batchSize to be greater than the amount of entries that will be matched.
 				// If the FilteredLogFile is implemented correctly, then it will continously notifiy the listener until
 				// the maximum wait time is elapsed.
 				const int batchSize = 10;
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), batchSize);
-				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 				file.Start(TimeSpan.Zero);
 				file.Wait();
 
@@ -140,14 +140,14 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
-				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				file.Start(TimeSpan.Zero);
 				file.Wait();
 				file.Count.Should().Be(2);
 
 				_entries.Clear();
-				file.OnLogFileModified(LogFileSection.Reset);
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Reset);
 				file.Wait();
 				file.Count.Should().Be(0);
 			}
@@ -161,13 +161,13 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var sections = new List<LogFileSection>();
 				var listener = new Mock<ILogFileListener>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-				        .Callback((LogFileSection section) => sections.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+				        .Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
 
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
 				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
-				file.OnLogFileModified(new LogFileSection(0, 2));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				file.Start(TimeSpan.Zero);
 				file.Wait();

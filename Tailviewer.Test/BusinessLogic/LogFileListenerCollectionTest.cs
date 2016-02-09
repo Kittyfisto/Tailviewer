@@ -14,11 +14,12 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that AddListener may be called multiple times, but if it is, then events aren't fired multiple times for each invocation")]
 		public void TestAddListener1()
 		{
-			var collection = new LogFileListenerCollection();
+			var logFile = new Mock<ILogFile>().Object;
+			var collection = new LogFileListenerCollection(logFile);
 			var listener = new Mock<ILogFileListener>();
 			var sections = new List<LogFileSection>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-			        .Callback((LogFileSection y) => sections.Add(y));
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogFile file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
 			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).ShouldNotThrow();

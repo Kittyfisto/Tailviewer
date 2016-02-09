@@ -7,9 +7,13 @@ namespace Tailviewer.BusinessLogic
 	{
 		private readonly Dictionary<ILogFileListener, LogFileListenerNotifier> _listeners;
 		private int _currentLineIndex;
+		private readonly ILogFile _logFile;
 
-		public LogFileListenerCollection()
+		public LogFileListenerCollection(ILogFile logFile)
 		{
+			if (logFile == null) throw new ArgumentNullException("logFile");
+
+			_logFile = logFile;
 			_listeners = new Dictionary<ILogFileListener, LogFileListenerNotifier>();
 			_currentLineIndex = -1;
 		}
@@ -20,7 +24,7 @@ namespace Tailviewer.BusinessLogic
 			{
 				if (!_listeners.ContainsKey(listener))
 				{
-					var notifier = new LogFileListenerNotifier(listener, maximumWaitTime, maximumLineCount);
+					var notifier = new LogFileListenerNotifier(_logFile, listener, maximumWaitTime, maximumLineCount);
 					_listeners.Add(listener, notifier);
 					notifier.OnRead(_currentLineIndex);
 				}

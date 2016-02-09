@@ -65,8 +65,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-				        .Callback((LogFileSection section) => sections.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+				        .Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
@@ -90,8 +90,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-						.Callback((LogFileSection section) => changes.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+						.Callback((ILogFile logFile, LogFileSection section) => changes.Add(section));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
@@ -119,8 +119,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-						.Callback((LogFileSection section) => changes.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+						.Callback((ILogFile logFile, LogFileSection section) => changes.Add(section));
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
@@ -271,8 +271,8 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					var listener = new Mock<ILogFileListener>();
 					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-							.Callback((LogFileSection section) => sections.Add(section));
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+							.Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 					filtered.Wait();
 					filtered.AddListener(listener.Object, TimeSpan.Zero, 1);
 
@@ -315,8 +315,8 @@ namespace Tailviewer.Test.BusinessLogic
 
 					var listener = new Mock<ILogFileListener>();
 					var sections = new List<LogFileSection>();
-					listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-							.Callback((LogFileSection section) => sections.Add(section));
+					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+							.Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
 					using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
@@ -434,8 +434,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
-				listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-						.Callback((LogFileSection section) => sections.Add(section));
+				listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+						.Callback((ILogFile log, LogFileSection section) => sections.Add(section));
 				logFile.AddListener(listener.Object, TimeSpan.Zero, 2);
 
 				logFile.Start();

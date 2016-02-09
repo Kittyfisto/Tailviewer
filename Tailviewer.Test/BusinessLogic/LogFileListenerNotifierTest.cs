@@ -13,19 +13,21 @@ namespace Tailviewer.Test.BusinessLogic
 		[SetUp]
 		public void SetUp()
 		{
+			_logFile = new Mock<ILogFile>();
 			_listener = new Mock<ILogFileListener>();
 			_changes = new List<LogFileSection>();
-			_listener.Setup(x => x.OnLogFileModified(It.IsAny<LogFileSection>()))
-			         .Callback((LogFileSection section) => _changes.Add(section));
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			         .Callback((ILogFile file, LogFileSection section) => _changes.Add(section));
 		}
 
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _changes;
+		private Mock<ILogFile> _logFile;
 
 		[Test]
 		public void TestCurrentLineChanged1()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.Zero, 1);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
 			notifier.OnRead(1);
 			notifier.OnRead(2);
 			notifier.OnRead(3);
@@ -43,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged2()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 4);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
 			notifier.OnRead(1);
 			_changes.Should().BeEmpty();
 			notifier.OnRead(2);
@@ -61,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged3()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 4);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
 			notifier.OnRead(4);
 			_changes.Should().Equal(new[]
 				{
@@ -72,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged4()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(1000);
 			_changes.Should().Equal(new[]
 				{
@@ -89,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged5()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
@@ -101,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCurrentLineChanged6()
 		{
-			var notifier = new LogFileListenerNotifier(_listener.Object, TimeSpan.FromHours(1), 1000);
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 1000);
 			notifier.OnRead(-1);
 			_changes.Should().Equal(new[]
 				{

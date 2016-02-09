@@ -157,7 +157,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public void OnLogFileModified(LogFileSection section)
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			lock (_pendingSections)
 			{
