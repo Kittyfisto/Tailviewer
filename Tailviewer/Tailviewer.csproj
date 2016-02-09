@@ -63,6 +63,7 @@
     <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogLineIndex.cs" />
     <Compile Include="BusinessLogic\LogLine.cs" />
+    <Compile Include="BusinessLogic\MergedLogFile.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />
     <Compile Include="BusinessLogic\QuickFilters.cs" />
     <Compile Include="BusinessLogic\RegexFilter.cs" />

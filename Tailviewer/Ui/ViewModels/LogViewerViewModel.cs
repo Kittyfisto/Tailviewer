@@ -159,6 +159,9 @@ namespace Tailviewer.Ui.ViewModels
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			if (section.InvalidateSection)
+				throw new NotImplementedException();
+
 			lock (_pendingSections)
 			{
 				if (section == LogFileSection.Reset)

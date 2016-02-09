@@ -152,7 +152,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public LogLine GetEntry(int index)
+		public LogLine GetLine(int index)
 		{
 			lock (_syncRoot)
 			{

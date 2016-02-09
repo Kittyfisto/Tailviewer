@@ -110,23 +110,26 @@ namespace Tailviewer.BusinessLogic
 				{
 					var index = section.Index + i;
 					int sourceIndex = _indices[(int) index];
-					LogLine line = _source.GetEntry(sourceIndex);
+					LogLine line = _source.GetLine(sourceIndex);
 					dest[i] = line;
 				}
 			}
 		}
 
-		public LogLine GetEntry(int index)
+		public LogLine GetLine(int index)
 		{
 			lock (_indices)
 			{
 				int sourceIndex = _indices[index];
-				return _source.GetEntry(sourceIndex);
+				return _source.GetLine(sourceIndex);
 			}
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			if (section.InvalidateSection)
+				throw new NotImplementedException();
+
 			_pendingModifications.Enqueue(section);
 			_endOfSectionHandle.Reset();
 		}

@@ -10,6 +10,7 @@ namespace Tailviewer.BusinessLogic
 	{
 		public readonly int Count;
 		public readonly LogLineIndex Index;
+		public readonly bool InvalidateSection;
 
 		public static readonly LogFileSection Reset;
 
@@ -18,10 +19,11 @@ namespace Tailviewer.BusinessLogic
 			Reset = new LogFileSection(LogLineIndex.Invalid, 0);
 		}
 
-		public LogFileSection(LogLineIndex index, int count)
+		public LogFileSection(LogLineIndex index, int count, bool invalidateSection = false)
 		{
 			Index = index;
 			Count = count;
+			InvalidateSection = invalidateSection;
 		}
 
 		public bool IsEndOfSection(LogLineIndex index)
@@ -34,7 +36,10 @@ namespace Tailviewer.BusinessLogic
 			if (Index == LogLineIndex.Invalid && Count == 0)
 				return "Reset";
 
-			return string.Format("[{0}, #{1}]", Index, Count);
+			if (InvalidateSection)
+				return string.Format("Invalidated [{0}, #{1}]", Index, Count);
+
+			return string.Format("Changed [{0}, #{1}]", Index, Count);
 		}
 
 		public static LogFileSection MinimumBoundingLine(LogFileSection lhs, LogFileSection rhs)

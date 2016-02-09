@@ -18,6 +18,6 @@ namespace Tailviewer.BusinessLogic
 		void GetSection(LogFileSection section, LogLine[] dest);
 
 		[Pure]
-		LogLine GetEntry(int index);
+		LogLine GetLine(int index);
 	}
 }
