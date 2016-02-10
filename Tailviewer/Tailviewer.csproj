@@ -57,8 +57,10 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="BusinessLogic\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filter.cs" />
+    <Compile Include="BusinessLogic\IDataSource.cs" />
     <Compile Include="BusinessLogic\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogLineIndex.cs" />
@@ -83,6 +85,9 @@
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
+    <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="XmlExtensions.cs" />
@@ -117,7 +122,7 @@
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
-    <Compile Include="Ui\ViewModels\DataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
     <Compile Include="Settings\WindowSettings.cs" />
     <Page Include="Themes\Constants.xaml">
       <SubType>Designer</SubType>

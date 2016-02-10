@@ -84,14 +84,38 @@ namespace Tailviewer.BusinessLogic
 
 			while (!token.IsCancellationRequested)
 			{
-				PendingModification section;
-				while (_pendingModifications.TryDequeue(out section))
+				PendingModification modification;
+				while (_pendingModifications.TryDequeue(out modification))
 				{
-					
+					if (modification.Section.IsReset)
+					{
+						Clear();
+					}
+					else if (modification.Section.InvalidateSection)
+					{
+						throw new NotImplementedException();
+					}
+					else
+					{
+						// We need to find out where this new entry (or entries) is/are to be inserted.
+						// If the new entry is to be inserted at the end then we simply need to add it as
+						// an index and we are done.
+						// If the new entry is to be inserted anywhere else, then we need to invalidate
+						// everything from that index on, insert the new line at the given index and then
+						// issue another modification that includes everything from the newly inserted index
+						// to the end.
+					}
 				}
-
-				
 			}
+		}
+
+		private void Clear()
+		{
+			lock (_indices)
+			{
+				_indices.Clear();
+			}
+			_listeners.OnRead(-1);
 		}
 
 		public void Start(TimeSpan maximumWaitTime)
@@ -120,6 +144,11 @@ namespace Tailviewer.BusinessLogic
 			_readTask.Dispose();
 		}
 
+		public int FatalCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public void Wait()
 		{
 			throw new NotImplementedException();
@@ -130,7 +159,48 @@ namespace Tailviewer.BusinessLogic
 			get { throw new NotImplementedException(); }
 		}
 
+		public DateTime LastModified
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public Size FileSize
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public int Count
+		{
+			get
+			{
+				lock (_indices)
+				{
+					return _indices.Count;
+				}
+			}
+		}
+
+		public int OtherCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int DebugCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int InfoCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int WarningCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int ErrorCount
 		{
 			get { throw new NotImplementedException(); }
 		}
@@ -156,7 +226,12 @@ namespace Tailviewer.BusinessLogic
 
 		public LogLine GetLine(int index)
 		{
-			var source = _indices[index];
+			Index source;
+			lock (_indices)
+			{
+				source = _indices[index];
+			}
+
 			var line = source.LogFile.GetLine(source.LogLineIndex);
 			return line;
 		}

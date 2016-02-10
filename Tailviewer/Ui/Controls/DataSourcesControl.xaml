@@ -1,6 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                    mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -32,8 +36,7 @@
                                 Margin="8,8,8,0"
                                 Height="26"
                                 FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Filter data sources (Ctrl+F)"
-                                />
+                                Watermark="Filter data sources (Ctrl+F)" />
 
                             <ListView ItemsSource="{TemplateBinding FilteredItemsSource}"
                                       SelectedItem="{Binding SelectedItem, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
@@ -49,7 +52,8 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="ListViewItem">
-                                                    <Border Background="{TemplateBinding Background}">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                            d:DataContext="{d:DesignInstance viewModels:IDataSourceViewModel}">
                                                         <Grid>
                                                             <StackPanel Orientation="Vertical"
                                                                         VerticalAlignment="Center"
@@ -92,7 +96,7 @@
                                                                                 HorizontalAlignment="Right"
                                                                                 IsInverted="{Binding IsOpen}"
                                                                                 Command="{Binding RemoveCommand}"
-                                                                                Margin="0,0,17,0"/>
+                                                                                Margin="0,0,17,0" />
                                                         </Grid>
                                                     </Border>
                                                 </ControlTemplate>
@@ -100,14 +104,16 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="true">
-                                                <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                                                <Setter Property="Background"
+                                                        Value="{StaticResource BackgroundBrushSelected}" />
                                             </Trigger>
                                             <MultiTrigger>
                                                 <MultiTrigger.Conditions>
                                                     <Condition Property="IsMouseOver" Value="True" />
                                                     <Condition Property="IsSelected" Value="False" />
                                                 </MultiTrigger.Conditions>
-                                                <Setter Property="Background" Value="{StaticResource BackgroundBrushHovered}" />
+                                                <Setter Property="Background"
+                                                        Value="{StaticResource BackgroundBrushHovered}" />
                                             </MultiTrigger>
                                         </Style.Triggers>
                                     </Style>

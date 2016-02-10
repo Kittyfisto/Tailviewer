@@ -19,7 +19,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
 		private readonly ICommand _addCommand;
 		private readonly ApplicationSettings _settings;
-		private DataSourceViewModel _currentDataSource;
+		private IDataSourceViewModel _currentDataSource;
 		private bool _isChangingCurrentDataSource;
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _viewModels; }
 		}
 
-		public DataSourceViewModel CurrentDataSource
+		public IDataSourceViewModel CurrentDataSource
 		{
 			get { return _currentDataSource; }
 			set

@@ -23,7 +23,7 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(null, OnItemsSourceChanged));
 
 		public static readonly DependencyProperty DataSourceProperty =
-			DependencyProperty.Register("DataSource", typeof (DataSourceViewModel), typeof (LogViewerControl),
+			DependencyProperty.Register("DataSource", typeof (SingleDataSourceViewModel), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnDataSourceChanged));
 
 		public static readonly DependencyProperty LogEntryCountProperty =
@@ -122,9 +122,9 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(ShowFatalProperty, value); }
 		}
 
-		public DataSourceViewModel DataSource
+		public SingleDataSourceViewModel DataSource
 		{
-			get { return (DataSourceViewModel) GetValue(DataSourceProperty); }
+			get { return (SingleDataSourceViewModel) GetValue(DataSourceProperty); }
 			set { SetValue(DataSourceProperty, value); }
 		}
 
@@ -161,8 +161,8 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl) dependencyObject).OnDataSourceChanged(args.OldValue as DataSourceViewModel,
-			                                                          args.NewValue as DataSourceViewModel);
+			((LogViewerControl) dependencyObject).OnDataSourceChanged(args.OldValue as IDataSourceViewModel,
+			                                                          args.NewValue as IDataSourceViewModel);
 		}
 
 		private void OnShowAllChanged(bool? showAll)
@@ -322,7 +322,7 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		private void OnDataSourceChanged(DataSourceViewModel oldValue, DataSourceViewModel newValue)
+		private void OnDataSourceChanged(IDataSourceViewModel oldValue, IDataSourceViewModel newValue)
 		{
 			if (oldValue != null)
 			{

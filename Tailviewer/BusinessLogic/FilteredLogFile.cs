@@ -8,7 +8,7 @@ using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
-	internal sealed class FilteredLogFile
+	public sealed class FilteredLogFile
 		: ILogFile
 		  , ILogFileListener
 	{
@@ -57,6 +57,11 @@ namespace Tailviewer.BusinessLogic
 			_readTask.Dispose();
 		}
 
+		public int FatalCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public void Wait()
 		{
 			while (true)
@@ -74,6 +79,16 @@ namespace Tailviewer.BusinessLogic
 			get { return _source.StartTimestamp; }
 		}
 
+		public DateTime LastModified
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public Size FileSize
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public int Count
 		{
 			get
@@ -83,6 +98,31 @@ namespace Tailviewer.BusinessLogic
 					return _indices.Count;
 				}
 			}
+		}
+
+		public int OtherCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int DebugCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int InfoCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int WarningCount
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public int ErrorCount
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

@@ -12,15 +12,15 @@ namespace Tailviewer.Ui.Controls
 	internal class DataSourcesControl : Control
 	{
 		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<DataSourceViewModel>), typeof (DataSourcesControl),
+			DependencyProperty.Register("ItemsSource", typeof(IEnumerable<IDataSourceViewModel>), typeof(DataSourcesControl),
 			                            new PropertyMetadata(null, OnDataSourcesChanged));
 
 		public static readonly DependencyProperty SelectedItemProperty =
-			DependencyProperty.Register("SelectedItem", typeof (DataSourceViewModel), typeof (DataSourcesControl),
+			DependencyProperty.Register("SelectedItem", typeof(IDataSourceViewModel), typeof(DataSourcesControl),
 			                            new PropertyMetadata(null, OnSelectedItemChanged));
 
 		private static readonly DependencyPropertyKey FilteredItemsSourcePropertyKey
-			= DependencyProperty.RegisterReadOnly("FilteredItemsSource", typeof (ObservableCollection<DataSourceViewModel>),
+			= DependencyProperty.RegisterReadOnly("FilteredItemsSource", typeof(ObservableCollection<IDataSourceViewModel>),
 			                                      typeof (DataSourcesControl),
 			                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.None));
 
@@ -41,7 +41,7 @@ namespace Tailviewer.Ui.Controls
 
 		public DataSourcesControl()
 		{
-			FilteredItemsSource = new ObservableCollection<DataSourceViewModel>();
+			FilteredItemsSource = new ObservableCollection<IDataSourceViewModel>();
 		}
 
 		public string StringFilter
@@ -55,21 +55,21 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		public ObservableCollection<DataSourceViewModel> FilteredItemsSource
+		public ObservableCollection<IDataSourceViewModel> FilteredItemsSource
 		{
-			get { return (ObservableCollection<DataSourceViewModel>) GetValue(FilteredItemsSourceProperty); }
+			get { return (ObservableCollection<IDataSourceViewModel>)GetValue(FilteredItemsSourceProperty); }
 			private set { SetValue(FilteredItemsSourcePropertyKey, value); }
 		}
 
-		public DataSourceViewModel SelectedItem
+		public IDataSourceViewModel SelectedItem
 		{
-			get { return (DataSourceViewModel) GetValue(SelectedItemProperty); }
+			get { return (IDataSourceViewModel)GetValue(SelectedItemProperty); }
 			set { SetValue(SelectedItemProperty, value); }
 		}
 
-		public IEnumerable<DataSourceViewModel> ItemsSource
+		public IEnumerable<IDataSourceViewModel> ItemsSource
 		{
-			get { return (IEnumerable<DataSourceViewModel>) GetValue(ItemsSourceProperty); }
+			get { return (IEnumerable<IDataSourceViewModel>)GetValue(ItemsSourceProperty); }
 			set { SetValue(ItemsSourceProperty, value); }
 		}
 
@@ -84,7 +84,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				int sourceIndex = 0;
 				int filterIndex = 0;
-				foreach (DataSourceViewModel model in ItemsSource)
+				foreach (IDataSourceViewModel model in ItemsSource)
 				{
 					bool passedOld = PassesFilter(model, oldValue);
 					bool passesNew = PassesFilter(model, newValue);
@@ -119,11 +119,11 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnDataSourcesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			((DataSourcesControl) d).OnDataSourcesChanged((IEnumerable<DataSourceViewModel>) e.OldValue,
-			                                              (IEnumerable<DataSourceViewModel>) e.NewValue);
+			((DataSourcesControl)d).OnDataSourcesChanged((IEnumerable<IDataSourceViewModel>)e.OldValue,
+														  (IEnumerable<IDataSourceViewModel>)e.NewValue);
 		}
 
-		private void OnDataSourcesChanged(IEnumerable<DataSourceViewModel> oldValue, IEnumerable<DataSourceViewModel> newValue)
+		private void OnDataSourcesChanged(IEnumerable<IDataSourceViewModel> oldValue, IEnumerable<IDataSourceViewModel> newValue)
 		{
 			var old = oldValue as INotifyCollectionChanged;
 			if (old != null)
@@ -134,7 +134,7 @@ namespace Tailviewer.Ui.Controls
 			FilteredItemsSource.Clear();
 			if (newValue != null)
 			{
-				foreach (DataSourceViewModel model in newValue)
+				foreach (IDataSourceViewModel model in newValue)
 				{
 					if (PassesFilter(model))
 					{
@@ -161,14 +161,14 @@ namespace Tailviewer.Ui.Controls
 				case NotifyCollectionChangedAction.Add:
 					for (int i = 0; i < e.NewItems.Count; ++i)
 					{
-						var model = (DataSourceViewModel) e.NewItems[0];
+						var model = (IDataSourceViewModel)e.NewItems[0];
 						if (PassesFilter(model))
 							FilteredItemsSource.Add(model);
 					}
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					foreach (DataSourceViewModel model in e.OldItems)
+					foreach (IDataSourceViewModel model in e.OldItems)
 					{
 						FilteredItemsSource.Remove(model);
 					}
@@ -184,18 +184,18 @@ namespace Tailviewer.Ui.Controls
 		}
 
 		[Pure]
-		private bool PassesFilter(DataSourceViewModel model)
+		private bool PassesFilter(IDataSourceViewModel model)
 		{
 			return PassesFilter(model, StringFilter);
 		}
 
 		[Pure]
-		private bool PassesFilter(DataSourceViewModel model, string filter)
+		private bool PassesFilter(IDataSourceViewModel model, string filter)
 		{
 			if (filter == null)
 				return true;
 
-			int idx = model.FullName.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
+			int idx = model.DisplayName.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase);
 			if (idx != -1)
 				return true;
 
@@ -204,11 +204,11 @@ namespace Tailviewer.Ui.Controls
 
 		private static void OnSelectedItemChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((DataSourcesControl) dependencyObject).OnSelectedItemChanged((DataSourceViewModel) args.OldValue,
-			                                                              (DataSourceViewModel) args.NewValue);
+			((DataSourcesControl) dependencyObject).OnSelectedItemChanged((SingleDataSourceViewModel) args.OldValue,
+			                                                              (SingleDataSourceViewModel) args.NewValue);
 		}
 
-		private void OnSelectedItemChanged(DataSourceViewModel oldValue, DataSourceViewModel newValue)
+		private void OnSelectedItemChanged(SingleDataSourceViewModel oldValue, SingleDataSourceViewModel newValue)
 		{
 			if (oldValue != null)
 			{

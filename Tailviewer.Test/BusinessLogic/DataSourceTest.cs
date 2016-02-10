@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCtor()
 		{
-			using (var source = new Tailviewer.BusinessLogic.DataSource(new DataSource(@"E:\somelogfile.txt")))
+			using (var source = new SingleDataSource(new DataSource(@"E:\somelogfile.txt")))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);

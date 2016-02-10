@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic
 
 		private readonly string _fileName;
 		private readonly LogFileListenerCollection _listeners;
-		private DateTime _lastWritten;
+		private DateTime _lastModified;
 
 		#endregion
 
@@ -112,9 +112,9 @@ namespace Tailviewer.BusinessLogic
 			get { return _startTimestamp; }
 		}
 
-		public DateTime LastWritten
+		public DateTime LastModified
 		{
-			get { return _lastWritten; }
+			get { return _lastModified; }
 		}
 
 		public int OtherCount
@@ -206,7 +206,7 @@ namespace Tailviewer.BusinessLogic
 			try
 			{
 				var levels = new List<KeyValuePair<int, LevelFlags>>();
-				_lastWritten = File.GetLastWriteTime(_fileName);
+				_lastModified = File.GetLastWriteTime(_fileName);
 
 				using (var stream = new FileStream(_fileName,
 				                                   FileMode.Open,
@@ -243,7 +243,7 @@ namespace Tailviewer.BusinessLogic
 						else
 						{
 							if (reachedEof)
-								_lastWritten = DateTime.Now;
+								_lastModified = DateTime.Now;
 
 							reachedEof = false;
 
@@ -420,18 +420,6 @@ namespace Tailviewer.BusinessLogic
 					}
 				}
 			}
-		}
-
-		public FilteredLogFile AsFiltered(ILogEntryFilter filter)
-		{
-			return AsFiltered(filter, TimeSpan.FromMilliseconds(10));
-		}
-
-		public FilteredLogFile AsFiltered(ILogEntryFilter filter, TimeSpan maximumWaitTime)
-		{
-			var file = new FilteredLogFile(this, filter);
-			file.Start(maximumWaitTime);
-			return file;
 		}
 	}
 }

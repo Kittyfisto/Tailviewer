@@ -26,6 +26,11 @@ namespace Tailviewer.BusinessLogic
 			InvalidateSection = invalidateSection;
 		}
 
+		public bool IsReset
+		{
+			get { return this == Reset; }
+		}
+
 		public bool IsEndOfSection(LogLineIndex index)
 		{
 			return index >= Index + Count;

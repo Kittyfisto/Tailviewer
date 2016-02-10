@@ -3,17 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class DataSources
-		: IEnumerable<DataSource>
+		: IEnumerable<IDataSource>
 		, IDisposable
 	{
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
-		private readonly List<DataSource> _dataSources;
+		private readonly List<IDataSource> _dataSources;
 
 		public DataSources(Settings.DataSources settings)
 		{
@@ -21,7 +20,7 @@ namespace Tailviewer.BusinessLogic
 
 			_syncRoot = new object();
 			_settings = settings;
-			_dataSources = new List<DataSource>();
+			_dataSources = new List<IDataSource>();
 			foreach (var dataSource in settings)
 			{
 				Add(dataSource);
@@ -39,21 +38,21 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public DataSource Add(Settings.DataSource settings)
+		public IDataSource Add(Settings.DataSource settings)
 		{
 			lock (_syncRoot)
 			{
-				var dataSource = new DataSource(settings);
+				var dataSource = new SingleDataSource(settings);
 				_dataSources.Add(dataSource);
 				return dataSource;
 			}
 		}
 
-		public DataSource Add(string fileName)
+		public IDataSource Add(string fileName)
 		{
 			string fullFileName;
 			var key = GetKey(fileName, out fullFileName);
-			DataSource dataSource;
+			IDataSource dataSource;
 
 			lock (_syncRoot)
 			{
@@ -77,7 +76,7 @@ namespace Tailviewer.BusinessLogic
 			return key;
 		}
 
-		public bool Remove(DataSource dataSource)
+		public bool Remove(IDataSource dataSource)
 		{
 			lock (_syncRoot)
 			{
@@ -92,7 +91,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public IEnumerator<DataSource> GetEnumerator()
+		public IEnumerator<IDataSource> GetEnumerator()
 		{
 			lock (_syncRoot)
 			{

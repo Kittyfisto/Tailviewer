@@ -2,8 +2,6 @@
 using System.Collections.ObjectModel;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
-using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
@@ -26,7 +24,7 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter1()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>();
+			var sources = new ObservableCollection<IDataSourceViewModel>();
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().BeEmpty();
 		}
@@ -35,9 +33,9 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter2()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>
+			var sources = new ObservableCollection<IDataSourceViewModel>
 				{
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log")))
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log")))
 				};
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -47,16 +45,16 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter3()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>();
+			var sources = new ObservableCollection<SingleDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -64,12 +62,12 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter4()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>();
+			var sources = new ObservableCollection<SingleDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))));
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))));
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
 
 			sources.RemoveAt(1);
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -85,11 +83,11 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter5()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
 				};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
@@ -100,16 +98,16 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter6()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
 				};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().BeEmpty();
 
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))));
-			sources.Add(new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
+			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
 			_control.FilteredItemsSource.Should().Equal(new[] { sources[1] });
 		}
 
@@ -117,11 +115,11 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter7()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
 				};
 			_control.ItemsSource = sources;
 
@@ -139,11 +137,11 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestFilter8()
 		{
-			var sources = new ObservableCollection<DataSourceViewModel>
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test2.log"))),
-					new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
 				};
 			_control.ItemsSource = sources;
 

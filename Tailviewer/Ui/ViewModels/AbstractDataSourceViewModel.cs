@@ -1,24 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	/// <summary>
-	///     Represents a data source and is capable
-	/// </summary>
-	internal sealed class DataSourceViewModel
-		: INotifyPropertyChanged
+	internal abstract class AbstractDataSourceViewModel
+		: IDataSourceViewModel
 	{
-		private readonly DataSource _dataSource;
-		private readonly string _fileName;
-		private readonly string _folder;
-		private readonly ICommand _openInExplorerCommand;
 		private readonly ICommand _removeCommand;
+		private readonly IDataSource _dataSource;
+
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
@@ -29,27 +22,23 @@ namespace Tailviewer.Ui.ViewModels
 		private int _totalCount;
 		private int _warningCount;
 
-		public DataSourceViewModel(DataSource dataSource)
+		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 
 			_dataSource = dataSource;
-			_fileName = Path.GetFileName(dataSource.FullFileName);
-			_folder = Path.GetDirectoryName(dataSource.FullFileName);
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
-			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 			Update();
 		}
 
-		public ICommand OpenInExplorerCommand
-		{
-			get { return _openInExplorerCommand; }
-		}
+		public abstract ICommand OpenInExplorerCommand { get; }
+
+		public abstract string DisplayName { get; }
 
 		public int TotalCount
 		{
 			get { return _totalCount; }
-			set
+			protected set
 			{
 				if (value == _totalCount)
 					return;
@@ -62,7 +51,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int OtherCount
 		{
 			get { return _otherCount; }
-			set
+			protected set
 			{
 				if (value == _otherCount)
 					return;
@@ -75,7 +64,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int DebugCount
 		{
 			get { return _debugCount; }
-			set
+			protected set
 			{
 				if (value == _debugCount)
 					return;
@@ -88,7 +77,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int InfoCount
 		{
 			get { return _infoCount; }
-			set
+			protected set
 			{
 				if (value == _infoCount)
 					return;
@@ -101,7 +90,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int WarningCount
 		{
 			get { return _warningCount; }
-			set
+			protected set
 			{
 				if (value == _warningCount)
 					return;
@@ -114,7 +103,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int ErrorCount
 		{
 			get { return _errorCount; }
-			set
+			protected set
 			{
 				if (value == _errorCount)
 					return;
@@ -127,7 +116,7 @@ namespace Tailviewer.Ui.ViewModels
 		public int FatalCount
 		{
 			get { return _fatalCount; }
-			set
+			protected set
 			{
 				if (value == _fatalCount)
 					return;
@@ -140,7 +129,7 @@ namespace Tailviewer.Ui.ViewModels
 		public Size FileSize
 		{
 			get { return _fileSize; }
-			set
+			protected set
 			{
 				if (value == _fileSize)
 					return;
@@ -219,56 +208,20 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public DateTime LastOpened
+		public DateTime LastViewed
 		{
-			get { return _dataSource.LastOpened; }
+			get { return _dataSource.LastViewed; }
 			set
 			{
-				if (value == LastOpened)
+				if (value == LastViewed)
 					return;
 
-				_dataSource.LastOpened = value;
+				_dataSource.LastViewed = value;
 				EmitPropertyChanged();
 			}
 		}
 
-		public bool IsOpen
-		{
-			get { return _dataSource.IsOpen; }
-			set
-			{
-				if (value == IsOpen)
-					return;
-
-				if (value)
-				{
-					_dataSource.LastOpened = DateTime.Now;
-				}
-
-				_dataSource.IsOpen = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public string FileName
-		{
-			get { return _fileName; }
-		}
-
-		public string Folder
-		{
-			get { return _folder; }
-		}
-
-		public string FullName
-		{
-			get { return _dataSource.FullFileName; }
-		}
-
-		public DataSource DataSource
-		{
-			get { return _dataSource; }
-		}
+		public IDataSource DataSource { get { return _dataSource; } }
 
 		public LevelFlags LevelsFilter
 		{
@@ -284,11 +237,24 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+		public event Action<IDataSourceViewModel> Remove;
 
-		private void OpenInExplorer()
+		public bool IsOpen
 		{
-			var argument = string.Format(@"/select, {0}", _dataSource.FullFileName);
-			Process.Start("explorer.exe", argument);
+			get { return _dataSource.IsOpen; }
+			set
+			{
+				if (value == IsOpen)
+					return;
+
+				if (value)
+				{
+					_dataSource.LastViewed = DateTime.Now;
+				}
+
+				_dataSource.IsOpen = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public void Update()
@@ -301,19 +267,17 @@ namespace Tailviewer.Ui.ViewModels
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			LastWrittenAge = DateTime.Now - _dataSource.LastWritten;
+			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 		}
-
-		public event Action<DataSourceViewModel> Remove;
 
 		private void OnRemoveDataSource()
 		{
-			Action<DataSourceViewModel> fn = Remove;
+			Action<IDataSourceViewModel> fn = Remove;
 			if (fn != null)
 				fn(this);
 		}
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));

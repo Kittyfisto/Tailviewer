@@ -6,12 +6,21 @@ namespace Tailviewer.BusinessLogic
 	public interface ILogFile
 		: IDisposable
 	{
-		void Wait();
-
 		DateTime? StartTimestamp { get; }
 
-		int Count { get; }
+		DateTime LastModified { get; }
 
+		Size FileSize { get; }
+
+		int Count { get; }
+		int OtherCount { get; }
+		int DebugCount { get; }
+		int InfoCount { get; }
+		int WarningCount { get; }
+		int ErrorCount { get; }
+		int FatalCount { get; }
+
+		void Wait();
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		void Remove(ILogFileListener listener);
 

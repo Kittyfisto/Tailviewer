@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
-using DataSource = Tailviewer.BusinessLogic.DataSource;
 using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
 
 namespace Tailviewer.Ui.ViewModels
@@ -14,7 +13,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly QuickFilter _quickFilter;
 		private readonly ICommand _removeCommand;
-		private DataSource _currentDataSource;
+		private IDataSource _currentDataSource;
 		private bool _isEditing;
 		private bool _isValid;
 
@@ -60,7 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _removeCommand; }
 		}
 
-		public DataSource CurrentDataSource
+		public IDataSource CurrentDataSource
 		{
 			get { return _currentDataSource; }
 			set
@@ -68,7 +67,7 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == CurrentDataSource)
 					return;
 
-				DataSource hadDataSource = _currentDataSource;
+				IDataSource hadDataSource = _currentDataSource;
 				bool before = IsActive;
 				_currentDataSource = value;
 				bool after = IsActive;
@@ -90,7 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get
 			{
-				DataSource dataSource = _currentDataSource;
+				IDataSource dataSource = _currentDataSource;
 				if (dataSource == null)
 					return false;
 
@@ -101,7 +100,7 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == IsActive)
 					return;
 
-				DataSource dataSource = _currentDataSource;
+				IDataSource dataSource = _currentDataSource;
 				if (dataSource == null)
 					throw new InvalidOperationException();
 

@@ -16,6 +16,7 @@ namespace Tailviewer.Settings
 		public LogLineIndex SelectedLogLine;
 		public LogLineIndex VisibleLogLine;
 		private readonly List<Guid> _activatedQuickFilters;
+		public DateTime LastViewed;
 
 		public List<Guid> ActivatedQuickFilters
 		{

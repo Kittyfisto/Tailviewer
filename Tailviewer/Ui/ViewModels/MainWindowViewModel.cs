@@ -22,7 +22,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _selectPreviousDataSourceCommand;
 		private readonly DispatcherTimer _timer;
 
-		private DataSourceViewModel _currentDataSource;
+		private IDataSourceViewModel _currentDataSource;
 		private LogViewerViewModel _currentDataSourceLogView;
 		private Exception _exception;
 		private bool _hasError;
@@ -162,12 +162,12 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _quickFilters.AddCommand; }
 		}
 
-		public IEnumerable<DataSourceViewModel> RecentFiles
+		public IEnumerable<IDataSourceViewModel> RecentFiles
 		{
 			get { return _dataSourcesViewModel.Observable; }
 		}
 
-		public DataSourceViewModel CurrentDataSource
+		public IDataSourceViewModel CurrentDataSource
 		{
 			get { return _currentDataSource; }
 			set
@@ -193,7 +193,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 			else
 			{
-				ObservableCollection<DataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				ObservableCollection<IDataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
 				int index = dataSources.IndexOf(CurrentDataSource);
 				int nextIndex = (index + 1)%dataSources.Count;
 				CurrentDataSource = dataSources[nextIndex];
@@ -208,7 +208,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 			else
 			{
-				ObservableCollection<DataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				ObservableCollection<IDataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
 				int index = dataSources.IndexOf(CurrentDataSource);
 				int nextIndex = index - 1;
 				if (nextIndex < 0)
@@ -237,14 +237,14 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public DataSourceViewModel OpenFile(string file)
+		public IDataSourceViewModel OpenFile(string file)
 		{
-			DataSourceViewModel dataSource = _dataSourcesViewModel.GetOrAdd(file);
+			IDataSourceViewModel dataSource = _dataSourcesViewModel.GetOrAdd(file);
 			OpenFile(dataSource);
 			return dataSource;
 		}
 
-		private void OpenFile(DataSourceViewModel dataSource)
+		private void OpenFile(IDataSourceViewModel dataSource)
 		{
 			if (dataSource != null)
 			{
@@ -252,7 +252,7 @@ namespace Tailviewer.Ui.ViewModels
 				CurrentDataSourceLogView = new LogViewerViewModel(
 					dataSource,
 					_dispatcher);
-				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.FileName);
+				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
 			}
 			else
 			{

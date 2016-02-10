@@ -14,17 +14,17 @@ namespace Tailviewer.Ui.ViewModels
 		, IDisposable
 	{
 		private readonly IDispatcher _dispatcher;
-		private readonly LogFile _fullLogFile;
+		private readonly ILogFile _fullLogFile;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
-		private readonly DataSourceViewModel _dataSource;
+		private readonly IDataSourceViewModel _dataSource;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
 		private int _totalLogEntryCount;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private readonly TimeSpan _maximumWaitTime;
 
-		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
+		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
@@ -42,7 +42,7 @@ namespace Tailviewer.Ui.ViewModels
 			UpdateCurrentLogFile();
 		}
 
-		public LogViewerViewModel(DataSourceViewModel dataSource, IDispatcher dispatcher)
+		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
 			: this(dataSource, dispatcher, TimeSpan.FromMilliseconds(10))
 		{
 		}
@@ -128,7 +128,7 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _logEntries; }
 		}
 
-		public DataSourceViewModel DataSource
+		public IDataSourceViewModel DataSource
 		{
 			get { return _dataSource; }
 		}

@@ -2,8 +2,9 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
-using DataSource = Tailviewer.BusinessLogic.DataSource;
+using IDataSource = Tailviewer.BusinessLogic.IDataSource;
 using DataSources = Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
@@ -12,7 +13,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly DataSources _dataSources;
 		private readonly ApplicationSettings _settings;
-		private readonly ObservableCollection<DataSourceViewModel> _viewModels;
+		private readonly ObservableCollection<IDataSourceViewModel> _viewModels;
 
 		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
@@ -20,35 +21,35 @@ namespace Tailviewer.Ui.ViewModels
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
 
 			_settings = settings;
-			_viewModels = new ObservableCollection<DataSourceViewModel>();
+			_viewModels = new ObservableCollection<IDataSourceViewModel>();
 			_dataSources = dataSources;
-			foreach (DataSource dataSource in dataSources)
+			foreach (IDataSource dataSource in dataSources)
 			{
 				Add(dataSource);
 			}
 		}
 
-		public ObservableCollection<DataSourceViewModel> Observable
+		public ObservableCollection<IDataSourceViewModel> Observable
 		{
 			get { return _viewModels; }
 		}
 
 		public void Update()
 		{
-			foreach (DataSourceViewModel dataSource in _viewModels)
+			foreach (SingleDataSourceViewModel dataSource in _viewModels)
 			{
 				dataSource.Update();
 			}
 		}
 
-		public DataSourceViewModel GetOrAdd(string fileName)
+		public IDataSourceViewModel GetOrAdd(string fileName)
 		{
 			string fullName = Path.GetFullPath(fileName);
-			DataSourceViewModel viewModel =
-				_viewModels.FirstOrDefault(x => string.Equals(x.FullName, fullName, StringComparison.InvariantCultureIgnoreCase));
+			IDataSourceViewModel viewModel =
+				_viewModels.FirstOrDefault(x => Represents(x, fullName));
 			if (viewModel == null)
 			{
-				DataSource dataSource = _dataSources.Add(fileName);
+				var dataSource = _dataSources.Add(fileName);
 				viewModel = Add(dataSource);
 				_settings.Save();
 			}
@@ -56,15 +57,24 @@ namespace Tailviewer.Ui.ViewModels
 			return viewModel;
 		}
 
-		private DataSourceViewModel Add(DataSource dataSource)
+		private bool Represents(IDataSourceViewModel dataSourceViewModel, string fullName)
 		{
-			var viewModel = new DataSourceViewModel(dataSource);
+			var file = dataSourceViewModel as SingleDataSourceViewModel;
+			if (file == null)
+				return false;
+
+			return string.Equals(file.FullName, fullName, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		private IDataSourceViewModel Add(IDataSource dataSource)
+		{
+			var viewModel = new SingleDataSourceViewModel((SingleDataSource) dataSource);
 			viewModel.Remove += OnRemove;
 			_viewModels.Add(viewModel);
 			return viewModel;
 		}
 
-		private void OnRemove(DataSourceViewModel viewModel)
+		private void OnRemove(IDataSourceViewModel viewModel)
 		{
 			_viewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);

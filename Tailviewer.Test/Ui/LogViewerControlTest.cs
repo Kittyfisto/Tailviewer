@@ -19,7 +19,7 @@ namespace Tailviewer.Test.Ui
 		{
 			_control = new LogViewerControl
 				{
-					DataSource = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")))
+					DataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar")))
 				};
 		}
 
@@ -100,7 +100,7 @@ namespace Tailviewer.Test.Ui
 		[STAThread]
 		public void TestCtor()
 		{
-			var source = new DataSourceViewModel(new Tailviewer.BusinessLogic.DataSource(new DataSource("Foobar")));
+			var source = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar")));
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl

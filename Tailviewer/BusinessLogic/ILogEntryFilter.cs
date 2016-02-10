@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic
 {
-	internal interface ILogEntryFilter
+	public interface ILogEntryFilter
 	{
 		/// <summary>
 		/// Tests if the given entry passes the filter.
