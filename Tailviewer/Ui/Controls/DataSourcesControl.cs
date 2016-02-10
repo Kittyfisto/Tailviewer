@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
 {
+	[TemplatePart(Name = PART_DataSources, Type=typeof(TreeView))]
+	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof(FilterTextBox))]
 	internal class DataSourcesControl : Control
 	{
+		public const string PART_DataSources = "PART_DataSources";
+		public const string PART_DataSourceSearch = "PART_DataSourceSearch";
+
 		public static readonly DependencyProperty ItemsSourceProperty =
 			DependencyProperty.Register("ItemsSource", typeof(IEnumerable<IDataSourceViewModel>), typeof(DataSourcesControl),
 			                            new PropertyMetadata(null, OnDataSourcesChanged));
@@ -32,6 +38,7 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(null, OnStringFilterChanged));
 
 		private FilterTextBox _partDataSourceSearch;
+		private TreeView _partDataSources;
 
 		static DataSourcesControl()
 		{
@@ -114,7 +121,14 @@ namespace Tailviewer.Ui.Controls
 		{
 			base.OnApplyTemplate();
 
-			_partDataSourceSearch = (FilterTextBox) GetTemplateChild("PART_DataSourceSearch");
+			_partDataSourceSearch = (FilterTextBox) GetTemplateChild(PART_DataSourceSearch);
+			_partDataSources = (TreeView) GetTemplateChild(PART_DataSources);
+			_partDataSources.SelectedItemChanged += PartDataSourcesOnSelectedItemChanged;
+		}
+
+		private void PartDataSourcesOnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> args)
+		{
+			SelectedItem = args.NewValue as IDataSourceViewModel;
 		}
 
 		private static void OnDataSourcesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -213,11 +227,33 @@ namespace Tailviewer.Ui.Controls
 			if (oldValue != null)
 			{
 				oldValue.IsOpen = false;
+				SetSelected(oldValue, false);
 			}
 			if (newValue != null)
 			{
 				newValue.IsOpen = true;
+				SetSelected(newValue, true);
 			}
+		}
+
+		private void SetSelected(SingleDataSourceViewModel newValue, bool isSelected)
+		{
+			// Because why wouldn't we want to make selecting an item in a treeview
+			// a hassle?!
+
+			if (_partDataSources == null)
+				return;
+
+			var treeViewItem = _partDataSources
+				.ItemContainerGenerator
+				.ContainerFromItem(newValue);
+			if (treeViewItem == null)
+				return;
+
+			MethodInfo selectMethod =
+				typeof (TreeViewItem).GetMethod("Select",
+				                                BindingFlags.NonPublic | BindingFlags.Instance);
+			selectMethod.Invoke(treeViewItem, new object[] { isSelected });
 		}
 
 		public void FocusSearch()

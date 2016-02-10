@@ -38,20 +38,20 @@
                                 FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Watermark="Filter data sources (Ctrl+F)" />
 
-                            <ListView ItemsSource="{TemplateBinding FilteredItemsSource}"
-                                      SelectedItem="{Binding SelectedItem, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            <TreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
+                                      x:Name="PART_DataSources"
                                       Margin="0,8,0,0"
                                       BorderThickness="0"
                                       ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                       ScrollViewer.VerticalScrollBarVisibility="Visible"
                                       Grid.Row="2">
 
-                                <ListView.Resources>
-                                    <Style TargetType="ListViewItem">
+                                <TreeView.Resources>
+                                    <Style TargetType="TreeViewItem">
                                         <Setter Property="Width" Value="198" />
                                         <Setter Property="Template">
                                             <Setter.Value>
-                                                <ControlTemplate TargetType="ListViewItem">
+                                                <ControlTemplate TargetType="TreeViewItem">
                                                     <Border Background="{TemplateBinding Background}"
                                                             d:DataContext="{d:DesignInstance viewModels:IDataSourceViewModel}">
                                                         <Grid>
@@ -117,8 +117,8 @@
                                             </MultiTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </ListView.Resources>
-                            </ListView>
+                                </TreeView.Resources>
+                            </TreeView>
                         </Grid>
                     </Border>
                 </ControlTemplate>
