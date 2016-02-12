@@ -272,5 +272,20 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			return _quickFilters.AddQuickFilter();
 		}
+
+		public bool CanBeDragged(IDataSourceViewModel source)
+		{
+			return _dataSourcesViewModel.CanBeDragged(source);
+		}
+
+		public bool CanBeDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		{
+			return _dataSourcesViewModel.CanBeDropped(source, dest);
+		}
+
+		public void OnDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		{
+			_dataSourcesViewModel.OnDropped(source, dest);
+		}
 	}
 }

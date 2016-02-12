@@ -42,6 +42,7 @@ namespace Tailviewer
 					};
 
 				settings.MainWindow.RestoreTo(window);
+				DragLayer.MainWindow = window;
 
 				window.Show();
 				return application.Run();

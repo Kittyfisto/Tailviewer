@@ -36,69 +36,71 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Grid.Row="1">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+    <AdornerDecorator x:Name="PART_DragDecorator">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <controls:DataSourcesControl
-            Width="200"
-            x:Name="PART_DataSources"
-            ItemsSource="{Binding RecentFiles}"
-            SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
+            <controls:DataSourcesControl
+                Width="200"
+                x:Name="PART_DataSources"
+                ItemsSource="{Binding RecentFiles}"
+                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
-        <Grid Grid.Column="1"
-              Width="1"
-              Background="{StaticResource SeparatorBrush}" />
+            <Grid Grid.Column="1"
+                  Width="1"
+                  Background="{StaticResource SeparatorBrush}" />
 
-        <Grid Grid.Column="2">
-            <Grid Width="200"
-                  Height="150"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Center">
-                <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
-                           TextWrapping="Wrap"
-                           FontSize="16"
-                           Margin="10"
-                           Foreground="DodgerBlue"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
-                <Rectangle StrokeDashArray="4 4"
-                           Stroke="DodgerBlue"
-                           StrokeThickness="2"
-                           RadiusX="10"
-                           RadiusY="10" />
+            <Grid Grid.Column="2">
+                <Grid Width="200"
+                      Height="150"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center">
+                    <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
+                               TextWrapping="Wrap"
+                               FontSize="16"
+                               Margin="10"
+                               Foreground="DodgerBlue"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                    <Rectangle StrokeDashArray="4 4"
+                               Stroke="DodgerBlue"
+                               StrokeThickness="2"
+                               RadiusX="10"
+                               RadiusY="10" />
+                </Grid>
+
+                <controls:LogViewerControl
+                    Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                    x:Name="PART_LogFileView"
+                    ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
+                    LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                    TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                    DataSource="{Binding CurrentDataSource}" />
             </Grid>
 
-            <controls:LogViewerControl
-                Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                x:Name="PART_LogFileView"
-                ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
-                LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
-                DataSource="{Binding CurrentDataSource}" />
+            <Grid Grid.Column="3"
+                  Width="1"
+                  Background="{StaticResource SeparatorBrush}" />
+
+            <controls:QuickFilterControl
+                Grid.Column="4"
+                Width="200"
+                ItemsSource="{Binding QuickFilters}"
+                AddCommand="{Binding AddQuickFilterCommand}" />
+
+            <controls:AlertControl
+                Grid.ColumnSpan="5"
+                Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                Exception="{Binding Exception}"
+                CloseCommand="{Binding CloseErrorDialogCommand}" />
         </Grid>
 
-        <Grid Grid.Column="3"
-              Width="1"
-              Background="{StaticResource SeparatorBrush}" />
-
-        <controls:QuickFilterControl
-            Grid.Column="4"
-            Width="200"
-            ItemsSource="{Binding QuickFilters}"
-            AddCommand="{Binding AddQuickFilterCommand}" />
-
-        <controls:AlertControl
-            Grid.ColumnSpan="5"
-            Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-            Exception="{Binding Exception}"
-            CloseCommand="{Binding CloseErrorDialogCommand}"
-            />
-    </Grid>
+    </AdornerDecorator>
 
 </Window>

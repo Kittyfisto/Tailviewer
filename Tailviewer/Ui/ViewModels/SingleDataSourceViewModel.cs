@@ -26,6 +26,11 @@ namespace Tailviewer.Ui.ViewModels
 			Update();
 		}
 
+		public override string ToString()
+		{
+			return DisplayName;
+		}
+
 		public override ICommand OpenInExplorerCommand
 		{
 			get { return _openInExplorerCommand; }

@@ -236,6 +236,8 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public IDataSourceViewModel Parent { get; set; }
+
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 

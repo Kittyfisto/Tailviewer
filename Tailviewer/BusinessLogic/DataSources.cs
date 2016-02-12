@@ -42,7 +42,16 @@ namespace Tailviewer.BusinessLogic
 		{
 			lock (_syncRoot)
 			{
-				var dataSource = new SingleDataSource(settings);
+				AbstractDataSource dataSource;
+				if (!string.IsNullOrEmpty(settings.File))
+				{
+					dataSource = new SingleDataSource(settings);
+				}
+				else
+				{
+					dataSource = new MergedDataSource(settings);
+				}
+
 				_dataSources.Add(dataSource);
 				return dataSource;
 			}

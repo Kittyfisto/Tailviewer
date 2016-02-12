@@ -1,11 +1,13 @@
-﻿namespace Tailviewer.BusinessLogic
+﻿using Tailviewer.Settings;
+
+namespace Tailviewer.BusinessLogic
 {
 	internal sealed class SingleDataSource
 		: AbstractDataSource
-{
+	{
 		private readonly LogFile _logFile;
 
-		public SingleDataSource(Settings.DataSource settings)
+		public SingleDataSource(DataSource settings)
 			: base(settings)
 		{
 			_logFile = new LogFile(settings.File);
@@ -16,5 +18,5 @@
 		{
 			get { return _logFile; }
 		}
-}
+	}
 }

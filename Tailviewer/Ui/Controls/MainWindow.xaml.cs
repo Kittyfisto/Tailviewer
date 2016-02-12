@@ -32,6 +32,8 @@ namespace Tailviewer.Ui.Controls
 
 			InitializeComponent();
 			Closing += OnClosing;
+			PreviewDragOver += OnPreviewDragOver;
+			MouseMove += OnMouseMove;
 		}
 
 		public ICommand FocusDataSourceSearchCommand
@@ -44,6 +46,11 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ICommand) GetValue(FocusLogFileSearchCommandProperty); }
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
+		}
+
+		private void OnMouseMove(object sender, MouseEventArgs e)
+		{
+			DragLayer.OnMouseMove(e);
 		}
 
 		private void FocusLogFileSearch()
@@ -75,6 +82,11 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
+		private void OnPreviewDragOver(object sender, DragEventArgs e)
+		{
+			DragLayer.UpdateAdornerPosition(e);
+		}
+
 		private void OnDragEnter(object sender, DragEventArgs e)
 		{
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -85,6 +97,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				e.Effects = DragDropEffects.None;
 			}
+			e.Handled = true;
 		}
 	}
 }

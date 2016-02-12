@@ -72,6 +72,11 @@ namespace Tailviewer
 			return lhs._numBytes != rhs._numBytes;
 		}
 
+		public static Size operator +(Size lhs, Size rhs)
+		{
+			return new Size(lhs._numBytes+rhs._numBytes);
+		}
+
 		public static double operator /(Size lhs, Size rhs)
 		{
 			return 1.0*lhs._numBytes/rhs._numBytes;

@@ -66,6 +66,7 @@
     <Compile Include="BusinessLogic\LevelFilter.cs" />
     <Compile Include="BusinessLogic\LogLineIndex.cs" />
     <Compile Include="BusinessLogic\LogLine.cs" />
+    <Compile Include="BusinessLogic\MergedDataSource.cs" />
     <Compile Include="BusinessLogic\MergedLogFile.cs" />
     <Compile Include="BusinessLogic\QuickFilter.cs" />
     <Compile Include="BusinessLogic\QuickFilters.cs" />
@@ -80,12 +81,14 @@
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
     <Compile Include="Ui\Controls\AddButton.cs" />
+    <Compile Include="Ui\Controls\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
+    <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />

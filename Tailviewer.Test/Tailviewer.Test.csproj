@@ -74,6 +74,7 @@
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Ui\DataSourcesControlTest.cs" />
+    <Compile Include="Ui\DataSourcesViewModelTest.cs" />
     <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
     <Compile Include="Ui\FilterTextBoxTest.cs" />
     <Compile Include="Ui\HighlightableTextBlockTest.cs" />

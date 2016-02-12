@@ -27,6 +27,14 @@ namespace Tailviewer.BusinessLogic
 		private readonly LogFileListenerCollection _listeners;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
+		private int _otherCount;
+		private int _debugCount;
+		private int _infoCount;
+		private int _warningCount;
+		private int _errorCount;
+		private int _fatalCount;
+		private Size _fileSize;
+		private DateTime _lastModified;
 
 		struct PendingModification
 		{
@@ -105,6 +113,18 @@ namespace Tailviewer.BusinessLogic
 						// issue another modification that includes everything from the newly inserted index
 						// to the end.
 					}
+
+					_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.FileSize);
+					_lastModified = _sources.Aggregate(DateTime.MinValue,
+					                                   (a, file) =>
+						                                   {
+							                                   var modified = file.LastModified;
+							                                   if (modified > a)
+								                                   return modified;
+
+							                                   return a;
+						                                   }
+						);
 				}
 			}
 		}
@@ -146,7 +166,7 @@ namespace Tailviewer.BusinessLogic
 
 		public int FatalCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _fatalCount; }
 		}
 
 		public void Wait()
@@ -161,12 +181,12 @@ namespace Tailviewer.BusinessLogic
 
 		public DateTime LastModified
 		{
-			get { throw new NotImplementedException(); }
+			get { return _lastModified; }
 		}
 
 		public Size FileSize
 		{
-			get { throw new NotImplementedException(); }
+			get { return _fileSize; }
 		}
 
 		public int Count
@@ -182,27 +202,27 @@ namespace Tailviewer.BusinessLogic
 
 		public int OtherCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _otherCount; }
 		}
 
 		public int DebugCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _debugCount; }
 		}
 
 		public int InfoCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _infoCount; }
 		}
 
 		public int WarningCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _warningCount; }
 		}
 
 		public int ErrorCount
 		{
-			get { throw new NotImplementedException(); }
+			get { return _errorCount; }
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

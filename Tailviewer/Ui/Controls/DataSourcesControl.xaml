@@ -42,63 +42,124 @@
                                       x:Name="PART_DataSources"
                                       Margin="0,8,0,0"
                                       BorderThickness="0"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                      SnapsToDevicePixels="True"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                       ScrollViewer.VerticalScrollBarVisibility="Visible"
                                       Grid.Row="2">
 
                                 <TreeView.Resources>
+                                    <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
+                                                              ItemsSource="{Binding Observable}">
+                                        <Grid Width="179">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       Margin="8,4,0,4">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOpen}"
+                                                                         Value="True">
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource TextBrushSelected}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <local:RemoveButton VerticalAlignment="Stretch"
+                                                                HorizontalAlignment="Right"
+                                                                IsInverted="{Binding IsOpen}"
+                                                                Command="{Binding RemoveCommand}"
+                                                                Grid.Column="1"
+                                                                HorizontalContentAlignment="Right"
+                                                                />
+                                        </Grid>
+                                    </HierarchicalDataTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Orientation="Vertical"
+                                                        VerticalAlignment="Center"
+                                                        Margin="8,4,16,4">
+                                                <TextBlock Text="{Binding DisplayName}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                             Value="True">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="{StaticResource TextBrushSelected}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding Folder}"
+                                                           TextTrimming="CharacterEllipsis">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                             Value="True">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="#DAECF7" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                             Value="False">
+                                                                    <Setter Property="Foreground"
+                                                                            Value="#B7B7B7" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <local:RemoveButton VerticalAlignment="Stretch"
+                                                                HorizontalAlignment="Right"
+                                                                IsInverted="{Binding IsOpen}"
+                                                                Command="{Binding RemoveCommand}"
+                                                                Grid.Column="1" />
+                                        </Grid>
+                                    </DataTemplate>
+
                                     <Style TargetType="TreeViewItem">
-                                        <Setter Property="Width" Value="198" />
+                                        <!--<Setter Property="MaxWidth" Value="198" />-->
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="TreeViewItem">
-                                                    <Border Background="{TemplateBinding Background}"
-                                                            d:DataContext="{d:DesignInstance viewModels:IDataSourceViewModel}">
-                                                        <Grid>
-                                                            <StackPanel Orientation="Vertical"
-                                                                        VerticalAlignment="Center"
-                                                                        Margin="8,4,16,4">
-                                                                <TextBlock Text="{Binding FileName}">
-                                                                    <TextBlock.Style>
-                                                                        <Style TargetType="TextBlock">
-                                                                            <Style.Triggers>
-                                                                                <DataTrigger Binding="{Binding IsOpen}"
-                                                                                             Value="True">
-                                                                                    <Setter Property="Foreground"
-                                                                                            Value="{StaticResource TextBrushSelected}" />
-                                                                                </DataTrigger>
-                                                                            </Style.Triggers>
-                                                                        </Style>
-                                                                    </TextBlock.Style>
-                                                                </TextBlock>
-                                                                <TextBlock Text="{Binding Folder}"
-                                                                           TextTrimming="CharacterEllipsis">
-                                                                    <TextBlock.Style>
-                                                                        <Style TargetType="TextBlock">
-                                                                            <Style.Triggers>
-                                                                                <DataTrigger Binding="{Binding IsOpen}"
-                                                                                             Value="True">
-                                                                                    <Setter Property="Foreground"
-                                                                                            Value="#DAECF7" />
-                                                                                </DataTrigger>
-                                                                                <DataTrigger Binding="{Binding IsOpen}"
-                                                                                             Value="False">
-                                                                                    <Setter Property="Foreground"
-                                                                                            Value="#B7B7B7" />
-                                                                                </DataTrigger>
-                                                                            </Style.Triggers>
-                                                                        </Style>
-                                                                    </TextBlock.Style>
-                                                                </TextBlock>
-                                                            </StackPanel>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="12" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
 
-                                                            <local:RemoveButton VerticalAlignment="Stretch"
-                                                                                HorizontalAlignment="Right"
-                                                                                IsInverted="{Binding IsOpen}"
-                                                                                Command="{Binding RemoveCommand}"
-                                                                                Margin="0,0,17,0" />
-                                                        </Grid>
-                                                    </Border>
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                d:DataContext="{d:DesignInstance viewModels:IDataSourceViewModel}"
+                                                                Grid.Row="0"
+                                                                Grid.Column="0"
+                                                                Grid.ColumnSpan="2">
+                                                            <ContentPresenter x:Name="PART_Header"
+                                                                              ContentSource="Header"
+                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                                                        </Border>
+                                                        <ItemsPresenter x:Name="ItemsHost"
+                                                                        Grid.Row="1"
+                                                                        Grid.Column="1" />
+                                                    </Grid>
                                                 </ControlTemplate>
                                             </Setter.Value>
                                         </Setter>
