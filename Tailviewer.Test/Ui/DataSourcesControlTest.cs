@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
@@ -153,6 +154,87 @@ namespace Tailviewer.Test.Ui
 			_control.FilteredItemsSource.Should().Equal(new[] { sources[0] });
 			sources.RemoveAt(0);
 			_control.FilteredItemsSource.Should().BeEmpty();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that inserting an item at the first position WITHOUT a filter works")]
+		public void TestInsertAt1()
+		{
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
+				{
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"))),
+				};
+			_control.ItemsSource = sources;
+			sources.Insert(0, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))));
+			_control.FilteredItemsSource.Should().Equal(sources);
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that inserting an item at the last position WITHOUT a filter works")]
+		public void TestInsertAt2()
+		{
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
+				{
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"))),
+				};
+			_control.ItemsSource = sources;
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))));
+			_control.FilteredItemsSource.Should().Equal(sources);
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that inserting an item in the middle WITHOUT a filter works")]
+		public void TestInsertAt3()
+		{
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
+				{
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+				};
+			_control.ItemsSource = sources;
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
+			_control.FilteredItemsSource.Should().Equal(sources);
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that inserting an item in the middle WITH a filter works")]
+		public void TestInsertAt4()
+		{
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
+				{
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+				};
+			_control.ItemsSource = sources;
+			// Let's set a filter that causes the first element to be hidden
+			_control.StringFilter = "test";
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
+			_control.FilteredItemsSource.Should().Equal(new object[] {sources[1], sources[2]});
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that inserting an item in the middle WITH a filter works")]
+		public void TestInsertAt5()
+		{
+			var sources = new ObservableCollection<SingleDataSourceViewModel>
+				{
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+				};
+			_control.ItemsSource = sources;
+			// Let's set a filter that causes the first element to be hidden
+			_control.StringFilter = "test";
+			sources.Insert(2, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
+			_control.FilteredItemsSource.Should().Equal(new object[] { sources[0], sources[2], sources[3] });
+
+			_control.StringFilter = null;
+			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 	}
 }

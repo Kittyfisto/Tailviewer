@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -293,9 +294,13 @@ namespace Tailviewer.Ui.Controls
 				case NotifyCollectionChangedAction.Add:
 					for (int i = 0; i < e.NewItems.Count; ++i)
 					{
-						var model = (IDataSourceViewModel) e.NewItems[0];
+						var model = (IDataSourceViewModel) e.NewItems[i];
 						if (PassesFilter(model))
-							FilteredItemsSource.Add(model);
+						{
+							int sourceIndex = e.NewStartingIndex + i;
+							int filteredIndex = FindFilteredIndex(sourceIndex);
+							FilteredItemsSource.Insert(filteredIndex, model);
+						}
 					}
 					break;
 
@@ -313,6 +318,24 @@ namespace Tailviewer.Ui.Controls
 				default:
 					throw new NotImplementedException();
 			}
+		}
+
+		private int FindFilteredIndex(int sourceIndex)
+		{
+			for (int i = sourceIndex-1; i >= 0; --i)
+			{
+				var previousModel = ItemsSource.ElementAt(i);
+				if (PassesFilter(previousModel))
+				{
+					// We found the next predecessor to the given source index that should be
+					// before "sourceIndex"
+					int filteredIndex = FilteredItemsSource.IndexOf(previousModel);
+					int desiredIndex = filteredIndex + 1;
+					return desiredIndex;
+				}
+			}
+
+			return 0;
 		}
 
 		[Pure]

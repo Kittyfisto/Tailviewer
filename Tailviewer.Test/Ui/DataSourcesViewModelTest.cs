@@ -74,7 +74,8 @@ namespace Tailviewer.Test.Ui
 			var a = _model.GetOrAdd("A");
 			var b = _model.GetOrAdd("B");
 			var c = _model.GetOrAdd("C");
-			_model.OnDropped(a, b);
+			var merged1 = _model.OnDropped(a, b);
+			_model.Observable.Should().Equal(new object[] { merged1, c });
 
 			var merged2 = _model.OnDropped(b, c);
 			a.Parent.Should().BeNull();
@@ -82,6 +83,19 @@ namespace Tailviewer.Test.Ui
 			c.Parent.Should().BeSameAs(merged2);
 			merged2.Observable.Should().Equal(new object[] {b, c});
 			_model.Observable.Should().Equal(new object[] { a, merged2 });
+		}
+
+		[Test]
+		[Description("Verifies that the order of data sources is preserved when creating a group")]
+		public void TestDrop4()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			var c = _model.GetOrAdd("C");
+			var d = _model.GetOrAdd("D");
+			var e = _model.GetOrAdd("E");
+			var merged1 = _model.OnDropped(a, b);
+			_model.Observable.Should().Equal(new object[] { merged1, c, d, e });
 		}
 
 		[Test]
