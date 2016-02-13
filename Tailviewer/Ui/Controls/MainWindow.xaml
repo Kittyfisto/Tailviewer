@@ -11,8 +11,6 @@
         Title="{Binding WindowTitle}"
         x:Name="This"
         AllowDrop="True"
-        DragEnter="OnDragEnter"
-        Drop="MainWindow_OnDrop"
         MinWidth="640"
         MinHeight="480"
         Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
@@ -37,7 +35,8 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <AdornerDecorator x:Name="PART_DragDecorator">
+    <AdornerDecorator x:Name="PART_DragDecorator"
+                      SnapsToDevicePixels="True">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

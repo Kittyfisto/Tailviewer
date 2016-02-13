@@ -1,29 +1,27 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui
 {
 	internal static class DragLayer
 	{
 		private static DataSourceDragAdorner _dragAdorner;
-		private static MainWindow _mainWindow;
 		private static Point _dragStartPosition;
 		private static AdornerLayer _adornerLayer;
 		private static DataSourceDropAdorner _dropAdorner;
+		private static DataSourceArrangeAdorner _arrangeAdorner;
 
-		public static MainWindow MainWindow
+		public static AdornerLayer AdornerLayer
 		{
-			get { return _mainWindow; }
+			get { return _adornerLayer; }
 			set
 			{
-				_mainWindow = value;
-				_adornerLayer = value.PART_DragDecorator.AdornerLayer;
+				_adornerLayer = value;
 			}
 		}
 
@@ -31,7 +29,7 @@ namespace Tailviewer.Ui
 		{
 			if (e.LeftButton == MouseButtonState.Released)
 			{
-				_dragStartPosition = e.GetPosition(_mainWindow);
+				_dragStartPosition = e.GetPosition(_adornerLayer);
 			}
 		}
 
@@ -39,7 +37,7 @@ namespace Tailviewer.Ui
 		{
 			if (_dragAdorner != null)
 			{
-				var position = e.GetPosition(_mainWindow);
+				var position = e.GetPosition(_adornerLayer);
 				_dragAdorner.UpdatePosition(position.X, position.Y);
 			}
 		}
@@ -48,7 +46,7 @@ namespace Tailviewer.Ui
 		{
 			if (e.LeftButton == MouseButtonState.Pressed && _dragAdorner == null)
 			{
-				Point position = e.GetPosition(_mainWindow);
+				Point position = e.GetPosition(_adornerLayer);
 				if ((Math.Abs(position.X - _dragStartPosition.X) > SystemParameters.MinimumHorizontalDragDistance ||
 					Math.Abs(position.Y - _dragStartPosition.Y) > SystemParameters.MinimumVerticalDragDistance))
 				{
@@ -81,43 +79,84 @@ namespace Tailviewer.Ui
 			}
 		}
 
-		public static void AdornDropTarget(TreeViewItem treeViewItem, IDataSourceViewModel dest, DataSourceDropType type)
+		public static void AdornDropTarget(DropInfo dropInfo)
 		{
-			if (treeViewItem != null)
+			if (dropInfo == null) throw new ArgumentNullException("dropInfo");
+			if (dropInfo.Type == DataSourceDropType.None) throw new ArgumentException("dropInfo.Type may not be set to none");
+
+			if (dropInfo.Type.HasFlag(DataSourceDropType.Group))
 			{
-				if (_dropAdorner == null)
-				{
-					AddDropAdorner(treeViewItem, dest, type);
-				}
-				else if (_dropAdorner.DataSource != dest)
-				{
-					RemoveDropAdorner();
-					AddDropAdorner(treeViewItem, dest, type);
-				}
-				else
-				{
-					_dropAdorner.Type = type;
-				}
+				if (dropInfo.TargetGroup == null)
+					throw new ArgumentException("dropInfo.Group is set to null but the type is set to group");
+
+				AddDropAdorner(dropInfo.TargetGroup.TreeViewItem);
 			}
 			else
 			{
-				if (_dropAdorner != null)
-				{
-					RemoveDropAdorner();
-				}
+				RemoveDropAdorner();
+			}
+
+			if (dropInfo.Type.HasFlag(DataSourceDropType.ArrangeTop) ||
+			    dropInfo.Type.HasFlag(DataSourceDropType.ArrangeBottom))
+			{
+				AddArrangeAdorner(dropInfo.Target.TreeViewItem, dropInfo.Type);
+			}
+			else
+			{
+				RemoveArrangeAdorner();
 			}
 		}
 
-		private static void AddDropAdorner(TreeViewItem treeViewItem, IDataSourceViewModel dest, DataSourceDropType type)
+		private static int i = 0;
+
+		public static void RemoveArrangeAdorner()
 		{
-			_dropAdorner = new DataSourceDropAdorner(treeViewItem, dest, type);
-			_adornerLayer.Add(_dropAdorner);
+			if (_arrangeAdorner != null)
+			{
+				_adornerLayer.Remove(_arrangeAdorner);
+				_arrangeAdorner = null;
+			}
 		}
 
-		private static void RemoveDropAdorner()
+		public static void RemoveDropAdorner()
 		{
+			if (_dropAdorner != null)
+			{
 				_adornerLayer.Remove(_dropAdorner);
 				_dropAdorner = null;
+			}
+		}
+
+		private static void AddArrangeAdorner(TreeViewItem treeViewItem, DataSourceDropType dropType)
+		{
+			if (_arrangeAdorner == null)
+			{
+				_arrangeAdorner = new DataSourceArrangeAdorner(treeViewItem, dropType);
+				_adornerLayer.Add(_arrangeAdorner);
+			}
+			else if (!Equals(_arrangeAdorner.AdornedElement, treeViewItem))
+			{
+				RemoveArrangeAdorner();
+
+				_arrangeAdorner = new DataSourceArrangeAdorner(treeViewItem, dropType);
+				_adornerLayer.Add(_arrangeAdorner);
+			}
+		}
+
+		private static void AddDropAdorner(TreeViewItem treeViewItem)
+		{
+			if (_dropAdorner == null)
+			{
+				_dropAdorner = new DataSourceDropAdorner(treeViewItem);
+				_adornerLayer.Add(_dropAdorner);
+			}
+			else if (!Equals(_dropAdorner.AdornedElement, treeViewItem))
+			{
+				RemoveDropAdorner();
+
+				_dropAdorner = new DataSourceDropAdorner(treeViewItem);
+				_adornerLayer.Add(_dropAdorner);
+			}
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -137,29 +138,47 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			_partDataSources.Drop += PartDataSourcesOnDrop;
 		}
 
-		private bool IsValidDrop(DragEventArgs e,
-			out IDataSourceViewModel source,
-			out IDataSourceViewModel dest,
-			out TreeViewItem destItem,
-			out DataSourceDropType dropType,
-			out IDataSourceViewModel finalDest)
+		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
-			source = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel;
-			dest = GetDataSourceFromPosition(e.GetPosition(_partDataSources), out destItem);
+			dropInfo = null;
+			var source = new TreeItem
+				{
+					ViewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel
+				};
+			if (source.ViewModel == null)
+				return false;
 
-			// Let's find out if this is a "rearrange"- or a "group" drop.
-			dropType = GetDropType(e, destItem);
+			var dropTarget = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
+			if (dropTarget == null)
+				return false;
 
+			var dropType = GetDropType(e, dropTarget);
 			var model = (MainWindowViewModel) DataContext;
-			return model.CanBeDropped(source, dest, dropType, out finalDest);
+			IDataSourceViewModel group;
+			if (!model.CanBeDropped(source.ViewModel, dropTarget.ViewModel, dropType, out group))
+				return false;
+
+			dropInfo = new DropInfo
+				{
+					Source = source,
+					Type = dropType,
+					Target = dropTarget,
+					TargetGroup = new TreeItem
+						{
+							ViewModel = group,
+							TreeViewItem = GetTreeViewItem(group)
+						}
+				};
+			return true;
 		}
 
-		private DataSourceDropType GetDropType(DragEventArgs e, TreeViewItem destItem)
+		private DataSourceDropType GetDropType(DragEventArgs e,
+			TreeItem destination)
 		{
-			if (destItem == null)
+			if (destination == null)
 				return DataSourceDropType.None;
 
-			var pos = e.GetPosition(destItem);
+			var pos = e.GetPosition(destination.TreeViewItem);
 			// Let's distribute it as follows:
 			// 20% top => arrange
 			// 60% middle => group
@@ -167,32 +186,38 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			//
 			// This way 60% of the height is used for grouping and 40% is used for arranging.
 
-			double height = destItem.ActualHeight;
+			var dropType = DataSourceDropType.None;
+			double height = destination.TreeViewItem.ActualHeight;
 			if (pos.Y < height*0.2)
-				return DataSourceDropType.ArrangeTop;
+				dropType |= DataSourceDropType.ArrangeTop;
+			else if (pos.Y < height*0.8)
+				dropType |= DataSourceDropType.Group;
+			else
+				dropType |= DataSourceDropType.ArrangeBottom;
 
-			if (pos.Y < height*0.8)
-				return DataSourceDropType.Group;
+			if (destination.ViewModel.Parent != null)
+				dropType |= DataSourceDropType.Group;
 
-			return DataSourceDropType.ArrangeBottom;
+			return dropType;
 		}
 
-		private void PartDataSourcesOnDrop(object sender, DragEventArgs e)
+		public void PartDataSourcesOnDrop(object sender, DragEventArgs e)
 		{
-			IDataSourceViewModel source, dest, unused2;
-			DataSourceDropType dropType;
-			TreeViewItem unused1;
-			if (IsValidDrop(e, out source, out dest, out unused1, out dropType, out unused2))
+			DropInfo dropInfo;
+			if (IsValidDrop(e, out dropInfo))
 			{
 				var vm = DataContext as MainWindowViewModel;
 				if (vm != null)
 				{
-					vm.OnDropped(source, dest, dropType);
+					vm.OnDropped(dropInfo.Source.ViewModel,
+						dropInfo.Target.ViewModel,
+						dropInfo.Type);
 				}
 
 				e.Handled = true;
 			}
-			DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
+			DragLayer.RemoveArrangeAdorner();
+			DragLayer.RemoveDropAdorner();
 		}
 
 		private void PartDataSourcesOnDragEnter(object sender, DragEventArgs e)
@@ -202,7 +227,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private void PartDataSourcesOnDragLeave(object sender, DragEventArgs e)
 		{
-			DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
+			HandleDrag(e);
 		}
 
 		private void PartDataSourcesOnDragOver(object sender, DragEventArgs e)
@@ -214,31 +239,40 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			DragLayer.UpdateAdornerPosition(e);
 
-			IDataSourceViewModel source, dest, finalDest;
-			TreeViewItem destItem;
-			DataSourceDropType dropType;
-			if (IsValidDrop(e, out source, out dest, out destItem, out dropType, out finalDest))
+			DropInfo dropInfo;
+			if (IsValidDrop(e, out dropInfo))
 			{
-				var finalDestItem = GetTreeViewItem(finalDest);
-				DragLayer.AdornDropTarget(finalDestItem, finalDest, dropType);
+				DragLayer.AdornDropTarget(dropInfo);
 				e.Effects = DragDropEffects.Move;
 			}
 			else
 			{
-				DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
+				DragLayer.RemoveDropAdorner();
+				DragLayer.RemoveArrangeAdorner();
 				e.Effects = DragDropEffects.None;
 			}
 			e.Handled = true;
 		}
 
-		private IDataSourceViewModel GetDataSourceFromPosition(Point position, out TreeViewItem treeViewItem)
+		private TreeItem GetDataSourceFromPosition(Point position)
 		{
-			treeViewItem = GetTreeViewItemFromPosition(position);
+			var treeViewItem = GetTreeViewItemFromPosition(position);
 			if (treeViewItem == null)
-				return null;
+			{
+				// I call bullshit, for whatever reason you can find that perfect position
+				// that is neither on the top item, nor on the bottom item.
+				// Let's try again at a different spot
+				treeViewItem = GetTreeViewItemFromPosition(new Point(position.X, position.Y + 1));
+				if (treeViewItem == null)
+					return null;
+			}
 
 			var model = treeViewItem.DataContext as IDataSourceViewModel;
-			return model;
+			return new TreeItem
+				{
+					ViewModel = model,
+					TreeViewItem = treeViewItem
+				};
 		}
 
 		private TreeViewItem GetTreeViewItemFromPosition(Point position)

@@ -305,11 +305,50 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestCanBeDropped()
+		public void TestCanBeDropped1()
 		{
 			var a = _model.GetOrAdd("A");
 			IDataSourceViewModel unused;
 			_model.CanBeDropped(a, a, DataSourceDropType.Group, out unused).Should().BeFalse("Because an item cannot be dropped onto itself");
+		}
+
+		[Test]
+		public void TestCanBeDropped2()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			IDataSourceViewModel unused;
+			_model.CanBeDropped(a, b, DataSourceDropType.Group, out unused).Should().BeTrue("Because two items can be grouped");
+		}
+
+		[Test]
+		[Description("Verifies that an item can be dropped above an item in a group")]
+		public void TestCanBeDropped3()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			var c = _model.GetOrAdd("C");
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+
+			IDataSourceViewModel group;
+			_model.CanBeDropped(c, a,
+				DataSourceDropType.Group | DataSourceDropType.ArrangeTop, out group).Should().BeTrue();
+			group.Should().BeSameAs(_model.Observable[0]);
+		}
+
+		[Test]
+		[Description("Verifies that an item can be dropped below an item in a group")]
+		public void TestCanBeDropped4()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			var c = _model.GetOrAdd("C");
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+
+			IDataSourceViewModel group;
+			_model.CanBeDropped(c, a,
+				DataSourceDropType.Group | DataSourceDropType.ArrangeBottom, out group).Should().BeTrue();
+			group.Should().BeSameAs(_model.Observable[0]);
 		}
 
 		[Test]

@@ -81,9 +81,12 @@
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
     <Compile Include="Ui\Controls\AddButton.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropType.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />

@@ -12,6 +12,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
+        <Setter Property="Background" Value="White" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type dataSourceTree:DataSourcesControl}">

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using Tailviewer.Settings;
@@ -33,8 +32,12 @@ namespace Tailviewer.Ui.Controls
 
 			InitializeComponent();
 			Closing += OnClosing;
+			DragEnter += OnDragEnter;
 			DragOver += OnDragOver;
+			Drop += OnDrop;
 			MouseMove += OnMouseMove;
+
+			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
 		}
 
 		public ICommand FocusDataSourceSearchCommand
@@ -70,7 +73,17 @@ namespace Tailviewer.Ui.Controls
 			_settings.Save();
 		}
 
-		private void MainWindow_OnDrop(object sender, DragEventArgs e)
+		private void OnDragOver(object sender, DragEventArgs e)
+		{
+			HandleDrag(e);
+		}
+
+		private void OnDragEnter(object sender, DragEventArgs e)
+		{
+			HandleDrag(e);
+		}
+
+		private void OnDrop(object sender, DragEventArgs e)
 		{
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -81,16 +94,12 @@ namespace Tailviewer.Ui.Controls
 				// handling code you have defined.
 				((MainWindowViewModel) DataContext).OpenFiles(files);
 			}
-		}
-
-		private void OnDragOver(object sender, DragEventArgs e)
-		{
-			HandleDrag(e);
-		}
-
-		private void OnDragEnter(object sender, DragEventArgs e)
-		{
-			HandleDrag(e);
+			else
+			{
+				// Why the fuck is the main window even asked to handle
+				// the drag when the mouse is clearly over the data source tree?!
+				PART_DataSources.PartDataSourcesOnDrop(sender, e);
+			}
 		}
 
 		private void HandleDrag(DragEventArgs e)
@@ -102,7 +111,9 @@ namespace Tailviewer.Ui.Controls
 			}
 			else
 			{
-				e.Effects = DragDropEffects.None;
+				// Why the fuck is the main window even asked to handle
+				// the drag when the mouse is clearly over the data source tree?!
+				PART_DataSources.HandleDrag(e);
 			}
 			e.Handled = true;
 		}
