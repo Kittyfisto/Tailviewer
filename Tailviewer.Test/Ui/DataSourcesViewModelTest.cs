@@ -204,6 +204,47 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that dropping and rearranging an item inside a group works")]
+		public void TestRearrange5()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			var c = _model.GetOrAdd("C");
+
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+			var group = _model.Observable[0] as MergedDataSourceViewModel;
+
+			new Action(() => _model.OnDropped(c, a, DataSourceDropType.ArrangeBottom | DataSourceDropType.Group))
+				.ShouldNotThrow();
+			_model.Observable.Should().Equal(new object[]
+				{
+					group
+				});
+
+			group.Observable.Should().Equal(new object[]
+				{
+					a, c, b
+				});
+			c.Parent.Should().BeSameAs(group);
+		}
+
+		[Test]
+		[Description("Verifies that rearranging an item inside a group works")]
+		public void TestRearrange6()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+			var group = _model.Observable[0] as MergedDataSourceViewModel;
+			group.Observable.Should().Equal(new object[] { a, b });
+
+			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom)).ShouldNotThrow();
+			_model.Observable.Should().Equal(new object[] {group});
+			group.Observable.Should().Equal(new object[] {b, a});
+		}
+
+		[Test]
 		[Description("Verifies that dragging a third file onto the group works")]
 		public void TestDropOntoGroup1()
 		{
@@ -218,10 +259,7 @@ namespace Tailviewer.Test.Ui
 			new Action(() => _model.OnDropped(c, merged, DataSourceDropType.Group)).ShouldNotThrow();
 			_model.Observable.Count.Should().Be(1);
 			_model.Observable.Should().Equal(new object[] {merged});
-			merged.Observable.Should().Equal(new[]
-				{
-					a, b, c
-				});
+			merged.Observable.Should().Equal(new[] {a, b, c});
 			c.Parent.Should().BeSameAs(merged);
 		}
 

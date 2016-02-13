@@ -148,29 +148,36 @@ namespace Tailviewer.Ui.ViewModels
 			if (!CanBeDropped(source, dest, dropType, out unused))
 				throw new ArgumentException("source or dest");
 
-			switch (dropType)
+			if (dropType == DataSourceDropType.Group)
 			{
-				case DataSourceDropType.Group:
-					DropToGroup(source, dest);
-					break;
-
-				case DataSourceDropType.ArrangeBottom:
-				case DataSourceDropType.ArrangeTop:
-					DropToArrange(source, dest, dropType);
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException("dropType");
+				DropToGroup(source, dest);
+			}
+			else
+			{
+				DropToArrange(source, dest, dropType);
 			}
 		}
 
 		private void DropToArrange(IDataSourceViewModel source, IDataSourceViewModel dest, DataSourceDropType dropType)
 		{
-			if (source.Parent != null)
+			var sourceParent = source.Parent;
+			if (sourceParent != null)
 			{
-				var group = ((MergedDataSourceViewModel) source.Parent);
+				//
+				// When the source is part of a group, then any arrange is going to remove it
+				// from said group.
+				//
+				var group = ((MergedDataSourceViewModel)sourceParent);
 				group.RemoveChild(source);
-				DissolveGroupIfNecessary(group);
+				if (sourceParent != dest.Parent)
+				{
+					//
+					// If both source and dest are part of different groups, then
+					// we need to check if source's group needs to be dissolved due to
+					// having only 1 child left.
+					//
+					DissolveGroupIfNecessary(group);
+				}
 			}
 			else
 			{
@@ -179,17 +186,25 @@ namespace Tailviewer.Ui.ViewModels
 
 			if (dest.Parent != null)
 			{
-				var merged = ((MergedDataSourceViewModel) dest.Parent);
-				int index = merged.Observable.IndexOf(source);
-				if (dropType == DataSourceDropType.ArrangeBottom)
+				//
+				// If the destination has a parent then we need to insert
+				// the source into it's collection.
+				//
+				var merged = ((MergedDataSourceViewModel)dest.Parent);
+				int index = merged.Observable.IndexOf(dest);
+				if (dropType.HasFlag(DataSourceDropType.ArrangeBottom))
 					++index;
 
 				merged.Insert(index, source);
 			}
 			else
 			{
+				//
+				// Otherwise we insert the source into the flat, or root
+				// collection.
+				//
 				int index = _observable.IndexOf(dest);
-				if (dropType == DataSourceDropType.ArrangeBottom)
+				if (dropType.HasFlag(DataSourceDropType.ArrangeBottom))
 					++index;
 
 				_observable.Insert(index, source);

@@ -39,6 +39,16 @@ namespace Tailviewer.Ui.ViewModels
 			dataSource.Parent = this;
 		}
 
+		public void Insert(int index, IDataSourceViewModel dataSource)
+		{
+			if (dataSource.Parent != null)
+				throw new ArgumentException("dataSource.Parent");
+
+			_observable.Insert(index, dataSource);
+			_dataSource.Add(dataSource.DataSource);
+			dataSource.Parent = this;
+		}
+
 		public void RemoveChild(IDataSourceViewModel dataSource)
 		{
 			if (dataSource.Parent != this)
@@ -62,11 +72,6 @@ namespace Tailviewer.Ui.ViewModels
 		public int ChildCount
 		{
 			get { return _observable.Count; }
-		}
-
-		public void Insert(int index, IDataSourceViewModel source)
-		{
-			_observable.Insert(index, source);
 		}
 	}
 }
