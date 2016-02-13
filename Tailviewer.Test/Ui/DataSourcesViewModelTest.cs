@@ -99,6 +99,19 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that the order of data sources is preserved when creating a group")]
+		public void TestDrop5()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			var c = _model.GetOrAdd("C");
+			var d = _model.GetOrAdd("D");
+			var e = _model.GetOrAdd("E");
+			var merged1 = _model.OnDropped(a, e);
+			_model.Observable.Should().Equal(new object[] { b, c, d, merged1 });
+		}
+
+		[Test]
 		[Description("Verifies that dragging a third file onto the group works")]
 		public void TestDropOntoGroup1()
 		{
@@ -197,7 +210,8 @@ namespace Tailviewer.Test.Ui
 		public void TestCanBeDropped()
 		{
 			var a = _model.GetOrAdd("A");
-			_model.CanBeDropped(a, a).Should().BeFalse("Because an item cannot be dropped onto itself");
+			IDataSourceViewModel unused;
+			_model.CanBeDropped(a, a, out unused).Should().BeFalse("Because an item cannot be dropped onto itself");
 		}
 
 		[Test]

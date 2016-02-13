@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.Controls;
+using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
 

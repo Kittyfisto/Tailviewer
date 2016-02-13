@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using Tailviewer.Settings;
@@ -32,7 +33,7 @@ namespace Tailviewer.Ui.Controls
 
 			InitializeComponent();
 			Closing += OnClosing;
-			PreviewDragOver += OnPreviewDragOver;
+			DragOver += OnDragOver;
 			MouseMove += OnMouseMove;
 		}
 
@@ -82,13 +83,19 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		private void OnPreviewDragOver(object sender, DragEventArgs e)
+		private void OnDragOver(object sender, DragEventArgs e)
 		{
-			DragLayer.UpdateAdornerPosition(e);
+			HandleDrag(e);
 		}
 
 		private void OnDragEnter(object sender, DragEventArgs e)
 		{
+			HandleDrag(e);
+		}
+
+		private void HandleDrag(DragEventArgs e)
+		{
+			DragLayer.UpdateAdornerPosition(e);
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				e.Effects = DragDropEffects.Link;

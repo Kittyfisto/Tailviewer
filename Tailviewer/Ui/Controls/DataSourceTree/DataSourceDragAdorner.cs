@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace Tailviewer.Ui.Controls
+namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	public sealed class DataSourceDragAdorner
 		: Adorner

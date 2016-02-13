@@ -4,16 +4,17 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                    xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                     mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="{x:Type local:DataSourcesControl}">
+    <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:DataSourcesControl}">
+                <ControlTemplate TargetType="{x:Type dataSourceTree:DataSourcesControl}">
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">

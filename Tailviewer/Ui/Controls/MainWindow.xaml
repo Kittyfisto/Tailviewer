@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
         xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+        xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=True}"
         Title="{Binding WindowTitle}"
@@ -46,7 +47,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <controls:DataSourcesControl
+            <dataSourceTree:DataSourcesControl
                 Width="200"
                 x:Name="PART_DataSources"
                 ItemsSource="{Binding RecentFiles}"

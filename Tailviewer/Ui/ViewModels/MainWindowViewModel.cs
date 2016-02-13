@@ -15,6 +15,7 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
+		private readonly ICommand _closeErrorDialogCommand;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly IDispatcher _dispatcher;
 		private readonly QuickFiltersViewModel _quickFilters;
@@ -28,7 +29,6 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _hasError;
 		private bool _isLogFileOpen;
 		private string _windowTitle;
-		private readonly ICommand _closeErrorDialogCommand;
 
 		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters,
 		                           IDispatcher dispatcher)
@@ -52,12 +52,6 @@ namespace Tailviewer.Ui.ViewModels
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
-		}
-
-		private void CloseErrorDialog()
-		{
-			Exception = null;
-			HasError = false;
 		}
 
 		public ICommand SelectPreviousDataSourceCommand
@@ -185,6 +179,12 @@ namespace Tailviewer.Ui.ViewModels
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		private void CloseErrorDialog()
+		{
+			Exception = null;
+			HasError = false;
+		}
+
 		private void SelectNextDataSource()
 		{
 			if (CurrentDataSource == null)
@@ -278,9 +278,11 @@ namespace Tailviewer.Ui.ViewModels
 			return _dataSourcesViewModel.CanBeDragged(source);
 		}
 
-		public bool CanBeDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		public bool CanBeDropped(IDataSourceViewModel source,
+		                         IDataSourceViewModel dest,
+		                         out IDataSourceViewModel finalDest)
 		{
-			return _dataSourcesViewModel.CanBeDropped(source, dest);
+			return _dataSourcesViewModel.CanBeDropped(source, dest, out finalDest);
 		}
 
 		public void OnDropped(IDataSourceViewModel source, IDataSourceViewModel dest)

@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Tailviewer.Ui.Controls;
+using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui
 {
-	public static class DragLayer
+	internal static class DragLayer
 	{
-		private static DataSourceDragAdorner _itemAdorner;
+		private static DataSourceDragAdorner _dragAdorner;
 		private static MainWindow _mainWindow;
 		private static Point _dragStartPosition;
 		private static AdornerLayer _adornerLayer;
+		private static DataSourceDropAdorner _dropAdorner;
 
 		public static MainWindow MainWindow
 		{
@@ -33,16 +37,16 @@ namespace Tailviewer.Ui
 
 		public static void UpdateAdornerPosition(DragEventArgs e)
 		{
-			if (_itemAdorner != null)
+			if (_dragAdorner != null)
 			{
 				var position = e.GetPosition(_mainWindow);
-				_itemAdorner.UpdatePosition(position.X, position.Y);
+				_dragAdorner.UpdatePosition(position.X, position.Y);
 			}
 		}
 
 		public static bool ShouldStartDrag(MouseEventArgs e)
 		{
-			if (e.LeftButton == MouseButtonState.Pressed && _itemAdorner == null)
+			if (e.LeftButton == MouseButtonState.Pressed && _dragAdorner == null)
 			{
 				Point position = e.GetPosition(_mainWindow);
 				if ((Math.Abs(position.X - _dragStartPosition.X) > SystemParameters.MinimumHorizontalDragDistance ||
@@ -57,24 +61,63 @@ namespace Tailviewer.Ui
 
 		public static void DoDragDrop(object dragData, UIElement dragElement, DragDropEffects effects)
 		{
-			_itemAdorner = new DataSourceDragAdorner(dragData,
+			_dragAdorner = new DataSourceDragAdorner(dragData,
 			                                         null,
 			                                         dragElement,
 			                                         _adornerLayer);
 			try
 			{
-				_itemAdorner.UpdatePosition(_dragStartPosition.X, _dragStartPosition.Y);
+				_dragAdorner.UpdatePosition(_dragStartPosition.X, _dragStartPosition.Y);
 				DragDropEffects de = DragDrop.DoDragDrop(dragElement, dragData, effects |
 				                                                                DragDropEffects.None);
 			}
 			finally
 			{
-				if (_itemAdorner != null)
+				if (_dragAdorner != null)
 				{
-					_itemAdorner.Destroy();
-					_itemAdorner = null;
+					_dragAdorner.Destroy();
+					_dragAdorner = null;
 				}
 			}
+		}
+
+		public static void AdornDropTarget(TreeViewItem treeViewItem, IDataSourceViewModel dest, DataSourceDropType type)
+		{
+			if (treeViewItem != null)
+			{
+				if (_dropAdorner == null)
+				{
+					AddDropAdorner(treeViewItem, dest, type);
+				}
+				else if (_dropAdorner.DataSource != dest)
+				{
+					RemoveDropAdorner();
+					AddDropAdorner(treeViewItem, dest, type);
+				}
+				else
+				{
+					_dropAdorner.Type = type;
+				}
+			}
+			else
+			{
+				if (_dropAdorner != null)
+				{
+					RemoveDropAdorner();
+				}
+			}
+		}
+
+		private static void AddDropAdorner(TreeViewItem treeViewItem, IDataSourceViewModel dest, DataSourceDropType type)
+		{
+			_dropAdorner = new DataSourceDropAdorner(treeViewItem, dest, type);
+			_adornerLayer.Add(_dropAdorner);
+		}
+
+		private static void RemoveDropAdorner()
+		{
+				_adornerLayer.Remove(_dropAdorner);
+				_dropAdorner = null;
 		}
 	}
 }

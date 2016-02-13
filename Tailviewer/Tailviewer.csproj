@@ -81,7 +81,9 @@
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterType.cs" />
     <Compile Include="Ui\Controls\AddButton.cs" />
-    <Compile Include="Ui\Controls\DataSourceDragAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropType.cs" />
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
@@ -116,7 +118,7 @@
     <Compile Include="Size.cs" />
     <Compile Include="Ui\Controls\AlertControl.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
-    <Compile Include="Ui\Controls\DataSourcesControl.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="Ui\Converters\BoolFalseToCollapsedConverter.cs" />
     <Compile Include="Ui\Converters\BoolTrueToCollapsedConverter.cs" />
     <Compile Include="Ui\IDispatcher.cs" />
@@ -185,7 +187,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ui\Controls\DataSourcesControl.xaml">
+    <Page Include="Ui\Controls\DataSourceTree\DataSourcesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

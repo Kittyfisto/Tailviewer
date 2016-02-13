@@ -105,8 +105,11 @@ namespace Tailviewer.Ui.ViewModels
 			return false;
 		}
 
-		public bool CanBeDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		public bool CanBeDropped(IDataSourceViewModel source,
+		                         IDataSourceViewModel dest,
+		                         out IDataSourceViewModel finalDest)
 		{
+			finalDest = null;
 			if (dest == null)
 				return false;
 
@@ -116,6 +119,12 @@ namespace Tailviewer.Ui.ViewModels
 			if (source == dest)
 				return false;
 
+			var single = dest as SingleDataSourceViewModel;
+			if (single != null)
+				finalDest = single.Parent ?? dest;
+			else
+				finalDest = dest;
+
 			return true;
 		}
 
@@ -124,7 +133,8 @@ namespace Tailviewer.Ui.ViewModels
 			if (!CanBeDragged(source))
 				throw new ArgumentException("source");
 
-			if (!CanBeDropped(source, dest))
+			IDataSourceViewModel unused;
+			if (!CanBeDropped(source, dest, out unused))
 				throw new ArgumentException("source or dest");
 
 			int sourceIndex = _observable.IndexOf(source);
@@ -159,7 +169,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				int groupIndex = _observable.IndexOf(parent);
 				_observable.RemoveAt(groupIndex);
-				var child = parent.Observable.First();
+				IDataSourceViewModel child = parent.Observable.First();
 				child.Parent = null;
 				_observable.Insert(groupIndex, child);
 			}
@@ -193,9 +203,6 @@ namespace Tailviewer.Ui.ViewModels
 					if (destIndex != -1)
 					{
 						_observable.Remove(dest);
-
-						if (sourceIndex != -1 && destIndex > sourceIndex)
-							destIndex--;
 
 						var mergedDataSource = (MergedDataSource) _dataSources.Add(new DataSource());
 						merged = new MergedDataSourceViewModel(mergedDataSource);

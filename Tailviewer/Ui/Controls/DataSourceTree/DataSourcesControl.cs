@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.Controls
+namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	[TemplatePart(Name = PART_DataSources, Type = typeof (TreeView))]
 	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof (FilterTextBox))]
@@ -132,15 +132,64 @@ namespace Tailviewer.Ui.Controls
 			_partDataSources.SelectedItemChanged += PartDataSourcesOnSelectedItemChanged;
 			_partDataSources.PreviewMouseMove += PartDataSourcesOnPreviewMouseMove;
 			_partDataSources.DragOver += PartDataSourcesOnDragOver;
+			_partDataSources.DragEnter += PartDataSourcesOnDragEnter;
+			_partDataSources.DragLeave += PartDataSourcesOnDragLeave;
 			_partDataSources.Drop += PartDataSourcesOnDrop;
 		}
 
-		private bool IsValidDrop(DragEventArgs e, out IDataSourceViewModel source, out IDataSourceViewModel dest)
+		private bool IsValidDrop(DragEventArgs e,
+			out IDataSourceViewModel source,
+			out IDataSourceViewModel dest)
+		{
+			TreeViewItem unused1;
+			DataSourceDropType unused2;
+			IDataSourceViewModel unused3;
+			return IsValidDrop(e,
+			                   out source,
+							   out dest,
+							   out unused1,
+							   out unused2,
+			                   out unused3);
+		}
+
+		private bool IsValidDrop(DragEventArgs e,
+			out IDataSourceViewModel source,
+			out IDataSourceViewModel dest,
+			out TreeViewItem destItem,
+			out DataSourceDropType dropType,
+			out IDataSourceViewModel finalDest)
 		{
 			source = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel;
-			dest = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
+			dest = GetDataSourceFromPosition(e.GetPosition(_partDataSources), out destItem);
+
+			// Let's find out if this is a "rearrange"- or a "group" drop.
+			dropType = GetDropType(e, destItem);
+
 			var model = (MainWindowViewModel) DataContext;
-			return model.CanBeDropped(source, dest);
+			return model.CanBeDropped(source, dest, out finalDest);
+		}
+
+		private DataSourceDropType GetDropType(DragEventArgs e, TreeViewItem destItem)
+		{
+			if (destItem == null)
+				return DataSourceDropType.None;
+
+			var pos = e.GetPosition(destItem);
+			// Let's distribute it as follows:
+			// 20% top => arrange
+			// 60% middle => group
+			// 20% bottom => arrange
+			//
+			// This way 60% of the height is used for grouping and 40% is used for arranging.
+
+			double height = destItem.ActualHeight;
+			if (pos.Y < height*0.2)
+				return DataSourceDropType.ArrangeTop;
+
+			if (pos.Y < height*0.8)
+				return DataSourceDropType.Group;
+
+			return DataSourceDropType.ArrangeBottom;
 		}
 
 		private void PartDataSourcesOnDrop(object sender, DragEventArgs e)
@@ -158,23 +207,45 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
+		private void PartDataSourcesOnDragEnter(object sender, DragEventArgs e)
+		{
+			HandleDrag(e);
+		}
+
+		private void PartDataSourcesOnDragLeave(object sender, DragEventArgs e)
+		{
+			DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
+		}
+
 		private void PartDataSourcesOnDragOver(object sender, DragEventArgs e)
 		{
-			IDataSourceViewModel source, dest;
-			if (IsValidDrop(e, out source, out dest))
+			HandleDrag(e);
+		}
+
+		public void HandleDrag(DragEventArgs e)
+		{
+			DragLayer.UpdateAdornerPosition(e);
+
+			IDataSourceViewModel source, dest, finalDest;
+			TreeViewItem destItem;
+			DataSourceDropType dropType;
+			if (IsValidDrop(e, out source, out dest, out destItem, out dropType, out finalDest))
 			{
+				var finalDestItem = GetTreeViewItem(finalDest);
+				DragLayer.AdornDropTarget(finalDestItem, finalDest, dropType);
 				e.Effects = DragDropEffects.Move;
 			}
 			else
 			{
+				DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
 				e.Effects = DragDropEffects.None;
 			}
 			e.Handled = true;
 		}
 
-		private IDataSourceViewModel GetDataSourceFromPosition(Point position)
+		private IDataSourceViewModel GetDataSourceFromPosition(Point position, out TreeViewItem treeViewItem)
 		{
-			TreeViewItem treeViewItem = GetTreeViewItemFromPosition(position);
+			treeViewItem = GetTreeViewItemFromPosition(position);
 			if (treeViewItem == null)
 				return null;
 
