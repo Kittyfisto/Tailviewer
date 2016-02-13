@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.DataSourceTree;
 using DataSources = Tailviewer.BusinessLogic.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
 
@@ -280,14 +281,17 @@ namespace Tailviewer.Ui.ViewModels
 
 		public bool CanBeDropped(IDataSourceViewModel source,
 		                         IDataSourceViewModel dest,
+		                         DataSourceDropType dropType,
 		                         out IDataSourceViewModel finalDest)
 		{
-			return _dataSourcesViewModel.CanBeDropped(source, dest, out finalDest);
+			return _dataSourcesViewModel.CanBeDropped(source, dest, dropType, out finalDest);
 		}
 
-		public void OnDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		public void OnDropped(IDataSourceViewModel source,
+		                      IDataSourceViewModel dest,
+		                      DataSourceDropType dropType)
 		{
-			_dataSourcesViewModel.OnDropped(source, dest);
+			_dataSourcesViewModel.OnDropped(source, dest, dropType);
 		}
 	}
 }

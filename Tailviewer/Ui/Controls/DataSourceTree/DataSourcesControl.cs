@@ -139,21 +139,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private bool IsValidDrop(DragEventArgs e,
 			out IDataSourceViewModel source,
-			out IDataSourceViewModel dest)
-		{
-			TreeViewItem unused1;
-			DataSourceDropType unused2;
-			IDataSourceViewModel unused3;
-			return IsValidDrop(e,
-			                   out source,
-							   out dest,
-							   out unused1,
-							   out unused2,
-			                   out unused3);
-		}
-
-		private bool IsValidDrop(DragEventArgs e,
-			out IDataSourceViewModel source,
 			out IDataSourceViewModel dest,
 			out TreeViewItem destItem,
 			out DataSourceDropType dropType,
@@ -166,7 +151,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			dropType = GetDropType(e, destItem);
 
 			var model = (MainWindowViewModel) DataContext;
-			return model.CanBeDropped(source, dest, out finalDest);
+			return model.CanBeDropped(source, dest, dropType, out finalDest);
 		}
 
 		private DataSourceDropType GetDropType(DragEventArgs e, TreeViewItem destItem)
@@ -194,17 +179,20 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private void PartDataSourcesOnDrop(object sender, DragEventArgs e)
 		{
-			IDataSourceViewModel source, dest;
-			if (IsValidDrop(e, out source, out dest))
+			IDataSourceViewModel source, dest, unused2;
+			DataSourceDropType dropType;
+			TreeViewItem unused1;
+			if (IsValidDrop(e, out source, out dest, out unused1, out dropType, out unused2))
 			{
 				var vm = DataContext as MainWindowViewModel;
 				if (vm != null)
 				{
-					vm.OnDropped(source, dest);
+					vm.OnDropped(source, dest, dropType);
 				}
 
 				e.Handled = true;
 			}
+			DragLayer.AdornDropTarget(null, null, DataSourceDropType.None);
 		}
 
 		private void PartDataSourcesOnDragEnter(object sender, DragEventArgs e)

@@ -63,5 +63,10 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get { return _observable.Count; }
 		}
+
+		public void Insert(int index, IDataSourceViewModel source)
+		{
+			_observable.Insert(index, source);
+		}
 	}
 }

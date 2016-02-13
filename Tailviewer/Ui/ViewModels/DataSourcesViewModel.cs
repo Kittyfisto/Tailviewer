@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.DataSourceTree;
 using DataSources = Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
@@ -99,22 +100,30 @@ namespace Tailviewer.Ui.ViewModels
 
 		public bool CanBeDragged(IDataSourceViewModel source)
 		{
-			if (source is SingleDataSourceViewModel)
-				return true;
-
-			return false;
+			return true;
 		}
 
 		public bool CanBeDropped(IDataSourceViewModel source,
 		                         IDataSourceViewModel dest,
+		                         DataSourceDropType dropType,
 		                         out IDataSourceViewModel finalDest)
 		{
 			finalDest = null;
+
+			if (dropType == DataSourceDropType.None)
+				return false;
+
 			if (dest == null)
 				return false;
 
 			if (source is MergedDataSourceViewModel)
+			{
+				if (dropType == DataSourceDropType.ArrangeBottom ||
+				    dropType == DataSourceDropType.ArrangeTop)
+					return true;
+
 				return false;
+			}
 
 			if (source == dest)
 				return false;
@@ -128,56 +137,107 @@ namespace Tailviewer.Ui.ViewModels
 			return true;
 		}
 
-		public MergedDataSourceViewModel OnDropped(IDataSourceViewModel source, IDataSourceViewModel dest)
+		public void OnDropped(IDataSourceViewModel source,
+		                      IDataSourceViewModel dest,
+		                      DataSourceDropType dropType)
 		{
 			if (!CanBeDragged(source))
 				throw new ArgumentException("source");
 
 			IDataSourceViewModel unused;
-			if (!CanBeDropped(source, dest, out unused))
+			if (!CanBeDropped(source, dest, dropType, out unused))
 				throw new ArgumentException("source or dest");
 
+			switch (dropType)
+			{
+				case DataSourceDropType.Group:
+					DropToGroup(source, dest);
+					break;
+
+				case DataSourceDropType.ArrangeBottom:
+				case DataSourceDropType.ArrangeTop:
+					DropToArrange(source, dest, dropType);
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException("dropType");
+			}
+		}
+
+		private void DropToArrange(IDataSourceViewModel source, IDataSourceViewModel dest, DataSourceDropType dropType)
+		{
+			if (source.Parent != null)
+			{
+				var group = ((MergedDataSourceViewModel) source.Parent);
+				group.RemoveChild(source);
+				DissolveGroupIfNecessary(group);
+			}
+			else
+			{
+				_observable.Remove(source);
+			}
+
+			if (dest.Parent != null)
+			{
+				var merged = ((MergedDataSourceViewModel) dest.Parent);
+				int index = merged.Observable.IndexOf(source);
+				if (dropType == DataSourceDropType.ArrangeBottom)
+					++index;
+
+				merged.Insert(index, source);
+			}
+			else
+			{
+				int index = _observable.IndexOf(dest);
+				if (dropType == DataSourceDropType.ArrangeBottom)
+					++index;
+
+				_observable.Insert(index, source);
+			}
+		}
+
+		private void DropToGroup(IDataSourceViewModel source, IDataSourceViewModel dest)
+		{
 			int sourceIndex = _observable.IndexOf(source);
 			if (sourceIndex != -1)
 			{
-				return DragFromUngrouped(source, dest, sourceIndex);
+				DragFromUngrouped(source, dest, sourceIndex);
 			}
 
 			var parent = source.Parent as MergedDataSourceViewModel;
 			if (parent != null)
 			{
-				return DragFromGroup(source, dest, parent);
+				DragFromGroup(source, dest, parent);
 			}
-
-			return null;
 		}
 
-		private MergedDataSourceViewModel DragFromUngrouped(IDataSourceViewModel source,
-		                                                    IDataSourceViewModel dest,
-		                                                    int sourceIndex)
+		private void DragFromUngrouped(IDataSourceViewModel source, IDataSourceViewModel dest, int sourceIndex)
 		{
 			_observable.RemoveAt(sourceIndex);
-			return Drag(source, dest, sourceIndex);
+			Drag(source, dest, sourceIndex);
 		}
 
-		private MergedDataSourceViewModel DragFromGroup(IDataSourceViewModel source,
-		                                                IDataSourceViewModel dest,
-		                                                MergedDataSourceViewModel parent)
+		private void DragFromGroup(IDataSourceViewModel source, IDataSourceViewModel dest, MergedDataSourceViewModel parent)
 		{
 			parent.RemoveChild(source);
-			if (parent.ChildCount == 1)
+			DissolveGroupIfNecessary(parent);
+
+			Drag(source, dest, -1);
+		}
+
+		private void DissolveGroupIfNecessary(MergedDataSourceViewModel group)
+		{
+			if (group.ChildCount == 1)
 			{
-				int groupIndex = _observable.IndexOf(parent);
+				int groupIndex = _observable.IndexOf(group);
 				_observable.RemoveAt(groupIndex);
-				IDataSourceViewModel child = parent.Observable.First();
+				IDataSourceViewModel child = group.Observable.First();
 				child.Parent = null;
 				_observable.Insert(groupIndex, child);
 			}
-
-			return Drag(source, dest, -1);
 		}
 
-		private MergedDataSourceViewModel Drag(IDataSourceViewModel source, IDataSourceViewModel dest, int sourceIndex)
+		private void Drag(IDataSourceViewModel source, IDataSourceViewModel dest, int sourceIndex)
 		{
 			var merged = dest as MergedDataSourceViewModel;
 			if (merged != null)
@@ -214,7 +274,7 @@ namespace Tailviewer.Ui.ViewModels
 					}
 				}
 			}
-			return merged;
+			return;
 		}
 
 		private static void AddFileToGroup(IDataSourceViewModel source, MergedDataSourceViewModel viewModel)
