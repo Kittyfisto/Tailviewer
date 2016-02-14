@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
@@ -6,13 +8,23 @@ namespace Tailviewer.BusinessLogic
 	internal sealed class MergedDataSource
 		: AbstractDataSource
 	{
-		private readonly MergedLogFile _logFile;
-		private readonly List<IDataSource> _dataSources;
+		private readonly HashSet<IDataSource> _dataSources;
+		private MergedLogFile _logFile;
 
 		public MergedDataSource(DataSource settings) : base(settings)
 		{
-			_logFile = new MergedLogFile();
-			_dataSources = new List<IDataSource>();
+			_dataSources = new HashSet<IDataSource>();
+			UpdateLogFile();
+		}
+
+		public int Count
+		{
+			get { return _dataSources.Count; }
+		}
+
+		public IEnumerable<IDataSource> DataSources
+		{
+			get { return _dataSources; }
 		}
 
 		public override ILogFile LogFile
@@ -22,12 +34,29 @@ namespace Tailviewer.BusinessLogic
 
 		public void Add(IDataSource dataSource)
 		{
+			if (dataSource.ParentId != Guid.Empty && dataSource.ParentId != Id)
+				throw new ArgumentException("This data source already belongs to a different parent");
+
 			_dataSources.Add(dataSource);
+			dataSource.Settings.ParentId = Settings.Id;
+			UpdateLogFile();
 		}
 
 		public void Remove(IDataSource dataSource)
 		{
-			_dataSources.Remove(dataSource);
+			if (dataSource.ParentId != Id)
+				throw new ArgumentException("This data source belongs to a different parent and thus cannot be removed from this one");
+
+			if (!_dataSources.Remove(dataSource))
+				throw new ArgumentException("dataSource");
+
+			dataSource.Settings.ParentId = Guid.Empty;
+			UpdateLogFile();
+		}
+
+		private void UpdateLogFile()
+		{
+			_logFile = new MergedLogFile(_dataSources.Select(x => x.LogFile));
 		}
 	}
 }

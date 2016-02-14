@@ -98,5 +98,66 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[0].IgnoreCase.Should().BeTrue();
 			settings.QuickFilters[0].Type.Should().Be(QuickFilterType.RegexpFilter);
 		}
+
+		#region Added DataSource.Id and DataSource.ParentId
+
+		[Test]
+		[Description("Verifies that a new GUID is created for a DataSource when none is stored in the xml")]
+		public void TestRestore2()
+		{
+			var settings = new ApplicationSettings(@"Settings\settings_no_file_guid.xml");
+			bool neededPatching;
+			settings.Restore(out neededPatching);
+			settings.DataSources.Count.Should().Be(2);
+			settings.DataSources[0].Id.Should().NotBe(Guid.Empty);
+			settings.DataSources[1].Id.Should().NotBe(Guid.Empty);
+			settings.DataSources[0].Id.Should().NotBe(settings.DataSources[1].Id);
+			neededPatching.Should().BeTrue("Because we should now be saving the settings again due to the upgrade");
+		}
+
+		[Test]
+		[Description("Verifies that the GUID of a data source is written to the file and read again")]
+		public void TestDataSourceId()
+		{
+			var fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var dataSource = new DataSource("foo");
+			dataSource.Id = Guid.NewGuid();
+			settings.DataSources.Add(dataSource);
+			settings.Save();
+
+			var settings2 = new ApplicationSettings(fname);
+			bool neededPatching;
+			settings2.Restore(out neededPatching);
+			neededPatching.Should().BeFalse();
+			settings2.DataSources.Count.Should().Be(1);
+			var dataSource2 = settings2.DataSources[0];
+			dataSource2.File.Should().Be("foo");
+			dataSource2.Id.Should().Be(dataSource.Id);
+		}
+
+		[Test]
+		[Description("Verifies that the GUID of a data source's parent is written to the file and read again")]
+		public void TestDataSourceParentId()
+		{
+			var fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var dataSource = new DataSource("foo");
+			dataSource.Id = Guid.NewGuid();
+			dataSource.ParentId = Guid.NewGuid();
+			settings.DataSources.Add(dataSource);
+			settings.Save();
+
+			var settings2 = new ApplicationSettings(fname);
+			bool neededPatching;
+			settings2.Restore(out neededPatching);
+			neededPatching.Should().BeFalse();
+			settings2.DataSources.Count.Should().Be(1);
+			var dataSource2 = settings2.DataSources[0];
+			dataSource2.File.Should().Be("foo");
+			dataSource2.ParentId.Should().Be(dataSource.ParentId);
+		}
+
+		#endregion
 	}
 }

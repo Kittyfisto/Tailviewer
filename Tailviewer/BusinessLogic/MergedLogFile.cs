@@ -67,6 +67,15 @@ namespace Tailviewer.BusinessLogic
 
 		private const int BatchSize = 1000;
 
+		public MergedLogFile(IEnumerable<ILogFile> sources)
+			: this(sources.ToArray())
+		{}
+
+		public IEnumerable<ILogFile> Sources
+		{
+			get { return _sources; }
+		}
+
 		public MergedLogFile(params ILogFile[] sources)
 		{
 			if (sources == null) throw new ArgumentNullException("sources");

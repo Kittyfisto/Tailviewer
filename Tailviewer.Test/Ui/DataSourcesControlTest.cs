@@ -3,24 +3,23 @@ using System.Collections.ObjectModel;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.Ui.Controls;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
-using DataSource = Tailviewer.Settings.DataSource;
 
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
 	public sealed class DataSourcesControlTest
 	{
-		private DataSourcesControl _control;
-
 		[SetUp]
 		[STAThread]
 		public void SetUp()
 		{
 			_control = new DataSourcesControl();
 		}
+
+		private DataSourcesControl _control;
 
 		[Test]
 		[STAThread]
@@ -37,7 +36,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log")))
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()}))
 				};
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -50,13 +49,13 @@ namespace Tailviewer.Test.Ui
 			var sources = new ObservableCollection<SingleDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -67,9 +66,9 @@ namespace Tailviewer.Test.Ui
 			var sources = new ObservableCollection<SingleDataSourceViewModel>();
 			_control.ItemsSource = sources;
 
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))));
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log") { Id = Guid.NewGuid() })));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log") { Id = Guid.NewGuid() })));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
 
 			sources.RemoveAt(1);
 			_control.FilteredItemsSource.Should().Equal(sources);
@@ -87,9 +86,9 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"){Id = Guid.NewGuid()}))
 				};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
@@ -102,15 +101,15 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
 				};
 			_control.StringFilter = "2";
 			_control.ItemsSource = sources;
 			_control.FilteredItemsSource.Should().BeEmpty();
 
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))));
-			sources.Add(new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log"))));
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[1] });
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log") { Id = Guid.NewGuid() })));
+			sources.Add(new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[1]});
 		}
 
 		[Test]
@@ -119,18 +118,18 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"){Id = Guid.NewGuid()}))
 				};
 			_control.ItemsSource = sources;
 
 			_control.StringFilter = "3";
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[2] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[2]});
 			sources.RemoveAt(0);
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[1] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[1]});
 			sources.RemoveAt(0);
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[0] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[0]});
 			sources.RemoveAt(0);
 			_control.FilteredItemsSource.Should().BeEmpty();
 		}
@@ -141,18 +140,18 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test2.log"))),
-					new SingleDataSourceViewModel(new Tailviewer.BusinessLogic.SingleDataSource(new DataSource("test3.log")))
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"){Id = Guid.NewGuid()}))
 				};
 			_control.ItemsSource = sources;
 
 			_control.StringFilter = "2";
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[1] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[1]});
 			sources.RemoveAt(0);
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[0] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[0]});
 			sources.RemoveAt(1);
-			_control.FilteredItemsSource.Should().Equal(new[] { sources[0] });
+			_control.FilteredItemsSource.Should().Equal(new[] {sources[0]});
 			sources.RemoveAt(0);
 			_control.FilteredItemsSource.Should().BeEmpty();
 		}
@@ -164,10 +163,10 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
 				};
 			_control.ItemsSource = sources;
-			sources.Insert(0, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))));
+			sources.Insert(0, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -178,10 +177,10 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test.log"){Id = Guid.NewGuid()})),
 				};
 			_control.ItemsSource = sources;
-			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))));
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -192,11 +191,11 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"))),
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
 				};
 			_control.ItemsSource = sources;
-			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(sources);
 		}
 
@@ -207,13 +206,13 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"))),
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
 				};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
-			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
+			sources.Insert(1, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
 			_control.FilteredItemsSource.Should().Equal(new object[] {sources[1], sources[2]});
 		}
 
@@ -224,15 +223,15 @@ namespace Tailviewer.Test.Ui
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
 				{
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"))),
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"))),
-					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"))),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test1.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("foo.log"){Id = Guid.NewGuid()})),
+					new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test2.log"){Id = Guid.NewGuid()})),
 				};
 			_control.ItemsSource = sources;
 			// Let's set a filter that causes the first element to be hidden
 			_control.StringFilter = "test";
-			sources.Insert(2, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log"))));
-			_control.FilteredItemsSource.Should().Equal(new object[] { sources[0], sources[2], sources[3] });
+			sources.Insert(2, new SingleDataSourceViewModel(new SingleDataSource(new DataSource("test3.log") { Id = Guid.NewGuid() })));
+			_control.FilteredItemsSource.Should().Equal(new object[] {sources[0], sources[2], sources[3]});
 
 			_control.StringFilter = null;
 			_control.FilteredItemsSource.Should().Equal(sources);

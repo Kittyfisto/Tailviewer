@@ -3,16 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Tailviewer.Settings;
+using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class DataSources
 		: IEnumerable<IDataSource>
-		, IDisposable
+		  , IDisposable
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly List<IDataSource> _dataSources;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
-		private readonly List<IDataSource> _dataSources;
 
 		public DataSources(Settings.DataSources settings)
 		{
@@ -21,10 +27,35 @@ namespace Tailviewer.BusinessLogic
 			_syncRoot = new object();
 			_settings = settings;
 			_dataSources = new List<IDataSource>();
-			foreach (var dataSource in settings)
+			foreach (DataSource dataSource in settings)
 			{
-				Add(dataSource);
+				AddDataSource(dataSource);
 			}
+
+			foreach (var dataSource in _dataSources)
+			{
+				var parentId = dataSource.Settings.ParentId;
+				if (parentId != Guid.Empty)
+				{
+					var parent = _dataSources.FirstOrDefault(x => x.Id == parentId) as MergedDataSource;
+					if (parent != null)
+					{
+						parent.Add(dataSource);
+					}
+					else
+					{
+						Log.WarnFormat("DataSource '{0} ({1})' is assigned a parent '{2}' but we don't know that one",
+						               dataSource.FullFileName,
+						               dataSource.Id,
+						               parentId);
+					}
+				}
+			}
+		}
+
+		public IDataSource this[int index]
+		{
+			get { return _dataSources[index]; }
 		}
 
 		public int Count
@@ -38,7 +69,31 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public IDataSource Add(Settings.DataSource settings)
+		public void Dispose()
+		{
+			lock (_syncRoot)
+			{
+				foreach (IDataSource dataSource in _dataSources)
+				{
+					dataSource.Dispose();
+				}
+			}
+		}
+
+		public IEnumerator<IDataSource> GetEnumerator()
+		{
+			lock (_syncRoot)
+			{
+				return _dataSources.ToList().GetEnumerator();
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		private IDataSource AddDataSource(DataSource settings)
 		{
 			lock (_syncRoot)
 			{
@@ -57,21 +112,42 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public IDataSource Add(string fileName)
+		public MergedDataSource AddGroup()
+		{
+			MergedDataSource dataSource;
+
+			lock (_syncRoot)
+			{
+				var settings = new DataSource
+					{
+						Id = Guid.NewGuid()
+					};
+				_settings.Add(settings);
+				dataSource = (MergedDataSource) AddDataSource(settings);
+			}
+
+			return dataSource;
+		}
+
+		public SingleDataSource AddDataSource(string fileName)
 		{
 			string fullFileName;
-			var key = GetKey(fileName, out fullFileName);
-			IDataSource dataSource;
+			string key = GetKey(fileName, out fullFileName);
+			SingleDataSource dataSource;
 
 			lock (_syncRoot)
 			{
 				dataSource =
+					(SingleDataSource)
 					_dataSources.FirstOrDefault(x => string.Equals(x.FullFileName, key, StringComparison.InvariantCultureIgnoreCase));
 				if (dataSource == null)
 				{
-					var settings = new Settings.DataSource(fullFileName);
+					var settings = new DataSource(fullFileName)
+						{
+							Id = Guid.NewGuid()
+						};
 					_settings.Add(settings);
-					dataSource = Add(settings);
+					dataSource = (SingleDataSource) AddDataSource(settings);
 				}
 			}
 
@@ -81,7 +157,7 @@ namespace Tailviewer.BusinessLogic
 		private static string GetKey(string fileName, out string fullFileName)
 		{
 			fullFileName = Path.GetFullPath(fileName);
-			var key = fullFileName.ToLower();
+			string key = fullFileName.ToLower();
 			return key;
 		}
 
@@ -97,30 +173,6 @@ namespace Tailviewer.BusinessLogic
 				}
 
 				return false;
-			}
-		}
-
-		public IEnumerator<IDataSource> GetEnumerator()
-		{
-			lock (_syncRoot)
-			{
-				return _dataSources.ToList().GetEnumerator();
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-
-		public void Dispose()
-		{
-			lock (_syncRoot)
-			{
-				foreach (var dataSource in _dataSources)
-				{
-					dataSource.Dispose();
-				}
 			}
 		}
 	}

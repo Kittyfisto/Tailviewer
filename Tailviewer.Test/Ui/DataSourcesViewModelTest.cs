@@ -25,6 +25,94 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that creating a view model from a group works")]
+		public void TestCtor1()
+		{
+			_settings = new ApplicationSettings("foobar");
+			var group = new DataSource{Id = Guid.NewGuid()};
+			var source1 = new DataSource("foo") {Id = Guid.NewGuid(), ParentId = group.Id};
+			var source2 = new DataSource("bar") {Id = Guid.NewGuid(), ParentId = group.Id};
+			var source3 = new DataSource("clondyke") {Id = Guid.NewGuid()};
+			_settings.DataSources.Add(group);
+			_settings.DataSources.Add(source1);
+			_settings.DataSources.Add(source2);
+			_settings.DataSources.Add(source3);
+			_dataSources = new DataSources(_settings.DataSources);
+			_model = new DataSourcesViewModel(_settings, _dataSources);
+			_model.Observable.Count.Should().Be(2);
+			var viewModel = _model.Observable[0];
+			viewModel.Should().NotBeNull();
+			viewModel.Should().BeOfType<MergedDataSourceViewModel>();
+			viewModel.DataSource.Id.Should().Be(group.Id);
+			var merged = (MergedDataSourceViewModel) viewModel;
+			merged.Observable.Count().Should().Be(2);
+			merged.Observable.ElementAt(0).DataSource.Id.Should().Be(source1.Id);
+			merged.Observable.ElementAt(1).DataSource.Id.Should().Be(source2.Id);
+
+			viewModel = _model.Observable[1];
+			viewModel.Should().NotBeNull();
+			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+			viewModel.DataSource.Id.Should().Be(source3.Id);
+		}
+
+		[Test]
+		[Description("Verifies that removing a data source via command removes it from the list of data sources as well as from the settings")]
+		public void TestRemove1()
+		{
+			_settings = new ApplicationSettings("foobar");
+			var source = new DataSource("foo") { Id = Guid.NewGuid()};
+			_settings.DataSources.Add(source);
+			_dataSources = new DataSources(_settings.DataSources);
+			_model = new DataSourcesViewModel(_settings, _dataSources);
+			var viewModel = _model.Observable[0];
+			viewModel.RemoveCommand.Execute(null);
+
+			_model.Observable.Should().BeEmpty();
+			_dataSources.Should().BeEmpty();
+			_settings.DataSources.Should().BeEmpty();
+		}
+
+		[Test]
+		[Description("Verifies that removing a grouped data source via command removes it from the list of data sources as well as from the settings")]
+		public void TestRemove2()
+		{
+			_settings = new ApplicationSettings("foobar");
+			var group = new DataSource { Id = Guid.NewGuid() };
+			var source1 = new DataSource("foo") { Id = Guid.NewGuid(), ParentId = group.Id };
+			var source2 = new DataSource("bar") { Id = Guid.NewGuid(), ParentId = group.Id };
+			var source3 = new DataSource("clondyke") { Id = Guid.NewGuid(), ParentId = group.Id };
+			_settings.DataSources.Add(source1);
+			_settings.DataSources.Add(source2);
+			_settings.DataSources.Add(source3);
+			_settings.DataSources.Add(group);
+			_dataSources = new DataSources(_settings.DataSources);
+			_model = new DataSourcesViewModel(_settings, _dataSources);
+			var merged = (MergedDataSourceViewModel)_model.Observable[0];
+			var viewModel1 = merged.Observable.ElementAt(0);
+			var viewModel2 = merged.Observable.ElementAt(1);
+			var viewModel3= merged.Observable.ElementAt(2);
+			viewModel1.RemoveCommand.Execute(null);
+
+			merged.ChildCount.Should().Be(2);
+			merged.Observable.Should().NotContain(viewModel1);
+			_model.Observable.Should().Equal(new object[] {merged});
+			_dataSources.Should().Equal(new object[] {viewModel2.DataSource, viewModel3.DataSource, merged.DataSource});
+			_settings.DataSources.Should().Equal(new object[] {source2, source3, group});
+		}
+
+		[Test]
+		[Description("Verifies that GetOrAdd creates a new data source when there's none with that name already")]
+		public void TestGetOrAdd1()
+		{
+			IDataSourceViewModel viewModel = null;
+			new Action(() => viewModel = _model.GetOrAdd("foobar")).ShouldNotThrow();
+			viewModel.Should().NotBeNull();
+			viewModel.DataSource.Should().NotBeNull();
+			viewModel.DataSource.Settings.Should().NotBeNull();
+			viewModel.DataSource.Id.Should().NotBe(Guid.Empty);
+		}
+
+		[Test]
 		[Description("Verifies that dropping a source onto another one creates a new group with the 2 sources")]
 		public void TestDrop1()
 		{

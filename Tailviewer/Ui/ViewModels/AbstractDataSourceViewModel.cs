@@ -9,8 +9,8 @@ namespace Tailviewer.Ui.ViewModels
 	internal abstract class AbstractDataSourceViewModel
 		: IDataSourceViewModel
 	{
-		private readonly ICommand _removeCommand;
 		private readonly IDataSource _dataSource;
+		private readonly ICommand _removeCommand;
 
 		private int _debugCount;
 		private int _errorCount;
@@ -29,6 +29,11 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 			Update();
+		}
+
+		public Guid Id
+		{
+			get { return _dataSource.Id; }
 		}
 
 		public abstract ICommand OpenInExplorerCommand { get; }
@@ -221,7 +226,10 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IDataSource DataSource { get { return _dataSource; } }
+		public IDataSource DataSource
+		{
+			get { return _dataSource; }
+		}
 
 		public LevelFlags LevelsFilter
 		{

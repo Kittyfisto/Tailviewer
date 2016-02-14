@@ -24,6 +24,8 @@ namespace Tailviewer.BusinessLogic
 		int TotalCount { get; }
 		Size FileSize { get; }
 		bool ColorByLevel { get; set; }
+		Guid Id { get; }
+		Guid ParentId { get; }
 		void ActivateQuickFilter(Guid id);
 		bool DeactivateQuickFilter(Guid id);
 		bool IsQuickFilterActive(Guid id);

@@ -1,30 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 using Tailviewer.BusinessLogic;
+using log4net;
 
 namespace Tailviewer.Settings
 {
 	internal sealed class DataSource
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly List<Guid> _activatedQuickFilters;
+		public bool ColorByLevel;
+
 		public string File;
 		public bool FollowTail;
-		public bool IsOpen;
-		public LevelFlags LevelFilter;
-		public string StringFilter;
-		public bool ColorByLevel;
-		public LogLineIndex SelectedLogLine;
-		public LogLineIndex VisibleLogLine;
-		private readonly List<Guid> _activatedQuickFilters;
-		public DateTime LastViewed;
 
-		public List<Guid> ActivatedQuickFilters
-		{
-			get { return _activatedQuickFilters; }
-		}
+		/// <summary>
+		///     Uniquely identifies this data source amongst all others.
+		/// </summary>
+		public Guid Id;
+
+		/// <summary>
+		/// Uniquely identifies this data-source's parent, if any.
+		/// Set to <see cref="Guid.Empty"/> if this data source has no parent.
+		/// </summary>
+		public Guid ParentId;
+
+		public bool IsOpen;
+		public DateTime LastViewed;
+		public LevelFlags LevelFilter;
+		public int Order;
+		public LogLineIndex SelectedLogLine;
+		public string StringFilter;
+		public LogLineIndex VisibleLogLine;
 
 		public DataSource()
 		{
+			Order = -1;
 			_activatedQuickFilters = new List<Guid>();
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
@@ -38,6 +53,19 @@ namespace Tailviewer.Settings
 			File = file;
 		}
 
+		public override string ToString()
+		{
+			if (File == null)
+				return string.Format("Merged ({0})", Id);
+
+			return string.Format("{0} ({1})", File, Id);
+		}
+
+		public List<Guid> ActivatedQuickFilters
+		{
+			get { return _activatedQuickFilters; }
+		}
+
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("file", File);
@@ -46,11 +74,13 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
-			writer.WriteAttributeInt("selectedentryindex", (int)SelectedLogLine);
-			writer.WriteAttributeInt("visibleentryindex", (int)VisibleLogLine);
+			writer.WriteAttributeInt("selectedentryindex", (int) SelectedLogLine);
+			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
+			writer.WriteAttributeGuid("id", Id);
+			writer.WriteAttributeGuid("parentid", ParentId);
 
 			writer.WriteStartElement("activatedquickfilters");
-			foreach (var guid in ActivatedQuickFilters)
+			foreach (Guid guid in ActivatedQuickFilters)
 			{
 				writer.WriteStartElement("quickfilter");
 				writer.WriteAttributeGuid("id", guid);
@@ -59,7 +89,7 @@ namespace Tailviewer.Settings
 			writer.WriteEndElement();
 		}
 
-		public void Restore(XmlReader reader)
+		public void Restore(XmlReader reader, out bool neededPatching)
 		{
 			int count = reader.AttributeCount;
 			for (int i = 0; i < count; ++i)
@@ -98,18 +128,40 @@ namespace Tailviewer.Settings
 					case "visibleentryindex":
 						VisibleLogLine = reader.ReadContentAsInt();
 						break;
+
+					case "id":
+						Id = reader.ReadContentAsGuid();
+						break;
+
+					case "parentid":
+						ParentId = reader.ReadContentAsGuid();
+						break;
 				}
+			}
+
+			if (Id == Guid.Empty)
+			{
+				Id = Guid.NewGuid();
+				Log.InfoFormat("Data Source '{0}' doesn't have an ID yet, setting it to: {1}",
+				               File,
+				               Id
+					);
+				neededPatching = true;
+			}
+			else
+			{
+				neededPatching = false;
 			}
 
 			reader.MoveToContent();
 
-			var subtree = reader.ReadSubtree();
+			XmlReader subtree = reader.ReadSubtree();
 			while (subtree.Read())
 			{
 				switch (subtree.Name)
 				{
 					case "activatedquickfilters":
-						var filters = ReadActivatedQuickFilters(reader);
+						IEnumerable<Guid> filters = ReadActivatedQuickFilters(reader);
 						ActivatedQuickFilters.Clear();
 						ActivatedQuickFilters.AddRange(filters);
 						break;
@@ -120,7 +172,7 @@ namespace Tailviewer.Settings
 		private IEnumerable<Guid> ReadActivatedQuickFilters(XmlReader reader)
 		{
 			var guids = new List<Guid>();
-			var subtree = reader.ReadSubtree();
+			XmlReader subtree = reader.ReadSubtree();
 
 			while (subtree.Read())
 			{

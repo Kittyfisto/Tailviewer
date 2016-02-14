@@ -13,17 +13,22 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor()
 		{
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")))
+			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
+				{
+					Id = Guid.NewGuid()
+				};
+			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(settings))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
+				model.Id.Should().Be(settings.Id);
 			}
 		}
 
 		[Test]
 		public void TestRemoveCommand1()
 		{
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")))
+			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.RemoveCommand.Should().NotBeNull();
@@ -35,7 +40,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRemoveCommand2()
 		{
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")))
+			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				var calls = new List<IDataSourceViewModel>();

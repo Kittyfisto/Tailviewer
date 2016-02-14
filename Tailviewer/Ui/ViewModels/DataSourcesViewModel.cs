@@ -26,7 +26,22 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSources = dataSources;
 			foreach (IDataSource dataSource in dataSources)
 			{
-				Add(dataSource);
+				if (dataSource.ParentId == Guid.Empty)
+				{
+					Add(dataSource);
+				}
+			}
+
+			foreach (IDataSource dataSource in dataSources)
+			{
+				var parentId = dataSource.ParentId;
+				if (parentId != Guid.Empty)
+				{
+					var parent = _observable.First(x => x.DataSource.Id == parentId);
+					var group = (MergedDataSourceViewModel) parent;
+					var viewModel = CreateViewModel(dataSource);
+					group.AddChild(viewModel);
+				}
 			}
 		}
 
@@ -50,7 +65,7 @@ namespace Tailviewer.Ui.ViewModels
 				_observable.FirstOrDefault(x => Represents(x, fullName));
 			if (viewModel == null)
 			{
-				IDataSource dataSource = _dataSources.Add(fileName);
+				IDataSource dataSource = _dataSources.AddDataSource(fileName);
 				viewModel = Add(dataSource);
 				_settings.Save();
 			}
@@ -69,9 +84,35 @@ namespace Tailviewer.Ui.ViewModels
 
 		private IDataSourceViewModel Add(IDataSource dataSource)
 		{
-			var viewModel = new SingleDataSourceViewModel((SingleDataSource) dataSource);
-			viewModel.Remove += OnRemove;
+			var viewModel = CreateViewModel(dataSource);
 			_observable.Add(viewModel);
+			return viewModel;
+		}
+
+		private IDataSourceViewModel CreateViewModel(IDataSource dataSource)
+		{
+			if (dataSource == null)
+				throw new ArgumentNullException("dataSource");
+
+			IDataSourceViewModel viewModel;
+			var single = dataSource as SingleDataSource;
+			if (single != null)
+			{
+				viewModel = new SingleDataSourceViewModel((SingleDataSource) dataSource);
+			}
+			else
+			{
+				var merged = dataSource as MergedDataSource;
+				if (merged != null)
+				{
+					viewModel = new MergedDataSourceViewModel(merged);
+				}
+				else
+				{
+					throw new ArgumentException(string.Format("Unknown data source: {0} ({1})", dataSource, dataSource.GetType()));
+				}
+			}
+			viewModel.Remove += OnRemove;
 			return viewModel;
 		}
 
@@ -81,7 +122,6 @@ namespace Tailviewer.Ui.ViewModels
 			if (index != -1)
 			{
 				_observable.RemoveAt(index);
-				_dataSources.Remove(viewModel.DataSource);
 
 				var merged = viewModel as MergedDataSourceViewModel;
 				if (merged != null)
@@ -93,9 +133,14 @@ namespace Tailviewer.Ui.ViewModels
 						item.Parent = null;
 					}
 				}
-
-				_settings.Save();
 			}
+			else if (viewModel.Parent != null)
+			{
+				((MergedDataSourceViewModel)viewModel.Parent).RemoveChild(viewModel);
+			}
+
+			_dataSources.Remove(viewModel.DataSource);
+			_settings.Save();
 		}
 
 		public bool CanBeDragged(IDataSourceViewModel source)
@@ -218,18 +263,20 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				DragFromUngrouped(source, dest, sourceIndex);
 			}
-
-			var parent = source.Parent as MergedDataSourceViewModel;
-			if (parent != null)
+			else
 			{
-				DragFromGroup(source, dest, parent);
+				var parent = source.Parent as MergedDataSourceViewModel;
+				if (parent != null)
+				{
+					DragFromGroup(source, dest, parent);
+				}
 			}
 		}
 
 		private void DragFromUngrouped(IDataSourceViewModel source, IDataSourceViewModel dest, int sourceIndex)
 		{
 			_observable.RemoveAt(sourceIndex);
-			Drag(source, dest, sourceIndex);
+			Drag(source, dest);
 		}
 
 		private void DragFromGroup(IDataSourceViewModel source, IDataSourceViewModel dest, MergedDataSourceViewModel parent)
@@ -237,7 +284,7 @@ namespace Tailviewer.Ui.ViewModels
 			parent.RemoveChild(source);
 			DissolveGroupIfNecessary(parent);
 
-			Drag(source, dest, -1);
+			Drag(source, dest);
 		}
 
 		private void DissolveGroupIfNecessary(MergedDataSourceViewModel group)
@@ -252,7 +299,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		private void Drag(IDataSourceViewModel source, IDataSourceViewModel dest, int sourceIndex)
+		private void Drag(IDataSourceViewModel source, IDataSourceViewModel dest)
 		{
 			var merged = dest as MergedDataSourceViewModel;
 			if (merged != null)
@@ -279,7 +326,7 @@ namespace Tailviewer.Ui.ViewModels
 					{
 						_observable.Remove(dest);
 
-						var mergedDataSource = (MergedDataSource) _dataSources.Add(new DataSource());
+						var mergedDataSource = _dataSources.AddGroup();
 						merged = new MergedDataSourceViewModel(mergedDataSource);
 						merged.Remove += OnRemove;
 						merged.AddChild(source);
@@ -289,7 +336,6 @@ namespace Tailviewer.Ui.ViewModels
 					}
 				}
 			}
-			return;
 		}
 
 		private static void AddFileToGroup(IDataSourceViewModel source, MergedDataSourceViewModel viewModel)

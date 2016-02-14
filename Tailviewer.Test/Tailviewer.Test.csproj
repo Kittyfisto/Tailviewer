@@ -67,6 +67,7 @@
     <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFileBase\LevelsTest.cs" />
+    <Compile Include="BusinessLogic\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Ui\DataSourcesControlTest.cs" />
     <Compile Include="Ui\DataSourcesViewModelTest.cs" />
     <Compile Include="Ui\DragLayerTest.cs" />
+    <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
     <Compile Include="Ui\FilterTextBoxTest.cs" />
     <Compile Include="Ui\HighlightableTextBlockTest.cs" />
@@ -93,6 +95,9 @@
     <Compile Include="Ui\RemoveButtonTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Settings\settings_no_file_guid.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\2Lines.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

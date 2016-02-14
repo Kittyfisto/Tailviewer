@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using DataSource = Tailviewer.Settings.DataSource;
@@ -11,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestCtor()
 		{
-			using (var source = new SingleDataSource(new DataSource(@"E:\somelogfile.txt")))
+			using (var source = new SingleDataSource(new DataSource(@"E:\somelogfile.txt"){Id = Guid.NewGuid()}))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);

@@ -27,7 +27,15 @@ namespace Tailviewer
 			LogEnvironment();
 
 			ApplicationSettings settings = ApplicationSettings.Create();
-			settings.Restore();
+			bool neededPatching;
+			settings.Restore(out neededPatching);
+
+			if (neededPatching)
+			{
+				// TODO: Save settings right again to complete the upgrade
+				//       (maybe we should preserve an old version)
+			}
+
 			using (var dataSources = new DataSources(settings.DataSources))
 			{
 				var quickFilters = new QuickFilters(settings.QuickFilters);

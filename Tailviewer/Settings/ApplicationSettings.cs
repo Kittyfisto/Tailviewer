@@ -99,6 +99,17 @@ namespace Tailviewer.Settings
 
 		public void Restore()
 		{
+			bool unused;
+			Restore(out unused);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="neededPatching">Whether or not certain values need to be changed (for example due to upgrades to the format - it is advised that the current settings be saved again if this is set to true)</param>
+		public void Restore(out bool neededPatching)
+		{
+			neededPatching = false;
 			if (!File.Exists(_fileName))
 				return;
 
@@ -116,7 +127,9 @@ namespace Tailviewer.Settings
 								break;
 
 							case "datasources":
-								_dataSources.Restore(reader);
+								bool dataSourcesNeededPatching;
+								_dataSources.Restore(reader, out dataSourcesNeededPatching);
+								neededPatching |= dataSourcesNeededPatching;
 								break;
 
 							case "quickfilters":
@@ -126,7 +139,7 @@ namespace Tailviewer.Settings
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
 			}
 		}

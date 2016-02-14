@@ -6,8 +6,9 @@ namespace Tailviewer.Settings
 	internal sealed class DataSources
 		: List<DataSource>
 	{
-		public void Restore(XmlReader reader)
+		public void Restore(XmlReader reader, out bool neededPatching)
 		{
+			neededPatching = false;
 			var dataSources = new List<DataSource>();
 			var subtree = reader.ReadSubtree();
 			while (subtree.Read())
@@ -16,8 +17,10 @@ namespace Tailviewer.Settings
 				{
 					case "datasource":
 						var dataSource = new DataSource();
-						dataSource.Restore(subtree);
+						bool sourceNeedsPatching;
+						dataSource.Restore(subtree, out sourceNeedsPatching);
 						dataSources.Add(dataSource);
+						neededPatching |= sourceNeedsPatching;
 						break;
 				}
 			}

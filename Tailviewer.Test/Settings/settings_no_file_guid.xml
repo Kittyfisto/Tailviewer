@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xml>
+  <mainwindow top="84" left="2076" width="1277" height="944" state="Normal" />
+  <datasources>
+    <datasource file="E:\Code\Tailviewer\bin\Debug\TestClear1.log" isopen="true" followtail="false" stringfilter="" levelfilter="All" colorbylevel="true" selectedentryindex="-1" visibleentryindex="-1">
+      <activatedquickfilters />
+    </datasource>
+    <datasource file="E:\Code\Tailviewer\bin\Debug\TestClear2.log" isopen="false" followtail="false" stringfilter="" levelfilter="All" colorbylevel="true" selectedentryindex="-1" visibleentryindex="-1">
+      <activatedquickfilters />
+    </datasource>
+  </datasources>
+</xml>

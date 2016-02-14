@@ -22,7 +22,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_quickFilter = new QuickFilter(new Tailviewer.Settings.QuickFilter());
-			_dataSource = new SingleDataSource(_dataSourceSettings = new DataSource("nothing"));
+			_dataSource = new SingleDataSource(_dataSourceSettings = new DataSource("nothing"){Id = Guid.NewGuid()});
 			_model = new QuickFilterViewModel(_quickFilter, x => {})
 				{
 					CurrentDataSource = _dataSource

@@ -1,13 +1,25 @@
 ﻿using System;
+using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal abstract class AbstractDataSource
 		: IDataSource
 	{
-		private readonly Settings.DataSource _settings;
+		private readonly DataSource _settings;
 
-		public DateTime LastModified { get { return LogFile.LastModified; } }
+		protected AbstractDataSource(DataSource settings)
+		{
+			if (settings == null) throw new ArgumentNullException("settings");
+			if (settings.Id == Guid.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
+
+			_settings = settings;
+		}
+
+		public DateTime LastModified
+		{
+			get { return LogFile.LastModified; }
+		}
 
 		public DateTime LastViewed
 		{
@@ -15,11 +27,14 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.LastViewed = value; }
 		}
 
-		protected AbstractDataSource(Settings.DataSource settings)
+		public Guid Id
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
+			get { return _settings.Id; }
+		}
 
-			_settings = settings;
+		public Guid ParentId
+		{
+			get { return _settings.ParentId; }
 		}
 
 		public void ActivateQuickFilter(Guid id)
@@ -37,6 +52,7 @@ namespace Tailviewer.BusinessLogic
 		{
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}
+
 		public abstract ILogFile LogFile { get; }
 
 		public int OtherCount
@@ -111,7 +127,7 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.VisibleLogLine = value; }
 		}
 
-		public Settings.DataSource Settings
+		public DataSource Settings
 		{
 			get { return _settings; }
 		}
