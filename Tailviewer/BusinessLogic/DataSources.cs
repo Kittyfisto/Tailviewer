@@ -48,6 +48,10 @@ namespace Tailviewer.BusinessLogic
 						               dataSource.FullFileName,
 						               dataSource.Id,
 						               parentId);
+						// We don't want the rest of the application having to deal with this.
+						// Therefore we'll simply remove the parent link and treat this data
+						// source as any other ungrouped one.
+						dataSource.Settings.ParentId = Guid.Empty;
 					}
 				}
 			}

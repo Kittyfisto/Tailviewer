@@ -56,6 +56,30 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that data sources with invalid parent id's are simply added to the root list of data sources")]
+		public void TestCtor2()
+		{
+			_settings = new ApplicationSettings("foobar");
+			var group = new DataSource { Id = Guid.NewGuid() };
+			var source = new DataSource("foo") { Id = Guid.NewGuid(), ParentId = Guid.NewGuid() };
+			_settings.DataSources.Add(group);
+			_settings.DataSources.Add(source);
+			_dataSources = new DataSources(_settings.DataSources);
+			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources)).ShouldNotThrow();
+			_model.Observable.Count.Should().Be(2);
+			var viewModel = _model.Observable[0];
+			viewModel.Should().NotBeNull();
+			viewModel.Should().BeOfType<MergedDataSourceViewModel>();
+			viewModel.DataSource.Id.Should().Be(group.Id);
+			var merged = (MergedDataSourceViewModel)viewModel;
+			merged.Observable.Should().BeEmpty();
+
+			viewModel = _model.Observable[1];
+			viewModel.Should().NotBeNull();
+			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+		}
+
+		[Test]
 		[Description("Verifies that removing a data source via command removes it from the list of data sources as well as from the settings")]
 		public void TestRemove1()
 		{
@@ -204,6 +228,30 @@ namespace Tailviewer.Test.Ui
 			_model.OnDropped(a, e, DataSourceDropType.Group);
 			var merged1 = _model.Observable[3] as MergedDataSourceViewModel;
 			_model.Observable.Should().Equal(new object[] { b, c, d, merged1 });
+		}
+
+		[Test]
+		[Description("Verifies that when a group is dissolved due to a drop, both data source's parent is removed")]
+		public void TestDrop6()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+			var merged = _model.Observable[0] as MergedDataSourceViewModel;
+			_model.OnDropped(a, merged, DataSourceDropType.ArrangeTop);
+
+			a.Parent.Should().BeNull();
+			a.DataSource.ParentId.Should().Be(Guid.Empty);
+			_dataSources.Should().Contain(a.DataSource);
+			_settings.DataSources.Should().Contain(a.DataSource.Settings);
+
+			b.Parent.Should().BeNull();
+			b.DataSource.ParentId.Should().Be(Guid.Empty);
+			_dataSources.Should().Contain(b.DataSource);
+			_settings.DataSources.Should().Contain(b.DataSource.Settings);
+
+			_dataSources.Should().NotContain(merged.DataSource);
+			_settings.DataSources.Should().NotContain(merged.DataSource.Settings);
 		}
 
 		[Test]

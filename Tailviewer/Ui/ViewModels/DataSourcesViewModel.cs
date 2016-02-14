@@ -137,6 +137,7 @@ namespace Tailviewer.Ui.ViewModels
 			else if (viewModel.Parent != null)
 			{
 				((MergedDataSourceViewModel)viewModel.Parent).RemoveChild(viewModel);
+				_dataSources.Remove(viewModel.DataSource);
 			}
 
 			_dataSources.Remove(viewModel.DataSource);
@@ -251,6 +252,8 @@ namespace Tailviewer.Ui.ViewModels
 				int index = _observable.IndexOf(dest);
 				if (dropType.HasFlag(DataSourceDropType.ArrangeBottom))
 					++index;
+				if (index < 0)
+					index = 0;
 
 				_observable.Insert(index, source);
 			}
@@ -293,8 +296,10 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				int groupIndex = _observable.IndexOf(group);
 				_observable.RemoveAt(groupIndex);
+				_dataSources.Remove(group.DataSource);
+
 				IDataSourceViewModel child = group.Observable.First();
-				child.Parent = null;
+				group.RemoveChild(child);
 				_observable.Insert(groupIndex, child);
 			}
 		}
