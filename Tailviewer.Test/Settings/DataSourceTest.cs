@@ -22,7 +22,6 @@ namespace Tailviewer.Test.Settings
 			dataSource.SelectedLogLine.Should().Be(LogLineIndex.Invalid);
 
 			dataSource.FollowTail.Should().BeFalse();
-			dataSource.IsOpen.Should().BeFalse();
 		}
 	}
 }

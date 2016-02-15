@@ -15,6 +15,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly ApplicationSettings _settings;
+		private IDataSourceViewModel _selectedItem;
 
 		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
@@ -34,14 +35,27 @@ namespace Tailviewer.Ui.ViewModels
 
 			foreach (IDataSource dataSource in dataSources)
 			{
-				var parentId = dataSource.ParentId;
+				Guid parentId = dataSource.ParentId;
 				if (parentId != Guid.Empty)
 				{
-					var parent = _observable.First(x => x.DataSource.Id == parentId);
+					IDataSourceViewModel parent = _observable.First(x => x.DataSource.Id == parentId);
 					var group = (MergedDataSourceViewModel) parent;
-					var viewModel = CreateViewModel(dataSource);
+					IDataSourceViewModel viewModel = CreateViewModel(dataSource);
 					group.AddChild(viewModel);
 				}
+			}
+		}
+
+		public IDataSourceViewModel SelectedItem
+		{
+			get { return _selectedItem; }
+			set
+			{
+				if (value == _selectedItem)
+					return;
+
+				_selectedItem = value;
+				_settings.DataSources.SelectedItem = value != null ? value.DataSource.Id : Guid.Empty;
 			}
 		}
 
@@ -84,7 +98,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private IDataSourceViewModel Add(IDataSource dataSource)
 		{
-			var viewModel = CreateViewModel(dataSource);
+			IDataSourceViewModel viewModel = CreateViewModel(dataSource);
 			_observable.Add(viewModel);
 			return viewModel;
 		}
@@ -98,7 +112,7 @@ namespace Tailviewer.Ui.ViewModels
 			var single = dataSource as SingleDataSource;
 			if (single != null)
 			{
-				viewModel = new SingleDataSourceViewModel((SingleDataSource) dataSource);
+				viewModel = new SingleDataSourceViewModel(single);
 			}
 			else
 			{
@@ -113,6 +127,12 @@ namespace Tailviewer.Ui.ViewModels
 				}
 			}
 			viewModel.Remove += OnRemove;
+
+			if (_settings.DataSources.SelectedItem == viewModel.DataSource.Id)
+			{
+				SelectedItem = viewModel;
+			}
+
 			return viewModel;
 		}
 
@@ -136,7 +156,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 			else if (viewModel.Parent != null)
 			{
-				((MergedDataSourceViewModel)viewModel.Parent).RemoveChild(viewModel);
+				((MergedDataSourceViewModel) viewModel.Parent).RemoveChild(viewModel);
 				_dataSources.Remove(viewModel.DataSource);
 			}
 
@@ -206,14 +226,14 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void DropToArrange(IDataSourceViewModel source, IDataSourceViewModel dest, DataSourceDropType dropType)
 		{
-			var sourceParent = source.Parent;
+			IDataSourceViewModel sourceParent = source.Parent;
 			if (sourceParent != null)
 			{
 				//
 				// When the source is part of a group, then any arrange is going to remove it
 				// from said group.
 				//
-				var group = ((MergedDataSourceViewModel)sourceParent);
+				var group = ((MergedDataSourceViewModel) sourceParent);
 				group.RemoveChild(source);
 				if (sourceParent != dest.Parent)
 				{
@@ -236,7 +256,7 @@ namespace Tailviewer.Ui.ViewModels
 				// If the destination has a parent then we need to insert
 				// the source into it's collection.
 				//
-				var merged = ((MergedDataSourceViewModel)dest.Parent);
+				var merged = ((MergedDataSourceViewModel) dest.Parent);
 				int index = merged.Observable.IndexOf(dest);
 				if (dropType.HasFlag(DataSourceDropType.ArrangeBottom))
 					++index;
@@ -331,13 +351,13 @@ namespace Tailviewer.Ui.ViewModels
 					{
 						_observable.Remove(dest);
 
-						var mergedDataSource = _dataSources.AddGroup();
+						MergedDataSource mergedDataSource = _dataSources.AddGroup();
 						merged = new MergedDataSourceViewModel(mergedDataSource);
 						merged.Remove += OnRemove;
 						merged.AddChild(source);
 						merged.AddChild(dest);
 						_observable.Insert(destIndex, merged);
-						merged.IsOpen = true;
+						SelectedItem = merged;
 					}
 				}
 			}

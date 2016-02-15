@@ -249,24 +249,6 @@ namespace Tailviewer.Ui.ViewModels
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 
-		public bool IsOpen
-		{
-			get { return _dataSource.IsOpen; }
-			set
-			{
-				if (value == IsOpen)
-					return;
-
-				if (value)
-				{
-					_dataSource.LastViewed = DateTime.Now;
-				}
-
-				_dataSource.IsOpen = value;
-				EmitPropertyChanged();
-			}
-		}
-
 		public void Update()
 		{
 			OtherCount = _dataSource.OtherCount;

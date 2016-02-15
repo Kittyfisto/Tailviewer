@@ -24,7 +24,6 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _selectPreviousDataSourceCommand;
 		private readonly DispatcherTimer _timer;
 
-		private IDataSourceViewModel _currentDataSource;
 		private LogViewerViewModel _currentDataSourceLogView;
 		private Exception _exception;
 		private bool _hasError;
@@ -40,6 +39,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
+
 			_timer = new DispatcherTimer
 				{
 					Interval = TimeSpan.FromMilliseconds(100)
@@ -53,6 +53,8 @@ namespace Tailviewer.Ui.ViewModels
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
+
+			ChangeDataSource(CurrentDataSource);
 		}
 
 		public ICommand SelectPreviousDataSourceCommand
@@ -164,18 +166,22 @@ namespace Tailviewer.Ui.ViewModels
 
 		public IDataSourceViewModel CurrentDataSource
 		{
-			get { return _currentDataSource; }
+			get { return _dataSourcesViewModel.SelectedItem; }
 			set
 			{
-				if (value == _currentDataSource)
+				if (value == _dataSourcesViewModel.SelectedItem)
 					return;
 
-				_currentDataSource = value;
-				_quickFilters.CurrentDataSource = value;
-
-				OpenFile(value);
+				ChangeDataSource(value);
 				EmitPropertyChanged();
 			}
+		}
+
+		private void ChangeDataSource(IDataSourceViewModel value)
+		{
+			_dataSourcesViewModel.SelectedItem = value;
+			_quickFilters.CurrentDataSource = value;
+			OpenFile(value);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -63,7 +63,8 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsOpen}"
+                                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                          Value="True">
                                                                 <Setter Property="Foreground"
                                                                         Value="{StaticResource TextBrushSelected}" />
@@ -75,7 +76,8 @@
 
                                             <local:RemoveButton VerticalAlignment="Stretch"
                                                                 HorizontalAlignment="Right"
-                                                                IsInverted="{Binding IsOpen}"
+                                                                IsInverted="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                 Command="{Binding RemoveCommand}"
                                                                 Grid.Column="1"
                                                                 HorizontalContentAlignment="Right"
@@ -96,7 +98,8 @@
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                              Value="True">
                                                                     <Setter Property="Foreground"
                                                                             Value="{StaticResource TextBrushSelected}" />
@@ -110,12 +113,14 @@
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                              Value="True">
                                                                     <Setter Property="Foreground"
                                                                             Value="#DAECF7" />
                                                                 </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsOpen}"
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                              Value="False">
                                                                     <Setter Property="Foreground"
                                                                             Value="#B7B7B7" />
@@ -128,7 +133,8 @@
 
                                             <local:RemoveButton VerticalAlignment="Stretch"
                                                                 HorizontalAlignment="Right"
-                                                                IsInverted="{Binding IsOpen}"
+                                                                IsInverted="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                                                 Command="{Binding RemoveCommand}"
                                                                 Grid.Column="1" />
                                         </Grid>

@@ -91,12 +91,6 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.File = value; }
 		}
 
-		public bool IsOpen
-		{
-			get { return _settings.IsOpen; }
-			set { _settings.IsOpen = value; }
-		}
-
 		public bool FollowTail
 		{
 			get { return _settings.FollowTail; }

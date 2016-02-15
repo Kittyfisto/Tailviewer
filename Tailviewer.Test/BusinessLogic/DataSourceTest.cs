@@ -17,7 +17,6 @@ namespace Tailviewer.Test.BusinessLogic
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);
 				source.StringFilter.Should().BeNull();
-				source.IsOpen.Should().BeFalse();
 				source.FollowTail.Should().BeFalse();
 			}
 		}

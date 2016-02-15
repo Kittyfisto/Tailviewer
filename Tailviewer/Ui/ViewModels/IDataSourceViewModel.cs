@@ -44,8 +44,6 @@ namespace Tailviewer.Ui.ViewModels
 
 		DateTime LastViewed { get; }
 
-		bool IsOpen { get; set; }
-
 		IDataSource DataSource { get; }
 
 		LevelFlags LevelsFilter { get; set; }

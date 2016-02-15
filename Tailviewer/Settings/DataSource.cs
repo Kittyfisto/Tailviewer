@@ -29,7 +29,6 @@ namespace Tailviewer.Settings
 		/// </summary>
 		public Guid ParentId;
 
-		public bool IsOpen;
 		public DateTime LastViewed;
 		public LevelFlags LevelFilter;
 		public int Order;
@@ -69,7 +68,6 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("file", File);
-			writer.WriteAttributeBool("isopen", IsOpen);
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
@@ -99,10 +97,6 @@ namespace Tailviewer.Settings
 				{
 					case "file":
 						File = reader.Value;
-						break;
-
-					case "isopen":
-						IsOpen = reader.ReadContentAsBool();
 						break;
 
 					case "followtail":

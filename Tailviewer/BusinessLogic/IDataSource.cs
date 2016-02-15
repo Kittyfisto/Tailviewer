@@ -14,7 +14,6 @@ namespace Tailviewer.BusinessLogic
 		int FatalCount { get; }
 		ILogFile LogFile { get; }
 		string FullFileName { get; set; }
-		bool IsOpen { get; set; }
 		bool FollowTail { get; set; }
 		string StringFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }

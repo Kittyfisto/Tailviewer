@@ -52,7 +52,7 @@ namespace Tailviewer.Test.Settings
 			settings.MainWindow.State = WindowState.Maximized;
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1600.log")
 				{
-					IsOpen = true,
+					Id = Guid.NewGuid(),
 					FollowTail = true,
 					StringFilter = "foobar",
 					LevelFilter = LevelFlags.Debug,
@@ -73,6 +73,7 @@ namespace Tailviewer.Test.Settings
 					Type = QuickFilterType.RegexpFilter
 				});
 			var id = settings.QuickFilters[0].Id;
+			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
 			settings.Save().Should().BeTrue();
 
 			settings = new ApplicationSettings(fileName);
@@ -84,13 +85,14 @@ namespace Tailviewer.Test.Settings
 			settings.MainWindow.State.Should().Be(WindowState.Maximized);
 			settings.DataSources.Count.Should().Be(1);
 			settings.DataSources[0].File.Should().Be(@"SharpRemote.Host.1600.log");
-			settings.DataSources[0].IsOpen.Should().BeTrue();
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].StringFilter.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
 			settings.DataSources[0].SelectedLogLine.Should().Be(new LogLineIndex(2));
 			settings.DataSources[0].VisibleLogLine.Should().Be(new LogLineIndex(1));
 			settings.DataSources[0].ActivatedQuickFilters.Should().Equal(guids);
+			settings.DataSources.SelectedItem.Should().NotBe(Guid.Empty);
+			settings.DataSources.SelectedItem.Should().Be(settings.DataSources[0].Id);
 
 			settings.QuickFilters.Count.Should().Be(1);
 			settings.QuickFilters[0].Id.Should().Be(id);
