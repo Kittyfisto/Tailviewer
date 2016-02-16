@@ -75,7 +75,10 @@ namespace Tailviewer.BusinessLogic
 
 		public void Invalidate(int firstIndex, int count)
 		{
-			var section = new LogFileSection(firstIndex, count, true);
+			var lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
+			int invalidateCount = lastIndex - firstIndex;
+
+			var section = new LogFileSection(firstIndex, invalidateCount, true);
 			_listener.OnLogFileModified(_logFile, section);
 			_lastNumberOfLines = firstIndex;
 		}

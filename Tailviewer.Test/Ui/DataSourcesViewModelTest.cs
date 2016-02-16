@@ -560,7 +560,9 @@ namespace Tailviewer.Test.Ui
 			b.Parent.Should().BeSameAs(merged);
 			merged.RemoveCommand.Execute(null);
 			a.Parent.Should().BeNull();
+			a.DataSource.ParentId.Should().Be(Guid.Empty);
 			b.Parent.Should().BeNull();
+			b.DataSource.ParentId.Should().Be(Guid.Empty);
 		}
 	}
 }

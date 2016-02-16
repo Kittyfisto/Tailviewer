@@ -37,6 +37,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 
 			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
+			_dataSourcesViewModel.PropertyChanged += DataSourcesViewModelOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
 
@@ -55,6 +56,17 @@ namespace Tailviewer.Ui.ViewModels
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
 
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void DataSourcesViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case "SelectedItem":
+					ChangeDataSource(_dataSourcesViewModel.SelectedItem);
+					EmitPropertyChanged("CurrentDataSource");
+					break;
+			}
 		}
 
 		public ICommand SelectPreviousDataSourceCommand

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -11,6 +13,7 @@ using DataSources = Tailviewer.BusinessLogic.DataSources;
 namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class DataSourcesViewModel
+		: INotifyPropertyChanged
 	{
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
@@ -56,6 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 
 				_selectedItem = value;
 				_settings.DataSources.SelectedItem = value != null ? value.DataSource.Id : Guid.Empty;
+				EmitPropertyChanged();
 			}
 		}
 
@@ -366,6 +370,14 @@ namespace Tailviewer.Ui.ViewModels
 		private static void AddFileToGroup(IDataSourceViewModel source, MergedDataSourceViewModel viewModel)
 		{
 			viewModel.AddChild(source);
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

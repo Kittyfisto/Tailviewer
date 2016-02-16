@@ -11,17 +11,17 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class LogViewerViewModel
 		: INotifyPropertyChanged
 		  , ILogFileListener
-		, IDisposable
+		  , IDisposable
 	{
-		private readonly IDispatcher _dispatcher;
-		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
-		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
 		private readonly IDataSourceViewModel _dataSource;
-		private int _logEntryCount;
-		private int _totalLogEntryCount;
-		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private readonly IDispatcher _dispatcher;
+		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private ILogFile _currentLogFile;
+		private int _logEntryCount;
+		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private int _totalLogEntryCount;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
@@ -43,33 +43,6 @@ namespace Tailviewer.Ui.ViewModels
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
 			: this(dataSource, dispatcher, TimeSpan.FromMilliseconds(10))
 		{
-		}
-
-		private void SetCurrentLogFile(ILogFile oldLogFile, ILogFile newLogFile)
-		{
-			if (oldLogFile == newLogFile)
-				return;
-
-			ClearAllEntries();
-
-			if (oldLogFile != null)
-			{
-				oldLogFile.Remove(this);
-			}
-
-			_currentLogFile = newLogFile;
-
-			if (newLogFile != null)
-			{
-				newLogFile.AddListener(this, _maximumWaitTime, 1000);
-			}
-
-			UpdateCounts();
-		}
-
-		private void ClearAllEntries()
-		{
-			_logEntries.Clear();
 		}
 
 		public int LogEntryCount
@@ -109,7 +82,7 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		/// <summary>
-		/// The list of filters as produced by the "quick filter" panel.
+		///     The list of filters as produced by the "quick filter" panel.
 		/// </summary>
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
@@ -124,12 +97,9 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		public void Dispose()
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			_dataSource.PropertyChanged -= DataSourceOnPropertyChanged;
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -144,17 +114,52 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void SetCurrentLogFile(ILogFile oldLogFile, ILogFile newLogFile)
+		{
+			if (oldLogFile == newLogFile)
+				return;
+
+			ClearAllEntries();
+
+			if (oldLogFile != null)
+			{
+				oldLogFile.Remove(this);
+			}
+
+			_currentLogFile = newLogFile;
+
+			if (newLogFile != null)
+			{
+				newLogFile.AddListener(this, _maximumWaitTime, 1000);
+			}
+
+			UpdateCounts();
+		}
+
+		private void ClearAllEntries()
+		{
+			_logEntries.Clear();
+		}
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		private void Synchronize()
 		{
 			lock (_pendingSections)
 			{
 				foreach (var pair in _pendingSections)
 				{
-					var file = pair.Key;
+					ILogFile file = pair.Key;
 					if (file != _currentLogFile)
 						continue; //< This message belongs to an old change and must be ignored
 
-					var section = pair.Value;
+					LogFileSection section = pair.Value;
 					if (section.IsReset)
 					{
 						_logEntries.Clear();
@@ -170,7 +175,7 @@ namespace Tailviewer.Ui.ViewModels
 					}
 					else
 					{
-						var entries = _currentLogFile.GetSection(section);
+						LogLine[] entries = _currentLogFile.GetSection(section);
 						for (int i = 0; i < entries.Length; ++i)
 						{
 							var model = new LogEntryViewModel((int) (section.Index + i), entries[i]);
@@ -189,11 +194,6 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			LogEntryCount = _currentLogFile.Count;
 			TotalLogEntryCount = _dataSource.DataSource.LogFile.Count;
-		}
-
-		public void Dispose()
-		{
-			_dataSource.PropertyChanged -= DataSourceOnPropertyChanged;
 		}
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)

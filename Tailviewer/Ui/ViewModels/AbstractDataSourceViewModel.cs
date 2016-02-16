@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.ViewModels
 		private int _otherCount;
 		private int _totalCount;
 		private int _warningCount;
+		private IDataSourceViewModel _parent;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -244,7 +245,22 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IDataSourceViewModel Parent { get; set; }
+		public IDataSourceViewModel Parent
+		{
+			get { return _parent; }
+			set
+			{
+				if (value == null)
+				{
+					_dataSource.Settings.ParentId = Guid.Empty;
+				}
+				else
+				{
+					_dataSource.Settings.ParentId = value.DataSource.Id;
+				}
+				_parent = value;
+			}
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;

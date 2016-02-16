@@ -124,5 +124,43 @@ namespace Tailviewer.Test.BusinessLogic
 				});
 			notifier.LastNumberOfLines.Should().Be(0);
 		}
+
+		[Test]
+		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		public void TestInvalidate2()
+		{
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
+			notifier.OnRead(10);
+			notifier.OnRead(12);
+			notifier.Invalidate(0, 12);
+			_changes.Should().Equal(new[]
+				{
+					new LogFileSection(0, 10),
+					new LogFileSection(0, 10, true)
+				},
+				"Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
+				);
+			notifier.LastNumberOfLines.Should().Be(0);
+		}
+
+		[Test]
+		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		public void TestInvalidate3()
+		{
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
+			notifier.OnRead(10);
+			notifier.OnRead(20);
+			notifier.OnRead(22);
+			notifier.Invalidate(0, 22);
+			_changes.Should().Equal(new[]
+				{
+					new LogFileSection(0, 10),
+					new LogFileSection(10, 10),
+					new LogFileSection(0, 20, true)
+				},
+				"Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
+				);
+			notifier.LastNumberOfLines.Should().Be(0);
+		}
 	}
 }
