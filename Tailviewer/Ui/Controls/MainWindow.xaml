@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
         xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=True}"
+        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         Title="{Binding WindowTitle}"
         x:Name="This"
         AllowDrop="True"

@@ -23,18 +23,24 @@ namespace Tailviewer.BusinessLogic
 
 		private readonly ILogFile[] _sources;
 		private readonly Task _readTask;
+
 		private readonly List<Index> _indices;
+		private readonly object _syncRoot;
+
 		private readonly LogFileListenerCollection _listeners;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
+		private readonly ManualResetEvent _endOfSectionHandle;
 		private int _otherCount;
 		private int _debugCount;
 		private int _infoCount;
 		private int _warningCount;
 		private int _errorCount;
 		private int _fatalCount;
+		private int _skippedCount;
 		private Size _fileSize;
 		private DateTime _lastModified;
+		private DateTime? _startTimestamp;
 
 		struct PendingModification
 		{
@@ -59,6 +65,11 @@ namespace Tailviewer.BusinessLogic
 			{
 				LogLineIndex = logLineIndex;
 				LogFile = logFile;
+			}
+
+			public override string ToString()
+			{
+				return string.Format("{0}: {1}", LogFile, LogLineIndex);
 			}
 
 			public readonly int LogLineIndex;
@@ -90,51 +101,135 @@ namespace Tailviewer.BusinessLogic
 			_listeners = new LogFileListenerCollection(this);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_indices = new List<Index>();
+			_syncRoot = new object();
+			_endOfSectionHandle = new ManualResetEvent(false);
 		}
 
 		private void Merge(object obj)
 		{
 			CancellationToken token = _cancellationTokenSource.Token;
 			var entries = new LogLine[BatchSize];
-			int currentSourceIndex = 0;
-			var lastLogEntry = new List<LogLine>();
 
 			while (!token.IsCancellationRequested)
 			{
 				PendingModification modification;
-				while (_pendingModifications.TryDequeue(out modification))
+				if (_pendingModifications.TryDequeue(out modification))
 				{
+
 					if (modification.Section.IsReset)
 					{
 						Clear();
 					}
 					else if (modification.Section.InvalidateSection)
 					{
+						// This one only needs to be implemented when MergedLogFiles use other
+						// MergedLogFiles as source.
 						throw new NotImplementedException();
 					}
 					else
 					{
-						// We need to find out where this new entry (or entries) is/are to be inserted.
-						// If the new entry is to be inserted at the end then we simply need to add it as
-						// an index and we are done.
-						// If the new entry is to be inserted anywhere else, then we need to invalidate
-						// everything from that index on, insert the new line at the given index and then
-						// issue another modification that includes everything from the newly inserted index
-						// to the end.
-					}
+						for (int i = 0; i < modification.Section.Count; ++i)
+						{
+							var sourceIndex = modification.Section.Index + i;
+							var newEntry = modification.LogFile.GetLine((int) sourceIndex);
+							if (newEntry.Timestamp != null)
+							{
+								// We need to find out where this new entry (or entries) is/are to be inserted.
+								int insertionIndex = _indices.Count;
+								for (int n = _indices.Count - 1; n >= 0; --n)
+								{
+									var idx = _indices[n];
+									var entry = idx.LogFile.GetLine(idx.LogLineIndex);
+									if (entry.Timestamp <= newEntry.Timestamp)
+									{
+										insertionIndex = n + 1;
+										break;
+									}
+								}
 
+								var index = new Index((int) sourceIndex, modification.LogFile);
+								lock (_syncRoot)
+								{
+									_indices.Insert(insertionIndex, index);
+								}
+
+								UpdateCounts(newEntry);
+
+								if (insertionIndex < _indices.Count - 1)
+								{
+									// If the new entry is to be inserted anywhere else, then we need to invalidate
+									// everything from that index on, insert the new line at the given index and then
+									// issue another modification that includes everything from the newly inserted index
+									// to the end.
+									_listeners.Invalidate(insertionIndex, _indices.Count);
+								}
+								_listeners.OnRead(_indices.Count);
+							}
+							else
+							{
+								// LogEntries which do not have a timestamp associated with them cannot be 
+								// used in a merged view and thus have to be skipped.
+								++_skippedCount;
+							}
+						}
+					}
+				}
+				else
+				{
 					_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.FileSize);
 					_lastModified = _sources.Aggregate(DateTime.MinValue,
-					                                   (a, file) =>
-						                                   {
-							                                   var modified = file.LastModified;
-							                                   if (modified > a)
-								                                   return modified;
+													   (a, file) =>
+													   {
+														   var modified = file.LastModified;
+														   if (modified > a)
+															   return modified;
 
-							                                   return a;
-						                                   }
+														   return a;
+													   }
 						);
+					_startTimestamp = _sources.Aggregate((DateTime?)null,
+													   (a, file) =>
+													   {
+														   var startTime = file.StartTimestamp;
+														   if (startTime == null)
+															   return a;
+														   if (a == null)
+															   return startTime;
+														   if (startTime < a)
+															   return startTime;
+														   return a;
+													   }
+						);
+
+					_endOfSectionHandle.Set();
+					Thread.Sleep(TimeSpan.FromMilliseconds(10));
 				}
+			}
+		}
+
+		private void UpdateCounts(LogLine newEntry)
+		{
+			switch (newEntry.Level)
+			{
+				case LevelFlags.Debug:
+					++_debugCount;
+					break;
+
+				case LevelFlags.Info:
+					++_infoCount;
+					break;
+
+				case LevelFlags.Warning:
+					++_warningCount;
+					break;
+
+				case LevelFlags.Error:
+					++_errorCount;
+					break;
+
+				case LevelFlags.Fatal:
+					++_fatalCount;
+					break;
 			}
 		}
 
@@ -180,12 +275,19 @@ namespace Tailviewer.BusinessLogic
 
 		public void Wait()
 		{
-			throw new NotImplementedException();
+			while (true)
+			{
+				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
+					break;
+
+				if (_readTask.IsFaulted)
+					throw _readTask.Exception;
+			}
 		}
 
 		public DateTime? StartTimestamp
 		{
-			get { throw new NotImplementedException(); }
+			get { return _startTimestamp; }
 		}
 
 		public DateTime LastModified
@@ -267,6 +369,7 @@ namespace Tailviewer.BusinessLogic
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			_endOfSectionHandle.Reset();
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
 		}
 	}

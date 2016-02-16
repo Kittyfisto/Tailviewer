@@ -68,6 +68,7 @@
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFileBase\LevelsTest.cs" />
     <Compile Include="BusinessLogic\MergedDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\MergedLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />

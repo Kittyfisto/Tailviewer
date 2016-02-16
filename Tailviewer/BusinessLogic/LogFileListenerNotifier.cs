@@ -67,5 +67,11 @@ namespace Tailviewer.BusinessLogic
 				_lastReportedTime = now;
 			}
 		}
+
+		public void Invalidate(int firstIndex, int count)
+		{
+			var section = new LogFileSection(firstIndex, count, true);
+			_listener.OnLogFileModified(_logFile, section);
+		}
 	}
 }

@@ -50,5 +50,16 @@ namespace Tailviewer.BusinessLogic
 			}
 			_currentLineIndex = numberOfLinesRead;
 		}
+
+		public void Invalidate(int firstIndex, int count)
+		{
+			lock (_listeners)
+			{
+				foreach (var notifier in _listeners.Values)
+				{
+					notifier.Invalidate(firstIndex, count);
+				}
+			}
+		}
 	}
 }
