@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Ui
 				dataSource.LogFile.Wait();
 
 				dataSourceModel.StringFilter = "i";
-				model.CurrentLogFile.Wait();
+				dataSource.FilteredLogFile.Wait();
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Ui
 				dataSourceModel.StringFilter = "info";
 
 				// Now we wait for the very last filter operation to complete
-				model.CurrentLogFile.Wait();
+				dataSource.FilteredLogFile.Wait();
 				// And then dispatch ALL events at ONCE.
 				// We expect the view model to completely ignore the old changes!
 				_dispatcher.InvokeAll();

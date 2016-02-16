@@ -6,8 +6,8 @@ namespace Tailviewer.BusinessLogic
 	public sealed class LogFileListenerCollection
 	{
 		private readonly Dictionary<ILogFileListener, LogFileListenerNotifier> _listeners;
-		private int _currentLineIndex;
 		private readonly ILogFile _logFile;
+		private int _currentLineIndex;
 
 		public LogFileListenerCollection(ILogFile logFile)
 		{
@@ -16,6 +16,11 @@ namespace Tailviewer.BusinessLogic
 			_logFile = logFile;
 			_listeners = new Dictionary<ILogFileListener, LogFileListenerNotifier>();
 			_currentLineIndex = -1;
+		}
+
+		public int CurrentLineIndex
+		{
+			get { return _currentLineIndex; }
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -43,22 +48,23 @@ namespace Tailviewer.BusinessLogic
 		{
 			lock (_listeners)
 			{
-				foreach (var notifier in _listeners.Values)
+				foreach (LogFileListenerNotifier notifier in _listeners.Values)
 				{
 					notifier.OnRead(numberOfLinesRead);
 				}
+				_currentLineIndex = numberOfLinesRead;
 			}
-			_currentLineIndex = numberOfLinesRead;
 		}
 
 		public void Invalidate(int firstIndex, int count)
 		{
 			lock (_listeners)
 			{
-				foreach (var notifier in _listeners.Values)
+				foreach (LogFileListenerNotifier notifier in _listeners.Values)
 				{
 					notifier.Invalidate(firstIndex, count);
 				}
+				_currentLineIndex = firstIndex;
 			}
 		}
 	}

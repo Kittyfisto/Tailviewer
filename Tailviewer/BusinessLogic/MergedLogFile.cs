@@ -52,6 +52,11 @@ namespace Tailviewer.BusinessLogic
 				LogFile = logFile;
 				Section = section;
 			}
+
+			public override string ToString()
+			{
+				return string.Format("{0} ({1})", Section, LogFile);
+			}
 		}
 
 		/// <summary>
@@ -145,9 +150,27 @@ namespace Tailviewer.BusinessLogic
 										insertionIndex = n + 1;
 										break;
 									}
+									if (entry.Timestamp > newEntry.Timestamp)
+									{
+										// We know that we MIGHT have to insert the new item *before*
+										// the current entry, but we can't stop looking yet until
+										// we've either reached the first entry or find an entry
+										// that is *before* the new entry... => hence no break here!
+										insertionIndex = n;
+									}
 								}
 
 								var index = new Index((int) sourceIndex, modification.LogFile);
+								if (insertionIndex < _indices.Count)
+								{
+									// If the new entry is to be inserted anywhere else, then we need to invalidate
+									// everything from that index on, insert the new line at the given index and then
+									// issue another modification that includes everything from the newly inserted index
+									// to the end.
+									int count = _indices.Count - insertionIndex;
+									_listeners.Invalidate(insertionIndex, count);
+								}
+
 								lock (_syncRoot)
 								{
 									_indices.Insert(insertionIndex, index);
@@ -155,14 +178,6 @@ namespace Tailviewer.BusinessLogic
 
 								UpdateCounts(newEntry);
 
-								if (insertionIndex < _indices.Count - 1)
-								{
-									// If the new entry is to be inserted anywhere else, then we need to invalidate
-									// everything from that index on, insert the new line at the given index and then
-									// issue another modification that includes everything from the newly inserted index
-									// to the end.
-									_listeners.Invalidate(insertionIndex, _indices.Count);
-								}
 								_listeners.OnRead(_indices.Count);
 							}
 							else
@@ -201,6 +216,7 @@ namespace Tailviewer.BusinessLogic
 													   }
 						);
 
+					_listeners.OnRead(_indices.Count);
 					_endOfSectionHandle.Set();
 					Thread.Sleep(TimeSpan.FromMilliseconds(10));
 				}

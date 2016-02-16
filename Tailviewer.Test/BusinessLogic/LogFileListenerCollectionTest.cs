@@ -31,5 +31,15 @@ namespace Tailviewer.Test.BusinessLogic
 					new LogFileSection(0, 10)
 				}, "Because even though we added the listener twice, it should never be invoked twice");
 		}
+
+		[Test]
+		public void TestInvalidate()
+		{
+			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+			collection.OnRead(1);
+			collection.CurrentLineIndex.Should().Be(1);
+			collection.Invalidate(0, 1);
+			collection.CurrentLineIndex.Should().Be(0);
+		}
 	}
 }

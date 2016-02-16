@@ -5,11 +5,11 @@ namespace Tailviewer.BusinessLogic
 	public sealed class LogFileListenerNotifier
 	{
 		private readonly ILogFileListener _listener;
-		private readonly TimeSpan _maximumTime;
-		private readonly int _maximumCount;
-		private DateTime _lastReportedTime;
-		private int _lastNumberOfLines;
 		private readonly ILogFile _logFile;
+		private readonly int _maximumCount;
+		private readonly TimeSpan _maximumTime;
+		private int _lastNumberOfLines;
+		private DateTime _lastReportedTime;
 
 		public LogFileListenerNotifier(ILogFile logFile, ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
 		{
@@ -24,6 +24,11 @@ namespace Tailviewer.BusinessLogic
 			Reset();
 		}
 
+		public int LastNumberOfLines
+		{
+			get { return _lastNumberOfLines; }
+		}
+
 		private void Reset()
 		{
 			_lastNumberOfLines = 0;
@@ -34,7 +39,7 @@ namespace Tailviewer.BusinessLogic
 		{
 			if (numberOfLinesRead >= 0)
 			{
-				var now = DateTime.Now;
+				DateTime now = DateTime.Now;
 				if (now - _lastReportedTime >= _maximumTime)
 				{
 					Report(numberOfLinesRead, now);
@@ -72,6 +77,7 @@ namespace Tailviewer.BusinessLogic
 		{
 			var section = new LogFileSection(firstIndex, count, true);
 			_listener.OnLogFileModified(_logFile, section);
+			_lastNumberOfLines = firstIndex;
 		}
 	}
 }

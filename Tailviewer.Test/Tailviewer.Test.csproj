@@ -72,6 +72,7 @@
     <Compile Include="BusinessLogic\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
+    <Compile Include="BusinessLogic\SingleDataSourceAcceptanceTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />

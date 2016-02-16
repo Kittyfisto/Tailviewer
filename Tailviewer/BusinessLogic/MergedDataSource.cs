@@ -9,10 +9,17 @@ namespace Tailviewer.BusinessLogic
 		: AbstractDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;
+		private readonly TimeSpan _maximumWaitTime;
 		private MergedLogFile _logFile;
 
-		public MergedDataSource(DataSource settings) : base(settings)
+		public MergedDataSource(DataSource settings)
+			: this(settings, TimeSpan.FromMilliseconds(100))
+		{}
+
+		public MergedDataSource(DataSource settings, TimeSpan maximumWaitTime)
+			: base(settings, maximumWaitTime)
 		{
+			_maximumWaitTime = maximumWaitTime;
 			_dataSources = new HashSet<IDataSource>();
 			UpdateLogFile();
 		}
@@ -37,9 +44,11 @@ namespace Tailviewer.BusinessLogic
 			if (dataSource.ParentId != Guid.Empty && dataSource.ParentId != Id)
 				throw new ArgumentException("This data source already belongs to a different parent");
 
-			_dataSources.Add(dataSource);
-			dataSource.Settings.ParentId = Settings.Id;
-			UpdateLogFile();
+			if (_dataSources.Add(dataSource))
+			{
+				dataSource.Settings.ParentId = Settings.Id;
+				UpdateLogFile();
+			}
 		}
 
 		public void Remove(IDataSource dataSource)
@@ -57,6 +66,8 @@ namespace Tailviewer.BusinessLogic
 		private void UpdateLogFile()
 		{
 			_logFile = new MergedLogFile(_dataSources.Select(x => x.LogFile));
+			_logFile.Start(_maximumWaitTime);
+			CreateFilteredLogFile();
 		}
 	}
 }

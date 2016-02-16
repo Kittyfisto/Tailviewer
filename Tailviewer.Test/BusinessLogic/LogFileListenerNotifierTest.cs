@@ -110,5 +110,19 @@ namespace Tailviewer.Test.BusinessLogic
 					LogFileSection.Reset
 				});
 		}
+
+		[Test]
+		public void TestInvalidate1()
+		{
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.Zero, 1);
+			notifier.OnRead(1);
+			notifier.Invalidate(0, 1);
+			_changes.Should().Equal(new[]
+				{
+					new LogFileSection(0, 1),
+					new LogFileSection(0, 1, true)
+				});
+			notifier.LastNumberOfLines.Should().Be(0);
+		}
 	}
 }

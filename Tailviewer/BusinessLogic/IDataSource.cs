@@ -1,9 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal interface IDataSource : IDisposable
 	{
+		/// <summary>
+		///     The list of filters as produced by the "quick filter" panel.
+		/// </summary>
+		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
+
+		ILogFile LogFile { get; }
+		ILogFile FilteredLogFile { get; }
+
 		DateTime LastModified { get; }
 		DateTime LastViewed { get; set; }
 		int OtherCount { get; }
@@ -12,14 +22,13 @@ namespace Tailviewer.BusinessLogic
 		int WarningCount { get; }
 		int ErrorCount { get; }
 		int FatalCount { get; }
-		ILogFile LogFile { get; }
 		string FullFileName { get; set; }
 		bool FollowTail { get; set; }
 		string StringFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }
 		LogLineIndex SelectedLogLine { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }
-		Settings.DataSource Settings { get; }
+		DataSource Settings { get; }
 		int TotalCount { get; }
 		Size FileSize { get; }
 		bool ColorByLevel { get; set; }

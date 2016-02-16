@@ -19,11 +19,13 @@ namespace Tailviewer.BusinessLogic
 		private readonly List<IDataSource> _dataSources;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
+		private readonly TimeSpan _maximumWaitTime;
 
 		public DataSources(Settings.DataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 
+			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
 			_syncRoot = new object();
 			_settings = settings;
 			_dataSources = new List<IDataSource>();
@@ -104,11 +106,11 @@ namespace Tailviewer.BusinessLogic
 				AbstractDataSource dataSource;
 				if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new SingleDataSource(settings);
+					dataSource = new SingleDataSource(settings, _maximumWaitTime);
 				}
 				else
 				{
-					dataSource = new MergedDataSource(settings);
+					dataSource = new MergedDataSource(settings, _maximumWaitTime);
 				}
 
 				_dataSources.Add(dataSource);

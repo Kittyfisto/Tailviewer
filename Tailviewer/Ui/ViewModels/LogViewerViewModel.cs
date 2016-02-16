@@ -14,15 +14,14 @@ namespace Tailviewer.Ui.ViewModels
 		, IDisposable
 	{
 		private readonly IDispatcher _dispatcher;
-		private readonly ILogFile _fullLogFile;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
 		private readonly IDataSourceViewModel _dataSource;
-		private ILogFile _currentLogFile;
 		private int _logEntryCount;
 		private int _totalLogEntryCount;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private readonly TimeSpan _maximumWaitTime;
+		private ILogFile _currentLogFile;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
@@ -34,12 +33,11 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource.PropertyChanged += DataSourceOnPropertyChanged;
 
 			_dispatcher = dispatcher;
-			_fullLogFile = dataSource.DataSource.LogFile;
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 			_logEntries = new ObservableCollection<LogEntryViewModel>();
 
-			UpdateCurrentLogFile();
+			SetCurrentLogFile(null, _dataSource.DataSource.FilteredLogFile);
 		}
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
@@ -47,54 +45,31 @@ namespace Tailviewer.Ui.ViewModels
 		{
 		}
 
-		public ILogFile CurrentLogFile
+		private void SetCurrentLogFile(ILogFile oldLogFile, ILogFile newLogFile)
 		{
-			get { return _currentLogFile; }
-		}
-
-		private void SetCurrentLogFile(ILogFile file)
-		{
-			if (file == null) throw new ArgumentNullException("file");
+			if (oldLogFile == newLogFile)
+				return;
 
 			ClearAllEntries();
 
-			if (_currentLogFile != null)
+			if (oldLogFile != null)
 			{
-				_currentLogFile.Remove(this);
-				if (_currentLogFile != _fullLogFile)
-				{
-					_currentLogFile.Dispose();
-				}
-				_currentLogFile = null;
+				oldLogFile.Remove(this);
 			}
 
-			_currentLogFile = file;
-			file.AddListener(this, _maximumWaitTime, 1000);
+			_currentLogFile = newLogFile;
+
+			if (newLogFile != null)
+			{
+				newLogFile.AddListener(this, _maximumWaitTime, 1000);
+			}
+
 			UpdateCounts();
 		}
 
 		private void ClearAllEntries()
 		{
 			_logEntries.Clear();
-		}
-
-		private void UpdateCurrentLogFile()
-		{
-			var stringFilter = DataSource.StringFilter;
-			var levelFilter = DataSource.LevelsFilter;
-
-			ILogFile logFile;
-			var filter = Filter.Create(stringFilter, true, levelFilter, _quickFilterChain);
-			if (filter != null)
-			{
-				logFile = _fullLogFile.AsFiltered(filter, _maximumWaitTime);
-			}
-			else
-			{
-				logFile = _fullLogFile;
-			}
-
-			SetCurrentLogFile(logFile);
 		}
 
 		public int LogEntryCount
@@ -145,7 +120,7 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_quickFilterChain = value;
-				UpdateCurrentLogFile();
+				SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
 			}
 		}
 
@@ -159,9 +134,6 @@ namespace Tailviewer.Ui.ViewModels
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			if (section.InvalidateSection)
-				throw new NotImplementedException();
-
 			lock (_pendingSections)
 			{
 				if (section == LogFileSection.Reset)
@@ -183,11 +155,18 @@ namespace Tailviewer.Ui.ViewModels
 						continue; //< This message belongs to an old change and must be ignored
 
 					var section = pair.Value;
-					if (section == LogFileSection.Reset)
+					if (section.IsReset)
 					{
 						_logEntries.Clear();
 						LogEntryCount = 0;
 						TotalLogEntryCount = 0;
+					}
+					else if (section.InvalidateSection)
+					{
+						for (int i = 0; i < section.Count; ++i)
+						{
+							_logEntries.RemoveAt((int) section.Index);
+						}
 					}
 					else
 					{
@@ -209,7 +188,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCounts()
 		{
 			LogEntryCount = _currentLogFile.Count;
-			TotalLogEntryCount = _fullLogFile.Count;
+			TotalLogEntryCount = _dataSource.DataSource.LogFile.Count;
 		}
 
 		public void Dispose()
@@ -224,7 +203,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "StringFilter":
 				case "LevelsFilter":
 				case "OtherFilter":
-					UpdateCurrentLogFile();
+					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
 					break;
 			}
 		}

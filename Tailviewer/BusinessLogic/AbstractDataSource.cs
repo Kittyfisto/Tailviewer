@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
@@ -6,14 +7,70 @@ namespace Tailviewer.BusinessLogic
 	internal abstract class AbstractDataSource
 		: IDataSource
 	{
+		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
+		private ILogFile _filteredLogFile;
+		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 
-		protected AbstractDataSource(DataSource settings)
+		protected AbstractDataSource(DataSource settings, TimeSpan maximumWaitTime)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 			if (settings.Id == Guid.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
 
 			_settings = settings;
+			_maximumWaitTime = maximumWaitTime;
+		}
+
+		public override string ToString()
+		{
+			return _settings.ToString();
+		}
+
+		public ILogFile FilteredLogFile
+		{
+			get { return _filteredLogFile; }
+		}
+
+		/// <summary>
+		///     The list of filters as produced by the "quick filter" panel.
+		/// </summary>
+		public IEnumerable<ILogEntryFilter> QuickFilterChain
+		{
+			get { return _quickFilterChain; }
+			set
+			{
+				if (value == _quickFilterChain)
+					return;
+
+				_quickFilterChain = value;
+				CreateFilteredLogFile();
+			}
+		}
+
+		public string StringFilter
+		{
+			get { return _settings.StringFilter; }
+			set
+			{
+				if (value == StringFilter)
+					return;
+
+				_settings.StringFilter = value;
+				CreateFilteredLogFile();
+			}
+		}
+
+		public LevelFlags LevelFilter
+		{
+			get { return _settings.LevelFilter; }
+			set
+			{
+				if (value == LevelFilter)
+					return;
+
+				_settings.LevelFilter = value;
+				CreateFilteredLogFile();
+			}
 		}
 
 		public DateTime LastModified
@@ -97,18 +154,6 @@ namespace Tailviewer.BusinessLogic
 			set { _settings.FollowTail = value; }
 		}
 
-		public string StringFilter
-		{
-			get { return _settings.StringFilter; }
-			set { _settings.StringFilter = value; }
-		}
-
-		public LevelFlags LevelFilter
-		{
-			get { return _settings.LevelFilter; }
-			set { _settings.LevelFilter = value; }
-		}
-
 		public LogLineIndex SelectedLogLine
 		{
 			get { return _settings.SelectedLogLine; }
@@ -145,6 +190,31 @@ namespace Tailviewer.BusinessLogic
 		public void Dispose()
 		{
 			LogFile.Dispose();
+		}
+
+		protected void CreateFilteredLogFile()
+		{
+			string stringFilter = StringFilter;
+			LevelFlags levelFilter = LevelFilter;
+
+			ILogFile newLogFile;
+			ILogEntryFilter filter = Filter.Create(stringFilter, true, levelFilter, _quickFilterChain);
+			if (filter != null)
+			{
+				newLogFile = LogFile.AsFiltered(filter, _maximumWaitTime);
+			}
+			else
+			{
+				newLogFile = LogFile;
+			}
+
+			if (_filteredLogFile != null)
+			{
+				if (_filteredLogFile != LogFile)
+					_filteredLogFile.Dispose();
+			}
+
+			_filteredLogFile = newLogFile;
 		}
 	}
 }

@@ -183,6 +183,41 @@ namespace Tailviewer.Test.BusinessLogic
 			data.Should().Equal(new object[] {source[0], source[2]});
 		}
 
+		[Test]
+		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")]
+		public void TestMerge5()
+		{
+			var source1 = new List<LogLine>();
+			var logFile1 = CreateLogFile(source1);
+
+			var source2 = new List<LogLine>();
+			var logFile2 = CreateLogFile(source2);
+
+			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
+			var data = Listen(merged);
+			merged.Start(TimeSpan.FromMilliseconds(1));
+
+			var later = new DateTime(2016, 2, 16);
+			var earlier = new DateTime(2016, 2, 15);
+
+			source1.Add(new LogLine(0, "a", LevelFlags.Warning, later));
+			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
+			merged.Wait();
+
+			source2.Add(new LogLine(2, "c", LevelFlags.Error, earlier));
+			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
+			merged.Wait();
+
+			merged.Count.Should().Be(2);
+			merged.DebugCount.Should().Be(0);
+			merged.InfoCount.Should().Be(0);
+			merged.WarningCount.Should().Be(1);
+			merged.ErrorCount.Should().Be(1);
+			merged.FatalCount.Should().Be(0);
+
+			data.Should().Equal(new object[] { source2[0], source1[0] });
+		}
+
 		private static List<LogLine> Listen(ILogFile logFile)
 		{
 			var data = new List<LogLine>();
@@ -190,7 +225,11 @@ namespace Tailviewer.Test.BusinessLogic
 			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
 			        .Callback((ILogFile file, LogFileSection section) =>
 				        {
-							if (section.InvalidateSection)
+							if (section.IsReset)
+							{
+								data.Clear();
+							}
+							else if (section.InvalidateSection)
 							{
 								data.RemoveRange((int) section.Index, section.Count);
 							}

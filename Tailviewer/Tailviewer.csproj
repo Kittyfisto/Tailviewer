@@ -128,7 +128,7 @@
     <Compile Include="Ui\IDispatcher.cs" />
     <Compile Include="Ui\UiDispatcher.cs" />
     <Compile Include="BusinessLogic\LogFile.cs" />
-    <Compile Include="BusinessLogic\DataSource.cs" />
+    <Compile Include="BusinessLogic\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
