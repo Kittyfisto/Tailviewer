@@ -19,8 +19,8 @@ namespace Tailviewer.Test.BusinessLogic
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";
 		public const string File2Entries = @"TestData\2LogEntries.txt";
-		public const string FileTestLive1 = @"TestData\TestLive1.log";
-		public const string FileTestLive2 = @"TestData\TestLive2.log";
+		public const string FileTestLive1 = @"TestData\TestLive1.txt";
+		public const string FileTestLive2 = @"TestData\TestLive2.txt";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

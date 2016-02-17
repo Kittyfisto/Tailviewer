@@ -117,12 +117,12 @@
     <Content Include="TestData\20Mb.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="TestData\TestLive1.log">
+    <Content Include="TestData\TestLive1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestData\TestLive2.log">
+    </Content>
+    <Content Include="TestData\TestLive2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
