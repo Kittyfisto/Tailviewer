@@ -23,7 +23,7 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(null, OnItemsSourceChanged));
 
 		public static readonly DependencyProperty DataSourceProperty =
-			DependencyProperty.Register("DataSource", typeof (SingleDataSourceViewModel), typeof (LogViewerControl),
+			DependencyProperty.Register("DataSource", typeof(IDataSourceViewModel), typeof(LogViewerControl),
 			                            new PropertyMetadata(null, OnDataSourceChanged));
 
 		public static readonly DependencyProperty LogEntryCountProperty =
@@ -122,9 +122,9 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(ShowFatalProperty, value); }
 		}
 
-		public SingleDataSourceViewModel DataSource
+		public IDataSourceViewModel DataSource
 		{
-			get { return (SingleDataSourceViewModel) GetValue(DataSourceProperty); }
+			get { return (IDataSourceViewModel)GetValue(DataSourceProperty); }
 			set { SetValue(DataSourceProperty, value); }
 		}
 

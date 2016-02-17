@@ -200,11 +200,15 @@ namespace Tailviewer.BusinessLogic
 				LogFileSection section;
 				while (_pendingModifications.TryDequeue(out section))
 				{
-					if (section == LogFileSection.Reset)
+					if (section.IsReset)
 					{
 						Clear();
 						lastLogEntry.Clear();
 						currentSourceIndex = 0;
+					}
+					else if (section.InvalidateSection)
+					{
+						throw new NotImplementedException();
 					}
 					else
 					{

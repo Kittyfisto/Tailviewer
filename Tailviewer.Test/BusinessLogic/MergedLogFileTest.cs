@@ -180,7 +180,11 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.ErrorCount.Should().Be(1);
 			merged.FatalCount.Should().Be(0);
 
-			data.Should().Equal(new object[] {source[0], source[2]});
+			data.Should().Equal(new []
+				{
+					new LogLine(0, 0, source[0]),
+					new LogLine(1, 1, source[2]),
+				});
 		}
 
 		[Test]
@@ -204,7 +208,7 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
 			merged.Wait();
 
-			source2.Add(new LogLine(2, "c", LevelFlags.Error, earlier));
+			source2.Add(new LogLine(0, "c", LevelFlags.Error, earlier));
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
 			merged.Wait();
 
@@ -215,7 +219,11 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.ErrorCount.Should().Be(1);
 			merged.FatalCount.Should().Be(0);
 
-			data.Should().Equal(new object[] { source2[0], source1[0] });
+			data.Should().Equal(new object[]
+				{
+					new LogLine(0, 0, source2[0]),
+					new LogLine(1, 1, source1[0])
+				});
 		}
 
 		private static List<LogLine> Listen(ILogFile logFile)

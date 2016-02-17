@@ -8,13 +8,11 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class MergedLogFileAcceptanceTest
 	{
-		public const string File20Mb = @"TestData\20Mb.txt";
-
 		[Test]
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
-			using (var source = new LogFile(File20Mb))
+			using (var source = new LogFile(LogFileTest.File20Mb))
 			using (var merged = new MergedLogFile(source))
 			{
 				source.Start();
@@ -35,6 +33,49 @@ namespace Tailviewer.Test.BusinessLogic
 				var sourceLines = source.GetSection(new LogFileSection(0, source.Count));
 				var mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
 				mergedLines.Should().Equal(sourceLines);
+			}
+		}
+
+		[Test]
+		public void Test2Sources()
+		{
+			using (var source1 = new LogFile(LogFileTest.File2Entries))
+			using (var source2 = new LogFile(LogFileTest.File2Lines))
+			using (var merged = new MergedLogFile(source1, source2))
+			{
+				merged.Start(TimeSpan.Zero);
+
+				source1.Start();
+				source1.Wait();
+
+				source2.Start();
+				source2.Wait();
+
+				merged.Wait();
+
+				merged.Count.Should().Be(8);
+				merged.DebugCount.Should().Be(4);
+				merged.InfoCount.Should().Be(4);
+				merged.WarningCount.Should().Be(0);
+				merged.ErrorCount.Should().Be(0);
+				merged.FatalCount.Should().Be(0);
+				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
+				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
+
+				var source1Lines = source1.GetSection(new LogFileSection(0, source1.Count));
+				var source2Lines = source2.GetSection(new LogFileSection(0, source2.Count));
+				var mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
+
+				// The reason why this appears to be out of order is because Tailviewer ignores the
+				// milliseconds of a timespan. This must be fixed..
+				mergedLines[0].Should().Be(new LogLine(0, 0, source1Lines[0]));
+				mergedLines[1].Should().Be(new LogLine(1, 0, source1Lines[1]));
+				mergedLines[2].Should().Be(new LogLine(2, 0, source1Lines[2]));
+				mergedLines[3].Should().Be(new LogLine(3, 1, source1Lines[3]));
+				mergedLines[4].Should().Be(new LogLine(4, 1, source1Lines[4]));
+				mergedLines[5].Should().Be(new LogLine(5, 1, source1Lines[5]));
+				mergedLines[6].Should().Be(new LogLine(6, 2, source2Lines[0]));
+				mergedLines[7].Should().Be(new LogLine(7, 3, source2Lines[1]));
 			}
 		}
 	}

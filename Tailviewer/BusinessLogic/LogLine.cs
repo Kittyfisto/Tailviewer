@@ -52,6 +52,15 @@ namespace Tailviewer.BusinessLogic
 			Timestamp = timestamp;
 		}
 
+		public LogLine(int lineIndex, int logEntryIndex, LogLine line)
+		{
+			LineIndex = lineIndex;
+			LogEntryIndex = logEntryIndex;
+			Message = line.Message;
+			Level = line.Level;
+			Timestamp = line.Timestamp;
+		}
+
 		public bool Equals(LogLine other)
 		{
 			return Level == other.Level && LineIndex == other.LineIndex && LogEntryIndex == other.LogEntryIndex &&

@@ -36,7 +36,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		ICommand RemoveCommand { get; }
 
-		bool FollowTail { get; }
+		bool FollowTail { get; set; }
 
 		bool ColorByLevel { get; set; }
 
