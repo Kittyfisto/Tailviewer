@@ -24,12 +24,12 @@ namespace Tailviewer.BusinessLogic
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
-		private DateTime? _startTimestamp;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
 		private int _infoCount;
 		private int _otherCount;
+		private DateTime? _startTimestamp;
 		private int _warningCount;
 
 		#endregion
@@ -41,6 +41,17 @@ namespace Tailviewer.BusinessLogic
 		private DateTime _lastModified;
 
 		#endregion
+
+		private static readonly string[] HardcodedTimestampFormats;
+
+		static LogFile()
+		{
+			HardcodedTimestampFormats = new[]
+				{
+					// The format I currently use at work - should be supported by default :P
+					"yyyy-MM-dd HH:mm:ss,fff"
+				};
+		}
 
 		public LogFile(string fileName)
 		{
@@ -57,6 +68,11 @@ namespace Tailviewer.BusinessLogic
 			                     _cancellationTokenSource.Token,
 			                     TaskCreationOptions.LongRunning);
 			_listeners = new LogFileListenerCollection(this);
+		}
+
+		public IEnumerable<LogLine> Entries
+		{
+			get { return _entries; }
 		}
 
 		public int DebugCount
@@ -100,11 +116,6 @@ namespace Tailviewer.BusinessLogic
 					return Size.Zero;
 				}
 			}
-		}
-
-		public IEnumerable<LogLine> Entries
-		{
-			get { return _entries; }
 		}
 
 		public DateTime? StartTimestamp
@@ -278,7 +289,6 @@ namespace Tailviewer.BusinessLogic
 								timestamp = previousTimestamp;
 							}
 
-							
 
 							Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
 							previousLevel = level;
@@ -380,18 +390,24 @@ namespace Tailviewer.BusinessLogic
 		{
 			if (_dateTimeColumn == null || _dateTimeLength == null)
 			{
-				DetermineDateTimePart(line, out _dateTimeColumn, out _dateTimeLength);
+				DetermineDateTimePart(line,
+				                      out _dateTimeColumn,
+				                      out _dateTimeLength);
 			}
 
 			if (_dateTimeColumn != null && _dateTimeLength != null)
 			{
-				var start = _dateTimeColumn.Value;
-				var length = _dateTimeLength.Value;
+				int start = _dateTimeColumn.Value;
+				int length = _dateTimeLength.Value;
 				if (line.Length >= start + length)
 				{
-					var timestampValue = line.Substring(start, length);
+					string timestampValue = line.Substring(start, length);
 					DateTime timestamp;
-					if (DateTime.TryParse(timestampValue, out timestamp))
+					if (DateTime.TryParseExact(timestampValue,
+					                           HardcodedTimestampFormats,
+					                           CultureInfo.InvariantCulture,
+					                           DateTimeStyles.None,
+					                           out timestamp))
 						return timestamp;
 				}
 			}
@@ -399,24 +415,31 @@ namespace Tailviewer.BusinessLogic
 			return null;
 		}
 
-		public static void DetermineDateTimePart(string line, out int? currentColumn, out int? currentLength)
+		public static void DetermineDateTimePart(string line,
+		                                         out int? currentColumn,
+		                                         out int? currentLength)
 		{
+			IFormatProvider culture = CultureInfo.InvariantCulture;
+
 			currentColumn = null;
 			currentLength = null;
+
 			for (int i = 0; i < line.Length; ++i)
 			{
-				for (int n = i; n < line.Length; ++n)
+				for (int n = i + 1; n < line.Length; ++n)
 				{
-					string dateTimeString = line.Substring(i, n - i);
 					DateTime dateTime;
-					if (DateTime.TryParse(dateTimeString, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+					string dateTimeString = line.Substring(i, n - i);
+					if (DateTime.TryParseExact(dateTimeString,
+					                           HardcodedTimestampFormats,
+					                           culture,
+					                           DateTimeStyles.None,
+					                           out dateTime))
 					{
 						int length = n - i;
-						if (currentLength == null || length > currentLength)
-						{
-							currentColumn = i;
-							currentLength = length;
-						}
+						currentColumn = i;
+						currentLength = length;
+						return;
 					}
 				}
 			}

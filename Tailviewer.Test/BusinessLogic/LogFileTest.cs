@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,26 @@ namespace Tailviewer.Test.BusinessLogic
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		[Test]
+		public void TestParse()
+		{
+			DateTime dateTime;
+			DateTime.TryParseExact("2015-10-07 19:50:58,998",
+			                       "yyyy-MM-dd HH:mm:ss,fff",
+			                       CultureInfo.InvariantCulture,
+			                       DateTimeStyles.AllowWhiteSpaces,
+			                       out dateTime)
+			        .Should().BeTrue();
+
+			dateTime.Year.Should().Be(2015);
+			dateTime.Month.Should().Be(10);
+			dateTime.Day.Should().Be(7);
+			dateTime.Hour.Should().Be(19);
+			dateTime.Minute.Should().Be(50);
+			dateTime.Second.Should().Be(58);
+			dateTime.Millisecond.Should().Be(998);
+		}
+
+		[Test]
 		public void TestDetermineDateTime()
 		{
 			int? column;
@@ -30,7 +51,7 @@ namespace Tailviewer.Test.BusinessLogic
 				out column,
 				out length);
 			column.Should().Be(0);
-			length.Should().Be(20);
+			length.Should().Be(23);
 			// This is not ideal yet because we don't detect that the next 4 characters is the amount of MS, but it's a start...
 		}
 
@@ -43,12 +64,12 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Wait();
 				file.Dispose();
 
-				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58));
+				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				var entries = file.Entries.ToList();
 				entries.Count.Should().Be(165342);
-				entries[0].Should().Be(new LogLine(0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58)));
-				entries[entries.Count - 1].Should().Be(new LogLine(165341, "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 51, 42)));
+				entries[0].Should().Be(new LogLine(0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)));
+				entries[entries.Count - 1].Should().Be(new LogLine(165341, "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 51, 42, 483)));
 
 				file.DebugCount.Should().Be(165337);
 				file.InfoCount.Should().Be(5);
@@ -137,17 +158,17 @@ namespace Tailviewer.Test.BusinessLogic
 						new LogFileSection(5, 1)
 					});
 
-				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58));
+				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				var lines = file.GetSection(new LogFileSection(0, 6));
 				lines.Should().Equal(new[]
 					{
-						new LogLine(0, 0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58)),
-						new LogLine(1, 0, "Foobar", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58)),
-						new LogLine(2, 0, "Some more info", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58)),
-						new LogLine(3, 1, "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58)),
-						new LogLine(4, 1, "Hey look at me", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58)),
-						new LogLine(5, 1, "dwadawdadw", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58))
+						new LogLine(0, 0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
+						new LogLine(1, 0, "Foobar", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
+						new LogLine(2, 0, "Some more info", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
+						new LogLine(3, 1, "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
+						new LogLine(4, 1, "Hey look at me", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
+						new LogLine(5, 1, "dwadawdadw", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998))
 					});
 
 				file.DebugCount.Should().Be(1);
@@ -166,7 +187,7 @@ namespace Tailviewer.Test.BusinessLogic
 				file.Start();
 				file.Wait();
 
-				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58));
+				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				var section = file.GetSection(new LogFileSection(0, 10));
 				section.Should().Equal(new[]
@@ -174,43 +195,43 @@ namespace Tailviewer.Test.BusinessLogic
 						new LogLine(0,
 						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
 						            LevelFlags.Info,
-									new DateTime(2015, 10, 7, 19, 50, 58)),
+									new DateTime(2015, 10, 7, 19, 50, 58, 982)),
 						new LogLine(1,
 						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 58)),
+									new DateTime(2015, 10, 7, 19, 50, 58, 998)),
 						new LogLine(2,
 						            "2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 013)),
 						new LogLine(3,
 						            "2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 062)),
 						new LogLine(4,
 						            "2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 067)),
 						new LogLine(5,
 						            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
 						            LevelFlags.Info,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 081)),
 						new LogLine(6,
 						            "2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 141)),
 						new LogLine(7,
 						            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
 						            LevelFlags.Info,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 171)),
 						new LogLine(8,
 						            "2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59)),
+									new DateTime(2015, 10, 7, 19, 50, 59, 181)),
 						new LogLine(9,
 						            "2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip",
 						            LevelFlags.Debug,
-									new DateTime(2015, 10, 7, 19, 50, 59))
+									new DateTime(2015, 10, 7, 19, 50, 59, 182))
 					});
 			}
 		}
@@ -228,7 +249,7 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					filtered.Wait();
 					filtered.Count.Should().Be(5);
-					filtered.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58));
+					filtered.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 					var section = filtered.GetSection(new LogFileSection(0, 5));
 					section.Should().Equal(new[]
@@ -236,23 +257,23 @@ namespace Tailviewer.Test.BusinessLogic
 							new LogLine(0,
 							            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
 							            LevelFlags.Info,
-										new DateTime(2015, 10, 7, 19, 50, 58, DateTimeKind.Unspecified)),
+										new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified)),
 							new LogLine(5,
 							            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
 							            LevelFlags.Info,
-										new DateTime(2015, 10, 7, 19, 50, 59)),
+										new DateTime(2015, 10, 7, 19, 50, 59, 081)),
 							new LogLine(7,
 							            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
 							            LevelFlags.Info,
-										new DateTime(2015, 10, 7, 19, 50, 59)),
+										new DateTime(2015, 10, 7, 19, 50, 59, 171)),
 							new LogLine(165340,
 							            "2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure",
 							            LevelFlags.Info,
-										new DateTime(2015, 10, 7, 19, 51, 42)),
+										new DateTime(2015, 10, 7, 19, 51, 42, 481)),
 							new LogLine(165341,
 							            "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...",
 							            LevelFlags.Info,
-										new DateTime(2015, 10, 7, 19, 51, 42))
+										new DateTime(2015, 10, 7, 19, 51, 42, 483))
 						});
 				}
 			}
