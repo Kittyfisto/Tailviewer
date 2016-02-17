@@ -164,9 +164,11 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
 			dropInfo = null;
+			var viewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel ??
+			                e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
 			var source = new TreeItem
 				{
-					ViewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel
+					ViewModel = viewModel
 				};
 			if (source.ViewModel == null)
 				return false;
@@ -175,7 +177,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (dropTarget == null)
 				return false;
 
-			var dropType = GetDropType(e, dropTarget);
+			var dropType = GetDropType(e, dropTarget, viewModel);
 			var model = (MainWindowViewModel) DataContext;
 			IDataSourceViewModel group;
 			if (!model.CanBeDropped(source.ViewModel, dropTarget.ViewModel, dropType, out group))
@@ -196,30 +198,44 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		}
 
 		private DataSourceDropType GetDropType(DragEventArgs e,
-			TreeItem destination)
+			TreeItem destination,
+			IDataSourceViewModel source)
 		{
 			if (destination == null)
 				return DataSourceDropType.None;
 
 			var pos = e.GetPosition(destination.TreeViewItem);
-			// Let's distribute it as follows:
-			// 20% top => arrange
-			// 60% middle => group
-			// 20% bottom => arrange
-			//
-			// This way 60% of the height is used for grouping and 40% is used for arranging.
 
 			var dropType = DataSourceDropType.None;
 			double height = destination.TreeViewItem.ActualHeight;
-			if (pos.Y < height*0.2)
-				dropType |= DataSourceDropType.ArrangeTop;
-			else if (pos.Y < height*0.8)
-				dropType |= DataSourceDropType.Group;
-			else
-				dropType |= DataSourceDropType.ArrangeBottom;
+			if (source is SingleDataSourceViewModel)
+			{
+				// Let's distribute it as follows:
+				// 20% top => arrange
+				// 60% middle => group
+				// 20% bottom => arrange
+				//
+				// This way 60% of the height is used for grouping and 40% is used for arranging.
+				if (pos.Y < height*0.2)
+					dropType |= DataSourceDropType.ArrangeTop;
+				else if (pos.Y < height*0.8)
+					dropType |= DataSourceDropType.Group;
+				else
+					dropType |= DataSourceDropType.ArrangeBottom;
 
-			if (destination.ViewModel.Parent != null)
-				dropType |= DataSourceDropType.Group;
+				if (destination.ViewModel.Parent != null)
+					dropType |= DataSourceDropType.Group;
+			}
+			else
+			{
+				// Groups can't be grouped any further, thus we
+				// simply arrange it above or beneath the drop source
+				// at a 50/50 split.
+				if (pos.Y < height*0.5)
+					dropType |= DataSourceDropType.ArrangeTop;
+				else
+					dropType |= DataSourceDropType.ArrangeBottom;
+			}
 
 			return dropType;
 		}

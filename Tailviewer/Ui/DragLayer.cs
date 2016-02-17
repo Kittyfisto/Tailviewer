@@ -82,7 +82,7 @@ namespace Tailviewer.Ui
 		public static void AdornDropTarget(DropInfo dropInfo)
 		{
 			if (dropInfo == null) throw new ArgumentNullException("dropInfo");
-			if (dropInfo.Type == DataSourceDropType.None) throw new ArgumentException("dropInfo.Type may not be set to none");
+			if (dropInfo.Type == DataSourceDropType.None) throw new ArgumentException("dropInfo.DropType may not be set to none");
 
 			if (dropInfo.Type.HasFlag(DataSourceDropType.Group))
 			{
@@ -134,7 +134,8 @@ namespace Tailviewer.Ui
 				_arrangeAdorner = new DataSourceArrangeAdorner(treeViewItem, dropType);
 				_adornerLayer.Add(_arrangeAdorner);
 			}
-			else if (!Equals(_arrangeAdorner.AdornedElement, treeViewItem))
+			else if (!Equals(_arrangeAdorner.AdornedElement, treeViewItem) ||
+				_arrangeAdorner.DropType != dropType)
 			{
 				RemoveArrangeAdorner();
 

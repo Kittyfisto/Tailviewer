@@ -190,7 +190,14 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				if (dropType == DataSourceDropType.ArrangeBottom ||
 				    dropType == DataSourceDropType.ArrangeTop)
+				{
+					// We cannot "rearrange" a group between parented data sources as that
+					// would result in grouped groups - which is not supported (yet?).
+					if (dest.Parent != null)
+						return false;
+
 					return true;
+				}
 
 				return false;
 			}
@@ -281,6 +288,8 @@ namespace Tailviewer.Ui.ViewModels
 
 				_observable.Insert(index, source);
 			}
+
+			SelectedItem = source;
 		}
 
 		private void DropToGroup(IDataSourceViewModel source, IDataSourceViewModel dest)

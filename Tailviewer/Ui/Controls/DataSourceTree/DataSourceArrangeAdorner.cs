@@ -19,6 +19,11 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			_type = dropType;
 		}
 
+		public DataSourceDropType DropType
+		{
+			get { return _type; }
+		}
+
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			if (_type.HasFlag(DataSourceDropType.ArrangeTop))

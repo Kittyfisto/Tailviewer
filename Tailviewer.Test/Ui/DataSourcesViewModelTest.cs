@@ -526,6 +526,20 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that a group cannot be rearranged above or beneath a grouped source")]
+		public void TestCanBeDropped5()
+		{
+			var a = _model.GetOrAdd("A");
+			var b = _model.GetOrAdd("B");
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+			var group = _model.Observable[0];
+
+			IDataSourceViewModel unused;
+			_model.CanBeDropped(group, a, DataSourceDropType.ArrangeBottom, out unused).Should().BeFalse();
+			_model.CanBeDropped(group, a, DataSourceDropType.ArrangeTop, out unused).Should().BeFalse();
+		}
+
+		[Test]
 		[Description("Verifies that deleting a merged data source puts the original data sources back in place")]
 		public void TestRemoveMerged1()
 		{
