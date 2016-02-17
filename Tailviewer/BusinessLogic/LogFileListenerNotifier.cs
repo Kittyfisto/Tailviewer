@@ -77,10 +77,15 @@ namespace Tailviewer.BusinessLogic
 		{
 			var lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
 			int invalidateCount = lastIndex - firstIndex;
-
-			var section = new LogFileSection(firstIndex, invalidateCount, true);
-			_listener.OnLogFileModified(_logFile, section);
-			_lastNumberOfLines = firstIndex;
+			// When the start index of the invalidation is greater than the last reported index
+			// then this means that our listeners haven't even gotten the change yet and thus
+			// they don't need to be notified of the invalidation either.
+			if (invalidateCount > 0)
+			{
+				var section = new LogFileSection(firstIndex, invalidateCount, true);
+				_listener.OnLogFileModified(_logFile, section);
+				_lastNumberOfLines = firstIndex;
+			}
 		}
 	}
 }

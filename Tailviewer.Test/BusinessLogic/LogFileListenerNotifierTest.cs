@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -161,6 +162,30 @@ namespace Tailviewer.Test.BusinessLogic
 				"Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
 			notifier.LastNumberOfLines.Should().Be(0);
+		}
+
+		[Test]
+		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		public void TestInvalidate4()
+		{
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
+			notifier.OnRead(9);
+			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+			notifier.OnRead(9);
+			_changes.Should().Equal(new[]
+				{
+					new LogFileSection(0, 9)
+				});
+
+			notifier.OnRead(35);
+			notifier.Invalidate(10, 25);
+			_changes.Should().Equal(new[]
+				{
+					new LogFileSection(0, 9)
+				},
+			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
+				);
+			notifier.LastNumberOfLines.Should().Be(9);
 		}
 	}
 }

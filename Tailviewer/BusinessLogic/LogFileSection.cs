@@ -21,6 +21,9 @@ namespace Tailviewer.BusinessLogic
 
 		public LogFileSection(LogLineIndex index, int count, bool invalidateSection = false)
 		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException("count");
+
 			Index = index;
 			Count = count;
 			InvalidateSection = invalidateSection;
