@@ -98,6 +98,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "Value":
 				case "IsActive":
 				case "DropType":
+				case "Type":
 					if (!_isChangingCurrentDataSource)
 					{
 						var fn = OnFiltersChanged;
