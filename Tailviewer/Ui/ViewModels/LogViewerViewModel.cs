@@ -20,7 +20,6 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
-		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private int _totalLogEntryCount;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
@@ -86,14 +85,24 @@ namespace Tailviewer.Ui.ViewModels
 		/// </summary>
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
-			get { return _quickFilterChain; }
+			get
+			{
+				var source = _dataSource;
+				if (source == null)
+					return null;
+
+				return source.QuickFilterChain;
+			}
 			set
 			{
-				if (value == _quickFilterChain)
+				if (value == QuickFilterChain)
 					return;
 
-				_quickFilterChain = value;
-				SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
+				if (_dataSource != null)
+				{
+					_dataSource.QuickFilterChain = value;
+					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
+				}
 			}
 		}
 

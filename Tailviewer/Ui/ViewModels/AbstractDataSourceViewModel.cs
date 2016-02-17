@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -260,6 +261,12 @@ namespace Tailviewer.Ui.ViewModels
 				}
 				_parent = value;
 			}
+		}
+
+		public IEnumerable<ILogEntryFilter> QuickFilterChain
+		{
+			get { return _dataSource.QuickFilterChain; }
+			set { _dataSource.QuickFilterChain = value; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

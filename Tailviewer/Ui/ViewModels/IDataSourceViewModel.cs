@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
@@ -48,6 +49,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		LevelFlags LevelsFilter { get; set; }
 		IDataSourceViewModel Parent { get; set; }
+		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
 		event Action<IDataSourceViewModel> Remove;
 		void Update();

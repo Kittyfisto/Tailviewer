@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
 
@@ -17,7 +18,7 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = Guid.NewGuid()
 				};
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(settings))
+			using (var source = new SingleDataSource(settings))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
@@ -26,9 +27,27 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that the quickfilterchain is forwarded to the data source")]
+		public void TestSetQuickFilterChain1()
+		{
+			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
+			{
+				Id = Guid.NewGuid()
+			};
+			using (var dataSource = new SingleDataSource(settings))
+			{
+				var model = new SingleDataSourceViewModel(dataSource);
+				var chain = new[] {new SubstringFilter("foobar", true)};
+				model.QuickFilterChain = chain;
+				model.QuickFilterChain.Should().BeSameAs(chain);
+				dataSource.QuickFilterChain.Should().BeSameAs(chain);
+			}
+		}
+
+		[Test]
 		public void TestRemoveCommand1()
 		{
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
+			using (var source = new SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.RemoveCommand.Should().NotBeNull();
@@ -40,13 +59,13 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRemoveCommand2()
 		{
-			using (var source = new Tailviewer.BusinessLogic.SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
+			using (var source = new SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test"){Id = Guid.NewGuid()}))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				var calls = new List<IDataSourceViewModel>();
 				model.Remove += calls.Add;
 				new Action(() => model.RemoveCommand.Execute(null)).ShouldNotThrow();
-				calls.Should().Equal(new[] { model });
+				calls.Should().Equal(new object[] { model });
 			}
 		}
 	}
