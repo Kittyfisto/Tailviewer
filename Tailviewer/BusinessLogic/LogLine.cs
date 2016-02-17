@@ -63,9 +63,22 @@ namespace Tailviewer.BusinessLogic
 
 		public bool Equals(LogLine other)
 		{
-			return Level == other.Level && LineIndex == other.LineIndex && LogEntryIndex == other.LogEntryIndex &&
-			       string.Equals(Message, other.Message) &&
-			       Equals(Timestamp, other.Timestamp);
+			if (Level != other.Level)
+				return false;
+
+			if (LineIndex != other.LineIndex)
+				return false;
+
+			if (LogEntryIndex != other.LogEntryIndex)
+				return false;
+
+			if (!string.Equals(Message, other.Message))
+				return false;
+
+			if (!Equals(Timestamp, other.Timestamp))
+				return false;
+
+			return true;
 		}
 
 		public override string ToString()
