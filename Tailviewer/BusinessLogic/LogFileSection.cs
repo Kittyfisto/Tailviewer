@@ -34,6 +34,11 @@ namespace Tailviewer.BusinessLogic
 			get { return this == Reset; }
 		}
 
+		public int LastIndex
+		{
+			get { return Index + Count - 1; }
+		}
+
 		public bool IsEndOfSection(LogLineIndex index)
 		{
 			return index >= Index + Count;

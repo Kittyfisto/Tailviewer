@@ -13,6 +13,8 @@ namespace Tailviewer.Test.BusinessLogic
 	{
 		private Mock<ILogFile> _logFile;
 		private List<LogLine> _entries;
+		private List<LogFileSection> _sections;
+		private Mock<ILogFileListener> _listener;
 
 		[SetUp]
 		public void SetUp()
@@ -23,6 +25,10 @@ namespace Tailviewer.Test.BusinessLogic
 			        .Callback((LogFileSection section, LogLine[] entries) => _entries.CopyTo((int) section.Index, entries, 0, section.Count));
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
+
+			_sections = new List<LogFileSection>();
+			_listener = new Mock<ILogFileListener>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>())).Callback((ILogFile l, LogFileSection s) => _sections.Add(s));
 		}
 
 		[Test]
@@ -175,6 +181,102 @@ namespace Tailviewer.Test.BusinessLogic
 				WaitUntil(() => sections.Count > 1, TimeSpan.FromMilliseconds(1000)).Should().BeTrue();
 				sections[0].Should().Be(LogFileSection.Reset);
 				sections[1].Should().Be(new LogFileSection(new LogLineIndex(0), 2));
+			}
+		}
+
+		[Test]
+		public void TestInvalidate1()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Info)))
+			{
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				_entries.AddRange(new []
+					{
+						new LogLine(0, 0, "A", LevelFlags.Info),
+						new LogLine(1, 1, "B", LevelFlags.Info),
+						new LogLine(2, 2, "C", LevelFlags.Info),
+						new LogLine(3, 3, "D", LevelFlags.Info)
+					});
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.Wait();
+
+				file.Count.Should().Be(2);
+			}
+		}
+
+		[Test]
+		public void TestInvalidate2()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Info)))
+			{
+				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				_entries.AddRange(new[]
+					{
+						new LogLine(0, 0, "A", LevelFlags.Info),
+						new LogLine(1, 1, "B", LevelFlags.Info),
+						new LogLine(2, 2, "C", LevelFlags.Info),
+						new LogLine(3, 3, "D", LevelFlags.Info)
+					});
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.Wait();
+				file.Count.Should().Be(4);
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.Wait();
+				file.Count.Should().Be(2);
+
+				_sections.Should().Equal(new[]
+					{
+						LogFileSection.Reset,
+						new LogFileSection(0, 1),
+						new LogFileSection(1, 1),
+						new LogFileSection(2, 1),
+						new LogFileSection(3, 1),
+						new LogFileSection(2, 2, true)
+					});
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the FilteredLogFile won't get stuck in an endless loop when an Invalidate() follows a multiline log entry")]
+		public void TestInvalidate3()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create(null, true, LevelFlags.Info)))
+			{
+				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				_entries.AddRange(new[]
+					{
+						new LogLine(0, 0, "A", LevelFlags.Info),
+						new LogLine(1, 0, "B", LevelFlags.Info),
+						new LogLine(2, 0, "C", LevelFlags.Info),
+						new LogLine(3, 0, "D", LevelFlags.Info)
+					});
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				file.Wait();
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue("Because the filtered log file should be finished in 1 second");
+				file.Count.Should().Be(2);
+
+				_sections.Should().Equal(new[]
+					{
+						LogFileSection.Reset,
+						new LogFileSection(0, 1),
+						new LogFileSection(1, 1),
+						new LogFileSection(2, 1),
+						new LogFileSection(3, 1),
+						new LogFileSection(2, 2, true)
+					});
 			}
 		}
 	}

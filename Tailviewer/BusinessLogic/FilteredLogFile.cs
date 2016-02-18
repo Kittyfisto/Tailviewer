@@ -1,29 +1,21 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
 	public sealed class FilteredLogFile
-		: ILogFile
-		  , ILogFileListener
+		: AbstractLogFile
+		, ILogFileListener
 	{
 		private const int BatchSize = 1000;
-		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly CancellationTokenSource _cancellationTokenSource;
-		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly ILogEntryFilter _filter;
 		private readonly List<int> _indices;
-		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
-		private readonly Task _readTask;
 		private readonly ILogFile _source;
-		private LogFileSection _fullSection;
+		private LogFileSection _fullSourceSection;
 
 		public FilteredLogFile(ILogFile source, ILogEntryFilter filter)
 		{
@@ -32,64 +24,26 @@ namespace Tailviewer.BusinessLogic
 
 			_source = source;
 			_filter = filter;
-			_cancellationTokenSource = new CancellationTokenSource();
-			_endOfSectionHandle = new ManualResetEvent(false);
-			_readTask = new Task(Filter,
-			                     _cancellationTokenSource.Token,
-			                     _cancellationTokenSource.Token,
-			                     TaskCreationOptions.LongRunning);
-			_listeners = new LogFileListenerCollection(this);
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
 		}
 
-		public void Dispose()
-		{
-			_cancellationTokenSource.Cancel();
-			try
-			{
-				_readTask.Wait();
-			}
-			catch (AggregateException e)
-			{
-				Log.DebugFormat("Caught exception while disposing: {0}", e);
-			}
-			_readTask.Dispose();
-		}
-
-		public int FatalCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public void Wait()
-		{
-			while (true)
-			{
-				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
-					break;
-
-				if (_readTask.IsFaulted)
-					throw _readTask.Exception;
-			}
-		}
-
-		public DateTime? StartTimestamp
+		public override DateTime? StartTimestamp
 		{
 			get { return _source.StartTimestamp; }
 		}
 
-		public DateTime LastModified
+		public override DateTime LastModified
 		{
 			get { throw new NotImplementedException(); }
 		}
 
-		public Size FileSize
+		public override Size FileSize
 		{
 			get { throw new NotImplementedException(); }
 		}
 
-		public int Count
+		public override int Count
 		{
 			get
 			{
@@ -100,42 +54,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public int OtherCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public int DebugCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public int InfoCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public int WarningCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public int ErrorCount
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
-		{
-			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
-		}
-
-		public void Remove(ILogFileListener listener)
-		{
-			_listeners.RemoveListener(listener);
-		}
-
-		public void GetSection(LogFileSection section, LogLine[] dest)
+		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -161,7 +80,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public LogLine GetLine(int index)
+		public override LogLine GetLine(int index)
 		{
 			lock (_indices)
 			{
@@ -172,25 +91,18 @@ namespace Tailviewer.BusinessLogic
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			if (section.InvalidateSection)
-				throw new NotImplementedException();
-
 			_pendingModifications.Enqueue(section);
-			_endOfSectionHandle.Reset();
+			EndOfSectionReset();
 		}
 
 		public void Start(TimeSpan maximumWaitTime)
 		{
-			if (_readTask.Status == TaskStatus.Created)
-			{
-				_source.AddListener(this, maximumWaitTime, BatchSize);
-				_readTask.Start();
-			}
+			StartTask();
+			_source.AddListener(this, maximumWaitTime, BatchSize);
 		}
 
-		private void Filter(object parameter)
+		protected override void Run(CancellationToken token)
 		{
-			CancellationToken token = _cancellationTokenSource.Token;
 			var entries = new LogLine[BatchSize];
 			int currentSourceIndex = 0;
 			var lastLogEntry = new List<LogLine>();
@@ -208,27 +120,34 @@ namespace Tailviewer.BusinessLogic
 					}
 					else if (section.InvalidateSection)
 					{
-						throw new NotImplementedException();
+						var startIndex = section.Index;
+						_fullSourceSection = new LogFileSection(0, (int) startIndex);
+
+						if (currentSourceIndex > _fullSourceSection.LastIndex)
+							currentSourceIndex = (int) section.Index;
+
+						Invalidate(currentSourceIndex);
+						RemoveInvalidatedLines(lastLogEntry, currentSourceIndex);
 					}
 					else
 					{
-						_fullSection = LogFileSection.MinimumBoundingLine(_fullSection, section);
+						_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 					}
 				}
 
-				if (_fullSection.IsEndOfSection(currentSourceIndex))
+				if (_fullSourceSection.IsEndOfSection(currentSourceIndex))
 				{
 					TryAddLogLine(lastLogEntry);
-					_listeners.OnRead(_indices.Count);
+					Listeners.OnRead(_indices.Count);
 
-					_endOfSectionHandle.Set();
+					EndOfSectionReached();
 
 					// There's no more data, let's wait for more (or until we're disposed)
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));
 				}
 				else
 				{
-					int remaining = _fullSection.Index + _fullSection.Count - currentSourceIndex;
+					int remaining = _fullSourceSection.Index + _fullSourceSection.Count - currentSourceIndex;
 					int nextCount = Math.Min(remaining, BatchSize);
 					var nextSection = new LogFileSection(currentSourceIndex, nextCount);
 					_source.GetSection(nextSection, entries);
@@ -256,14 +175,54 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
+		private static void RemoveInvalidatedLines(List<LogLine> lastLogEntry, int currentSourceIndex)
+		{
+			while (lastLogEntry.Count > 0)
+			{
+				int i = lastLogEntry.Count - 1;
+				var line = lastLogEntry[i];
+				if (line.LineIndex >= currentSourceIndex)
+				{
+					lastLogEntry.RemoveAt(i);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+
+		private void Invalidate(int currentSourceIndex)
+		{
+			int numRemoved = 0;
+			lock (_indices)
+			{
+				while (_indices.Count > 0)
+				{
+					int i = _indices.Count - 1;
+					int sourceIndex = _indices[i];
+					if (sourceIndex >= currentSourceIndex)
+					{
+						_indices.RemoveAt(i);
+						++numRemoved;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			Listeners.Invalidate(_indices.Count, numRemoved);
+		}
+
 		private void Clear()
 		{
-			_fullSection = new LogFileSection();
+			_fullSourceSection = new LogFileSection();
 			lock (_indices)
 			{
 				_indices.Clear();
 			}
-			_listeners.OnRead(-1);
+			Listeners.OnRead(-1);
 		}
 
 		private bool TryAddLogLine(List<LogLine> logEntry)
@@ -281,7 +240,7 @@ namespace Tailviewer.BusinessLogic
 						_indices.Add(line.LineIndex);
 					}
 				}
-				_listeners.OnRead(_indices.Count);
+				Listeners.OnRead(_indices.Count);
 				return true;
 			}
 

@@ -34,13 +34,13 @@ namespace Tailviewer.BusinessLogic
 		private readonly Task _readTask;
 		private readonly ILogFile[] _sources;
 		private readonly object _syncRoot;
+		private Size _fileSize;
+		private int _infoCount;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
-		private Size _fileSize;
-		private int _infoCount;
-		private DateTime _lastModified;
 		private int _otherCount;
+		private DateTime _lastModified;
 		private int _skippedCount;
 		private DateTime? _startTimestamp;
 		private int _warningCount;
