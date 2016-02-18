@@ -76,6 +76,21 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		[Description("Verifies that the data source disposed of the merged log file")]
+		public void TestAdd3()
+		{
+			var settings = new DataSource("foo") { Id = Guid.NewGuid() };
+			var dataSource = new SingleDataSource(settings);
+			var logFile1 = _merged.LogFile;
+
+			_merged.Add(dataSource);
+			var logFile2 = _merged.LogFile;
+
+			logFile2.Should().NotBeSameAs(logFile1);
+			((AbstractLogFile)logFile1).IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
 		[Description("Verifies that removing a data source from a group sets the parent id of the settings object to Empty again")]
 		public void TestRemove1()
 		{
@@ -103,5 +118,21 @@ namespace Tailviewer.Test.BusinessLogic
 			_merged.LogFile.Should().BeOfType<MergedLogFile>();
 			((MergedLogFile)_merged.LogFile).Sources.Should().Equal(new object[] { dataSource1.LogFile });
 		}
+
+		[Test]
+		[Description("Verifies that the data source disposed of the merged log file")]
+		public void TestChangeFilter1()
+		{
+			var logFile1 = _merged.LogFile;
+			_merged.StringFilter = "foo";
+			var settings1 = new DataSource("foo") { Id = Guid.NewGuid() };
+			var dataSource1 = new SingleDataSource(settings1);
+			_merged.Add(dataSource1);
+			var logFile2 = _merged.LogFile;
+
+			logFile2.Should().NotBeSameAs(logFile1);
+			((AbstractLogFile)logFile1).IsDisposed.Should().BeTrue();
+		}
+
 	}
 }

@@ -15,6 +15,7 @@ namespace Tailviewer.BusinessLogic
 		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly LogFileListenerCollection _listeners;
 		private readonly Task _readTask;
+		private bool _isDisposed;
 
 		#region Counts
 
@@ -53,9 +54,15 @@ namespace Tailviewer.BusinessLogic
 			_listeners.RemoveListener(listener);
 		}
 
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
+		}
+
 		public virtual void Dispose()
 		{
 			_cancellationTokenSource.Cancel();
+			_isDisposed = true;
 		}
 
 		public void Wait()

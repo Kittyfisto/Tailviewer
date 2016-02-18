@@ -3,10 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -16,34 +13,20 @@ namespace Tailviewer.BusinessLogic
 	///     are discarded from this representation.
 	/// </summary>
 	internal sealed class MergedLogFile
-		: ILogFile
+		: AbstractLogFile
 		  , ILogFileListener
 	{
 		private const int BatchSize = 1000;
 
-		private static readonly ILog Log =
-			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-		private readonly CancellationTokenSource _cancellationTokenSource;
-		private readonly ManualResetEvent _endOfSectionHandle;
-
 		private readonly List<Index> _indices;
 
-		private readonly LogFileListenerCollection _listeners;
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
-		private readonly Task _readTask;
 		private readonly ILogFile[] _sources;
 		private readonly object _syncRoot;
 		private Size _fileSize;
-		private int _infoCount;
-		private int _debugCount;
-		private int _errorCount;
-		private int _fatalCount;
-		private int _otherCount;
 		private DateTime _lastModified;
 		private int _skippedCount;
 		private DateTime? _startTimestamp;
-		private int _warningCount;
 
 		public MergedLogFile(IEnumerable<ILogFile> sources)
 			: this(sources.ToArray())
@@ -56,16 +39,9 @@ namespace Tailviewer.BusinessLogic
 			if (sources.Any(x => x == null)) throw new ArgumentException("sources", "sources.Any(x => x == null)");
 
 			_sources = sources;
-			_cancellationTokenSource = new CancellationTokenSource();
-			_readTask = new Task(Merge,
-			                     _cancellationTokenSource.Token,
-			                     _cancellationTokenSource.Token,
-			                     TaskCreationOptions.LongRunning);
-			_listeners = new LogFileListenerCollection(this);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_indices = new List<Index>();
 			_syncRoot = new object();
-			_endOfSectionHandle = new ManualResetEvent(false);
 		}
 
 		public IEnumerable<ILogFile> Sources
@@ -73,53 +49,22 @@ namespace Tailviewer.BusinessLogic
 			get { return _sources; }
 		}
 
-		public void Dispose()
-		{
-			_cancellationTokenSource.Cancel();
-			try
-			{
-				_readTask.Wait();
-			}
-			catch (AggregateException e)
-			{
-				Log.DebugFormat("Caught exception while disposing: {0}", e);
-			}
-			_readTask.Dispose();
-		}
-
-		public int FatalCount
-		{
-			get { return _fatalCount; }
-		}
-
-		public void Wait()
-		{
-			while (true)
-			{
-				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
-					break;
-
-				if (_readTask.IsFaulted)
-					throw _readTask.Exception;
-			}
-		}
-
-		public DateTime? StartTimestamp
+		public override DateTime? StartTimestamp
 		{
 			get { return _startTimestamp; }
 		}
 
-		public DateTime LastModified
+		public override DateTime LastModified
 		{
 			get { return _lastModified; }
 		}
 
-		public Size FileSize
+		public override Size FileSize
 		{
 			get { return _fileSize; }
 		}
 
-		public int Count
+		public override int Count
 		{
 			get
 			{
@@ -130,42 +75,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public int OtherCount
-		{
-			get { return _otherCount; }
-		}
-
-		public int DebugCount
-		{
-			get { return _debugCount; }
-		}
-
-		public int InfoCount
-		{
-			get { return _infoCount; }
-		}
-
-		public int WarningCount
-		{
-			get { return _warningCount; }
-		}
-
-		public int ErrorCount
-		{
-			get { return _errorCount; }
-		}
-
-		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
-		{
-			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
-		}
-
-		public void Remove(ILogFileListener listener)
-		{
-			_listeners.RemoveListener(listener);
-		}
-
-		public void GetSection(LogFileSection section, LogLine[] dest)
+		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			for (int i = 0; i < section.Count; ++i)
 			{
@@ -174,7 +84,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public LogLine GetLine(int index)
+		public override LogLine GetLine(int index)
 		{
 			Index idx;
 			lock (_indices)
@@ -191,14 +101,12 @@ namespace Tailviewer.BusinessLogic
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			_endOfSectionHandle.Reset();
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
+			EndOfSectionReset();
 		}
 
-		private void Merge(object obj)
+		protected override void Run(CancellationToken token)
 		{
-			CancellationToken token = _cancellationTokenSource.Token;
-
 			while (!token.IsCancellationRequested)
 			{
 				PendingModification modification;
@@ -260,7 +168,7 @@ namespace Tailviewer.BusinessLogic
 
 								UpdateCounts(newLogLine);
 
-								_listeners.OnRead(_indices.Count);
+								Listeners.OnRead(_indices.Count);
 							}
 							else
 							{
@@ -298,8 +206,8 @@ namespace Tailviewer.BusinessLogic
 						                                     }
 						);
 
-					_listeners.OnRead(_indices.Count);
-					_endOfSectionHandle.Set();
+					Listeners.OnRead(_indices.Count);
+					EndOfSectionReached();
 					Thread.Sleep(TimeSpan.FromMilliseconds(10));
 				}
 			}
@@ -337,7 +245,7 @@ namespace Tailviewer.BusinessLogic
 			// issue another modification that includes everything from the newly inserted index
 			// to the end.
 			int count = _indices.Count - insertionIndex;
-			_listeners.Invalidate(insertionIndex, count);
+			Listeners.Invalidate(insertionIndex, count);
 
 			// This is really interesting.
 			// We're inserting a line somewhere in the middle which means that the logentry index of all following
@@ -366,51 +274,22 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		private void UpdateCounts(LogLine newEntry)
-		{
-			switch (newEntry.Level)
-			{
-				case LevelFlags.Debug:
-					++_debugCount;
-					break;
-
-				case LevelFlags.Info:
-					++_infoCount;
-					break;
-
-				case LevelFlags.Warning:
-					++_warningCount;
-					break;
-
-				case LevelFlags.Error:
-					++_errorCount;
-					break;
-
-				case LevelFlags.Fatal:
-					++_fatalCount;
-					break;
-			}
-		}
-
 		private void Clear()
 		{
 			lock (_indices)
 			{
 				_indices.Clear();
 			}
-			_listeners.OnRead(-1);
+			Listeners.OnRead(-1);
 		}
 
 		public void Start(TimeSpan maximumWaitTime)
 		{
-			if (_readTask.Status == TaskStatus.Created)
+			foreach (ILogFile logFile in _sources)
 			{
-				foreach (ILogFile logFile in _sources)
-				{
-					logFile.AddListener(this, maximumWaitTime, BatchSize);
-				}
-				_readTask.Start();
+				logFile.AddListener(this, maximumWaitTime, BatchSize);
 			}
+			StartTask();
 		}
 
 		/// <summary>

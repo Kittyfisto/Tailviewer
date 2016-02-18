@@ -97,8 +97,8 @@ namespace Tailviewer.BusinessLogic
 
 		public void Start(TimeSpan maximumWaitTime)
 		{
-			StartTask();
 			_source.AddListener(this, maximumWaitTime, BatchSize);
+			StartTask();
 		}
 
 		protected override void Run(CancellationToken token)

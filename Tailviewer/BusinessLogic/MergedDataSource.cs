@@ -65,6 +65,11 @@ namespace Tailviewer.BusinessLogic
 
 		private void UpdateLogFile()
 		{
+			if (_logFile != null)
+			{
+				_logFile.Dispose();
+			}
+
 			_logFile = new MergedLogFile(_dataSources.Select(x => x.LogFile));
 			_logFile.Start(_maximumWaitTime);
 			CreateFilteredLogFile();
