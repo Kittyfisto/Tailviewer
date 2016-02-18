@@ -25,16 +25,19 @@ namespace Tailviewer.Test.BusinessLogic
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		[Test]
-		public void TestParse()
+		public void TestParse1()
 		{
-			DateTime dateTime;
-			DateTime.TryParseExact("2015-10-07 19:50:58,998",
-			                       "yyyy-MM-dd HH:mm:ss,fff",
-			                       CultureInfo.InvariantCulture,
-			                       DateTimeStyles.AllowWhiteSpaces,
-			                       out dateTime)
-			        .Should().BeTrue();
+			int? column;
+			int? length;
+			LogFile.DetermineDateTimePart("2015-10-07 19:50:58,998",
+										  out column,
+										  out length);
+			column.Should().HaveValue();
+			length.Should().HaveValue();
 
+			var value = LogFile.ParseTimestamp("2015-10-07 19:50:58,998", column, length);
+			value.Should().HaveValue();
+			var dateTime = value.Value;
 			dateTime.Year.Should().Be(2015);
 			dateTime.Month.Should().Be(10);
 			dateTime.Day.Should().Be(7);
@@ -45,7 +48,33 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestDetermineDateTime()
+		public void TestParse2()
+		{
+			var ticks = TimeSpan.FromSeconds(1).Ticks;
+
+			int? column;
+			int? length;
+			LogFile.DetermineDateTimePart("2016 Feb 17 12:38:59.060754850",
+			                              out column,
+			                              out length);
+			column.Should().HaveValue();
+			length.Should().HaveValue();
+			length.Should().Be(24);
+
+			var value = LogFile.ParseTimestamp("2016 Feb 17 12:38:59.060754850", column, length);
+			value.Should().HaveValue();
+			var dateTime = value.Value;
+			dateTime.Year.Should().Be(2016);
+			dateTime.Month.Should().Be(2);
+			dateTime.Day.Should().Be(17);
+			dateTime.Hour.Should().Be(12);
+			dateTime.Minute.Should().Be(38);
+			dateTime.Second.Should().Be(59);
+			dateTime.Millisecond.Should().Be(60);
+		}
+
+		[Test]
+		public void TestDetermineDateTime1()
 		{
 			int? column;
 			int? length;

@@ -49,7 +49,10 @@ namespace Tailviewer.BusinessLogic
 			HardcodedTimestampFormats = new[]
 				{
 					// The format I currently use at work - should be supported by default :P
-					"yyyy-MM-dd HH:mm:ss,fff"
+					"yyyy-MM-dd HH:mm:ss,fff",
+
+					// Another one used by a colleague, well its actually nanoseconds but I can't find that format string
+					"yyyy MMM dd HH:mm:ss.fff"
 				};
 		}
 
@@ -395,19 +398,24 @@ namespace Tailviewer.BusinessLogic
 				                      out _dateTimeLength);
 			}
 
-			if (_dateTimeColumn != null && _dateTimeLength != null)
+			return ParseTimestamp(line, _dateTimeColumn, _dateTimeLength);
+		}
+
+		public static DateTime? ParseTimestamp(string line, int? dateTimeColumn, int? dateTimeLength)
+		{
+			if (dateTimeColumn != null && dateTimeLength != null)
 			{
-				int start = _dateTimeColumn.Value;
-				int length = _dateTimeLength.Value;
+				int start = dateTimeColumn.Value;
+				int length = dateTimeLength.Value;
 				if (line.Length >= start + length)
 				{
 					string timestampValue = line.Substring(start, length);
 					DateTime timestamp;
 					if (DateTime.TryParseExact(timestampValue,
-					                           HardcodedTimestampFormats,
-					                           CultureInfo.InvariantCulture,
-					                           DateTimeStyles.None,
-					                           out timestamp))
+											   HardcodedTimestampFormats,
+											   CultureInfo.InvariantCulture,
+											   DateTimeStyles.None,
+											   out timestamp))
 						return timestamp;
 				}
 			}
@@ -426,7 +434,7 @@ namespace Tailviewer.BusinessLogic
 
 			for (int i = 0; i < line.Length; ++i)
 			{
-				for (int n = i + 1; n < line.Length; ++n)
+				for (int n = i; n <= line.Length; ++n)
 				{
 					DateTime dateTime;
 					string dateTimeString = line.Substring(i, n - i);
