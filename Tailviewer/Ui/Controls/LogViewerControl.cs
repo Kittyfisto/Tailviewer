@@ -23,7 +23,7 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(null, OnItemsSourceChanged));
 
 		public static readonly DependencyProperty DataSourceProperty =
-			DependencyProperty.Register("DataSource", typeof(IDataSourceViewModel), typeof(LogViewerControl),
+			DependencyProperty.Register("DataSource", typeof (IDataSourceViewModel), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnDataSourceChanged));
 
 		public static readonly DependencyProperty LogEntryCountProperty =
@@ -62,11 +62,16 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("TotalLogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(int)));
 
+		public static readonly DependencyProperty NoEntriesExplanationProperty =
+			DependencyProperty.Register("NoEntriesExplanation", typeof (string), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(string)));
+
+		private bool _logged;
+
 		private ListView _partListView;
 		private FilterTextBox _partStringFilter;
 		private bool _scrollByUser;
 		private ScrollViewer _scrollViewer;
-		private bool _logged;
 
 		static LogViewerControl()
 		{
@@ -78,6 +83,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
 			SizeChanged += OnSizeChanged;
+		}
+
+		public string NoEntriesExplanation
+		{
+			get { return (string) GetValue(NoEntriesExplanationProperty); }
+			set { SetValue(NoEntriesExplanationProperty, value); }
 		}
 
 		public bool? ShowAll
@@ -124,7 +135,7 @@ namespace Tailviewer.Ui.Controls
 
 		public IDataSourceViewModel DataSource
 		{
-			get { return (IDataSourceViewModel)GetValue(DataSourceProperty); }
+			get { return (IDataSourceViewModel) GetValue(DataSourceProperty); }
 			set { SetValue(DataSourceProperty, value); }
 		}
 
@@ -396,8 +407,8 @@ namespace Tailviewer.Ui.Controls
 			{
 				if (VisualTreeHelper.GetChildrenCount(_partListView) > 0)
 				{
-					var border = VisualTreeHelper.GetChild(_partListView, 0);
-					var child = VisualTreeHelper.GetChild(border, 0);
+					DependencyObject border = VisualTreeHelper.GetChild(_partListView, 0);
+					DependencyObject child = VisualTreeHelper.GetChild(border, 0);
 					_scrollViewer = child as ScrollViewer;
 					if (_scrollViewer != null)
 					{

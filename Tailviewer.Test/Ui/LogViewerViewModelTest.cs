@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Test.BusinessLogic;
@@ -18,6 +20,78 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_dispatcher = new ManualDispatcher();
+		}
+
+		[Test]
+		public void TestDataSourceEmpty()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("The data source is empty");
+		}
+
+		[Test]
+		public void TestLevelFilter()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(1);
+			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.None);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
+		}
+
+		[Test]
+		public void TestStringFilter()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(1);
+			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.StringFilter).Returns("s");
+			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the log file filter");
+		}
+
+		[Test]
+		public void TestQuickFilter()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(1);
+			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.StringFilter).Returns("");
+			dataSource.Setup(x => x.QuickFilterChain).Returns(new List<ILogEntryFilter> {new Mock<ILogEntryFilter>().Object});
+			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the activated quick filters");
 		}
 
 		[Test]

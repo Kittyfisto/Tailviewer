@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
@@ -21,6 +22,20 @@ namespace Tailviewer.Ui.ViewModels
 		private ILogFile _currentLogFile;
 		private int _logEntryCount;
 		private int _totalLogEntryCount;
+		private string _noEntriesExplanation;
+
+		public string NoEntriesExplanation
+		{
+			get { return _noEntriesExplanation; }
+			private set
+			{
+				if (Equals(value, _noEntriesExplanation))
+					return;
+
+				_noEntriesExplanation = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
@@ -203,6 +218,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			LogEntryCount = _currentLogFile.Count;
 			TotalLogEntryCount = _dataSource.DataSource.LogFile.Count;
+			UpdateNoEntriesExplanation();
 		}
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -214,6 +230,42 @@ namespace Tailviewer.Ui.ViewModels
 				case "OtherFilter":
 					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
 					break;
+			}
+		}
+
+		private void UpdateNoEntriesExplanation()
+		{
+			var dataSource = _dataSource.DataSource;
+			var source = dataSource.LogFile;
+			var filtered = dataSource.FilteredLogFile;
+
+			if (filtered.Count == 0)
+			{
+				var chain = dataSource.QuickFilterChain;
+				if (source.FileSize == Size.Zero)
+				{
+					NoEntriesExplanation = "The data source is empty";
+				}
+				else if (dataSource.LevelFilter == LevelFlags.None)
+				{
+					NoEntriesExplanation = "Not a single log entry matches the level selection";
+				}
+				else if (!string.IsNullOrEmpty(dataSource.StringFilter))
+				{
+					NoEntriesExplanation = "Not a single log entry matches the log file filter";
+				}
+				else if (chain != null && chain.All(x => x != null))
+				{
+					NoEntriesExplanation = "Not a single log entry matches the activated quick filters";
+				}
+				else
+				{
+					NoEntriesExplanation = null;
+				}
+			}
+			else
+			{
+				NoEntriesExplanation = null;
 			}
 		}
 	}

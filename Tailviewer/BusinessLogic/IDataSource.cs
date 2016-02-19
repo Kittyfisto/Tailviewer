@@ -4,7 +4,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic
 {
-	internal interface IDataSource : IDisposable
+	public interface IDataSource : IDisposable
 	{
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.

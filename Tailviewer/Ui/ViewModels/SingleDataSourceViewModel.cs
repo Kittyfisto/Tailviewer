@@ -12,11 +12,11 @@ namespace Tailviewer.Ui.ViewModels
 		: AbstractDataSourceViewModel
 	{
 		private readonly ICommand _openInExplorerCommand;
-		private readonly SingleDataSource _dataSource;
+		private readonly IDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
 
-		public SingleDataSourceViewModel(SingleDataSource dataSource)
+		public SingleDataSourceViewModel(IDataSource dataSource)
 			: base(dataSource)
 		{
 			_dataSource = dataSource;

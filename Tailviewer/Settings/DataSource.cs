@@ -7,7 +7,7 @@ using log4net;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class DataSource
+	public sealed class DataSource
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

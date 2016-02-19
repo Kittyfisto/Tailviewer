@@ -81,6 +81,7 @@
                     ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
                     LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
                     TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                    NoEntriesExplanation="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                     DataSource="{Binding CurrentDataSource}" />
             </Grid>
 

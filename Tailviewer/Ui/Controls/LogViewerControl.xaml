@@ -195,6 +195,13 @@
                             </ListView.Resources>
                         </ListView>
 
+                        <TextBlock Grid.Row="2"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   Text="{Binding NoEntriesExplanation, RelativeSource={RelativeSource TemplatedParent}}"
+                                   />
+
                         <Border Grid.Row="3"
                                 Background="#D8D8D8">
                             <StackPanel Orientation="Horizontal">
