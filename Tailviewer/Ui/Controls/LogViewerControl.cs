@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -162,11 +164,15 @@ namespace Tailviewer.Ui.Controls
 			ListView listViewer = _partListView;
 			if (listViewer != null)
 			{
-				var logEntry = listViewer.SelectedItem as LogEntryViewModel;
-				if (logEntry != null)
+				var items = listViewer.SelectedItems;
+				var viewModels = items != null ? items.Cast<LogEntryViewModel>() : Enumerable.Empty<LogEntryViewModel>();
+				var builder = new StringBuilder();
+				foreach (var item in viewModels)
 				{
-					Clipboard.SetText(logEntry.Message);
+					builder.AppendLine(item.Message);
 				}
+				var message = builder.ToString();
+				Clipboard.SetText(message);
 			}
 		}
 
