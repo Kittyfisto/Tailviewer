@@ -91,9 +91,12 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <StackPanel Orientation="Vertical"
-                                                        VerticalAlignment="Center"
-                                                        Margin="8,4,16,4">
+                                            <Grid Margin="8,4,16,4"
+                                                  >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding DisplayName}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
@@ -109,7 +112,8 @@
                                                     </TextBlock.Style>
                                                 </TextBlock>
                                                 <TextBlock Text="{Binding Folder}"
-                                                           TextTrimming="CharacterEllipsis">
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Grid.Row="1" >
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Style.Triggers>
@@ -129,7 +133,7 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
-                                            </StackPanel>
+                                            </Grid>
 
                                             <local:RemoveButton VerticalAlignment="Stretch"
                                                                 HorizontalAlignment="Right"
@@ -161,8 +165,7 @@
                                                                 Grid.Column="0"
                                                                 Grid.ColumnSpan="2">
                                                             <ContentPresenter x:Name="PART_Header"
-                                                                              ContentSource="Header"
-                                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                                                                              ContentSource="Header" />
                                                         </Border>
                                                         <ItemsPresenter x:Name="ItemsHost"
                                                                         Grid.Row="1"
