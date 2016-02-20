@@ -137,7 +137,9 @@ namespace Tailviewer.Test.Ui
 			_viewModel.Update();
 
 			_viewModel.NewLogLineCount.Should().Be(4);
-			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge", "NewLogLineCount"});
+			changes.Count.Should().BeInRange(2, 3);
+			changes.Should().Contain("TotalCount");
+			changes.Should().Contain("NewLogLineCount");
 		}
 	}
 }
