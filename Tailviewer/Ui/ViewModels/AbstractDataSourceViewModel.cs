@@ -66,6 +66,10 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_isVisible = value;
+				if (value)
+				{
+					LastViewed = DateTime.Now;
+				}
 				EmitPropertyChanged();
 
 				UpdateLastSeenLogLine();
@@ -355,10 +359,15 @@ namespace Tailviewer.Ui.ViewModels
 
 			if (NewLogLineCount != newBefore)
 			{
-				EmitPropertyChanged("NewLogLineCount");
+				if (_dataSource.LastModified >= LastViewed && !IsVisible)
+				{
+					EmitPropertyChanged("NewLogLineCount");
+				}
+				else
+				{
+					_lastSeenLogLine = TotalCount;
+				}
 			}
-
-			UpdateLastSeenLogLine();
 		}
 
 		private void OnRemoveDataSource()

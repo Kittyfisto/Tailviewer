@@ -101,6 +101,32 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[0].Type.Should().Be(QuickFilterType.RegexpFilter);
 		}
 
+		#region LastViewed
+
+		[Test]
+		[Description("Verifies that the last viewed datetime is restored from the file")]
+		public void TestRestore3()
+		{
+			var fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var timestamp = DateTime.Now;
+			settings.DataSources.Add(new DataSource("dawadaw")
+				{
+					LastViewed = timestamp
+				});
+
+			settings.Save();
+			settings = new ApplicationSettings(fname);
+			settings.Restore();
+
+			settings.DataSources.Count.Should().Be(1);
+			var source = settings.DataSources[0];
+			source.Should().NotBeNull();
+			source.LastViewed.Should().Be(timestamp);
+		}
+
+		#endregion
+
 		#region Added DataSource.Id and DataSource.ParentId
 
 		[Test]

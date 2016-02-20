@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Input;
 using FluentAssertions;
 using Moq;
@@ -13,6 +14,21 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class AbstractDataSourceViewModelTest
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			_settings = new DataSource();
+
+			_logFile = new Mock<ILogFile>();
+
+			_dataSource = new Mock<IDataSource>();
+			_dataSource.Setup(x => x.LogFile).Returns(_logFile.Object);
+			_dataSource.Setup(x => x.Settings).Returns(_settings);
+			_dataSource.SetupProperty(x => x.LastViewed);
+
+			_viewModel = new DataSourceViewModel(_dataSource.Object);
+		}
+
 		private Mock<IDataSource> _dataSource;
 		private DataSourceViewModel _viewModel;
 		private DataSource _settings;
@@ -36,28 +52,76 @@ namespace Tailviewer.Test.Ui
 			}
 		}
 
-		[SetUp]
-		public void SetUp()
+		[Test]
+		[Description("Verifies that setting the IsVisible to true causes the LastSeen timestamp to be set to now")]
+		public void TestIsVisible()
 		{
-			_settings = new DataSource();
-			_dataSource = new Mock<IDataSource>();
-			_logFile = new Mock<ILogFile>();
-			_dataSource.Setup(x => x.LogFile).Returns(_logFile.Object);
-			_dataSource.Setup(x => x.Settings).Returns(_settings);
-			_viewModel = new DataSourceViewModel(_dataSource.Object);
+			_viewModel.IsVisible.Should().BeFalse();
+
+			var before = DateTime.Now;
+			_viewModel.IsVisible = true;
+			var after = DateTime.Now;
+			_viewModel.LastViewed.Should().BeOnOrAfter(before);
+			_viewModel.LastViewed.Should().BeOnOrBefore(after);
 		}
 
 		[Test]
-		[Description("Verifies that the number of new log lines is increased when a line is added")]
+		[Description("Verifies that the number of new log lines is NOT increased when the last modified timestamp is less than the last viewed one")]
 		public void TestAddLine()
 		{
+			_viewModel.IsVisible = true;
+			_viewModel.IsVisible = false;
+
 			var changes = new List<string>();
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 			_viewModel.NewLogLineCount.Should().Be(0);
+
+			var now = DateTime.Now;
 			_dataSource.Setup(x => x.TotalCount).Returns(1);
+			_dataSource.Setup(x => x.LastModified).Returns(now - TimeSpan.FromMinutes(1));
+
+			_viewModel.Update();
+			_viewModel.NewLogLineCount.Should().Be(0, "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
+			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge"});
+		}
+
+		[Test]
+		[Description("Verifies that changes made to the total count of a log file are not counted as new" +
+		             "unless the last modified timestamp is GREATER than the timestamp the file was last seen")]
+		public void TestAddLine2()
+		{
+			_viewModel.IsVisible = true;
+			_viewModel.IsVisible = false;
+
+			var changes = new List<string>();
+			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+			_viewModel.NewLogLineCount.Should().Be(0);
+
+			_dataSource.Setup(x => x.TotalCount).Returns(1);
+			_dataSource.Setup(x => x.LastModified).Returns(DateTime.Now);
+
 			_viewModel.Update();
 			_viewModel.NewLogLineCount.Should().Be(1);
 			changes.Should().Equal(new[] { "TotalCount", "LastWrittenAge", "NewLogLineCount" });
+		}
+
+		[Test]
+		[Description("Verifies that the number of new log lines is NOT increased when IsVisible is set to true")]
+		public void TestAddLine3()
+		{
+			_viewModel.IsVisible = true;
+
+			var changes = new List<string>();
+			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+			_viewModel.NewLogLineCount.Should().Be(0);
+
+			var now = DateTime.Now;
+			_dataSource.Setup(x => x.TotalCount).Returns(1);
+			_dataSource.Setup(x => x.LastModified).Returns(now);
+
+			_viewModel.Update();
+			_viewModel.NewLogLineCount.Should().Be(0, "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
+			changes.Should().Equal(new[] { "TotalCount", "LastWrittenAge" });
 		}
 
 		[Test]
@@ -73,7 +137,7 @@ namespace Tailviewer.Test.Ui
 			_viewModel.Update();
 
 			_viewModel.NewLogLineCount.Should().Be(4);
-			changes.Should().Equal(new[] { "TotalCount", "LastWrittenAge", "NewLogLineCount" });
+			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge", "NewLogLineCount"});
 		}
 	}
 }

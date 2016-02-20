@@ -76,6 +76,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
+			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (Guid guid in ActivatedQuickFilters)
@@ -129,6 +130,10 @@ namespace Tailviewer.Settings
 
 					case "parentid":
 						ParentId = reader.ReadContentAsGuid();
+						break;
+
+					case "lastviewed":
+						LastViewed = reader.ReadContentAsDateTime2();
 						break;
 				}
 			}
