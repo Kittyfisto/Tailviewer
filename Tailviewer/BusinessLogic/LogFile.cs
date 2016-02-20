@@ -152,19 +152,10 @@ namespace Tailviewer.BusinessLogic
 						_exists = false;
 						EndOfSectionReached();
 
-						
-
-						if (DateTime.Now - _lastModified > TimeSpan.FromSeconds(10))
-						{
-
-						}
-						else
-						{
-							// We want to avoid keeping this task busy by checking the file's presence
-							// as fast as possible, therefore we sleep for quite some time - the user won't be mad
-							// if changes appear a few 100ms after the fact.
-							Thread.Sleep(sleepTime);
-						}
+						// We want to avoid keeping this task busy by checking the file's presence
+						// as fast as possible, therefore we sleep for quite some time - the user won't be mad
+						// if changes appear a few 100ms after the fact.
+						Thread.Sleep(sleepTime);
 					}
 					else
 					{

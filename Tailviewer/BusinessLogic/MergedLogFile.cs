@@ -114,7 +114,7 @@ namespace Tailviewer.BusinessLogic
 				{
 					if (modification.Section.IsReset)
 					{
-						Clear();
+						Clear(modification.LogFile);
 					}
 					else if (modification.Section.InvalidateSection)
 					{
@@ -266,13 +266,27 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		private void Clear()
+		private void Clear(ILogFile logFile)
 		{
+			int numRemoved = 0;
 			lock (_indices)
 			{
-				_indices.Clear();
+				for (int i = _indices.Count - 1; i >= 0; --i)
+				{
+					var index = _indices[i];
+					if (index.LogFile == logFile)
+					{
+						_indices.RemoveAt(i);
+						++numRemoved;
+					}
+				}
 			}
-			Listeners.OnRead(-1);
+
+			if (numRemoved > 0)
+			{
+				Listeners.OnRead(-1);
+				Listeners.OnRead(_indices.Count);
+			}
 		}
 
 		public void Start(TimeSpan maximumWaitTime)

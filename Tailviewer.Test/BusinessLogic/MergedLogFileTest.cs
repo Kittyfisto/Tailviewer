@@ -201,6 +201,53 @@ namespace Tailviewer.Test.BusinessLogic
 				});
 		}
 
+		[Test]
+		[Description("Verifies that Reset() events from an always empty data source do not result in reset events from the merged log file")]
+		public void TestMerge6()
+		{
+			var source1 = new List<LogLine>();
+			var logFile1 = CreateLogFile(source1);
+
+			var source2 = new List<LogLine>();
+			var timestamp = DateTime.Now;
+			source2.Add(new LogLine(0, 0, "Hello World", LevelFlags.Info, timestamp));
+			var logFile2 = CreateLogFile(source2);
+
+			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
+			var data = Listen(merged);
+			var changes = ListenToChanges(merged);
+			merged.Start(TimeSpan.FromMilliseconds(1));
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile2.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
+			merged.Wait();
+
+			data.Should().Equal(source2);
+			changes.Should().Equal(new[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 1)
+				});
+		}
+
+		private static List<LogFileSection> ListenToChanges(ILogFile logFile)
+		{
+			var changes = new List<LogFileSection>();
+			var listener = new Mock<ILogFileListener>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogFile file, LogFileSection section) =>
+				        {
+							changes.Add(section);
+						});
+			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
+			return changes;
+		}
+
 		private static List<LogLine> Listen(ILogFile logFile)
 		{
 			var data = new List<LogLine>();
