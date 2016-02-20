@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -49,8 +50,6 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestParse2()
 		{
-			var ticks = TimeSpan.FromSeconds(1).Ticks;
-
 			int? column;
 			int? length;
 			LogFile.DetermineDateTimePart("2016 Feb 17 12:38:59.060754850",
@@ -397,21 +396,34 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		public void TestDelete1()
 		{
 			const string fname = "TestDelete1.log";
-			using (new Logger(fname))
-			{
-				Log.Info("Test");
-			}
+			File.WriteAllText(fname, "Test");
 
 			using (var logFile = new LogFile(fname))
 			{
 				logFile.Start();
 				logFile.Wait();
 				logFile.Count.Should().Be(1);
-				File.Delete(fname);
+
+				new Action(() =>
+					{
+						for (int i = 0; i < 10; ++i)
+						{
+							try
+							{
+								File.Delete(fname);
+								return;
+							}
+							catch (IOException)
+							{
+
+							}
+						}
+
+						File.Delete(fname);
+					}).ShouldNotThrow();
 			}
 		}
 
@@ -488,6 +500,57 @@ namespace Tailviewer.Test.BusinessLogic
 							new LogFileSection(-1, 0)
 						});
 				}
+			}
+		}
+
+		[Test]
+		[Description("Verifies that creating a LogFile for a file that doesn't exist works")]
+		public void TestDoesNotExist()
+		{
+			LogFile logFile = null;
+			try
+			{
+				new Action(() =>  logFile = new LogFile("dadwdawdw")).ShouldNotThrow();
+				logFile.Start();
+				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
+				logFile.Exists.Should().BeFalse("Because the specified file doesn't exist");
+			}
+			finally 
+			{
+				if (logFile != null)
+					logFile.Dispose();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that opening a log file before the file is created works and that its contents can be read")]
+		public void TestOpenBeforeCreate()
+		{
+			LogFile logFile = null;
+			try
+			{
+				var fileName = Path.GetTempFileName();
+				if (File.Exists(fileName))
+					File.Delete(fileName);
+
+				new Action(() => logFile = new LogFile(fileName)).ShouldNotThrow();
+
+				logFile.Start();
+				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
+				logFile.Exists.Should().BeFalse("Because the specified file doesn't exist");
+
+				File.WriteAllText(fileName, "Hello World!");
+				Thread.Sleep(TimeSpan.FromMilliseconds(500));
+				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
+				logFile.Exists.Should().BeFalse("Because the file has been created now");
+
+				logFile.Count.Should().Be(1, "Because one line was written to the file");
+				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+			}
+			finally
+			{
+				if (logFile != null)
+					logFile.Dispose();
 			}
 		}
 	}

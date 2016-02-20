@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
+using log4net;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class LogFile
 		: AbstractLogFile
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		#region Data
 
 		private readonly List<LogLine> _entries;
@@ -16,6 +21,7 @@ namespace Tailviewer.BusinessLogic
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
 		private DateTime? _startTimestamp;
+		private bool _exists;
 
 		#endregion
 
@@ -116,6 +122,11 @@ namespace Tailviewer.BusinessLogic
 			get { return _entries.Count; }
 		}
 
+		public bool Exists
+		{
+			get { return _exists; }
+		}
+
 		public void Start()
 		{
 			StartTask();
@@ -125,96 +136,138 @@ namespace Tailviewer.BusinessLogic
 		{
 			int numberOfLinesRead = 0;
 			int nextLogEntryIndex = 0;
-			bool reachedEof = false;
+			long lastPosition = 0;
 			var previousLevel = LevelFlags.None;
 			DateTime? previousTimestamp = null;
+			var levels = new List<KeyValuePair<int, LevelFlags>>();
+			var sleepTime = TimeSpan.FromMilliseconds(200);
 
-			try
+			while (!token.IsCancellationRequested)
 			{
-				var levels = new List<KeyValuePair<int, LevelFlags>>();
-				_lastModified = File.GetLastWriteTime(_fileName);
-
-				using (var stream = new FileStream(_fileName,
-				                                   FileMode.Open,
-				                                   FileAccess.Read,
-				                                   FileShare.ReadWrite))
-				using (var reader = new StreamReader(stream))
+				try
 				{
-					while (!token.IsCancellationRequested)
+					if (!File.Exists(_fileName))
 					{
-						string line = reader.ReadLine();
-						if (line == null)
+						OnReset(null, out numberOfLinesRead, out lastPosition);
+						_exists = false;
+						EndOfSectionReached();
+
+						
+
+						if (DateTime.Now - _lastModified > TimeSpan.FromSeconds(10))
 						{
-							reachedEof = true;
-							Listeners.OnRead(numberOfLinesRead);
-							EndOfSectionReached();
-							token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
 
-							if (stream.Length < stream.Position) //< Somebody cleared the file
-							{
-								stream.Position = 0;
-								numberOfLinesRead = 0;
-								_startTimestamp = null;
-
-								_entries.Clear();
-								Listeners.OnRead(-1);
-							}
 						}
 						else
 						{
-							if (reachedEof)
-								_lastModified = DateTime.Now;
-
-							reachedEof = false;
-
-							EndOfSectionReset();
-							++numberOfLinesRead;
-
-							LevelFlags level = DetermineLevel(line, levels);
-
-							DateTime? timestamp;
-							int logEntryIndex;
-							bool isNewLogEntry;
-							if (level != LevelFlags.None)
+							// We want to avoid keeping this task busy by checking the file's presence
+							// as fast as possible, therefore we sleep for quite some time - the user won't be mad
+							// if changes appear a few 100ms after the fact.
+							Thread.Sleep(sleepTime);
+						}
+					}
+					else
+					{
+						using (var stream = new FileStream(_fileName,
+														   FileMode.Open,
+														   FileAccess.Read,
+														   FileShare.ReadWrite))
+						using (var reader = new StreamReader(stream))
+						{
+							_exists = false;
+							_lastModified = File.GetLastWriteTime(_fileName);
+							if (stream.Length >= lastPosition)
 							{
-								timestamp = ParseTimestamp(line);
-								logEntryIndex = nextLogEntryIndex;
-								++nextLogEntryIndex;
+								stream.Position = lastPosition;
 							}
 							else
 							{
-								if (nextLogEntryIndex > 0)
+								OnReset(stream, out numberOfLinesRead, out lastPosition);
+							}
+
+							string line;
+							while ((line = reader.ReadLine()) != null)
+							{
+								token.ThrowIfCancellationRequested();
+
+								EndOfSectionReset();
+								++numberOfLinesRead;
+
+								LevelFlags level = DetermineLevel(line, levels);
+
+								DateTime? timestamp;
+								int logEntryIndex;
+								if (level != LevelFlags.None)
 								{
-									logEntryIndex = nextLogEntryIndex - 1;
+									timestamp = ParseTimestamp(line);
+									logEntryIndex = nextLogEntryIndex;
+									++nextLogEntryIndex;
 								}
 								else
 								{
-									logEntryIndex = 0;
+									if (nextLogEntryIndex > 0)
+									{
+										logEntryIndex = nextLogEntryIndex - 1;
+									}
+									else
+									{
+										logEntryIndex = 0;
+									}
+
+									// This line belongs to the previous line and together they form
+									// (part of) a log entry. Even though only a single line mentions
+									// the log level, all lines are given the same log level.
+									level = previousLevel;
+									timestamp = previousTimestamp;
 								}
 
-								// This line belongs to the previous line and together they form
-								// (part of) a log entry. Even though only a single line mentions
-								// the log level, all lines are given the same log level.
-								level = previousLevel;
-								timestamp = previousTimestamp;
+								Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
+								previousLevel = level;
+								previousTimestamp = timestamp;
 							}
 
-							Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
-							previousLevel = level;
-							previousTimestamp = timestamp;
+							lastPosition = stream.Position;
 						}
+
+						Listeners.OnRead(numberOfLinesRead);
+						EndOfSectionReached();
+
+						if (token.WaitHandle.WaitOne(sleepTime))
+							break;
 					}
 				}
+				catch (FileNotFoundException e)
+				{
+					Log.Debug(e);
+				}
+				catch (DirectoryNotFoundException e)
+				{
+					Log.Debug(e);
+				}
+				catch (OperationCanceledException e)
+				{
+					Log.Debug(e);
+				}
+				catch (Exception e)
+				{
+					Log.Debug(e);
+				}
 			}
-			catch (FileNotFoundException)
-			{
-			}
-			catch (DirectoryNotFoundException)
-			{
-			}
-			catch (Exception)
-			{
-			}
+		}
+
+		private void OnReset(FileStream stream,
+			out int numberOfLinesRead,
+			out long lastPosition)
+		{
+			lastPosition = 0;
+			if (stream != null)
+				stream.Position = 0;
+
+			numberOfLinesRead = 0;
+			_startTimestamp = null;
+
+			_entries.Clear();
+			Listeners.OnRead(-1);
 		}
 
 		private LevelFlags DetermineLevel(string line, List<KeyValuePair<int, LevelFlags>> levels)
