@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     Represents a single line (terminated by \n or \r\n) of the data source (log file).

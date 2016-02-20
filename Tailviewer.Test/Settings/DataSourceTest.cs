@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 using DataSource = Tailviewer.Settings.DataSource;
 
 namespace Tailviewer.Test.Settings

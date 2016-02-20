@@ -1,29 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.Filters
 {
-	internal class WildcardFilter : ILogEntryFilter
+	internal sealed class RegexFilter
+		: ILogEntryFilter
 	{
 		private readonly Regex _regex;
 
-		public WildcardFilter(string pattern, bool ignoreCase)
+		public RegexFilter(string pattern, bool isCaseSensitive)
 		{
 			var options = RegexOptions.Compiled;
-			if (ignoreCase)
+			if (isCaseSensitive)
 				options |= RegexOptions.IgnoreCase;
 
-			var regexPattern = Regex.Escape(pattern)
-			                        .Replace(@"\*", ".*")
-			                        .Replace(@"\?", ".");
-			_regex = new Regex(regexPattern, options);
+			_regex = new Regex(pattern, options);
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (var logLine in logEntry)
-			// ReSharper restore LoopCanBeConvertedToQuery
+			foreach (LogLine logLine in logEntry)
+				// ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))
 					return true;

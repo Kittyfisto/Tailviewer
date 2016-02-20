@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
 	/// A filter that can be used to exclude entries of certain levels.

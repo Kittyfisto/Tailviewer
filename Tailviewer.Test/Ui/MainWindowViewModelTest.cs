@@ -6,8 +6,8 @@ using NUnit.Framework;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
-using DataSources = Tailviewer.BusinessLogic.DataSources;
-using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
+using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui
 {

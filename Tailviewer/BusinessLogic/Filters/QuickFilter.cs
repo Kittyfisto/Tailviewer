@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Tailviewer.Settings;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.Filters
 {
 	internal sealed class QuickFilter
 	{

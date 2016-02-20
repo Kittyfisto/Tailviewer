@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.DataSources
 {
 	public interface IDataSource : IDisposable
 	{

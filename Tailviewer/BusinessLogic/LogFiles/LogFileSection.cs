@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     Basically a handle to a specific portion of the logfile.

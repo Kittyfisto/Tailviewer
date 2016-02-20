@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
 using log4net;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public struct LogLineIndex : IEquatable<LogLineIndex>
 	{

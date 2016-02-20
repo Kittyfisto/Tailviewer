@@ -6,6 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {

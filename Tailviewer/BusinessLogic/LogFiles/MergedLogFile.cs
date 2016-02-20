@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     Responsible for merging two or more <see cref="ILogFile" /> instances into one coherent view.

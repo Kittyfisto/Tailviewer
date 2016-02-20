@@ -6,6 +6,8 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 

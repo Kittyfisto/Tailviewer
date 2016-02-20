@@ -4,6 +4,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {

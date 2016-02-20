@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {

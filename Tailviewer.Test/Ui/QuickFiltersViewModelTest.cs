@@ -4,10 +4,11 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
-using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
-using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
+using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui
 {

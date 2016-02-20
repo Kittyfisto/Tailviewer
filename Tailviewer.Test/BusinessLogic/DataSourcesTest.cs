@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using DataSource = Tailviewer.Settings.DataSource;
 using DataSources = Tailviewer.Settings.DataSources;
 
@@ -12,13 +13,13 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class DataSourcesTest
 	{
 		private DataSources _settings;
-		private Tailviewer.BusinessLogic.DataSources _dataSources;
+		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_settings = new DataSources();
-			_dataSources = new Tailviewer.BusinessLogic.DataSources(_settings);
+			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_settings);
 		}
 
 		[TearDown]
@@ -38,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic
 							Id = Guid.NewGuid()
 						}
 				};
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
 			{
 				dataSources.Count.Should().Be(1);
 				var dataSource = dataSources.First();
@@ -71,7 +72,7 @@ namespace Tailviewer.Test.BusinessLogic
 			settings[0].ParentId = merged.Id;
 			settings[1].ParentId = merged.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
 			{
 				dataSources.Count.Should().Be(4, "Because we've loaded 4 data sources");
 				var mergedDataSource = dataSources[3] as MergedDataSource;
@@ -115,7 +116,7 @@ namespace Tailviewer.Test.BusinessLogic
 			settings[1].ParentId = merged2.Id;
 			settings[2].ParentId = merged3.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
 			{
 				dataSources.Count.Should().Be(6, "Because we've loaded 6 data sources");
 				var mergedDataSource1 = dataSources[3] as MergedDataSource;
@@ -137,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestAddGroup1()
 		{
 			var settings = new DataSources();
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
 			{
 				var group = dataSources.AddGroup();
 				group.Should().NotBeNull();

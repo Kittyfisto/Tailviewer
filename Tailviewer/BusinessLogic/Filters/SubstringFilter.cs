@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
 	/// A filter that looks for a substring in a (possibly) bigger string.

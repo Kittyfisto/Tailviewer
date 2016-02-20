@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.BusinessLogic
+﻿namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public interface ILogFileListener
 	{

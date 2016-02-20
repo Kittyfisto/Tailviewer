@@ -7,7 +7,7 @@ using System.Reflection;
 using Tailviewer.Settings;
 using log4net;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.DataSources
 {
 	internal sealed class DataSources
 		: IEnumerable<IDataSource>

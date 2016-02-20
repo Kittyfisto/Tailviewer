@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.Converters
 {

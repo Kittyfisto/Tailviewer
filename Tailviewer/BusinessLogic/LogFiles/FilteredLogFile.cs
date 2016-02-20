@@ -2,8 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using Tailviewer.BusinessLogic.Filters;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public sealed class FilteredLogFile
 		: AbstractLogFile

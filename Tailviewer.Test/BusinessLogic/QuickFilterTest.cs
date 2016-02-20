@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using QuickFilter = Tailviewer.Settings.QuickFilter;
 
@@ -12,7 +13,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestSubstringFilter1()
 		{
-			var quickFilter = new Tailviewer.BusinessLogic.QuickFilter(new QuickFilter())
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
 				{
 					Value = "foobar"
 				};
@@ -24,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestWildcardFilter()
 		{
-			var quickFilter = new Tailviewer.BusinessLogic.QuickFilter(new QuickFilter())
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
 			{
 				Value = "he*rld",
 				IgnoreCase = true,

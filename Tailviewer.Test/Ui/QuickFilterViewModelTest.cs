@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
-using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
+using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Test.Ui
 {

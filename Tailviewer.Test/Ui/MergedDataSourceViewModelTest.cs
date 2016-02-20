@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Ui.ViewModels;
-using DataSources = Tailviewer.BusinessLogic.DataSources;
+using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Test.Ui
 {

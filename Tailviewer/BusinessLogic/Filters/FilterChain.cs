@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
 	/// Combines multiple <see cref="ILogEntryFilter"/>s into one.

@@ -1,6 +1,7 @@
 using System;
+using Tailviewer.BusinessLogic.Filters;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public static class LogFileExtensions
 	{

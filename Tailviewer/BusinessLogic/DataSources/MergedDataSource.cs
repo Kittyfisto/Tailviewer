@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.DataSources
 {
 	internal sealed class MergedDataSource
 		: AbstractDataSource

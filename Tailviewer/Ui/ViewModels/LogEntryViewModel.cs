@@ -1,4 +1,5 @@
 ﻿using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {

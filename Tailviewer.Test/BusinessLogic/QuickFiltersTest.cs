@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
-using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.BusinessLogic
 {

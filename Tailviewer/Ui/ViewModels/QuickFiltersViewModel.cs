@@ -4,9 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
-using QuickFilter = Tailviewer.BusinessLogic.QuickFilter;
-using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
+using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Ui.ViewModels
 {

@@ -9,8 +9,8 @@ using Tailviewer.Ui;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using log4net;
-using DataSources = Tailviewer.BusinessLogic.DataSources;
-using QuickFilters = Tailviewer.BusinessLogic.QuickFilters;
+using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
+using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer
 {

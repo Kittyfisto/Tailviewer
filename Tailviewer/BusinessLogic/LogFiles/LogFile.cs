@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	internal sealed class LogFile
 		: AbstractLogFile

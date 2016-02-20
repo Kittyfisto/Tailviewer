@@ -47,6 +47,7 @@
 
                 <!-- Folder -->
                 <TextBlock Text="{Binding Folder}"
+                           ToolTip="{Binding Folder}"
                            TextTrimming="CharacterEllipsis"
                            Grid.Row="1">
                     <TextBlock.Style>

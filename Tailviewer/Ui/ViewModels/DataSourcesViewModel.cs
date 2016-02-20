@@ -6,9 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
-using DataSources = Tailviewer.BusinessLogic.DataSources;
+using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {

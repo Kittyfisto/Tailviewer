@@ -2,6 +2,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using DataSource = Tailviewer.Settings.DataSource;
