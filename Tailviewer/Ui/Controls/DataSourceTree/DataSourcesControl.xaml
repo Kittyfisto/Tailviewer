@@ -9,6 +9,8 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/SingleDataSourceTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/MergedDataSourceTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
@@ -50,99 +52,8 @@
                                       Grid.Row="2">
 
                                 <TreeView.Resources>
-                                    <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
-                                                              ItemsSource="{Binding Observable}">
-                                        <Grid Width="179">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
+                                    
 
-                                            <TextBlock Text="{Binding DisplayName}"
-                                                       Margin="8,4,0,4">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                         Value="True">
-                                                                <Setter Property="Foreground"
-                                                                        Value="{StaticResource TextBrushSelected}" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-
-                                            <local:RemoveButton VerticalAlignment="Stretch"
-                                                                HorizontalAlignment="Right"
-                                                                IsInverted="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                Command="{Binding RemoveCommand}"
-                                                                Grid.Column="1"
-                                                                HorizontalContentAlignment="Right"
-                                                                />
-                                        </Grid>
-                                    </HierarchicalDataTemplate>
-                                    <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Grid Margin="8,4,16,4"
-                                                  >
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition />
-                                                    <RowDefinition />
-                                                </Grid.RowDefinitions>
-                                                <TextBlock Text="{Binding DisplayName}">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                             Value="True">
-                                                                    <Setter Property="Foreground"
-                                                                            Value="{StaticResource TextBrushSelected}" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                                <TextBlock Text="{Binding Folder}"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           Grid.Row="1" >
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                             Value="True">
-                                                                    <Setter Property="Foreground"
-                                                                            Value="#DAECF7" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                             Value="False">
-                                                                    <Setter Property="Foreground"
-                                                                            Value="#B7B7B7" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-
-                                            <local:RemoveButton VerticalAlignment="Stretch"
-                                                                HorizontalAlignment="Right"
-                                                                IsInverted="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                Command="{Binding RemoveCommand}"
-                                                                Grid.Column="1" />
-                                        </Grid>
-                                    </DataTemplate>
 
                                     <Style TargetType="TreeViewItem">
                                         <!--<Setter Property="MaxWidth" Value="198" />-->

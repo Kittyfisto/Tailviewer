@@ -1,0 +1,71 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
+                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Margin="8,4,16,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding DisplayName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                                                    Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                                                    Value="True">
+                                    <Setter Property="Foreground"
+                                                                            Value="{StaticResource TextBrushSelected}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBlock Text="{Binding Folder}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Grid.Row="1">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                                                    Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                                                    Value="True">
+                                    <Setter Property="Foreground"
+                                                                            Value="#DAECF7" />
+                                </DataTrigger>
+                                <DataTrigger
+                                                                    Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                                                    Value="False">
+                                    <Setter Property="Foreground"
+                                                                            Value="#B7B7B7" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <local:RemoveButton VerticalAlignment="Stretch"
+                                                                HorizontalAlignment="Right"
+                                                                IsInverted="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                                                Command="{Binding RemoveCommand}"
+                                                                Grid.Column="1" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

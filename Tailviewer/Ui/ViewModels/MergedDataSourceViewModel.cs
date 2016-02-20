@@ -24,6 +24,11 @@ namespace Tailviewer.Ui.ViewModels
 			return DisplayName;
 		}
 
+		public int SkippedLogLineCount
+		{
+			get { return _dataSource.SkippedLogLineCount; }
+		}
+
 		public IEnumerable<IDataSourceViewModel> Observable
 		{
 			get { return _observable; }

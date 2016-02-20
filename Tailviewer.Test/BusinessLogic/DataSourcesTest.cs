@@ -76,7 +76,7 @@ namespace Tailviewer.Test.BusinessLogic
 				dataSources.Count.Should().Be(4, "Because we've loaded 4 data sources");
 				var mergedDataSource = dataSources[3] as MergedDataSource;
 				mergedDataSource.Should().NotBeNull();
-				mergedDataSource.Count.Should().Be(2, "Because 2 of the data sources are part of this group");
+				mergedDataSource.DataSourceCount.Should().Be(2, "Because 2 of the data sources are part of this group");
 				var dataSource1 = dataSources[0];
 				var dataSource2 = dataSources[1];
 

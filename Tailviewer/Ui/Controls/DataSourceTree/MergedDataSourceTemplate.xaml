@@ -1,0 +1,64 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
+                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <converters:CountConverter x:Key="CountConverter" />
+    
+    <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
+                              ItemsSource="{Binding Observable}">
+        <Grid Width="179">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Margin="8,4,0,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding DisplayName}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                    Value="True">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource TextBrushSelected}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1">
+                    
+                    <local:ImageLabel
+                        Content="{Binding SkippedLogLineCount, Converter={StaticResource CountConverter}}"
+                        DarkImage="pack://application:,,,/Resources/ic_no_time_black_8dp.png"
+                        LightImage="pack://application:,,,/Resources/ic_no_time_white_8dp.png"
+                        UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                        />
+                </StackPanel>
+            </Grid>
+
+            <local:RemoveButton VerticalAlignment="Stretch"
+                                HorizontalAlignment="Right"
+                                IsInverted="{Binding IsSelected, RelativeSource=
+{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                Command="{Binding RemoveCommand}"
+                                Grid.Column="1"
+                                HorizontalContentAlignment="Right" />
+        </Grid>
+    </HierarchicalDataTemplate>
+</ResourceDictionary>

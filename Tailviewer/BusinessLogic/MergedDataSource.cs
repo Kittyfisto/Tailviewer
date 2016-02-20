@@ -24,9 +24,14 @@ namespace Tailviewer.BusinessLogic
 			UpdateLogFile();
 		}
 
-		public int Count
+		public int DataSourceCount
 		{
 			get { return _dataSources.Count; }
+		}
+
+		public int SkippedLogLineCount
+		{
+			get { return _logFile.SkippedCount; }
 		}
 
 		public IEnumerable<IDataSource> DataSources

@@ -88,6 +88,7 @@
     <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
+    <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
@@ -154,11 +155,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\DataSourceTree\MergedDataSourceTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\SingleDataSourceTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\EditToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\FilterTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ImageLabel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -239,7 +252,9 @@
   <ItemGroup>
     <Resource Include="Resources\ic_find_in_page_black_48dp.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_black_18dp.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_clear_black_18dp.png" />
   </ItemGroup>
@@ -262,6 +277,13 @@
     <EmbeddedResource Include="..\packages\log4net.2.0.3\lib\net20-full\log4net.dll">
       <Link>ThirdParty\log4net.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_white_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_black_8dp.png" />
+    <Resource Include="Resources\ic_no_time_white_8dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

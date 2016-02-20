@@ -26,6 +26,12 @@ namespace Tailviewer.BusinessLogic
 		private Size _fileSize;
 		private DateTime _lastModified;
 		private int _skippedCount;
+
+		public int SkippedCount
+		{
+			get { return _skippedCount; }
+		}
+
 		private DateTime? _startTimestamp;
 
 		public MergedLogFile(IEnumerable<ILogFile> sources)
