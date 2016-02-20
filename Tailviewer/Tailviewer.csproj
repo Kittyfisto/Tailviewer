@@ -45,6 +45,7 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -57,6 +58,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
+    <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />
     <Compile Include="BusinessLogic\LogFiles\LevelFlags.cs" />
     <Compile Include="Constants.cs" />

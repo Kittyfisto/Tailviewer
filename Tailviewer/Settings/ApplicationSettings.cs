@@ -8,6 +8,13 @@ namespace Tailviewer.Settings
 	{
 		private readonly string _fileName;
 
+		private readonly AutoUpdateSettings _autoUpdate;
+
+		public AutoUpdateSettings AutoUpdate
+		{
+			get { return _autoUpdate; }
+		}
+
 		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
 		private readonly QuickFilters _quickFilters;
@@ -26,6 +33,7 @@ namespace Tailviewer.Settings
 			_fileName = Path.GetFullPath(fileName);
 			_fileFolder = Path.GetDirectoryName(_fileName);
 
+			_autoUpdate = new AutoUpdateSettings();
 			_mainWindow = new WindowSettings();
 			_dataSources = new DataSources();
 			_quickFilters = new QuickFilters();
@@ -73,6 +81,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("quickfilters");
 						_quickFilters.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("autoupdate");
+						_autoUpdate.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -134,6 +146,10 @@ namespace Tailviewer.Settings
 
 							case "quickfilters":
 								_quickFilters.Restore(reader);
+								break;
+
+							case "autoupdate":
+								_autoUpdate.Restore(reader);
 								break;
 						}
 					}

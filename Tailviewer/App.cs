@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
+using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui;
 using Tailviewer.Ui.Controls;
@@ -37,6 +38,7 @@ namespace Tailviewer
 			}
 
 			using (var dataSources = new DataSources(settings.DataSources))
+			using (new AutoUpdater(settings.AutoUpdate))
 			{
 				var quickFilters = new QuickFilters(settings.QuickFilters);
 				var application = new App();
