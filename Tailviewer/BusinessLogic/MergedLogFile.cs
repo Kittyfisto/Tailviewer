@@ -25,12 +25,6 @@ namespace Tailviewer.BusinessLogic
 		private readonly object _syncRoot;
 		private Size _fileSize;
 		private DateTime _lastModified;
-		private int _skippedCount;
-
-		public int SkippedCount
-		{
-			get { return _skippedCount; }
-		}
 
 		private DateTime? _startTimestamp;
 
@@ -172,15 +166,7 @@ namespace Tailviewer.BusinessLogic
 									_indices.Insert(insertionIndex, index);
 								}
 
-								UpdateCounts(newLogLine);
-
 								Listeners.OnRead(_indices.Count);
-							}
-							else
-							{
-								// LogEntries which do not have a timestamp associated with them cannot be 
-								// used in a merged view and thus have to be skipped.
-								++_skippedCount;
 							}
 						}
 					}

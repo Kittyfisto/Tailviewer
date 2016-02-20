@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Settings;
@@ -133,6 +135,5 @@ namespace Tailviewer.Test.BusinessLogic
 			logFile2.Should().NotBeSameAs(logFile1);
 			((AbstractLogFile)logFile1).IsDisposed.Should().BeTrue();
 		}
-
 	}
 }

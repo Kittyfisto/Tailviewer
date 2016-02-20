@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic;
@@ -15,6 +17,20 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
+		private bool _displayNoTimestampCount;
+
+		public bool DisplayNoTimestampCount
+		{
+			get { return _displayNoTimestampCount; }
+			private set
+			{
+				if (value == _displayNoTimestampCount)
+					return;
+
+				_displayNoTimestampCount = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public SingleDataSourceViewModel(IDataSource dataSource)
 			: base(dataSource)
@@ -24,6 +40,25 @@ namespace Tailviewer.Ui.ViewModels
 			_folder = Path.GetDirectoryName(dataSource.FullFileName);
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 			Update();
+
+			UpdateDisplayNoTimestampCount();
+			PropertyChanged += OnPropertyChanged;
+		}
+
+		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case "IsGrouped":
+				case "NoTimestampCount":
+					UpdateDisplayNoTimestampCount();
+					break;
+			}
+		}
+
+		private void UpdateDisplayNoTimestampCount()
+		{
+			DisplayNoTimestampCount = IsGrouped && NoTimestampCount > 0;
 		}
 
 		public override string ToString()

@@ -16,12 +16,7 @@ namespace Tailviewer.BusinessLogic
 
 		DateTime LastModified { get; }
 		DateTime LastViewed { get; set; }
-		int OtherCount { get; }
-		int DebugCount { get; }
-		int InfoCount { get; }
-		int WarningCount { get; }
-		int ErrorCount { get; }
-		int FatalCount { get; }
+
 		string FullFileName { get; set; }
 		bool FollowTail { get; set; }
 		string StringFilter { get; set; }
@@ -34,6 +29,19 @@ namespace Tailviewer.BusinessLogic
 		bool ColorByLevel { get; set; }
 		Guid Id { get; }
 		Guid ParentId { get; }
+
+		#region Counts
+
+		int NoLevelCount { get; }
+		int DebugCount { get; }
+		int InfoCount { get; }
+		int WarningCount { get; }
+		int ErrorCount { get; }
+		int FatalCount { get; }
+		int NoTimestampCount { get; }
+
+		#endregion
+
 		void ActivateQuickFilter(Guid id);
 		bool DeactivateQuickFilter(Guid id);
 		bool IsQuickFilterActive(Guid id);

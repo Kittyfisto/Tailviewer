@@ -1,11 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels">
+                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:CountConverter x:Key="CountConverter" />
+    <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
+
     <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,53 +25,68 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
+
+                <!-- Name -->
                 <TextBlock Text="{Binding DisplayName}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Style.Triggers>
                                 <DataTrigger
-                                                                    Binding="{Binding IsSelected, RelativeSource=
+                                    Binding="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                    Value="True">
+                                    Value="True">
                                     <Setter Property="Foreground"
-                                                                            Value="{StaticResource TextBrushSelected}" />
+                                            Value="{StaticResource TextBrushSelected}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+
+                <!-- Folder -->
                 <TextBlock Text="{Binding Folder}"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           Grid.Row="1">
+                           TextTrimming="CharacterEllipsis"
+                           Grid.Row="1">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Style.Triggers>
                                 <DataTrigger
-                                                                    Binding="{Binding IsSelected, RelativeSource=
+                                    Binding="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                    Value="True">
+                                    Value="True">
                                     <Setter Property="Foreground"
-                                                                            Value="#DAECF7" />
+                                            Value="#DAECF7" />
                                 </DataTrigger>
                                 <DataTrigger
-                                                                    Binding="{Binding IsSelected, RelativeSource=
+                                    Binding="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                    Value="False">
+                                    Value="False">
                                     <Setter Property="Foreground"
-                                                                            Value="#B7B7B7" />
+                                            Value="#B7B7B7" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+
+                <!-- Misc: Skipped, etc... -->
+                <StackPanel Grid.Row="2">
+                    <local:ImageLabel
+                        Content="{Binding NoTimestampCount, Converter={StaticResource CountConverter}}"
+                        ToolTip="{Binding NoTimestampCount, Converter={StaticResource SkippedDueToTimestampConverter}}"
+                        DarkImage="pack://application:,,,/Resources/ic_no_time_black_8dp.png"
+                        LightImage="pack://application:,,,/Resources/ic_no_time_white_8dp.png"
+                        Visibility="{Binding DisplayNoTimestampCount, Converter={StaticResource BoolFalseToHiddenConverter}}"
+                        UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
+                </StackPanel>
             </Grid>
 
             <local:RemoveButton VerticalAlignment="Stretch"
-                                                                HorizontalAlignment="Right"
-                                                                IsInverted="{Binding IsSelected, RelativeSource=
+                                HorizontalAlignment="Right"
+                                IsInverted="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                                                Command="{Binding RemoveCommand}"
-                                                                Grid.Column="1" />
+                                Command="{Binding RemoveCommand}"
+                                Grid.Column="1" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

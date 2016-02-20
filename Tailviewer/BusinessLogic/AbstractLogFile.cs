@@ -17,17 +17,6 @@ namespace Tailviewer.BusinessLogic
 		private readonly Task _readTask;
 		private bool _isDisposed;
 
-		#region Counts
-
-		private int _debugCount;
-		private int _errorCount;
-		private int _fatalCount;
-		private int _infoCount;
-		private int _otherCount;
-		private int _warningCount;
-
-		#endregion
-
 		protected AbstractLogFile()
 		{
 			_endOfSectionHandle = new ManualResetEvent(false);
@@ -78,40 +67,6 @@ namespace Tailviewer.BusinessLogic
 		public abstract void GetSection(LogFileSection section, LogLine[] dest);
 		public abstract LogLine GetLine(int index);
 
-		#region Counts
-
-		public int FatalCount
-		{
-			get { return _fatalCount; }
-		}
-
-		public int OtherCount
-		{
-			get { return _otherCount; }
-		}
-
-		public int DebugCount
-		{
-			get { return _debugCount; }
-		}
-
-		public int InfoCount
-		{
-			get { return _infoCount; }
-		}
-
-		public int WarningCount
-		{
-			get { return _warningCount; }
-		}
-
-		public int ErrorCount
-		{
-			get { return _errorCount; }
-		}
-
-		#endregion
-
 		protected abstract void Run(CancellationToken token);
 
 		private void Run(object obj)
@@ -159,36 +114,6 @@ namespace Tailviewer.BusinessLogic
 			}
 
 			return false;
-		}
-
-		protected void UpdateCounts(LogLine newEntry)
-		{
-			switch (newEntry.Level)
-			{
-				case LevelFlags.Debug:
-					++_debugCount;
-					break;
-
-				case LevelFlags.Info:
-					++_infoCount;
-					break;
-
-				case LevelFlags.Warning:
-					++_warningCount;
-					break;
-
-				case LevelFlags.Error:
-					++_errorCount;
-					break;
-
-				case LevelFlags.Fatal:
-					++_fatalCount;
-					break;
-
-				default:
-					++_otherCount;
-					break;
-			}
 		}
 	}
 }

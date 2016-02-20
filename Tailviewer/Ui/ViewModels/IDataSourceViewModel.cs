@@ -23,6 +23,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		int WarningCount { get; }
 
+		int NoTimestampCount { get; }
+
 		int ErrorCount { get; }
 
 		int FatalCount { get; }

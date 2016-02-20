@@ -59,6 +59,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\AbstractLogFile.cs" />
+    <Compile Include="BusinessLogic\Count.cs" />
     <Compile Include="BusinessLogic\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filter.cs" />
     <Compile Include="BusinessLogic\IDataSource.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
+    <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="EnumerableExtensions.cs" />

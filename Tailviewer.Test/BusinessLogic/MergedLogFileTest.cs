@@ -89,11 +89,6 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.Wait();
 
 			merged.Count.Should().Be(1);
-			merged.DebugCount.Should().Be(0);
-			merged.InfoCount.Should().Be(1);
-			merged.WarningCount.Should().Be(0);
-			merged.ErrorCount.Should().Be(0);
-			merged.FatalCount.Should().Be(0);
 
 			data.Should().Equal(source);
 		}
@@ -114,11 +109,6 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.Wait();
 
 			merged.Count.Should().Be(2);
-			merged.DebugCount.Should().Be(1);
-			merged.InfoCount.Should().Be(1);
-			merged.WarningCount.Should().Be(0);
-			merged.ErrorCount.Should().Be(0);
-			merged.FatalCount.Should().Be(0);
 
 			data.Should().Equal(source);
 		}
@@ -147,11 +137,6 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.Wait();
 
 			merged.Count.Should().Be(2);
-			merged.DebugCount.Should().Be(1);
-			merged.InfoCount.Should().Be(1);
-			merged.WarningCount.Should().Be(0);
-			merged.ErrorCount.Should().Be(0);
-			merged.FatalCount.Should().Be(0);
 
 			data.Should().Equal(new object[]{source1[0], source2[0]});
 		}
@@ -174,11 +159,6 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.Wait();
 
 			merged.Count.Should().Be(2);
-			merged.DebugCount.Should().Be(0);
-			merged.InfoCount.Should().Be(0);
-			merged.WarningCount.Should().Be(1);
-			merged.ErrorCount.Should().Be(1);
-			merged.FatalCount.Should().Be(0);
 
 			data.Should().Equal(new []
 				{
@@ -213,11 +193,6 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.Wait();
 
 			merged.Count.Should().Be(2);
-			merged.DebugCount.Should().Be(0);
-			merged.InfoCount.Should().Be(0);
-			merged.WarningCount.Should().Be(1);
-			merged.ErrorCount.Should().Be(1);
-			merged.FatalCount.Should().Be(0);
 
 			data.Should().Equal(new object[]
 				{

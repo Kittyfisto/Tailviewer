@@ -24,11 +24,6 @@ namespace Tailviewer.Test.BusinessLogic
 				merged.Wait();
 
 				merged.Count.Should().Be(source.Count);
-				merged.DebugCount.Should().Be(source.DebugCount);
-				merged.InfoCount.Should().Be(source.InfoCount);
-				merged.WarningCount.Should().Be(source.WarningCount);
-				merged.ErrorCount.Should().Be(source.ErrorCount);
-				merged.FatalCount.Should().Be(source.FatalCount);
 				merged.FileSize.Should().Be(source.FileSize);
 				merged.StartTimestamp.Should().Be(source.StartTimestamp);
 
@@ -60,11 +55,6 @@ namespace Tailviewer.Test.BusinessLogic
 
 				WaitUntil(() => merged.Count == 8, TimeSpan.FromSeconds(2))
 					.Should().BeTrue("Because the merged file should've been finished after 2 seconds");
-				merged.DebugCount.Should().Be(4);
-				merged.InfoCount.Should().Be(4);
-				merged.WarningCount.Should().Be(0);
-				merged.ErrorCount.Should().Be(0);
-				merged.FatalCount.Should().Be(0);
 				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
 				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
 
@@ -96,11 +86,6 @@ namespace Tailviewer.Test.BusinessLogic
 
 				WaitUntil(() => merged.Count == 19, TimeSpan.FromSeconds(2))
 					.Should().BeTrue("Because the merged file should've been finished after 2 seconds");
-				merged.DebugCount.Should().Be(0);
-				merged.InfoCount.Should().Be(9);
-				merged.WarningCount.Should().Be(10);
-				merged.ErrorCount.Should().Be(0);
-				merged.FatalCount.Should().Be(0);
 				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
 				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
 

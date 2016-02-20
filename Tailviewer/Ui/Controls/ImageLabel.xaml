@@ -18,7 +18,7 @@
                             <Setter Property="Foreground" Value="#B7B7B7" />
                         </Trigger>
                     </ControlTemplate.Triggers>
-                    <Grid>
+                    <Grid Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />

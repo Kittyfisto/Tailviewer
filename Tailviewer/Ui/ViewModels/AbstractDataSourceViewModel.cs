@@ -22,7 +22,9 @@ namespace Tailviewer.Ui.ViewModels
 		private int _otherCount;
 		private int _totalCount;
 		private int _warningCount;
+		private int _noTimestampCount;
 		private IDataSourceViewModel _parent;
+		private bool _isGrouped;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -38,6 +40,19 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _dataSource.Id; }
 		}
 
+		public bool IsGrouped
+		{
+			get { return _isGrouped; }
+			private set
+			{
+				if (value == _isGrouped)
+					return;
+
+				_isGrouped = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public abstract ICommand OpenInExplorerCommand { get; }
 
 		public abstract string DisplayName { get; }
@@ -51,6 +66,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_totalCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int NoTimestampCount
+		{
+			get { return _noTimestampCount; }
+			protected set
+			{
+				if (value == _noTimestampCount)
+					return;
+
+				_noTimestampCount = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -260,6 +288,7 @@ namespace Tailviewer.Ui.ViewModels
 					_dataSource.Settings.ParentId = value.DataSource.Id;
 				}
 				_parent = value;
+				IsGrouped = value != null;
 			}
 		}
 
@@ -272,9 +301,9 @@ namespace Tailviewer.Ui.ViewModels
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 
-		public void Update()
+		public virtual void Update()
 		{
-			OtherCount = _dataSource.OtherCount;
+			OtherCount = _dataSource.NoLevelCount;
 			DebugCount = _dataSource.DebugCount;
 			InfoCount = _dataSource.InfoCount;
 			WarningCount = _dataSource.WarningCount;
@@ -282,6 +311,7 @@ namespace Tailviewer.Ui.ViewModels
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
+			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 		}
 

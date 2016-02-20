@@ -3,41 +3,25 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Tailviewer.BusinessLogic
 {
 	internal sealed class LogFile
-		: ILogFile
+		: AbstractLogFile
 	{
-		#region Reading
-
-		private readonly CancellationTokenSource _cancellationTokenSource;
-		private readonly ManualResetEvent _endOfSectionHandle;
-		private readonly Task _readTask;
-
-		#endregion
-
 		#region Data
 
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
-		private int _debugCount;
-		private int _errorCount;
-		private int _fatalCount;
-		private int _infoCount;
-		private int _otherCount;
 		private DateTime? _startTimestamp;
-		private int _warningCount;
 
 		#endregion
 
 		#region Listeners
 
 		private readonly string _fileName;
-		private readonly LogFileListenerCollection _listeners;
 		private DateTime _lastModified;
 
 		#endregion
@@ -61,16 +45,9 @@ namespace Tailviewer.BusinessLogic
 			if (fileName == null) throw new ArgumentNullException("fileName");
 
 			_fileName = fileName;
-			_endOfSectionHandle = new ManualResetEvent(false);
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
-			_cancellationTokenSource = new CancellationTokenSource();
-			_readTask = new Task(ReadFile,
-			                     _cancellationTokenSource.Token,
-			                     _cancellationTokenSource.Token,
-			                     TaskCreationOptions.LongRunning);
-			_listeners = new LogFileListenerCollection(this);
 		}
 
 		public IEnumerable<LogLine> Entries
@@ -78,32 +55,7 @@ namespace Tailviewer.BusinessLogic
 			get { return _entries; }
 		}
 
-		public int DebugCount
-		{
-			get { return _debugCount; }
-		}
-
-		public int InfoCount
-		{
-			get { return _infoCount; }
-		}
-
-		public int WarningCount
-		{
-			get { return _warningCount; }
-		}
-
-		public int ErrorCount
-		{
-			get { return _errorCount; }
-		}
-
-		public int FatalCount
-		{
-			get { return _fatalCount; }
-		}
-
-		public Size FileSize
+		public override Size FileSize
 		{
 			get
 			{
@@ -121,32 +73,17 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public DateTime? StartTimestamp
+		public override DateTime? StartTimestamp
 		{
 			get { return _startTimestamp; }
 		}
 
-		public DateTime LastModified
+		public override DateTime LastModified
 		{
 			get { return _lastModified; }
 		}
 
-		public int OtherCount
-		{
-			get { return _otherCount; }
-		}
-
-		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
-		{
-			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
-		}
-
-		public void Remove(ILogFileListener listener)
-		{
-			_listeners.RemoveListener(listener);
-		}
-
-		public void GetSection(LogFileSection section, LogLine[] dest)
+		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
 				throw new ArgumentOutOfRangeException("section.Index");
@@ -166,7 +103,7 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public LogLine GetLine(int index)
+		public override LogLine GetLine(int index)
 		{
 			lock (_syncRoot)
 			{
@@ -174,43 +111,18 @@ namespace Tailviewer.BusinessLogic
 			}
 		}
 
-		public void Dispose()
-		{
-			_cancellationTokenSource.Cancel();
-			_readTask.Wait();
-		}
-
-		/// <summary>
-		///     Blocks until the entire contents of the file has been read into memory.
-		/// </summary>
-		public void Wait()
-		{
-			while (true)
-			{
-				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
-					break;
-
-				if (_readTask.IsFaulted)
-					throw _readTask.Exception;
-			}
-		}
-
-		public int Count
+		public override int Count
 		{
 			get { return _entries.Count; }
 		}
 
 		public void Start()
 		{
-			if (_readTask.Status == TaskStatus.Created)
-			{
-				_readTask.Start();
-			}
+			StartTask();
 		}
 
-		private void ReadFile(object parameter)
+		protected override void Run(CancellationToken token)
 		{
-			var token = (CancellationToken) parameter;
 			int numberOfLinesRead = 0;
 			int nextLogEntryIndex = 0;
 			bool reachedEof = false;
@@ -234,24 +146,18 @@ namespace Tailviewer.BusinessLogic
 						if (line == null)
 						{
 							reachedEof = true;
-							_listeners.OnRead(numberOfLinesRead);
-							_endOfSectionHandle.Set();
+							Listeners.OnRead(numberOfLinesRead);
+							EndOfSectionReached();
 							token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(100));
 
 							if (stream.Length < stream.Position) //< Somebody cleared the file
 							{
 								stream.Position = 0;
 								numberOfLinesRead = 0;
-								_otherCount = 0;
-								_debugCount = 0;
-								_infoCount = 0;
-								_warningCount = 0;
-								_errorCount = 0;
-								_fatalCount = 0;
 								_startTimestamp = null;
 
 								_entries.Clear();
-								_listeners.OnRead(-1);
+								Listeners.OnRead(-1);
 							}
 						}
 						else
@@ -261,13 +167,14 @@ namespace Tailviewer.BusinessLogic
 
 							reachedEof = false;
 
-							_endOfSectionHandle.Reset();
+							EndOfSectionReset();
 							++numberOfLinesRead;
 
 							LevelFlags level = DetermineLevel(line, levels);
 
 							DateTime? timestamp;
 							int logEntryIndex;
+							bool isNewLogEntry;
 							if (level != LevelFlags.None)
 							{
 								timestamp = ParseTimestamp(line);
@@ -291,7 +198,6 @@ namespace Tailviewer.BusinessLogic
 								level = previousLevel;
 								timestamp = previousTimestamp;
 							}
-
 
 							Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
 							previousLevel = level;
@@ -350,28 +256,6 @@ namespace Tailviewer.BusinessLogic
 				level = LevelFlags.None;
 			}
 
-			switch (level)
-			{
-				case LevelFlags.Debug:
-					Interlocked.Increment(ref _debugCount);
-					break;
-				case LevelFlags.Info:
-					Interlocked.Increment(ref _infoCount);
-					break;
-				case LevelFlags.Warning:
-					Interlocked.Increment(ref _warningCount);
-					break;
-				case LevelFlags.Error:
-					Interlocked.Increment(ref _errorCount);
-					break;
-				case LevelFlags.Fatal:
-					Interlocked.Increment(ref _fatalCount);
-					break;
-				default:
-					Interlocked.Increment(ref _otherCount);
-					break;
-			}
-
 			return level;
 		}
 
@@ -383,10 +267,11 @@ namespace Tailviewer.BusinessLogic
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
-				_entries.Add(new LogLine(lineIndex, numberOfLogEntriesRead, line, level, timestamp));
+				var logLine = new LogLine(lineIndex, numberOfLogEntriesRead, line, level, timestamp);
+				_entries.Add(logLine);
 			}
 
-			_listeners.OnRead(numberOfLinesRead);
+			Listeners.OnRead(numberOfLinesRead);
 		}
 
 		private DateTime? ParseTimestamp(string line)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -101,12 +100,6 @@ namespace Tailviewer.Test.BusinessLogic
 				entries.Count.Should().Be(165342);
 				entries[0].Should().Be(new LogLine(0, "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)));
 				entries[entries.Count - 1].Should().Be(new LogLine(165341, "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 51, 42, 483)));
-
-				file.DebugCount.Should().Be(165337);
-				file.InfoCount.Should().Be(5);
-				file.WarningCount.Should().Be(0);
-				file.ErrorCount.Should().Be(0);
-				file.FatalCount.Should().Be(0);
 			}
 		}
 
@@ -155,12 +148,6 @@ namespace Tailviewer.Test.BusinessLogic
 						new LogFileSection(0, 1),
 						new LogFileSection(1, 1)
 					});
-
-				file.DebugCount.Should().Be(1);
-				file.InfoCount.Should().Be(1);
-				file.WarningCount.Should().Be(0);
-				file.ErrorCount.Should().Be(0);
-				file.FatalCount.Should().Be(0);
 			}
 		}
 
@@ -201,12 +188,6 @@ namespace Tailviewer.Test.BusinessLogic
 						new LogLine(4, 1, "Hey look at me", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
 						new LogLine(5, 1, "dwadawdadw", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998))
 					});
-
-				file.DebugCount.Should().Be(1);
-				file.InfoCount.Should().Be(1);
-				file.WarningCount.Should().Be(0);
-				file.ErrorCount.Should().Be(0);
-				file.FatalCount.Should().Be(0);
 			}
 		}
 
