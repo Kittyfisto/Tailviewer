@@ -9,8 +9,10 @@
     </ResourceDictionary.MergedDictionaries>
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
-    <converters:CountConverter x:Key="CountConverter" />
+    <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
+    <converters:CountConverter x:Key="NoTimestampCountConverter" />
+    <converters:CountConverter x:Key="NewLogLineCountConverter" HasPlural="False" Suffix="new" />
     
     <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
                               ItemsSource="{Binding Observable}">
@@ -42,16 +44,27 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <StackPanel Orientation="Horizontal"
-                            Grid.Row="1">
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
                     <local:ImageLabel
-                        Content="{Binding NoTimestampSum, Converter={StaticResource CountConverter}}"
+                        Content="{Binding NoTimestampSum, Converter={StaticResource NoTimestampCountConverter}}"
                         ToolTip="{Binding NoTimestampSum, Converter={StaticResource SkippedDueToTimestampConverter}}"
                         DarkImage="pack://application:,,,/Resources/ic_no_time_black_8dp.png"
                         LightImage="pack://application:,,,/Resources/ic_no_time_white_8dp.png"
                         Visibility="{Binding DisplayNoTimestampCount, Converter={StaticResource BoolFalseToHiddenConverter}}"
                         UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
-                </StackPanel>
+                    
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="4,0,4,0"
+                        HorizontalAlignment="Right"
+                        Text="{Binding NewLogLineCount, Converter={StaticResource NewLogLineCountConverter}}"
+                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}"
+                        />
+                </Grid>
             </Grid>
 
             <local:RemoveButton VerticalAlignment="Stretch"
@@ -61,6 +74,7 @@
                                 Command="{Binding RemoveCommand}"
                                 Grid.Column="1"
                                 HorizontalContentAlignment="Right" />
+            
         </Grid>
     </HierarchicalDataTemplate>
 </ResourceDictionary>

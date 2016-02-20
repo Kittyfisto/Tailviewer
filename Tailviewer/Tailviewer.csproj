@@ -90,12 +90,14 @@
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
+    <Compile Include="Ui\Controls\NotificationBadge.cs" />
     <Compile Include="Ui\Controls\OneWayToggle.cs" />
     <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\TextToggleButton.cs" />
     <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
+    <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="EnumerableExtensions.cs" />
@@ -174,6 +176,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\ImageLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\NotificationBadge.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

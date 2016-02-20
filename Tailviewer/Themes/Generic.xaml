@@ -11,11 +11,11 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/ImageLabel.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogViewerControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/TextToggleButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/NotificationBadge.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/OneWayToggle.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/RemoveButton.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterTypeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
 
 </ResourceDictionary>

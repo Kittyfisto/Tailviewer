@@ -17,6 +17,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
+		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly ApplicationSettings _settings;
 		private IDataSourceViewModel _selectedItem;
 
@@ -27,6 +28,7 @@ namespace Tailviewer.Ui.ViewModels
 
 			_settings = settings;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
+			_allDataSourceViewModels = new List<IDataSourceViewModel>();
 			_dataSources = dataSources;
 			foreach (IDataSource dataSource in dataSources)
 			{
@@ -57,8 +59,22 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == _selectedItem)
 					return;
 
+				foreach (var dataSource in _allDataSourceViewModels)
+				{
+					dataSource.IsVisible = false;
+				}
+
 				_selectedItem = value;
-				_settings.DataSources.SelectedItem = value != null ? value.DataSource.Id : Guid.Empty;
+				if (value != null)
+				{
+					_settings.DataSources.SelectedItem = value.DataSource.Id;
+					value.IsVisible = true;
+				}
+				else
+				{
+					_settings.DataSources.SelectedItem = Guid.Empty;
+				}
+
 				EmitPropertyChanged();
 			}
 		}
@@ -70,7 +86,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public void Update()
 		{
-			foreach (IDataSourceViewModel dataSource in _observable)
+			foreach (IDataSourceViewModel dataSource in _allDataSourceViewModels)
 			{
 				dataSource.Update();
 			}
@@ -86,6 +102,11 @@ namespace Tailviewer.Ui.ViewModels
 				IDataSource dataSource = _dataSources.AddDataSource(fileName);
 				viewModel = Add(dataSource);
 				_settings.Save();
+
+				if (_observable.Count == 1)
+				{
+					SelectedItem = viewModel;
+				}
 			}
 
 			return viewModel;
@@ -131,6 +152,7 @@ namespace Tailviewer.Ui.ViewModels
 				}
 			}
 			viewModel.Remove += OnRemove;
+			_allDataSourceViewModels.Add(viewModel);
 
 			if (_settings.DataSources.SelectedItem == viewModel.DataSource.Id)
 			{
@@ -164,6 +186,7 @@ namespace Tailviewer.Ui.ViewModels
 				_dataSources.Remove(viewModel.DataSource);
 			}
 
+			_allDataSourceViewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);
 			_settings.Save();
 		}

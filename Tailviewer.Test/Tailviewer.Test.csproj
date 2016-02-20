@@ -77,6 +77,7 @@
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
+    <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Converters\CountConverterTest.cs" />
     <Compile Include="Ui\DataSourcesControlTest.cs" />
     <Compile Include="Ui\DataSourcesViewModelTest.cs" />

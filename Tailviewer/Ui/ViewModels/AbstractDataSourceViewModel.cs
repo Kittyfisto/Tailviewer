@@ -25,6 +25,8 @@ namespace Tailviewer.Ui.ViewModels
 		private int _noTimestampCount;
 		private IDataSourceViewModel _parent;
 		private bool _isGrouped;
+		private bool _isVisible;
+		private int _lastSeenLogLine;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -33,6 +35,41 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 			Update();
+		}
+
+		public int NewLogLineCount
+		{
+			get
+			{
+				var diff = TotalCount - _lastSeenLogLine;
+				return Math.Max(diff, 0);
+			}
+		}
+
+		private void UpdateLastSeenLogLine()
+		{
+			var before = NewLogLineCount;
+			if (IsVisible)
+			{
+				_lastSeenLogLine = TotalCount;
+				if (before != NewLogLineCount)
+					EmitPropertyChanged("NewLogLineCount");
+			}
+		}
+
+		public bool IsVisible
+		{
+			get { return _isVisible; }
+			set
+			{
+				if (value == _isVisible)
+					return;
+
+				_isVisible = value;
+				EmitPropertyChanged();
+
+				UpdateLastSeenLogLine();
+			}
 		}
 
 		public Guid Id
@@ -303,6 +340,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public virtual void Update()
 		{
+			var newBefore = NewLogLineCount;
+
 			OtherCount = _dataSource.NoLevelCount;
 			DebugCount = _dataSource.DebugCount;
 			InfoCount = _dataSource.InfoCount;
@@ -313,6 +352,13 @@ namespace Tailviewer.Ui.ViewModels
 			FileSize = _dataSource.FileSize;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
+
+			if (NewLogLineCount != newBefore)
+			{
+				EmitPropertyChanged("NewLogLineCount");
+			}
+
+			UpdateLastSeenLogLine();
 		}
 
 		private void OnRemoveDataSource()

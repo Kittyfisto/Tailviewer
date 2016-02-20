@@ -25,6 +25,55 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that adding the first data source sets it to be selected")]
+		public void TestAdd1()
+		{
+			var model = _model.GetOrAdd("foo");
+			_model.SelectedItem.Should().BeSameAs(model);
+			model.IsVisible.Should().BeTrue();
+		}
+
+		[Test]
+		[Description("Verifies that selecting a data source sets the IsVisible property on all view models")]
+		public void TestSelect1()
+		{
+			var model1 = _model.GetOrAdd("foo");
+			var model2 = _model.GetOrAdd("bar");
+
+			_model.SelectedItem.Should().BeSameAs(model1);
+			_model.SelectedItem = model2;
+
+			model1.IsVisible.Should().BeFalse();
+			model2.IsVisible.Should().BeTrue();
+		}
+
+		[Test]
+		[Description("Verifies that selecting a data source sets the IsVisible property on all view models")]
+		public void TestSelect2()
+		{
+			var model1 = _model.GetOrAdd("foo");
+			var model2 = _model.GetOrAdd("bar");
+			var model3 = _model.GetOrAdd("clondyke");
+			_model.OnDropped(model2, model3, DataSourceDropType.Group);
+
+			_model.SelectedItem = model2;
+
+			model1.IsVisible.Should().BeFalse();
+			model2.IsVisible.Should().BeTrue();
+			model3.IsVisible.Should().BeFalse();
+		}
+
+		[Test]
+		[Description("Verifies that selecting a null data source is possible")]
+		public void TestSelect3()
+		{
+			var model = _model.GetOrAdd("foo");
+			new Action(() => _model.SelectedItem = null).ShouldNotThrow();
+			_model.SelectedItem.Should().BeNull();
+			model.IsVisible.Should().BeFalse();
+		}
+
+		[Test]
 		[Description("Verifies that creating a view model from a group works")]
 		public void TestCtor1()
 		{

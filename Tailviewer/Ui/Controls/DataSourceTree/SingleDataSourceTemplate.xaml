@@ -9,8 +9,10 @@
     </ResourceDictionary.MergedDictionaries>
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:CountConverter x:Key="CountConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
+    <converters:CountConverter x:Key="NewLogLineCountConverter" HasPlural="False" Suffix="new" />
 
     <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
         <Grid>
@@ -70,7 +72,11 @@
                 </TextBlock>
 
                 <!-- Misc: Skipped, etc... -->
-                <StackPanel Grid.Row="2">
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
                     <local:ImageLabel
                         Content="{Binding NoTimestampCount, Converter={StaticResource CountConverter}}"
                         ToolTip="{Binding NoTimestampCount, Converter={StaticResource SkippedDueToTimestampConverter}}"
@@ -78,7 +84,15 @@
                         LightImage="pack://application:,,,/Resources/ic_no_time_white_8dp.png"
                         Visibility="{Binding DisplayNoTimestampCount, Converter={StaticResource BoolFalseToHiddenConverter}}"
                         UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
-                </StackPanel>
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="4,0,4,0"
+                        HorizontalAlignment="Right"
+                        Text="{Binding NewLogLineCount, Converter={StaticResource NewLogLineCountConverter}}"
+                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}"
+                        />
+                </Grid>
             </Grid>
 
             <local:RemoveButton VerticalAlignment="Stretch"
