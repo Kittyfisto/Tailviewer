@@ -38,7 +38,7 @@ namespace Tailviewer
 			}
 
 			using (var dataSources = new DataSources(settings.DataSources))
-			using (new AutoUpdater(settings.AutoUpdate))
+			using (var updater = new AutoUpdater(settings.AutoUpdate))
 			{
 				var quickFilters = new QuickFilters(settings.QuickFilters);
 				var application = new App();
@@ -48,7 +48,11 @@ namespace Tailviewer
 
 				var window = new MainWindow(settings)
 					{
-						DataContext = new MainWindowViewModel(settings, dataSources, quickFilters, uiDispatcher)
+						DataContext = new MainWindowViewModel(settings,
+						                                      dataSources,
+						                                      quickFilters,
+						                                      updater,
+						                                      uiDispatcher)
 					};
 
 				settings.MainWindow.RestoreTo(window);
@@ -64,11 +68,11 @@ namespace Tailviewer
 			builder.AppendLine();
 			builder.AppendFormat("Tailviewer: v{0}, {1}\r\n",
 			                     FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
-								 Environment.Is64BitProcess ? "64bit" : "32bit");
+			                     Environment.Is64BitProcess ? "64bit" : "32bit");
 			builder.AppendFormat(".NET Environment: {0}\r\n", Environment.Version);
 			builder.AppendFormat("Operating System: {0}, {1}\r\n",
-				Environment.OSVersion,
-				Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
+			                     Environment.OSVersion,
+			                     Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
 
 			Log.InfoFormat("Environment: {0}", builder);
 		}
@@ -107,6 +111,5 @@ namespace Tailviewer
 			MessageBox.Show(string.Format("Oops, something went wrong:\r\n{0}", exception),
 			                Constants.MainWindowTitle);
 		}
-
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Tailviewer.BusinessLogic.AutoUpdates
 {
-	internal sealed class VersionInfo
+	public sealed class VersionInfo
 	{
 		public readonly Version Beta;
 		public readonly Version Release;

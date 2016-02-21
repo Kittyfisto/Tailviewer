@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -19,6 +21,7 @@ namespace Tailviewer.Test.Ui
 		private DataSources _dataSources;
 		private QuickFilters _quickFilters;
 		private ApplicationSettings _settings;
+		private Mock<IAutoUpdater> _updater;
 
 		[SetUp]
 		public void SetUp()
@@ -27,7 +30,12 @@ namespace Tailviewer.Test.Ui
 			_dispatcher = new ManualDispatcher();
 			_dataSources = new DataSources(_settings.DataSources);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
-			_mainWindow = new MainWindowViewModel(_settings, _dataSources, _quickFilters, _dispatcher);
+			_updater = new Mock<IAutoUpdater>();
+			_mainWindow = new MainWindowViewModel(_settings,
+				_dataSources,
+				_quickFilters,
+				_updater.Object,
+				_dispatcher);
 		}
 
 		[TearDown]
@@ -116,6 +124,23 @@ namespace Tailviewer.Test.Ui
 			_mainWindow.CurrentDataSource.Should().BeSameAs(group);
 			_mainWindow.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
 			changes.Should().Equal(new[] {"CurrentDataSourceLogView", "WindowTitle", "CurrentDataSource"});
+		}
+
+		[Test]
+		public void TestUpdateAvailable()
+		{
+			var changes = new List<string>();
+			_mainWindow.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+			_updater.Setup(x => x.AppVersion).Returns(new Version(1, 0, 0));
+			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(new Version(1, 0, 1), null));
+
+			_mainWindow.IsUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
+			_mainWindow.ShowUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
+
+			_dispatcher.InvokeAll();
+			_mainWindow.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
+			changes.Should().Equal(new object[] { "ShowUpdateAvailable", "IsUpdateAvailable" });
 		}
 	}
 }

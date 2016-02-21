@@ -38,44 +38,69 @@
     <AdornerDecorator x:Name="PART_DragDecorator"
                       SnapsToDevicePixels="True">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-            <dataSourceTree:DataSourcesControl
+            <Grid Background="{StaticResource BackgroundBrushSelected}"
+                  Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                  >
+                <StackPanel Orientation="Horizontal" Margin="8"
+                        >
+                    <TextBlock Text="A new version is ready to be downloaded from github"
+                               Foreground="{StaticResource TextBrushSelected}"
+                               VerticalAlignment="Center"
+                               />
+                    <Button Content="Got it"
+                            Command="{Binding GotItCommand}"
+                            Margin="4" Padding="4" />
+                    <!--
+                    <Button Content="Download" Margin="4" Padding="4" />
+                    <Button Content="Not now" Margin="4" Padding="4" />
+                    -->
+                </StackPanel>
+            </Grid>
+            
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <dataSourceTree:DataSourcesControl
                 Width="200"
                 x:Name="PART_DataSources"
                 ItemsSource="{Binding RecentFiles}"
                 SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
-            <Grid Grid.Column="1"
+                <Grid Grid.Column="1"
                   Width="1"
                   Background="{StaticResource SeparatorBrush}" />
 
-            <Grid Grid.Column="2">
-                <Grid Width="200"
+                <Grid Grid.Column="2">
+                    <Grid Width="200"
                       Height="150"
                       VerticalAlignment="Center"
                       HorizontalAlignment="Center">
-                    <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
+                        <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
                                TextWrapping="Wrap"
                                FontSize="16"
                                Margin="10"
                                Foreground="DodgerBlue"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
-                    <Rectangle StrokeDashArray="4 4"
+                        <Rectangle StrokeDashArray="4 4"
                                Stroke="DodgerBlue"
                                StrokeThickness="2"
                                RadiusX="10"
                                RadiusY="10" />
-                </Grid>
+                    </Grid>
 
-                <controls:LogViewerControl
+                    <controls:LogViewerControl
                     Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                     x:Name="PART_LogFileView"
                     ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
@@ -83,23 +108,24 @@
                     TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                     NoEntriesExplanation="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                     DataSource="{Binding CurrentDataSource}" />
-            </Grid>
+                </Grid>
 
-            <Grid Grid.Column="3"
+                <Grid Grid.Column="3"
                   Width="1"
                   Background="{StaticResource SeparatorBrush}" />
 
-            <controls:QuickFilterControl
+                <controls:QuickFilterControl
                 Grid.Column="4"
                 Width="200"
                 ItemsSource="{Binding QuickFilters}"
                 AddCommand="{Binding AddQuickFilterCommand}" />
 
-            <controls:AlertControl
+                <controls:AlertControl
                 Grid.ColumnSpan="5"
                 Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                 Exception="{Binding Exception}"
                 CloseCommand="{Binding CloseErrorDialogCommand}" />
+            </Grid>
         </Grid>
 
     </AdornerDecorator>

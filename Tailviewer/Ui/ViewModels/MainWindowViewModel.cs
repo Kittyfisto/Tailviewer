@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -19,21 +20,31 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _closeErrorDialogCommand;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly IDispatcher _dispatcher;
+		private readonly ICommand _gotItCommand;
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
+
 		private readonly DispatcherTimer _timer;
+		private readonly IAutoUpdater _updater;
 
 		private LogViewerViewModel _currentDataSourceLogView;
 		private Exception _exception;
 		private bool _hasError;
 		private bool _isLogFileOpen;
+		private bool _isUpdateAvailable;
+		private bool _showUpdateAvailable;
 		private string _windowTitle;
 
-		public MainWindowViewModel(ApplicationSettings settings, DataSources dataSources, QuickFilters quickFilters,
+		public MainWindowViewModel(ApplicationSettings settings,
+		                           DataSources dataSources,
+		                           QuickFilters quickFilters,
+		                           IAutoUpdater updater,
 		                           IDispatcher dispatcher)
 		{
 			if (dataSources == null) throw new ArgumentNullException("dataSources");
+			if (quickFilters == null) throw new ArgumentNullException("quickFilters");
+			if (updater == null) throw new ArgumentNullException("updater");
 			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
 
 			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
@@ -48,24 +59,53 @@ namespace Tailviewer.Ui.ViewModels
 			_timer.Tick += TimerOnTick;
 			_timer.Start();
 
+			_updater = updater;
+
 			_dispatcher = dispatcher;
 			WindowTitle = Constants.MainWindowTitle;
 
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
+			_gotItCommand = new DelegateCommand(GotIt);
 
 			ChangeDataSource(CurrentDataSource);
+
+			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
 		}
 
-		private void DataSourcesViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		public ICommand GotItCommand
 		{
-			switch (e.PropertyName)
+			get { return _gotItCommand; }
+		}
+
+		public bool ShowUpdateAvailable
+		{
+			get { return _showUpdateAvailable; }
+			private set
 			{
-				case "SelectedItem":
-					ChangeDataSource(_dataSourcesViewModel.SelectedItem);
-					EmitPropertyChanged("CurrentDataSource");
-					break;
+				if (value == _showUpdateAvailable)
+					return;
+
+				_showUpdateAvailable = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsUpdateAvailable
+		{
+			get { return _isUpdateAvailable; }
+			private set
+			{
+				if (value == _isUpdateAvailable)
+					return;
+
+				_isUpdateAvailable = value;
+				if (value)
+				{
+					ShowUpdateAvailable = true;
+				}
+				EmitPropertyChanged();
 			}
 		}
 
@@ -189,14 +229,43 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void GotIt()
+		{
+			ShowUpdateAvailable = false;
+		}
+
+		private void UpdaterOnLatestVersionChanged(VersionInfo versionInfo)
+		{
+			_dispatcher.BeginInvoke(() =>
+				{
+					Version latest = versionInfo.Beta;
+					Version current = _updater.AppVersion;
+					if (current != null && latest != null && latest > current)
+					{
+						IsUpdateAvailable = true;
+					}
+				});
+		}
+
+		private void DataSourcesViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case "SelectedItem":
+					ChangeDataSource(_dataSourcesViewModel.SelectedItem);
+					EmitPropertyChanged("CurrentDataSource");
+					break;
+			}
+		}
+
 		private void ChangeDataSource(IDataSourceViewModel value)
 		{
 			_dataSourcesViewModel.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
 			OpenFile(value);
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void CloseErrorDialog()
 		{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -11,7 +12,7 @@ using log4net;
 namespace Tailviewer.BusinessLogic.AutoUpdates
 {
 	internal sealed class AutoUpdater
-		: IDisposable
+		: IDisposable, IAutoUpdater
 	{
 #if DEBUG
 		private const string Server = "http://localhost";
@@ -21,13 +22,15 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		private const ushort Port = 80;
 #endif
 
-		private static readonly ILog Log =
-			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static readonly Version CurrentAppVersion;
 
+		private readonly Task<VersionInfo> _updateTask;
+		private readonly object _syncRoot;
 		private AutoUpdateSettings _settings;
-		private Task<VersionInfo> _updateTask;
+		private VersionInfo _latestVersion;
+		private readonly List<Action<VersionInfo>> _latestVersionChanged;
 
 		static AutoUpdater()
 		{
@@ -43,8 +46,67 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		public AutoUpdater(AutoUpdateSettings settings)
 		{
+			_syncRoot = new object();
 			_settings = settings;
+			_latestVersionChanged = new List<Action<VersionInfo>>();
 			_updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
+			_updateTask.ContinueWith(OnVersionChecked);
+		}
+
+		public event Action<VersionInfo> LatestVersionChanged
+		{
+			add
+			{
+				lock (_syncRoot)
+				{
+					_latestVersionChanged.Add(value);
+					if (_latestVersion != null)
+					{
+						value(_latestVersion);
+					}
+				}
+			}
+			remove
+			{
+				_latestVersionChanged.Remove(value);
+			}
+		}
+
+		private void OnVersionChecked(Task<VersionInfo> task)
+		{
+			try
+			{
+				VersionInfo latest = task.Result;
+				LatestVersion = latest;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while querying newest version: {0}", e);
+			}
+		}
+
+		public Version AppVersion
+		{
+			get { return CurrentAppVersion; }
+		}
+
+		public VersionInfo LatestVersion
+		{
+			get { return _latestVersion; }
+			private set
+			{
+				lock (_syncRoot)
+				{
+					if (value == _latestVersion)
+						return;
+
+					_latestVersion = value;
+					foreach (var fn in _latestVersionChanged)
+					{
+						fn(value);
+					}
+				}
+			}
 		}
 
 		public void Dispose()
@@ -73,7 +135,8 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					Log.DebugFormat("Looking for newest version on '{0}", uri);
 					byte[] data = client.DownloadData(uri);
 
-					Log.DebugFormat("Parsing response ({0} bytes)", data != null ? data.Length.ToString(CultureInfo.InvariantCulture) : "null");
+					Log.DebugFormat("Parsing response ({0} bytes)",
+					                data != null ? data.Length.ToString(CultureInfo.InvariantCulture) : "null");
 
 					VersionInfo versions;
 					Parse(data, out versions);
