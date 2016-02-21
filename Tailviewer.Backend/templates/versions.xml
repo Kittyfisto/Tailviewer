@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<versions>
+	<release major="{{ release[0] }}"
+	minor="{{ release[1] }}"
+	build="{{ release[2] }}"
+	executable="/versions/{{ release[3] }}"
+	/>
+	<beta major="{{ beta[0] }}"
+	minor="{{ beta[1] }}"
+	build="{{ beta[2] }}"
+	executable="/versions/{{ beta[3] }}"
+	/>
+</versions>

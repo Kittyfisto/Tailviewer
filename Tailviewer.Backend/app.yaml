@@ -17,8 +17,9 @@ handlers:
 
 # App Engine serves and caches static files contained in the listed directories
 # (and subdirectories). Uncomment and set the directory as needed.
-#- url: /client
-#  static_dir: client
+- url: /versions
+  static_dir: static
+  application_readable: true
 
 # This handler tells app engine how to route requests to a WSGI application.
 # The script value is in the format <path.to.module>.<wsgi_application>

@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogic\AbstractTest.cs" />
+    <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\DataSourceTest.cs" />
     <Compile Include="BusinessLogic\FilteredAndMergedLogFileAcceptanceTest.cs" />
@@ -119,6 +120,9 @@
     <Content Include="TestData\20Mb.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\query_version.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\TestLive1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -129,7 +133,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
-      <Name>SharpTail</Name>
+      <Name>Tailviewer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
