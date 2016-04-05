@@ -399,7 +399,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public string FullFileName
 		{
 			get { return _settings.File; }
-			set { _settings.File = value; }
 		}
 
 		public bool FollowTail

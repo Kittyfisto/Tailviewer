@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		DateTime LastModified { get; }
 		DateTime LastViewed { get; set; }
 
-		string FullFileName { get; set; }
+		string FullFileName { get; }
 		bool FollowTail { get; set; }
 		string StringFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }

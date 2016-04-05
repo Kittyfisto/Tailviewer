@@ -59,6 +59,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Wait(TimeSpan.MaxValue);
 		}
 
+		public abstract bool Exists { get; }
 		public abstract DateTime? StartTimestamp { get; }
 		public abstract DateTime LastModified { get; }
 		public abstract Size FileSize { get; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -9,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
 using log4net;
@@ -65,8 +65,12 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("TotalLogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(int)));
 
-		public static readonly DependencyProperty NoEntriesExplanationProperty =
-			DependencyProperty.Register("NoEntriesExplanation", typeof (string), typeof (LogViewerControl),
+		public static readonly DependencyProperty ErrorMessageProperty =
+			DependencyProperty.Register("ErrorMessage", typeof(string), typeof(LogViewerControl),
+			                            new PropertyMetadata(default(string)));
+
+		public static readonly DependencyProperty DetailedErrorMessageProperty =
+			DependencyProperty.Register("DetailedErrorMessage", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(string)));
 
 		private bool _logged;
@@ -88,10 +92,16 @@ namespace Tailviewer.Ui.Controls
 			SizeChanged += OnSizeChanged;
 		}
 
-		public string NoEntriesExplanation
+		public string DetailedErrorMessage
 		{
-			get { return (string) GetValue(NoEntriesExplanationProperty); }
-			set { SetValue(NoEntriesExplanationProperty, value); }
+			get { return (string) GetValue(DetailedErrorMessageProperty); }
+			set { SetValue(DetailedErrorMessageProperty, value); }
+		}
+
+		public string ErrorMessage
+		{
+			get { return (string) GetValue(ErrorMessageProperty); }
+			set { SetValue(ErrorMessageProperty, value); }
 		}
 
 		public bool? ShowAll
@@ -165,14 +175,16 @@ namespace Tailviewer.Ui.Controls
 			ListView listViewer = _partListView;
 			if (listViewer != null)
 			{
-				var items = listViewer.SelectedItems;
-				var viewModels = items != null ? items.Cast<LogEntryViewModel>() : Enumerable.Empty<LogEntryViewModel>();
+				IList items = listViewer.SelectedItems;
+				IEnumerable<LogEntryViewModel> viewModels = items != null
+					                                            ? items.Cast<LogEntryViewModel>()
+					                                            : Enumerable.Empty<LogEntryViewModel>();
 				var builder = new StringBuilder();
-				foreach (var item in viewModels)
+				foreach (LogEntryViewModel item in viewModels)
 				{
 					builder.AppendLine(item.Message);
 				}
-				var message = builder.ToString();
+				string message = builder.ToString();
 				Clipboard.SetText(message);
 			}
 		}

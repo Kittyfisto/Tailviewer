@@ -29,6 +29,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_indices = new List<int>();
 		}
 
+		public override bool Exists
+		{
+			get { return _source.Exists; }
+		}
+
 		public override DateTime? StartTimestamp
 		{
 			get { return _source.StartTimestamp; }

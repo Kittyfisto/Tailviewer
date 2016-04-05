@@ -4,7 +4,6 @@ using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -26,10 +25,29 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestDataSourceDoesntExist()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(false);
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
+			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
+		}
+
+		[Test]
 		public void TestDataSourceEmpty()
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(true);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
@@ -45,6 +63,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -63,6 +82,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -82,6 +102,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();

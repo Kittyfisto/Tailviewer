@@ -49,6 +49,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _sources; }
 		}
 
+		public override bool Exists
+		{
+			get
+			{
+				// This should return false in order to show a detailed error
+				// message as to why a view is empty, however I'm not sure if stating
+				// "All data sources do not exist" is such an improvement over
+				// "The data source is empty".
+				return true;
+			}
+		}
+
 		public override DateTime? StartTimestamp
 		{
 			get { return _startTimestamp; }

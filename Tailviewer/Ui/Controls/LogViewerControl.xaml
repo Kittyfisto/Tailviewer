@@ -14,7 +14,7 @@
     <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
     <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
-    
+
     <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
     <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
     <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
@@ -41,8 +41,7 @@
                                 VerticalAlignment="Center"
                                 Command="{Binding DataSource.OpenInExplorerCommand, RelativeSource={RelativeSource TemplatedParent}}">
                                 <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
-                                       ToolTip="Open folder in explorer"
-                                       />
+                                       ToolTip="Open folder in explorer" />
                             </Button>
 
                             <metrolib:TextToggleButton
@@ -52,7 +51,7 @@
                                 Content="Follow Tail"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
- 
+
                             <metrolib:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
@@ -67,8 +66,7 @@
                                 Width="41"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowAll, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}"
-                                />
+                                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
                             <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
@@ -123,13 +121,11 @@
                             BorderThickness="0"
                             VirtualizingPanel.IsVirtualizing="True"
                             ScrollViewer.VerticalScrollBarVisibility="Visible"
-                            SnapsToDevicePixels="True"
-                            >
+                            SnapsToDevicePixels="True">
 
                             <ListView.InputBindings>
                                 <KeyBinding Modifiers="Control" Key="C"
-                                            Command="{Binding CopySelectedLineToClipboardCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                                            />
+                                            Command="{Binding CopySelectedLineToClipboardCommand, RelativeSource={RelativeSource TemplatedParent}}" />
                             </ListView.InputBindings>
 
                             <ListView.Resources>
@@ -138,8 +134,7 @@
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListViewItem">
                                                 <Border Background="{TemplateBinding Background}"
-                                                        BorderThickness="0"
-                                                        >
+                                                        BorderThickness="0">
                                                     <TextBlock Text="{Binding Message}" />
                                                 </Border>
                                             </ControlTemplate>
@@ -147,8 +142,10 @@
                                     </Setter>
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="true">
-                                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
-                                            <Setter Property="TextElement.Foreground" Value="{StaticResource TextBrushSelected}" />
+                                            <Setter Property="Background"
+                                                    Value="{StaticResource BackgroundBrushSelected}" />
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{StaticResource TextBrushSelected}" />
                                         </Trigger>
                                         <MultiTrigger>
                                             <MultiTrigger.Conditions>
@@ -196,12 +193,17 @@
                             </ListView.Resources>
                         </ListView>
 
-                        <TextBlock Grid.Row="2"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   FontSize="20"
-                                   Text="{Binding NoEntriesExplanation, RelativeSource={RelativeSource TemplatedParent}}"
-                                   />
+
+                        <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="20"
+                                Text="{Binding ErrorMessage, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="12"
+                                Text="{Binding DetailedErrorMessage, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </StackPanel>
 
                         <Border Grid.Row="3"
                                 Background="#D8D8D8">

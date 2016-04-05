@@ -122,7 +122,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _entries.Count; }
 		}
 
-		public bool Exists
+		public override bool Exists
 		{
 			get { return _exists; }
 		}

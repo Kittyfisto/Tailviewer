@@ -12,6 +12,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		Size FileSize { get; }
 
+		/// <summary>
+		/// Whether or not the datasource exists (is reachable).
+		/// </summary>
+		bool Exists { get; }
+
 		void Wait();
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		void Remove(ILogFileListener listener);
