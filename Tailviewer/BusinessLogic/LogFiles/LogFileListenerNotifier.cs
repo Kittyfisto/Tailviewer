@@ -75,7 +75,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void Invalidate(int firstIndex, int count)
 		{
-			var lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
+			int lastIndex = Math.Min(firstIndex + count, _lastNumberOfLines);
 			int invalidateCount = lastIndex - firstIndex;
 			// When the start index of the invalidation is greater than the last reported index
 			// then this means that our listeners haven't even gotten the change yet and thus

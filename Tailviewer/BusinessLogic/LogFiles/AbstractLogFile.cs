@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Metrolib;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -33,6 +34,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _listeners; }
 		}
 
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
+		}
+
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
@@ -41,11 +47,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public void Remove(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
-		}
-
-		public bool IsDisposed
-		{
-			get { return _isDisposed; }
 		}
 
 		public virtual void Dispose()

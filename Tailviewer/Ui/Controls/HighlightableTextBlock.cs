@@ -11,29 +11,29 @@ namespace Tailviewer.Ui.Controls
 		: TextBlock
 	{
 		public static readonly DependencyProperty FilterStringProperty =
-			DependencyProperty.Register("StringFilter", typeof(string), typeof(HighlightableTextBlock),
-										new PropertyMetadata(default(string), OnFilterStringChanged));
+			DependencyProperty.Register("StringFilter", typeof (string), typeof (HighlightableTextBlock),
+			                            new PropertyMetadata(default(string), OnFilterStringChanged));
 
 		public static readonly DependencyProperty LogEntryProperty =
-			DependencyProperty.Register("LogEntry", typeof(LogEntryViewModel), typeof(HighlightableTextBlock),
-										new PropertyMetadata(default(LogEntryViewModel), OnLogEntryChanged));
+			DependencyProperty.Register("LogEntry", typeof (LogEntryViewModel), typeof (HighlightableTextBlock),
+			                            new PropertyMetadata(default(LogEntryViewModel), OnLogEntryChanged));
 
 		public LogEntryViewModel LogEntry
 		{
-			get { return (LogEntryViewModel)GetValue(LogEntryProperty); }
+			get { return (LogEntryViewModel) GetValue(LogEntryProperty); }
 			set { SetValue(LogEntryProperty, value); }
 		}
 
 		public string FilterString
 		{
-			get { return (string)GetValue(FilterStringProperty); }
+			get { return (string) GetValue(FilterStringProperty); }
 			set { SetValue(FilterStringProperty, value); }
 		}
 
 		private static void OnFilterStringChanged(DependencyObject dependencyObject,
-												  DependencyPropertyChangedEventArgs e)
+		                                          DependencyPropertyChangedEventArgs e)
 		{
-			((HighlightableTextBlock)dependencyObject).OnFilterStringChanged((string)e.NewValue);
+			((HighlightableTextBlock) dependencyObject).OnFilterStringChanged((string) e.NewValue);
 		}
 
 		private void OnFilterStringChanged(string filterString)
@@ -42,9 +42,9 @@ namespace Tailviewer.Ui.Controls
 		}
 
 		private static void OnLogEntryChanged(DependencyObject dependencyObject,
-											  DependencyPropertyChangedEventArgs e)
+		                                      DependencyPropertyChangedEventArgs e)
 		{
-			((HighlightableTextBlock)dependencyObject).OnLogEntryChanged((LogEntryViewModel)e.NewValue);
+			((HighlightableTextBlock) dependencyObject).OnLogEntryChanged((LogEntryViewModel) e.NewValue);
 		}
 
 		private void OnLogEntryChanged(LogEntryViewModel logEntry)
@@ -61,7 +61,7 @@ namespace Tailviewer.Ui.Controls
 			}
 			else
 			{
-				var message = logEntry.Message;
+				string message = logEntry.Message;
 				if (string.IsNullOrEmpty(filterString))
 				{
 					var item = new Run(message);
@@ -81,7 +81,7 @@ namespace Tailviewer.Ui.Controls
 						}
 
 						TryAddFromTo(message, last, idx);
-						var run = AddFromLength(message, idx, filterString.Length);
+						Inline run = AddFromLength(message, idx, filterString.Length);
 						run.Background = Brushes.LightBlue;
 
 						idx += filterString.Length;
@@ -94,7 +94,7 @@ namespace Tailviewer.Ui.Controls
 
 		private Inline AddFromLength(string message, int from, int length)
 		{
-			var substr = message.Substring(from, length);
+			string substr = message.Substring(from, length);
 			var item = new Run(substr);
 			Inlines.Add(item);
 			return item;

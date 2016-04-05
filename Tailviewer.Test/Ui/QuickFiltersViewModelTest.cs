@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -29,7 +28,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAdd()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(new DataSource("sw"){Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(new DataSource("sw") {Id = Guid.NewGuid()});
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
@@ -39,7 +38,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(new DataSource("sw"){Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(new DataSource("sw") {Id = Guid.NewGuid()});
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
 
@@ -54,7 +53,8 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeFilterType1()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			model.CurrentDataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("adw"){Id=Guid.NewGuid()}));
+			model.CurrentDataSource =
+				new SingleDataSourceViewModel(new SingleDataSource(new DataSource("adw") {Id = Guid.NewGuid()}));
 
 			int numFilterChanges = 0;
 			QuickFilterViewModel filter = model.AddQuickFilter();
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor2()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(new DataSource("daw"){Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(new DataSource("daw") {Id = Guid.NewGuid()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);

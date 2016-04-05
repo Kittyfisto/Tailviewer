@@ -66,7 +66,7 @@ namespace Tailviewer.Ui.Controls
 			                            new PropertyMetadata(default(int)));
 
 		public static readonly DependencyProperty ErrorMessageProperty =
-			DependencyProperty.Register("ErrorMessage", typeof(string), typeof(LogViewerControl),
+			DependencyProperty.Register("ErrorMessage", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(string)));
 
 		public static readonly DependencyProperty DetailedErrorMessageProperty =

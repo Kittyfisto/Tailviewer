@@ -14,7 +14,7 @@ namespace Tailviewer.Test
 
 		public Logger(string fileName)
 		{
-			_hierarchy = (Hierarchy)LogManager.GetRepository();
+			_hierarchy = (Hierarchy) LogManager.GetRepository();
 
 			var patternLayout = new PatternLayout
 				{

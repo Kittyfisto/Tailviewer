@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.Converters
@@ -28,57 +27,6 @@ namespace Tailviewer.Ui.Converters
 		public BrushType Type { get; set; }
 		public bool IsHovered { get; set; }
 		public bool IsSelected { get; set; }
-
-		private Brush Error()
-		{
-			switch (Type)
-			{
-				case BrushType.Foreground:
-					return Brushes.White;
-
-				case BrushType.Background:
-					return IsHovered
-							   ? ErrorHighlightBackgroundBrush
-							   : ErrorBackgroundBrush;
-
-				default:
-					return null;
-			}
-		}
-
-		private Brush Warning()
-		{
-			switch (Type)
-			{
-				case BrushType.Foreground:
-					return Brushes.Black;
-
-				case BrushType.Background:
-					return IsHovered
-							   ? WarningHighlightBackgroundBrush
-							   : WarningBackgroundBrush;
-
-				default:
-					return null;
-			}
-		}
-
-		private Brush Default()
-		{
-			switch (Type)
-			{
-				case BrushType.Foreground:
-					return Brushes.Black;
-
-				case BrushType.Background:
-					return IsHovered
-						       ? HighlightBackgroundBrush
-						       : Brushes.Transparent;
-
-				default:
-					return null;
-			}
-		}
 
 		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -110,8 +58,64 @@ namespace Tailviewer.Ui.Converters
 
 				case BrushType.Background:
 					return IsHovered
-						   ? HighlightBackgroundBrush
-						   : Brushes.Transparent;
+						       ? HighlightBackgroundBrush
+						       : Brushes.Transparent;
+
+				default:
+					return null;
+			}
+		}
+
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+		{
+			return null;
+		}
+
+		private Brush Error()
+		{
+			switch (Type)
+			{
+				case BrushType.Foreground:
+					return Brushes.White;
+
+				case BrushType.Background:
+					return IsHovered
+						       ? ErrorHighlightBackgroundBrush
+						       : ErrorBackgroundBrush;
+
+				default:
+					return null;
+			}
+		}
+
+		private Brush Warning()
+		{
+			switch (Type)
+			{
+				case BrushType.Foreground:
+					return Brushes.Black;
+
+				case BrushType.Background:
+					return IsHovered
+						       ? WarningHighlightBackgroundBrush
+						       : WarningBackgroundBrush;
+
+				default:
+					return null;
+			}
+		}
+
+		private Brush Default()
+		{
+			switch (Type)
+			{
+				case BrushType.Foreground:
+					return Brushes.Black;
+
+				case BrushType.Background:
+					return IsHovered
+						       ? HighlightBackgroundBrush
+						       : Brushes.Transparent;
 
 				default:
 					return null;
@@ -122,8 +126,8 @@ namespace Tailviewer.Ui.Converters
 		{
 			if (values != null && values.Length >= 2)
 			{
-				var lvl = values[0];
-				var clr = values[1];
+				object lvl = values[0];
+				object clr = values[1];
 				if (lvl is LevelFlags && clr is bool)
 				{
 					level = (LevelFlags) lvl;
@@ -135,11 +139,6 @@ namespace Tailviewer.Ui.Converters
 			level = LevelFlags.None;
 			hasColors = false;
 			return false;
-		}
-
-		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-		{
-			return null;
 		}
 	}
 }

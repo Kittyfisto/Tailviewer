@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -15,14 +14,12 @@ namespace Tailviewer.Ui
 		private static AdornerLayer _adornerLayer;
 		private static DataSourceDropAdorner _dropAdorner;
 		private static DataSourceArrangeAdorner _arrangeAdorner;
+		private static int i = 0;
 
 		public static AdornerLayer AdornerLayer
 		{
 			get { return _adornerLayer; }
-			set
-			{
-				_adornerLayer = value;
-			}
+			set { _adornerLayer = value; }
 		}
 
 		public static void OnMouseMove(MouseEventArgs e)
@@ -37,7 +34,7 @@ namespace Tailviewer.Ui
 		{
 			if (_dragAdorner != null)
 			{
-				var position = e.GetPosition(_adornerLayer);
+				Point position = e.GetPosition(_adornerLayer);
 				_dragAdorner.UpdatePosition(position.X, position.Y);
 			}
 		}
@@ -48,7 +45,7 @@ namespace Tailviewer.Ui
 			{
 				Point position = e.GetPosition(_adornerLayer);
 				if ((Math.Abs(position.X - _dragStartPosition.X) > SystemParameters.MinimumHorizontalDragDistance ||
-					Math.Abs(position.Y - _dragStartPosition.Y) > SystemParameters.MinimumVerticalDragDistance))
+				     Math.Abs(position.Y - _dragStartPosition.Y) > SystemParameters.MinimumVerticalDragDistance))
 				{
 					return true;
 				}
@@ -82,7 +79,8 @@ namespace Tailviewer.Ui
 		public static void AdornDropTarget(DropInfo dropInfo)
 		{
 			if (dropInfo == null) throw new ArgumentNullException("dropInfo");
-			if (dropInfo.Type == DataSourceDropType.None) throw new ArgumentException("dropInfo.DropType may not be set to none");
+			if (dropInfo.Type == DataSourceDropType.None)
+				throw new ArgumentException("dropInfo.DropType may not be set to none");
 
 			if (dropInfo.Type.HasFlag(DataSourceDropType.Group))
 			{
@@ -106,8 +104,6 @@ namespace Tailviewer.Ui
 				RemoveArrangeAdorner();
 			}
 		}
-
-		private static int i = 0;
 
 		public static void RemoveArrangeAdorner()
 		{
@@ -135,7 +131,7 @@ namespace Tailviewer.Ui
 				_adornerLayer.Add(_arrangeAdorner);
 			}
 			else if (!Equals(_arrangeAdorner.AdornedElement, treeViewItem) ||
-				_arrangeAdorner.DropType != dropType)
+			         _arrangeAdorner.DropType != dropType)
 			{
 				RemoveArrangeAdorner();
 

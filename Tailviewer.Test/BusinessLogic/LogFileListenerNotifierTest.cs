@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic
@@ -128,7 +127,8 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		[Description(
+			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate2()
 		{
 			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
@@ -140,13 +140,14 @@ namespace Tailviewer.Test.BusinessLogic
 					new LogFileSection(0, 10),
 					new LogFileSection(0, 10, true)
 				},
-				"Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
+			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
 			notifier.LastNumberOfLines.Should().Be(0);
 		}
 
 		[Test]
-		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		[Description(
+			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate3()
 		{
 			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromSeconds(1), 10);
@@ -160,13 +161,14 @@ namespace Tailviewer.Test.BusinessLogic
 					new LogFileSection(10, 10),
 					new LogFileSection(0, 20, true)
 				},
-				"Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
+			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
 			notifier.LastNumberOfLines.Should().Be(0);
 		}
 
 		[Test]
-		[Description("Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
+		[Description(
+			"Verifies that the Invalidate() arguments are adjusted to reflect the changes that were actually propagated")]
 		public void TestInvalidate4()
 		{
 			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);

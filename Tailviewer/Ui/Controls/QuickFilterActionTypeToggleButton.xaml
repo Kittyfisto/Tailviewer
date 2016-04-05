@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
     <Style TargetType="{x:Type local:QuickFilterActionTypeToggleButton}">
         <Setter Property="Template">
             <Setter.Value>
@@ -17,9 +17,16 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <metrolib:OneWayToggle IsChecked="{Binding ExcludeNonMatched, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Content="Include" ToolTip="Exclude all entries that do NOT match" />
-                            <metrolib:OneWayToggle IsChecked="{Binding ExcludeMatched, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Content="Exclude" ToolTip="Exclude all entries that do match" Grid.Column="1" HasLeftBorder="False" HasRightBorder="False" />
-                            <metrolib:OneWayToggle IsChecked="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"  Content="Color" Grid.Column="2" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding ExcludeNonMatched, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Include" ToolTip="Exclude all entries that do NOT match" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding ExcludeMatched, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Exclude" ToolTip="Exclude all entries that do match" Grid.Column="1"
+                                HasLeftBorder="False" HasRightBorder="False" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Color" Grid.Column="2" />
 
                         </Grid>
 

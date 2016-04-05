@@ -14,17 +14,17 @@ namespace Tailviewer.BusinessLogic.Filters
 			if (ignoreCase)
 				options |= RegexOptions.IgnoreCase;
 
-			var regexPattern = Regex.Escape(pattern)
-			                        .Replace(@"\*", ".*")
-			                        .Replace(@"\?", ".");
+			string regexPattern = Regex.Escape(pattern)
+			                           .Replace(@"\*", ".*")
+			                           .Replace(@"\?", ".");
 			_regex = new Regex(regexPattern, options);
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (var logLine in logEntry)
-			// ReSharper restore LoopCanBeConvertedToQuery
+			foreach (LogLine logLine in logEntry)
+				// ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))
 					return true;

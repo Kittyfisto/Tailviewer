@@ -2,13 +2,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public sealed class FilteredLogFile
 		: AbstractLogFile
-		, ILogFileListener
+		  , ILogFileListener
 	{
 		private const int BatchSize = 1000;
 
@@ -60,6 +61,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		{
+			_pendingModifications.Enqueue(section);
+			EndOfSectionReset();
+		}
+
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
@@ -95,12 +102,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
-		{
-			_pendingModifications.Enqueue(section);
-			EndOfSectionReset();
-		}
-
 		public void Start(TimeSpan maximumWaitTime)
 		{
 			_source.AddListener(this, maximumWaitTime, BatchSize);
@@ -126,7 +127,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					}
 					else if (section.InvalidateSection)
 					{
-						var startIndex = section.Index;
+						LogLineIndex startIndex = section.Index;
 						_fullSourceSection = new LogFileSection(0, (int) startIndex);
 
 						if (currentSourceIndex > _fullSourceSection.LastIndex)
@@ -186,7 +187,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			while (lastLogEntry.Count > 0)
 			{
 				int i = lastLogEntry.Count - 1;
-				var line = lastLogEntry[i];
+				LogLine line = lastLogEntry[i];
 				if (line.LineIndex >= currentSourceIndex)
 				{
 					lastLogEntry.RemoveAt(i);

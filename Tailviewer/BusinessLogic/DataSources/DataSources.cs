@@ -17,9 +17,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<IDataSource> _dataSources;
+		private readonly TimeSpan _maximumWaitTime;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
-		private readonly TimeSpan _maximumWaitTime;
 
 		public DataSources(Settings.DataSources settings)
 		{
@@ -34,9 +34,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 				AddDataSource(dataSource);
 			}
 
-			foreach (var dataSource in _dataSources)
+			foreach (IDataSource dataSource in _dataSources)
 			{
-				var parentId = dataSource.Settings.ParentId;
+				Guid parentId = dataSource.Settings.ParentId;
 				if (parentId != Guid.Empty)
 				{
 					var parent = _dataSources.FirstOrDefault(x => x.Id == parentId) as MergedDataSource;

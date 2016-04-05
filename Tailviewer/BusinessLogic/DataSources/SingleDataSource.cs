@@ -11,7 +11,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public SingleDataSource(DataSource settings)
 			: this(settings, TimeSpan.FromMilliseconds(100))
-		{}
+		{
+		}
 
 		public SingleDataSource(DataSource settings, TimeSpan maximumWaitTime)
 			: base(settings, maximumWaitTime)

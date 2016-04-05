@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
@@ -28,19 +27,6 @@ namespace Tailviewer.Ui.ViewModels
 			_removeCommand = new DelegateCommand(() => onRemove(this));
 
 			UpdateValidity();
-		}
-
-		private void UpdateValidity()
-		{
-			try
-			{
-				_quickFilter.CreateFilter();
-				IsValid = true;
-			}
-			catch (ArgumentException)
-			{
-				IsValid = false;
-			}
 		}
 
 		public bool IsValid
@@ -166,6 +152,19 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void UpdateValidity()
+		{
+			try
+			{
+				_quickFilter.CreateFilter();
+				IsValid = true;
+			}
+			catch (ArgumentException)
+			{
+				IsValid = false;
+			}
+		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{

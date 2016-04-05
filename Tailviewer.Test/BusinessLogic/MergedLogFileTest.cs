@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic
@@ -11,6 +10,50 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class MergedLogFileTest
 	{
+		private static Mock<ILogFile> CreateLogFile(List<LogLine> lines)
+		{
+			var source = new Mock<ILogFile>();
+			source.Setup(x => x.GetLine(It.IsAny<int>()))
+			      .Returns((int index) => lines[index]);
+			source.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
+			      .Callback((LogFileSection section, LogLine[] data) => lines.CopyTo((int) section.Index, data, 0, section.Count));
+			return source;
+		}
+
+		private static List<LogFileSection> ListenToChanges(ILogFile logFile)
+		{
+			var changes = new List<LogFileSection>();
+			var listener = new Mock<ILogFileListener>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogFile file, LogFileSection section) => { changes.Add(section); });
+			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
+			return changes;
+		}
+
+		private static List<LogLine> Listen(ILogFile logFile)
+		{
+			var data = new List<LogLine>();
+			var listener = new Mock<ILogFileListener>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogFile file, LogFileSection section) =>
+				        {
+					        if (section.IsReset)
+					        {
+						        data.Clear();
+					        }
+					        else if (section.InvalidateSection)
+					        {
+						        data.RemoveRange((int) section.Index, section.Count);
+					        }
+					        else
+					        {
+						        data.AddRange(file.GetSection(section));
+					        }
+				        });
+			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
+			return data;
+		}
+
 		[Test]
 		[Description("Verifies that creating a merged log file from two sources is possible")]
 		public void TestCtor1()
@@ -22,24 +65,6 @@ namespace Tailviewer.Test.BusinessLogic
 			new Action(() => logFile = new MergedLogFile(source1.Object, source2.Object))
 				.ShouldNotThrow();
 			logFile.Should().NotBeNull();
-		}
-
-		[Test]
-		[Description("Verifies that starting a merged log file causes it to add listeners with the source files")]
-		public void TestStart1()
-		{
-			var source = new Mock<ILogFile>();
-			var listeners = new List<Tuple<ILogFileListener, TimeSpan, int>>();
-			source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-			      .Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => listeners.Add(Tuple.Create(listener, maximumWaitTime, maximumLineCount)));
-
-			var logFile = new MergedLogFile(source.Object);
-			var waitTime = TimeSpan.FromSeconds(1);
-			new Action(() => logFile.Start(waitTime)).ShouldNotThrow();
-			listeners.Count.Should().Be(1, "Because the merged file should have registered exactly 1 listener with the source file");
-			listeners[0].Item1.Should().NotBeNull();
-			listeners[0].Item2.Should().Be(waitTime);
-			listeners[0].Item3.Should().BeGreaterThan(0);
 		}
 
 		[Test]
@@ -65,24 +90,14 @@ namespace Tailviewer.Test.BusinessLogic
 			new Action(logFile.Dispose).ShouldNotThrow();
 		}
 
-		private static Mock<ILogFile> CreateLogFile(List<LogLine> lines)
-		{
-			var source = new Mock<ILogFile>();
-			source.Setup(x => x.GetLine(It.IsAny<int>()))
-			      .Returns((int index) => lines[index]);
-			source.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-				   .Callback((LogFileSection section, LogLine[] data) => lines.CopyTo((int) section.Index, data, 0, section.Count));
-			return source;
-		}
-
 		[Test]
 		public void TestMerge1()
 		{
 			var source = new List<LogLine>();
-			var source1 = CreateLogFile(source);
+			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			var merged = new MergedLogFile(source1.Object, source2.Object);
-			var data = Listen(merged);
+			List<LogLine> data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, 0, "foobar", LevelFlags.Info, DateTime.Now));
@@ -98,10 +113,10 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestMerge2()
 		{
 			var source = new List<LogLine>();
-			var source1 = CreateLogFile(source);
+			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			var merged = new MergedLogFile(source1.Object, source2.Object);
-			var data = Listen(merged);
+			List<LogLine> data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, "a", LevelFlags.Info, DateTime.Now));
@@ -115,20 +130,21 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Description("Verifies that the order of OnLogFileModified invocations is preserved when invoked from 2 data sources")]
+		[Description("Verifies that the order of OnLogFileModified invocations is preserved when invoked from 2 data sources")
+		]
 		public void TestMerge3()
 		{
 			var source1 = new List<LogLine>();
-			var logFile1 = CreateLogFile(source1);
+			Mock<ILogFile> logFile1 = CreateLogFile(source1);
 
 			var source2 = new List<LogLine>();
-			var logFile2 = CreateLogFile(source2);
+			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			var data = Listen(merged);
+			List<LogLine> data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
-			var timestamp = DateTime.Now;
+			DateTime timestamp = DateTime.Now;
 			source1.Add(new LogLine(0, "a", LevelFlags.Info, timestamp));
 			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
 			merged.Wait();
@@ -139,7 +155,7 @@ namespace Tailviewer.Test.BusinessLogic
 
 			merged.Count.Should().Be(2);
 
-			data.Should().Equal(new object[]{source1[0], source2[0]});
+			data.Should().Equal(new object[] {source1[0], source2[0]});
 		}
 
 		[Test]
@@ -147,10 +163,10 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestMerge4()
 		{
 			var source = new List<LogLine>();
-			var source1 = CreateLogFile(source);
+			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			var merged = new MergedLogFile(source1.Object, source2.Object);
-			var data = Listen(merged);
+			List<LogLine> data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, "a", LevelFlags.Warning, DateTime.Now));
@@ -161,7 +177,7 @@ namespace Tailviewer.Test.BusinessLogic
 
 			merged.Count.Should().Be(2);
 
-			data.Should().Equal(new []
+			data.Should().Equal(new[]
 				{
 					new LogLine(0, 0, source[0]),
 					new LogLine(1, 1, source[2]),
@@ -169,17 +185,18 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")]
+		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")
+		]
 		public void TestMerge5()
 		{
 			var source1 = new List<LogLine>();
-			var logFile1 = CreateLogFile(source1);
+			Mock<ILogFile> logFile1 = CreateLogFile(source1);
 
 			var source2 = new List<LogLine>();
-			var logFile2 = CreateLogFile(source2);
+			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			var data = Listen(merged);
+			List<LogLine> data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			var later = new DateTime(2016, 2, 16);
@@ -203,20 +220,22 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		[Description("Verifies that Reset() events from an always empty data source do not result in reset events from the merged log file")]
+		[Description(
+			"Verifies that Reset() events from an always empty data source do not result in reset events from the merged log file"
+			)]
 		public void TestMerge6()
 		{
 			var source1 = new List<LogLine>();
-			var logFile1 = CreateLogFile(source1);
+			Mock<ILogFile> logFile1 = CreateLogFile(source1);
 
 			var source2 = new List<LogLine>();
-			var timestamp = DateTime.Now;
+			DateTime timestamp = DateTime.Now;
 			source2.Add(new LogLine(0, 0, "Hello World", LevelFlags.Info, timestamp));
-			var logFile2 = CreateLogFile(source2);
+			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			var data = Listen(merged);
-			var changes = ListenToChanges(merged);
+			List<LogLine> data = Listen(merged);
+			List<LogFileSection> changes = ListenToChanges(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
@@ -236,41 +255,25 @@ namespace Tailviewer.Test.BusinessLogic
 				});
 		}
 
-		private static List<LogFileSection> ListenToChanges(ILogFile logFile)
+		[Test]
+		[Description("Verifies that starting a merged log file causes it to add listeners with the source files")]
+		public void TestStart1()
 		{
-			var changes = new List<LogFileSection>();
-			var listener = new Mock<ILogFileListener>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogFile file, LogFileSection section) =>
-				        {
-							changes.Add(section);
-						});
-			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
-			return changes;
-		}
+			var source = new Mock<ILogFile>();
+			var listeners = new List<Tuple<ILogFileListener, TimeSpan, int>>();
+			source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+			      .Callback(
+				      (ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) =>
+				      listeners.Add(Tuple.Create(listener, maximumWaitTime, maximumLineCount)));
 
-		private static List<LogLine> Listen(ILogFile logFile)
-		{
-			var data = new List<LogLine>();
-			var listener = new Mock<ILogFileListener>();
-			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-			        .Callback((ILogFile file, LogFileSection section) =>
-				        {
-							if (section.IsReset)
-							{
-								data.Clear();
-							}
-							else if (section.InvalidateSection)
-							{
-								data.RemoveRange((int) section.Index, section.Count);
-							}
-							else
-							{
-								data.AddRange(file.GetSection(section));
-							}
-				        });
-			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
-			return data;
+			var logFile = new MergedLogFile(source.Object);
+			TimeSpan waitTime = TimeSpan.FromSeconds(1);
+			new Action(() => logFile.Start(waitTime)).ShouldNotThrow();
+			listeners.Count.Should()
+			         .Be(1, "Because the merged file should have registered exactly 1 listener with the source file");
+			listeners[0].Item1.Should().NotBeNull();
+			listeners[0].Item2.Should().Be(waitTime);
+			listeners[0].Item3.Should().BeGreaterThan(0);
 		}
 	}
 }

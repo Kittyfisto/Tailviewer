@@ -7,9 +7,6 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class DragLayerTest
 	{
-		private AdornerLayer _layer;
-		private AdornerDecorator _decorator;
-
 		[SetUp]
 		[STAThread]
 		public void SetUp()
@@ -18,11 +15,13 @@ namespace Tailviewer.Test.Ui
 			_layer = _decorator.AdornerLayer;
 		}
 
+		private AdornerLayer _layer;
+		private AdornerDecorator _decorator;
+
 		[Test]
 		[STAThread]
 		public void TestDoDragDrop1()
 		{
-			
 		}
 	}
 }

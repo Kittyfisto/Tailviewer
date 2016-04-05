@@ -6,8 +6,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
-	/// Combines multiple <see cref="ILogEntryFilter"/>s into one.
-	/// A <see cref="LogLine"/> passes if it passes *all* individual filters.
+	///     Combines multiple <see cref="ILogEntryFilter" />s into one.
+	///     A <see cref="LogLine" /> passes if it passes *all* individual filters.
 	/// </summary>
 	internal sealed class FilterChain
 		: ILogEntryFilter
@@ -25,11 +25,11 @@ namespace Tailviewer.BusinessLogic.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			var passes = new bool[_filters.Length];
-			foreach(var logLine in logEntry)
+			foreach (LogLine logLine in logEntry)
 			{
 				for (int i = 0; i < _filters.Length; ++i)
 				{
-					var filter = _filters[i];
+					ILogEntryFilter filter = _filters[i];
 					if (!passes[i])
 					{
 						passes[i] = filter.PassesFilter(logLine);

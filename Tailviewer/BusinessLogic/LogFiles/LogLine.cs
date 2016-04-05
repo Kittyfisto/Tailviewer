@@ -8,7 +8,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	public struct LogLine : IEquatable<LogLine>
 	{
 		/// <summary>
-		/// 
 		/// </summary>
 		public readonly LevelFlags Level;
 
@@ -36,7 +35,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public LogLine(int lineIndex, string message, LevelFlags level, DateTime? timestamp)
 			: this(lineIndex, lineIndex, message, level, timestamp)
-		{}
+		{
+		}
 
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level)
 			: this(lineIndex, logEntryIndex, message, level, null)

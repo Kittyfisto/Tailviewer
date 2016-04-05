@@ -31,13 +31,13 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			get { return 1; }
 		}
 
-		protected override System.Windows.Size MeasureOverride(System.Windows.Size constraint)
+		protected override Size MeasureOverride(Size constraint)
 		{
 			_contentPresenter.Measure(constraint);
 			return _contentPresenter.DesiredSize;
 		}
 
-		protected override System.Windows.Size ArrangeOverride(System.Windows.Size finalSize)
+		protected override Size ArrangeOverride(Size finalSize)
 		{
 			_contentPresenter.Arrange(new Rect(finalSize));
 			return finalSize;

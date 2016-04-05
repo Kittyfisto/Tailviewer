@@ -9,7 +9,7 @@ namespace Tailviewer.Settings
 		public void Restore(XmlReader reader)
 		{
 			var quickfilters = new List<QuickFilter>();
-			var subtree = reader.ReadSubtree();
+			XmlReader subtree = reader.ReadSubtree();
 			while (subtree.Read())
 			{
 				switch (subtree.Name)
@@ -28,7 +28,7 @@ namespace Tailviewer.Settings
 
 		public void Save(XmlWriter writer)
 		{
-			foreach (var dataSource in this)
+			foreach (QuickFilter dataSource in this)
 			{
 				writer.WriteStartElement("quickfilter");
 				dataSource.Save(writer);

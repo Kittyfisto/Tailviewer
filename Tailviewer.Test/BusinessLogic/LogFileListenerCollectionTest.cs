@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic
@@ -12,10 +11,12 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class LogFileListenerCollectionTest
 	{
 		[Test]
-		[Description("Verifies that AddListener may be called multiple times, but if it is, then events aren't fired multiple times for each invocation")]
+		[Description(
+			"Verifies that AddListener may be called multiple times, but if it is, then events aren't fired multiple times for each invocation"
+			)]
 		public void TestAddListener1()
 		{
-			var logFile = new Mock<ILogFile>().Object;
+			ILogFile logFile = new Mock<ILogFile>().Object;
 			var collection = new LogFileListenerCollection(logFile);
 			var listener = new Mock<ILogFileListener>();
 			var sections = new List<LogFileSection>();

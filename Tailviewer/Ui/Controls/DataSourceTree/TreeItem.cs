@@ -5,7 +5,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	internal sealed class TreeItem
 	{
-		public IDataSourceViewModel ViewModel;
 		public TreeViewItem TreeViewItem;
+		public IDataSourceViewModel ViewModel;
 	}
 }

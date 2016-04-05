@@ -20,6 +20,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_value = value;
 		}
 
+		public bool Equals(LogLineIndex other)
+		{
+			return _value == other._value;
+		}
+
 		public static explicit operator int(LogLineIndex value)
 		{
 			return value._value;
@@ -28,11 +33,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public static implicit operator LogLineIndex(int value)
 		{
 			return new LogLineIndex(value);
-		}
-
-		public bool Equals(LogLineIndex other)
-		{
-			return _value == other._value;
 		}
 
 		public override bool Equals(object obj)

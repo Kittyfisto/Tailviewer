@@ -9,8 +9,10 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/SingleDataSourceTemplate.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/MergedDataSourceTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/SingleDataSourceTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/MergedDataSourceTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
@@ -52,7 +54,6 @@
                                       Grid.Row="2">
 
                                 <TreeView.Resources>
-                                    
 
 
                                     <Style TargetType="TreeViewItem">

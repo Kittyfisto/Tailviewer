@@ -1,0 +1,67 @@
+﻿<Window x:Class="Installer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:viewModels="clr-namespace:Installer"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+        Height="600" Width="480">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock HorizontalAlignment="Center"
+                   FontSize="20">
+            <Run Text="Tailviewer" />
+            <Run Text="{Binding AppVersion}" />
+        </TextBlock>
+
+        <Grid x:Name="PART_Body" Grid.Row="1" Margin="40,50,40,0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Left">
+                    <Run Text="Installation will install " />
+                    <Run Text="{Binding InstallationSize}" />
+                    <Run Text=" to:" />
+                </TextBlock>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding InstallationPath}" />
+                    <Button Content="..." Padding="4" Width="25" Height="25" Command="{Binding BrowseCommand}"
+                            Grid.Column="1" />
+                </Grid>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1">
+                <Run Text="You must agree to the " />
+                <Run Text="License Terms" />
+                <Run
+                    Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
+            </TextBlock>
+
+            <CheckBox
+                Grid.Row="2"
+                Content="I agree to the License terms"
+                IsChecked="{Binding AgreeToLicense}" />
+        </Grid>
+
+        <Button Grid.Row="2"
+                VerticalAlignment="Bottom">
+            <Button.Content>
+                <TextBlock Text="Install"
+                           FontSize="30" />
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>

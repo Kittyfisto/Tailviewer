@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.Converters
 			bool plural = count != 1;
 			var builder = new StringBuilder();
 
-			builder.AppendFormat("{0} log entry",count);
+			builder.AppendFormat("{0} log entry", count);
 			builder.Append(plural ? "s are" : " is");
 			builder.Append(" not displayed in the group because ");
 			builder.AppendFormat(plural ? "they do" : "it does");

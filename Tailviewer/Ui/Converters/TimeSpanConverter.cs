@@ -13,12 +13,12 @@ namespace Tailviewer.Ui.Converters
 				return null;
 
 			var age = (TimeSpan) value;
-			var oneMonth = TimeSpan.FromDays(30);
-			var oneWeek = TimeSpan.FromDays(7);
-			var oneDay = TimeSpan.FromDays(1);
-			var oneHour = TimeSpan.FromHours(1);
-			var oneMinute = TimeSpan.FromMinutes(1);
-			var oneSecond = TimeSpan.FromSeconds(1);
+			TimeSpan oneMonth = TimeSpan.FromDays(30);
+			TimeSpan oneWeek = TimeSpan.FromDays(7);
+			TimeSpan oneDay = TimeSpan.FromDays(1);
+			TimeSpan oneHour = TimeSpan.FromHours(1);
+			TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+			TimeSpan oneSecond = TimeSpan.FromSeconds(1);
 
 			if (age > oneMonth)
 				return Format(age, oneMonth, "day");
@@ -34,6 +34,11 @@ namespace Tailviewer.Ui.Converters
 			return Format(age, oneSecond, "second");
 		}
 
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return null;
+		}
+
 		private object Format(TimeSpan value, TimeSpan divider, string caption)
 		{
 			var number = (int) (value.TotalMilliseconds/divider.TotalMilliseconds);
@@ -41,11 +46,6 @@ namespace Tailviewer.Ui.Converters
 				return string.Format("{0} {1}", number, caption);
 
 			return string.Format("{0} {1}s", number, caption);
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return null;
 		}
 	}
 }

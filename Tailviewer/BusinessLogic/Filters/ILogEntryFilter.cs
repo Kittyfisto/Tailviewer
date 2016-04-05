@@ -7,7 +7,7 @@ namespace Tailviewer.BusinessLogic.Filters
 	public interface ILogEntryFilter
 	{
 		/// <summary>
-		/// Tests if the given entry passes the filter.
+		///     Tests if the given entry passes the filter.
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <returns></returns>

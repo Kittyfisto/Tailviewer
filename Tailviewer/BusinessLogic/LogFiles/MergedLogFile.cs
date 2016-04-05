@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
+using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -87,6 +88,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		{
+			_pendingModifications.Enqueue(new PendingModification(logFile, section));
+			EndOfSectionReset();
+		}
+
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			for (int i = 0; i < section.Count; ++i)
@@ -109,12 +116,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			                             idx.MergedLogEntryIndex,
 			                             line);
 			return actualLine;
-		}
-
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
-		{
-			_pendingModifications.Enqueue(new PendingModification(logFile, section));
-			EndOfSectionReset();
 		}
 
 		protected override void Run(CancellationToken token)
@@ -285,7 +286,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				for (int i = _indices.Count - 1; i >= 0; --i)
 				{
-					var index = _indices[i];
+					Index index = _indices[i];
 					if (index.LogFile == logFile)
 					{
 						_indices.RemoveAt(i);

@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <Style TargetType="{x:Type local:QuickFilterMatchTypeToggleButton}">
         <Setter Property="Template">
@@ -18,9 +18,15 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <metrolib:OneWayToggle IsChecked="{Binding IsStringChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Content="String" />
-                            <metrolib:OneWayToggle IsChecked="{Binding IsWildcardChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Content="Wildcard" Grid.Column="1" HasLeftBorder="False" HasRightBorder="False" />
-                            <metrolib:OneWayToggle IsChecked="{Binding IsRegexChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"  Content="Regexp" Grid.Column="2" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding IsStringChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="String" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding IsWildcardChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Wildcard" Grid.Column="1" HasLeftBorder="False" HasRightBorder="False" />
+                            <controls:OneWayToggle
+                                IsChecked="{Binding IsRegexChecked, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Regexp" Grid.Column="2" />
 
                         </Grid>
 

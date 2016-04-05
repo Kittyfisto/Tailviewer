@@ -5,16 +5,20 @@ namespace Tailviewer.Settings
 {
 	internal sealed class QuickFilter
 	{
-		private Guid _id;
-		public Guid Id { get { return _id; } }
+		public bool IgnoreCase;
 		public QuickFilterMatchType MatchType;
 		public string Value;
-		public bool IgnoreCase;
+		private Guid _id;
 
 		public QuickFilter()
 		{
 			_id = Guid.NewGuid();
 			IgnoreCase = true;
+		}
+
+		public Guid Id
+		{
+			get { return _id; }
 		}
 
 		public bool Restore(XmlReader reader)

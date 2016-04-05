@@ -18,7 +18,7 @@ namespace Tailviewer.Settings
 		{
 			neededPatching = false;
 			var dataSources = new List<DataSource>();
-			var subtree = reader.ReadSubtree();
+			XmlReader subtree = reader.ReadSubtree();
 			Guid selectedItem = Guid.Empty;
 
 			while (subtree.Read())
@@ -50,7 +50,7 @@ namespace Tailviewer.Settings
 
 			Clear();
 			Capacity = dataSources.Count;
-			foreach (var source in dataSources)
+			foreach (DataSource source in dataSources)
 			{
 				Add(source);
 
@@ -74,7 +74,7 @@ namespace Tailviewer.Settings
 		{
 			writer.WriteAttributeGuid("selecteditem", SelectedItem);
 
-			foreach (var dataSource in this)
+			foreach (DataSource dataSource in this)
 			{
 				writer.WriteStartElement("datasource");
 				dataSource.Save(writer);

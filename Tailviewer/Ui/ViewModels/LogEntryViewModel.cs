@@ -1,13 +1,12 @@
-﻿using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
+﻿using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	public sealed class LogEntryViewModel
 	{
 		private readonly int _index;
-		private readonly string _message;
 		private readonly LevelFlags _level;
+		private readonly string _message;
 
 		public LogEntryViewModel(string message)
 		{

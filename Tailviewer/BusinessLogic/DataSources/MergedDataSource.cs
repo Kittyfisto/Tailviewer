@@ -15,7 +15,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public MergedDataSource(DataSource settings)
 			: this(settings, TimeSpan.FromMilliseconds(100))
-		{}
+		{
+		}
 
 		public MergedDataSource(DataSource settings, TimeSpan maximumWaitTime)
 			: base(settings, maximumWaitTime)
@@ -55,7 +56,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public void Remove(IDataSource dataSource)
 		{
 			if (dataSource.ParentId != Id)
-				throw new ArgumentException("This data source belongs to a different parent and thus cannot be removed from this one");
+				throw new ArgumentException(
+					"This data source belongs to a different parent and thus cannot be removed from this one");
 
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");

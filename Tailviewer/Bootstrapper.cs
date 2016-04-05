@@ -21,26 +21,26 @@ namespace Tailviewer
 
 		private static void SetupLoggers()
 		{
-			var hierarchy = (Hierarchy)LogManager.GetRepository();
+			var hierarchy = (Hierarchy) LogManager.GetRepository();
 
 			var patternLayout = new PatternLayout
-			{
-				ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
-			};
+				{
+					ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
+				};
 			patternLayout.ActivateOptions();
 
 			var fileAppender = new RollingFileAppender
-			{
-				AppendToFile = false,
-				File =
-					Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tailviewer",
-								 "Tailviewer.log"),
-				Layout = patternLayout,
-				MaxSizeRollBackups = 20,
-				MaximumFileSize = "1GB",
-				RollingStyle = RollingFileAppender.RollingMode.Size,
-				StaticLogFileName = true
-			};
+				{
+					AppendToFile = false,
+					File =
+						Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tailviewer",
+						             "Tailviewer.log"),
+					Layout = patternLayout,
+					MaxSizeRollBackups = 20,
+					MaximumFileSize = "1GB",
+					RollingStyle = RollingFileAppender.RollingMode.Size,
+					StaticLogFileName = true
+				};
 			fileAppender.ActivateOptions();
 			hierarchy.Root.AddAppender(fileAppender);
 
@@ -55,7 +55,7 @@ namespace Tailviewer
 
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
 		{
-			var name = args.Name;
+			string name = args.Name;
 
 			var assemblyName = new AssemblyName(name);
 			string fileName = assemblyName.Name;
@@ -67,14 +67,14 @@ namespace Tailviewer
 				if (stream == null)
 					return null;
 
-				var data = ReadFully(stream);
+				byte[] data = ReadFully(stream);
 				return Assembly.Load(data);
 			}
 		}
 
 		private static byte[] ReadFully(Stream input)
 		{
-			var buffer = new byte[16 * 1024];
+			var buffer = new byte[16*1024];
 			using (var ms = new MemoryStream())
 			{
 				int read;

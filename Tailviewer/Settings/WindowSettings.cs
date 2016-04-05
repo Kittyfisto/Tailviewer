@@ -52,7 +52,7 @@ namespace Tailviewer.Settings
 						break;
 
 					case "state":
-						State = (WindowState) Enum.Parse(typeof(WindowState), reader.Value);
+						State = (WindowState) Enum.Parse(typeof (WindowState), reader.Value);
 						break;
 				}
 			}

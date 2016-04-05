@@ -6,7 +6,7 @@ namespace Tailviewer
 	{
 		public static int IndexOf<T>(this IEnumerable<T> that, T value)
 		{
-			var it = that.GetEnumerator();
+			IEnumerator<T> it = that.GetEnumerator();
 			int i = 0;
 			while (it.MoveNext())
 			{

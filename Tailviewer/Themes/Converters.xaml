@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
 
-    <metrolib:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
-    <metrolib:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
 
 </ResourceDictionary>

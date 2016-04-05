@@ -8,11 +8,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	public struct LogFileSection : IEquatable<LogFileSection>
 	{
+		public static readonly LogFileSection Reset;
 		public readonly int Count;
 		public readonly LogLineIndex Index;
 		public readonly bool InvalidateSection;
-
-		public static readonly LogFileSection Reset;
 
 		static LogFileSection()
 		{
@@ -39,6 +38,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return Index + Count - 1; }
 		}
 
+		public bool Equals(LogFileSection other)
+		{
+			return Index == other.Index && Count == other.Count;
+		}
+
 		public bool IsEndOfSection(LogLineIndex index)
 		{
 			return index >= Index + Count;
@@ -57,16 +61,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public static LogFileSection MinimumBoundingLine(LogFileSection lhs, LogFileSection rhs)
 		{
-			var minIndex = LogLineIndex.Min(lhs.Index, rhs.Index);
-			var maxIndex = LogLineIndex.Max(lhs.Index + lhs.Count, rhs.Index + rhs.Count);
-			var count = maxIndex - minIndex;
+			LogLineIndex minIndex = LogLineIndex.Min(lhs.Index, rhs.Index);
+			LogLineIndex maxIndex = LogLineIndex.Max(lhs.Index + lhs.Count, rhs.Index + rhs.Count);
+			int count = maxIndex - minIndex;
 
 			return new LogFileSection(minIndex, count);
-		}
-
-		public bool Equals(LogFileSection other)
-		{
-			return Index == other.Index && Count == other.Count;
 		}
 
 		public override bool Equals(object obj)
@@ -79,7 +78,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			unchecked
 			{
-				return ((int)Index*397) ^ Count;
+				return ((int) Index*397) ^ Count;
 			}
 		}
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 
@@ -24,15 +23,16 @@ namespace Tailviewer.Settings
 		/// </summary>
 		public Guid Id;
 
-		/// <summary>
-		/// Uniquely identifies this data-source's parent, if any.
-		/// Set to <see cref="Guid.Empty"/> if this data source has no parent.
-		/// </summary>
-		public Guid ParentId;
-
 		public DateTime LastViewed;
 		public LevelFlags LevelFilter;
 		public int Order;
+
+		/// <summary>
+		///     Uniquely identifies this data-source's parent, if any.
+		///     Set to <see cref="Guid.Empty" /> if this data source has no parent.
+		/// </summary>
+		public Guid ParentId;
+
 		public LogLineIndex SelectedLogLine;
 		public string StringFilter;
 		public LogLineIndex VisibleLogLine;
@@ -53,17 +53,17 @@ namespace Tailviewer.Settings
 			File = file;
 		}
 
+		public List<Guid> ActivatedQuickFilters
+		{
+			get { return _activatedQuickFilters; }
+		}
+
 		public override string ToString()
 		{
 			if (File == null)
 				return string.Format("Merged ({0})", Id);
 
 			return string.Format("{0} ({1})", File, Id);
-		}
-
-		public List<Guid> ActivatedQuickFilters
-		{
-			get { return _activatedQuickFilters; }
 		}
 
 		public void Save(XmlWriter writer)

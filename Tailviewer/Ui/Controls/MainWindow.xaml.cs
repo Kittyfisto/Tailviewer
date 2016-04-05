@@ -41,12 +41,6 @@ namespace Tailviewer.Ui.Controls
 			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
 		}
 
-		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-		{
-			var res = Resources;
-			int n = 0;
-		}
-
 		public ICommand FocusDataSourceSearchCommand
 		{
 			get { return (ICommand) GetValue(FocusDataSourceSearchCommandProperty); }
@@ -57,6 +51,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ICommand) GetValue(FocusLogFileSearchCommandProperty); }
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
+		}
+
+		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			ResourceDictionary res = Resources;
+			int n = 0;
 		}
 
 		private void OnMouseMove(object sender, MouseEventArgs e)

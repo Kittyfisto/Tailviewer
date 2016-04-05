@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -13,23 +12,32 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class QuickFilterViewModelTest
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			_quickFilter = new QuickFilter(new Tailviewer.Settings.QuickFilter());
+			_dataSource = new SingleDataSource(_dataSourceSettings = new DataSource("nothing") {Id = Guid.NewGuid()});
+			_model = new QuickFilterViewModel(_quickFilter, x => { })
+				{
+					CurrentDataSource = _dataSource
+				};
+			_changes = new List<string>();
+			_model.PropertyChanged += (sender, args) => _changes.Add(args.PropertyName);
+		}
+
 		private QuickFilter _quickFilter;
 		private SingleDataSource _dataSource;
 		private QuickFilterViewModel _model;
 		private DataSource _dataSourceSettings;
 		private List<string> _changes;
 
-		[SetUp]
-		public void SetUp()
+		[Test]
+		public void TestChangeType()
 		{
-			_quickFilter = new QuickFilter(new Tailviewer.Settings.QuickFilter());
-			_dataSource = new SingleDataSource(_dataSourceSettings = new DataSource("nothing"){Id = Guid.NewGuid()});
-			_model = new QuickFilterViewModel(_quickFilter, x => {})
-				{
-					CurrentDataSource = _dataSource
-				};
-			_changes = new List<string>();
-			_model.PropertyChanged += (sender, args) => _changes.Add(args.PropertyName);
+			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_changes.Should().Equal(new[] {"MatchType"});
+			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_changes.Should().Equal(new[] {"MatchType"});
 		}
 
 		[Test]
@@ -64,29 +72,20 @@ namespace Tailviewer.Test.Ui
 			_model.IsActive.Should().BeFalse();
 
 			_model.CurrentDataSource = _dataSource;
-			_changes.Should().Equal(new[] { "CanBeActivated", "CanBeActivated" });
+			_changes.Should().Equal(new[] {"CanBeActivated", "CanBeActivated"});
 
 			_model.CurrentDataSource = _dataSource;
-			_changes.Should().Equal(new[] { "CanBeActivated", "CanBeActivated" });
+			_changes.Should().Equal(new[] {"CanBeActivated", "CanBeActivated"});
 		}
 
 		[Test]
 		public void TestIsActive()
 		{
 			_model.IsActive = true;
-			_dataSourceSettings.ActivatedQuickFilters.Should().Equal(new[] { _quickFilter.Id });
+			_dataSourceSettings.ActivatedQuickFilters.Should().Equal(new[] {_quickFilter.Id});
 
 			_model.IsActive = false;
 			_dataSourceSettings.ActivatedQuickFilters.Should().BeEmpty();
-		}
-
-		[Test]
-		public void TestChangeType()
-		{
-			_model.MatchType = QuickFilterMatchType.RegexpFilter;
-			_changes.Should().Equal(new[] { "MatchType" });
-			_model.MatchType = QuickFilterMatchType.RegexpFilter;
-			_changes.Should().Equal(new[] { "MatchType" });
 		}
 	}
 }

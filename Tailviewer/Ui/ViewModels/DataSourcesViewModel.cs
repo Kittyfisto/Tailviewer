@@ -15,9 +15,9 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class DataSourcesViewModel
 		: INotifyPropertyChanged
 	{
+		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
-		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly ApplicationSettings _settings;
 		private IDataSourceViewModel _selectedItem;
 
@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == _selectedItem)
 					return;
 
-				foreach (var dataSource in _allDataSourceViewModels)
+				foreach (IDataSourceViewModel dataSource in _allDataSourceViewModels)
 				{
 					dataSource.IsVisible = false;
 				}
@@ -83,6 +83,8 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get { return _observable; }
 		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void Update()
 		{
@@ -403,8 +405,6 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			viewModel.AddChild(source);
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{

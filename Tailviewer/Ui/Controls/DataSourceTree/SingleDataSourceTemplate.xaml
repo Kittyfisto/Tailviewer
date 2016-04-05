@@ -3,13 +3,14 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:converters2="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <metrolib:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters2:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:CountConverter x:Key="CountConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
@@ -92,17 +93,16 @@
                         Margin="4,0,4,0"
                         HorizontalAlignment="Right"
                         Text="{Binding NewLogLineCount, Converter={StaticResource NewLogLineCountConverter}}"
-                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}"
-                        />
+                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}" />
                 </Grid>
             </Grid>
 
-            <metrolib:RemoveButton VerticalAlignment="Stretch"
-                                HorizontalAlignment="Right"
-                                IsInverted="{Binding IsSelected, RelativeSource=
+            <controls:RemoveButton VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Right"
+                                   IsInverted="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                Command="{Binding RemoveCommand}"
-                                Grid.Column="1" />
+                                   Command="{Binding RemoveCommand}"
+                                   Grid.Column="1" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

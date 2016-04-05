@@ -7,13 +7,9 @@ namespace Tailviewer.Ui.Controls
 	internal class QuickFilterActionTypeToggleButton : Control
 	{
 		public static readonly DependencyProperty FilterActionTypeProperty =
-			DependencyProperty.Register("FilterActionType", typeof (QuickFilterActionType), typeof (QuickFilterActionTypeToggleButton), new PropertyMetadata(default(QuickFilterActionType)));
-
-		public QuickFilterActionType FilterActionType
-		{
-			get { return (QuickFilterActionType) GetValue(FilterActionTypeProperty); }
-			set { SetValue(FilterActionTypeProperty, value); }
-		}
+			DependencyProperty.Register("FilterActionType", typeof (QuickFilterActionType),
+			                            typeof (QuickFilterActionTypeToggleButton),
+			                            new PropertyMetadata(default(QuickFilterActionType)));
 
 		public static readonly DependencyProperty IncludeProperty =
 			DependencyProperty.Register("Include", typeof (bool), typeof (QuickFilterActionTypeToggleButton),
@@ -31,6 +27,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof (QuickFilterActionTypeToggleButton),
 			                                         new FrameworkPropertyMetadata(typeof (QuickFilterActionTypeToggleButton)));
+		}
+
+		public QuickFilterActionType FilterActionType
+		{
+			get { return (QuickFilterActionType) GetValue(FilterActionTypeProperty); }
+			set { SetValue(FilterActionTypeProperty, value); }
 		}
 
 		public bool Include

@@ -27,31 +27,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DependencyProperty.Register("SelectedItem", typeof (IDataSourceViewModel), typeof (DataSourcesControl),
 			                            new PropertyMetadata(null, OnSelectedItemChanged));
 
-		private static void OnSelectedItemChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-		{
-			((DataSourcesControl) dependencyObject).OnSelectedItemChanged((IDataSourceViewModel) e.NewValue);
-		}
-
-		private void OnSelectedItemChanged(IDataSourceViewModel selectedViewModel)
-		{
-			var treeViewItem = GetTreeViewItem(selectedViewModel);
-			if (treeViewItem != null)
-			{
-				treeViewItem.IsSelected = true;
-			}
-			else
-			{
-				Dispatcher.BeginInvoke(new Action(() =>
-					{
-						var item = GetTreeViewItem(selectedViewModel);
-						if (item != null)
-						{
-							item.IsSelected = true;
-						}
-					}));
-			}
-		}
-
 		private static readonly DependencyPropertyKey FilteredItemsSourcePropertyKey
 			= DependencyProperty.RegisterReadOnly("FilteredItemsSource", typeof (ObservableCollection<IDataSourceViewModel>),
 			                                      typeof (DataSourcesControl),
@@ -109,6 +84,31 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private TreeViewItem SelectedTreeViewItem { get; set; }
 
+		private static void OnSelectedItemChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+		{
+			((DataSourcesControl) dependencyObject).OnSelectedItemChanged((IDataSourceViewModel) e.NewValue);
+		}
+
+		private void OnSelectedItemChanged(IDataSourceViewModel selectedViewModel)
+		{
+			TreeViewItem treeViewItem = GetTreeViewItem(selectedViewModel);
+			if (treeViewItem != null)
+			{
+				treeViewItem.IsSelected = true;
+			}
+			else
+			{
+				Dispatcher.BeginInvoke(new Action(() =>
+					{
+						TreeViewItem item = GetTreeViewItem(selectedViewModel);
+						if (item != null)
+						{
+							item.IsSelected = true;
+						}
+					}));
+			}
+		}
+
 		private static void OnStringFilterChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
 		{
 			((DataSourcesControl) dependencyObject).OnStringFilterChanged((string) e.OldValue, (string) e.NewValue);
@@ -164,8 +164,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
 			dropInfo = null;
-			var viewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel ??
-			                e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
+			IDataSourceViewModel viewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel ??
+			                                 e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
 			var source = new TreeItem
 				{
 					ViewModel = viewModel
@@ -173,11 +173,11 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (source.ViewModel == null)
 				return false;
 
-			var dropTarget = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
+			TreeItem dropTarget = GetDataSourceFromPosition(e.GetPosition(_partDataSources));
 			if (dropTarget == null)
 				return false;
 
-			var dropType = GetDropType(e, dropTarget, viewModel);
+			DataSourceDropType dropType = GetDropType(e, dropTarget, viewModel);
 			var model = (MainWindowViewModel) DataContext;
 			IDataSourceViewModel group;
 			if (!model.CanBeDropped(source.ViewModel, dropTarget.ViewModel, dropType, out group))
@@ -198,13 +198,13 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		}
 
 		private DataSourceDropType GetDropType(DragEventArgs e,
-			TreeItem destination,
-			IDataSourceViewModel source)
+		                                       TreeItem destination,
+		                                       IDataSourceViewModel source)
 		{
 			if (destination == null)
 				return DataSourceDropType.None;
 
-			var pos = e.GetPosition(destination.TreeViewItem);
+			Point pos = e.GetPosition(destination.TreeViewItem);
 
 			var dropType = DataSourceDropType.None;
 			double height = destination.TreeViewItem.ActualHeight;
@@ -249,8 +249,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				if (vm != null)
 				{
 					vm.OnDropped(dropInfo.Source.ViewModel,
-						dropInfo.Target.ViewModel,
-						dropInfo.Type);
+					             dropInfo.Target.ViewModel,
+					             dropInfo.Type);
 				}
 
 				e.Handled = true;
@@ -295,7 +295,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private TreeItem GetDataSourceFromPosition(Point position)
 		{
-			var treeViewItem = GetTreeViewItemFromPosition(position);
+			TreeViewItem treeViewItem = GetTreeViewItemFromPosition(position);
 			if (treeViewItem == null)
 			{
 				// I call bullshit, for whatever reason you can find that perfect position
@@ -332,8 +332,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			if (DragLayer.ShouldStartDrag(e))
 			{
-				var source = SelectedItem;
-				var treeViewItem = SelectedTreeViewItem;
+				IDataSourceViewModel source = SelectedItem;
+				TreeViewItem treeViewItem = SelectedTreeViewItem;
 				if (((MainWindowViewModel) DataContext).CanBeDragged(source))
 				{
 					DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
@@ -348,17 +348,17 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		}
 
 		/// <summary>
-		/// Yes, please don't make dealing with a tree complicated or anything...
+		///     Yes, please don't make dealing with a tree complicated or anything...
 		/// </summary>
 		/// <param name="item"></param>
 		/// <returns></returns>
 		private TreeViewItem GetTreeViewItem(IDataSourceViewModel item)
 		{
-			var containerGenerator = _partDataSources.ItemContainerGenerator;
+			ItemContainerGenerator containerGenerator = _partDataSources.ItemContainerGenerator;
 			return GetTreeViewItem(containerGenerator, item);
 		}
 
-		private TreeViewItem GetTreeViewItem( ItemContainerGenerator containerGenerator, IDataSourceViewModel item)
+		private TreeViewItem GetTreeViewItem(ItemContainerGenerator containerGenerator, IDataSourceViewModel item)
 		{
 			var container = (TreeViewItem) containerGenerator.ContainerFromItem(item);
 			if (container != null)
@@ -430,7 +430,6 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 							int filteredIndex = FindFilteredIndex(sourceIndex);
 							FilteredItemsSource.Insert(filteredIndex, model);
 						}
-
 					}
 					break;
 
@@ -441,7 +440,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 					}
 					break;
 
-				/*case NotifyCollectionChangedAction.Reset:
+					/*case NotifyCollectionChangedAction.Reset:
 					foreach (IDataSourceViewModel model in _dataSourceCopy)
 					{
 						model.PropertyChanged -= DataSourceOnPropertyChanged;
@@ -457,9 +456,9 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 		private int FindFilteredIndex(int sourceIndex)
 		{
-			for (int i = sourceIndex-1; i >= 0; --i)
+			for (int i = sourceIndex - 1; i >= 0; --i)
 			{
-				var previousModel = ItemsSource.ElementAt(i);
+				IDataSourceViewModel previousModel = ItemsSource.ElementAt(i);
 				if (PassesFilter(previousModel))
 				{
 					// We found the next predecessor to the given source index that should be

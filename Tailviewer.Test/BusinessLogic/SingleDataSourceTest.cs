@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
@@ -15,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\LevelCounts.txt"){Id = Guid.NewGuid()}))
+			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\LevelCounts.txt") {Id = Guid.NewGuid()}))
 			{
 				dataSource.LogFile.Wait();
 
@@ -33,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount2()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\20Mb.txt") { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\20Mb.txt") {Id = Guid.NewGuid()}))
 			{
 				dataSource.LogFile.Wait();
 
@@ -50,11 +49,11 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that the level of a log line is unambigously defined")]
 		public void TestLevelPrecedence()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\DifferentLevels.txt") {Id = Guid.NewGuid()}))
 			{
 				dataSource.LogFile.Wait();
 				dataSource.LogFile.Count.Should().Be(6);
-				var lines = dataSource.LogFile.GetSection(new LogFileSection(0, 6));
+				LogLine[] lines = dataSource.LogFile.GetSection(new LogFileSection(0, 6));
 				lines[0].Message.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				lines[0].Level.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
 
@@ -71,7 +70,9 @@ namespace Tailviewer.Test.BusinessLogic
 				lines[4].Level.Should().Be(LevelFlags.Fatal, "Because FATAL is the first level to appear in the line");
 
 				lines[5].Message.Should().Be("fatal error info warn debug");
-				lines[5].Level.Should().Be(LevelFlags.Fatal, "Because this line belongs to the previous log entry and thus is marked as fatal as well");
+				lines[5].Level.Should()
+				        .Be(LevelFlags.Fatal,
+				            "Because this line belongs to the previous log entry and thus is marked as fatal as well");
 				lines[5].LogEntryIndex.Should().Be(lines[4].LogEntryIndex);
 
 				dataSource.DebugCount.Should().Be(1);

@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
@@ -14,24 +12,11 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class SingleDataSourceViewModel
 		: AbstractDataSourceViewModel
 	{
-		private readonly ICommand _openInExplorerCommand;
 		private readonly IDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
+		private readonly ICommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
-
-		public bool DisplayNoTimestampCount
-		{
-			get { return _displayNoTimestampCount; }
-			private set
-			{
-				if (value == _displayNoTimestampCount)
-					return;
-
-				_displayNoTimestampCount = value;
-				EmitPropertyChanged();
-			}
-		}
 
 		public SingleDataSourceViewModel(IDataSource dataSource)
 			: base(dataSource)
@@ -46,25 +31,17 @@ namespace Tailviewer.Ui.ViewModels
 			PropertyChanged += OnPropertyChanged;
 		}
 
-		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		public bool DisplayNoTimestampCount
 		{
-			switch (e.PropertyName)
+			get { return _displayNoTimestampCount; }
+			private set
 			{
-				case "IsGrouped":
-				case "NoTimestampCount":
-					UpdateDisplayNoTimestampCount();
-					break;
+				if (value == _displayNoTimestampCount)
+					return;
+
+				_displayNoTimestampCount = value;
+				EmitPropertyChanged();
 			}
-		}
-
-		private void UpdateDisplayNoTimestampCount()
-		{
-			DisplayNoTimestampCount = IsGrouped && NoTimestampCount > 0;
-		}
-
-		public override string ToString()
-		{
-			return DisplayName;
 		}
 
 		public override ICommand OpenInExplorerCommand
@@ -90,6 +67,27 @@ namespace Tailviewer.Ui.ViewModels
 		public string FullName
 		{
 			get { return _dataSource.FullFileName; }
+		}
+
+		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case "IsGrouped":
+				case "NoTimestampCount":
+					UpdateDisplayNoTimestampCount();
+					break;
+			}
+		}
+
+		private void UpdateDisplayNoTimestampCount()
+		{
+			DisplayNoTimestampCount = IsGrouped && NoTimestampCount > 0;
+		}
+
+		public override string ToString()
+		{
+			return DisplayName;
 		}
 
 		private void OpenInExplorer()

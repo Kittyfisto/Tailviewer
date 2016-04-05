@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
-using QuickFilter = Tailviewer.Settings.QuickFilter;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -26,11 +24,11 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestWildcardFilter()
 		{
 			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
-			{
-				Value = "he*rld",
-				IgnoreCase = true,
-				MatchType = QuickFilterMatchType.WildcardFilter
-			};
+				{
+					Value = "he*rld",
+					IgnoreCase = true,
+					MatchType = QuickFilterMatchType.WildcardFilter
+				};
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.None)).Should().BeTrue();
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.None)).Should().BeTrue();
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello Wold!", LevelFlags.None)).Should().BeFalse();

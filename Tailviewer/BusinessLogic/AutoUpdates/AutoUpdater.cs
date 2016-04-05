@@ -66,10 +66,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					}
 				}
 			}
-			remove
-			{
-				_latestVersionChanged.Remove(value);
-			}
+			remove { _latestVersionChanged.Remove(value); }
 		}
 
 		private void OnVersionChecked(Task<VersionInfo> task)

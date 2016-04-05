@@ -41,7 +41,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		[Pure]
 		public ILogEntryFilter CreateFilter()
 		{
-			var value = Value;
+			string value = Value;
 			switch (MatchType)
 			{
 				case QuickFilterMatchType.StringFilter:

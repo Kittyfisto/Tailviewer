@@ -2,15 +2,15 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Tailviewer.Ui.Controls;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls2="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <metrolib:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
-    <metrolib:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <Style TargetType="{x:Type local:QuickFilterControl}">
         <Setter Property="Template">
@@ -37,7 +37,7 @@
                                            FontSize="14"
                                            Margin="8,8,0,0" />
 
-                                <metrolib:AddButton
+                                <controls2:AddButton
                                     Grid.Column="1"
                                     Width="26"
                                     Height="26"
@@ -81,14 +81,14 @@
                                                         IsValid="{Binding IsValid, Mode=OneWay}"
                                                         Watermark="Filter log file" />
 
-                                                    <controls:EditToggleButton
+                                                    <controls2:EditToggleButton
                                                         SnapsToDevicePixels="True"
                                                         x:Name="PART_EditToggleButton"
                                                         Grid.Column="2"
                                                         VerticalAlignment="Stretch"
                                                         IsChecked="{Binding IsEditing, Mode=TwoWay}" />
 
-                                                    <metrolib:RemoveButton
+                                                    <controls2:RemoveButton
                                                         x:Name="PART_RemoveButton"
                                                         Grid.Column="3"
                                                         VerticalAlignment="Stretch"
@@ -106,12 +106,12 @@
                                                     <local:QuickFilterMatchTypeToggleButton
                                                         QuickFilterMatchType="{Binding MatchType, Mode=TwoWay}"
                                                         Margin="0,8,0,8" />
-                                                    
+
                                                     <!--<local:QuickFilterActionTypeToggleButton
                                                         Grid.Row="1"
                                                         Margin="0,0,0,8"
                                                         />-->
-                                                    
+
                                                     <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="2" />
                                                 </Grid>
                                             </Grid>

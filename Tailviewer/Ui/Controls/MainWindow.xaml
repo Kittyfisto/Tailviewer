@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
         xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
         xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
-        xmlns:controls2="clr-namespace:Tailviewer.Ui.Controls;assembly=Metrolib"
+        xmlns:controls3="clr-namespace:Metrolib.Controls;assembly=Metrolib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         Title="{Binding WindowTitle}"
@@ -45,14 +45,11 @@
             </Grid.RowDefinitions>
 
             <Grid Background="{StaticResource BackgroundBrushSelected}"
-                  Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                  >
-                <StackPanel Orientation="Horizontal" Margin="8"
-                        >
+                  Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <StackPanel Orientation="Horizontal" Margin="8">
                     <TextBlock Text="A new version is ready to be downloaded from github"
                                Foreground="{StaticResource TextBrushSelected}"
-                               VerticalAlignment="Center"
-                               />
+                               VerticalAlignment="Center" />
                     <Button Content="Got it"
                             Command="{Binding GotItCommand}"
                             Margin="4" Padding="4" />
@@ -62,7 +59,7 @@
                     -->
                 </StackPanel>
             </Grid>
-            
+
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -73,60 +70,60 @@
                 </Grid.ColumnDefinitions>
 
                 <dataSourceTree:DataSourcesControl
-                Width="200"
-                x:Name="PART_DataSources"
-                ItemsSource="{Binding RecentFiles}"
-                SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
+                    Width="200"
+                    x:Name="PART_DataSources"
+                    ItemsSource="{Binding RecentFiles}"
+                    SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
                 <Grid Grid.Column="1"
-                  Width="1"
-                  Background="{StaticResource SeparatorBrush}" />
+                      Width="1"
+                      Background="{StaticResource SeparatorBrush}" />
 
                 <Grid Grid.Column="2">
                     <Grid Width="200"
-                      Height="150"
-                      VerticalAlignment="Center"
-                      HorizontalAlignment="Center">
+                          Height="150"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Center">
                         <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
-                               TextWrapping="Wrap"
-                               FontSize="16"
-                               Margin="10"
-                               Foreground="DodgerBlue"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center" />
+                                   TextWrapping="Wrap"
+                                   FontSize="16"
+                                   Margin="10"
+                                   Foreground="DodgerBlue"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" />
                         <Rectangle StrokeDashArray="4 4"
-                               Stroke="DodgerBlue"
-                               StrokeThickness="2"
-                               RadiusX="10"
-                               RadiusY="10" />
+                                   Stroke="DodgerBlue"
+                                   StrokeThickness="2"
+                                   RadiusX="10"
+                                   RadiusY="10" />
                     </Grid>
 
                     <controls:LogViewerControl
-                    Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                    x:Name="PART_LogFileView"
-                    ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
-                    LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                    TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
-                    ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
-                    DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
-                    DataSource="{Binding CurrentDataSource}" />
+                        Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                        x:Name="PART_LogFileView"
+                        ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
+                        LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                        TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                        ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
+                        DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
+                        DataSource="{Binding CurrentDataSource}" />
                 </Grid>
 
                 <Grid Grid.Column="3"
-                  Width="1"
-                  Background="{StaticResource SeparatorBrush}" />
+                      Width="1"
+                      Background="{StaticResource SeparatorBrush}" />
 
                 <controls:QuickFilterControl
-                Grid.Column="4"
-                Width="200"
-                ItemsSource="{Binding QuickFilters}"
-                AddCommand="{Binding AddQuickFilterCommand}" />
+                    Grid.Column="4"
+                    Width="200"
+                    ItemsSource="{Binding QuickFilters}"
+                    AddCommand="{Binding AddQuickFilterCommand}" />
 
-                <controls2:AlertControl
-                Grid.ColumnSpan="5"
-                Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                Exception="{Binding Exception}"
-                CloseCommand="{Binding CloseErrorDialogCommand}" />
+                <controls3:AlertControl
+                    Grid.ColumnSpan="5"
+                    Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                    Exception="{Binding Exception}"
+                    CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
         </Grid>
 

@@ -20,8 +20,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			var rect = new Rect(0, 0, ActualWidth, ActualHeight);
 			drawingContext.DrawRectangle(null,
-										 _pen,
-										 rect);
+			                             _pen,
+			                             rect);
 		}
 	}
 }

@@ -10,21 +10,6 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FilterText", typeof (string), typeof (FilterTextBox),
 			                            new PropertyMetadata(null, OnFilterTextChanged));
 
-		public Button RemoveFilterTextButton
-		{
-			get { return _removeFilterTextButton; }
-		}
-
-		private static void OnFilterTextChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((FilterTextBox) dependencyObject).OnFilterTextChanged((string) args.NewValue);
-		}
-
-		private void OnFilterTextChanged(string filterText)
-		{
-			HasFilterText = !string.IsNullOrEmpty(filterText);
-		}
-
 		public static readonly DependencyProperty WatermarkProperty =
 			DependencyProperty.Register("Watermark", typeof (string), typeof (FilterTextBox),
 			                            new PropertyMetadata(default(string)));
@@ -33,24 +18,12 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("IsValid", typeof (bool), typeof (FilterTextBox), new PropertyMetadata(true));
 
 		private static readonly DependencyPropertyKey HasFilterTextPropertyKey
-		= DependencyProperty.RegisterReadOnly("HasFilterText", typeof(bool), typeof(FilterTextBox),
-			new FrameworkPropertyMetadata(false,
-				FrameworkPropertyMetadataOptions.None));
+			= DependencyProperty.RegisterReadOnly("HasFilterText", typeof (bool), typeof (FilterTextBox),
+			                                      new FrameworkPropertyMetadata(false,
+			                                                                    FrameworkPropertyMetadataOptions.None));
 
 		public static readonly DependencyProperty HasFilterTextProperty
 			= HasFilterTextPropertyKey.DependencyProperty;
-
-		public bool HasFilterText
-		{
-			get { return (bool)GetValue(HasFilterTextProperty); }
-			protected set { SetValue(HasFilterTextPropertyKey, value); }
-		}
-
-		public bool IsValid
-		{
-			get { return (bool) GetValue(IsValidProperty); }
-			set { SetValue(IsValidProperty, value); }
-		}
 
 		private TextBox _filterInput;
 		private Button _removeFilterTextButton;
@@ -66,6 +39,23 @@ namespace Tailviewer.Ui.Controls
 			GotFocus += OnGotFocus;
 		}
 
+		public Button RemoveFilterTextButton
+		{
+			get { return _removeFilterTextButton; }
+		}
+
+		public bool HasFilterText
+		{
+			get { return (bool) GetValue(HasFilterTextProperty); }
+			protected set { SetValue(HasFilterTextPropertyKey, value); }
+		}
+
+		public bool IsValid
+		{
+			get { return (bool) GetValue(IsValidProperty); }
+			set { SetValue(IsValidProperty, value); }
+		}
+
 		public string Watermark
 		{
 			get { return (string) GetValue(WatermarkProperty); }
@@ -78,11 +68,21 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(FilterTextProperty, value); }
 		}
 
+		private static void OnFilterTextChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((FilterTextBox) dependencyObject).OnFilterTextChanged((string) args.NewValue);
+		}
+
+		private void OnFilterTextChanged(string filterText)
+		{
+			HasFilterText = !string.IsNullOrEmpty(filterText);
+		}
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (e.Key == Key.Escape)
 			{
-				var scope = FocusManager.GetFocusScope(_filterInput);
+				DependencyObject scope = FocusManager.GetFocusScope(_filterInput);
 				FocusManager.SetFocusedElement(scope, null);
 				Application.Current.MainWindow.Focus();
 			}

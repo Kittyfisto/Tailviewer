@@ -16,29 +16,6 @@ namespace Tailviewer.Test
 			_pendingInvokes = new SortedDictionary<DispatcherPriority, List<Action>>();
 		}
 
-		public void InvokeAll()
-		{
-			List<KeyValuePair<DispatcherPriority, List<Action>>> pendingInvokes;
-
-			lock (_pendingInvokes)
-			{
-				pendingInvokes = _pendingInvokes.Select(x =>
-				                                        new KeyValuePair<DispatcherPriority, List<Action>>(
-					                                        x.Key, x.Value.ToList()
-					                                        )).ToList();
-				_pendingInvokes.Clear();
-			}
-
-			foreach (var pair in pendingInvokes)
-			{
-				var invokes = pair.Value;
-				foreach (var invoke in invokes)
-				{
-					invoke();
-				}
-			}
-		}
-
 		public void BeginInvoke(Action fn)
 		{
 			BeginInvoke(fn, DispatcherPriority.Normal);
@@ -56,6 +33,29 @@ namespace Tailviewer.Test
 				}
 
 				invokes.Add(fn);
+			}
+		}
+
+		public void InvokeAll()
+		{
+			List<KeyValuePair<DispatcherPriority, List<Action>>> pendingInvokes;
+
+			lock (_pendingInvokes)
+			{
+				pendingInvokes = _pendingInvokes.Select(x =>
+				                                        new KeyValuePair<DispatcherPriority, List<Action>>(
+					                                        x.Key, x.Value.ToList()
+					                                        )).ToList();
+				_pendingInvokes.Clear();
+			}
+
+			foreach (var pair in pendingInvokes)
+			{
+				List<Action> invokes = pair.Value;
+				foreach (Action invoke in invokes)
+				{
+					invoke();
+				}
 			}
 		}
 	}

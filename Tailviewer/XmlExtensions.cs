@@ -20,8 +20,8 @@ namespace Tailviewer
 
 		public static DateTime ReadContentAsDateTime2(this XmlReader reader)
 		{
-			var stringValue = reader.Value;
-			var value = long.Parse(stringValue, NumberStyles.Integer, CultureInfo.InvariantCulture);
+			string stringValue = reader.Value;
+			long value = long.Parse(stringValue, NumberStyles.Integer, CultureInfo.InvariantCulture);
 			var dateTime = new DateTime(value);
 			return dateTime;
 		}
@@ -34,13 +34,13 @@ namespace Tailviewer
 
 		public static void WriteAttributeDateTime(this XmlWriter writer, string localName, DateTime value)
 		{
-			var stringValue = value.Ticks.ToString(CultureInfo.InvariantCulture);
+			string stringValue = value.Ticks.ToString(CultureInfo.InvariantCulture);
 			writer.WriteAttributeString(localName, stringValue);
 		}
 
 		public static void WriteAttributeGuid(this XmlWriter writer, string localName, Guid value)
 		{
-			var stringValue = value.ToString();
+			string stringValue = value.ToString();
 			writer.WriteAttributeString(localName, stringValue);
 		}
 

@@ -6,27 +6,13 @@ namespace Tailviewer.Settings
 {
 	internal sealed class ApplicationSettings
 	{
-		private readonly string _fileName;
-
 		private readonly AutoUpdateSettings _autoUpdate;
 
-		public AutoUpdateSettings AutoUpdate
-		{
-			get { return _autoUpdate; }
-		}
-
-		private readonly WindowSettings _mainWindow;
 		private readonly DataSources _dataSources;
-		private readonly QuickFilters _quickFilters;
 		private readonly string _fileFolder;
-
-		public static ApplicationSettings Create()
-		{
-			var appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			var fileName = Path.Combine(appDataLocal, Constants.ApplicationTitle, "settings");
-			fileName += ".xml";
-			return new ApplicationSettings(fileName);
-		}
+		private readonly string _fileName;
+		private readonly WindowSettings _mainWindow;
+		private readonly QuickFilters _quickFilters;
 
 		public ApplicationSettings(string fileName)
 		{
@@ -37,6 +23,11 @@ namespace Tailviewer.Settings
 			_mainWindow = new WindowSettings();
 			_dataSources = new DataSources();
 			_quickFilters = new QuickFilters();
+		}
+
+		public AutoUpdateSettings AutoUpdate
+		{
+			get { return _autoUpdate; }
 		}
 
 		public WindowSettings MainWindow
@@ -54,6 +45,14 @@ namespace Tailviewer.Settings
 			get { return _quickFilters; }
 		}
 
+		public static ApplicationSettings Create()
+		{
+			string appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			string fileName = Path.Combine(appDataLocal, Constants.ApplicationTitle, "settings");
+			fileName += ".xml";
+			return new ApplicationSettings(fileName);
+		}
+
 		public bool Save()
 		{
 			try
@@ -61,12 +60,12 @@ namespace Tailviewer.Settings
 				using (var stream = new MemoryStream())
 				{
 					var settings = new XmlWriterSettings
-					{
-						Indent = true,
-						IndentChars = "  ",
-						NewLineChars = "\r\n",
-						NewLineHandling = NewLineHandling.Replace
-					};
+						{
+							Indent = true,
+							IndentChars = "  ",
+							NewLineChars = "\r\n",
+							NewLineHandling = NewLineHandling.Replace
+						};
 					using (XmlWriter writer = XmlWriter.Create(stream, settings))
 					{
 						writer.WriteStartElement("xml");
@@ -95,7 +94,7 @@ namespace Tailviewer.Settings
 
 					using (var file = new FileStream(_fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
 					{
-						var length = (int)stream.Position;
+						var length = (int) stream.Position;
 						file.Write(stream.GetBuffer(), 0, length);
 						file.SetLength(length);
 					}
@@ -116,7 +115,6 @@ namespace Tailviewer.Settings
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="neededPatching">Whether or not certain values need to be changed (for example due to upgrades to the format - it is advised that the current settings be saved again if this is set to true)</param>
 		public void Restore(out bool neededPatching)

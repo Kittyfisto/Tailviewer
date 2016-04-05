@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Metrolib;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -14,14 +15,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private static readonly string[] HardcodedTimestampFormats;
+
 		#region Data
 
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
 		private int? _dateTimeLength;
-		private DateTime? _startTimestamp;
 		private bool _exists;
+		private DateTime? _startTimestamp;
 
 		#endregion
 
@@ -31,8 +34,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private DateTime _lastModified;
 
 		#endregion
-
-		private static readonly string[] HardcodedTimestampFormats;
 
 		static LogFile()
 		{
@@ -89,6 +90,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _lastModified; }
 		}
 
+		public override int Count
+		{
+			get { return _entries.Count; }
+		}
+
+		public override bool Exists
+		{
+			get { return _exists; }
+		}
+
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
@@ -117,16 +128,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override int Count
-		{
-			get { return _entries.Count; }
-		}
-
-		public override bool Exists
-		{
-			get { return _exists; }
-		}
-
 		public void Start()
 		{
 			StartTask();
@@ -140,7 +141,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			var previousLevel = LevelFlags.None;
 			DateTime? previousTimestamp = null;
 			var levels = new List<KeyValuePair<int, LevelFlags>>();
-			var sleepTime = TimeSpan.FromMilliseconds(200);
+			TimeSpan sleepTime = TimeSpan.FromMilliseconds(200);
 
 			while (!token.IsCancellationRequested)
 			{
@@ -160,9 +161,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					else
 					{
 						using (var stream = new FileStream(_fileName,
-														   FileMode.Open,
-														   FileAccess.Read,
-														   FileShare.ReadWrite))
+						                                   FileMode.Open,
+						                                   FileAccess.Read,
+						                                   FileShare.ReadWrite))
 						using (var reader = new StreamReader(stream))
 						{
 							_exists = false;
@@ -247,8 +248,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		private void OnReset(FileStream stream,
-			out int numberOfLinesRead,
-			out long lastPosition)
+		                     out int numberOfLinesRead,
+		                     out long lastPosition)
 		{
 			lastPosition = 0;
 			if (stream != null)
@@ -341,10 +342,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					string timestampValue = line.Substring(start, length);
 					DateTime timestamp;
 					if (DateTime.TryParseExact(timestampValue,
-											   HardcodedTimestampFormats,
-											   CultureInfo.InvariantCulture,
-											   DateTimeStyles.None,
-											   out timestamp))
+					                           HardcodedTimestampFormats,
+					                           CultureInfo.InvariantCulture,
+					                           DateTimeStyles.None,
+					                           out timestamp))
 						return timestamp;
 				}
 			}

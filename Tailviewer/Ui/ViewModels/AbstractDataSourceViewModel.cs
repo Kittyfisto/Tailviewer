@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Tailviewer.BusinessLogic;
+using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -21,15 +21,15 @@ namespace Tailviewer.Ui.ViewModels
 		private int _fatalCount;
 		private Size _fileSize;
 		private int _infoCount;
-		private TimeSpan _lastWrittenAge;
-		private int _otherCount;
-		private int _totalCount;
-		private int _warningCount;
-		private int _noTimestampCount;
-		private IDataSourceViewModel _parent;
 		private bool _isGrouped;
 		private bool _isVisible;
 		private int _lastSeenLogLine;
+		private TimeSpan _lastWrittenAge;
+		private int _noTimestampCount;
+		private int _otherCount;
+		private IDataSourceViewModel _parent;
+		private int _totalCount;
+		private int _warningCount;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -44,19 +44,26 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get
 			{
-				var diff = TotalCount - _lastSeenLogLine;
+				int diff = TotalCount - _lastSeenLogLine;
 				return Math.Max(diff, 0);
 			}
 		}
 
-		private void UpdateLastSeenLogLine()
+		public Guid Id
 		{
-			var before = NewLogLineCount;
-			if (IsVisible)
+			get { return _dataSource.Id; }
+		}
+
+		public bool IsGrouped
+		{
+			get { return _isGrouped; }
+			private set
 			{
-				_lastSeenLogLine = TotalCount;
-				if (before != NewLogLineCount)
-					EmitPropertyChanged("NewLogLineCount");
+				if (value == _isGrouped)
+					return;
+
+				_isGrouped = value;
+				EmitPropertyChanged();
 			}
 		}
 
@@ -76,24 +83,6 @@ namespace Tailviewer.Ui.ViewModels
 				EmitPropertyChanged();
 
 				UpdateLastSeenLogLine();
-			}
-		}
-
-		public Guid Id
-		{
-			get { return _dataSource.Id; }
-		}
-
-		public bool IsGrouped
-		{
-			get { return _isGrouped; }
-			private set
-			{
-				if (value == _isGrouped)
-					return;
-
-				_isGrouped = value;
-				EmitPropertyChanged();
 			}
 		}
 
@@ -347,7 +336,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public virtual void Update()
 		{
-			var newBefore = NewLogLineCount;
+			int newBefore = NewLogLineCount;
 
 			OtherCount = _dataSource.NoLevelCount;
 			DebugCount = _dataSource.DebugCount;
@@ -370,6 +359,17 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					_lastSeenLogLine = TotalCount;
 				}
+			}
+		}
+
+		private void UpdateLastSeenLogLine()
+		{
+			int before = NewLogLineCount;
+			if (IsVisible)
+			{
+				_lastSeenLogLine = TotalCount;
+				if (before != NewLogLineCount)
+					EmitPropertyChanged("NewLogLineCount");
 			}
 		}
 

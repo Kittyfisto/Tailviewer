@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
+
 <versions>
-	<release major="0" minor="1" build="57" />
-	<beta major="0" minor="1" build="80" />
+  <release major="0" minor="1" build="57" />
+  <beta major="0" minor="1" build="80" />
 </versions>

@@ -12,6 +12,15 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class FilterTextBoxTest
 	{
+		[STAThread]
+		[SetUp]
+		public void SetUp()
+		{
+			_control = new FilterTextBox();
+			_control.Style = (Style) _app.FindResource(typeof (FilterTextBox));
+			_control.ApplyTemplate().Should().BeTrue();
+		}
+
 		private FilterTextBox _control;
 		private App _app;
 
@@ -22,13 +31,18 @@ namespace Tailviewer.Test.Ui
 			_app = new App();
 		}
 
-		[STAThread]
-		[SetUp]
-		public void SetUp()
+		public static void ExecuteEvents()
 		{
-			_control = new FilterTextBox();
-			_control.Style = (Style)_app.FindResource(typeof(FilterTextBox));
-			_control.ApplyTemplate().Should().BeTrue();
+			var frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
+			                                         new DispatcherOperationCallback(ExitFrame), frame);
+			Dispatcher.PushFrame(frame);
+		}
+
+		public static object ExitFrame(object f)
+		{
+			((DispatcherFrame) f).Continue = false;
+			return null;
 		}
 
 		[Test]
@@ -51,25 +65,11 @@ namespace Tailviewer.Test.Ui
 			_control.FilterText = "Foobar";
 
 			var peer = new ButtonAutomationPeer(_control.RemoveFilterTextButton);
-			var invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+			var invokeProv = (IInvokeProvider) peer.GetPattern(PatternInterface.Invoke);
 			invokeProv.Invoke();
 			ExecuteEvents();
 
 			_control.FilterText.Should().BeNull();
-		}
-
-		public static void ExecuteEvents()
-		{
-			var frame = new DispatcherFrame();
-			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
-					new DispatcherOperationCallback(ExitFrame), frame);
-			Dispatcher.PushFrame(frame);
-		}
-
-		public static object ExitFrame(object f)
-		{
-			((DispatcherFrame)f).Continue = false;
-			return null;
 		}
 	}
 }

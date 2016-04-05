@@ -1,17 +1,13 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Ui.ViewModels;
-using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
 	public sealed class MergedDataSourceViewModelTest
 	{
-		private MergedDataSourceViewModel _model;
-		private DataSources _dataSources;
-		private Tailviewer.Settings.DataSources _settings;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -20,10 +16,14 @@ namespace Tailviewer.Test.Ui
 			_model = new MergedDataSourceViewModel(_dataSources.AddGroup());
 		}
 
+		private MergedDataSourceViewModel _model;
+		private DataSources _dataSources;
+		private Tailviewer.Settings.DataSources _settings;
+
 		[Test]
 		public void TestAdd1()
 		{
-			var source = _dataSources.AddDataSource("foo");
+			SingleDataSource source = _dataSources.AddDataSource("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source);
 			_model.AddChild(sourceViewModel);
 			_model.Observable.Should().Equal(sourceViewModel);

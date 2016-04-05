@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;

@@ -6,13 +6,13 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
-	/// A filter that looks for a substring in a (possibly) bigger string.
+	///     A filter that looks for a substring in a (possibly) bigger string.
 	/// </summary>
 	internal sealed class SubstringFilter
 		: ILogEntryFilter
 	{
-		public readonly string StringFilter;
 		public readonly StringComparison Comparison;
+		public readonly string StringFilter;
 
 		public SubstringFilter(string stringFilter, bool ignoreCase)
 		{
@@ -23,8 +23,8 @@ namespace Tailviewer.BusinessLogic.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (var logLine in logEntry)
-			// ReSharper restore LoopCanBeConvertedToQuery
+			foreach (LogLine logLine in logEntry)
+				// ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))
 					return true;

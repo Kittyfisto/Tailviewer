@@ -3,18 +3,19 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:converters2="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <metrolib:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters2:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
     <converters:CountConverter x:Key="NoTimestampCountConverter" />
     <converters:CountConverter x:Key="NewLogLineCountConverter" HasPlural="False" Suffix="new" />
-    
+
     <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
                               ItemsSource="{Binding Observable}">
         <Grid Width="179">
@@ -57,25 +58,24 @@
                         LightImage="pack://application:,,,/Resources/ic_no_time_white_8dp.png"
                         Visibility="{Binding DisplayNoTimestampCount, Converter={StaticResource BoolFalseToHiddenConverter}}"
                         UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
-                    
+
                     <TextBlock
                         Grid.Column="1"
                         Margin="4,0,4,0"
                         HorizontalAlignment="Right"
                         Text="{Binding NewLogLineCount, Converter={StaticResource NewLogLineCountConverter}}"
-                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}"
-                        />
+                        Visibility="{Binding NewLogLineCount, Converter={StaticResource ZeroToHiddenConverter}}" />
                 </Grid>
             </Grid>
 
-            <metrolib:RemoveButton VerticalAlignment="Stretch"
-                                HorizontalAlignment="Right"
-                                IsInverted="{Binding IsSelected, RelativeSource=
+            <controls:RemoveButton VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Right"
+                                   IsInverted="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                Command="{Binding RemoveCommand}"
-                                Grid.Column="1"
-                                HorizontalContentAlignment="Right" />
-            
+                                   Command="{Binding RemoveCommand}"
+                                   Grid.Column="1"
+                                   HorizontalContentAlignment="Right" />
+
         </Grid>
     </HierarchicalDataTemplate>
 </ResourceDictionary>

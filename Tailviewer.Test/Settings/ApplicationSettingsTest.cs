@@ -1,14 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
-using DataSource = Tailviewer.Settings.DataSource;
-using QuickFilter = Tailviewer.Settings.QuickFilter;
 
 namespace Tailviewer.Test.Settings
 {
@@ -16,14 +14,93 @@ namespace Tailviewer.Test.Settings
 	public sealed class ApplicationSettingsTest
 	{
 		[Test]
+		[Description("Verifies that the GUID of a data source is written to the file and read again")]
+		public void TestDataSourceId()
+		{
+			string fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var dataSource = new DataSource("foo");
+			dataSource.Id = Guid.NewGuid();
+			settings.DataSources.Add(dataSource);
+			settings.Save();
+
+			var settings2 = new ApplicationSettings(fname);
+			bool neededPatching;
+			settings2.Restore(out neededPatching);
+			neededPatching.Should().BeFalse();
+			settings2.DataSources.Count.Should().Be(1);
+			DataSource dataSource2 = settings2.DataSources[0];
+			dataSource2.File.Should().Be("foo");
+			dataSource2.Id.Should().Be(dataSource.Id);
+		}
+
+		[Test]
+		[Description("Verifies that the GUID of a data source's parent is written to the file and read again")]
+		public void TestDataSourceParentId()
+		{
+			string fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var dataSource = new DataSource("foo");
+			dataSource.Id = Guid.NewGuid();
+			dataSource.ParentId = Guid.NewGuid();
+			settings.DataSources.Add(dataSource);
+			settings.Save();
+
+			var settings2 = new ApplicationSettings(fname);
+			bool neededPatching;
+			settings2.Restore(out neededPatching);
+			neededPatching.Should().BeFalse();
+			settings2.DataSources.Count.Should().Be(1);
+			DataSource dataSource2 = settings2.DataSources[0];
+			dataSource2.File.Should().Be("foo");
+			dataSource2.ParentId.Should().Be(dataSource.ParentId);
+		}
+
+		[Test]
+		[Description("Verifies that a new GUID is created for a DataSource when none is stored in the xml")]
+		public void TestRestore2()
+		{
+			var settings = new ApplicationSettings(@"Settings\settings_no_file_guid.xml");
+			bool neededPatching;
+			settings.Restore(out neededPatching);
+			settings.DataSources.Count.Should().Be(2);
+			settings.DataSources[0].Id.Should().NotBe(Guid.Empty);
+			settings.DataSources[1].Id.Should().NotBe(Guid.Empty);
+			settings.DataSources[0].Id.Should().NotBe(settings.DataSources[1].Id);
+			neededPatching.Should().BeTrue("Because we should now be saving the settings again due to the upgrade");
+		}
+
+		[Test]
+		[Description("Verifies that the last viewed datetime is restored from the file")]
+		public void TestRestore3()
+		{
+			string fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			DateTime timestamp = DateTime.Now;
+			settings.DataSources.Add(new DataSource("dawadaw")
+				{
+					LastViewed = timestamp
+				});
+
+			settings.Save();
+			settings = new ApplicationSettings(fname);
+			settings.Restore();
+
+			settings.DataSources.Count.Should().Be(1);
+			DataSource source = settings.DataSources[0];
+			source.Should().NotBeNull();
+			source.LastViewed.Should().Be(timestamp);
+		}
+
+		[Test]
 		[Description("Verifies that the folder is created if it doesn't exist")]
 		public void TestStore1()
 		{
-			var path = Path.GetTempPath();
+			string path = Path.GetTempPath();
 			const string folderName = "ApplicationSettingsTest";
 			const string fileName = "settings.xml";
-			var fileFolder = Path.Combine(path, folderName);
-			var filePath = Path.Combine(fileFolder, fileName);
+			string fileFolder = Path.Combine(path, folderName);
+			string filePath = Path.Combine(fileFolder, fileName);
 
 			if (File.Exists(filePath))
 				File.Delete(filePath);
@@ -66,14 +143,14 @@ namespace Tailviewer.Test.Settings
 							Guid.NewGuid(),
 						}
 				});
-			var guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
+			List<Guid> guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
 			settings.QuickFilters.Add(new QuickFilter
 				{
 					Value = "foobar",
 					IgnoreCase = true,
 					MatchType = QuickFilterMatchType.RegexpFilter
 				});
-			var id = settings.QuickFilters[0].Id;
+			Guid id = settings.QuickFilters[0].Id;
 			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
 			settings.Save().Should().BeTrue();
 
@@ -101,92 +178,5 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[0].IgnoreCase.Should().BeTrue();
 			settings.QuickFilters[0].MatchType.Should().Be(QuickFilterMatchType.RegexpFilter);
 		}
-
-		#region LastViewed
-
-		[Test]
-		[Description("Verifies that the last viewed datetime is restored from the file")]
-		public void TestRestore3()
-		{
-			var fname = Path.GetTempFileName();
-			var settings = new ApplicationSettings(fname);
-			var timestamp = DateTime.Now;
-			settings.DataSources.Add(new DataSource("dawadaw")
-				{
-					LastViewed = timestamp
-				});
-
-			settings.Save();
-			settings = new ApplicationSettings(fname);
-			settings.Restore();
-
-			settings.DataSources.Count.Should().Be(1);
-			var source = settings.DataSources[0];
-			source.Should().NotBeNull();
-			source.LastViewed.Should().Be(timestamp);
-		}
-
-		#endregion
-
-		#region Added DataSource.Id and DataSource.ParentId
-
-		[Test]
-		[Description("Verifies that a new GUID is created for a DataSource when none is stored in the xml")]
-		public void TestRestore2()
-		{
-			var settings = new ApplicationSettings(@"Settings\settings_no_file_guid.xml");
-			bool neededPatching;
-			settings.Restore(out neededPatching);
-			settings.DataSources.Count.Should().Be(2);
-			settings.DataSources[0].Id.Should().NotBe(Guid.Empty);
-			settings.DataSources[1].Id.Should().NotBe(Guid.Empty);
-			settings.DataSources[0].Id.Should().NotBe(settings.DataSources[1].Id);
-			neededPatching.Should().BeTrue("Because we should now be saving the settings again due to the upgrade");
-		}
-
-		[Test]
-		[Description("Verifies that the GUID of a data source is written to the file and read again")]
-		public void TestDataSourceId()
-		{
-			var fname = Path.GetTempFileName();
-			var settings = new ApplicationSettings(fname);
-			var dataSource = new DataSource("foo");
-			dataSource.Id = Guid.NewGuid();
-			settings.DataSources.Add(dataSource);
-			settings.Save();
-
-			var settings2 = new ApplicationSettings(fname);
-			bool neededPatching;
-			settings2.Restore(out neededPatching);
-			neededPatching.Should().BeFalse();
-			settings2.DataSources.Count.Should().Be(1);
-			var dataSource2 = settings2.DataSources[0];
-			dataSource2.File.Should().Be("foo");
-			dataSource2.Id.Should().Be(dataSource.Id);
-		}
-
-		[Test]
-		[Description("Verifies that the GUID of a data source's parent is written to the file and read again")]
-		public void TestDataSourceParentId()
-		{
-			var fname = Path.GetTempFileName();
-			var settings = new ApplicationSettings(fname);
-			var dataSource = new DataSource("foo");
-			dataSource.Id = Guid.NewGuid();
-			dataSource.ParentId = Guid.NewGuid();
-			settings.DataSources.Add(dataSource);
-			settings.Save();
-
-			var settings2 = new ApplicationSettings(fname);
-			bool neededPatching;
-			settings2.Restore(out neededPatching);
-			neededPatching.Should().BeFalse();
-			settings2.DataSources.Count.Should().Be(1);
-			var dataSource2 = settings2.DataSources[0];
-			dataSource2.File.Should().Be("foo");
-			dataSource2.ParentId.Should().Be(dataSource.ParentId);
-		}
-
-		#endregion
 	}
 }

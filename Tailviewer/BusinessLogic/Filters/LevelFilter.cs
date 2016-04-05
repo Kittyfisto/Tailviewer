@@ -4,7 +4,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
-	/// A filter that can be used to exclude entries of certain levels.
+	///     A filter that can be used to exclude entries of certain levels.
 	/// </summary>
 	internal sealed class LevelFilter
 		: ILogEntryFilter
@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
-			foreach (var logLine in logEntry)
+			foreach (LogLine logLine in logEntry)
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))

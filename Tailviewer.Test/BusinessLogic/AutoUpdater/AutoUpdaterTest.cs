@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.AutoUpdater
 		[Test]
 		public void TestParse()
 		{
-			var data = File.ReadAllBytes(@"TestData\query_version.xml");
+			byte[] data = File.ReadAllBytes(@"TestData\query_version.xml");
 			VersionInfo version;
 			Tailviewer.BusinessLogic.AutoUpdates.AutoUpdater.Parse(data, out version);
 			version.Should().NotBeNull();

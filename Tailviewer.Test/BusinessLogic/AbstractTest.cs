@@ -7,7 +7,7 @@ namespace Tailviewer.Test.BusinessLogic
 	{
 		public static bool WaitUntil(Func<bool> fn, TimeSpan timeout)
 		{
-			var started = DateTime.UtcNow;
+			DateTime started = DateTime.UtcNow;
 			while ((DateTime.UtcNow - started) < timeout)
 			{
 				if (fn())

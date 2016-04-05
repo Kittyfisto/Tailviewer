@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,12 +44,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.9.0\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Metrolib.0.1.14.0\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -128,7 +128,6 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
-    <Compile Include="Size.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="Ui\IDispatcher.cs" />
@@ -256,9 +255,9 @@
     <Resource Include="Resources\ic_no_time_white_8dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\Metrolib.0.1.9.0\lib\net45\Metrolib.dll">
+    <Content Include="..\packages\Metrolib.0.1.11.0\lib\net45\Metrolib.dll">
       <Link>ThirdParty\Metrolib.dll</Link>
-    </EmbeddedResource>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

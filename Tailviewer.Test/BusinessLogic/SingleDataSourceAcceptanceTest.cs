@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
@@ -11,9 +10,6 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class SingleDataSourceAcceptanceTest
 	{
-		private DataSource _settings;
-		private SingleDataSource _dataSource;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -30,6 +26,9 @@ namespace Tailviewer.Test.BusinessLogic
 			_dataSource.Dispose();
 		}
 
+		private DataSource _settings;
+		private SingleDataSource _dataSource;
+
 		[Test]
 		public void TestCtor()
 		{
@@ -44,22 +43,22 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestStringFilter1()
+		public void TestLevleFilter1()
 		{
 			_dataSource.LogFile.Wait();
 
-			_dataSource.StringFilter = "info";
+			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Wait();
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
 		}
 
 		[Test]
-		public void TestLevleFilter1()
+		public void TestStringFilter1()
 		{
 			_dataSource.LogFile.Wait();
 
-			_dataSource.LevelFilter = LevelFlags.Info;
+			_dataSource.StringFilter = "info";
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Wait();
 			_dataSource.FilteredLogFile.Count.Should().Be(5);

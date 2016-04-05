@@ -3,7 +3,7 @@
 namespace Tailviewer.Test
 {
 	/// <summary>
-	/// Attribute to mark tests that wont run in the CI environment (missing dependencies, rights, etc..)
+	///     Attribute to mark tests that wont run in the CI environment (missing dependencies, rights, etc..)
 	/// </summary>
 	public sealed class LocalTest
 		: CategoryAttribute
@@ -11,7 +11,6 @@ namespace Tailviewer.Test
 		public LocalTest(string description)
 			: base("LocalTest")
 		{
-			
 		}
 	}
 }

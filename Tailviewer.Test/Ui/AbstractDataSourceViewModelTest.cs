@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
@@ -55,20 +53,9 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[Description("Verifies that setting the IsVisible to true causes the LastSeen timestamp to be set to now")]
-		public void TestIsVisible()
-		{
-			_viewModel.IsVisible.Should().BeFalse();
-
-			var before = DateTime.Now;
-			_viewModel.IsVisible = true;
-			var after = DateTime.Now;
-			_viewModel.LastViewed.Should().BeOnOrAfter(before);
-			_viewModel.LastViewed.Should().BeOnOrBefore(after);
-		}
-
-		[Test]
-		[Description("Verifies that the number of new log lines is NOT increased when the last modified timestamp is less than the last viewed one")]
+		[Description(
+			"Verifies that the number of new log lines is NOT increased when the last modified timestamp is less than the last viewed one"
+			)]
 		public void TestAddLine()
 		{
 			_viewModel.IsVisible = true;
@@ -78,12 +65,14 @@ namespace Tailviewer.Test.Ui
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 			_viewModel.NewLogLineCount.Should().Be(0);
 
-			var now = DateTime.Now;
+			DateTime now = DateTime.Now;
 			_dataSource.Setup(x => x.TotalCount).Returns(1);
 			_dataSource.Setup(x => x.LastModified).Returns(now - TimeSpan.FromMinutes(1));
 
 			_viewModel.Update();
-			_viewModel.NewLogLineCount.Should().Be(0, "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
+			_viewModel.NewLogLineCount.Should()
+			          .Be(0,
+			              "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
 			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge"});
 		}
 
@@ -104,7 +93,7 @@ namespace Tailviewer.Test.Ui
 
 			_viewModel.Update();
 			_viewModel.NewLogLineCount.Should().Be(1);
-			changes.Should().Equal(new[] { "TotalCount", "LastWrittenAge", "NewLogLineCount" });
+			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge", "NewLogLineCount"});
 		}
 
 		[Test]
@@ -117,13 +106,28 @@ namespace Tailviewer.Test.Ui
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 			_viewModel.NewLogLineCount.Should().Be(0);
 
-			var now = DateTime.Now;
+			DateTime now = DateTime.Now;
 			_dataSource.Setup(x => x.TotalCount).Returns(1);
 			_dataSource.Setup(x => x.LastModified).Returns(now);
 
 			_viewModel.Update();
-			_viewModel.NewLogLineCount.Should().Be(0, "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
-			changes.Should().Equal(new[] { "TotalCount", "LastWrittenAge" });
+			_viewModel.NewLogLineCount.Should()
+			          .Be(0,
+			              "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
+			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge"});
+		}
+
+		[Test]
+		[Description("Verifies that setting the IsVisible to true causes the LastSeen timestamp to be set to now")]
+		public void TestIsVisible()
+		{
+			_viewModel.IsVisible.Should().BeFalse();
+
+			DateTime before = DateTime.Now;
+			_viewModel.IsVisible = true;
+			DateTime after = DateTime.Now;
+			_viewModel.LastViewed.Should().BeOnOrAfter(before);
+			_viewModel.LastViewed.Should().BeOnOrBefore(after);
 		}
 
 		[Test]

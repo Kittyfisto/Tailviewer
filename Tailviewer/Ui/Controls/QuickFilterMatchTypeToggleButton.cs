@@ -7,7 +7,8 @@ namespace Tailviewer.Ui.Controls
 	internal class QuickFilterMatchTypeToggleButton : Control
 	{
 		public static readonly DependencyProperty QuickFilterTypeProperty =
-			DependencyProperty.Register("QuickFilterMatchType", typeof (QuickFilterMatchType), typeof (QuickFilterMatchTypeToggleButton),
+			DependencyProperty.Register("QuickFilterMatchType", typeof (QuickFilterMatchType),
+			                            typeof (QuickFilterMatchTypeToggleButton),
 			                            new PropertyMetadata(default(QuickFilterMatchType), OnQuickFilterTypeChanged));
 
 		public static readonly DependencyProperty IsStringCheckedProperty =

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
@@ -9,256 +10,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 	internal abstract class AbstractDataSource
 		: IDataSource
 	{
-		sealed class Counter
-			: ICount
-		{
-			public int LogLineCount { get; set; }
-			public int LogEntryCount { get; set; }
-
-			public void Reset()
-			{
-				LogLineCount = 0;
-				LogEntryCount = 0;
-			}
-		}
-
-		/// <summary>
-		/// Responsible for providing the amount of occurences of certain classes of log lines and -entries.
-		/// </summary>
-		sealed class LogFileCounter
-			: ILogFileListener
-		{
-			#region Counts
-
-			public readonly Counter Fatals;
-			public readonly Counter Errors;
-			public readonly Counter Warnings;
-			public readonly Counter Infos;
-			public readonly Counter Debugs;
-			public readonly Counter NoLevel;
-			public readonly Counter NoTimestamp;
-			public readonly Counter Total;
-
-			#endregion
-
-			private readonly List<LogLine> _lines;
-
-			public LogFileCounter()
-			{
-				Fatals = new Counter();
-				Errors = new Counter();
-				Warnings = new Counter();
-				Infos = new Counter();
-				Debugs = new Counter();
-				NoLevel = new Counter();
-				NoTimestamp = new Counter();
-				Total = new Counter();
-
-				_lines = new List<LogLine>();
-			}
-
-			public void OnLogFileModified(ILogFile logFile, LogFileSection section)
-			{
-				if (section.IsReset)
-				{
-					Clear();
-				}
-				else if (section.InvalidateSection)
-				{
-					RemoveRange(section);
-				}
-				else
-				{
-					AddRange(logFile, section);
-				}
-			}
-
-			private void AddRange(ILogFile logFile, LogFileSection section)
-			{
-				LogLine previousLine;
-				if (_lines.Count > 0)
-					previousLine = _lines[_lines.Count - 1];
-				else
-					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
-				
-				var lines = logFile.GetSection(section);
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var line = lines[i];
-					IncrementCount(line, previousLine);
-					previousLine = line;
-				}
-				_lines.AddRange(lines);
-			}
-
-			private void RemoveRange(LogFileSection section)
-			{
-				LogLine previousLine;
-				if (section.Index > 0)
-					previousLine = _lines[(int) section.Index];
-				else
-					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
-
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					var line = _lines[(int) index];
-					DecrementCount(line, previousLine);
-					previousLine = line;
-				}
-
-				_lines.RemoveRange((int)section.Index, section.Count);
-			}
-
-			private void DecrementCount(LogLine currentLogLine, LogLine previousLogLine)
-			{
-				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
-				{
-					switch (currentLogLine.Level)
-					{
-						case LevelFlags.Fatal:
-							--Fatals.LogEntryCount;
-							break;
-						case LevelFlags.Error:
-							--Errors.LogEntryCount;
-							break;
-						case LevelFlags.Warning:
-							--Warnings.LogEntryCount;
-							break;
-						case LevelFlags.Info:
-							--Infos.LogEntryCount;
-							break;
-						case LevelFlags.Debug:
-							--Debugs.LogEntryCount;
-							break;
-						default:
-							--NoLevel.LogEntryCount;
-							break;
-					}
-
-					if (currentLogLine.Timestamp == null)
-					{
-						--NoTimestamp.LogEntryCount;
-					}
-
-					--Total.LogEntryCount;
-				}
-
-				switch (currentLogLine.Level)
-				{
-					case LevelFlags.Fatal:
-						--Fatals.LogLineCount;
-						break;
-					case LevelFlags.Error:
-						--Errors.LogLineCount;
-						break;
-					case LevelFlags.Warning:
-						--Warnings.LogLineCount;
-						break;
-					case LevelFlags.Info:
-						--Infos.LogLineCount;
-						break;
-					case LevelFlags.Debug:
-						--Debugs.LogLineCount;
-						break;
-					default:
-						--NoLevel.LogLineCount;
-						break;
-				}
-
-				if (currentLogLine.Timestamp == null)
-				{
-					--NoTimestamp.LogLineCount;
-				}
-
-				--Total.LogLineCount;
-			}
-
-			private void IncrementCount(LogLine currentLogLine, LogLine previousLogLine)
-			{
-				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
-				{
-					switch (currentLogLine.Level)
-					{
-						case LevelFlags.Fatal:
-							++Fatals.LogEntryCount;
-							break;
-						case LevelFlags.Error:
-							++Errors.LogEntryCount;
-							break;
-						case LevelFlags.Warning:
-							++Warnings.LogEntryCount;
-							break;
-						case LevelFlags.Info:
-							++Infos.LogEntryCount;
-							break;
-						case LevelFlags.Debug:
-							++Debugs.LogEntryCount;
-							break;
-						default:
-							++NoLevel.LogEntryCount;
-							break;
-					}
-
-					if (currentLogLine.Timestamp == null)
-					{
-						++NoTimestamp.LogEntryCount;
-					}
-
-					++Total.LogEntryCount;
-				}
-
-				switch (currentLogLine.Level)
-				{
-					case LevelFlags.Fatal:
-						++Fatals.LogLineCount;
-						break;
-					case LevelFlags.Error:
-						++Errors.LogLineCount;
-						break;
-					case LevelFlags.Warning:
-						++Warnings.LogLineCount;
-						break;
-					case LevelFlags.Info:
-						++Infos.LogLineCount;
-						break;
-					case LevelFlags.Debug:
-						++Debugs.LogLineCount;
-						break;
-					default:
-						++NoLevel.LogLineCount;
-						break;
-				}
-
-				if (currentLogLine.Timestamp == null)
-				{
-					++NoTimestamp.LogLineCount;
-				}
-
-				++Total.LogLineCount;
-			}
-
-			private void Clear()
-			{
-				_lines.Clear();
-				Fatals.Reset();
-				Errors.Reset();
-				Warnings.Reset();
-				Infos.Reset();
-				Debugs.Reset();
-				NoLevel.Reset();
-				NoTimestamp.Reset();
-				Total.Reset();
-			}
-
-		}
-
+		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
-		private readonly LogFileCounter _counter;
 		private ILogFile _filteredLogFile;
-		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private ILogFile _lastRegisteredLogFile;
+		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 
 		protected AbstractDataSource(DataSource settings, TimeSpan maximumWaitTime)
 		{
@@ -268,11 +25,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
-		}
-
-		public override string ToString()
-		{
-			return _settings.ToString();
 		}
 
 		public ILogFile FilteredLogFile
@@ -445,6 +197,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			LogFile.Dispose();
 		}
 
+		public override string ToString()
+		{
+			return _settings.ToString();
+		}
+
 		protected void CreateFilteredLogFile()
 		{
 			if (LogFile != _lastRegisteredLogFile)
@@ -475,6 +232,249 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 
 			_filteredLogFile = newLogFile;
+		}
+
+		private sealed class Counter
+			: ICount
+		{
+			public int LogLineCount { get; set; }
+			public int LogEntryCount { get; set; }
+
+			public void Reset()
+			{
+				LogLineCount = 0;
+				LogEntryCount = 0;
+			}
+		}
+
+		/// <summary>
+		///     Responsible for providing the amount of occurences of certain classes of log lines and -entries.
+		/// </summary>
+		private sealed class LogFileCounter
+			: ILogFileListener
+		{
+			#region Counts
+
+			public readonly Counter Debugs;
+			public readonly Counter Errors;
+			public readonly Counter Fatals;
+			public readonly Counter Infos;
+			public readonly Counter NoLevel;
+			public readonly Counter NoTimestamp;
+			public readonly Counter Total;
+			public readonly Counter Warnings;
+
+			#endregion
+
+			private readonly List<LogLine> _lines;
+
+			public LogFileCounter()
+			{
+				Fatals = new Counter();
+				Errors = new Counter();
+				Warnings = new Counter();
+				Infos = new Counter();
+				Debugs = new Counter();
+				NoLevel = new Counter();
+				NoTimestamp = new Counter();
+				Total = new Counter();
+
+				_lines = new List<LogLine>();
+			}
+
+			public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+			{
+				if (section.IsReset)
+				{
+					Clear();
+				}
+				else if (section.InvalidateSection)
+				{
+					RemoveRange(section);
+				}
+				else
+				{
+					AddRange(logFile, section);
+				}
+			}
+
+			private void AddRange(ILogFile logFile, LogFileSection section)
+			{
+				LogLine previousLine;
+				if (_lines.Count > 0)
+					previousLine = _lines[_lines.Count - 1];
+				else
+					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
+
+				LogLine[] lines = logFile.GetSection(section);
+				for (int i = 0; i < section.Count; ++i)
+				{
+					LogLine line = lines[i];
+					IncrementCount(line, previousLine);
+					previousLine = line;
+				}
+				_lines.AddRange(lines);
+			}
+
+			private void RemoveRange(LogFileSection section)
+			{
+				LogLine previousLine;
+				if (section.Index > 0)
+					previousLine = _lines[(int) section.Index];
+				else
+					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
+
+				for (int i = 0; i < section.Count; ++i)
+				{
+					LogLineIndex index = section.Index + i;
+					LogLine line = _lines[(int) index];
+					DecrementCount(line, previousLine);
+					previousLine = line;
+				}
+
+				_lines.RemoveRange((int) section.Index, section.Count);
+			}
+
+			private void DecrementCount(LogLine currentLogLine, LogLine previousLogLine)
+			{
+				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
+				{
+					switch (currentLogLine.Level)
+					{
+						case LevelFlags.Fatal:
+							--Fatals.LogEntryCount;
+							break;
+						case LevelFlags.Error:
+							--Errors.LogEntryCount;
+							break;
+						case LevelFlags.Warning:
+							--Warnings.LogEntryCount;
+							break;
+						case LevelFlags.Info:
+							--Infos.LogEntryCount;
+							break;
+						case LevelFlags.Debug:
+							--Debugs.LogEntryCount;
+							break;
+						default:
+							--NoLevel.LogEntryCount;
+							break;
+					}
+
+					if (currentLogLine.Timestamp == null)
+					{
+						--NoTimestamp.LogEntryCount;
+					}
+
+					--Total.LogEntryCount;
+				}
+
+				switch (currentLogLine.Level)
+				{
+					case LevelFlags.Fatal:
+						--Fatals.LogLineCount;
+						break;
+					case LevelFlags.Error:
+						--Errors.LogLineCount;
+						break;
+					case LevelFlags.Warning:
+						--Warnings.LogLineCount;
+						break;
+					case LevelFlags.Info:
+						--Infos.LogLineCount;
+						break;
+					case LevelFlags.Debug:
+						--Debugs.LogLineCount;
+						break;
+					default:
+						--NoLevel.LogLineCount;
+						break;
+				}
+
+				if (currentLogLine.Timestamp == null)
+				{
+					--NoTimestamp.LogLineCount;
+				}
+
+				--Total.LogLineCount;
+			}
+
+			private void IncrementCount(LogLine currentLogLine, LogLine previousLogLine)
+			{
+				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
+				{
+					switch (currentLogLine.Level)
+					{
+						case LevelFlags.Fatal:
+							++Fatals.LogEntryCount;
+							break;
+						case LevelFlags.Error:
+							++Errors.LogEntryCount;
+							break;
+						case LevelFlags.Warning:
+							++Warnings.LogEntryCount;
+							break;
+						case LevelFlags.Info:
+							++Infos.LogEntryCount;
+							break;
+						case LevelFlags.Debug:
+							++Debugs.LogEntryCount;
+							break;
+						default:
+							++NoLevel.LogEntryCount;
+							break;
+					}
+
+					if (currentLogLine.Timestamp == null)
+					{
+						++NoTimestamp.LogEntryCount;
+					}
+
+					++Total.LogEntryCount;
+				}
+
+				switch (currentLogLine.Level)
+				{
+					case LevelFlags.Fatal:
+						++Fatals.LogLineCount;
+						break;
+					case LevelFlags.Error:
+						++Errors.LogLineCount;
+						break;
+					case LevelFlags.Warning:
+						++Warnings.LogLineCount;
+						break;
+					case LevelFlags.Info:
+						++Infos.LogLineCount;
+						break;
+					case LevelFlags.Debug:
+						++Debugs.LogLineCount;
+						break;
+					default:
+						++NoLevel.LogLineCount;
+						break;
+				}
+
+				if (currentLogLine.Timestamp == null)
+				{
+					++NoTimestamp.LogLineCount;
+				}
+
+				++Total.LogLineCount;
+			}
+
+			private void Clear()
+			{
+				_lines.Clear();
+				Fatals.Reset();
+				Errors.Reset();
+				Warnings.Reset();
+				Infos.Reset();
+				Debugs.Reset();
+				NoLevel.Reset();
+				NoTimestamp.Reset();
+				Total.Reset();
+			}
 		}
 	}
 }

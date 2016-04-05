@@ -16,13 +16,6 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class MainWindowViewModelTest
 	{
-		private MainWindowViewModel _mainWindow;
-		private ManualDispatcher _dispatcher;
-		private DataSources _dataSources;
-		private QuickFilters _quickFilters;
-		private ApplicationSettings _settings;
-		private Mock<IAutoUpdater> _updater;
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -32,10 +25,10 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_updater = new Mock<IAutoUpdater>();
 			_mainWindow = new MainWindowViewModel(_settings,
-				_dataSources,
-				_quickFilters,
-				_updater.Object,
-				_dispatcher);
+			                                      _dataSources,
+			                                      _quickFilters,
+			                                      _updater.Object,
+			                                      _dispatcher);
 		}
 
 		[TearDown]
@@ -44,17 +37,26 @@ namespace Tailviewer.Test.Ui
 			_dataSources.Dispose();
 		}
 
+		private MainWindowViewModel _mainWindow;
+		private ManualDispatcher _dispatcher;
+		private DataSources _dataSources;
+		private QuickFilters _quickFilters;
+		private ApplicationSettings _settings;
+		private Mock<IAutoUpdater> _updater;
+
 		[Test]
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.CurrentDataSource.Should().BeNull();
 
-			var filter = _mainWindow.AddQuickFilter();
+			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
 			filter.Value = "test";
 
-			var dataSource = _mainWindow.OpenFile("Foobar");
+			IDataSourceViewModel dataSource = _mainWindow.OpenFile("Foobar");
 			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource);
-			filter.CurrentDataSource.Should().BeSameAs(dataSource.DataSource, "Because now that said data source is visible, the filter should be applied to it");
+			filter.CurrentDataSource.Should()
+			      .BeSameAs(dataSource.DataSource,
+			                "Because now that said data source is visible, the filter should be applied to it");
 			_mainWindow.CurrentDataSourceLogView.Should().NotBeNull();
 			_mainWindow.CurrentDataSourceLogView.QuickFilterChain.Should()
 			           .BeNull("Because no quick filters have been added / nor activated");
@@ -65,11 +67,11 @@ namespace Tailviewer.Test.Ui
 		{
 			_mainWindow.CurrentDataSource.Should().BeNull();
 
-			var filter = _mainWindow.AddQuickFilter();
+			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
 			filter.Value = "test";
 
-			var dataSource1 = _mainWindow.OpenFile("foo");
-			var dataSource2 = _mainWindow.OpenFile("bar");
+			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
 			_mainWindow.CurrentDataSource.Should().NotBeNull();
 			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2);
 
@@ -82,48 +84,57 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description(
+			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
+		public void TestGroup1()
+		{
+			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
+			var changes = new List<string>();
+			_mainWindow.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+			_mainWindow.OnDropped(dataSource1, dataSource2, DataSourceDropType.Group);
+			_mainWindow.RecentFiles.Count().Should().Be(1);
+			IDataSourceViewModel group = _mainWindow.RecentFiles.First();
+			group.Should().NotBeNull();
+			_mainWindow.CurrentDataSource.Should().BeSameAs(group);
+			_mainWindow.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
+			changes.Should().Equal(new[] {"CurrentDataSourceLogView", "WindowTitle", "CurrentDataSource"});
+		}
+
+		[Test]
 		public void TestNextDataSource()
 		{
-			var dataSource1 = _mainWindow.OpenFile("foo");
-			var dataSource2 = _mainWindow.OpenFile("bar");
+			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
 			_mainWindow.CurrentDataSource = null;
 			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1, "Because when no data source is selected, the first should be when navigating forward");
+			_mainWindow.CurrentDataSource.Should()
+			           .BeSameAs(dataSource1,
+			                     "Because when no data source is selected, the first should be when navigating forward");
 			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
 			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because obvious");
 			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1, "Because selecting the next data source when the last data source is, should simply roundtrip to the first datasource again");
+			_mainWindow.CurrentDataSource.Should()
+			           .BeSameAs(dataSource1,
+			                     "Because selecting the next data source when the last data source is, should simply roundtrip to the first datasource again");
 		}
 
 		[Test]
 		public void TestPreviousDataSource()
 		{
-			var dataSource1 = _mainWindow.OpenFile("foo");
-			var dataSource2 = _mainWindow.OpenFile("bar");
+			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
 			_mainWindow.CurrentDataSource = null;
 			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because when no data source is selected, the last should be when navigating backwards");
+			_mainWindow.CurrentDataSource.Should()
+			           .BeSameAs(dataSource2,
+			                     "Because when no data source is selected, the last should be when navigating backwards");
 			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
 			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1);
 			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because selecting the previous data source when the first data source is, should simply roundtrip to the last data source again");
-		}
-
-		[Test]
-		[Description("Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
-		public void TestGroup1()
-		{
-			var dataSource1 = _mainWindow.OpenFile("foo");
-			var dataSource2 = _mainWindow.OpenFile("bar");
-			var changes = new List<string>();
-			_mainWindow.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
-			_mainWindow.OnDropped(dataSource1, dataSource2, DataSourceDropType.Group);
-			_mainWindow.RecentFiles.Count().Should().Be(1);
-			var group = _mainWindow.RecentFiles.First();
-			group.Should().NotBeNull();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(group);
-			_mainWindow.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
-			changes.Should().Equal(new[] {"CurrentDataSourceLogView", "WindowTitle", "CurrentDataSource"});
+			_mainWindow.CurrentDataSource.Should()
+			           .BeSameAs(dataSource2,
+			                     "Because selecting the previous data source when the first data source is, should simply roundtrip to the last data source again");
 		}
 
 		[Test]
@@ -140,7 +151,7 @@ namespace Tailviewer.Test.Ui
 			_dispatcher.InvokeAll();
 			_mainWindow.IsUpdateAvailable.Should().BeTrue();
 			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
-			changes.Should().Equal(new object[] { "ShowUpdateAvailable", "IsUpdateAvailable" });
+			changes.Should().Equal(new object[] {"ShowUpdateAvailable", "IsUpdateAvailable"});
 		}
 	}
 }
