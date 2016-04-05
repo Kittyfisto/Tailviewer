@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using Metrolib;
 
 namespace Installer
 {
@@ -26,9 +27,10 @@ namespace Installer
 		private static int Run()
 		{
 			var app = new Application();
+			var dispatcher = new UiDispatcher(Dispatcher.CurrentDispatcher);
 			var window = new MainWindow
 				{
-					DataContext = new MainWindowViewModel(Dispatcher.CurrentDispatcher)
+					DataContext = new MainWindowViewModel(dispatcher)
 				};
 			window.Show();
 			return app.Run();

@@ -3,9 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:viewModels="clr-namespace:Installer"
+        xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         Height="600" Width="480">
+    <Window.Resources>
+        <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -20,51 +25,100 @@
         </TextBlock>
 
         <Grid x:Name="PART_Body" Grid.Row="1" Margin="40,50,40,0">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+            <Grid x:Name="PART_PreInstallation"
+                  Visibility="{Binding IsPreInstallation, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-            <StackPanel>
-                <TextBlock HorizontalAlignment="Left">
-                    <Run Text="Installation will install " />
-                    <Run Text="{Binding InstallationSize, Mode=OneWay}" />
-                    <Run Text=" to:" />
+                <StackPanel>
+                    <TextBlock HorizontalAlignment="Left">
+                        <Run Text="Installation will install " />
+                        <Run Text="{Binding InstallationSize, Mode=OneWay}" />
+                        <Run Text=" to:" />
+                    </TextBlock>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding InstallationPath, Mode=TwoWay}"
+                                 Margin="0,0,7,0" />
+                        <Button Content="..." Padding="4" Width="25" Height="25" Command="{Binding BrowseCommand}"
+                                Grid.Column="1" />
+                    </Grid>
+                </StackPanel>
+
+                <TextBlock Grid.Row="1"
+                           TextWrapping="Wrap">
+                    <Run Text="You must agree to the " />
+                    <Run Text="License Terms" />
+                    <Run
+                        Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
                 </TextBlock>
-                <Grid Margin="0,4,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding InstallationPath, Mode=TwoWay}"
-                             Margin="0,0,7,0"
-                             />
-                    <Button Content="..." Padding="4" Width="25" Height="25" Command="{Binding BrowseCommand}"
-                            Grid.Column="1" />
-                </Grid>
-            </StackPanel>
 
-            <TextBlock Grid.Row="1"
-                       TextWrapping="Wrap"
-                       >
-                <Run Text="You must agree to the " />
-                <Run Text="License Terms" />
-                <Run Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
-            </TextBlock>
+                <CheckBox
+                    Grid.Row="2"
+                    Content="I agree to the License terms"
+                    IsChecked="{Binding AgreeToLicense, Mode=TwoWay}" />
 
-            <CheckBox
-                Grid.Row="2"
-                Content="I agree to the License terms"
-                IsChecked="{Binding AgreeToLicense, Mode=TwoWay}" />
-        </Grid>
+                <Button Grid.Row="3"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding InstallationCommand}">
+                    <Button.Content>
+                        <TextBlock Text="Install"
+                                   FontSize="30" />
+                    </Button.Content>
+                </Button>
+            </Grid>
 
-        <Button Grid.Row="2"
-                VerticalAlignment="Bottom">
-            <Button.Content>
-                <TextBlock Text="Install"
+            <Grid x:Name="PART_Installation"
+                  Visibility="{Binding IsInstalling, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ProgressBar
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Minimum="0"
+                    Maximum="1"
+                    Height="12"
+                    Value="{Binding InstallationProgress, Mode=OneWay}" />
+
+                <TextBlock Text="Installing"
                            FontSize="30" />
-            </Button.Content>
-        </Button>
+            </Grid>
+
+            <Grid x:Name="PART_PostInstallation"
+                  Visibility="{Binding IsPostInstallation, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <TextBlock>
+                        <Run Text="Installation " />
+                        <Run Text="{Binding InstallationResult}" />
+                    </TextBlock>
+                </StackPanel>
+
+                <Button Grid.Row="2"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding LaunchCommand}">
+                    <Button.Content>
+                        <TextBlock Text="Launch"
+                                   FontSize="30" />
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>
