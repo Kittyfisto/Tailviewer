@@ -71,7 +71,7 @@ namespace Tailviewer.Test.Settings
 				{
 					Value = "foobar",
 					IgnoreCase = true,
-					Type = QuickFilterType.RegexpFilter
+					MatchType = QuickFilterMatchType.RegexpFilter
 				});
 			var id = settings.QuickFilters[0].Id;
 			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[0].Id.Should().Be(id);
 			settings.QuickFilters[0].Value.Should().Be("foobar");
 			settings.QuickFilters[0].IgnoreCase.Should().BeTrue();
-			settings.QuickFilters[0].Type.Should().Be(QuickFilterType.RegexpFilter);
+			settings.QuickFilters[0].MatchType.Should().Be(QuickFilterMatchType.RegexpFilter);
 		}
 
 		#region LastViewed

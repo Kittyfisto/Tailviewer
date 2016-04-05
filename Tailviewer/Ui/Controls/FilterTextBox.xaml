@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
 
-    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <metrolib:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <Style TargetType="{x:Type local:FilterTextBox}">
         <Setter Property="IsTabStop" Value="False" />
@@ -59,7 +59,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
 
-                            <local:RemoveButton
+                            <metrolib:RemoveButton
                                 Visibility="{Binding HasFilterText, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                 Grid.Column="1"
                                 x:Name="PART_RemoveFilterText"

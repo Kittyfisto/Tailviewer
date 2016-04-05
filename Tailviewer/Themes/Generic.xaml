@@ -3,19 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/AddButton.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/AlertControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/DataSourcesControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/EditToggleButton.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/FilterTextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/ImageLabel.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogViewerControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/TextToggleButton.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/NotificationBadge.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/OneWayToggle.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/RemoveButton.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterControl.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterTypeToggleButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterMatchTypeToggleButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterActionTypeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

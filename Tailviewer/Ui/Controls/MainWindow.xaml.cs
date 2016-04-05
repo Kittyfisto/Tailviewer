@@ -36,8 +36,15 @@ namespace Tailviewer.Ui.Controls
 			DragOver += OnDragOver;
 			Drop += OnDrop;
 			MouseMove += OnMouseMove;
+			Loaded += OnLoaded;
 
 			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
+		}
+
+		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			var res = Resources;
+			int n = 0;
 		}
 
 		public ICommand FocusDataSourceSearchCommand

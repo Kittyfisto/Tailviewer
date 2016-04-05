@@ -27,10 +27,10 @@ namespace Tailviewer.BusinessLogic.Filters
 			set { _settings.IgnoreCase = value; }
 		}
 
-		public QuickFilterType Type
+		public QuickFilterMatchType MatchType
 		{
-			get { return _settings.Type; }
-			set { _settings.Type = value; }
+			get { return _settings.MatchType; }
+			set { _settings.MatchType = value; }
 		}
 
 		public Guid Id
@@ -42,19 +42,19 @@ namespace Tailviewer.BusinessLogic.Filters
 		public ILogEntryFilter CreateFilter()
 		{
 			var value = Value;
-			switch (Type)
+			switch (MatchType)
 			{
-				case QuickFilterType.StringFilter:
+				case QuickFilterMatchType.StringFilter:
 					if (!string.IsNullOrEmpty(value))
 						return new SubstringFilter(value, IgnoreCase);
 					break;
 
-				case QuickFilterType.WildcardFilter:
+				case QuickFilterMatchType.WildcardFilter:
 					if (!string.IsNullOrEmpty(value))
 						return new WildcardFilter(value, IgnoreCase);
 					break;
 
-				case QuickFilterType.RegexpFilter:
+				case QuickFilterMatchType.RegexpFilter:
 					if (!string.IsNullOrEmpty(value))
 						return new RegexFilter(value, IgnoreCase);
 					break;

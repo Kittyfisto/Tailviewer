@@ -7,7 +7,7 @@ namespace Tailviewer.Settings
 	{
 		private Guid _id;
 		public Guid Id { get { return _id; } }
-		public QuickFilterType Type;
+		public QuickFilterMatchType MatchType;
 		public string Value;
 		public bool IgnoreCase;
 
@@ -31,7 +31,7 @@ namespace Tailviewer.Settings
 						break;
 
 					case "type":
-						Type = reader.ReadContentAsEnum<QuickFilterType>();
+						MatchType = reader.ReadContentAsEnum<QuickFilterMatchType>();
 						break;
 
 					case "value":
@@ -53,7 +53,7 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeGuid("id", Id);
-			writer.WriteAttributeEnum("type", Type);
+			writer.WriteAttributeEnum("type", MatchType);
 			writer.WriteAttributeString("value", Value);
 			writer.WriteAttributeBool("ignorecase", IgnoreCase);
 		}

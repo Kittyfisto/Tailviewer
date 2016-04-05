@@ -1,6 +1,6 @@
 ﻿namespace Tailviewer.Settings
 {
-	internal enum QuickFilterType
+	internal enum QuickFilterMatchType
 	{
 		StringFilter = 0,
 		WildcardFilter = 1,

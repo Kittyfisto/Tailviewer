@@ -29,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				Value = "he*rld",
 				IgnoreCase = true,
-				Type = QuickFilterType.WildcardFilter
+				MatchType = QuickFilterMatchType.WildcardFilter
 			};
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.None)).Should().BeTrue();
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.None)).Should().BeTrue();

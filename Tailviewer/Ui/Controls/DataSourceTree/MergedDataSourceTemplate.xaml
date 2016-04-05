@@ -2,13 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
+                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <metrolib:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
     <converters:CountConverter x:Key="NoTimestampCountConverter" />
@@ -67,7 +68,7 @@
                 </Grid>
             </Grid>
 
-            <local:RemoveButton VerticalAlignment="Stretch"
+            <metrolib:RemoveButton VerticalAlignment="Stretch"
                                 HorizontalAlignment="Right"
                                 IsInverted="{Binding IsSelected, RelativeSource=
 {RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"

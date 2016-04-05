@@ -146,15 +146,15 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public QuickFilterType Type
+		public QuickFilterMatchType MatchType
 		{
-			get { return _quickFilter.Type; }
+			get { return _quickFilter.MatchType; }
 			set
 			{
-				if (value == Type)
+				if (value == MatchType)
 					return;
 
-				_quickFilter.Type = value;
+				_quickFilter.MatchType = value;
 				UpdateValidity();
 				EmitPropertyChanged();
 			}

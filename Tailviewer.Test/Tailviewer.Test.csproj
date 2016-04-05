@@ -98,7 +98,6 @@
     <Compile Include="Ui\MainWindowViewModelTest.cs" />
     <Compile Include="Ui\QuickFiltersViewModelTest.cs" />
     <Compile Include="Ui\QuickFilterViewModelTest.cs" />
-    <Compile Include="Ui\RemoveButtonTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Settings\settings_no_file_guid.xml">

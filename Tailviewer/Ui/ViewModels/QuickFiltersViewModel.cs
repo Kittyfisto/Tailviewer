@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
@@ -99,7 +98,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "Value":
 				case "IsActive":
 				case "DropType":
-				case "Type":
+				case "MatchType":
 					if (!_isChangingCurrentDataSource)
 					{
 						var fn = OnFiltersChanged;

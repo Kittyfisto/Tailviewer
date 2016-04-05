@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Metrolib, Version=0.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.9.0\lib\net45\Metrolib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -84,22 +88,18 @@
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
     <Compile Include="Settings\QuickFilter.cs" />
+    <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
-    <Compile Include="Settings\QuickFilterType.cs" />
-    <Compile Include="Ui\Controls\AddButton.cs" />
+    <Compile Include="Settings\QuickFilterMatchType.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropType.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
-    <Compile Include="Ui\Controls\EditToggleButton.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
-    <Compile Include="Ui\Controls\NotificationBadge.cs" />
-    <Compile Include="Ui\Controls\OneWayToggle.cs" />
-    <Compile Include="Ui\Controls\QuickFilterTypeToggleButton.cs" />
-    <Compile Include="Ui\Controls\TextToggleButton.cs" />
-    <Compile Include="Ui\Converters\BoolFalseToHiddenConverter.cs" />
+    <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
+    <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />
@@ -118,7 +118,6 @@
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
-    <Compile Include="Ui\Controls\RemoveButton.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
@@ -130,11 +129,8 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
     <Compile Include="Size.cs" />
-    <Compile Include="Ui\Controls\AlertControl.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
-    <Compile Include="Ui\Converters\BoolFalseToCollapsedConverter.cs" />
-    <Compile Include="Ui\Converters\BoolTrueToCollapsedConverter.cs" />
     <Compile Include="Ui\IDispatcher.cs" />
     <Compile Include="Ui\UiDispatcher.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFile.cs" />
@@ -156,23 +152,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\AddButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\AlertControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Ui\Controls\DataSourceTree\MergedDataSourceTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\DataSourceTree\SingleDataSourceTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\EditToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,15 +168,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\NotificationBadge.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\OneWayToggle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\QuickFilterTypeToggleButton.xaml">
+    <Page Include="Ui\Controls\QuickFilterMatchTypeToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -200,7 +176,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\RemoveButton.xaml">
+    <Page Include="Ui\Controls\QuickFilterActionTypeToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -222,10 +198,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\DataSourceTree\DataSourcesControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\TextToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -269,22 +241,7 @@
     <Resource Include="Resources\ic_no_time_black_18dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\ic_clear_black_18dp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ic_clear_white_18dp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ic_add_black_18dp.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\ic_open_10_black_18dp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ic_mode_edit_black_18dp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\ic_mode_edit_white_18dp.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\packages\log4net.2.0.3\lib\net20-full\log4net.dll">
@@ -297,6 +254,11 @@
   <ItemGroup>
     <Resource Include="Resources\ic_no_time_black_8dp.png" />
     <Resource Include="Resources\ic_no_time_white_8dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\packages\Metrolib.0.1.9.0\lib\net45\Metrolib.dll">
+      <Link>ThirdParty\Metrolib.dll</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -83,10 +83,10 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeType()
 		{
-			_model.Type = QuickFilterType.RegexpFilter;
-			_changes.Should().Equal(new[] { "Type" });
-			_model.Type = QuickFilterType.RegexpFilter;
-			_changes.Should().Equal(new[] { "Type" });
+			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_changes.Should().Equal(new[] { "MatchType" });
+			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_changes.Should().Equal(new[] { "MatchType" });
 		}
 	}
 }

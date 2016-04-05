@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters">
+                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -44,7 +45,7 @@
                                        />
                             </Button>
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
                                 x:Name="PART_FollowTail"
@@ -52,7 +53,7 @@
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
  
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
                                 x:Name="PART_ColorByLevel"
@@ -60,7 +61,7 @@
                                 IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="Color by level" />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 Width="41"
@@ -69,35 +70,35 @@
                                 Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}"
                                 />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowError, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowWarning, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,0,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding ShowInfo, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                            <local:TextToggleButton
+                            <metrolib:TextToggleButton
                                 Margin="0,0,8,8"
                                 Padding="4"
                                 VerticalAlignment="Stretch"

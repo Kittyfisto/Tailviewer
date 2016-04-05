@@ -58,12 +58,12 @@ namespace Tailviewer.Test.Ui
 
 			int numFilterChanges = 0;
 			QuickFilterViewModel filter = model.AddQuickFilter();
-			filter.Type.Should().Be(QuickFilterType.StringFilter);
+			filter.MatchType.Should().Be(QuickFilterMatchType.StringFilter);
 			filter.Value = "Foobar";
 			filter.IsActive = true;
 
 			model.OnFiltersChanged += () => ++numFilterChanges;
-			filter.Type = QuickFilterType.WildcardFilter;
+			filter.MatchType = QuickFilterMatchType.WildcardFilter;
 			numFilterChanges.Should().Be(1);
 		}
 

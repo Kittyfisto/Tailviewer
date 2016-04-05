@@ -6,6 +6,7 @@
         xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
         xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
         xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
+        xmlns:controls2="clr-namespace:Tailviewer.Ui.Controls;assembly=Metrolib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
         Title="{Binding WindowTitle}"
@@ -120,7 +121,7 @@
                 ItemsSource="{Binding QuickFilters}"
                 AddCommand="{Binding AddQuickFilterCommand}" />
 
-                <controls:AlertControl
+                <controls2:AlertControl
                 Grid.ColumnSpan="5"
                 Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                 Exception="{Binding Exception}"
