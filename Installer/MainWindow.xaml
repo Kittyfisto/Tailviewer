@@ -6,7 +6,9 @@
         xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-        Height="600" Width="480">
+        Height="600" Width="480"
+        ResizeMode="NoResize"
+        Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
     <Window.Resources>
         <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
     </Window.Resources>

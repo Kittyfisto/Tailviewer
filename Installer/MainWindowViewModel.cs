@@ -244,7 +244,7 @@ namespace Installer
 		private void DoBrowse()
 		{
 			var folderBrowser = new FolderBrowserDialog();
-			folderBrowser.Description = "Select Chase 6 Installation Folder";
+			folderBrowser.Description = string.Format("Choose folder for {0}", Constants.ApplicationTitle);
 			folderBrowser.RootFolder = Environment.SpecialFolder.MyComputer;
 			folderBrowser.ShowNewFolderButton = false;
 
@@ -255,7 +255,7 @@ namespace Installer
 
 			if (folderBrowser.ShowDialog() == DialogResult.OK)
 			{
-				_installationPath = folderBrowser.SelectedPath;
+				InstallationPath = folderBrowser.SelectedPath;
 			}
 		}
 
