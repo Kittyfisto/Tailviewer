@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
-using Tailviewer.Ui;
+using Metrolib;
 
 namespace Tailviewer.Test
 {

@@ -15,8 +15,8 @@
 
         <TextBlock HorizontalAlignment="Center"
                    FontSize="20">
-            <Run Text="Tailviewer" />
-            <Run Text="{Binding AppVersion}" />
+            <Run Text="{Binding AppTitle, Mode=OneTime}" />
+            <Run Text="{Binding AppVersion, Mode=OneWay}" />
         </TextBlock>
 
         <Grid x:Name="PART_Body" Grid.Row="1" Margin="40,50,40,0">
@@ -29,31 +29,34 @@
             <StackPanel>
                 <TextBlock HorizontalAlignment="Left">
                     <Run Text="Installation will install " />
-                    <Run Text="{Binding InstallationSize}" />
+                    <Run Text="{Binding InstallationSize, Mode=OneWay}" />
                     <Run Text=" to:" />
                 </TextBlock>
-                <Grid>
+                <Grid Margin="0,4,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding InstallationPath}" />
+                    <TextBox Text="{Binding InstallationPath, Mode=TwoWay}"
+                             Margin="0,0,7,0"
+                             />
                     <Button Content="..." Padding="4" Width="25" Height="25" Command="{Binding BrowseCommand}"
                             Grid.Column="1" />
                 </Grid>
             </StackPanel>
 
-            <TextBlock Grid.Row="1">
+            <TextBlock Grid.Row="1"
+                       TextWrapping="Wrap"
+                       >
                 <Run Text="You must agree to the " />
                 <Run Text="License Terms" />
-                <Run
-                    Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
+                <Run Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
             </TextBlock>
 
             <CheckBox
                 Grid.Row="2"
                 Content="I agree to the License terms"
-                IsChecked="{Binding AgreeToLicense}" />
+                IsChecked="{Binding AgreeToLicense, Mode=TwoWay}" />
         </Grid>
 
         <Button Grid.Row="2"

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Metrolib;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 

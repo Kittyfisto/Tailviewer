@@ -44,9 +44,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Metrolib.0.1.14.0\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.18.0\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -114,7 +113,6 @@
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Ui\Converters\LevelToBrushConverter.cs" />
-    <Compile Include="Ui\DelegateCommand.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />
@@ -130,8 +128,6 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
     <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
-    <Compile Include="Ui\IDispatcher.cs" />
-    <Compile Include="Ui\UiDispatcher.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
@@ -243,21 +239,11 @@
     <Resource Include="Resources\ic_open_10_black_18dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\log4net.2.0.3\lib\net20-full\log4net.dll">
-      <Link>ThirdParty\log4net.dll</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\ic_no_time_white_18dp.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\ic_no_time_black_8dp.png" />
     <Resource Include="Resources\ic_no_time_white_8dp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\packages\Metrolib.0.1.11.0\lib\net45\Metrolib.dll">
-      <Link>ThirdParty\Metrolib.dll</Link>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

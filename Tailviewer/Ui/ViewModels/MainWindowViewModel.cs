@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Metrolib;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;

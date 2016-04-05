@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Metrolib;
 
 namespace Installer
@@ -9,26 +10,46 @@ namespace Installer
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
+		private readonly string _appVersion;
+		private readonly ICommand _browseCommand;
+		private readonly Dispatcher _dispatcher;
+
 		private bool _agreeToLicense;
+		private string _installationPath;
+		private Size _installationSize;
+
+		public MainWindowViewModel(Dispatcher dispatcher)
+		{
+			_dispatcher = dispatcher;
+			_installationPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+		}
 
 		public string AppVersion
 		{
-			get { throw new NotImplementedException(); }
+			get { return _appVersion; }
 		}
 
 		public Size InstallationSize
 		{
-			get { throw new NotImplementedException(); }
+			get { return _installationSize; }
 		}
 
 		public string InstallationPath
 		{
-			get { throw new NotImplementedException(); }
+			get { return _installationPath; }
+			set
+			{
+				if (value == _installationPath)
+					return;
+
+				_installationPath = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public ICommand BrowseCommand
 		{
-			get { throw new NotImplementedException(); }
+			get { return _browseCommand; }
 		}
 
 		public bool AgreeToLicense
@@ -42,6 +63,11 @@ namespace Installer
 				_agreeToLicense = value;
 				EmitPropertyChanged();
 			}
+		}
+
+		public string AppTitle
+		{
+			get { return Constants.ApplicationTitle; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -42,9 +42,9 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Metrolib.0.1.14.0\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.18.0\lib\net45\Metrolib.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
@@ -97,7 +97,6 @@
     <Compile Include="BusinessLogic\LogFileTest.cs" />
     <Compile Include="Ui\LogViewerControlTest.cs" />
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
-    <Compile Include="ManualDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ui\MainWindowViewModelTest.cs" />
     <Compile Include="Ui\QuickFiltersViewModelTest.cs" />
