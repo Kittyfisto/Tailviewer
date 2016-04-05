@@ -19,11 +19,11 @@ namespace Installer
 		private readonly ICommand _browseCommand;
 		private readonly DelegateCommand _installationCommand;
 		private readonly DelegateCommand _launchCommand;
+		private readonly Installer _installer;
 
 		private bool _agreeToLicense;
 		private string _installationPath;
 		private double _installationProgress;
-		private Size _installationSize;
 
 		private Task _installationTask;
 		private bool _isInstalling;
@@ -41,6 +41,7 @@ namespace Installer
 			_browseCommand = new DelegateCommand(DoBrowse);
 			_installationCommand = new DelegateCommand(DoInstall, CanClickInstall);
 			_launchCommand = new DelegateCommand(DoLaunch, CanLaunch);
+			_installer = new Installer();
 
 			IsPreInstallation = true;
 		}
@@ -69,7 +70,7 @@ namespace Installer
 
 		public Size InstallationSize
 		{
-			get { return _installationSize; }
+			get { return _installer.InstallationSize; }
 		}
 
 		public string InstallationPath
@@ -237,10 +238,7 @@ namespace Installer
 
 		private void Installation()
 		{
-			using (var installer = new Installer(_installationPath))
-			{
-				installer.Run();
-			}
+			_installer.Run(_installationPath);
 		}
 
 		private void DoBrowse()

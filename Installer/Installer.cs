@@ -1,34 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Metrolib;
 
 namespace Installer
 {
 	internal sealed class Installer : IDisposable
 	{
-		private readonly string _installationPath;
+		private readonly List<string> _files;
+		private readonly Assembly _assembly;
+		private readonly string _prefix;
+		private readonly Size _installationSize;
 
-		public Installer(string installationPath)
+		public Size InstallationSize
 		{
-			_installationPath = installationPath;
+			get { return _installationSize; }
+		}
+
+		public Installer()
+		{
+			_assembly = Assembly.GetExecutingAssembly();
+			_prefix = string.Format("{0}.InstallationFiles.", _assembly.GetName().Name);
+			var allFiles = _assembly.GetManifestResourceNames();
+			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
+			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+		}
+
+		private Size Filesize(string fileName)
+		{
+			using (var stream = _assembly.GetManifestResourceStream(fileName))
+			{
+				if (stream == null)
+					return Size.Zero;
+
+				return Size.FromBytes(stream.Length);
+			}
 		}
 
 		public void Dispose()
 		{
 		}
 
-		public void Run()
+		public void Run(string installationPath)
 		{
 			var start = DateTime.Now;
 
 			try
 			{
-
-				RemovePreviousInstallation();
-				EnsureInstallationPath();
-				InstallNewFiles();
+				RemovePreviousInstallation(installationPath);
+				EnsureInstallationPath(installationPath);
+				InstallNewFiles(installationPath);
 			}
 			finally
 			{
@@ -42,9 +66,9 @@ namespace Installer
 			}
 		}
 
-		private void RemovePreviousInstallation()
+		private void RemovePreviousInstallation(string installationPath)
 		{
-			Delete(_installationPath);
+			Delete(installationPath);
 		}
 
 		private void Delete(string path)
@@ -61,26 +85,22 @@ namespace Installer
 			}
 		}
 
-		private void EnsureInstallationPath()
+		private void EnsureInstallationPath(string installationPath)
 		{
-			Directory.CreateDirectory(_installationPath);
+			Directory.CreateDirectory(installationPath);
 		}
 
-		private void InstallNewFiles()
+		private void InstallNewFiles(string installationPath)
 		{
-			Assembly assembly = Assembly.GetExecutingAssembly();
-			string prefix = string.Format("{0}.InstallationFiles.", assembly.GetName().Name);
-			var allFiles = assembly.GetManifestResourceNames();
-			var files = allFiles.Where(x => x.Contains(prefix)).ToList();
-			double perFile = 1.0 / files.Count;
+			double perFile = 1.0 / _files.Count;
 
-			foreach (var file in files)
+			foreach (var file in _files)
 			{
-				var fileName = file.Substring(prefix.Length);
-				string destFilePath = Path.Combine(_installationPath, fileName);
+				var fileName = file.Substring(_prefix.Length);
+				string destFilePath = Path.Combine(installationPath, fileName);
 
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-				using (var source = assembly.GetManifestResourceStream(file))
+				using (var source = _assembly.GetManifestResourceStream(file))
 				{
 					const int size = 4096;
 					var buffer = new byte[size];

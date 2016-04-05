@@ -24,7 +24,7 @@
             <Run Text="{Binding AppVersion, Mode=OneWay}" />
         </TextBlock>
 
-        <Grid x:Name="PART_Body" Grid.Row="1" Margin="40,50,40,0">
+        <Grid x:Name="PART_Body" Grid.Row="1" Margin="40,50,40,40">
             <Grid x:Name="PART_PreInstallation"
                   Visibility="{Binding IsPreInstallation, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                 <Grid.RowDefinitions>
