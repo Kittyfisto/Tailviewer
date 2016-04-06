@@ -9,7 +9,6 @@ namespace Installer.Exceptions
 		public FileIoException(string message, Exception innerException)
 			: base(message, innerException)
 		{
-			
 		}
 	}
 }

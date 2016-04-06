@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace LogViewer
@@ -21,12 +20,10 @@ namespace LogViewer
 
 		public void Dispose()
 		{
-			
 		}
 
 		public void Wait()
 		{
-			
 		}
 
 		public DateTime? StartTimestamp
@@ -56,12 +53,10 @@ namespace LogViewer
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
-			
 		}
 
 		public void Remove(ILogFileListener listener)
 		{
-			
 		}
 
 		public void GetSection(LogFileSection section, LogLine[] dest)

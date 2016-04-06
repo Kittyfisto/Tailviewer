@@ -76,17 +76,17 @@ namespace Installer
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			foreach (var file in _files)
+			foreach (string file in _files)
 			{
-				var fullFilePath = DestFilePath(installationPath, file);
+				string fullFilePath = DestFilePath(installationPath, file);
 				DeleteFile(fullFilePath);
 			}
 		}
 
 		private void DeleteFile(string filePath)
 		{
-			var name = Path.GetFileName(filePath);
-			var dir = Path.GetDirectoryName(filePath);
+			string name = Path.GetFileName(filePath);
+			string dir = Path.GetDirectoryName(filePath);
 
 			try
 			{
@@ -107,7 +107,7 @@ namespace Installer
 		{
 			foreach (string file in _files)
 			{
-				var destFilePath = DestFilePath(installationPath, file);
+				string destFilePath = DestFilePath(installationPath, file);
 				CopyFile(destFilePath, file);
 			}
 		}
@@ -121,12 +121,11 @@ namespace Installer
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
 		{
-			var directory = Path.GetDirectoryName(destFilePath);
-			var fileName = Path.GetFileName(destFilePath);
+			string directory = Path.GetDirectoryName(destFilePath);
+			string fileName = Path.GetFileName(destFilePath);
 
 			try
 			{
-
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 				using (Stream source = _assembly.GetManifestResourceStream(sourceFilePath))
 				{
@@ -138,7 +137,7 @@ namespace Installer
 					{
 						dest.Write(buffer, 0, read);
 						_installedSize += Size.FromBytes(read);
-						_progress = _installedSize / _installationSize;
+						_progress = _installedSize/_installationSize;
 					}
 				}
 			}

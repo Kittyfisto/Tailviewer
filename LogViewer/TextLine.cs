@@ -1,13 +1,15 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace LogViewer
 {
 	public sealed class TextLine
 	{
+		public const double FontSize = 12;
+		public const double LineSpacing = 4;
+		public const double LineHeight = FontSize + LineSpacing;
 		private static readonly Brush NormalForegroundBrush;
 		private static readonly Brush NormalBackgroundBrush;
 		private static readonly Brush HoveredForegroundBrush;
@@ -16,14 +18,26 @@ namespace LogViewer
 		private static readonly Brush SelectedBackgroundBrush;
 		private static readonly Typeface Typeface;
 
-		public const double FontSize = 12;
-		public const double LineSpacing = 4;
-		public const double LineHeight = FontSize + LineSpacing;
-
 		private readonly LogLine _logEntry;
-		private FormattedText _text;
 		private bool _isHovered;
 		private bool _isSelected;
+		private FormattedText _text;
+
+		static TextLine()
+		{
+			NormalBackgroundBrush = null;
+			NormalForegroundBrush = Brushes.Black;
+			HoveredBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
+			HoveredForegroundBrush = Brushes.Black;
+			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
+			SelectedForegroundBrush = Brushes.White;
+			Typeface = new Typeface("Segoe UI");
+		}
+
+		public TextLine(LogLine logEntry)
+		{
+			_logEntry = logEntry;
+		}
 
 		public bool IsHovered
 		{
@@ -60,20 +74,6 @@ namespace LogViewer
 			}
 		}
 
-		private void CreateTextIfNecessary()
-		{
-			if (_text != null)
-				return;
-
-			var brush = ForegroundBrush;
-			_text = new FormattedText(_logEntry.Message,
-			                          CultureInfo.CurrentUICulture,
-			                          FlowDirection.LeftToRight,
-			                          Typeface,
-			                          FontSize,
-			                          brush);
-		}
-
 		private Brush ForegroundBrush
 		{
 			get
@@ -107,25 +107,23 @@ namespace LogViewer
 			}
 		}
 
-		static TextLine()
+		private void CreateTextIfNecessary()
 		{
-			NormalBackgroundBrush = null;
-			NormalForegroundBrush = Brushes.Black;
-			HoveredBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
-			HoveredForegroundBrush = Brushes.Black;
-			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
-			SelectedForegroundBrush = Brushes.White;
-			Typeface = new Typeface("Segoe UI");
-		}
+			if (_text != null)
+				return;
 
-		public TextLine(LogLine logEntry)
-		{
-			_logEntry = logEntry;
+			Brush brush = ForegroundBrush;
+			_text = new FormattedText(_logEntry.Message,
+			                          CultureInfo.CurrentUICulture,
+			                          FlowDirection.LeftToRight,
+			                          Typeface,
+			                          FontSize,
+			                          brush);
 		}
 
 		public void Render(DrawingContext drawingContext, double y, double actualWidth)
 		{
-			var brush = BackgroundBrush;
+			Brush brush = BackgroundBrush;
 			if (brush != null)
 			{
 				drawingContext.DrawRectangle(brush, null, new Rect(0, y, actualWidth, LineHeight));

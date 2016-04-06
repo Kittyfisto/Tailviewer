@@ -8,26 +8,24 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        
+
                         <Grid>
                             <ScrollBar x:Name="PART_VerticalScrollBar"
                                        VerticalAlignment="Stretch"
                                        HorizontalAlignment="Right"
-                                       Margin="0,0,0,17"
-                                       />
+                                       Margin="0,0,0,17" />
                             <ScrollBar x:Name="PART_HorizontalScrollBar"
                                        VerticalAlignment="Bottom"
                                        HorizontalAlignment="Stretch"
                                        Orientation="Horizontal"
-                                       Margin="0,0,17,0"
-                                       />
-                            
+                                       Margin="0,0,17,0" />
+
                             <Rectangle Width="17" Height="17"
                                        VerticalAlignment="Bottom"
                                        HorizontalAlignment="Right"
-                                       Fill="#CECECE"/>
+                                       Fill="#CECECE" />
                         </Grid>
-                        
+
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

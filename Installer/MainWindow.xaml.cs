@@ -20,7 +20,7 @@ namespace Installer
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			((MainWindowViewModel)DataContext).Update();
+			((MainWindowViewModel) DataContext).Update();
 		}
 	}
 }

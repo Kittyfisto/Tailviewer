@@ -7,9 +7,9 @@ namespace Installer.Exceptions
 	{
 		public CopyFileException(string fileName, string destFolder, Exception innerException)
 			: base(string.Format("Could not copy '{0}' to '{1}': {2}",
-			fileName,
-			destFolder,
-			innerException.Message), innerException)
+			                     fileName,
+			                     destFolder,
+			                     innerException.Message), innerException)
 		{
 		}
 	}

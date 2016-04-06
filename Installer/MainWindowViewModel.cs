@@ -278,7 +278,7 @@ namespace Installer
 		private string FormatErrorMessage(AggregateException exception)
 		{
 			var builder = new StringBuilder();
-			foreach(var inner in exception.InnerExceptions)
+			foreach (Exception inner in exception.InnerExceptions)
 			{
 				FormatErrorMessage(builder, inner);
 			}

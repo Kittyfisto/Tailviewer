@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace LogViewer
