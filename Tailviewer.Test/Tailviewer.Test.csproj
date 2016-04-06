@@ -83,6 +83,7 @@
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
     <Compile Include="Ui\Converters\CountConverterTest.cs" />
     <Compile Include="Ui\DataSourcesControlTest.cs" />

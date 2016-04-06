@@ -29,6 +29,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var availableSize = new Size(1024, 768);
 			_control.Measure(availableSize);
 			_control.Arrange(new Rect(new Point(), availableSize));
+			DispatcherExtensions.ExecuteAllEvents();
 
 			_lines = new List<LogLine>();
 			_listeners = new List<ILogFileListener>();
@@ -67,6 +68,39 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.VisibleTextLines.Count.Should().Be(1, "Because the log file contains one log line");
 			_control.VisibleTextLines[0].LogLine.Should().Be(_lines[0]);
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the view synchronizes itself with the log file when the latter was modified after being attached")]
+		public void TestLogFileAdd1()
+		{
+			_control.LogFile = _logFile.Object;
+
+			for (int i = 0; i < 1000; ++i)
+			{
+				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
+			}
+			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+
+			_control.VisibleTextLines.Count.Should().Be(0, "Because the view may not have synchronized itself with the log file");
+
+
+			_control.VisibleTextLines.Count.Should().Be(48, "Because the view must have synchronized itself and display the maximum of 48 lines");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the ListView is capable of handling exceptions thrown by GetSection() that indicate that the log file has shrunk")]
+		public void TestGetSectionThrows()
+		{
+			_control.LogFile = _logFile.Object;
+
+			for (int i = 0; i < 1000; ++i)
+			{
+				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
+			}
+			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
 		}
 	}
 }
