@@ -4,34 +4,46 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Installer.Exceptions;
 using Metrolib;
 
 namespace Installer
 {
 	internal sealed class Installer : IDisposable
 	{
-		private readonly List<string> _files;
 		private readonly Assembly _assembly;
-		private readonly string _prefix;
+		private readonly List<string> _files;
 		private readonly Size _installationSize;
+		private readonly string _prefix;
+		private Size _installedSize;
+		private double _progress;
+
+		public Installer()
+		{
+			_assembly = Assembly.GetExecutingAssembly();
+			_prefix = string.Format("{0}.InstallationFiles.", _assembly.GetName().Name);
+			string[] allFiles = _assembly.GetManifestResourceNames();
+			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
+			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+		}
 
 		public Size InstallationSize
 		{
 			get { return _installationSize; }
 		}
 
-		public Installer()
+		public double Progress
 		{
-			_assembly = Assembly.GetExecutingAssembly();
-			_prefix = string.Format("{0}.InstallationFiles.", _assembly.GetName().Name);
-			var allFiles = _assembly.GetManifestResourceNames();
-			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
-			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			get { return _progress; }
+		}
+
+		public void Dispose()
+		{
 		}
 
 		private Size Filesize(string fileName)
 		{
-			using (var stream = _assembly.GetManifestResourceStream(fileName))
+			using (Stream stream = _assembly.GetManifestResourceStream(fileName))
 			{
 				if (stream == null)
 					return Size.Zero;
@@ -40,25 +52,23 @@ namespace Installer
 			}
 		}
 
-		public void Dispose()
-		{
-		}
-
 		public void Run(string installationPath)
 		{
-			var start = DateTime.Now;
+			DateTime start = DateTime.Now;
 
 			try
 			{
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
+
+				throw new Exception();
 			}
 			finally
 			{
-				var end = DateTime.Now;
-				var elapsed = end - start;
-				var remaining = TimeSpan.FromSeconds(1) - elapsed;
+				DateTime end = DateTime.Now;
+				TimeSpan elapsed = end - start;
+				TimeSpan remaining = TimeSpan.FromMilliseconds(500) - elapsed;
 				if (remaining > TimeSpan.Zero)
 				{
 					Thread.Sleep(remaining);
@@ -68,20 +78,32 @@ namespace Installer
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			Delete(installationPath);
+			DeleteEverything(installationPath);
 		}
 
-		private void Delete(string path)
+		private void DeleteEverything(string path)
 		{
 			var directory = new DirectoryInfo(path);
 
 			foreach (FileInfo file in directory.GetFiles())
 			{
-				file.Delete();
+				DeleteFile(file);
 			}
 			foreach (DirectoryInfo dir in directory.GetDirectories())
 			{
-				Delete(dir.FullName);
+				DeleteEverything(dir.FullName);
+			}
+		}
+
+		private void DeleteFile(FileInfo file)
+		{
+			try
+			{
+				file.Delete();
+			}
+			catch (Exception e)
+			{
+				throw new DeleteFileException(file.Name, file.Directory.FullName, e);
 			}
 		}
 
@@ -92,15 +114,25 @@ namespace Installer
 
 		private void InstallNewFiles(string installationPath)
 		{
-			double perFile = 1.0 / _files.Count;
-
-			foreach (var file in _files)
+			foreach (string file in _files)
 			{
-				var fileName = file.Substring(_prefix.Length);
+				string fileName = file.Substring(_prefix.Length);
 				string destFilePath = Path.Combine(installationPath, fileName);
 
+				CopyFile(destFilePath, file);
+			}
+		}
+
+		private void CopyFile(string destFilePath, string sourceFilePath)
+		{
+			var directory = Path.GetDirectoryName(destFilePath);
+			var fileName = Path.GetFileName(destFilePath);
+
+			try
+			{
+
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-				using (var source = _assembly.GetManifestResourceStream(file))
+				using (Stream source = _assembly.GetManifestResourceStream(sourceFilePath))
 				{
 					const int size = 4096;
 					var buffer = new byte[size];
@@ -109,8 +141,14 @@ namespace Installer
 					while ((read = source.Read(buffer, 0, size)) > 0)
 					{
 						dest.Write(buffer, 0, read);
+						_installedSize += Size.FromBytes(read);
+						_progress = _installedSize / _installationSize;
 					}
 				}
+			}
+			catch (Exception e)
+			{
+				throw new CopyFileException(fileName, directory, e);
 			}
 		}
 	}

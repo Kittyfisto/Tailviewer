@@ -28,10 +28,7 @@ namespace Installer
 		{
 			var app = new Application();
 			var dispatcher = new UiDispatcher(Dispatcher.CurrentDispatcher);
-			var window = new MainWindow
-				{
-					DataContext = new MainWindowViewModel(dispatcher)
-				};
+			var window = new MainWindow(new MainWindowViewModel(dispatcher));
 			window.Show();
 			return app.Run();
 		}
@@ -59,8 +56,6 @@ namespace Installer
 
 			string resource = string.Format("{0}.{1}.{2}.dll", _containingAssembly, _subFolder, fileName);
 			Assembly curAsm = Assembly.GetExecutingAssembly();
-
-			var fucks = curAsm.GetManifestResourceNames();
 
 			using (Stream stream = curAsm.GetManifestResourceStream(resource))
 			{

@@ -64,6 +64,9 @@
     </Page>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\CopyFileException.cs" />
+    <Compile Include="Exceptions\DeleteFileException.cs" />
+    <Compile Include="Exceptions\FileIOException.cs" />
     <Compile Include="Installer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -92,7 +95,9 @@
     <EmbeddedResource Include="..\LICENSE">
       <Link>InstallationFiles\LICENSE</Link>
     </EmbeddedResource>
-    <None Include="app.manifest" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

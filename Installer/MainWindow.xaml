@@ -112,6 +112,19 @@
                     </TextBlock>
                 </StackPanel>
 
+                <Grid Grid.Row="1"
+                      Margin="0,4,0,4"
+                      Visibility="{Binding HasFailed, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                      >
+                    <Border BorderBrush="Black" BorderThickness="1"
+                            Padding="4"
+                            >
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="{Binding ErrorMessage, Mode=OneWay}"
+                                   />
+                    </Border>
+                </Grid>
+                
                 <Button Grid.Row="2"
                         VerticalAlignment="Bottom"
                         Command="{Binding LaunchCommand}">

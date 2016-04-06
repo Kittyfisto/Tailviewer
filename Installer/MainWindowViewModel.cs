@@ -4,10 +4,14 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Installer.Exceptions;
 using Metrolib;
+using Application = System.Windows.Application;
+using Size = Metrolib.Size;
 
 namespace Installer
 {
@@ -15,21 +19,23 @@ namespace Installer
 		: INotifyPropertyChanged
 	{
 		private readonly Version _appVersion;
-		private readonly IDispatcher _dispatcher;
 		private readonly ICommand _browseCommand;
+		private readonly IDispatcher _dispatcher;
 		private readonly DelegateCommand _installationCommand;
-		private readonly DelegateCommand _launchCommand;
 		private readonly Installer _installer;
+		private readonly DelegateCommand _launchCommand;
 
 		private bool _agreeToLicense;
+		private string _errorMessage;
+		private bool _hasFailed;
 		private string _installationPath;
 		private double _installationProgress;
+		private string _installationResult;
 
 		private Task _installationTask;
 		private bool _isInstalling;
 		private bool _isPostInstallation;
 		private bool _isPreInstallation;
-		private string _installationResult;
 		private bool _success;
 
 		public MainWindowViewModel(IDispatcher dispatcher)
@@ -44,18 +50,6 @@ namespace Installer
 			_installer = new Installer();
 
 			IsPreInstallation = true;
-		}
-
-		private bool CanLaunch()
-		{
-			return _success;
-		}
-
-		private void DoLaunch()
-		{
-			var app = Path.Combine(_installationPath, "Tailviewer.exe");
-			Process.Start(app);
-			System.Windows.Application.Current.Shutdown();
 		}
 
 		public DelegateCommand LaunchCommand
@@ -177,7 +171,50 @@ namespace Installer
 			}
 		}
 
+		public bool HasFailed
+		{
+			get { return _hasFailed; }
+			private set
+			{
+				if (value == _hasFailed)
+					return;
+
+				_hasFailed = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string ErrorMessage
+		{
+			get { return _errorMessage; }
+			private set
+			{
+				if (value == _errorMessage)
+					return;
+
+				_errorMessage = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void Update()
+		{
+			InstallationProgress = _installer.Progress;
+		}
+
+		private bool CanLaunch()
+		{
+			return _success;
+		}
+
+		private void DoLaunch()
+		{
+			string app = Path.Combine(_installationPath, "Tailviewer.exe");
+			Process.Start(app);
+			Application.Current.Shutdown();
+		}
 
 		[Pure]
 		private bool CanClickInstall()
@@ -212,19 +249,21 @@ namespace Installer
 
 		private void OnInstallationFinished(Task task)
 		{
-			string result;
-			if (task.IsFaulted)
-			{
-				result = "failed";
-			}
-			else
-			{
-				_success = true;
-				result = "succeeded";
-			}
-
 			_dispatcher.BeginInvoke(() =>
 				{
+					string result;
+					if (task.IsFaulted)
+					{
+						result = "failed";
+						HasFailed = true;
+						ErrorMessage = FormatErrorMessage(task.Exception);
+					}
+					else
+					{
+						_success = true;
+						result = "succeeded";
+					}
+
 					_installationTask = null;
 
 					InstallationResult = result;
@@ -234,6 +273,30 @@ namespace Installer
 
 					_launchCommand.RaiseCanExecuteChanged();
 				});
+		}
+
+		private string FormatErrorMessage(AggregateException exception)
+		{
+			var builder = new StringBuilder();
+			foreach(var inner in exception.InnerExceptions)
+			{
+				FormatErrorMessage(builder, inner);
+			}
+			return builder.ToString();
+		}
+
+		private void FormatErrorMessage(StringBuilder builder, Exception inner)
+		{
+			var file = inner as FileIoException;
+			if (file != null)
+			{
+				builder.AppendLine(inner.Message);
+			}
+			else
+			{
+				builder.AppendLine(inner.Message);
+				builder.AppendLine(inner.StackTrace);
+			}
 		}
 
 		private void Installation()
