@@ -61,8 +61,6 @@ namespace Installer
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
-
-				throw new Exception();
 			}
 			finally
 			{
@@ -78,32 +76,25 @@ namespace Installer
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			DeleteEverything(installationPath);
-		}
-
-		private void DeleteEverything(string path)
-		{
-			var directory = new DirectoryInfo(path);
-
-			foreach (FileInfo file in directory.GetFiles())
+			foreach (var file in _files)
 			{
-				DeleteFile(file);
-			}
-			foreach (DirectoryInfo dir in directory.GetDirectories())
-			{
-				DeleteEverything(dir.FullName);
+				var fullFilePath = DestFilePath(installationPath, file);
+				DeleteFile(fullFilePath);
 			}
 		}
 
-		private void DeleteFile(FileInfo file)
+		private void DeleteFile(string filePath)
 		{
+			var name = Path.GetFileName(filePath);
+			var dir = Path.GetDirectoryName(filePath);
+
 			try
 			{
-				file.Delete();
+				File.Delete(filePath);
 			}
 			catch (Exception e)
 			{
-				throw new DeleteFileException(file.Name, file.Directory.FullName, e);
+				throw new DeleteFileException(name, dir, e);
 			}
 		}
 
@@ -116,11 +107,16 @@ namespace Installer
 		{
 			foreach (string file in _files)
 			{
-				string fileName = file.Substring(_prefix.Length);
-				string destFilePath = Path.Combine(installationPath, fileName);
-
+				var destFilePath = DestFilePath(installationPath, file);
 				CopyFile(destFilePath, file);
 			}
+		}
+
+		private string DestFilePath(string installationPath, string file)
+		{
+			string fileName = file.Substring(_prefix.Length);
+			string destFilePath = Path.Combine(installationPath, fileName);
+			return destFilePath;
 		}
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
