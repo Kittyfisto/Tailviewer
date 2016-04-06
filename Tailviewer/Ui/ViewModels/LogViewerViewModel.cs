@@ -268,27 +268,33 @@ namespace Tailviewer.Ui.ViewModels
 				else if (source.FileSize == Size.Zero)
 				{
 					NoEntriesExplanation = "The data source is empty";
+					NoEntriesSubtext = null;
 				}
 				else if (dataSource.LevelFilter == LevelFlags.None)
 				{
 					NoEntriesExplanation = "Not a single log entry matches the level selection";
+					NoEntriesSubtext = null;
 				}
 				else if (!string.IsNullOrEmpty(dataSource.StringFilter))
 				{
 					NoEntriesExplanation = "Not a single log entry matches the log file filter";
+					NoEntriesSubtext = null;
 				}
 				else if (chain != null && chain.All(x => x != null))
 				{
 					NoEntriesExplanation = "Not a single log entry matches the activated quick filters";
+					NoEntriesSubtext = null;
 				}
 				else
 				{
 					NoEntriesExplanation = null;
+					NoEntriesSubtext = null;
 				}
 			}
 			else
 			{
 				NoEntriesExplanation = null;
+				NoEntriesSubtext = null;
 			}
 		}
 	}

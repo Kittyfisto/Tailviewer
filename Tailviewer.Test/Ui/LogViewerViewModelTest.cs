@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui
 		private ManualDispatcher _dispatcher;
 
 		[Test]
-		public void TestDataSourceDoesntExist()
+		public void TestDataSourceDoesntExist1()
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
@@ -44,6 +44,35 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that the NoEntriesSubtext is cleared when the reason why no entries are showing up changes")]
+		public void TestDataSourceDoesntExist2()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Exists).Returns(false);
+			var filteredLogFile = new Mock<ILogFile>();
+			ILogFileListener listener = null;
+			filteredLogFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+			               .Callback((ILogFileListener l, TimeSpan t, int i) => listener = l);
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
+			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
+
+			logFile.Setup(x => x.Exists).Returns(true);
+			listener.OnLogFileModified(logFile.Object, new LogFileSection(0, 0));
+			_dispatcher.InvokeAll();
+
+			model.NoEntriesExplanation.Should().Be("The data source is empty");
+			model.NoEntriesSubtext.Should().BeNull();
+		}
+
+		[Test]
 		public void TestDataSourceEmpty()
 		{
 			var dataSource = new Mock<IDataSource>();
@@ -57,6 +86,7 @@ namespace Tailviewer.Test.Ui
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("The data source is empty");
+			model.NoEntriesSubtext.Should().BeNull();
 		}
 
 		[Test]
@@ -119,6 +149,7 @@ namespace Tailviewer.Test.Ui
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
+			model.NoEntriesSubtext.Should().BeNull();
 		}
 
 		[Test]
@@ -140,6 +171,7 @@ namespace Tailviewer.Test.Ui
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the activated quick filters");
+			model.NoEntriesSubtext.Should().BeNull();
 		}
 
 		[Test]
@@ -160,6 +192,7 @@ namespace Tailviewer.Test.Ui
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the log file filter");
+			model.NoEntriesSubtext.Should().BeNull();
 		}
 	}
 }
