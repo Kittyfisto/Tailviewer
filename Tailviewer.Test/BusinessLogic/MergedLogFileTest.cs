@@ -104,6 +104,7 @@ namespace Tailviewer.Test.BusinessLogic
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 1));
 			merged.Wait();
 
+			// TODO: This code is broken - the following assert failed with count = 0: FIND THE RACE CONDITION!!!!
 			merged.Count.Should().Be(1);
 
 			data.Should().Equal(source);

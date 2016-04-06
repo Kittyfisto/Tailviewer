@@ -6,6 +6,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Metrolib;
+using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Converters;
 
@@ -49,7 +51,7 @@ namespace Tailviewer.Ui.Controls
 					HorizontalAlignment = HorizontalAlignment.Right,
 					Margin = new Thickness(0, 0, 0, 17)
 				};
-			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
+			_verticalScrollBar.ValueChanged += VerticalScrollBarOnScroll;
 
 			_horizontalScrollBar = new ScrollBar
 				{
@@ -59,7 +61,7 @@ namespace Tailviewer.Ui.Controls
 					Orientation = Orientation.Horizontal,
 					Margin = new Thickness(0, 0, 17, 0)
 				};
-			_horizontalScrollBar.Scroll += HorizontalScrollBarOnScroll;
+			_horizontalScrollBar.ValueChanged += HorizontalScrollBarOnScroll;
 
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
@@ -72,11 +74,38 @@ namespace Tailviewer.Ui.Controls
 					Fill = new SolidColorBrush(Color.FromRgb(0xce, 0xce, 0xce))
 				});
 
+			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
+			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
+
 			_visibleTextLines = new List<TextLine>();
 
 			ClipToBounds = true;
 
 			SizeChanged += OnSizeChanged;
+		}
+
+		internal void OnMouseWheelDown()
+		{
+			var delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
+			var toScroll = Math.Min(delta, TextLine.LineHeight);
+			_verticalScrollBar.Value += toScroll;
+		}
+
+		internal void OnMouseWheelUp()
+		{
+			var delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
+			var toScroll = Math.Min(delta, TextLine.LineHeight);
+			_verticalScrollBar.Value -= toScroll;
+		}
+
+		internal ScrollBar VerticalScrollBar
+		{
+			get { return _verticalScrollBar; }
+		}
+
+		internal ScrollBar HorizontalScrollBar
+		{
+			get { return _horizontalScrollBar; }
 		}
 
 		public LevelToBrushConverter HoveredBackgroundBrushConverter
@@ -276,7 +305,7 @@ namespace Tailviewer.Ui.Controls
 			UpdateVisibleLines(logFile);
 		}
 
-		private void VerticalScrollBarOnScroll(object sender, ScrollEventArgs args)
+		private void VerticalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
 			double pos = args.NewValue;
 			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
@@ -286,7 +315,7 @@ namespace Tailviewer.Ui.Controls
 			UpdateVisibleLines();
 		}
 
-		private void HorizontalScrollBarOnScroll(object sender, ScrollEventArgs args)
+		private void HorizontalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> ars)
 		{
 		}
 
