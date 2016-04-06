@@ -99,6 +99,8 @@
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
+    <Compile Include="Ui\Controls\TextLine.cs" />
+    <Compile Include="Ui\Controls\LogEntryListView.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />

@@ -44,7 +44,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
-		public void Remove(ILogFileListener listener)
+		public void RemoveListener(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
 		}

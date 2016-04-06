@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -22,9 +21,9 @@ namespace Tailviewer.Ui.Controls
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register("ItemsSource", typeof (IEnumerable<LogEntryViewModel>), typeof (LogViewerControl),
-			                            new PropertyMetadata(null, OnItemsSourceChanged));
+		public static readonly DependencyProperty LogFileProperty =
+			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(ILogFile)));
 
 		public static readonly DependencyProperty DataSourceProperty =
 			DependencyProperty.Register("DataSource", typeof (IDataSourceViewModel), typeof (LogViewerControl),
@@ -76,7 +75,7 @@ namespace Tailviewer.Ui.Controls
 
 		private bool _logged;
 
-		private ListView _partListView;
+		private LogEntryListView _partListView;
 		private FilterTextBox _partStringFilter;
 		private bool _scrollByUser;
 		private ScrollViewer _scrollViewer;
@@ -91,6 +90,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
 			SizeChanged += OnSizeChanged;
+		}
+
+		public ILogFile LogFile
+		{
+			get { return (ILogFile) GetValue(LogFileProperty); }
+			set { SetValue(LogFileProperty, value); }
 		}
 
 		public string DetailedErrorMessage
@@ -165,15 +170,9 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogEntryCountProperty, value); }
 		}
 
-		public IEnumerable<LogEntryViewModel> ItemsSource
-		{
-			get { return (IEnumerable<LogEntryViewModel>) GetValue(ItemsSourceProperty); }
-			set { SetValue(ItemsSourceProperty, value); }
-		}
-
 		private void CopySelectedLineToClipboard()
 		{
-			ListView listViewer = _partListView;
+			/*ListView listViewer = _partListView;
 			if (listViewer != null)
 			{
 				IList items = listViewer.SelectedItems;
@@ -187,7 +186,7 @@ namespace Tailviewer.Ui.Controls
 				}
 				string message = builder.ToString();
 				Clipboard.SetText(message);
-			}
+			}*/
 		}
 
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -380,32 +379,6 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			((LogViewerControl) d).OnItemsSourceChanged(e.OldValue as INotifyCollectionChanged,
-			                                            e.NewValue as INotifyCollectionChanged);
-		}
-
-		private void OnItemsSourceChanged(INotifyCollectionChanged oldValue, INotifyCollectionChanged newValue)
-		{
-			if (oldValue != null)
-			{
-				oldValue.CollectionChanged -= ItemsSourceOnCollectionChanged;
-			}
-			if (newValue != null)
-			{
-				newValue.CollectionChanged += ItemsSourceOnCollectionChanged;
-			}
-		}
-
-		private void ItemsSourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (DataSource != null && DataSource.FollowTail)
-			{
-				ScrollToTail();
-			}
-		}
-
 		private void OnFollowTailChanged()
 		{
 			if (DataSource != null && DataSource.FollowTail)
@@ -482,7 +455,7 @@ namespace Tailviewer.Ui.Controls
 		{
 			base.OnApplyTemplate();
 
-			_partListView = (ListView) GetTemplateChild("PART_ListView");
+			_partListView = (LogEntryListView) GetTemplateChild("PART_ListView");
 			_partStringFilter = (FilterTextBox) GetTemplateChild("PART_StringFilter");
 		}
 

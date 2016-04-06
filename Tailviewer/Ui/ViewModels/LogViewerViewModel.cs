@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -20,7 +19,6 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly IDataSourceViewModel _dataSource;
 		private readonly IDispatcher _dispatcher;
-		private readonly ObservableCollection<LogEntryViewModel> _logEntries;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private ILogFile _currentLogFile;
@@ -41,7 +39,6 @@ namespace Tailviewer.Ui.ViewModels
 			_dispatcher = dispatcher;
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
-			_logEntries = new ObservableCollection<LogEntryViewModel>();
 
 			SetCurrentLogFile(null, _dataSource.DataSource.FilteredLogFile);
 		}
@@ -49,6 +46,19 @@ namespace Tailviewer.Ui.ViewModels
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
 			: this(dataSource, dispatcher, TimeSpan.FromMilliseconds(10))
 		{
+		}
+
+		public ILogFile CurrentLogFile
+		{
+			get { return _currentLogFile; }
+			private set
+			{
+				if (value == _currentLogFile)
+					return;
+
+				_currentLogFile = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public string NoEntriesSubtext
@@ -101,11 +111,6 @@ namespace Tailviewer.Ui.ViewModels
 				_totalLogEntryCount = value;
 				EmitPropertyChanged();
 			}
-		}
-
-		public ObservableCollection<LogEntryViewModel> LogEntries
-		{
-			get { return _logEntries; }
 		}
 
 		public IDataSourceViewModel DataSource
@@ -163,14 +168,12 @@ namespace Tailviewer.Ui.ViewModels
 			if (oldLogFile == newLogFile)
 				return;
 
-			ClearAllEntries();
-
 			if (oldLogFile != null)
 			{
-				oldLogFile.Remove(this);
+				oldLogFile.RemoveListener(this);
 			}
 
-			_currentLogFile = newLogFile;
+			CurrentLogFile = newLogFile;
 
 			if (newLogFile != null)
 			{
@@ -178,11 +181,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 
 			UpdateCounts();
-		}
-
-		private void ClearAllEntries()
-		{
-			_logEntries.Clear();
 		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
@@ -201,29 +199,9 @@ namespace Tailviewer.Ui.ViewModels
 					if (file != _currentLogFile)
 						continue; //< This message belongs to an old change and must be ignored
 
-					LogFileSection section = pair.Value;
-					if (section.IsReset)
-					{
-						_logEntries.Clear();
-						LogEntryCount = 0;
-						TotalLogEntryCount = 0;
-					}
-					else if (section.InvalidateSection)
-					{
-						for (int i = 0; i < section.Count; ++i)
-						{
-							_logEntries.RemoveAt((int) section.Index);
-						}
-					}
-					else
-					{
-						LogLine[] entries = _currentLogFile.GetSection(section);
-						for (int i = 0; i < entries.Length; ++i)
-						{
-							var model = new LogEntryViewModel((int) (section.Index + i), entries[i]);
-							_logEntries.Add(model);
-						}
-					}
+
+					LogEntryCount = 0;
+					TotalLogEntryCount = 0;
 				}
 
 				_pendingSections.Clear();

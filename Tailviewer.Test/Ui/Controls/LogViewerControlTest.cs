@@ -7,7 +7,7 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Test.Ui
+namespace Tailviewer.Test.Ui.Controls
 {
 	[TestFixture]
 	public sealed class LogViewerControlTest

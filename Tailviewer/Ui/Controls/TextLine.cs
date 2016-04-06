@@ -3,8 +3,12 @@ using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace LogViewer
+namespace Tailviewer.Ui.Controls
 {
+	/// <summary>
+	///     Is responsible for representing the contents of a <see cref="LogLine" /> as a <see cref="FormattedText" />,
+	///     ready to be rendered.
+	/// </summary>
 	public sealed class TextLine
 	{
 		public const double FontSize = 12;
@@ -18,7 +22,8 @@ namespace LogViewer
 		private static readonly Brush SelectedBackgroundBrush;
 		private static readonly Typeface Typeface;
 
-		private readonly LogLine _logEntry;
+		private readonly LogLine _logLine;
+
 		private bool _isHovered;
 		private bool _isSelected;
 		private FormattedText _text;
@@ -34,9 +39,14 @@ namespace LogViewer
 			Typeface = new Typeface("Segoe UI");
 		}
 
-		public TextLine(LogLine logEntry)
+		public TextLine(LogLine logLine)
 		{
-			_logEntry = logEntry;
+			_logLine = logLine;
+		}
+
+		public LogLine LogLine
+		{
+			get { return _logLine; }
 		}
 
 		public bool IsHovered
@@ -113,7 +123,7 @@ namespace LogViewer
 				return;
 
 			Brush brush = ForegroundBrush;
-			_text = new FormattedText(_logEntry.Message,
+			_text = new FormattedText(_logLine.Message,
 			                          CultureInfo.CurrentUICulture,
 			                          FlowDirection.LeftToRight,
 			                          Typeface,

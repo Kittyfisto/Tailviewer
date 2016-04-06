@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		void Wait();
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
-		void Remove(ILogFileListener listener);
+		void RemoveListener(ILogFileListener listener);
 
 		void GetSection(LogFileSection section, LogLine[] dest);
 

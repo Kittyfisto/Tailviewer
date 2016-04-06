@@ -101,7 +101,7 @@
                     <controls:LogViewerControl
                         Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                         x:Name="PART_LogFileView"
-                        ItemsSource="{Binding CurrentDataSourceLogView.LogEntries}"
+                        LogFile="{Binding CurrentDataSourceLogView.CurrentLogFile}"
                         LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
                         TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                         ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"

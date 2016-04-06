@@ -114,85 +114,22 @@
                               Height="1"
                               Background="{StaticResource SeparatorBrush}" />
 
-                        <ListView
+                        <local:LogEntryListView 
                             x:Name="PART_ListView"
                             Grid.Row="2"
-                            ItemsSource="{TemplateBinding ItemsSource}"
-                            BorderThickness="0"
-                            VirtualizingPanel.IsVirtualizing="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Visible"
-                            SnapsToDevicePixels="True">
+                            LogFile="{TemplateBinding LogFile}"
+                            ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
+                            BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
+                            HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
+                            SnapsToDevicePixels="True"
+                            />
 
+                        <!--
                             <ListView.InputBindings>
-                                <KeyBinding Modifiers="Control" Key="C"
+                            <KeyBinding Modifiers="Control" Key="C"
                                             Command="{Binding CopySelectedLineToClipboardCommand, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </ListView.InputBindings>
-
-                            <ListView.Resources>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListViewItem">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        BorderThickness="0">
-                                                    <TextBlock Text="{Binding Message}" />
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="true">
-                                            <Setter Property="Background"
-                                                    Value="{StaticResource BackgroundBrushSelected}" />
-                                            <Setter Property="TextElement.Foreground"
-                                                    Value="{StaticResource TextBrushSelected}" />
-                                        </Trigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsMouseOver" Value="True" />
-                                                <Condition Property="IsSelected" Value="False" />
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Background">
-                                                <Setter.Value>
-                                                    <MultiBinding
-                                                        Converter="{StaticResource LevelToHoveredBrushConverter}">
-                                                        <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" ElementName="PART_ColorByLevel" />
-                                                    </MultiBinding>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </MultiTrigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="IsMouseOver" Value="False" />
-                                                <Condition Property="IsSelected" Value="False" />
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Background">
-                                                <Setter.Value>
-                                                    <MultiBinding
-                                                        Converter="{StaticResource LevelToBackgroundBrushConverter}">
-                                                        <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" Mode="OneWay"
-                                                                 ElementName="PART_ColorByLevel" />
-                                                    </MultiBinding>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <Setter Property="TextElement.Foreground">
-                                                <Setter.Value>
-                                                    <MultiBinding
-                                                        Converter="{StaticResource LevelToForegroundBrushConverter}">
-                                                        <Binding Path="Level" Mode="OneWay" />
-                                                        <Binding Path="IsChecked" Mode="OneWay"
-                                                                 ElementName="PART_ColorByLevel" />
-                                                    </MultiBinding>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </MultiTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListView.Resources>
-                        </ListView>
-
+                        </ListView.InputBindings>
+                        -->
 
                         <StackPanel Grid.Row="2" VerticalAlignment="Center">
                             <TextBlock
