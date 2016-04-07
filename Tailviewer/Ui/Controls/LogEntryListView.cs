@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -33,8 +36,11 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("HoveredBackgroundBrushConverter", typeof (LevelToBrushConverter),
 			                            typeof (LogEntryListView), new PropertyMetadata(default(LevelToBrushConverter)));
 
+		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
+
 		private readonly ScrollBar _horizontalScrollBar;
 		private readonly ScrollBar _verticalScrollBar;
+		private readonly DispatcherTimer _timer;
 
 		static LogEntryListView()
 		{
@@ -78,10 +84,31 @@ namespace Tailviewer.Ui.Controls
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
 
 			_visibleTextLines = new List<TextLine>();
+			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
+			_timer.Start();
 
 			ClipToBounds = true;
 
 			SizeChanged += OnSizeChanged;
+		}
+
+		internal int PendingModificationsCount
+		{
+			get
+			{
+				return _pendingModificationsCount;
+			}
+		}
+
+		private void OnTimer(object sender, EventArgs e)
+		{
+			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
+			{
+				// TODO: Optimize if performance drops below acceptable rates
+				_currentlyVisibleSection = CalculateVisibleSection();
+				UpdateScrollViewerRegions();
+				UpdateVisibleLines();
+			}
 		}
 
 		internal void OnMouseWheelDown()
@@ -135,24 +162,28 @@ namespace Tailviewer.Ui.Controls
 		/// <summary>
 		///     The section of the log file that is currently visible.
 		/// </summary>
-		public LogFileSection VisibleSection
+		[Pure]
+		public LogFileSection CalculateVisibleSection()
 		{
-			get
-			{
-				if (LogFile == null)
-					return new LogFileSection(0, 0);
+			if (LogFile == null)
+				return new LogFileSection(0, 0);
 
-				int maxCount = MaxNumVisibleLines;
-				int linesLeft = LogFile.Count - _currentLine;
-				int count = Math.Min(linesLeft, maxCount);
-				return new LogFileSection(_currentLine, count);
-			}
+			int maxCount = MaxNumVisibleLines;
+			int linesLeft = LogFile.Count - _currentLine;
+			int count = Math.Min(linesLeft, maxCount);
+			return new LogFileSection(_currentLine, count);
 		}
 
 		private int MaxNumVisibleLines
 		{
 			get { return (int) Math.Ceiling(ActualHeight/TextLine.LineHeight); }
 		}
+
+		#region Updates
+
+		private int _pendingModificationsCount;
+
+		#endregion
 
 		#region Cached data
 
@@ -167,7 +198,7 @@ namespace Tailviewer.Ui.Controls
 		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
 		{
 			LogFileSection previousVisibleSection = _currentlyVisibleSection;
-			_currentlyVisibleSection = VisibleSection;
+			_currentlyVisibleSection = CalculateVisibleSection();
 			UpdateScrollViewerRegions();
 			UpdateVisibleLines(LogFile, previousVisibleSection, _currentlyVisibleSection);
 		}
@@ -311,7 +342,7 @@ namespace Tailviewer.Ui.Controls
 			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
 
 			_currentLine = currentLine;
-			_currentlyVisibleSection = VisibleSection;
+			_currentlyVisibleSection = CalculateVisibleSection();
 			UpdateVisibleLines();
 		}
 
@@ -341,7 +372,7 @@ namespace Tailviewer.Ui.Controls
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			
+			Interlocked.Increment(ref _pendingModificationsCount);
 		}
 	}
 }

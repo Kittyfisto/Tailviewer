@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 using FluentAssertions;
 using Moq;
@@ -76,6 +77,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestLogFileAdd1()
 		{
 			_control.LogFile = _logFile.Object;
+			DispatcherExtensions.ExecuteAllEvents();
 
 			for (int i = 0; i < 1000; ++i)
 			{
@@ -84,7 +86,10 @@ namespace Tailviewer.Test.Ui.Controls
 			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
 
 			_control.VisibleTextLines.Count.Should().Be(0, "Because the view may not have synchronized itself with the log file");
+			_control.PendingModificationsCount.Should().Be(1, "Because this log file modification should have been tracked by the control");
 
+			Thread.Sleep((int) (2*LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
+			DispatcherExtensions.ExecuteAllEvents();
 
 			_control.VisibleTextLines.Count.Should().Be(48, "Because the view must have synchronized itself and display the maximum of 48 lines");
 		}
