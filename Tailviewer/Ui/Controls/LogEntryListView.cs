@@ -159,6 +159,21 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogFileProperty, value); }
 		}
 
+		public double ActualViewerHeight
+		{
+			get
+			{
+				var height = ActualHeight;
+				if (_horizontalScrollBar.Visibility != Visibility.Collapsed)
+				{
+					var usableHeight = height - _horizontalScrollBar.ActualHeight;
+					return usableHeight;
+				}
+
+				return height;
+			}
+		}
+
 		/// <summary>
 		///     The section of the log file that is currently visible.
 		/// </summary>
@@ -174,9 +189,21 @@ namespace Tailviewer.Ui.Controls
 			return new LogFileSection(_currentLine, count);
 		}
 
-		private int MaxNumVisibleLines
+		/// <summary>
+		/// The total number of lines that can be displayed, taking accepting that the bottom most
+		/// line may be only partially visible.
+		/// </summary>
+		internal int MaxNumVisibleLines
 		{
-			get { return (int) Math.Ceiling(ActualHeight/TextLine.LineHeight); }
+			get { return (int) Math.Ceiling(ActualViewerHeight/TextLine.LineHeight); }
+		}
+
+		/// <summary>
+		/// The total number of lines that can be fully displayed.
+		/// </summary>
+		internal int MaxNumFullyVisibleLines
+		{
+			get { return (int)Math.Floor(ActualViewerHeight / TextLine.LineHeight); }
 		}
 
 		#region Updates
@@ -323,11 +350,19 @@ namespace Tailviewer.Ui.Controls
 			{
 				int count = LogFile.Count;
 				double totalHeight = count*TextLine.LineHeight;
-				double maximum = Math.Max(totalHeight - ActualHeight, 0);
-
-				_verticalScrollBar.Minimum = 0;
-				_verticalScrollBar.Maximum = maximum;
-				_verticalScrollBar.ViewportSize = ActualHeight;
+				double usableHeight = ActualViewerHeight;
+				if (totalHeight > usableHeight)
+				{
+					_verticalScrollBar.Minimum = 0;
+					_verticalScrollBar.Maximum = totalHeight - usableHeight;
+					_verticalScrollBar.ViewportSize = usableHeight;
+				}
+				else
+				{
+					_verticalScrollBar.Minimum = 0;
+					_verticalScrollBar.Maximum = 0;
+					_verticalScrollBar.ViewportSize = usableHeight;
+				}
 			}
 		}
 

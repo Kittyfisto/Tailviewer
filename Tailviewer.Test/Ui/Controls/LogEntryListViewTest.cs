@@ -56,6 +56,13 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
 			_control.LogFile.Should().BeSameAs(_logFile.Object);
+
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
+			_control.VerticalScrollBar.Maximum.Should().Be(0, "Because the log file is empty and thus no scrolling shall happen");
+			_control.VerticalScrollBar.Value.Should().Be(0, "Because the log file is empty and thus no scrolling shall happen");
+			_control.VerticalScrollBar.ViewportSize.Should().Be(751, "Because the viewport shall be as big as the control");
 		}
 
 		[Test]
@@ -69,6 +76,69 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.VisibleTextLines.Count.Should().Be(1, "Because the log file contains one log line");
 			_control.VisibleTextLines[0].LogLine.Should().Be(_lines[0]);
+
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
+			_control.VerticalScrollBar.Maximum.Should().Be(0, "Because the single line that is being displayed is less than the total of 48 that can be, hence no scrolling may be allowed");
+			_control.VerticalScrollBar.Value.Should().Be(0, "Because there is less content than can be displayed and thus no scrolling is necessary");
+			_control.VerticalScrollBar.ViewportSize.Should().Be(751, "Because the viewport shall be as big as the control");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verfies that a log file with as many lines as the viewport can hold can be represented")]
+		public void TestSetLogFile3()
+		{
+			_control.MaxNumFullyVisibleLines.Should().Be(46);
+			for (int i = 0; i < 46; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
+			}
+
+			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+
+			_control.VisibleTextLines.Count.Should().Be(46, "Because the view can display 46 lines and we've added as many");
+			for (int i = 0; i < 46; ++i)
+			{
+				_control.VisibleTextLines[i].LogLine.Should().Be(_lines[i]);
+			}
+
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
+			_control.VerticalScrollBar.Maximum.Should().Be(0, "Because we've added a total of 46 lines, which the view can display, and thus no scrolling should be necessary");
+			_control.VerticalScrollBar.Value.Should().Be(0, "Because we've added a total of 46 lines, which the view can display, and thus no scrolling should be necessary");
+			_control.VerticalScrollBar.ViewportSize.Should().Be(751, "Because the viewport shall be as big as the control minus the horizontal scrollbar");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verfies that a log file with as one line more than the viewport can hold can be represented")]
+		public void TestSetLogFile4()
+		{
+			_control.MaxNumVisibleLines.Should().Be(47);
+
+			const int lineCount = 48;
+			for (int i = 0; i < lineCount; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
+			}
+
+			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+
+			_control.VisibleTextLines.Count.Should().Be(47, "Because the view can display 47 of the 48 lines that we've added");
+			for (int i = 0; i < 47; ++i)
+			{
+				_control.VisibleTextLines[i].LogLine.Should().Be(_lines[i]);
+			}
+
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
+			_control.VerticalScrollBar.Maximum.Should().Be(17, "Because we've added a total of 48 lines, which the view can display, and thus no scrolling should be necessary");
+			_control.VerticalScrollBar.Value.Should().Be(0, "Because we've added a total of 48 lines, which the view can display, and thus no scrolling should be necessary");
+			_control.VerticalScrollBar.ViewportSize.Should().Be(751, "Because the viewport shall be as big as the control");
 		}
 
 		[Test]
@@ -91,7 +161,7 @@ namespace Tailviewer.Test.Ui.Controls
 			Thread.Sleep((int) (2*LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
-			_control.VisibleTextLines.Count.Should().Be(48, "Because the view must have synchronized itself and display the maximum of 48 lines");
+			_control.VisibleTextLines.Count.Should().Be(47, "Because the view must have synchronized itself and display the maximum of 48 lines");
 		}
 
 		[Test]
