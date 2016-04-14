@@ -92,7 +92,6 @@
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
     <Compile Include="Ui\FilterTextBoxTest.cs" />
-    <Compile Include="Ui\HighlightableTextBlockTest.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />

@@ -128,13 +128,11 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
-    <Compile Include="Ui\Controls\HighlightableTextBlock.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Ui\ViewModels\LogEntryViewModel.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
     <Compile Include="Settings\WindowSettings.cs" />
     <Page Include="Resources\Icons.xaml">
