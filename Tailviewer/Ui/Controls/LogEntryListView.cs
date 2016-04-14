@@ -105,6 +105,7 @@ namespace Tailviewer.Ui.Controls
 			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
 			{
 				// TODO: Optimize if performance drops below acceptable rates
+				DetermineVerticalOffset();
 				_currentlyVisibleSection = CalculateVisibleSection();
 				UpdateScrollViewerRegions();
 				UpdateVisibleLines();
@@ -180,30 +181,20 @@ namespace Tailviewer.Ui.Controls
 		[Pure]
 		public LogFileSection CalculateVisibleSection()
 		{
-			if (LogFile == null)
+			return CalculateVisibleSection(LogFile);
+		}
+
+		[Pure]
+		private LogFileSection CalculateVisibleSection(ILogFile logFile)
+		{
+			if (logFile == null)
 				return new LogFileSection(0, 0);
 
-			int maxCount = MaxNumVisibleLines;
+			double maxLinesInViewport = (ActualHeight + _yOffset)/TextLine.LineHeight;
+			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
 			int linesLeft = LogFile.Count - _currentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			return new LogFileSection(_currentLine, count);
-		}
-
-		/// <summary>
-		/// The total number of lines that can be displayed, taking accepting that the bottom most
-		/// line may be only partially visible.
-		/// </summary>
-		internal int MaxNumVisibleLines
-		{
-			get { return (int) Math.Ceiling(ActualViewerHeight/TextLine.LineHeight); }
-		}
-
-		/// <summary>
-		/// The total number of lines that can be fully displayed.
-		/// </summary>
-		internal int MaxNumFullyVisibleLines
-		{
-			get { return (int)Math.Floor(ActualViewerHeight / TextLine.LineHeight); }
 		}
 
 		#region Updates
@@ -219,11 +210,13 @@ namespace Tailviewer.Ui.Controls
 		private LogFileSection _currentlyVisibleSection;
 		private TextLine _hoveredLine;
 		private TextLine _selectedLine;
+		private double _yOffset;
 
 		#endregion
 
 		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
 		{
+			DetermineVerticalOffset();
 			LogFileSection previousVisibleSection = _currentlyVisibleSection;
 			_currentlyVisibleSection = CalculateVisibleSection();
 			UpdateScrollViewerRegions();
@@ -312,9 +305,9 @@ namespace Tailviewer.Ui.Controls
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
 
-				int numRows = Math.Min(MaxNumVisibleLines, newValue.Count);
-				_currentlyVisibleSection = new LogFileSection(0, numRows);
-
+				DetermineVerticalOffset();
+				_currentLine = 0;
+				_currentlyVisibleSection = CalculateVisibleSection(newValue);
 				UpdateScrollViewerRegions();
 				UpdateVisibleLines(newValue);
 			}
@@ -346,8 +339,13 @@ namespace Tailviewer.Ui.Controls
 			if (LogFile == null)
 			{
 			}
-			else if (_verticalScrollBar != null)
+			else
 			{
+				//
+				// Depending on the current size of the logfile and the size of the viewport,
+				// we need to determine the range of our scrollers.
+				//
+
 				int count = LogFile.Count;
 				double totalHeight = count*TextLine.LineHeight;
 				double usableHeight = ActualViewerHeight;
@@ -366,6 +364,13 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
+		private void DetermineVerticalOffset()
+		{
+			var value = _verticalScrollBar.Value;
+			var lineBeginning = (int) (Math.Floor(value/TextLine.LineHeight)*TextLine.LineHeight);
+			_yOffset = lineBeginning - value;
+		}
+
 		private void UpdateVisibleLines(ILogFile logFile, LogFileSection oldSection, LogFileSection newSection)
 		{
 			UpdateVisibleLines(logFile);
@@ -376,6 +381,7 @@ namespace Tailviewer.Ui.Controls
 			double pos = args.NewValue;
 			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
 
+			DetermineVerticalOffset();
 			_currentLine = currentLine;
 			_currentlyVisibleSection = CalculateVisibleSection();
 			UpdateVisibleLines();
@@ -392,7 +398,7 @@ namespace Tailviewer.Ui.Controls
 			var rect = new Rect(0, 0, ActualWidth, ActualHeight);
 			drawingContext.DrawRectangle(Brushes.White, null, rect);
 
-			double y = 0;
+			double y = _yOffset;
 			foreach (TextLine textLine in _visibleTextLines)
 			{
 				textLine.Render(drawingContext, y, ActualWidth);

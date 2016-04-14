@@ -90,7 +90,6 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verfies that a log file with as many lines as the viewport can hold can be represented")]
 		public void TestSetLogFile3()
 		{
-			_control.MaxNumFullyVisibleLines.Should().Be(46);
 			for (int i = 0; i < 46; ++i)
 			{
 				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
@@ -117,8 +116,6 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verfies that a log file with as one line more than the viewport can hold can be represented")]
 		public void TestSetLogFile4()
 		{
-			_control.MaxNumVisibleLines.Should().Be(47);
-
 			const int lineCount = 48;
 			for (int i = 0; i < lineCount; ++i)
 			{
@@ -127,7 +124,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
 
-			_control.VisibleTextLines.Count.Should().Be(47, "Because the view can display 47 of the 48 lines that we've added");
+			_control.VisibleTextLines.Count.Should().Be(48, "Because the view can display 47 of the 48 lines that we've added");
 			for (int i = 0; i < 47; ++i)
 			{
 				_control.VisibleTextLines[i].LogLine.Should().Be(_lines[i]);
@@ -161,7 +158,7 @@ namespace Tailviewer.Test.Ui.Controls
 			Thread.Sleep((int) (2*LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
-			_control.VisibleTextLines.Count.Should().Be(47, "Because the view must have synchronized itself and display the maximum of 48 lines");
+			_control.VisibleTextLines.Count.Should().Be(48, "Because the view must have synchronized itself and display the maximum of 48 lines");
 		}
 
 		[Test]
