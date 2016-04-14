@@ -166,6 +166,24 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestExists()
+		{
+			LogFile logFile = null;
+			try
+			{
+				new Action(() => logFile = new LogFile(File2Lines)).ShouldNotThrow();
+				logFile.Start();
+				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
+				logFile.Exists.Should().BeTrue("Because the specified file does exist");
+			}
+			finally
+			{
+				if (logFile != null)
+					logFile.Dispose();
+			}
+		}
+
+		[Test]
 		public void TestFilter1()
 		{
 			using (var file = new LogFile(File20Mb))
@@ -390,7 +408,7 @@ namespace Tailviewer.Test.BusinessLogic
 				File.WriteAllText(fileName, "Hello World!");
 				Thread.Sleep(TimeSpan.FromMilliseconds(500));
 				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
-				logFile.Exists.Should().BeFalse("Because the file has been created now");
+				logFile.Exists.Should().BeTrue("Because the file has been created now");
 
 				logFile.Count.Should().Be(1, "Because one line was written to the file");
 				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));

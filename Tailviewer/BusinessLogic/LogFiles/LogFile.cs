@@ -166,7 +166,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						                                   FileShare.ReadWrite))
 						using (var reader = new StreamReader(stream))
 						{
-							_exists = false;
+							_exists = true;
 							_lastModified = File.GetLastWriteTime(_fileName);
 							if (stream.Length >= lastPosition)
 							{
