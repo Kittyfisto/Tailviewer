@@ -1,10 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
@@ -14,9 +12,6 @@ namespace Tailviewer.Ui.Controls
 {
 	internal class LogViewerControl : Control
 	{
-		private static readonly ILog Log =
-			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(ILogFile)));
@@ -69,12 +64,14 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("DetailedErrorMessage", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(string)));
 
-		private bool _logged;
-
 		private LogEntryListView _partListView;
+
+		public LogEntryListView PartListView
+		{
+			get { return _partListView; }
+		}
+
 		private FilterTextBox _partStringFilter;
-		private bool _scrollByUser;
-		private ScrollViewer _scrollViewer;
 
 		static LogViewerControl()
 		{
@@ -85,7 +82,6 @@ namespace Tailviewer.Ui.Controls
 		public LogViewerControl()
 		{
 			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
-			SizeChanged += OnSizeChanged;
 		}
 
 		public ILogFile LogFile
@@ -357,6 +353,8 @@ namespace Tailviewer.Ui.Controls
 			if (newValue != null)
 			{
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
+				if (_partListView != null)
+					_partListView.FollowTail = newValue.FollowTail;
 			}
 			OnLevelsChanged();
 		}
@@ -366,7 +364,7 @@ namespace Tailviewer.Ui.Controls
 			switch (args.PropertyName)
 			{
 				case "FollowTail":
-					OnFollowTailChanged();
+					_partListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
 					break;
 
 				case "LevelsFilter":
@@ -375,84 +373,34 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		private void OnFollowTailChanged()
-		{
-			if (DataSource != null && DataSource.FollowTail)
-			{
-				ScrollToTail();
-			}
-		}
-
-		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-		{
-			// We don't want to disable auto scroll because the user resized
-			// the window which in turn caused the scroll to change by a negative value...
-			_scrollByUser = false;
-		}
-
-		private void ScrollToTail()
-		{
-			if (_partListView != null && _scrollViewer == null)
-			{
-				if (VisualTreeHelper.GetChildrenCount(_partListView) > 0)
-				{
-					DependencyObject border = VisualTreeHelper.GetChild(_partListView, 0);
-					DependencyObject child = VisualTreeHelper.GetChild(border, 0);
-					_scrollViewer = child as ScrollViewer;
-					if (_scrollViewer != null)
-					{
-						_scrollViewer.ScrollChanged += OnScrollChanged;
-					}
-					else
-					{
-						if (!_logged)
-						{
-							Log.ErrorFormat("Unable to find ScrollViewer in visual tree - can't scroll to bottom");
-							_logged = true;
-						}
-					}
-				}
-			}
-
-			if (_scrollViewer != null)
-			{
-				_scrollByUser = false;
-				_scrollViewer.ScrollToBottom();
-			}
-		}
-
-		private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
-		{
-			if (e.VerticalChange == 0.0)
-				return;
-
-			if (DataSource != null)
-			{
-				if (_scrollByUser)
-				{
-					if (e.VerticalChange > 0.0)
-					{
-						double scrollerOffset = e.VerticalOffset + e.ViewportHeight;
-						if (Math.Abs(scrollerOffset - e.ExtentHeight) < 5.0)
-						{
-							DataSource.FollowTail = true;
-						}
-					}
-					else
-					{
-						DataSource.FollowTail = false;
-					}
-				}
-			}
-			_scrollByUser = true;
-		}
-
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
+			if (_partListView != null)
+			{
+				_partListView.FollowTailChanged -= OnFollowTailChanged;
+			}
+
 			_partListView = (LogEntryListView) GetTemplateChild("PART_ListView");
+
+			if (_partListView != null)
+			{
+				_partListView.FollowTailChanged += OnFollowTailChanged;
+
+				var dataSource = DataSource;
+				if (dataSource != null)
+					_partListView.FollowTail = dataSource.FollowTail;
+			}
+
 			_partStringFilter = (FilterTextBox) GetTemplateChild("PART_StringFilter");
+		}
+
+		private void OnFollowTailChanged(bool followTail)
+		{
+			var dataSource = DataSource;
+			if (dataSource != null)
+				dataSource.FollowTail = followTail;
 		}
 
 		public void FocusStringFilter()

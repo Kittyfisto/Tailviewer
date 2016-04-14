@@ -51,6 +51,17 @@ namespace Tailviewer.Test.Ui.Controls
 
 		[Test]
 		[STAThread]
+		public void TestCtor()
+		{
+			_control.LogFile.Should().BeNull();
+			_control.FollowTail.Should().BeFalse();
+			_control.ForegroundBrushConverter.Should().BeNull();
+			_control.BackgroundBrushConverter.Should().BeNull();
+			_control.HoveredBackgroundBrushConverter.Should().BeNull();
+		}
+
+		[Test]
+		[STAThread]
 		[Description("Verifies that an empty log file can be represented")]
 		public void TestSetLogFile1()
 		{
@@ -153,7 +164,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
 
 			_control.VisibleTextLines.Count.Should().Be(0, "Because the view may not have synchronized itself with the log file");
-			_control.PendingModificationsCount.Should().Be(1, "Because this log file modification should have been tracked by the control");
+			_control.PendingModificationsCount.Should().BeGreaterOrEqualTo(1, "Because this log file modification should have been tracked by the control");
 
 			Thread.Sleep((int) (2*LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
@@ -173,6 +184,78 @@ namespace Tailviewer.Test.Ui.Controls
 				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
 			}
 			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that if the most recent log line becomes even partially obstructed, then the view is moved to make it fully visible when FollowTail is enabled")]
+		public void TestFollowTail1()
+		{
+			_control.LogFile = _logFile.Object;
+			DispatcherExtensions.ExecuteAllEvents();
+
+			for (int i = 0; i < 48; ++i)
+			{
+				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
+			}
+			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+
+			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Value.Should().Be(0);
+			_control.VisibleTextLines.Count.Should().Be(48);
+
+			_control.FollowTail = true;
+			_control.VerticalScrollBar.Maximum.Should().Be(17, "Because the view is missing 17 pixels to fully display the last row");
+			_control.VerticalScrollBar.Value.Should().Be(17, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that if FollowTail is enabled and lines are added to the log file, then the view scrolls to the bottom")]
+		public void TestFollowTail2()
+		{
+			_control.LogFile = _logFile.Object;
+			DispatcherExtensions.ExecuteAllEvents();
+
+			for (int i = 0; i < 47; ++i)
+			{
+				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
+			}
+			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
+			DispatcherExtensions.ExecuteAllEvents();
+
+
+			_control.FollowTail = true;
+			_lines.Add(new LogLine(47, 47, "Foobar", LevelFlags.Info));
+			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
+			DispatcherExtensions.ExecuteAllEvents();
+
+			_control.VerticalScrollBar.Maximum.Should().Be(17, "Because the view is missing 17 pixels to fully display the last row");
+			_control.VerticalScrollBar.Value.Should().Be(17, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that if the code in OnTimer throws an exception, then the exception is caught and another update is scheduled")]
+		public void TestOnTimerException()
+		{
+			_control.LogFile = _logFile.Object;
+			_control.PendingModificationsCount.Should().Be(1, "Because the control should've queried an update due to attaching to the log file");
+
+			bool exceptionThrown = false;
+			_logFile.Setup(x => x.Count).Callback(() =>
+				{
+					exceptionThrown = true;
+					throw new SystemException();
+				});
+
+			new Action(() => _control.OnTimer(null, null)).ShouldNotThrow("Because any and all exceptions must be handled inside this callback");
+			_control.PendingModificationsCount.Should().Be(1, "Because another update should've been scheduled as this one wasn't fully completed");
+			exceptionThrown.Should().BeTrue("Because the control should've queried the ILogFile.Count property during its update");
 		}
 	}
 }

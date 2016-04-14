@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,13 +14,16 @@ using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Converters;
+using log4net;
 
 namespace Tailviewer.Ui.Controls
 {
 	public class LogEntryListView
 		: Grid
-		, ILogFileListener
+		  , ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogEntryListView),
 			                            new PropertyMetadata(null, OnLogFileChanged));
@@ -36,11 +40,15 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("HoveredBackgroundBrushConverter", typeof (LevelToBrushConverter),
 			                            typeof (LogEntryListView), new PropertyMetadata(default(LevelToBrushConverter)));
 
+		public static readonly DependencyProperty FollowTailProperty =
+			DependencyProperty.Register("FollowTail", typeof (bool), typeof (LogEntryListView),
+			                            new PropertyMetadata(false, OnFollowTailChanged));
+
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 
 		private readonly ScrollBar _horizontalScrollBar;
-		private readonly ScrollBar _verticalScrollBar;
 		private readonly DispatcherTimer _timer;
+		private readonly ScrollBar _verticalScrollBar;
 
 		static LogEntryListView()
 		{
@@ -57,13 +65,14 @@ namespace Tailviewer.Ui.Controls
 					HorizontalAlignment = HorizontalAlignment.Right,
 					Margin = new Thickness(0, 0, 0, 17)
 				};
-			_verticalScrollBar.ValueChanged += VerticalScrollBarOnScroll;
+			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
+			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 
 			_horizontalScrollBar = new ScrollBar
 				{
-					Name="PART_HorizontalScrollBar",
-					VerticalAlignment=VerticalAlignment.Bottom,
-					HorizontalAlignment=HorizontalAlignment.Stretch,
+					Name = "PART_HorizontalScrollBar",
+					VerticalAlignment = VerticalAlignment.Bottom,
+					HorizontalAlignment = HorizontalAlignment.Stretch,
 					Orientation = Orientation.Horizontal,
 					Margin = new Thickness(0, 0, 17, 0)
 				};
@@ -92,38 +101,15 @@ namespace Tailviewer.Ui.Controls
 			SizeChanged += OnSizeChanged;
 		}
 
+		public bool FollowTail
+		{
+			get { return (bool) GetValue(FollowTailProperty); }
+			set { SetValue(FollowTailProperty, value); }
+		}
+
 		internal int PendingModificationsCount
 		{
-			get
-			{
-				return _pendingModificationsCount;
-			}
-		}
-
-		private void OnTimer(object sender, EventArgs e)
-		{
-			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
-			{
-				// TODO: Optimize if performance drops below acceptable rates
-				DetermineVerticalOffset();
-				_currentlyVisibleSection = CalculateVisibleSection();
-				UpdateScrollViewerRegions();
-				UpdateVisibleLines();
-			}
-		}
-
-		internal void OnMouseWheelDown()
-		{
-			var delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
-			var toScroll = Math.Min(delta, TextLine.LineHeight);
-			_verticalScrollBar.Value += toScroll;
-		}
-
-		internal void OnMouseWheelUp()
-		{
-			var delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
-			var toScroll = Math.Min(delta, TextLine.LineHeight);
-			_verticalScrollBar.Value -= toScroll;
+			get { return _pendingModificationsCount; }
 		}
 
 		internal ScrollBar VerticalScrollBar
@@ -164,14 +150,95 @@ namespace Tailviewer.Ui.Controls
 		{
 			get
 			{
-				var height = ActualHeight;
+				double height = ActualHeight;
 				if (_horizontalScrollBar.Visibility != Visibility.Collapsed)
 				{
-					var usableHeight = height - _horizontalScrollBar.ActualHeight;
+					double usableHeight = height - _horizontalScrollBar.ActualHeight;
 					return usableHeight;
 				}
 
 				return height;
+			}
+		}
+
+		public List<TextLine> VisibleTextLines
+		{
+			get { return _visibleTextLines; }
+		}
+
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		{
+			Interlocked.Increment(ref _pendingModificationsCount);
+		}
+
+		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((LogEntryListView) d).OnFollowTailChanged((bool) e.NewValue);
+		}
+
+		public event Action<bool> FollowTailChanged;
+
+		private void OnFollowTailChanged(bool followTail)
+		{
+			if (followTail)
+			{
+				ScrollToBottom();
+			}
+			FollowTailChanged(followTail);
+		}
+
+		private void ScrollToBottom()
+		{
+			_verticalScrollBar.Value = _verticalScrollBar.Maximum;
+		}
+
+		internal void OnTimer(object sender, EventArgs args)
+		{
+			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
+			{
+				try
+				{
+					// TODO: Optimize if performance drops below acceptable rates
+					DetermineVerticalOffset();
+					_currentlyVisibleSection = CalculateVisibleSection();
+					UpdateScrollViewerRegions();
+					ScrollToBottomIfRequired();
+					UpdateVisibleLines();
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception while updating: {0}", e);
+
+					// Let's pray that this was just a hickup and try next time...
+					Interlocked.Increment(ref _pendingModificationsCount);
+				}
+			}
+		}
+
+		private void ScrollToBottomIfRequired()
+		{
+			if (FollowTail)
+			{
+				ScrollToBottom();
+			}
+		}
+
+		internal void OnMouseWheelDown()
+		{
+			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+			_verticalScrollBar.Value += toScroll;
+		}
+
+		internal void OnMouseWheelUp()
+		{
+			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+
+			if (toScroll > 0)
+			{
+				FollowTail = false;
+				_verticalScrollBar.Value -= toScroll;
 			}
 		}
 
@@ -196,23 +263,6 @@ namespace Tailviewer.Ui.Controls
 			int count = Math.Min(linesLeft, maxCount);
 			return new LogFileSection(_currentLine, count);
 		}
-
-		#region Updates
-
-		private int _pendingModificationsCount;
-
-		#endregion
-
-		#region Cached data
-
-		private readonly List<TextLine> _visibleTextLines;
-		private int _currentLine;
-		private LogFileSection _currentlyVisibleSection;
-		private TextLine _hoveredLine;
-		private TextLine _selectedLine;
-		private double _yOffset;
-
-		#endregion
 
 		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
 		{
@@ -366,7 +416,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void DetermineVerticalOffset()
 		{
-			var value = _verticalScrollBar.Value;
+			double value = _verticalScrollBar.Value;
 			var lineBeginning = (int) (Math.Floor(value/TextLine.LineHeight)*TextLine.LineHeight);
 			_yOffset = lineBeginning - value;
 		}
@@ -376,8 +426,22 @@ namespace Tailviewer.Ui.Controls
 			UpdateVisibleLines(logFile);
 		}
 
-		private void VerticalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> args)
+		private void VerticalScrollBarOnScroll(object sender, ScrollEventArgs scrollEventArgs)
 		{
+			if (_lastScroll.NewValue < _lastScroll.OldValue)
+			{
+				FollowTail = false;
+			}
+		}
+
+		private void VerticalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
+		{
+			_lastScroll = new ScrollEvent
+				{
+					OldValue = args.OldValue,
+					NewValue = args.NewValue,
+				};
+
 			double pos = args.NewValue;
 			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
 
@@ -406,14 +470,28 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		public List<TextLine> VisibleTextLines
-		{
-			get { return _visibleTextLines; }
-		}
+		#region Updates
 
-		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		private int _pendingModificationsCount;
+
+		#endregion
+
+		#region Cached data
+
+		private readonly List<TextLine> _visibleTextLines;
+		private int _currentLine;
+		private LogFileSection _currentlyVisibleSection;
+		private TextLine _hoveredLine;
+		private ScrollEvent _lastScroll;
+		private TextLine _selectedLine;
+		private double _yOffset;
+
+		#endregion
+
+		private struct ScrollEvent
 		{
-			Interlocked.Increment(ref _pendingModificationsCount);
+			public double NewValue;
+			public double OldValue;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -255,6 +256,19 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowError = true;
 			_control.ShowFatal = true;
 			_control.ShowAll.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		[Ignore("Doesn't work yet")]
+		[Description("Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
+		public void TestChangeDataSource()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.FollowTail).Returns(true);
+
+			_control.DataSource = dataSource.Object;
+			_control.PartListView.FollowTail.Should().BeTrue();
 		}
 	}
 }

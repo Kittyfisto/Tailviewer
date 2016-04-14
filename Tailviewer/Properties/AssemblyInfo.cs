@@ -57,3 +57,4 @@ using System.Windows;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("Tailviewer.Test")]
 [assembly: InternalsVisibleTo("LogViewer")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
