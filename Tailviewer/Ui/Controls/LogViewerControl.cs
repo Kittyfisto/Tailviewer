@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
-using log4net;
 
 namespace Tailviewer.Ui.Controls
 {

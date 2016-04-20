@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -36,7 +37,9 @@ namespace Tailviewer.Ui.Controls
 			HoveredForegroundBrush = Brushes.Black;
 			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
 			SelectedForegroundBrush = Brushes.White;
-			Typeface = new Typeface("Segoe UI");
+			var family = new FontFamily(new Uri("pack://application:,,,/Tailviewer;Component/Resources/"),
+			                            "./#Anonymous Pro");
+			Typeface = new Typeface(family, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 		}
 
 		public TextLine(LogLine logLine)
