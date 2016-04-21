@@ -127,6 +127,20 @@
       <Link>Resources\ic_find_in_page_black_48dp.png</Link>
     </Resource>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Tailviewer\Resources\FONTLOG.txt">
+      <Link>InstallationFiles\Anonymous Pro\FONTLOG.txt</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Tailviewer\Resources\OFL-FAQ.txt">
+      <Link>InstallationFiles\Anonymous Pro\OFL-FAQ.txt</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Tailviewer\Resources\OFL.txt">
+      <Link>InstallationFiles\Anonymous Pro\OFL.txt</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Tailviewer\Resources\README.txt">
+      <Link>InstallationFiles\Anonymous Pro\README.txt</Link>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
