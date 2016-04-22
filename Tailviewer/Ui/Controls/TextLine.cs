@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
@@ -22,6 +23,7 @@ namespace Tailviewer.Ui.Controls
 		private static readonly Brush SelectedForegroundBrush;
 		private static readonly Brush SelectedBackgroundBrush;
 		private static readonly Typeface Typeface;
+		private static readonly double GlyphWidth;
 
 		private readonly LogLine _logLine;
 
@@ -40,6 +42,12 @@ namespace Tailviewer.Ui.Controls
 			var family = new FontFamily(new Uri("pack://application:,,,/Tailviewer;Component/Resources/"),
 			                            "./#Anonymous Pro");
 			Typeface = new Typeface(family, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+
+			GlyphTypeface test;
+			Typeface.TryGetGlyphTypeface(out test);
+
+			ushort glyphIndex = test.CharacterToGlyphMap[' '];
+			GlyphWidth = test.AdvanceWidths[glyphIndex]*FontSize;
 		}
 
 		public TextLine(LogLine logLine)
@@ -144,6 +152,19 @@ namespace Tailviewer.Ui.Controls
 
 			var topLeft = new Point(0, y);
 			drawingContext.DrawText(Text, topLeft);
+		}
+
+		/// <summary>
+		/// Estimates the width of the given text in DIP units.
+		/// </summary>
+		/// <param name="line"></param>
+		/// <returns></returns>
+		[Pure]
+		public static double EstimateWidthUpperLimit(string line)
+		{
+			// TODO: What about surrogate pairs?
+			// TODO: What about tabs?
+			return line.Length*GlyphWidth;
 		}
 	}
 }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -256,6 +259,22 @@ namespace Tailviewer.Test.Ui.Controls
 			new Action(() => _control.OnTimer(null, null)).ShouldNotThrow("Because any and all exceptions must be handled inside this callback");
 			_control.PendingModificationsCount.Should().Be(1, "Because another update should've been scheduled as this one wasn't fully completed");
 			exceptionThrown.Should().BeTrue("Because the control should've queried the ILogFile.Count property during its update");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies a mouse left down selects the item under it")]
+		public void TestSelect1()
+		{
+			_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			_lines.Add(new LogLine(1, 1, "Foobar", LevelFlags.Info));
+			_control.LogFile = _logFile.Object;
+			_control.SelectedIndices.Should().BeEmpty();
+
+			_control.SelectedIndices.Should().Equal(new[]
+				{
+					new LogLineIndex(1)
+				});
 		}
 	}
 }

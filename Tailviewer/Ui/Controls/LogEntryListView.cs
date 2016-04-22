@@ -49,6 +49,7 @@ namespace Tailviewer.Ui.Controls
 		private readonly ScrollBar _horizontalScrollBar;
 		private readonly DispatcherTimer _timer;
 		private readonly ScrollBar _verticalScrollBar;
+		private int _maxLineWidth;
 
 		static LogEntryListView()
 		{
@@ -58,6 +59,8 @@ namespace Tailviewer.Ui.Controls
 
 		public LogEntryListView()
 		{
+			_selectedIndices = new List<LogLineIndex>();
+
 			_verticalScrollBar = new ScrollBar
 				{
 					Name = "PART_VerticalScrollBar",
@@ -146,6 +149,21 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogFileProperty, value); }
 		}
 
+		public double ActualViewerWidth
+		{
+			get
+			{
+				double width = ActualWidth;
+				if (_verticalScrollBar.Visibility != Visibility.Collapsed)
+				{
+					double usableWidth = width - _verticalScrollBar.ActualWidth;
+					return usableWidth;
+				}
+
+				return width;
+			}
+		}
+
 		public double ActualViewerHeight
 		{
 			get
@@ -168,8 +186,24 @@ namespace Tailviewer.Ui.Controls
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			if (!section.InvalidateSection)
+			{
+				var lines = logFile.GetSection(section);
+				foreach (var line in lines)
+				{
+					double width = TextLine.EstimateWidthUpperLimit(line.Message);
+					var upperWidth = (int) Math.Ceiling(width);
+
+					// Setting an integer is an atomic operation and thus no
+					// special synchronization is required.
+					_maxLineWidth = Math.Max(_maxLineWidth, upperWidth);
+				}
+			}
+
 			Interlocked.Increment(ref _pendingModificationsCount);
 		}
+
+		public IEnumerable<LogLineIndex> SelectedIndices { get { return _selectedIndices; } }
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -184,7 +218,10 @@ namespace Tailviewer.Ui.Controls
 			{
 				ScrollToBottom();
 			}
-			FollowTailChanged(followTail);
+
+			var fn = FollowTailChanged;
+			if (fn != null)
+				fn(followTail);
 		}
 
 		private void ScrollToBottom()
@@ -292,7 +329,11 @@ namespace Tailviewer.Ui.Controls
 					_hoveredLine = hoveredLine;
 
 					if (Mouse.LeftButton == MouseButtonState.Pressed)
-						TrySelectLine(_hoveredLine);
+					{
+						var element = InputHitTest(relativePos);
+						if (element == this)
+							TrySelectLine(_hoveredLine);
+					}
 
 					InvalidateVisual();
 				}
@@ -351,12 +392,15 @@ namespace Tailviewer.Ui.Controls
 			}
 
 			_visibleTextLines.Clear();
+
+			_maxLineWidth = 0;
+			_currentLine = 0;
+
 			if (newValue != null)
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
 
 				DetermineVerticalOffset();
-				_currentLine = 0;
 				_currentlyVisibleSection = CalculateVisibleSection(newValue);
 				UpdateScrollViewerRegions();
 				UpdateVisibleLines(newValue);
@@ -404,12 +448,31 @@ namespace Tailviewer.Ui.Controls
 					_verticalScrollBar.Minimum = 0;
 					_verticalScrollBar.Maximum = totalHeight - usableHeight;
 					_verticalScrollBar.ViewportSize = usableHeight;
+					_verticalScrollBar.Visibility = Visibility.Visible;
 				}
 				else
 				{
 					_verticalScrollBar.Minimum = 0;
 					_verticalScrollBar.Maximum = 0;
 					_verticalScrollBar.ViewportSize = usableHeight;
+					_verticalScrollBar.Visibility = Visibility.Collapsed;
+				}
+
+				double totalWidth = _maxLineWidth;
+				double usableWidth = ActualViewerWidth;
+				if (totalWidth > usableWidth)
+				{
+					_horizontalScrollBar.Minimum = 0;
+					_horizontalScrollBar.Maximum = totalWidth - usableWidth;
+					_horizontalScrollBar.ViewportSize = usableWidth;
+					_horizontalScrollBar.Visibility = Visibility.Visible;
+				}
+				else
+				{
+					_horizontalScrollBar.Minimum = 0;
+					_horizontalScrollBar.Maximum = 0;
+					_horizontalScrollBar.ViewportSize = usableWidth;
+					_horizontalScrollBar.Visibility = Visibility.Collapsed;
 				}
 			}
 		}
@@ -485,6 +548,7 @@ namespace Tailviewer.Ui.Controls
 		private ScrollEvent _lastScroll;
 		private TextLine _selectedLine;
 		private double _yOffset;
+		private readonly List<LogLineIndex> _selectedIndices;
 
 		#endregion
 
