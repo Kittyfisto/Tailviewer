@@ -142,7 +142,7 @@ namespace Tailviewer.Ui.Controls
 			                          brush);
 		}
 
-		public void Render(DrawingContext drawingContext, double y, double actualWidth)
+		public void Render(DrawingContext drawingContext, double x, double y, double actualWidth)
 		{
 			Brush brush = BackgroundBrush;
 			if (brush != null)
@@ -150,7 +150,7 @@ namespace Tailviewer.Ui.Controls
 				drawingContext.DrawRectangle(brush, null, new Rect(0, y, actualWidth, LineHeight));
 			}
 
-			var topLeft = new Point(0, y);
+			var topLeft = new Point(x, y);
 			drawingContext.DrawText(Text, topLeft);
 		}
 

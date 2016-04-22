@@ -186,7 +186,8 @@ namespace Tailviewer.Ui.Controls
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			if (!section.InvalidateSection)
+			if (!section.InvalidateSection &&
+				!section.IsReset)
 			{
 				var lines = logFile.GetSection(section);
 				foreach (var line in lines)
@@ -516,6 +517,12 @@ namespace Tailviewer.Ui.Controls
 
 		private void HorizontalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> ars)
 		{
+			// A value 0 zero means that the leftmost character shall be visible.
+			// A value of MaxValue means that the rightmost character shall be visible.
+			// This we need to offset each line's position by -value
+			_xOffset = -_horizontalScrollBar.Value;
+
+			InvalidateVisual();
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)
@@ -528,7 +535,7 @@ namespace Tailviewer.Ui.Controls
 			double y = _yOffset;
 			foreach (TextLine textLine in _visibleTextLines)
 			{
-				textLine.Render(drawingContext, y, ActualWidth);
+				textLine.Render(drawingContext, _xOffset, y, ActualWidth);
 				y += TextLine.LineHeight;
 			}
 		}
@@ -545,17 +552,28 @@ namespace Tailviewer.Ui.Controls
 		private int _currentLine;
 		private LogFileSection _currentlyVisibleSection;
 		private TextLine _hoveredLine;
-		private ScrollEvent _lastScroll;
-		private TextLine _selectedLine;
-		private double _yOffset;
 		private readonly List<LogLineIndex> _selectedIndices;
 
 		#endregion
+
+		#region Selection
+
+		private TextLine _selectedLine;
+
+		#endregion
+
+		#region Scrolling
+
+		private double _yOffset;
+		private double _xOffset;
+		private ScrollEvent _lastScroll;
 
 		private struct ScrollEvent
 		{
 			public double NewValue;
 			public double OldValue;
 		}
+
+		#endregion
 	}
 }
