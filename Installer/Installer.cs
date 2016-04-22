@@ -92,6 +92,10 @@ namespace Installer
 			{
 				File.Delete(filePath);
 			}
+			catch (DirectoryNotFoundException)
+			{
+				// This is great, one thing less to delete...
+			}
 			catch (Exception e)
 			{
 				throw new DeleteFileException(name, dir, e);
