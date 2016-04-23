@@ -357,6 +357,8 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_maxLineWidth = 0;
 			_textCanvas.LogFile = newValue;
+			_verticalScrollBar.Value = 0;
+			_horizontalScrollBar.Value = 0;
 
 			if (newValue != null)
 			{
