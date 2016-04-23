@@ -24,7 +24,7 @@ namespace Tailviewer.Test
 
 			var roller = new FileAppender
 				{
-					AppendToFile = false,
+					AppendToFile = true,
 					File = fileName,
 					Layout = patternLayout,
 				};

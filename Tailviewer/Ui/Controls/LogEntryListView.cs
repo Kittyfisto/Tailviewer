@@ -351,7 +351,7 @@ namespace Tailviewer.Ui.Controls
 
 			#endregion Mouse Events
 
-			private void UpdateMouseOver()
+			public void UpdateMouseOver()
 			{
 				var relativePos = Mouse.GetPosition(this);
 				UpdateMouseOver(relativePos);
@@ -508,6 +508,7 @@ namespace Tailviewer.Ui.Controls
 					UpdateScrollViewerRegions();
 					ScrollToBottomIfRequired();
 					_canvas.UpdateVisibleLines();
+					_canvas.UpdateMouseOver();
 				}
 				catch (Exception e)
 				{
