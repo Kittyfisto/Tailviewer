@@ -116,12 +116,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			_textCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
 			_textCanvas.SetValue(RowProperty, 0);
 			_textCanvas.SetValue(ColumnProperty, 1);
+			_textCanvas.SetValue(RowProperty, 0);
+			_textCanvas.SetValue(ColumnProperty, 1);
 			_textCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
 			_textCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
 			_textCanvas.SizeChanged += TextCanvasOnSizeChanged;
 			_textCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
-			_textCanvas.SetValue(RowProperty, 0);
-			_textCanvas.SetValue(ColumnProperty, 1);
+			_textCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
 
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, 0);
@@ -144,6 +145,24 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
 			_timer.Start();
+		}
+
+		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex)
+		{
+			var height = _textCanvas.ActualHeight;
+			var offset = _textCanvas.YOffset;
+			int start = _textCanvas.CurrentLine;
+			int diff = logLineIndex - start;
+			double min = ((diff)*TextHelper.LineHeight + offset);
+			double max = ((diff + 1)*TextHelper.LineHeight + offset);
+			if (min < 0)
+			{
+				_verticalScrollBar.Value += min;
+			}
+			else if (max > height)
+			{
+				_verticalScrollBar.Value += (max - height);
+			}
 		}
 
 		public bool ShowLineNumbers

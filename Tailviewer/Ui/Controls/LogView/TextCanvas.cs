@@ -50,6 +50,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			_visibleTextLines = new List<TextLine>();
 
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnCopyToClipboard), Key.C, ModifierKeys.Control));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveDown), Key.Down, ModifierKeys.None));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveUp), Key.Up, ModifierKeys.None));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMovePageDown), Key.PageDown, ModifierKeys.None));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMovePageUp), Key.PageUp, ModifierKeys.None));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
 
@@ -57,19 +61,6 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			Focusable = true;
 			ClipToBounds = true;
-		}
-
-		protected override void OnKeyDown(KeyEventArgs e)
-		{
-			if (e.Key == Key.C &&
-				(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-			{
-				e.Handled = true;
-			}
-			else
-			{
-				base.OnKeyDown(e);
-			}
 		}
 
 		public LogFileSection CurrentlyVisibleSection
@@ -91,9 +82,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		private int CurrentLine
+		public int CurrentLine
 		{
-			set { _currentLine = value; }
+			get { return _currentLine; }
 		}
 
 		public List<TextLine> VisibleTextLines
@@ -104,6 +95,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{
 			get { return _selectedIndices; }
+		}
+
+		public double YOffset
+		{
+			get { return _yOffset; }
 		}
 
 		public void UpdateVisibleSection()
@@ -137,7 +133,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void DetermineVerticalOffset()
 		{
 			double value = _verticalScrollBar.Value;
-			var lineBeginning = (int)(Math.Floor(value / TextHelper.LineHeight) * TextHelper.LineHeight);
+			var lineBeginning = (int) (Math.Floor(value/TextHelper.LineHeight)*TextHelper.LineHeight);
 			_yOffset = lineBeginning - value;
 		}
 
@@ -154,7 +150,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				_visibleTextLines.Add(new TextLine(data[i], _hoveredIndices, _selectedIndices));
 			}
 
-			var fn = VisibleLinesChanged;
+			Action fn = VisibleLinesChanged;
 			if (fn != null)
 				fn();
 
@@ -172,6 +168,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			bool changed = Set(_selectedIndices, index, selectMode);
 			_lastSelection = index;
+
+			if (changed)
+			{
+				Action fn = OnSelectionChanged;
+				if (fn != null)
+					fn();
+			}
+
 			return changed;
 		}
 
@@ -180,16 +184,22 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (selectMode == SelectMode.Replace)
 			{
 				_selectedIndices.Clear();
-				foreach (var index in indices)
+				foreach (LogLineIndex index in indices)
 				{
 					_selectedIndices.Add(index);
 				}
+
+				Action fn = OnSelectionChanged;
+				if (fn != null)
+					fn();
 			}
 			else
 			{
 				throw new NotImplementedException();
 			}
 		}
+
+		public event Action OnSelectionChanged;
 
 		private static bool Set(HashSet<LogLineIndex> indices, LogLineIndex index, SelectMode selectMode)
 		{
@@ -220,8 +230,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (_logFile == null)
 				return new LogFileSection(0, 0);
 
-			double maxLinesInViewport = (ActualHeight + _yOffset) / TextHelper.LineHeight;
-			var maxCount = (int)Math.Ceiling(maxLinesInViewport);
+			double maxLinesInViewport = (ActualHeight - _yOffset)/TextHelper.LineHeight;
+			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
 			int linesLeft = LogFile.Count - _currentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			return new LogFileSection(_currentLine, count);
@@ -237,7 +247,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void UpdateMouseOver(Point relativePos)
 		{
 			double y = relativePos.Y - _yOffset;
-			var visibleLineIndex = (int)Math.Floor(y / TextHelper.LineHeight);
+			var visibleLineIndex = (int) Math.Floor(y/TextHelper.LineHeight);
 			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 			{
 				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
@@ -249,17 +259,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void VerticalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
 			double pos = args.NewValue;
-			var currentLine = (int)Math.Floor(pos / TextHelper.LineHeight);
+			var currentLine = (int) Math.Floor(pos/TextHelper.LineHeight);
 
 			DetermineVerticalOffset();
-			CurrentLine = currentLine;
+			_currentLine = currentLine;
 			CurrentlyVisibleSection = CalculateVisibleSection();
 			UpdateVisibleLines();
-		}
-
-		public double YOffset
-		{
-			get { return _yOffset; }
 		}
 
 		private void HorizontalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> args)
@@ -270,6 +275,125 @@ namespace Tailviewer.Ui.Controls.LogView
 			_xOffset = -args.NewValue;
 
 			InvalidateVisual();
+		}
+
+		private void ChangeSelectionAndBringIntoView(LogLineIndex newIndex)
+		{
+			if (SetSelected(newIndex, SelectMode.Replace))
+			{
+				var fn = RequestBringIntoView;
+				if (fn != null)
+					fn(newIndex);
+
+				InvalidateVisual();
+			}
+		}
+
+		public void OnMovePageUp()
+		{
+			try
+			{
+				if (_selectedIndices.Count > 0 && _lastSelection > 0)
+				{
+					LogLineIndex newIndex;
+					var maxDelta = _currentlyVisibleSection.Count;
+					if (maxDelta > _lastSelection)
+						newIndex = 0;
+					else
+						newIndex = _lastSelection - maxDelta;
+
+					ChangeSelectionAndBringIntoView(newIndex);
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+			}
+		}
+
+		public void OnMovePageDown()
+		{
+			try
+			{
+				var count = _logFile.Count;
+				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
+				{
+					LogLineIndex newIndex;
+					var maxDelta = _currentlyVisibleSection.Count;
+					if (maxDelta + _lastSelection >= count)
+						newIndex = count - 1;
+					else
+						newIndex = _lastSelection + maxDelta;
+
+					ChangeSelectionAndBringIntoView(newIndex);
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+			}
+		}
+
+		public void OnMoveUp()
+		{
+			try
+			{
+			if (_selectedIndices.Count > 0 && _lastSelection > 0)
+			{
+				var newIndex = _lastSelection - 1;
+				ChangeSelectionAndBringIntoView(newIndex);
+			}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+			}
+		}
+
+		public void OnMoveDown()
+		{
+			try
+			{
+				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.Count-1)
+				{
+					var newIndex = _lastSelection + 1;
+					ChangeSelectionAndBringIntoView(newIndex);
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+			}
+		}
+
+		public new event Action<LogLineIndex> RequestBringIntoView;
+
+		public void OnCopyToClipboard()
+		{
+			try
+			{
+				var builder = new StringBuilder();
+				ILogFile logFile = _logFile;
+				if (logFile != null)
+				{
+					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
+					sortedIndices.Sort();
+					for (int i = 0; i < sortedIndices.Count; ++i)
+					{
+						LogLine line = logFile.GetLine((int) sortedIndices[i]);
+						if (i < sortedIndices.Count - 1)
+							builder.AppendLine(line.Message);
+						else
+							builder.Append(line.Message);
+					}
+				}
+				string message = builder.ToString();
+				Clipboard.SetText(message);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
 		}
 
 		#region Mouse Events
@@ -320,8 +444,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				LogLineIndex index = _hoveredIndices.First();
 
 				SelectMode selectMode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
-					            ? SelectMode.Add
-					            : SelectMode.Replace;
+					                        ? SelectMode.Add
+					                        : SelectMode.Replace;
 				if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
 				{
 					if (SetSelected(_lastSelection, index, selectMode))
@@ -356,37 +480,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				changed |= _selectedIndices.Add(min + i);
 			}
+
+			if (changed)
+			{
+				Action fn = OnSelectionChanged;
+				if (fn != null)
+					fn();
+			}
+
 			return changed;
 		}
 
 		#endregion Mouse Events
-
-		public void OnCopyToClipboard()
-		{
-			try
-			{
-				var builder = new StringBuilder();
-				var logFile = _logFile;
-				if (logFile != null)
-				{
-					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
-					sortedIndices.Sort();
-					for (int i = 0; i < sortedIndices.Count; ++i)
-					{
-						var line = logFile.GetLine((int)sortedIndices[i]);
-						if (i < sortedIndices.Count - 1)
-							builder.AppendLine(line.Message);
-						else
-							builder.Append(line.Message);
-					}
-				}
-				string message = builder.ToString();
-				Clipboard.SetText(message);
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-			}
-		}
 	}
 }
