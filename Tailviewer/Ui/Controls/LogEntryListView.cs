@@ -170,6 +170,7 @@ namespace Tailviewer.Ui.Controls
 			}
 
 			private ILogFile _logFile;
+			private LogLineIndex _lastSelection;
 
 			public ILogFile LogFile
 			{
@@ -180,6 +181,7 @@ namespace Tailviewer.Ui.Controls
 					_visibleTextLines.Clear();
 
 					_currentLine = 0;
+					_lastSelection = 0;
 				}
 			}
 
@@ -273,7 +275,9 @@ namespace Tailviewer.Ui.Controls
 
 			private bool SetSelected(LogLineIndex index, Mode mode)
 			{
-				return Set(_selectedIndices, index, mode);
+				var changed = Set(_selectedIndices, index, mode);
+				_lastSelection = index;
+				return changed;
 			}
 
 			/// <summary>
@@ -342,11 +346,40 @@ namespace Tailviewer.Ui.Controls
 					var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
 									   ? Mode.Add
 									   : Mode.Replace;
-					if (SetSelected(index, mode))
-						InvalidateVisual();
+					if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+					{
+						if (SetSelected(_lastSelection, index, mode))
+							InvalidateVisual();
+					}
+					else
+					{
+						if (SetSelected(index, mode))
+							InvalidateVisual();
+					}
 				}
 
 				base.OnMouseLeftButtonDown(e);
+			}
+
+			private bool SetSelected(LogLineIndex from, LogLineIndex to, Mode mode)
+			{
+				bool changed = false;
+				if (mode == Mode.Replace)
+				{
+					if (_hoveredIndices.Count > 0)
+						changed = true;
+
+					_hoveredIndices.Clear();
+				}
+
+				var min = LogLineIndex.Min(from, to);
+				var max = LogLineIndex.Max(from, to);
+				int count = max - min;
+				for (int i = 0; i < count; ++i)
+				{
+					changed |= _selectedIndices.Add(min+i);
+				}
+				return changed;
 			}
 
 			#endregion Mouse Events
