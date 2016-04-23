@@ -307,7 +307,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
 
@@ -330,7 +330,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
 
@@ -346,7 +346,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
 
@@ -362,7 +362,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
 
