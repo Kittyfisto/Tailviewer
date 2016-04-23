@@ -21,7 +21,7 @@ namespace Installer
 		public Installer()
 		{
 			_assembly = Assembly.GetExecutingAssembly();
-			_prefix = string.Format("{0}.InstallationFiles.", _assembly.GetName().Name);
+			_prefix = "Installer.InstallationFiles.";
 			string[] allFiles = _assembly.GetManifestResourceNames();
 			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
 			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));

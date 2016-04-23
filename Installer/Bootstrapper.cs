@@ -17,8 +17,7 @@ namespace Installer
 		{
 			InstallExceptionHandlers();
 
-			AssemblyName name = Assembly.GetExecutingAssembly().GetName();
-			EnableEmbeddedDependencyLoading(name.Name, "InstallationFiles");
+			EnableEmbeddedDependencyLoading("Installer", "InstallationFiles");
 
 			return Run();
 		}
