@@ -1,6 +1,6 @@
 # Tailviewer
 
-Master: [![Build status](https://ci.appveyor.com/api/projects/status/mripd18s222ue6gm?svg=true)](https://ci.appveyor.com/project/Kittyfisto/sharptail)  
+[![Build status](https://ci.appveyor.com/api/projects/status/mripd18s222ue6gm?svg=true)](https://ci.appveyor.com/project/Kittyfisto/sharptail)  
 
 Tailviewer is a free and active open-source log file viewer.
 
