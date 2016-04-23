@@ -375,7 +375,7 @@ namespace Tailviewer.Ui.Controls
 				var min = LogLineIndex.Min(from, to);
 				var max = LogLineIndex.Max(from, to);
 				int count = max - min;
-				for (int i = 0; i < count; ++i)
+				for (int i = 0; i <= count /* we want to select everything including 'to' */; ++i)
 				{
 					changed |= _selectedIndices.Add(min+i);
 				}
