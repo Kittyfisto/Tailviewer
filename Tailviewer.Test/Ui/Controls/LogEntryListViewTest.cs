@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;

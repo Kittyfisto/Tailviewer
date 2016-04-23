@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Windows;
@@ -26,9 +27,9 @@ namespace Tailviewer.Ui.Controls
 		private static readonly double GlyphWidth;
 
 		private readonly LogLine _logLine;
+		private readonly HashSet<LogLineIndex> _hoveredIndices;
+		private readonly HashSet<LogLineIndex> _selectedIndices;
 
-		private bool _isHovered;
-		private bool _isSelected;
 		private FormattedText _text;
 
 		static TextLine()
@@ -50,9 +51,17 @@ namespace Tailviewer.Ui.Controls
 			GlyphWidth = test.AdvanceWidths[glyphIndex]*FontSize;
 		}
 
-		public TextLine(LogLine logLine)
+		public TextLine(LogLine logLine,
+			HashSet<LogLineIndex> hoveredIndices,
+			HashSet<LogLineIndex> selectedIndices)
 		{
+			if (logLine == null) throw new ArgumentNullException("logLine");
+			if (hoveredIndices == null) throw new ArgumentNullException("hoveredIndices");
+			if (selectedIndices == null) throw new ArgumentNullException("selectedIndices");
+
 			_logLine = logLine;
+			_hoveredIndices = hoveredIndices;
+			_selectedIndices = selectedIndices;
 		}
 
 		public LogLine LogLine
@@ -62,28 +71,7 @@ namespace Tailviewer.Ui.Controls
 
 		public bool IsHovered
 		{
-			get { return _isHovered; }
-			set
-			{
-				if (value == _isHovered)
-					return;
-
-				_isHovered = value;
-				_text = null;
-			}
-		}
-
-		public bool IsSelected
-		{
-			get { return _isSelected; }
-			set
-			{
-				if (value == _isSelected)
-					return;
-
-				_isSelected = value;
-				_text = null;
-			}
+			get { return _hoveredIndices.Contains(_logLine.LineIndex); }
 		}
 
 		public FormattedText Text
@@ -99,11 +87,11 @@ namespace Tailviewer.Ui.Controls
 		{
 			get
 			{
-				if (_isSelected)
+				if (IsSelected)
 				{
 					return SelectedForegroundBrush;
 				}
-				if (_isHovered)
+				if (IsHovered)
 				{
 					return HoveredForegroundBrush;
 				}
@@ -116,16 +104,21 @@ namespace Tailviewer.Ui.Controls
 		{
 			get
 			{
-				if (_isSelected)
+				if (IsSelected)
 				{
 					return SelectedBackgroundBrush;
 				}
-				if (_isHovered)
+				if (IsHovered)
 				{
 					return HoveredBackgroundBrush;
 				}
 				return NormalBackgroundBrush;
 			}
+		}
+
+		public bool IsSelected
+		{
+			get { return _selectedIndices.Contains(_logLine.LineIndex); }
 		}
 
 		private void CreateTextIfNecessary()

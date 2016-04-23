@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -59,7 +60,8 @@ namespace Tailviewer.Ui.Controls
 
 		public LogEntryListView()
 		{
-			_selectedIndices = new List<LogLineIndex>();
+			_selectedIndices = new HashSet<LogLineIndex>();
+			_hoveredIndices = new HashSet<LogLineIndex>();
 
 			_verticalScrollBar = new ScrollBar
 				{
@@ -266,6 +268,8 @@ namespace Tailviewer.Ui.Controls
 			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
 			double toScroll = Math.Min(delta, TextLine.LineHeight);
 			_verticalScrollBar.Value += toScroll;
+
+			UpdateMouseOver();
 		}
 
 		internal void OnMouseWheelUp()
@@ -278,6 +282,8 @@ namespace Tailviewer.Ui.Controls
 				FollowTail = false;
 				_verticalScrollBar.Value -= toScroll;
 			}
+
+			UpdateMouseOver();
 		}
 
 		/// <summary>
@@ -314,26 +320,36 @@ namespace Tailviewer.Ui.Controls
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-
 			Point relativePos = e.GetPosition(this);
-			var lineIndex = (int) Math.Floor(relativePos.Y/TextLine.LineHeight);
-			if (lineIndex >= 0 && lineIndex < _visibleTextLines.Count)
+			UpdateMouseOver(relativePos);
+		}
+
+		private void UpdateMouseOver()
+		{
+			var relativePos = Mouse.GetPosition(this);
+			UpdateMouseOver(relativePos);
+		}
+
+		private void UpdateMouseOver(Point relativePos)
+		{
+			var y = relativePos.Y - _yOffset;
+			var visibleLineIndex = (int) Math.Floor(y/TextLine.LineHeight);
+			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 			{
-				TextLine hoveredLine = _visibleTextLines[lineIndex];
-				if (hoveredLine != _hoveredLine)
+				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
+				if (!_hoveredIndices.Contains(lineIndex))
 				{
-					hoveredLine.IsHovered = true;
-					if (_hoveredLine != null)
-					{
-						_hoveredLine.IsHovered = false;
-					}
-					_hoveredLine = hoveredLine;
+					_hoveredIndices.Clear();
+					_hoveredIndices.Add(lineIndex);
 
 					if (Mouse.LeftButton == MouseButtonState.Pressed)
 					{
 						var element = InputHitTest(relativePos);
 						if (element == this)
-							TrySelectLine(_hoveredLine);
+						{
+							_selectedIndices.Clear();
+							_selectedIndices.Add(lineIndex);
+						}
 					}
 
 					InvalidateVisual();
@@ -345,39 +361,27 @@ namespace Tailviewer.Ui.Controls
 		{
 			base.OnMouseLeave(e);
 
-			if (_hoveredLine != null)
+			if (_hoveredIndices.Count > 0)
 			{
-				_hoveredLine.IsHovered = false;
-				_hoveredLine = null;
+				_hoveredIndices.Clear();
 				InvalidateVisual();
 			}
 		}
 
 		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
 		{
-			if (TrySelectLine(_hoveredLine))
+			if (_hoveredIndices.Count > 0)
 			{
-				e.Handled = true;
+				var index = _hoveredIndices.First();
+				if (_selectedIndices.Count > 0)
+				{
+					_selectedIndices.Clear();
+				}
+				_selectedIndices.Add(index);
 				InvalidateVisual();
 			}
 
 			base.OnMouseLeftButtonDown(e);
-		}
-
-		private bool TrySelectLine(TextLine line)
-		{
-			if (line != null)
-			{
-				if (_selectedLine != null)
-					_selectedLine.IsSelected = false;
-
-				_selectedLine = line;
-				_selectedLine.IsSelected = true;
-
-				return true;
-			}
-
-			return false;
 		}
 
 		private static void OnLogFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -423,7 +427,7 @@ namespace Tailviewer.Ui.Controls
 			logFile.GetSection(_currentlyVisibleSection, data);
 			for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 			{
-				_visibleTextLines.Add(new TextLine(data[i]));
+				_visibleTextLines.Add(new TextLine(data[i], _hoveredIndices, _selectedIndices));
 			}
 
 			InvalidateVisual();
@@ -551,14 +555,13 @@ namespace Tailviewer.Ui.Controls
 		private readonly List<TextLine> _visibleTextLines;
 		private int _currentLine;
 		private LogFileSection _currentlyVisibleSection;
-		private TextLine _hoveredLine;
-		private readonly List<LogLineIndex> _selectedIndices;
 
 		#endregion
 
-		#region Selection
+		#region Selection/Hovering
 
-		private TextLine _selectedLine;
+		private readonly HashSet<LogLineIndex> _selectedIndices;
+		private readonly HashSet<LogLineIndex> _hoveredIndices;
 
 		#endregion
 
