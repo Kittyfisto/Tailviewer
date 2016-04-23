@@ -468,6 +468,31 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestParse3()
+		{
+			int? column;
+			int? length;
+			LogFile.DetermineDateTimePart("07/Mar/2004:16:31:48",
+			                              out column,
+										  out length);
+
+			column.Should().HaveValue();
+			length.Should().HaveValue();
+			length.Should().Be(20);
+
+			DateTime? value = LogFile.ParseTimestamp("07/Mar/2004:16:31:48", column, length);
+			value.Should().HaveValue();
+			DateTime dateTime = value.Value;
+			dateTime.Year.Should().Be(2004);
+			dateTime.Month.Should().Be(3);
+			dateTime.Day.Should().Be(7);
+			dateTime.Hour.Should().Be(16);
+			dateTime.Minute.Should().Be(31);
+			dateTime.Second.Should().Be(48);
+			dateTime.Millisecond.Should().Be(0);
+		}
+
+		[Test]
 		public void TestRead2Lines()
 		{
 			using (var file = new LogFile(File2Lines))

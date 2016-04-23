@@ -43,7 +43,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					"yyyy-MM-dd HH:mm:ss,fff",
 
 					// Another one used by a colleague, well its actually nanoseconds but I can't find that format string
-					"yyyy MMM dd HH:mm:ss.fff"
+					"yyyy MMM dd HH:mm:ss.fff",
+
+					// Various formats...
+					"dd/MMM/yyyy:HH:mm:ss"
 				};
 		}
 
