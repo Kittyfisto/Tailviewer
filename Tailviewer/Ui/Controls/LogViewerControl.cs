@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
@@ -47,10 +45,6 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LogViewerControl),
 			                            new PropertyMetadata(false, OnDebugChanged));
 
-		public static readonly DependencyProperty CopySelectedLineToClipboardCommandProperty =
-			DependencyProperty.Register("CopySelectedLineToClipboardCommand", typeof (ICommand), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(ICommand)));
-
 		public static readonly DependencyProperty ShowAllProperty =
 			DependencyProperty.Register("ShowAll", typeof (bool?), typeof (LogViewerControl),
 			                            new PropertyMetadata(false, OnShowAllChanged));
@@ -75,11 +69,6 @@ namespace Tailviewer.Ui.Controls
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
-		}
-
-		public LogViewerControl()
-		{
-			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
 		}
 
 		public bool ShowLineNumbers
@@ -115,12 +104,6 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (bool?) GetValue(ShowAllProperty); }
 			set { SetValue(ShowAllProperty, value); }
-		}
-
-		public ICommand CopySelectedLineToClipboardCommand
-		{
-			get { return (ICommand) GetValue(CopySelectedLineToClipboardCommandProperty); }
-			set { SetValue(CopySelectedLineToClipboardCommandProperty, value); }
 		}
 
 		public bool ShowDebug
@@ -182,25 +165,6 @@ namespace Tailviewer.Ui.Controls
 			IDataSourceViewModel dataSource = DataSource;
 			if (dataSource != null)
 				dataSource.ShowLineNumbers = showLineNumbers;
-		}
-
-		private void CopySelectedLineToClipboard()
-		{
-			/*ListView listViewer = _partListView;
-			if (listViewer != null)
-			{
-				IList items = listViewer.SelectedItems;
-				IEnumerable<LogEntryViewModel> viewModels = items != null
-					                                            ? items.Cast<LogEntryViewModel>()
-					                                            : Enumerable.Empty<LogEntryViewModel>();
-				var builder = new StringBuilder();
-				foreach (LogEntryViewModel item in viewModels)
-				{
-					builder.AppendLine(item.Message);
-				}
-				string message = builder.ToString();
-				Clipboard.SetText(message);
-			}*/
 		}
 
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)

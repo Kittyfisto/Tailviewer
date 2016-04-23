@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Globalization;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
-	public struct LogLineIndex : IEquatable<LogLineIndex>
+	public struct LogLineIndex
+		: IEquatable<LogLineIndex>
+		, IComparable<LogLineIndex>
 	{
 		public static readonly LogLineIndex Invalid;
 		private readonly int _value;
@@ -45,6 +46,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public override int GetHashCode()
 		{
 			return _value;
+		}
+
+		public int CompareTo(LogLineIndex other)
+		{
+			return _value.CompareTo(other._value);
 		}
 
 		public override string ToString()

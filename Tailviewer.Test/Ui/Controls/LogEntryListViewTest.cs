@@ -40,6 +40,8 @@ namespace Tailviewer.Test.Ui.Controls
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
 			        .Callback((LogFileSection section, LogLine[] dest) =>
 			                  _lines.CopyTo((int) section.Index, dest, 0, section.Count));
+			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) =>
+			                                                        _lines[index]);
 			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 			        .Callback((ILogFileListener listener, TimeSpan maximumTimeout, int maximumLines) =>
 				        {
@@ -274,6 +276,34 @@ namespace Tailviewer.Test.Ui.Controls
 				{
 					new LogLineIndex(1)
 				});
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that only selected lines are copied to the clipboard")]
+		public void TestCopyToClipboard1()
+		{
+			_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			_lines.Add(new LogLine(1, 1, "Clondyke bar", LevelFlags.Info));
+			_control.LogFile = _logFile.Object;
+			_control.Select(1);
+			_control.CopySelectedLinesToClipboard();
+
+			Clipboard.GetText().Should().Be("Clondyke bar");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that multiple lines can be copied to the clipboard")]
+		public void TestCopyToClipboard2()
+		{
+			_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			_lines.Add(new LogLine(1, 1, "Clondyke bar", LevelFlags.Info));
+			_control.LogFile = _logFile.Object;
+			_control.Select(1, 0);
+			_control.CopySelectedLinesToClipboard();
+
+			Clipboard.GetText().Should().Be("Foobar\r\nClondyke bar");
 		}
 	}
 }

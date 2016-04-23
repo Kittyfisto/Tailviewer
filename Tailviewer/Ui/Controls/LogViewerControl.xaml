@@ -134,13 +134,6 @@
                             SnapsToDevicePixels="True"
                             />
 
-                        <!--
-                            <ListView.InputBindings>
-                            <KeyBinding Modifiers="Control" Key="C"
-                                            Command="{Binding CopySelectedLineToClipboardCommand, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </ListView.InputBindings>
-                        -->
-
                         <StackPanel Grid.Row="2" VerticalAlignment="Center">
                             <TextBlock
                                 HorizontalAlignment="Center"

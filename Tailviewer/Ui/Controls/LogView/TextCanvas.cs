@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -9,6 +11,7 @@ using System.Windows.Media;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
+using log4net;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -18,6 +21,9 @@ namespace Tailviewer.Ui.Controls.LogView
 	public sealed class TextCanvas
 		: FrameworkElement
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ScrollBar _horizontalScrollBar;
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
@@ -43,12 +49,27 @@ namespace Tailviewer.Ui.Controls.LogView
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
 
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnCopyToClipboard), Key.C, ModifierKeys.Control));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
 
 			SizeChanged += OnSizeChanged;
 
+			Focusable = true;
 			ClipToBounds = true;
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (e.Key == Key.C &&
+				(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+			{
+				e.Handled = true;
+			}
+			else
+			{
+				base.OnKeyDown(e);
+			}
 		}
 
 		public LogFileSection CurrentlyVisibleSection
@@ -147,11 +168,27 @@ namespace Tailviewer.Ui.Controls.LogView
 			return Set(_hoveredIndices, index, selectMode);
 		}
 
-		private bool SetSelected(LogLineIndex index, SelectMode selectMode)
+		public bool SetSelected(LogLineIndex index, SelectMode selectMode)
 		{
 			bool changed = Set(_selectedIndices, index, selectMode);
 			_lastSelection = index;
 			return changed;
+		}
+
+		public void SetSelected(IEnumerable<LogLineIndex> indices, SelectMode selectMode)
+		{
+			if (selectMode == SelectMode.Replace)
+			{
+				_selectedIndices.Clear();
+				foreach (var index in indices)
+				{
+					_selectedIndices.Add(index);
+				}
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		private static bool Set(HashSet<LogLineIndex> indices, LogLineIndex index, SelectMode selectMode)
@@ -297,6 +334,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 			}
 
+			Focus();
 			base.OnMouseLeftButtonDown(e);
 		}
 
@@ -322,5 +360,33 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		#endregion Mouse Events
+
+		public void OnCopyToClipboard()
+		{
+			try
+			{
+				var builder = new StringBuilder();
+				var logFile = _logFile;
+				if (logFile != null)
+				{
+					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
+					sortedIndices.Sort();
+					for (int i = 0; i < sortedIndices.Count; ++i)
+					{
+						var line = logFile.GetLine((int)sortedIndices[i]);
+						if (i < sortedIndices.Count - 1)
+							builder.AppendLine(line.Message);
+						else
+							builder.Append(line.Message);
+					}
+				}
+				string message = builder.ToString();
+				Clipboard.SetText(message);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
+		}
 	}
 }

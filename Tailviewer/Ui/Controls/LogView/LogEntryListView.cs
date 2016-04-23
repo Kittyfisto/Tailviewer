@@ -434,5 +434,20 @@ namespace Tailviewer.Ui.Controls.LogView
 					NewValue = args.NewValue,
 				};
 		}
+
+		public void Select(LogLineIndex index)
+		{
+			_textCanvas.SetSelected(index, SelectMode.Replace);
+		}
+
+		public void Select(params LogLineIndex[] indices)
+		{
+			_textCanvas.SetSelected(indices, SelectMode.Replace);
+		}
+
+		public void CopySelectedLinesToClipboard()
+		{
+			_textCanvas.OnCopyToClipboard();
+		}
 	}
 }
