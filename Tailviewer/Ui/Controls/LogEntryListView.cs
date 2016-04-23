@@ -47,10 +47,27 @@ namespace Tailviewer.Ui.Controls
 
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 
-		private readonly ScrollBar _horizontalScrollBar;
 		private readonly DispatcherTimer _timer;
+		private readonly ScrollBar _horizontalScrollBar;
 		private readonly ScrollBar _verticalScrollBar;
+		private readonly Canvas _canvas;
+		private readonly Rectangle _cornerRectangle;
+
+		private int _pendingModificationsCount;
 		private int _maxLineWidth;
+
+
+		#region Scrolling
+
+		private ScrollEvent _lastScroll;
+
+		private struct ScrollEvent
+		{
+			public double NewValue;
+			public double OldValue;
+		}
+
+		#endregion
 
 		static LogEntryListView()
 		{
@@ -60,50 +77,327 @@ namespace Tailviewer.Ui.Controls
 
 		public LogEntryListView()
 		{
-			_selectedIndices = new HashSet<LogLineIndex>();
-			_hoveredIndices = new HashSet<LogLineIndex>();
-
 			_verticalScrollBar = new ScrollBar
 				{
 					Name = "PART_VerticalScrollBar",
-					VerticalAlignment = VerticalAlignment.Stretch,
-					HorizontalAlignment = HorizontalAlignment.Right,
-					Margin = new Thickness(0, 0, 0, 17)
 				};
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
+			_verticalScrollBar.SetValue(RowProperty, 0);
+			_verticalScrollBar.SetValue(ColumnProperty, 1);
 
 			_horizontalScrollBar = new ScrollBar
 				{
 					Name = "PART_HorizontalScrollBar",
-					VerticalAlignment = VerticalAlignment.Bottom,
-					HorizontalAlignment = HorizontalAlignment.Stretch,
 					Orientation = Orientation.Horizontal,
-					Margin = new Thickness(0, 0, 17, 0)
 				};
-			_horizontalScrollBar.ValueChanged += HorizontalScrollBarOnScroll;
+			_horizontalScrollBar.SetValue(RowProperty, 1);
+			_horizontalScrollBar.SetValue(ColumnProperty, 0);
 
-			Children.Add(_verticalScrollBar);
-			Children.Add(_horizontalScrollBar);
-			Children.Add(new Rectangle
+			ColumnDefinitions.Add(new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)});
+			ColumnDefinitions.Add(new ColumnDefinition{Width = new GridLength(1, GridUnitType.Auto)});
+			RowDefinitions.Add(new RowDefinition{Height = new GridLength(1, GridUnitType.Star)});
+			RowDefinitions.Add(new RowDefinition{Height = new GridLength(1, GridUnitType.Auto)});
+
+			_canvas = new Canvas(_horizontalScrollBar, _verticalScrollBar);
+			_canvas.SetValue(RowProperty, 0);
+			_canvas.SetValue(ColumnProperty, 0);
+			_canvas.MouseWheelDown += CanvasOnMouseWheelDown;
+			_canvas.MouseWheelUp += CanvasOnMouseWheelUp;
+			_canvas.SizeChanged += CanvasOnSizeChanged;
+
+			_cornerRectangle = new Rectangle
 				{
 					Width = 17,
 					Height = 17,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					HorizontalAlignment = HorizontalAlignment.Right,
 					Fill = new SolidColorBrush(Color.FromRgb(0xce, 0xce, 0xce))
-				});
+				};
+			_cornerRectangle.SetValue(RowProperty, 1);
+			_cornerRectangle.SetValue(ColumnProperty, 1);
 
-			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
-			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
+			Children.Add(_canvas);
+			Children.Add(_verticalScrollBar);
+			Children.Add(_horizontalScrollBar);
+			Children.Add(_cornerRectangle);
 
-			_visibleTextLines = new List<TextLine>();
 			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
 			_timer.Start();
 
 			ClipToBounds = true;
+		}
 
-			SizeChanged += OnSizeChanged;
+		private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			UpdateScrollViewerRegions();
+		}
+
+		private void CanvasOnMouseWheelUp()
+		{
+			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+
+			if (toScroll > 0)
+			{
+				FollowTail = false;
+				_verticalScrollBar.Value -= toScroll;
+			}
+		}
+
+		private void CanvasOnMouseWheelDown()
+		{
+			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+			_verticalScrollBar.Value += toScroll;
+		}
+
+		sealed class Canvas
+			: FrameworkElement
+		{
+			private readonly ScrollBar _horizontalScrollBar;
+			private readonly ScrollBar _verticalScrollBar;
+			private readonly List<TextLine> _visibleTextLines;
+			private readonly HashSet<LogLineIndex> _selectedIndices;
+			private readonly HashSet<LogLineIndex> _hoveredIndices;
+
+			private int _currentLine;
+			private LogFileSection _currentlyVisibleSection;
+			private double _yOffset;
+			private double _xOffset;
+
+			public LogFileSection CurrentlyVisibleSection
+			{
+				set { _currentlyVisibleSection = value; }
+			}
+
+			private ILogFile _logFile;
+
+			public ILogFile LogFile
+			{
+				get { return _logFile; }
+				set
+				{
+					_logFile = value;
+					_visibleTextLines.Clear();
+
+					_currentLine = 0;
+				}
+			}
+
+			public void UpdateVisibleSection()
+			{
+				_currentlyVisibleSection = CalculateVisibleSection();
+			}
+
+			public Canvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
+			{
+				_horizontalScrollBar = horizontalScrollBar;
+				_horizontalScrollBar.ValueChanged += HorizontalScrollBarOnScroll;
+
+				_verticalScrollBar = verticalScrollBar;
+				_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
+
+				_selectedIndices = new HashSet<LogLineIndex>();
+				_hoveredIndices = new HashSet<LogLineIndex>();
+				_visibleTextLines = new List<TextLine>();
+
+				InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
+				InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
+
+				SizeChanged += OnSizeChanged;
+			}
+
+			private int CurrentLine
+			{
+				set { _currentLine = value; }
+			}
+
+			public List<TextLine> VisibleTextLines
+			{
+				get { return _visibleTextLines; }
+			}
+
+			public IEnumerable<LogLineIndex> SelectedIndices
+			{
+				get { return _selectedIndices; }
+			}
+
+			protected override void OnRender(DrawingContext drawingContext)
+			{
+				base.OnRender(drawingContext);
+
+				var rect = new Rect(0, 0, ActualWidth, ActualHeight);
+				drawingContext.DrawRectangle(Brushes.White, null, rect);
+
+				double y = _yOffset;
+				foreach (TextLine textLine in _visibleTextLines)
+				{
+					textLine.Render(drawingContext, _xOffset, y, ActualWidth);
+					y += TextLine.LineHeight;
+				}
+			}
+
+			private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+			{
+				DetermineVerticalOffset();
+				_currentlyVisibleSection = CalculateVisibleSection();
+				UpdateVisibleLines();
+			}
+
+			public void DetermineVerticalOffset()
+			{
+				double value = _verticalScrollBar.Value;
+				var lineBeginning = (int)(Math.Floor(value / TextLine.LineHeight) * TextLine.LineHeight);
+				_yOffset = lineBeginning - value;
+			}
+
+			public void UpdateVisibleLines()
+			{
+				_visibleTextLines.Clear();
+				if (_logFile == null)
+					return;
+
+				var data = new LogLine[_currentlyVisibleSection.Count];
+				_logFile.GetSection(_currentlyVisibleSection, data);
+				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+				{
+					_visibleTextLines.Add(new TextLine(data[i], _hoveredIndices, _selectedIndices));
+				}
+
+				InvalidateVisual();
+			}
+
+			private bool SetHovered(LogLineIndex index, Mode mode)
+			{
+				return Set(_hoveredIndices, index, mode);
+			}
+
+			private bool SetSelected(LogLineIndex index, Mode mode)
+			{
+				return Set(_selectedIndices, index, mode);
+			}
+
+			/// <summary>
+			///     The section of the log file that is currently visible.
+			/// </summary>
+			[Pure]
+			public LogFileSection CalculateVisibleSection()
+			{
+				if (_logFile == null)
+					return new LogFileSection(0, 0);
+
+				double maxLinesInViewport = (ActualHeight + _yOffset) / TextLine.LineHeight;
+				var maxCount = (int)Math.Ceiling(maxLinesInViewport);
+				int linesLeft = LogFile.Count - _currentLine;
+				int count = Math.Min(linesLeft, maxCount);
+				return new LogFileSection(_currentLine, count);
+			}
+
+			#region Mouse Events
+
+			protected override void OnMouseMove(MouseEventArgs e)
+			{
+				base.OnMouseMove(e);
+				Point relativePos = e.GetPosition(this);
+				UpdateMouseOver(relativePos);
+			}
+
+			public event Action MouseWheelDown;
+			public event Action MouseWheelUp;
+
+			private void OnMouseWheelDown()
+			{
+				var fn = MouseWheelDown;
+				if (fn != null)
+					fn();
+
+				UpdateMouseOver();
+			}
+
+			private void OnMouseWheelUp()
+			{
+				var fn = MouseWheelUp;
+				if (fn != null)
+					fn();
+
+				UpdateMouseOver();
+			}
+
+			protected override void OnMouseLeave(MouseEventArgs e)
+			{
+				base.OnMouseLeave(e);
+
+				if (_hoveredIndices.Count > 0)
+				{
+					_hoveredIndices.Clear();
+					InvalidateVisual();
+				}
+			}
+
+			protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+			{
+				if (_hoveredIndices.Count > 0)
+				{
+					var index = _hoveredIndices.First();
+
+					var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
+									   ? Mode.Add
+									   : Mode.Replace;
+					if (SetSelected(index, mode))
+						InvalidateVisual();
+				}
+
+				base.OnMouseLeftButtonDown(e);
+			}
+
+			#endregion Mouse Events
+
+			private void UpdateMouseOver()
+			{
+				var relativePos = Mouse.GetPosition(this);
+				UpdateMouseOver(relativePos);
+			}
+
+			private void UpdateMouseOver(Point relativePos)
+			{
+				var y = relativePos.Y - _yOffset;
+				var visibleLineIndex = (int)Math.Floor(y / TextLine.LineHeight);
+				if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
+				{
+					var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
+					if (SetHovered(lineIndex, Mode.Replace))
+						InvalidateVisual();
+
+					if (Mouse.LeftButton == MouseButtonState.Pressed)
+					{
+						var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
+										   ? Mode.Add
+										   : Mode.Replace;
+						if (SetSelected(lineIndex, mode))
+							InvalidateVisual();
+					}
+				}
+			}
+
+			private void VerticalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
+			{
+				double pos = args.NewValue;
+				var currentLine = (int)Math.Floor(pos / TextLine.LineHeight);
+
+				DetermineVerticalOffset();
+				CurrentLine = currentLine;
+				CurrentlyVisibleSection = CalculateVisibleSection();
+				UpdateVisibleLines();
+			}
+
+			private void HorizontalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> args)
+			{
+				// A value 0 zero means that the leftmost character shall be visible.
+				// A value of MaxValue means that the rightmost character shall be visible.
+				// This we need to offset each line's position by -value
+				_xOffset = -args.NewValue;
+
+				InvalidateVisual();
+			}
 		}
 
 		public bool FollowTail
@@ -151,39 +445,9 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogFileProperty, value); }
 		}
 
-		public double ActualViewerWidth
-		{
-			get
-			{
-				double width = ActualWidth;
-				if (_verticalScrollBar.Visibility != Visibility.Collapsed)
-				{
-					double usableWidth = width - _verticalScrollBar.ActualWidth;
-					return usableWidth;
-				}
-
-				return width;
-			}
-		}
-
-		public double ActualViewerHeight
-		{
-			get
-			{
-				double height = ActualHeight;
-				if (_horizontalScrollBar.Visibility != Visibility.Collapsed)
-				{
-					double usableHeight = height - _horizontalScrollBar.ActualHeight;
-					return usableHeight;
-				}
-
-				return height;
-			}
-		}
-
 		public List<TextLine> VisibleTextLines
 		{
-			get { return _visibleTextLines; }
+			get { return _canvas.VisibleTextLines; }
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -206,7 +470,7 @@ namespace Tailviewer.Ui.Controls
 			Interlocked.Increment(ref _pendingModificationsCount);
 		}
 
-		public IEnumerable<LogLineIndex> SelectedIndices { get { return _selectedIndices; } }
+		public IEnumerable<LogLineIndex> SelectedIndices { get { return _canvas.SelectedIndices; } }
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -239,11 +503,11 @@ namespace Tailviewer.Ui.Controls
 				try
 				{
 					// TODO: Optimize if performance drops below acceptable rates
-					DetermineVerticalOffset();
-					_currentlyVisibleSection = CalculateVisibleSection();
+					_canvas.DetermineVerticalOffset();
+					_canvas.CurrentlyVisibleSection = CalculateVisibleSection();
 					UpdateScrollViewerRegions();
 					ScrollToBottomIfRequired();
-					UpdateVisibleLines();
+					_canvas.UpdateVisibleLines();
 				}
 				catch (Exception e)
 				{
@@ -269,45 +533,13 @@ namespace Tailviewer.Ui.Controls
 		[Pure]
 		public LogFileSection CalculateVisibleSection()
 		{
-			return CalculateVisibleSection(LogFile);
-		}
-
-		[Pure]
-		private LogFileSection CalculateVisibleSection(ILogFile logFile)
-		{
-			if (logFile == null)
-				return new LogFileSection(0, 0);
-
-			double maxLinesInViewport = (ActualHeight + _yOffset)/TextLine.LineHeight;
-			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			int linesLeft = LogFile.Count - _currentLine;
-			int count = Math.Min(linesLeft, maxCount);
-			return new LogFileSection(_currentLine, count);
-		}
-
-		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-		{
-			DetermineVerticalOffset();
-			LogFileSection previousVisibleSection = _currentlyVisibleSection;
-			_currentlyVisibleSection = CalculateVisibleSection();
-			UpdateScrollViewerRegions();
-			UpdateVisibleLines(LogFile, previousVisibleSection, _currentlyVisibleSection);
+			return _canvas.CalculateVisibleSection();
 		}
 
 		enum Mode
 		{
 			Replace,
 			Add
-		}
-
-		private bool SetHovered(LogLineIndex index, Mode mode)
-		{
-			return Set(_hoveredIndices, index, mode);
-		}
-
-		private bool SetSelected(LogLineIndex index, Mode mode)
-		{
-			return Set(_selectedIndices, index, mode);
 		}
 
 		private static bool Set(HashSet<LogLineIndex> indices, LogLineIndex index, Mode mode)
@@ -330,98 +562,6 @@ namespace Tailviewer.Ui.Controls
 			return false;
 		}
 
-		#region Mouse Events
-
-		internal void OnMouseWheelDown()
-		{
-			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
-			double toScroll = Math.Min(delta, TextLine.LineHeight);
-			_verticalScrollBar.Value += toScroll;
-
-			UpdateMouseOver();
-		}
-
-		internal void OnMouseWheelUp()
-		{
-			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
-			double toScroll = Math.Min(delta, TextLine.LineHeight);
-
-			if (toScroll > 0)
-			{
-				FollowTail = false;
-				_verticalScrollBar.Value -= toScroll;
-			}
-
-			UpdateMouseOver();
-		}
-
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			base.OnMouseMove(e);
-			Point relativePos = e.GetPosition(this);
-			UpdateMouseOver(relativePos);
-		}
-
-		private void UpdateMouseOver()
-		{
-			var relativePos = Mouse.GetPosition(this);
-			UpdateMouseOver(relativePos);
-		}
-
-		private void UpdateMouseOver(Point relativePos)
-		{
-			var element = InputHitTest(relativePos);
-			if (element == this)
-			{
-				var y = relativePos.Y - _yOffset;
-				var visibleLineIndex = (int)Math.Floor(y / TextLine.LineHeight);
-				if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
-				{
-					var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
-					if (SetHovered(lineIndex, Mode.Replace))
-						InvalidateVisual();
-
-					if (Mouse.LeftButton == MouseButtonState.Pressed)
-					{
-						var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
-										   ? Mode.Add
-										   : Mode.Replace;
-						if (SetSelected(lineIndex, mode))
-							InvalidateVisual();
-					}
-				}
-			}
-		}
-
-		protected override void OnMouseLeave(MouseEventArgs e)
-		{
-			base.OnMouseLeave(e);
-
-			if (_hoveredIndices.Count > 0)
-			{
-				_hoveredIndices.Clear();
-				InvalidateVisual();
-			}
-		}
-
-		protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-		{
-			if (_hoveredIndices.Count > 0)
-			{
-				var index = _hoveredIndices.First();
-
-				var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
-								   ? Mode.Add
-								   : Mode.Replace;
-				if (SetSelected(index, mode))
-					InvalidateVisual();
-			}
-
-			base.OnMouseLeftButtonDown(e);
-		}
-
-		#endregion Mouse Events
-
 		private static void OnLogFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			((LogEntryListView) d).OnLogFileChanged(e.OldValue as ILogFile, e.NewValue as ILogFile);
@@ -434,41 +574,18 @@ namespace Tailviewer.Ui.Controls
 				oldValue.RemoveListener(this);
 			}
 
-			_visibleTextLines.Clear();
-
 			_maxLineWidth = 0;
-			_currentLine = 0;
+			_canvas.LogFile = newValue;
 
 			if (newValue != null)
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
 
-				DetermineVerticalOffset();
-				_currentlyVisibleSection = CalculateVisibleSection(newValue);
 				UpdateScrollViewerRegions();
-				UpdateVisibleLines(newValue);
+				_canvas.DetermineVerticalOffset();
+				_canvas.UpdateVisibleSection();
+				_canvas.UpdateVisibleLines();
 			}
-		}
-
-		private void UpdateVisibleLines()
-		{
-			UpdateVisibleLines(LogFile);
-		}
-
-		private void UpdateVisibleLines(ILogFile logFile)
-		{
-			_visibleTextLines.Clear();
-			if (logFile == null)
-				return;
-
-			var data = new LogLine[_currentlyVisibleSection.Count];
-			logFile.GetSection(_currentlyVisibleSection, data);
-			for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
-			{
-				_visibleTextLines.Add(new TextLine(data[i], _hoveredIndices, _selectedIndices));
-			}
-
-			InvalidateVisual();
 		}
 
 		private void UpdateScrollViewerRegions()
@@ -483,53 +600,60 @@ namespace Tailviewer.Ui.Controls
 				// we need to determine the range of our scrollers.
 				//
 
-				int count = LogFile.Count;
-				double totalHeight = count*TextLine.LineHeight;
-				double usableHeight = ActualViewerHeight;
-				if (totalHeight > usableHeight)
-				{
-					_verticalScrollBar.Minimum = 0;
-					_verticalScrollBar.Maximum = totalHeight - usableHeight;
-					_verticalScrollBar.ViewportSize = usableHeight;
-					_verticalScrollBar.Visibility = Visibility.Visible;
-				}
-				else
-				{
-					_verticalScrollBar.Minimum = 0;
-					_verticalScrollBar.Maximum = 0;
-					_verticalScrollBar.ViewportSize = usableHeight;
-					_verticalScrollBar.Visibility = Visibility.Collapsed;
-				}
-
-				double totalWidth = _maxLineWidth;
-				double usableWidth = ActualViewerWidth;
-				if (totalWidth > usableWidth)
-				{
-					_horizontalScrollBar.Minimum = 0;
-					_horizontalScrollBar.Maximum = totalWidth - usableWidth;
-					_horizontalScrollBar.ViewportSize = usableWidth;
-					_horizontalScrollBar.Visibility = Visibility.Visible;
-				}
-				else
-				{
-					_horizontalScrollBar.Minimum = 0;
-					_horizontalScrollBar.Maximum = 0;
-					_horizontalScrollBar.ViewportSize = usableWidth;
-					_horizontalScrollBar.Visibility = Visibility.Collapsed;
-				}
+				UpdateHorizontalScrollbar();
+				UpdateVerticalScrollbar();
+				UpdateCornerRectangle();
 			}
 		}
 
-		private void DetermineVerticalOffset()
+		private void UpdateCornerRectangle()
 		{
-			double value = _verticalScrollBar.Value;
-			var lineBeginning = (int) (Math.Floor(value/TextLine.LineHeight)*TextLine.LineHeight);
-			_yOffset = lineBeginning - value;
+			_cornerRectangle.Visibility =
+				_horizontalScrollBar.Visibility == Visibility.Visible &&
+				_verticalScrollBar.Visibility == Visibility.Visible
+					? Visibility.Visible
+					: Visibility.Collapsed;
 		}
 
-		private void UpdateVisibleLines(ILogFile logFile, LogFileSection oldSection, LogFileSection newSection)
+		private void UpdateHorizontalScrollbar()
 		{
-			UpdateVisibleLines(logFile);
+			double totalWidth = _maxLineWidth;
+			double usableWidth = _canvas.ActualWidth;
+			if (totalWidth > usableWidth)
+			{
+				_horizontalScrollBar.Minimum = 0;
+				_horizontalScrollBar.Maximum = totalWidth - usableWidth;
+				_horizontalScrollBar.ViewportSize = usableWidth;
+				_horizontalScrollBar.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				_horizontalScrollBar.Minimum = 0;
+				_horizontalScrollBar.Maximum = 0;
+				_horizontalScrollBar.ViewportSize = usableWidth;
+				_horizontalScrollBar.Visibility = Visibility.Collapsed;
+			}
+		}
+
+		private void UpdateVerticalScrollbar()
+		{
+			int count = LogFile.Count;
+			double totalHeight = count*TextLine.LineHeight;
+			double usableHeight = _canvas.ActualHeight;
+			if (totalHeight > usableHeight)
+			{
+				_verticalScrollBar.Minimum = 0;
+				_verticalScrollBar.Maximum = totalHeight - usableHeight;
+				_verticalScrollBar.ViewportSize = usableHeight;
+				_verticalScrollBar.Visibility = Visibility.Visible;
+			}
+			else
+			{
+				_verticalScrollBar.Minimum = 0;
+				_verticalScrollBar.Maximum = 0;
+				_verticalScrollBar.ViewportSize = usableHeight;
+				_verticalScrollBar.Visibility = Visibility.Collapsed;
+			}
 		}
 
 		private void VerticalScrollBarOnScroll(object sender, ScrollEventArgs scrollEventArgs)
@@ -547,74 +671,6 @@ namespace Tailviewer.Ui.Controls
 					OldValue = args.OldValue,
 					NewValue = args.NewValue,
 				};
-
-			double pos = args.NewValue;
-			var currentLine = (int) Math.Floor(pos/TextLine.LineHeight);
-
-			DetermineVerticalOffset();
-			_currentLine = currentLine;
-			_currentlyVisibleSection = CalculateVisibleSection();
-			UpdateVisibleLines();
 		}
-
-		private void HorizontalScrollBarOnScroll(object sender, RoutedPropertyChangedEventArgs<double> ars)
-		{
-			// A value 0 zero means that the leftmost character shall be visible.
-			// A value of MaxValue means that the rightmost character shall be visible.
-			// This we need to offset each line's position by -value
-			_xOffset = -_horizontalScrollBar.Value;
-
-			InvalidateVisual();
-		}
-
-		protected override void OnRender(DrawingContext drawingContext)
-		{
-			base.OnRender(drawingContext);
-
-			var rect = new Rect(0, 0, ActualWidth, ActualHeight);
-			drawingContext.DrawRectangle(Brushes.White, null, rect);
-
-			double y = _yOffset;
-			foreach (TextLine textLine in _visibleTextLines)
-			{
-				textLine.Render(drawingContext, _xOffset, y, ActualWidth);
-				y += TextLine.LineHeight;
-			}
-		}
-
-		#region Updates
-
-		private int _pendingModificationsCount;
-
-		#endregion
-
-		#region Cached data
-
-		private readonly List<TextLine> _visibleTextLines;
-		private int _currentLine;
-		private LogFileSection _currentlyVisibleSection;
-
-		#endregion
-
-		#region Selection/Hovering
-
-		private readonly HashSet<LogLineIndex> _selectedIndices;
-		private readonly HashSet<LogLineIndex> _hoveredIndices;
-
-		#endregion
-
-		#region Scrolling
-
-		private double _yOffset;
-		private double _xOffset;
-		private ScrollEvent _lastScroll;
-
-		private struct ScrollEvent
-		{
-			public double NewValue;
-			public double OldValue;
-		}
-
-		#endregion
 	}
 }

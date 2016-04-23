@@ -135,6 +135,9 @@ namespace Tailviewer.Test.Ui.Controls
 
 			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
 
+			// It takes some "time" until the control has done its layouting
+			DispatcherExtensions.ExecuteAllEvents();
+
 			_control.VisibleTextLines.Count.Should().Be(48, "Because the view can display 48 of the 49 lines that we've added");
 			for (int i = 0; i < 48; ++i)
 			{
