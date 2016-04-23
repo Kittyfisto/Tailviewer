@@ -33,10 +33,15 @@ namespace Tailviewer.Ui.Controls.LogView
 			NormalBackgroundBrush = null;
 			NormalForegroundBrush = Brushes.Black;
 			HoveredBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
+			HoveredBackgroundBrush.Freeze();
+
 			HoveredForegroundBrush = Brushes.Black;
 			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
+			SelectedBackgroundBrush.Freeze();
+
 			SelectedForegroundBrush = Brushes.White;
 			LineNumberForegroundBrush = new SolidColorBrush(Color.FromRgb(43, 145, 175));
+			LineNumberForegroundBrush.Freeze();
 
 			FontFamily family = PickFontFamily();
 			Typeface = new Typeface(family, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);

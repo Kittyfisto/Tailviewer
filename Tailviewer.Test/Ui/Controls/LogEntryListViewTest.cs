@@ -127,7 +127,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verfies that a log file with as one line more than the viewport can hold can be represented")]
 		public void TestSetLogFile4()
 		{
-			const int lineCount = 49;
+			const int lineCount = 53;
 			for (int i = 0; i < lineCount; ++i)
 			{
 				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
@@ -138,17 +138,15 @@ namespace Tailviewer.Test.Ui.Controls
 			// It takes some "time" until the control has done its layouting
 			DispatcherExtensions.ExecuteAllEvents();
 
-			_control.VisibleTextLines.Count.Should().Be(48, "Because the view can display 48 of the 49 lines that we've added");
-			for (int i = 0; i < 48; ++i)
+			_control.VisibleTextLines.Count.Should().Be(52, "Because the view can display 48 of the 49 lines that we've added");
+			for (int i = 0; i < 52; ++i)
 			{
 				_control.VisibleTextLines[i].LogLine.Should().Be(_lines[i]);
 			}
 
-			DispatcherExtensions.ExecuteAllEvents();
-
 			_control.VerticalScrollBar.Minimum.Should().Be(0, "Because a scrollviewer should always start at 0");
-			_control.VerticalScrollBar.Maximum.Should().Be(16, "Because we've added a total of 48 lines, which the view can display, and thus no scrolling should be necessary");
-			_control.VerticalScrollBar.Value.Should().Be(0, "Because we've added a total of 48 lines, which the view can display, and thus no scrolling should be necessary");
+			_control.VerticalScrollBar.Maximum.Should().Be(27, "Because we've added a total of 53 lines, of which the view can display 52 partially, and hus 27 pixels are missing in height");
+			_control.VerticalScrollBar.Value.Should().Be(0);
 			_control.VerticalScrollBar.ViewportSize.Should().Be(768, "Because the viewport shall be as big as the control");
 		}
 
@@ -172,7 +170,7 @@ namespace Tailviewer.Test.Ui.Controls
 			Thread.Sleep((int) (2*LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
-			_control.VisibleTextLines.Count.Should().Be(48, "Because the view must have synchronized itself and display the maximum of 48 lines");
+			_control.VisibleTextLines.Count.Should().Be(52, "Because the view must have synchronized itself and display the maximum of 52 lines");
 		}
 
 		[Test]
@@ -197,7 +195,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
-			for (int i = 0; i < 49; ++i)
+			for (int i = 0; i < 52; ++i)
 			{
 				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
 			}
@@ -207,11 +205,11 @@ namespace Tailviewer.Test.Ui.Controls
 			DispatcherExtensions.ExecuteAllEvents();
 
 			_control.VerticalScrollBar.Value.Should().Be(0);
-			_control.VisibleTextLines.Count.Should().Be(48);
+			_control.VisibleTextLines.Count.Should().Be(52);
 
 			_control.FollowTail = true;
-			_control.VerticalScrollBar.Maximum.Should().Be(16, "Because the view is missing 17 pixels to fully display the last row");
-			_control.VerticalScrollBar.Value.Should().Be(16, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
+			_control.VerticalScrollBar.Maximum.Should().Be(12, "Because the view is missing 12 pixels to fully display the last row");
+			_control.VerticalScrollBar.Value.Should().Be(12, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
 		}
 
 		[Test]
@@ -222,7 +220,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
-			for (int i = 0; i < 48; ++i)
+			for (int i = 0; i < 51; ++i)
 			{
 				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
 			}
@@ -232,13 +230,13 @@ namespace Tailviewer.Test.Ui.Controls
 
 
 			_control.FollowTail = true;
-			_lines.Add(new LogLine(48, 48, "Foobar", LevelFlags.Info));
+			_lines.Add(new LogLine(51, 51, "Foobar", LevelFlags.Info));
 			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));
 			DispatcherExtensions.ExecuteAllEvents();
 
-			_control.VerticalScrollBar.Maximum.Should().Be(16, "Because the view is missing 17 pixels to fully display the last row");
-			_control.VerticalScrollBar.Value.Should().Be(16, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
+			_control.VerticalScrollBar.Maximum.Should().Be(12, "Because the view is missing 12 pixels to fully display the last row");
+			_control.VerticalScrollBar.Value.Should().Be(12, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
 		}
 
 		[Test]

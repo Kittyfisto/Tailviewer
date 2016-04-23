@@ -294,7 +294,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.ShowLineNumbers = false;
 			_control.DataSource = dataSource.Object;
-			_control.ShowLineNumbers.Should().BeFalse();
+			_control.ShowLineNumbers.Should().BeTrue();
 		}
 	}
 }
