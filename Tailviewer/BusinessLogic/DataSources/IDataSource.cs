@@ -22,6 +22,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		string FullFileName { get; }
 		bool FollowTail { get; set; }
+		bool ShowLineNumbers { get; set; }
 		string StringFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }
 		LogLineIndex SelectedLogLine { get; set; }

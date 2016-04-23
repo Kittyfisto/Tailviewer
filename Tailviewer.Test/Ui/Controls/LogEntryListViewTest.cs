@@ -6,7 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Ui.Controls;
+using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Test.Ui.Controls
 {

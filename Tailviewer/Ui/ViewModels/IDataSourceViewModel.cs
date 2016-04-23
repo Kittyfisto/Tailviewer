@@ -44,6 +44,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		bool FollowTail { get; set; }
 
+		bool ShowLineNumbers { get; set; }
+
 		bool ColorByLevel { get; set; }
 
 		string StringFilter { get; set; }

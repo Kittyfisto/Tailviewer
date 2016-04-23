@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
@@ -21,6 +22,10 @@ namespace Tailviewer.Ui.Controls
 		public static readonly DependencyProperty LogEntryCountProperty =
 			DependencyProperty.Register("LogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(0));
+
+		public static readonly DependencyProperty ShowLineNumbersProperty =
+			DependencyProperty.Register("ShowLineNumbers", typeof (bool), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(bool), OnShowLineNumbersChanged));
 
 		public static readonly DependencyProperty ShowFatalProperty =
 			DependencyProperty.Register("ShowFatal", typeof (bool), typeof (LogViewerControl),
@@ -64,11 +69,6 @@ namespace Tailviewer.Ui.Controls
 
 		private LogEntryListView _partListView;
 
-		public LogEntryListView PartListView
-		{
-			get { return _partListView; }
-		}
-
 		private FilterTextBox _partStringFilter;
 
 		static LogViewerControl()
@@ -80,6 +80,17 @@ namespace Tailviewer.Ui.Controls
 		public LogViewerControl()
 		{
 			CopySelectedLineToClipboardCommand = new DelegateCommand(CopySelectedLineToClipboard);
+		}
+
+		public bool ShowLineNumbers
+		{
+			get { return (bool) GetValue(ShowLineNumbersProperty); }
+			set { SetValue(ShowLineNumbersProperty, value); }
+		}
+
+		public LogEntryListView PartListView
+		{
+			get { return _partListView; }
 		}
 
 		public ILogFile LogFile
@@ -158,6 +169,19 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (int) GetValue(LogEntryCountProperty); }
 			set { SetValue(LogEntryCountProperty, value); }
+		}
+
+		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
+		                                             DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
+		}
+
+		private void OnShowLineNumbersChanged(bool showLineNumbers)
+		{
+			IDataSourceViewModel dataSource = DataSource;
+			if (dataSource != null)
+				dataSource.ShowLineNumbers = showLineNumbers;
 		}
 
 		private void CopySelectedLineToClipboard()
@@ -353,6 +377,8 @@ namespace Tailviewer.Ui.Controls
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				if (_partListView != null)
 					_partListView.FollowTail = newValue.FollowTail;
+
+				ShowLineNumbers = newValue.ShowLineNumbers;
 			}
 			OnLevelsChanged();
 		}
@@ -386,7 +412,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				_partListView.FollowTailChanged += OnFollowTailChanged;
 
-				var dataSource = DataSource;
+				IDataSourceViewModel dataSource = DataSource;
 				if (dataSource != null)
 					_partListView.FollowTail = dataSource.FollowTail;
 			}
@@ -396,7 +422,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnFollowTailChanged(bool followTail)
 		{
-			var dataSource = DataSource;
+			IDataSourceViewModel dataSource = DataSource;
 			if (dataSource != null)
 				dataSource.FollowTail = followTail;
 		}

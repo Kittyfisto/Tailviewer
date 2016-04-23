@@ -250,6 +250,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ShowLineNumbers
+		{
+			get { return _dataSource.ShowLineNumbers; }
+			set
+			{
+				if (value == ShowLineNumbers)
+					return;
+
+				_dataSource.ShowLineNumbers = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public bool ColorByLevel
 		{
 			get { return _dataSource.ColorByLevel; }

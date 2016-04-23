@@ -97,10 +97,15 @@
     <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumber.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumberCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
+    <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
-    <Compile Include="Ui\Controls\TextLine.cs" />
-    <Compile Include="Ui\Controls\LogEntryListView.cs" />
+    <Compile Include="Ui\Controls\LogView\TextLine.cs" />
+    <Compile Include="Ui\Controls\LogView\LogEntryListView.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />

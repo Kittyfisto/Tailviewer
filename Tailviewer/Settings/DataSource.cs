@@ -17,6 +17,7 @@ namespace Tailviewer.Settings
 
 		public string File;
 		public bool FollowTail;
+		public bool ShowLineNumbers;
 
 		/// <summary>
 		///     Uniquely identifies this data source amongst all others.
@@ -43,6 +44,7 @@ namespace Tailviewer.Settings
 			_activatedQuickFilters = new List<Guid>();
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
+			ShowLineNumbers = true;
 			SelectedLogLine = LogLineIndex.Invalid;
 			VisibleLogLine = LogLineIndex.Invalid;
 		}
@@ -70,6 +72,7 @@ namespace Tailviewer.Settings
 		{
 			writer.WriteAttributeString("file", File);
 			writer.WriteAttributeBool("followtail", FollowTail);
+			writer.WriteAttributeBool("showlinenumbers", ShowLineNumbers);
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
@@ -103,6 +106,10 @@ namespace Tailviewer.Settings
 
 					case "followtail":
 						FollowTail = reader.ReadContentAsBool();
+						break;
+
+					case "showlinenumbers":
+						ShowLineNumbers = reader.ReadContentAsBool();
 						break;
 
 					case "stringfilter":

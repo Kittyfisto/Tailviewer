@@ -159,6 +159,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.FollowTail = value; }
 		}
 
+		public bool ShowLineNumbers
+		{
+			get { return _settings.ShowLineNumbers; }
+			set { _settings.ShowLineNumbers = value; }
+		}
+
 		public LogLineIndex SelectedLogLine
 		{
 			get { return _settings.SelectedLogLine; }

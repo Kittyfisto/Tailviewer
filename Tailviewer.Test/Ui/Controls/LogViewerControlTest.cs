@@ -262,13 +262,39 @@ namespace Tailviewer.Test.Ui.Controls
 		[STAThread]
 		[Ignore("Doesn't work yet")]
 		[Description("Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
-		public void TestChangeDataSource()
+		public void TestChangeDataSource1()
 		{
 			var dataSource = new Mock<IDataSourceViewModel>();
 			dataSource.Setup(x => x.FollowTail).Returns(true);
 
 			_control.DataSource = dataSource.Object;
 			_control.PartListView.FollowTail.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		public void TestChangeDataSource2()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(false);
+
+			_control.ShowLineNumbers = true;
+			_control.DataSource = dataSource.Object;
+			_control.ShowLineNumbers.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		public void TestChangeDataSource3()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(true);
+
+			_control.ShowLineNumbers = false;
+			_control.DataSource = dataSource.Object;
+			_control.ShowLineNumbers.Should().BeFalse();
 		}
 	}
 }

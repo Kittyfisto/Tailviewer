@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -41,7 +42,7 @@
                                 VerticalAlignment="Center"
                                 Command="{Binding DataSource.OpenInExplorerCommand, RelativeSource={RelativeSource TemplatedParent}}">
                                 <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
-                                       ToolTip="Open folder in explorer" />
+                                       ToolTip="Open file in explorer" />
                             </Button>
 
                             <controls:TextToggleButton
@@ -51,6 +52,14 @@
                                 Content="Follow Tail"
                                 VerticalAlignment="Stretch"
                                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                            <controls:TextToggleButton
+                                Margin="0,0,8,8"
+                                Padding="4"
+                                x:Name="PART_ShowLineNumbers"
+                                VerticalAlignment="Stretch"
+                                IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="Line Numbers" />
 
                             <controls:TextToggleButton
                                 Margin="0,0,8,8"
@@ -114,13 +123,14 @@
                               Height="1"
                               Background="{StaticResource SeparatorBrush}" />
 
-                        <local:LogEntryListView 
+                        <logView:LogEntryListView 
                             x:Name="PART_ListView"
                             Grid.Row="2"
                             LogFile="{TemplateBinding LogFile}"
                             ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
                             BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
                             HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
+                            ShowLineNumbers="{TemplateBinding ShowLineNumbers}"
                             SnapsToDevicePixels="True"
                             />
 
