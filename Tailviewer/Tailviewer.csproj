@@ -222,10 +222,9 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
-    <Resource Include="Resources\Anonymous Pro B.ttf" />
-    <Resource Include="Resources\Anonymous Pro BI.ttf" />
-    <Resource Include="Resources\Anonymous Pro I.ttf" />
-    <Resource Include="Resources\Anonymous Pro.ttf" />
+    <Resource Include="Resources\Fonts\Inconsolata-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Inconsolata-Regular.ttf" />
+    <None Include="Resources\Fonts\METADATA.pb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -250,10 +249,8 @@
     <Resource Include="Resources\ic_no_time_white_8dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\FONTLOG.txt" />
-    <Resource Include="Resources\OFL-FAQ.txt" />
-    <Resource Include="Resources\OFL.txt" />
-    <Resource Include="Resources\README.txt" />
+    <None Include="Resources\Fonts\FONTLOG.txt" />
+    <None Include="Resources\Fonts\OFL.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.LogFiles;
+using log4net;
 
 namespace Tailviewer.Ui.Controls
 {
@@ -14,8 +17,11 @@ namespace Tailviewer.Ui.Controls
 	/// </summary>
 	public sealed class TextLine
 	{
-		public const double FontSize = 12;
-		public const double LineSpacing = 4;
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		public const double FontSize = 13;
+		public const double LineSpacing = 3;
 		public const double LineHeight = FontSize + LineSpacing;
 		private static readonly Brush NormalForegroundBrush;
 		private static readonly Brush NormalBackgroundBrush;
@@ -41,8 +47,8 @@ namespace Tailviewer.Ui.Controls
 			HoveredForegroundBrush = Brushes.Black;
 			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
 			SelectedForegroundBrush = Brushes.White;
-			var family = new FontFamily(new Uri("pack://application:,,,/Tailviewer;Component/Resources/"),
-			                            "./#Anonymous Pro");
+
+			var family = PickFontFamily();
 			Typeface = new Typeface(family, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
 			GlyphTypeface test;
@@ -50,6 +56,21 @@ namespace Tailviewer.Ui.Controls
 
 			ushort glyphIndex = test.CharacterToGlyphMap[' '];
 			GlyphWidth = test.AdvanceWidths[glyphIndex]*FontSize;
+		}
+
+		private static FontFamily PickFontFamily()
+		{
+			var consolas =
+				Fonts.SystemFontFamilies.FirstOrDefault(
+					x => string.Equals(x.Source, "Consolas", StringComparison.InvariantCultureIgnoreCase));
+
+			if (consolas != null)
+				return consolas;
+
+			Log.InfoFormat("Consolas is not installed, chosing Inconsolata instead");
+
+			return new FontFamily(new Uri("pack://application:,,,/Tailviewer;Component/Resources/Fonts/"),
+								  "./#Inconsolata");
 		}
 
 		public TextLine(LogLine logLine,

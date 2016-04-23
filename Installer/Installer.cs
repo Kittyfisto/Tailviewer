@@ -119,8 +119,14 @@ namespace Installer
 		private string DestFilePath(string installationPath, string file)
 		{
 			string fileName = file.Substring(_prefix.Length);
-			string destFilePath = Path.Combine(installationPath, fileName);
+			var patchedFileName = Patch(fileName);
+			string destFilePath = Path.Combine(installationPath, patchedFileName);
 			return destFilePath;
+		}
+
+		private string Patch(string fileName)
+		{
+			return fileName.Replace("Fonts.", "Fonts\\");
 		}
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
@@ -130,6 +136,8 @@ namespace Installer
 
 			try
 			{
+				Directory.CreateDirectory(directory);
+
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 				using (Stream source = _assembly.GetManifestResourceStream(sourceFilePath))
 				{

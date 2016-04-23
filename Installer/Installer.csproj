@@ -95,6 +95,9 @@
     <EmbeddedResource Include="..\LICENSE">
       <Link>InstallationFiles\LICENSE</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\METADATA.pb">
+      <Link>InstallationFiles\Fonts\METADATA.pb</Link>
+    </EmbeddedResource>
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
@@ -128,17 +131,11 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Tailviewer\Resources\FONTLOG.txt">
-      <Link>InstallationFiles\Anonymous Pro\FONTLOG.txt</Link>
+    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\FONTLOG.txt">
+      <Link>InstallationFiles\Fonts\FONTLOG.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\OFL-FAQ.txt">
-      <Link>InstallationFiles\Anonymous Pro\OFL-FAQ.txt</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\OFL.txt">
-      <Link>InstallationFiles\Anonymous Pro\OFL.txt</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\README.txt">
-      <Link>InstallationFiles\Anonymous Pro\README.txt</Link>
+    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\OFL.txt">
+      <Link>InstallationFiles\Fonts\OFL.txt</Link>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
