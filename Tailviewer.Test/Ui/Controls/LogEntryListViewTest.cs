@@ -197,7 +197,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
-			for (int i = 0; i < 48; ++i)
+			for (int i = 0; i < 49; ++i)
 			{
 				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
 			}
@@ -210,8 +210,8 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.VisibleTextLines.Count.Should().Be(48);
 
 			_control.FollowTail = true;
-			_control.VerticalScrollBar.Maximum.Should().Be(17, "Because the view is missing 17 pixels to fully display the last row");
-			_control.VerticalScrollBar.Value.Should().Be(17, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
+			_control.VerticalScrollBar.Maximum.Should().Be(16, "Because the view is missing 17 pixels to fully display the last row");
+			_control.VerticalScrollBar.Value.Should().Be(16, "Because the vertical scrollbar should've moved in order to bring the last line *fully* into view");
 		}
 
 		[Test]
