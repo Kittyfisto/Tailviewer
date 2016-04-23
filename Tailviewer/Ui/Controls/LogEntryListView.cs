@@ -354,7 +354,8 @@ namespace Tailviewer.Ui.Controls
 			public void UpdateMouseOver()
 			{
 				var relativePos = Mouse.GetPosition(this);
-				UpdateMouseOver(relativePos);
+				if (InputHitTest(relativePos) == this)
+					UpdateMouseOver(relativePos);
 			}
 
 			private void UpdateMouseOver(Point relativePos)
@@ -366,15 +367,6 @@ namespace Tailviewer.Ui.Controls
 					var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
 					if (SetHovered(lineIndex, Mode.Replace))
 						InvalidateVisual();
-
-					if (Mouse.LeftButton == MouseButtonState.Pressed)
-					{
-						var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
-										   ? Mode.Add
-										   : Mode.Replace;
-						if (SetSelected(lineIndex, mode))
-							InvalidateVisual();
-					}
 				}
 			}
 
