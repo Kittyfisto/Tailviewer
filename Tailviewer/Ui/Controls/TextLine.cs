@@ -31,6 +31,7 @@ namespace Tailviewer.Ui.Controls
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 
 		private FormattedText _text;
+		private Brush _lastForegroundBrush;
 
 		static TextLine()
 		{
@@ -123,16 +124,17 @@ namespace Tailviewer.Ui.Controls
 
 		private void CreateTextIfNecessary()
 		{
-			if (_text != null)
-				return;
-
 			Brush brush = ForegroundBrush;
-			_text = new FormattedText(_logLine.Message,
-			                          CultureInfo.CurrentUICulture,
-			                          FlowDirection.LeftToRight,
-			                          Typeface,
-			                          FontSize,
-			                          brush);
+			if (_text == null || _lastForegroundBrush != brush)
+			{
+				_text = new FormattedText(_logLine.Message,
+										  CultureInfo.CurrentUICulture,
+										  FlowDirection.LeftToRight,
+										  Typeface,
+										  FontSize,
+										  brush);
+				_lastForegroundBrush = brush;
+			}
 		}
 
 		public void Render(DrawingContext drawingContext, double x, double y, double actualWidth)

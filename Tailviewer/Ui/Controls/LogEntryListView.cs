@@ -263,29 +263,6 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		internal void OnMouseWheelDown()
-		{
-			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
-			double toScroll = Math.Min(delta, TextLine.LineHeight);
-			_verticalScrollBar.Value += toScroll;
-
-			UpdateMouseOver();
-		}
-
-		internal void OnMouseWheelUp()
-		{
-			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
-			double toScroll = Math.Min(delta, TextLine.LineHeight);
-
-			if (toScroll > 0)
-			{
-				FollowTail = false;
-				_verticalScrollBar.Value -= toScroll;
-			}
-
-			UpdateMouseOver();
-		}
-
 		/// <summary>
 		///     The section of the log file that is currently visible.
 		/// </summary>
@@ -317,6 +294,67 @@ namespace Tailviewer.Ui.Controls
 			UpdateVisibleLines(LogFile, previousVisibleSection, _currentlyVisibleSection);
 		}
 
+		enum Mode
+		{
+			Replace,
+			Add
+		}
+
+		private bool SetHovered(LogLineIndex index, Mode mode)
+		{
+			return Set(_hoveredIndices, index, mode);
+		}
+
+		private bool SetSelected(LogLineIndex index, Mode mode)
+		{
+			return Set(_selectedIndices, index, mode);
+		}
+
+		private static bool Set(HashSet<LogLineIndex> indices, LogLineIndex index, Mode mode)
+		{
+			if (mode == Mode.Replace)
+			{
+				if (indices.Count != 1 ||
+					!indices.Contains(index))
+				{
+					indices.Clear();
+					indices.Add(index);
+					return true;
+				}
+			}
+			else if (indices.Add(index))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		#region Mouse Events
+
+		internal void OnMouseWheelDown()
+		{
+			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+			_verticalScrollBar.Value += toScroll;
+
+			UpdateMouseOver();
+		}
+
+		internal void OnMouseWheelUp()
+		{
+			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
+			double toScroll = Math.Min(delta, TextLine.LineHeight);
+
+			if (toScroll > 0)
+			{
+				FollowTail = false;
+				_verticalScrollBar.Value -= toScroll;
+			}
+
+			UpdateMouseOver();
+		}
+
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
@@ -332,27 +370,25 @@ namespace Tailviewer.Ui.Controls
 
 		private void UpdateMouseOver(Point relativePos)
 		{
-			var y = relativePos.Y - _yOffset;
-			var visibleLineIndex = (int) Math.Floor(y/TextLine.LineHeight);
-			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
+			var element = InputHitTest(relativePos);
+			if (element == this)
 			{
-				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
-				if (!_hoveredIndices.Contains(lineIndex))
+				var y = relativePos.Y - _yOffset;
+				var visibleLineIndex = (int)Math.Floor(y / TextLine.LineHeight);
+				if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 				{
-					_hoveredIndices.Clear();
-					_hoveredIndices.Add(lineIndex);
+					var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
+					if (SetHovered(lineIndex, Mode.Replace))
+						InvalidateVisual();
 
 					if (Mouse.LeftButton == MouseButtonState.Pressed)
 					{
-						var element = InputHitTest(relativePos);
-						if (element == this)
-						{
-							_selectedIndices.Clear();
-							_selectedIndices.Add(lineIndex);
-						}
+						var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
+										   ? Mode.Add
+										   : Mode.Replace;
+						if (SetSelected(lineIndex, mode))
+							InvalidateVisual();
 					}
-
-					InvalidateVisual();
 				}
 			}
 		}
@@ -373,16 +409,18 @@ namespace Tailviewer.Ui.Controls
 			if (_hoveredIndices.Count > 0)
 			{
 				var index = _hoveredIndices.First();
-				if (_selectedIndices.Count > 0)
-				{
-					_selectedIndices.Clear();
-				}
-				_selectedIndices.Add(index);
-				InvalidateVisual();
+
+				var mode = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
+								   ? Mode.Add
+								   : Mode.Replace;
+				if (SetSelected(index, mode))
+					InvalidateVisual();
 			}
 
 			base.OnMouseLeftButtonDown(e);
 		}
+
+		#endregion Mouse Events
 
 		private static void OnLogFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
