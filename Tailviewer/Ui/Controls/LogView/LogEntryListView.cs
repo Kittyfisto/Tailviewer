@@ -405,7 +405,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (totalHeight > usableHeight)
 			{
 				_verticalScrollBar.Minimum = 0;
-				_verticalScrollBar.Maximum = totalHeight - usableHeight;
+				_verticalScrollBar.Maximum = Math.Ceiling((totalHeight - usableHeight)/TextHelper.LineHeight)*TextHelper.LineHeight;
 				_verticalScrollBar.ViewportSize = usableHeight;
 				_verticalScrollBar.Visibility = Visibility.Visible;
 			}

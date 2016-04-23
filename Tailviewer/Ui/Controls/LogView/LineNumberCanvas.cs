@@ -16,10 +16,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		public LineNumberCanvas()
 		{
 			_lineNumbers = new List<LineNumber>();
+
+			ClipToBounds = true;
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{
+			drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, ActualWidth, ActualHeight));
+
 			double y = _yOffset;
 			foreach (var number in _lineNumbers)
 			{
