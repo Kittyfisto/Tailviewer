@@ -45,6 +45,20 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ShowLineNumbers", typeof (bool), typeof (LogEntryListView),
 			                            new PropertyMetadata(true, OnShowLineNumbersChanged));
 
+		public static readonly DependencyProperty CurrentLineProperty =
+			DependencyProperty.Register("CurrentLine", typeof (LogLineIndex), typeof (LogEntryListView), new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
+
+		private static void OnCurrentLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnCurrentLineChanged((LogLineIndex) args.NewValue);
+		}
+
+		public LogLineIndex CurrentLine
+		{
+			get { return (LogLineIndex) GetValue(CurrentLineProperty); }
+			set { SetValue(CurrentLineProperty, value); }
+		}
+
 		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogEntryListView) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
@@ -123,6 +137,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_textCanvas.SizeChanged += TextCanvasOnSizeChanged;
 			_textCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
 			_textCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
+			_textCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
 
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, 0);
@@ -147,14 +162,38 @@ namespace Tailviewer.Ui.Controls.LogView
 			_timer.Start();
 		}
 
+		private void OnCurrentLineChanged(LogLineIndex index)
+		{
+			var current = _textCanvas.CurrentlyVisibleSection;
+
+			//< We don't want to call BringIntoView() everytime because that one scrolls to fully
+			// bring a line into view. This would mean that if the currently visible section changed
+			// so that the top line is only partially visible, then this method would always bring
+			// it fully visible. Removing the following filter would completely remove per pixel scrolling...
+			if (current.Index != index)
+			{
+				_verticalScrollBar.Value = (int) index*TextHelper.LineHeight;
+			}
+		}
+
+		private void TextCanvasOnVisibleSectionChanged(LogFileSection section)
+		{
+			CurrentLine = section.Index;
+		}
+
 		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex)
+		{
+			BringIntoView(logLineIndex);
+		}
+
+		private void BringIntoView(LogLineIndex logLineIndex)
 		{
 			var height = _textCanvas.ActualHeight;
 			var offset = _textCanvas.YOffset;
 			int start = _textCanvas.CurrentLine;
 			int diff = logLineIndex - start;
-			double min = ((diff)*TextHelper.LineHeight + offset);
-			double max = ((diff + 1)*TextHelper.LineHeight + offset);
+			double min = ((diff) * TextHelper.LineHeight + offset);
+			double max = ((diff + 1) * TextHelper.LineHeight + offset);
 			if (min < 0)
 			{
 				_verticalScrollBar.Value += min;

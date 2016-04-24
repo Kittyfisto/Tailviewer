@@ -9,6 +9,10 @@ namespace Tailviewer.Ui.Controls
 {
 	internal class LogViewerControl : Control
 	{
+		public static readonly DependencyProperty LogViewProperty =
+			DependencyProperty.Register("LogView", typeof (LogViewerViewModel), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(LogViewerViewModel), OnLogViewChanged));
+
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(ILogFile)));
@@ -20,6 +24,10 @@ namespace Tailviewer.Ui.Controls
 		public static readonly DependencyProperty LogEntryCountProperty =
 			DependencyProperty.Register("LogEntryCount", typeof (int), typeof (LogViewerControl),
 			                            new PropertyMetadata(0));
+
+		public static readonly DependencyProperty CurrentLogLineProperty =
+			DependencyProperty.Register("CurrentLogLine", typeof (LogLineIndex), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(LogLineIndex), OnCurrentLogLineChanged));
 
 		public static readonly DependencyProperty ShowLineNumbersProperty =
 			DependencyProperty.Register("ShowLineNumbers", typeof (bool), typeof (LogViewerControl),
@@ -64,11 +72,24 @@ namespace Tailviewer.Ui.Controls
 		private LogEntryListView _partListView;
 
 		private FilterTextBox _partStringFilter;
+		private bool _changingLogView;
 
 		static LogViewerControl()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
 			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
+		}
+
+		public LogViewerViewModel LogView
+		{
+			get { return (LogViewerViewModel) GetValue(LogViewProperty); }
+			set { SetValue(LogViewProperty, value); }
+		}
+
+		public LogLineIndex CurrentLogLine
+		{
+			get { return (LogLineIndex) GetValue(CurrentLogLineProperty); }
+			set { SetValue(CurrentLogLineProperty, value); }
 		}
 
 		public bool ShowLineNumbers
@@ -152,6 +173,70 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (int) GetValue(LogEntryCountProperty); }
 			set { SetValue(LogEntryCountProperty, value); }
+		}
+
+		private static void OnLogViewChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl) dependencyObject).OnLogViewChanged((LogViewerViewModel) args.OldValue,
+			                                                       (LogViewerViewModel) args.NewValue);
+		}
+
+		private void OnLogViewChanged(LogViewerViewModel oldView, LogViewerViewModel newView)
+		{
+			try
+			{
+				_changingLogView = true;
+
+				if (oldView != null)
+				{
+					oldView.PropertyChanged -= LogViewOnPropertyChanged;
+				}
+
+				if (newView != null)
+				{
+					newView.PropertyChanged += LogViewOnPropertyChanged;
+					LogFile = newView.CurrentLogFile;
+				}
+				else
+				{
+					LogFile = null;
+				}
+			}
+			finally
+			{
+				_changingLogView = false;
+			}
+		}
+
+		private void LogViewOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case "CurrentLogFile":
+					LogFile = LogView.CurrentLogFile;
+					break;
+			}
+		}
+
+		private static void OnCurrentLogLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl) dependencyObject).OnCurrentLogLineChanged((LogLineIndex) args.NewValue);
+		}
+
+		private void OnCurrentLogLineChanged(LogLineIndex index)
+		{
+			IDataSourceViewModel dataSource = DataSource;
+			if (dataSource != null)
+			{
+				// We most certainly do not want to change the
+				// VIsibleLogLine property of a DataSource while we're switching
+				// out said data source. This is bound to happen because stuff
+				// get's resized etc...
+				if (!_changingLogView)
+				{
+					dataSource.VisibleLogLine = index;
+				}
+			}
 		}
 
 		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
@@ -343,6 +428,7 @@ namespace Tailviewer.Ui.Controls
 					_partListView.FollowTail = newValue.FollowTail;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
+				CurrentLogLine = newValue.VisibleLogLine;
 			}
 			OnLevelsChanged();
 		}

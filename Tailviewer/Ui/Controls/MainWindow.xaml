@@ -101,11 +101,11 @@
                     <controls:LogViewerControl
                         Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                         x:Name="PART_LogFileView"
-                        LogFile="{Binding CurrentDataSourceLogView.CurrentLogFile}"
                         LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
                         TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                         ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                         DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
+                        LogView="{Binding CurrentDataSourceLogView}"
                         DataSource="{Binding CurrentDataSource}" />
                 </Grid>
 

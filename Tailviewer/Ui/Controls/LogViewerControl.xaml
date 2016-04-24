@@ -130,6 +130,7 @@
                             ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
                             BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
                             HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
+                            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                             ShowLineNumbers="{TemplateBinding ShowLineNumbers}"
                             SnapsToDevicePixels="True"
                             />

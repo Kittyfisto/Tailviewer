@@ -21,9 +21,12 @@ namespace Tailviewer.Test.Ui.Controls
 				{
 					DataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar") {Id = Guid.NewGuid()}))
 				};
+			_dispatcher = new ManualDispatcher();
 		}
 
 		private LogViewerControl _control;
+		private ManualDispatcher _dispatcher;
+
 
 		[Test]
 		[STAThread]
@@ -295,6 +298,36 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowLineNumbers = false;
 			_control.DataSource = dataSource.Object;
 			_control.ShowLineNumbers.Should().BeTrue();
+		}
+
+		[Test][Ignore("Not complete yet")]
+		[STAThread]
+		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
+		public void TestChangeLogView1()
+		{
+			// TODO: This test requires that the template be fully loaded (or the control changed to a user control)
+
+			var oldLog = new Mock<IDataSourceViewModel>();
+			var oldDataSource = new Mock<IDataSource>();
+			oldDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			oldDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
+			oldLog.SetupProperty(x => x.VisibleLogLine);
+			oldLog.Object.VisibleLogLine = 42;
+			var oldLogView = new LogViewerViewModel(oldLog.Object, _dispatcher);
+			_control.LogView = oldLogView;
+
+
+			var newLog = new Mock<IDataSourceViewModel>();
+			var newDataSource = new Mock<IDataSource>();
+			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			newDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
+			newLog.Setup(x => x.VisibleLogLine).Returns(1);
+			var newLogView = new LogViewerViewModel(newLog.Object, _dispatcher);
+			_control.LogView = newLogView;
+
+			oldLog.Object.VisibleLogLine.Should().Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
 		}
 	}
 }

@@ -66,7 +66,16 @@ namespace Tailviewer.Ui.Controls.LogView
 		public LogFileSection CurrentlyVisibleSection
 		{
 			get { return _currentlyVisibleSection; }
-			set { _currentlyVisibleSection = value; }
+			set
+			{
+				if (value == _currentlyVisibleSection)
+					return;
+
+				_currentlyVisibleSection = value;
+				Action<LogFileSection> fn = VisibleSectionChanged;
+				if (fn != null)
+					fn(value);
+			}
 		}
 
 		public ILogFile LogFile
@@ -101,6 +110,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return _yOffset; }
 		}
+
+		public event Action<LogFileSection> VisibleSectionChanged;
 
 		public void UpdateVisibleSection()
 		{
@@ -281,7 +292,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			if (SetSelected(newIndex, SelectMode.Replace))
 			{
-				var fn = RequestBringIntoView;
+				Action<LogLineIndex> fn = RequestBringIntoView;
 				if (fn != null)
 					fn(newIndex);
 
@@ -296,7 +307,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				if (_selectedIndices.Count > 0 && _lastSelection > 0)
 				{
 					LogLineIndex newIndex;
-					var maxDelta = _currentlyVisibleSection.Count;
+					int maxDelta = _currentlyVisibleSection.Count;
 					if (maxDelta > _lastSelection)
 						newIndex = 0;
 					else
@@ -315,11 +326,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				var count = _logFile.Count;
+				int count = _logFile.Count;
 				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
 				{
 					LogLineIndex newIndex;
-					var maxDelta = _currentlyVisibleSection.Count;
+					int maxDelta = _currentlyVisibleSection.Count;
 					if (maxDelta + _lastSelection >= count)
 						newIndex = count - 1;
 					else
@@ -338,11 +349,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-			if (_selectedIndices.Count > 0 && _lastSelection > 0)
-			{
-				var newIndex = _lastSelection - 1;
-				ChangeSelectionAndBringIntoView(newIndex);
-			}
+				if (_selectedIndices.Count > 0 && _lastSelection > 0)
+				{
+					int newIndex = _lastSelection - 1;
+					ChangeSelectionAndBringIntoView(newIndex);
+				}
 			}
 			catch (Exception e)
 			{
@@ -354,9 +365,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.Count-1)
+				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.Count - 1)
 				{
-					var newIndex = _lastSelection + 1;
+					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
 				}
 			}
