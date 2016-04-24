@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -25,8 +26,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly Brush SelectedForegroundBrush;
 		public static readonly Brush SelectedBackgroundBrush;
 		public static readonly Brush LineNumberForegroundBrush;
+		public static readonly Brush HighlightedForegroundBrush;
+		public static readonly Brush HighlightedBackgroundBrush;
 		public static readonly Typeface Typeface;
 		public static readonly double GlyphWidth;
+		public static readonly double TabWidth;
 
 		static TextHelper()
 		{
@@ -38,6 +42,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			HoveredForegroundBrush = Brushes.Black;
 			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));
 			SelectedBackgroundBrush.Freeze();
+
+			HighlightedForegroundBrush = Brushes.Black;
+			HighlightedBackgroundBrush = new SolidColorBrush(Color.FromRgb(246, 185, 77));
 
 			SelectedForegroundBrush = Brushes.White;
 			LineNumberForegroundBrush = new SolidColorBrush(Color.FromRgb(43, 145, 175));
@@ -51,6 +58,11 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			ushort glyphIndex = test.CharacterToGlyphMap[' '];
 			GlyphWidth = test.AdvanceWidths[glyphIndex]*FontSize;
+			TabWidth = new FormattedText("s\t", CultureInfo.CurrentUICulture,
+			                             FlowDirection.LeftToRight,
+			                             Typeface,
+			                             FontSize,
+			                             Brushes.Black).Width;
 		}
 
 		private static FontFamily PickFontFamily()

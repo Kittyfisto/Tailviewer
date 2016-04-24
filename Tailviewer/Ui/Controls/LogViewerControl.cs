@@ -472,6 +472,10 @@ namespace Tailviewer.Ui.Controls
 					PART_ListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
 					break;
 
+				case "StringFilter":
+					PART_ListView.StringFilter = DataSource.StringFilter;
+					break;
+
 				case "LevelsFilter":
 					OnLevelsChanged();
 					break;

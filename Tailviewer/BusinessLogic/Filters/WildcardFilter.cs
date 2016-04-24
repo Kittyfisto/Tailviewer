@@ -40,5 +40,22 @@ namespace Tailviewer.BusinessLogic.Filters
 
 			return false;
 		}
+
+		public List<FilterMatch> Match(LogLine line)
+		{
+			var ret = new List<FilterMatch>();
+			Match(line, ret);
+			return ret;
+		}
+
+		public void Match(LogLine line, List<FilterMatch> matches)
+		{
+			var regexMatches = _regex.Matches(line.Message);
+			matches.Capacity += regexMatches.Count;
+			for (int i = 0; i < regexMatches.Count; ++i)
+			{
+				matches.Add(new FilterMatch(regexMatches[i]));
+			}
+		}
 	}
 }

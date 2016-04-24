@@ -64,5 +64,20 @@ namespace Tailviewer.BusinessLogic.Filters
 
 			return true;
 		}
+
+		public List<FilterMatch> Match(LogLine line)
+		{
+			var ret = new List<FilterMatch>();
+			Match(line, ret);
+			return ret;
+		}
+
+		public void Match(LogLine line, List<FilterMatch> matches)
+		{
+			foreach (var filter in _filters)
+			{
+				filter.Match(line, matches);
+			}
+		}
 	}
 }

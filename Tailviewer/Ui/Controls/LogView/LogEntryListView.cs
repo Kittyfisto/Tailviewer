@@ -213,6 +213,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _textCanvas; }
 		}
 
+		public string StringFilter
+		{
+			get { return _textCanvas.StringFilter; }
+			set { _textCanvas.StringFilter = value; }
+		}
+
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			if (!section.InvalidateSection &&

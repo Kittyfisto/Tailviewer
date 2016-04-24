@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 
@@ -36,6 +37,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		private ILogFile _logFile;
 		private double _xOffset;
 		private double _yOffset;
+		private string _stringFilter;
+		private ILogEntryFilter _filter;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
 		{
@@ -112,6 +115,36 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _yOffset; }
 		}
 
+		public string StringFilter
+		{
+			get { return _stringFilter; }
+			set
+			{
+				_stringFilter = value;
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					Filter = null;
+				}
+				else
+				{
+					Filter = BusinessLogic.Filters.Filter.Create(value);
+				}
+			}
+		}
+
+		public ILogEntryFilter Filter
+		{
+			get { return _filter; }
+			set
+			{
+				_filter = value;
+				foreach (var line in _visibleTextLines)
+				{
+					line.Filter = value;
+				}
+			}
+		}
+
 		public event Action<LogFileSection> VisibleSectionChanged;
 
 		public void UpdateVisibleSection()
@@ -159,7 +192,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			_logFile.GetSection(_currentlyVisibleSection, data);
 			for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 			{
-				_visibleTextLines.Add(new TextLine(data[i], _hoveredIndices, _selectedIndices));
+				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices)
+					{
+						Filter = _filter
+					};
+				_visibleTextLines.Add(line);
 			}
 
 			Action fn = VisibleLinesChanged;

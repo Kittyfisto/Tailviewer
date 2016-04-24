@@ -39,5 +39,15 @@ namespace Tailviewer.BusinessLogic.Filters
 
 			return true;
 		}
+
+		public List<FilterMatch> Match(LogLine line)
+		{
+			return new List<FilterMatch>();
+		}
+
+		public void Match(LogLine line, List<FilterMatch> matches)
+		{
+			
+		}
 	}
 }

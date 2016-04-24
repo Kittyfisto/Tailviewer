@@ -120,7 +120,7 @@
                 Margin="0,0,8,8"
                 x:Name="PART_StringFilter"
                 FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                Watermark="Filter log file (Ctrl+E)" />
+                Watermark="Filter log file (Ctrl+F)" />
         </WrapPanel>
 
         <Grid Grid.Row="1"

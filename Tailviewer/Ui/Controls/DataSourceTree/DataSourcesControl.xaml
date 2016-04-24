@@ -42,7 +42,7 @@
                                 Margin="8,8,8,0"
                                 Height="26"
                                 FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Filter data sources (Ctrl+F)" />
+                                Watermark="Filter data sources (Ctrl+E)" />
 
                             <TreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
                                       x:Name="PART_DataSources"

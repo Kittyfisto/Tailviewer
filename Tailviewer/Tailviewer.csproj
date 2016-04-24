@@ -65,6 +65,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\Filters\FilterMatch.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
     <Compile Include="BusinessLogic\Filters\FilterChain.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
     <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
+    <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
