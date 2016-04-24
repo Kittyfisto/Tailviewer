@@ -1,173 +1,172 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView">
+﻿<UserControl x:Class="Tailviewer.Ui.Controls.LogViewerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
+             xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
+             xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+             xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
+             x:Name="This">
 
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-    </ResourceDictionary.MergedDictionaries>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-    <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
-    <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
-    <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
-    <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
-    <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
+            <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
+            <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
+            <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
+            <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
-    <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
-    <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
-    <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
-    <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
-    <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
+            <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
 
-    <Style TargetType="{x:Type local:LogViewerControl}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:LogViewerControl}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+            <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
+            <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
+            <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
+            <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
+            <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
 
-                        <WrapPanel Orientation="Horizontal" Margin="8">
-                            <Button
-                                Margin="0,0,8,8"
-                                Width="26"
-                                Height="26"
-                                VerticalAlignment="Center"
-                                Command="{Binding DataSource.OpenInExplorerCommand, RelativeSource={RelativeSource TemplatedParent}}">
-                                <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
-                                       ToolTip="Open file in explorer" />
-                            </Button>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-                            <controls:TextToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                x:Name="PART_FollowTail"
-                                Content="Follow Tail"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                            <controls:TextToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                x:Name="PART_ShowLineNumbers"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="Line Numbers" />
+        <WrapPanel Orientation="Horizontal" Margin="8">
+            <Button
+                Margin="0,0,8,8"
+                Width="26"
+                Height="26"
+                VerticalAlignment="Center"
+                Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}">
+                <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
+                       ToolTip="Open file in explorer" />
+            </Button>
 
-                            <controls:TextToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                x:Name="PART_ColorByLevel"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="Color by level" />
+            <controls:TextToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                x:Name="PART_FollowTail"
+                Content="Follow Tail"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, ElementName=This}" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,0,8"
-                                Padding="4"
-                                Width="41"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowAll, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                x:Name="PART_ShowLineNumbers"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, ElementName=This}"
+                Content="Line Numbers" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,0,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowFatal, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                x:Name="PART_ColorByLevel"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, ElementName=This}"
+                Content="Color by level" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,0,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowError, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,0,8"
+                Padding="4"
+                Width="41"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
+                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,0,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowWarning, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,0,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
+                Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,0,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowInfo, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,0,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
+                Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
 
-                            <controls:TextToggleButton
-                                Margin="0,0,8,8"
-                                Padding="4"
-                                VerticalAlignment="Stretch"
-                                IsChecked="{Binding ShowDebug, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            <controls:TextToggleButton
+                Margin="0,0,0,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
+                Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
 
-                            <local:FilterTextBox
-                                Margin="0,0,8,8"
-                                x:Name="PART_StringFilter"
-                                FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
-                                Watermark="Filter log file (Ctrl+E)" />
-                        </WrapPanel>
+            <controls:TextToggleButton
+                Margin="0,0,0,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
+                Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
 
-                        <Grid Grid.Row="1"
-                              Height="1"
-                              Background="{StaticResource SeparatorBrush}" />
+            <controls:TextToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
+                Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
-                        <logView:LogEntryListView 
-                            x:Name="PART_ListView"
-                            Grid.Row="2"
-                            LogFile="{TemplateBinding LogFile}"
-                            ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
-                            BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
-                            HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
-                            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                            ShowLineNumbers="{TemplateBinding ShowLineNumbers}"
-                            SnapsToDevicePixels="True"
-                            />
+            <local:FilterTextBox
+                Margin="0,0,8,8"
+                x:Name="PART_StringFilter"
+                FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
+                Watermark="Filter log file (Ctrl+E)" />
+        </WrapPanel>
 
-                        <StackPanel Grid.Row="2" VerticalAlignment="Center">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                FontSize="20"
-                                Text="{Binding ErrorMessage, RelativeSource={RelativeSource TemplatedParent}}" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                FontSize="12"
-                                Text="{Binding DetailedErrorMessage, RelativeSource={RelativeSource TemplatedParent}}" />
-                        </StackPanel>
+        <Grid Grid.Row="1"
+              Height="1"
+              Background="{StaticResource SeparatorBrush}" />
 
-                        <Border Grid.Row="3"
-                                Background="#D8D8D8">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    Margin="4"
-                                    Text="{Binding LogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=lines: {0}}" />
-                                <TextBlock
-                                    Margin="4"
-                                    Text="{Binding TotalLogEntryCount, RelativeSource={RelativeSource TemplatedParent}, StringFormat=of {0}}" />
-                                <TextBlock
-                                    Margin="4"
-                                    Text="{Binding DataSource.FileSize, RelativeSource={RelativeSource TemplatedParent}, StringFormat=size: {0}}" />
-                                <TextBlock
-                                    Margin="4"
-                                    Text="{Binding DataSource.LastWrittenAge, RelativeSource={RelativeSource TemplatedParent}, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
-                            </StackPanel>
-                        </Border>
+        <logView:LogEntryListView
+            x:Name="PART_ListView"
+            Grid.Row="2"
+            LogFile="{Binding LogFile, ElementName=This}"
+            ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
+            BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
+            HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
+            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+            ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+            SnapsToDevicePixels="True" />
 
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+        <StackPanel Grid.Row="2" VerticalAlignment="Center">
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="20"
+                Text="{Binding ErrorMessage, ElementName=This}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="12"
+                Text="{Binding DetailedErrorMessage, ElementName=This}" />
+        </StackPanel>
 
-</ResourceDictionary>
+        <Border Grid.Row="3"
+                Background="#D8D8D8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Margin="4"
+                    Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
+                <TextBlock
+                    Margin="4"
+                    Text="{Binding TotalLogEntryCount, ElementName=This, StringFormat=of {0}}" />
+                <TextBlock
+                    Margin="4"
+                    Text="{Binding DataSource.FileSize, ElementName=This, StringFormat=size: {0}}" />
+                <TextBlock
+                    Margin="4"
+                    Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
+            </StackPanel>
+        </Border>
+
+    </Grid>
+
+</UserControl>

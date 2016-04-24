@@ -12,7 +12,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal sealed class LogViewerViewModel
+	public sealed class LogViewerViewModel
 		: INotifyPropertyChanged
 		  , ILogFileListener
 		  , IDisposable

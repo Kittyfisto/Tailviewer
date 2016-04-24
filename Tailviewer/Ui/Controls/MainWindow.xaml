@@ -105,8 +105,7 @@
                         TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                         ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                         DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
-                        LogView="{Binding CurrentDataSourceLogView}"
-                        DataSource="{Binding CurrentDataSource}" />
+                        LogView="{Binding CurrentDataSourceLogView}" />
                 </Grid>
 
                 <Grid Grid.Column="3"

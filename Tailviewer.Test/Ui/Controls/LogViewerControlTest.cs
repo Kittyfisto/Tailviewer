@@ -19,8 +19,13 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_control = new LogViewerControl
 				{
-					DataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar") {Id = Guid.NewGuid()}))
+					DataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar") {Id = Guid.NewGuid()})),
+					Width = 1024,
+					Height = 768
 				};
+
+			DispatcherExtensions.ExecuteAllEvents();
+
 			_dispatcher = new ManualDispatcher();
 		}
 
@@ -300,7 +305,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowLineNumbers.Should().BeTrue();
 		}
 
-		[Test][Ignore("Not complete yet")]
+		[Test]
 		[STAThread]
 		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
 		public void TestChangeLogView1()
@@ -309,7 +314,9 @@ namespace Tailviewer.Test.Ui.Controls
 
 			var oldLog = new Mock<IDataSourceViewModel>();
 			var oldDataSource = new Mock<IDataSource>();
-			oldDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			var oldLogFile = new Mock<ILogFile>();
+			oldLogFile.Setup(x => x.Count).Returns(10000);
+			oldDataSource.Setup(x => x.FilteredLogFile).Returns(oldLogFile.Object);
 			oldDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
 			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
 			oldLog.SetupProperty(x => x.VisibleLogLine);
@@ -323,11 +330,13 @@ namespace Tailviewer.Test.Ui.Controls
 			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			newDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
 			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
-			newLog.Setup(x => x.VisibleLogLine).Returns(1);
+			newLog.SetupProperty(x => x.VisibleLogLine);
+			newLog.Object.VisibleLogLine = 1;
 			var newLogView = new LogViewerViewModel(newLog.Object, _dispatcher);
 			_control.LogView = newLogView;
 
 			oldLog.Object.VisibleLogLine.Should().Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
+			newLog.Object.VisibleLogLine.Should().Be(1, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
 		}
 	}
 }

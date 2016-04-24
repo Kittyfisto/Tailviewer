@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls
 {
-	internal class LogViewerControl : Control
+	public partial class LogViewerControl
 	{
 		public static readonly DependencyProperty LogViewProperty =
 			DependencyProperty.Register("LogView", typeof (LogViewerViewModel), typeof (LogViewerControl),
@@ -74,10 +73,9 @@ namespace Tailviewer.Ui.Controls
 		private FilterTextBox _partStringFilter;
 		private bool _changingLogView;
 
-		static LogViewerControl()
+		public LogViewerControl()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogViewerControl),
-			                                         new FrameworkPropertyMetadata(typeof (LogViewerControl)));
+			InitializeComponent();
 		}
 
 		public LogViewerViewModel LogView
@@ -195,10 +193,12 @@ namespace Tailviewer.Ui.Controls
 				if (newView != null)
 				{
 					newView.PropertyChanged += LogViewOnPropertyChanged;
+					DataSource = newView.DataSource;
 					LogFile = newView.CurrentLogFile;
 				}
 				else
 				{
+					DataSource = null;
 					LogFile = null;
 				}
 			}

@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal interface IDataSourceViewModel
+	public interface IDataSourceViewModel
 		: INotifyPropertyChanged
 	{
 		ICommand OpenInExplorerCommand { get; }
