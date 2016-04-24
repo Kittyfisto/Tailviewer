@@ -251,6 +251,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				PART_ListView.FollowTail = newValue.FollowTail;
+				PART_ListView.StringFilter = newValue.StringFilter;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
 			}

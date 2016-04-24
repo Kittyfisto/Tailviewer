@@ -385,6 +385,33 @@ namespace Tailviewer.Test.Ui.Controls
 
 		[Test]
 		[STAThread]
+		[Description("Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting")]
+		public void TestChangeLogView4()
+		{
+			_control.DataSource = null;
+
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(100);
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> { new LogLineIndex(42) });
+			dataSourceViewModel.Setup(x => x.StringFilter).Returns("Foobar");
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+
+			_control.PART_StringFilter.FilterText.Should().BeNull();
+			_control.PART_ListView.StringFilter.Should().BeNull();
+
+			_control.LogView = logView;
+			_control.SelectedIndices.Should().Equal(new[] { new LogLineIndex(42) });
+			_control.PART_StringFilter.FilterText.Should().Be("Foobar");
+			_control.PART_ListView.StringFilter.Should().Be("Foobar");
+		}
+
+		[Test]
+		[STAThread]
 		public void TestChangeSelection1()
 		{
 			_dataSource.SelectedLogLines.Should().BeEmpty();
