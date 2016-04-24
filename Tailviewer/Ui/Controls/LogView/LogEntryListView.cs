@@ -46,39 +46,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			                            new PropertyMetadata(true, OnShowLineNumbersChanged));
 
 		public static readonly DependencyProperty CurrentLineProperty =
-			DependencyProperty.Register("CurrentLine", typeof (LogLineIndex), typeof (LogEntryListView), new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
-
-		private static void OnCurrentLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((LogEntryListView) dependencyObject).OnCurrentLineChanged((LogLineIndex) args.NewValue);
-		}
-
-		public LogLineIndex CurrentLine
-		{
-			get { return (LogLineIndex) GetValue(CurrentLineProperty); }
-			set { SetValue(CurrentLineProperty, value); }
-		}
-
-		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((LogEntryListView) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
-		}
-
-		private void OnShowLineNumbersChanged(bool showLineNumbers)
-		{
-			_lineNumberCanvas.Visibility = showLineNumbers
-				                               ? Visibility.Visible
-				                               : Visibility.Collapsed;
-		}
+			DependencyProperty.Register("CurrentLine", typeof (LogLineIndex), typeof (LogEntryListView),
+			                            new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
 
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 		private readonly Rectangle _cornerRectangle;
 
 		private readonly ScrollBar _horizontalScrollBar;
+		private readonly LineNumberCanvas _lineNumberCanvas;
 		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
 		private readonly ScrollBar _verticalScrollBar;
-		private readonly LineNumberCanvas _lineNumberCanvas;
 
 		private int _maxLineWidth;
 		private int _pendingModificationsCount;
@@ -121,7 +99,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(ColumnProperty, 0);
 			_horizontalScrollBar.SetValue(ColumnSpanProperty, 2);
 
-			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
 			RowDefinitions.Add(new RowDefinition {Height = new GridLength(1, GridUnitType.Star)});
@@ -138,6 +116,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_textCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
 			_textCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
 			_textCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
+			_textCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
 
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, 0);
@@ -162,46 +141,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			_timer.Start();
 		}
 
-		private void OnCurrentLineChanged(LogLineIndex index)
+		public LogLineIndex CurrentLine
 		{
-			var current = _textCanvas.CurrentlyVisibleSection;
-
-			//< We don't want to call BringIntoView() everytime because that one scrolls to fully
-			// bring a line into view. This would mean that if the currently visible section changed
-			// so that the top line is only partially visible, then this method would always bring
-			// it fully visible. Removing the following filter would completely remove per pixel scrolling...
-			if (current.Index != index)
-			{
-				_verticalScrollBar.Value = (int) index*TextHelper.LineHeight;
-			}
-		}
-
-		private void TextCanvasOnVisibleSectionChanged(LogFileSection section)
-		{
-			CurrentLine = section.Index;
-		}
-
-		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex)
-		{
-			BringIntoView(logLineIndex);
-		}
-
-		private void BringIntoView(LogLineIndex logLineIndex)
-		{
-			var height = _textCanvas.ActualHeight;
-			var offset = _textCanvas.YOffset;
-			int start = _textCanvas.CurrentLine;
-			int diff = logLineIndex - start;
-			double min = ((diff) * TextHelper.LineHeight + offset);
-			double max = ((diff + 1) * TextHelper.LineHeight + offset);
-			if (min < 0)
-			{
-				_verticalScrollBar.Value += min;
-			}
-			else if (max > height)
-			{
-				_verticalScrollBar.Value += (max - height);
-			}
+			get { return (LogLineIndex) GetValue(CurrentLineProperty); }
+			set { SetValue(CurrentLineProperty, value); }
 		}
 
 		public bool ShowLineNumbers
@@ -265,6 +208,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _textCanvas.SelectedIndices; }
 		}
 
+		public TextCanvas PartTextCanvas
+		{
+			get { return _textCanvas; }
+		}
+
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			if (!section.InvalidateSection &&
@@ -283,6 +231,78 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 
 			Interlocked.Increment(ref _pendingModificationsCount);
+		}
+
+		private static void OnCurrentLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnCurrentLineChanged((LogLineIndex) args.NewValue);
+		}
+
+		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
+		                                             DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
+		}
+
+		private void OnShowLineNumbersChanged(bool showLineNumbers)
+		{
+			_lineNumberCanvas.Visibility = showLineNumbers
+				                               ? Visibility.Visible
+				                               : Visibility.Collapsed;
+		}
+
+		private void OnCurrentLineChanged(LogLineIndex index)
+		{
+			LogFileSection current = _textCanvas.CurrentlyVisibleSection;
+			if (index != LogLineIndex.Invalid)
+			{
+				_textCanvas.CurrentLine = (int)index;
+				//< We don't want to call BringIntoView() everytime because that one scrolls to fully
+				// bring a line into view. This would mean that if the currently visible section changed
+				// so that the top line is only partially visible, then this method would always bring
+				// it fully visible. Removing the following filter would completely remove per pixel scrolling...
+				if (current.Index != index)
+				{
+					_verticalScrollBar.Value = (int)index * TextHelper.LineHeight;
+				}
+			}
+		}
+
+		private void TextCanvasOnVisibleSectionChanged(LogFileSection section)
+		{
+			CurrentLine = section.Index;
+		}
+
+		private void TextCanvasOnOnSelectionChanged(HashSet<LogLineIndex> selectedIndices)
+		{
+			var fn = SelectionChanged;
+			if (fn != null)
+				fn(selectedIndices);
+		}
+
+		public event Action<IEnumerable<LogLineIndex>> SelectionChanged;
+
+		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex)
+		{
+			BringIntoView(logLineIndex);
+		}
+
+		private void BringIntoView(LogLineIndex logLineIndex)
+		{
+			double height = _textCanvas.ActualHeight;
+			double offset = _textCanvas.YOffset;
+			int start = _textCanvas.CurrentLine;
+			int diff = logLineIndex - start;
+			double min = ((diff)*TextHelper.LineHeight + offset);
+			double max = ((diff + 1)*TextHelper.LineHeight + offset);
+			if (min < 0)
+			{
+				_verticalScrollBar.Value += min;
+			}
+			else if (max > height)
+			{
+				_verticalScrollBar.Value += (max - height);
+			}
 		}
 
 		private void TextCanvasOnVisibleLinesChanged()
@@ -396,8 +416,6 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_maxLineWidth = 0;
 			_textCanvas.LogFile = newValue;
-			_verticalScrollBar.Value = 0;
-			_horizontalScrollBar.Value = 0;
 
 			if (newValue != null)
 			{
@@ -408,6 +426,23 @@ namespace Tailviewer.Ui.Controls.LogView
 				_textCanvas.UpdateVisibleSection();
 				_textCanvas.UpdateVisibleLines();
 			}
+
+			MatchScrollbarValueToCurrentLine();
+		}
+
+		private void MatchScrollbarValueToCurrentLine()
+		{
+			var value = _textCanvas.CurrentLine*TextHelper.LineHeight;
+			if (value >= 0 && value <= _verticalScrollBar.Maximum)
+			{
+				_verticalScrollBar.Value = value;
+			}
+			else
+			{
+				_verticalScrollBar.Value = 0;
+			}
+
+			_horizontalScrollBar.Value = 0;
 		}
 
 		private void UpdateScrollViewerRegions()
@@ -460,7 +495,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void UpdateVerticalScrollbar()
 		{
 			int count = LogFile.Count;
-			double totalHeight = count * TextHelper.LineHeight;
+			double totalHeight = count*TextHelper.LineHeight;
 			double usableHeight = _textCanvas.ActualHeight;
 			if (totalHeight > usableHeight)
 			{
@@ -498,6 +533,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void Select(LogLineIndex index)
 		{
 			_textCanvas.SetSelected(index, SelectMode.Replace);
+		}
+
+		public void Select(IEnumerable<LogLineIndex> indices)
+		{
+			_textCanvas.SetSelected(indices, SelectMode.Replace);
 		}
 
 		public void Select(params LogLineIndex[] indices)

@@ -94,6 +94,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public int CurrentLine
 		{
 			get { return _currentLine; }
+			set { _currentLine = value; }
 		}
 
 		public List<TextLine> VisibleTextLines
@@ -182,9 +183,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			if (changed)
 			{
-				Action fn = OnSelectionChanged;
+				var fn = OnSelectionChanged;
 				if (fn != null)
-					fn();
+					fn(_selectedIndices);
 			}
 
 			return changed;
@@ -195,14 +196,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (selectMode == SelectMode.Replace)
 			{
 				_selectedIndices.Clear();
-				foreach (LogLineIndex index in indices)
+				if (indices != null)
 				{
-					_selectedIndices.Add(index);
+					foreach (LogLineIndex index in indices)
+					{
+						_selectedIndices.Add(index);
+					}
 				}
 
-				Action fn = OnSelectionChanged;
+				var fn = OnSelectionChanged;
 				if (fn != null)
-					fn();
+					fn(_selectedIndices);
 			}
 			else
 			{
@@ -210,7 +214,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public event Action OnSelectionChanged;
+		public event Action<HashSet<LogLineIndex>> OnSelectionChanged;
 
 		private static bool Set(HashSet<LogLineIndex> indices, LogLineIndex index, SelectMode selectMode)
 		{
@@ -494,9 +498,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			if (changed)
 			{
-				Action fn = OnSelectionChanged;
+				var fn = OnSelectionChanged;
 				if (fn != null)
-					fn();
+					fn(_selectedIndices);
 			}
 
 			return changed;

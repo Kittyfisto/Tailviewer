@@ -213,10 +213,10 @@ namespace Tailviewer.Ui.ViewModels
 			set { _dataSource.VisibleLogLine = value; }
 		}
 
-		public LogLineIndex SelectedLogLine
+		public HashSet<LogLineIndex> SelectedLogLines
 		{
-			get { return _dataSource.SelectedLogLine; }
-			set { _dataSource.SelectedLogLine = value; }
+			get { return _dataSource.SelectedLogLines; }
+			set { _dataSource.SelectedLogLines = value; }
 		}
 
 		public TimeSpan LastWrittenAge

@@ -36,7 +36,7 @@ namespace Tailviewer.Ui.ViewModels
 		bool IsVisible { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }
 
-		LogLineIndex SelectedLogLine { get; set; }
+		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 
 		TimeSpan LastWrittenAge { get; }
 

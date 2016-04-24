@@ -165,10 +165,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.ShowLineNumbers = value; }
 		}
 
-		public LogLineIndex SelectedLogLine
+		public HashSet<LogLineIndex> SelectedLogLines
 		{
-			get { return _settings.SelectedLogLine; }
-			set { _settings.SelectedLogLine = value; }
+			get { return _settings.SelectedLogLines; }
+			set { _settings.SelectedLogLines = value; }
 		}
 
 		public LogLineIndex VisibleLogLine

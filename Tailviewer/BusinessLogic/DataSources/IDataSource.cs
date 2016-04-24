@@ -25,7 +25,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool ShowLineNumbers { get; set; }
 		string StringFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }
-		LogLineIndex SelectedLogLine { get; set; }
+		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }
 		DataSource Settings { get; }
 		int TotalCount { get; }

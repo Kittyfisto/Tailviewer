@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
@@ -68,14 +70,38 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("DetailedErrorMessage", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(string)));
 
-		private LogEntryListView _partListView;
-
-		private FilterTextBox _partStringFilter;
 		private bool _changingLogView;
 
 		public LogViewerControl()
 		{
 			InitializeComponent();
+
+			PART_ListView.SelectionChanged += PartListViewOnSelectionChanged;
+			PART_ListView.FollowTailChanged -= OnFollowTailChanged;
+		}
+
+		public void Select(LogLineIndex index)
+		{
+			PART_ListView.Select(index);
+		}
+
+		public void Select(IEnumerable<LogLineIndex> indices)
+		{
+			PART_ListView.Select(indices);
+		}
+
+		public void Select(params LogLineIndex[] indices)
+		{
+			PART_ListView.Select(indices);
+		}
+
+		private void PartListViewOnSelectionChanged(IEnumerable<LogLineIndex> logLineIndices)
+		{
+			var dataSource = DataSource;
+			if (dataSource != null)
+			{
+				dataSource.SelectedLogLines = new HashSet<LogLineIndex>(logLineIndices);
+			}
 		}
 
 		public LogViewerViewModel LogView
@@ -94,11 +120,6 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (bool) GetValue(ShowLineNumbersProperty); }
 			set { SetValue(ShowLineNumbersProperty, value); }
-		}
-
-		public LogEntryListView PartListView
-		{
-			get { return _partListView; }
 		}
 
 		public ILogFile LogFile
@@ -173,6 +194,16 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogEntryCountProperty, value); }
 		}
 
+		public IEnumerable<LogLineIndex> SelectedIndices
+		{
+			get { return PART_ListView.SelectedIndices; }
+		}
+
+		public LogEntryListView PartListView
+		{
+			get { return PART_ListView; }
+		}
+
 		private static void OnLogViewChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnLogViewChanged((LogViewerViewModel) args.OldValue,
@@ -195,6 +226,8 @@ namespace Tailviewer.Ui.Controls
 					newView.PropertyChanged += LogViewOnPropertyChanged;
 					DataSource = newView.DataSource;
 					LogFile = newView.CurrentLogFile;
+					CurrentLogLine = newView.DataSource.VisibleLogLine;
+					Select(newView.DataSource.SelectedLogLines);
 				}
 				else
 				{
@@ -206,6 +239,22 @@ namespace Tailviewer.Ui.Controls
 			{
 				_changingLogView = false;
 			}
+		}
+
+		private void OnDataSourceChanged(IDataSourceViewModel oldValue, IDataSourceViewModel newValue)
+		{
+			if (oldValue != null)
+			{
+				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
+			}
+			if (newValue != null)
+			{
+				newValue.PropertyChanged += DataSourceOnPropertyChanged;
+				PART_ListView.FollowTail = newValue.FollowTail;
+
+				ShowLineNumbers = newValue.ShowLineNumbers;
+			}
+			OnLevelsChanged();
 		}
 
 		private void LogViewOnPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -415,59 +464,18 @@ namespace Tailviewer.Ui.Controls
 			}
 		}
 
-		private void OnDataSourceChanged(IDataSourceViewModel oldValue, IDataSourceViewModel newValue)
-		{
-			if (oldValue != null)
-			{
-				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
-			}
-			if (newValue != null)
-			{
-				newValue.PropertyChanged += DataSourceOnPropertyChanged;
-				if (_partListView != null)
-					_partListView.FollowTail = newValue.FollowTail;
-
-				ShowLineNumbers = newValue.ShowLineNumbers;
-				CurrentLogLine = newValue.VisibleLogLine;
-			}
-			OnLevelsChanged();
-		}
-
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			switch (args.PropertyName)
 			{
 				case "FollowTail":
-					_partListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
+					PART_ListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
 					break;
 
 				case "LevelsFilter":
 					OnLevelsChanged();
 					break;
 			}
-		}
-
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-
-			if (_partListView != null)
-			{
-				_partListView.FollowTailChanged -= OnFollowTailChanged;
-			}
-
-			_partListView = (LogEntryListView) GetTemplateChild("PART_ListView");
-
-			if (_partListView != null)
-			{
-				_partListView.FollowTailChanged += OnFollowTailChanged;
-
-				IDataSourceViewModel dataSource = DataSource;
-				if (dataSource != null)
-					_partListView.FollowTail = dataSource.FollowTail;
-			}
-
-			_partStringFilter = (FilterTextBox) GetTemplateChild("PART_StringFilter");
 		}
 
 		private void OnFollowTailChanged(bool followTail)
@@ -479,7 +487,7 @@ namespace Tailviewer.Ui.Controls
 
 		public void FocusStringFilter()
 		{
-			FilterTextBox element = _partStringFilter;
+			FilterTextBox element = PART_StringFilter;
 			if (element != null)
 			{
 				element.Focus();

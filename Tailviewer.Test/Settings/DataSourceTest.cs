@@ -19,7 +19,8 @@ namespace Tailviewer.Test.Settings
 			dataSource.File.Should().BeNull();
 
 			dataSource.VisibleLogLine.Should().Be(LogLineIndex.Invalid);
-			dataSource.SelectedLogLine.Should().Be(LogLineIndex.Invalid);
+			dataSource.SelectedLogLines.Should().NotBeNull();
+			dataSource.SelectedLogLines.Should().BeEmpty();
 
 			dataSource.FollowTail.Should().BeFalse();
 

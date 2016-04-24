@@ -34,7 +34,7 @@ namespace Tailviewer.Settings
 		/// </summary>
 		public Guid ParentId;
 
-		public LogLineIndex SelectedLogLine;
+		public HashSet<LogLineIndex> SelectedLogLines;
 		public string StringFilter;
 		public LogLineIndex VisibleLogLine;
 
@@ -45,7 +45,7 @@ namespace Tailviewer.Settings
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
 			ShowLineNumbers = true;
-			SelectedLogLine = LogLineIndex.Invalid;
+			SelectedLogLines = new HashSet<LogLineIndex>();
 			VisibleLogLine = LogLineIndex.Invalid;
 		}
 
@@ -76,7 +76,6 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("stringfilter", StringFilter);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
-			writer.WriteAttributeInt("selectedentryindex", (int) SelectedLogLine);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
@@ -122,10 +121,6 @@ namespace Tailviewer.Settings
 
 					case "colorbylevel":
 						ColorByLevel = reader.ReadContentAsBool();
-						break;
-
-					case "selectedentryindex":
-						SelectedLogLine = reader.ReadContentAsInt();
 						break;
 
 					case "visibleentryindex":

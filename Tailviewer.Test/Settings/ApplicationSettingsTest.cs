@@ -134,7 +134,6 @@ namespace Tailviewer.Test.Settings
 					FollowTail = true,
 					StringFilter = "foobar",
 					LevelFilter = LevelFlags.Debug,
-					SelectedLogLine = new LogLineIndex(2),
 					VisibleLogLine = new LogLineIndex(1),
 					ShowLineNumbers = false,
 					ActivatedQuickFilters =
@@ -174,7 +173,6 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].ShowLineNumbers.Should().BeFalse();
 			settings.DataSources[0].StringFilter.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
-			settings.DataSources[0].SelectedLogLine.Should().Be(new LogLineIndex(2));
 			settings.DataSources[0].VisibleLogLine.Should().Be(new LogLineIndex(1));
 			settings.DataSources[0].ActivatedQuickFilters.Should().Equal(guids);
 			settings.DataSources[1].File.Should().Be(@"SharpRemote.Host.1700.log");
