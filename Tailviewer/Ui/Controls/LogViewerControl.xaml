@@ -15,9 +15,6 @@
 
 
             <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
-            <converters:LevelToBrushConverter x:Key="LevelToForegroundBrushConverter" Type="Foreground" />
-            <converters:LevelToBrushConverter x:Key="LevelToBackgroundBrushConverter" Type="Background" />
-            <converters:LevelToBrushConverter x:Key="LevelToHoveredBrushConverter" Type="Background" IsHovered="True" />
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
 
@@ -131,9 +128,6 @@
             x:Name="PART_ListView"
             Grid.Row="2"
             LogFile="{Binding LogFile, ElementName=This}"
-            ForegroundBrushConverter="{StaticResource LevelToForegroundBrushConverter}"
-            BackgroundBrushConverter="{StaticResource LevelToBackgroundBrushConverter}"
-            HoveredBackgroundBrushConverter="{StaticResource LevelToHoveredBrushConverter}"
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
             SnapsToDevicePixels="True" />

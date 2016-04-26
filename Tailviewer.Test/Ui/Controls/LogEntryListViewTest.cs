@@ -57,9 +57,6 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_control.LogFile.Should().BeNull();
 			_control.FollowTail.Should().BeFalse();
-			_control.ForegroundBrushConverter.Should().BeNull();
-			_control.BackgroundBrushConverter.Should().BeNull();
-			_control.HoveredBackgroundBrushConverter.Should().BeNull();
 		}
 
 		[Test]

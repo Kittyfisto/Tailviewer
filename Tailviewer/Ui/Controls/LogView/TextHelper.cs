@@ -22,12 +22,17 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly Brush NormalForegroundBrush;
 		public static readonly Brush NormalBackgroundBrush;
 		public static readonly Brush HoveredForegroundBrush;
-		public static readonly Brush HoveredBackgroundBrush;
+		public static readonly Brush NormalHighlightBackgroundBrush;
 		public static readonly Brush SelectedForegroundBrush;
 		public static readonly Brush SelectedBackgroundBrush;
 		public static readonly Brush LineNumberForegroundBrush;
 		public static readonly Brush HighlightedForegroundBrush;
 		public static readonly Brush HighlightedBackgroundBrush;
+		public static readonly Brush WarningBackgroundBrush;
+		public static readonly Brush WarningHighlightBackgroundBrush;
+		public static readonly Brush ErrorBackgroundBrush;
+		public static readonly Brush ErrorHighlightBackgroundBrush;
+		public static readonly Brush ErrorForegroundBrush;
 		public static readonly Typeface Typeface;
 		public static readonly double GlyphWidth;
 		public static readonly double TabWidth;
@@ -36,8 +41,22 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			NormalBackgroundBrush = null;
 			NormalForegroundBrush = Brushes.Black;
-			HoveredBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
-			HoveredBackgroundBrush.Freeze();
+			NormalHighlightBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
+			NormalHighlightBackgroundBrush.Freeze();
+
+			WarningBackgroundBrush = new SolidColorBrush(Color.FromRgb(255, 195, 0));
+			WarningBackgroundBrush.Freeze();
+
+			WarningHighlightBackgroundBrush = new SolidColorBrush(Color.FromRgb(255, 218, 142));
+			WarningHighlightBackgroundBrush.Freeze();
+
+			ErrorBackgroundBrush = new SolidColorBrush(Color.FromRgb(232, 17, 35));
+			ErrorBackgroundBrush.Freeze();
+
+			ErrorHighlightBackgroundBrush = new SolidColorBrush(Color.FromRgb(250, 108, 118));
+			ErrorHighlightBackgroundBrush.Freeze();
+
+			ErrorForegroundBrush = Brushes.White;
 
 			HoveredForegroundBrush = Brushes.Black;
 			SelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(57, 152, 214));

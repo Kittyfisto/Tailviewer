@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Ui.Converters;
 using log4net;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -24,18 +23,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogEntryListView),
 			                            new PropertyMetadata(null, OnLogFileChanged));
-
-		public static readonly DependencyProperty ForegroundBrushConverterProperty =
-			DependencyProperty.Register("ForegroundBrushConverter", typeof (LevelToBrushConverter), typeof (LogEntryListView),
-			                            new PropertyMetadata(default(LevelToBrushConverter)));
-
-		public static readonly DependencyProperty BackgroundBrushConverterProperty =
-			DependencyProperty.Register("BackgroundBrushConverter", typeof (LevelToBrushConverter), typeof (LogEntryListView),
-			                            new PropertyMetadata(default(LevelToBrushConverter)));
-
-		public static readonly DependencyProperty HoveredBackgroundBrushConverterProperty =
-			DependencyProperty.Register("HoveredBackgroundBrushConverter", typeof (LevelToBrushConverter),
-			                            typeof (LogEntryListView), new PropertyMetadata(default(LevelToBrushConverter)));
 
 		public static readonly DependencyProperty FollowTailProperty =
 			DependencyProperty.Register("FollowTail", typeof (bool), typeof (LogEntryListView),
@@ -172,24 +159,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		internal ScrollBar HorizontalScrollBar
 		{
 			get { return _horizontalScrollBar; }
-		}
-
-		public LevelToBrushConverter HoveredBackgroundBrushConverter
-		{
-			get { return (LevelToBrushConverter) GetValue(HoveredBackgroundBrushConverterProperty); }
-			set { SetValue(HoveredBackgroundBrushConverterProperty, value); }
-		}
-
-		public LevelToBrushConverter BackgroundBrushConverter
-		{
-			get { return (LevelToBrushConverter) GetValue(BackgroundBrushConverterProperty); }
-			set { SetValue(BackgroundBrushConverterProperty, value); }
-		}
-
-		public LevelToBrushConverter ForegroundBrushConverter
-		{
-			get { return (LevelToBrushConverter) GetValue(ForegroundBrushConverterProperty); }
-			set { SetValue(ForegroundBrushConverterProperty, value); }
 		}
 
 		public ILogFile LogFile

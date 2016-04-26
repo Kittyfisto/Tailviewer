@@ -121,7 +121,6 @@
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
-    <Compile Include="Ui\Converters\LevelToBrushConverter.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Controls\FilterTextBox.cs" />

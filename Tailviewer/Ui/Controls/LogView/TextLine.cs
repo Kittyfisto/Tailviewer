@@ -45,24 +45,32 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _hoveredIndices.Contains(_logLine.LineIndex); }
 		}
 
-		private Brush ForegroundBrush
+		public Brush ForegroundBrush
 		{
 			get
 			{
-				if (IsSelected)
+				switch (_logLine.Level)
 				{
-					return TextHelper.SelectedForegroundBrush;
-				}
-				if (IsHovered)
-				{
-					return TextHelper.HoveredForegroundBrush;
-				}
+					case LevelFlags.Fatal:
+					case LevelFlags.Error:
+						return TextHelper.ErrorForegroundBrush;
 
-				return TextHelper.NormalForegroundBrush;
+					default:
+						if (IsSelected)
+						{
+							return TextHelper.SelectedForegroundBrush;
+						}
+						if (IsHovered)
+						{
+							return TextHelper.HoveredForegroundBrush;
+						}
+
+						return TextHelper.NormalForegroundBrush;
+				}
 			}
 		}
 
-		private Brush BackgroundBrush
+		public Brush BackgroundBrush
 		{
 			get
 			{
@@ -72,9 +80,32 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 				if (IsHovered)
 				{
-					return TextHelper.HoveredBackgroundBrush;
+					switch (_logLine.Level)
+					{
+						case LevelFlags.Fatal:
+						case LevelFlags.Error:
+							return TextHelper.ErrorHighlightBackgroundBrush;
+
+						case LevelFlags.Warning:
+							return TextHelper.WarningHighlightBackgroundBrush;
+
+						default:
+							return TextHelper.NormalHighlightBackgroundBrush;
+					}
 				}
-				return TextHelper.NormalBackgroundBrush;
+
+				switch (_logLine.Level)
+				{
+					case LevelFlags.Fatal:
+					case LevelFlags.Error:
+						return TextHelper.ErrorBackgroundBrush;
+
+					case LevelFlags.Warning:
+						return TextHelper.WarningBackgroundBrush;
+
+					default:
+						return TextHelper.NormalBackgroundBrush;
+				}
 			}
 		}
 
