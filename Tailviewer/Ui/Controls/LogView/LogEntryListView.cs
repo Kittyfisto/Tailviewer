@@ -39,10 +39,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 		private readonly Rectangle _cornerRectangle;
 
-		private readonly ScrollBar _horizontalScrollBar;
 		private readonly LineNumberCanvas _lineNumberCanvas;
 		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
+		private readonly ScrollBar _horizontalScrollBar;
 		private readonly ScrollBar _verticalScrollBar;
 
 		private int _maxLineWidth;
@@ -278,6 +278,23 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				_verticalScrollBar.Value += (max - height);
 			}
+
+			var logFile = LogFile;
+			if (logFile != null)
+			{
+				var count = logFile.Count;
+				if (count > 0)
+				{
+					if (logLineIndex < count-1)
+					{
+						FollowTail = false;
+					}
+					else
+					{
+						FollowTail = true;
+					}
+				}
+			}
 		}
 
 		private void TextCanvasOnVisibleLinesChanged()
@@ -292,7 +309,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			UpdateScrollViewerRegions();
 		}
 
-		private void TextCanvasOnMouseWheelUp()
+		internal void TextCanvasOnMouseWheelUp()
 		{
 			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
 			double toScroll = Math.Min(delta, TextHelper.LineHeight);
@@ -304,11 +321,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		private void TextCanvasOnMouseWheelDown()
+		internal void TextCanvasOnMouseWheelDown()
 		{
 			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
 			double toScroll = Math.Min(delta, TextHelper.LineHeight);
 			_verticalScrollBar.Value += toScroll;
+
+			if (_verticalScrollBar.Value >= _verticalScrollBar.Maximum)
+			{
+				FollowTail = true;
+			}
 		}
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -493,6 +515,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (_lastScroll.NewValue < _lastScroll.OldValue)
 			{
 				FollowTail = false;
+			}
+			if (scrollEventArgs.NewValue >= _verticalScrollBar.Maximum)
+			{
+				FollowTail = true;
 			}
 		}
 

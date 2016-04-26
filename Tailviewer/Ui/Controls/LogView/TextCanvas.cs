@@ -57,6 +57,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveUp), Key.Up, ModifierKeys.None));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMovePageDown), Key.PageDown, ModifierKeys.None));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMovePageUp), Key.PageUp, ModifierKeys.None));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveStart), Key.Home, ModifierKeys.Control));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveEnd), Key.End, ModifierKeys.Control));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelUp), MouseWheelGesture.WheelUp));
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
 
@@ -341,7 +343,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public void OnMovePageUp()
+		internal void OnMovePageUp()
 		{
 			try
 			{
@@ -363,7 +365,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public void OnMovePageDown()
+		internal void OnMovePageDown()
 		{
 			try
 			{
@@ -386,7 +388,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public void OnMoveUp()
+		internal void OnMoveUp()
 		{
 			try
 			{
@@ -402,7 +404,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public void OnMoveDown()
+		internal void OnMoveDown()
 		{
 			try
 			{
@@ -410,6 +412,40 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
+		}
+
+		internal void OnMoveStart()
+		{
+			try
+			{
+				var newIndex = new LogLineIndex(0);
+				ChangeSelectionAndBringIntoView(newIndex);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
+		}
+
+		internal void OnMoveEnd()
+		{
+			try
+			{
+				ILogFile logFile = _logFile;
+				if (logFile != null)
+				{
+					var count = logFile.Count;
+					if (count > 0)
+					{
+						var newIndex = new LogLineIndex(count - 1);
+						ChangeSelectionAndBringIntoView(newIndex);
+					}
 				}
 			}
 			catch (Exception e)

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
@@ -77,7 +76,7 @@ namespace Tailviewer.Ui.Controls
 			InitializeComponent();
 
 			PART_ListView.SelectionChanged += PartListViewOnSelectionChanged;
-			PART_ListView.FollowTailChanged -= OnFollowTailChanged;
+			PART_ListView.FollowTailChanged += OnFollowTailChanged;
 		}
 
 		public void Select(LogLineIndex index)

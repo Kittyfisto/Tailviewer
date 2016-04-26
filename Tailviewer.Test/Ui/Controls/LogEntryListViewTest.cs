@@ -302,5 +302,86 @@ namespace Tailviewer.Test.Ui.Controls
 
 			Clipboard.GetText().Should().Be("Foobar\r\nClondyke bar");
 		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when the mouse wheel is used to scroll to the last line, then FollowTail is automatically enabled")]
+		public void TestMouseWheelDown1()
+		{
+			for (int i = 0; i < 51; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.VerticalScrollBar.Value.Should().BeLessThan(_control.VerticalScrollBar.Maximum);
+			_control.FollowTail.Should().BeFalse();
+
+			_control.TextCanvasOnMouseWheelDown();
+			_control.VerticalScrollBar.Value.Should().Be(_control.VerticalScrollBar.Maximum);
+			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when the mouse wheel is used to scroll up from the last line, then FollowTail is automatically disabled")]
+		public void TestMouseWheelUp1()
+		{
+			for (int i = 0; i < 51; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.TextCanvasOnMouseWheelDown();
+			_control.VerticalScrollBar.Value.Should().Be(_control.VerticalScrollBar.Maximum);
+			_control.FollowTail.Should().BeTrue();
+
+			_control.TextCanvasOnMouseWheelUp();
+			_control.VerticalScrollBar.Value.Should().BeLessThan(_control.VerticalScrollBar.Maximum);
+			_control.FollowTail.Should().BeFalse("because scrolling up shall automatically disable follow tail");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when control+end is pressed, then the last line is both brought into view and selected")]
+		public void TestControlEnd()
+		{
+			for (int i = 0; i < 200; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.SelectedIndices.Should().BeEmpty();
+			_control.FollowTail.Should().BeFalse();
+
+			_control.PartTextCanvas.OnMoveEnd();
+			_control.SelectedIndices.Should().Equal(new object[] {new LogLineIndex(199)});
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
+			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when control+start is pressed, then the first line is both brought into view and selected")]
+		public void TestControlStart()
+		{
+			for (int i = 0; i < 200; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.PartTextCanvas.OnMoveEnd();
+			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(199) });
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
+			_control.FollowTail.Should().BeTrue();
+
+			_control.PartTextCanvas.OnMoveStart();
+			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(0) });
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 51));
+			_control.FollowTail.Should().BeFalse();
+		}
 	}
 }
