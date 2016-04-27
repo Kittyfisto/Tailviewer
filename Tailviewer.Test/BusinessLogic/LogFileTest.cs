@@ -607,5 +607,21 @@ namespace Tailviewer.Test.BusinessLogic
 				}
 			}
 		}
+
+		[Test]
+		[Description("Verifies that the maximum number of characters for all lines is determined correctly")]
+		public void TestReadAll3()
+		{
+			using (var file = new LogFile(File20Mb))
+			{
+				file.MaxCharactersPerLine.Should().Be(0);
+
+				file.Start();
+				file.Wait();
+
+				file.Count.Should().Be(165342);
+				file.MaxCharactersPerLine.Should().Be(218);
+			}
+		}
 	}
 }

@@ -93,6 +93,29 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
+		[Description("Verifies that the visible log line and horizontal offset is restored")]
+		public void TestRestore4()
+		{
+			string fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			settings.DataSources.Add(new DataSource("dawadaw")
+			{
+				VisibleLogLine = 42,
+				HorizontalOffset = 142.42
+			});
+
+			settings.Save();
+			settings = new ApplicationSettings(fname);
+			settings.Restore();
+
+			settings.DataSources.Count.Should().Be(1);
+			DataSource source = settings.DataSources[0];
+			source.Should().NotBeNull();
+			source.VisibleLogLine.Should().Be(42);
+			source.HorizontalOffset.Should().Be(142.42);
+		}
+
+		[Test]
 		[Description("Verifies that the folder is created if it doesn't exist")]
 		public void TestStore1()
 		{

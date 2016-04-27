@@ -25,6 +25,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private int? _dateTimeLength;
 		private bool _exists;
 		private DateTime? _startTimestamp;
+		private int _maxCharactersPerLine;
 
 		#endregion
 
@@ -58,6 +59,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
+		}
+		
+		public override string ToString()
+		{
+			return _fileName;
 		}
 
 		public IEnumerable<LogLine> Entries
@@ -96,6 +102,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public override int Count
 		{
 			get { return _entries.Count; }
+		}
+
+		public override int MaxCharactersPerLine
+		{
+			get { return _maxCharactersPerLine; }
 		}
 
 		public override bool Exists
@@ -260,6 +271,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			numberOfLinesRead = 0;
 			_startTimestamp = null;
+			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
 			Listeners.OnRead(-1);
@@ -317,6 +329,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				int lineIndex = _entries.Count;
 				var logLine = new LogLine(lineIndex, numberOfLogEntriesRead, line, level, timestamp);
 				_entries.Add(logLine);
+				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Length);
 			}
 
 			Listeners.OnRead(numberOfLinesRead);

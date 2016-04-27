@@ -48,6 +48,11 @@ namespace Tailviewer.Ui.ViewModels
 		{
 		}
 
+		public override string ToString()
+		{
+			return _currentLogFile.ToString();
+		}
+
 		public ILogFile CurrentLogFile
 		{
 			get { return _currentLogFile; }

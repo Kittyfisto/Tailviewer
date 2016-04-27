@@ -35,6 +35,7 @@ namespace Tailviewer.Ui.ViewModels
 		Size FileSize { get; }
 		bool IsVisible { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }
+		double HorizontalOffset { get; set; }
 
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 

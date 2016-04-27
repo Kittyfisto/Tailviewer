@@ -190,20 +190,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			if (!section.InvalidateSection &&
-			    !section.IsReset)
-			{
-				LogLine[] lines = logFile.GetSection(section);
-				foreach (LogLine line in lines)
-				{
-					double width = TextHelper.EstimateWidthUpperLimit(line.Message);
-					var upperWidth = (int) Math.Ceiling(width);
+			double width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
+			var upperWidth = (int)Math.Ceiling(width);
 
-					// Setting an integer is an atomic operation and thus no
-					// special synchronization is required.
-					_maxLineWidth = Math.Max(_maxLineWidth, upperWidth);
-				}
-			}
+			// Setting an integer is an atomic operation and thus no
+			// special synchronization is required.
+			_maxLineWidth = Math.Max(_maxLineWidth, upperWidth);
 
 			Interlocked.Increment(ref _pendingModificationsCount);
 		}
@@ -411,17 +403,21 @@ namespace Tailviewer.Ui.Controls.LogView
 				oldValue.RemoveListener(this);
 			}
 
-			_maxLineWidth = 0;
 			_textCanvas.LogFile = newValue;
 
 			if (newValue != null)
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
 
+				_maxLineWidth = (int)Math.Ceiling(TextHelper.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
 				UpdateScrollViewerRegions();
 				_textCanvas.DetermineVerticalOffset();
 				_textCanvas.UpdateVisibleSection();
 				_textCanvas.UpdateVisibleLines();
+			}
+			else
+			{
+				_maxLineWidth = 0;
 			}
 
 			MatchScrollbarValueToCurrentLine();
@@ -438,8 +434,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				_verticalScrollBar.Value = 0;
 			}
-
-			_horizontalScrollBar.Value = 0;
 		}
 
 		private void UpdateScrollViewerRegions()
@@ -549,6 +543,16 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void CopySelectedLinesToClipboard()
 		{
 			_textCanvas.OnCopyToClipboard();
+		}
+
+		public void SetHorizontalOffset(double value)
+		{
+			if (value < _horizontalScrollBar.Minimum)
+				_horizontalScrollBar.Value = _horizontalScrollBar.Minimum;
+			else if (value > _horizontalScrollBar.Maximum)
+				_horizontalScrollBar.Value = _horizontalScrollBar.Maximum;
+			else
+				_horizontalScrollBar.Value = value;
 		}
 	}
 }

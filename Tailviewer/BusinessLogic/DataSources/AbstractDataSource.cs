@@ -177,6 +177,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.VisibleLogLine = value; }
 		}
 
+		public double HorizontalOffset
+		{
+			get { return _settings.HorizontalOffset; }
+			set { _settings.HorizontalOffset = value; }
+		}
+
 		public DataSource Settings
 		{
 			get { return _settings; }

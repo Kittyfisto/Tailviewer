@@ -151,6 +151,24 @@ namespace Tailviewer.Test.Ui.Controls
 
 		[Test]
 		[STAThread]
+		[Description("Verfies that when a log file is set, its maximum number of characters for all lines is queried and used to calculate the maximum value of the horizontal scrollbar")]
+		public void TestSetLogFile5()
+		{
+			bool called = false;
+			_logFile.Setup(x => x.MaxCharactersPerLine).Returns(() =>
+				{
+					called = true;
+					return 221;
+				});
+			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+
+			_control.HorizontalScrollBar.Visibility.Should().Be(Visibility.Visible, "Because a scroll bar is necessary to view all contents of the log file");
+			_control.HorizontalScrollBar.Maximum.Should().BeGreaterThan(0, "Because the log file claims that its greatest line contains more characters than can currently be represented by the control, hence a scrollbar is necessary");
+			called.Should().BeTrue("Because the control should've queried the log file for its MaxCharactersPerLine property");
+		}
+
+		[Test]
+		[STAThread]
 		[Description("Verifies that the view synchronizes itself with the log file when the latter was modified after being attached")]
 		public void TestLogFileAdd1()
 		{

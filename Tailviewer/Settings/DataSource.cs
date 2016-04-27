@@ -37,6 +37,7 @@ namespace Tailviewer.Settings
 		public HashSet<LogLineIndex> SelectedLogLines;
 		public string StringFilter;
 		public LogLineIndex VisibleLogLine;
+		public double HorizontalOffset;
 
 		public DataSource()
 		{
@@ -80,6 +81,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
+			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (Guid guid in ActivatedQuickFilters)
@@ -137,6 +139,10 @@ namespace Tailviewer.Settings
 
 					case "lastviewed":
 						LastViewed = reader.ReadContentAsDateTime2();
+						break;
+
+					case "horizontaloffset":
+						HorizontalOffset = reader.ReadContentAsDouble2();
 						break;
 				}
 			}

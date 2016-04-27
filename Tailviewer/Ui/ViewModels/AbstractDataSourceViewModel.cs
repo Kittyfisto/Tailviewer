@@ -213,6 +213,12 @@ namespace Tailviewer.Ui.ViewModels
 			set { _dataSource.VisibleLogLine = value; }
 		}
 
+		public double HorizontalOffset
+		{
+			get { return _dataSource.HorizontalOffset; }
+			set { _dataSource.HorizontalOffset = value; }
+		}
+
 		public HashSet<LogLineIndex> SelectedLogLines
 		{
 			get { return _dataSource.SelectedLogLines; }

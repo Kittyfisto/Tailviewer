@@ -55,6 +55,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_isDisposed = true;
 		}
 
+		public abstract int MaxCharactersPerLine { get; }
+
 		public void Wait()
 		{
 			Wait(TimeSpan.MaxValue);

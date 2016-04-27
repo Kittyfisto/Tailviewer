@@ -18,6 +18,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
 		private LogFileSection _fullSourceSection;
+		private int _maxCharactersPerLine;
 
 		public FilteredLogFile(ILogFile source, ILogEntryFilter filter)
 		{
@@ -59,6 +60,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					return _indices.Count;
 				}
 			}
+		}
+
+		public override int MaxCharactersPerLine
+		{
+			get { return _maxCharactersPerLine; }
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -245,6 +251,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					foreach (LogLine line in logEntry)
 					{
 						_indices.Add(line.LineIndex);
+						_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message.Length);
 					}
 				}
 				Listeners.OnRead(_indices.Count);

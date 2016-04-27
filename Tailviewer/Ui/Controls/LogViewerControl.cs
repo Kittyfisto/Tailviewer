@@ -77,6 +77,7 @@ namespace Tailviewer.Ui.Controls
 
 			PART_ListView.SelectionChanged += PartListViewOnSelectionChanged;
 			PART_ListView.FollowTailChanged += OnFollowTailChanged;
+			PART_ListView.HorizontalScrollBar.ValueChanged += HorizontalScrollBarOnValueChanged;
 		}
 
 		public void Select(LogLineIndex index)
@@ -92,6 +93,11 @@ namespace Tailviewer.Ui.Controls
 		public void Select(params LogLineIndex[] indices)
 		{
 			PART_ListView.Select(indices);
+		}
+
+		private void SetHorizontalOffset(double horizontalOffset)
+		{
+			PART_ListView.SetHorizontalOffset(horizontalOffset);
 		}
 
 		private void PartListViewOnSelectionChanged(IEnumerable<LogLineIndex> logLineIndices)
@@ -227,6 +233,7 @@ namespace Tailviewer.Ui.Controls
 					LogFile = newView.CurrentLogFile;
 					CurrentLogLine = newView.DataSource.VisibleLogLine;
 					Select(newView.DataSource.SelectedLogLines);
+					SetHorizontalOffset(newView.DataSource.HorizontalOffset);
 				}
 				else
 				{
@@ -487,6 +494,13 @@ namespace Tailviewer.Ui.Controls
 			IDataSourceViewModel dataSource = DataSource;
 			if (dataSource != null)
 				dataSource.FollowTail = followTail;
+		}
+
+		private void HorizontalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
+		{
+			var dataSource = DataSource;
+			if (dataSource != null && !_changingLogView)
+				dataSource.HorizontalOffset = args.NewValue;
 		}
 
 		public void FocusStringFilter()

@@ -26,6 +26,13 @@ namespace Tailviewer
 			return dateTime;
 		}
 
+		public static double ReadContentAsDouble2(this XmlReader reader)
+		{
+			string stringValue = reader.Value;
+			double value = double.Parse(stringValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+			return value;
+		}
+
 		public static bool ReadContentAsBool(this XmlReader reader)
 		{
 			string value = reader.Value;
@@ -35,6 +42,12 @@ namespace Tailviewer
 		public static void WriteAttributeDateTime(this XmlWriter writer, string localName, DateTime value)
 		{
 			string stringValue = value.Ticks.ToString(CultureInfo.InvariantCulture);
+			writer.WriteAttributeString(localName, stringValue);
+		}
+
+		public static void WriteAttributeDouble(this XmlWriter writer, string localName, double value)
+		{
+			string stringValue = value.ToString(CultureInfo.InvariantCulture);
 			writer.WriteAttributeString(localName, stringValue);
 		}
 

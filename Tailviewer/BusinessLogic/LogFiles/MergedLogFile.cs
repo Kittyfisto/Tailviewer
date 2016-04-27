@@ -28,6 +28,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private DateTime _lastModified;
 
 		private DateTime? _startTimestamp;
+		private int _maxCharactersPerLine;
 
 		public MergedLogFile(IEnumerable<ILogFile> sources)
 			: this(sources.ToArray())
@@ -86,6 +87,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					return _indices.Count;
 				}
 			}
+		}
+
+		public override int MaxCharactersPerLine
+		{
+			get { return _maxCharactersPerLine; }
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -171,12 +177,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 								                      modification.LogFile);
 								if (insertionIndex < _indices.Count)
 								{
+									// TODO: We need to re-evaluate the entire file until this point
+									//       in order to determine the maximum number of characters again,
+									//       which could be less because of the invalidation...
+
 									InvalidateOnward(insertionIndex, modification.LogFile, newLogLine);
 								}
 
 								lock (_syncRoot)
 								{
 									_indices.Insert(insertionIndex, index);
+									_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message.Length);
 								}
 
 								Listeners.OnRead(_indices.Count);
