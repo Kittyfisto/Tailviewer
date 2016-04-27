@@ -172,6 +172,11 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
 		{
+			OnSizeChanged();
+		}
+
+		internal void OnSizeChanged()
+		{
 			DetermineVerticalOffset();
 			_currentlyVisibleSection = CalculateVisibleSection();
 			UpdateVisibleLines();
@@ -288,6 +293,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
 			int linesLeft = LogFile.Count - _currentLine;
 			int count = Math.Min(linesLeft, maxCount);
+			if (count < 0)
+				return new LogFileSection();
+
 			return new LogFileSection(_currentLine, count);
 		}
 
