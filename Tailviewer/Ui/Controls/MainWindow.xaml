@@ -73,6 +73,7 @@
                     Width="200"
                     x:Name="PART_DataSources"
                     ItemsSource="{Binding RecentFiles}"
+                    AddDataSourceCommand="{Binding AddDataSourceCommand}"
                     SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
                 <Grid Grid.Column="1"

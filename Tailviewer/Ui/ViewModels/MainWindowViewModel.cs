@@ -22,6 +22,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly IDispatcher _dispatcher;
 		private readonly ICommand _gotItCommand;
+		private readonly ICommand _addDataSourceCommand;
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
@@ -70,9 +71,32 @@ namespace Tailviewer.Ui.ViewModels
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
 			_gotItCommand = new DelegateCommand(GotIt);
 
+			_addDataSourceCommand = new DelegateCommand(AddDataSource);
+
 			ChangeDataSource(CurrentDataSource);
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
+		}
+
+		private void AddDataSource()
+		{
+			// Create OpenFileDialog 
+			var dlg = new Microsoft.Win32.OpenFileDialog
+				{
+					DefaultExt = ".log",
+					Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+					Multiselect = true
+				};
+
+			// Display OpenFileDialog by calling ShowDialog method 
+			if (dlg.ShowDialog() == true)
+			{
+				var selectedFiles = dlg.FileNames;
+				foreach (var fileName in selectedFiles)
+				{
+					OpenFile(fileName);
+				}
+			}
 		}
 
 		public ICommand GotItCommand
@@ -228,6 +252,11 @@ namespace Tailviewer.Ui.ViewModels
 				ChangeDataSource(value);
 				EmitPropertyChanged();
 			}
+		}
+
+		public ICommand AddDataSourceCommand
+		{
+			get { return _addDataSourceCommand; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

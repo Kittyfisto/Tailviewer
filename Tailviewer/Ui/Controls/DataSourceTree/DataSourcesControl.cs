@@ -39,6 +39,10 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DependencyProperty.Register("StringFilter", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnStringFilterChanged));
 
+		public static readonly DependencyProperty AddDataSourceCommandProperty =
+			DependencyProperty.Register("AddDataSourceCommand", typeof (ICommand), typeof (DataSourcesControl),
+			                            new PropertyMetadata(default(ICommand)));
+
 		private FilterTextBox _partDataSourceSearch;
 		private TreeView _partDataSources;
 
@@ -51,6 +55,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public DataSourcesControl()
 		{
 			FilteredItemsSource = new ObservableCollection<IDataSourceViewModel>();
+		}
+
+		public ICommand AddDataSourceCommand
+		{
+			get { return (ICommand) GetValue(AddDataSourceCommandProperty); }
+			set { SetValue(AddDataSourceCommandProperty, value); }
 		}
 
 		public string StringFilter

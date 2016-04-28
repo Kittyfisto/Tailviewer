@@ -41,6 +41,7 @@
                                     Grid.Column="1"
                                     Width="26"
                                     Height="26"
+                                    ToolTip="Add new quick filter"
                                     Command="{TemplateBinding AddCommand}" />
                             </Grid>
 
