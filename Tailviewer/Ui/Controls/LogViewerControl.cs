@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;

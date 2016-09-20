@@ -44,8 +44,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.31.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.31\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.32.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.32\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -123,7 +123,6 @@
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
-    <Compile Include="Ui\Controls\FilterTextBox.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
@@ -162,10 +161,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\DataSourceTree\TreeViewItemStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\FilterTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

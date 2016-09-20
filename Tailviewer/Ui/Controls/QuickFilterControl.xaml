@@ -74,7 +74,7 @@
                                                         IsChecked="{Binding IsActive}"
                                                         IsEnabled="{Binding CanBeActivated}" />
 
-                                                    <local:FilterTextBox
+                                                    <controls2:FilterTextBox
                                                         x:Name="PART_Value"
                                                         Grid.Column="1"
                                                         Height="26"
