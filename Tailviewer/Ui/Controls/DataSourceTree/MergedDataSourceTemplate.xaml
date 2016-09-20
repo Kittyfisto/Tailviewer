@@ -18,7 +18,7 @@
 
     <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
                               ItemsSource="{Binding Observable}">
-        <Grid Width="179">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
@@ -35,8 +35,7 @@
                         <Style TargetType="TextBlock">
                             <Style.Triggers>
                                 <DataTrigger
-                                    Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                    Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                     Value="True">
                                     <Setter Property="Foreground"
                                             Value="{StaticResource TextBrushSelected}" />
@@ -70,8 +69,7 @@
 
             <controls:RemoveButton VerticalAlignment="Stretch"
                                    HorizontalAlignment="Right"
-                                   IsInverted="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
+                                   IsInverted="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                    Command="{Binding RemoveCommand}"
                                    Grid.Column="1"
                                    HorizontalContentAlignment="Right" />

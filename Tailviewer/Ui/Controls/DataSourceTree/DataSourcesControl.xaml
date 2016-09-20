@@ -3,7 +3,6 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                     xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                     xmlns:controls2="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     mc:Ignorable="d">
@@ -14,6 +13,8 @@
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/SingleDataSourceTemplate.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/MergedDataSourceTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/TreeViewItemStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type dataSourceTree:DataSourcesControl}">
@@ -64,58 +65,8 @@
                                       SnapsToDevicePixels="True"
                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                       ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                      Grid.Row="2">
-
-                                <TreeView.Resources>
-
-
-                                    <Style TargetType="TreeViewItem">
-                                        <!--<Setter Property="MaxWidth" Value="198" />-->
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="TreeViewItem">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="12" />
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition />
-                                                        </Grid.RowDefinitions>
-
-                                                        <Border Background="{TemplateBinding Background}"
-                                                                d:DataContext="{d:DesignInstance viewModels:IDataSourceViewModel}"
-                                                                Grid.Row="0"
-                                                                Grid.Column="0"
-                                                                Grid.ColumnSpan="2">
-                                                            <ContentPresenter x:Name="PART_Header"
-                                                                              ContentSource="Header" />
-                                                        </Border>
-                                                        <ItemsPresenter x:Name="ItemsHost"
-                                                                        Grid.Row="1"
-                                                                        Grid.Column="1" />
-                                                    </Grid>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsSelected" Value="true">
-                                                <Setter Property="Background"
-                                                        Value="{StaticResource BackgroundBrushSelected}" />
-                                            </Trigger>
-                                            <MultiTrigger>
-                                                <MultiTrigger.Conditions>
-                                                    <Condition Property="IsMouseOver" Value="True" />
-                                                    <Condition Property="IsSelected" Value="False" />
-                                                </MultiTrigger.Conditions>
-                                                <Setter Property="Background"
-                                                        Value="{StaticResource BackgroundBrushHovered}" />
-                                            </MultiTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TreeView.Resources>
-                            </TreeView>
+                                      ItemContainerStyle="{StaticResource DataSourceTreeViewItemStyle}"
+                                      Grid.Row="2" />
                         </Grid>
                     </Border>
                 </ControlTemplate>
