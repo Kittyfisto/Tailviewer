@@ -70,7 +70,7 @@
                 </Grid.ColumnDefinitions>
 
                 <dataSourceTree:DataSourcesControl
-                    Width="200"
+                    Width="240"
                     x:Name="PART_DataSources"
                     ItemsSource="{Binding RecentFiles}"
                     AddDataSourceCommand="{Binding AddDataSourceCommand}"
