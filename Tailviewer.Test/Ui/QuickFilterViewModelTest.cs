@@ -79,6 +79,19 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestIsInverted()
+		{
+			_model.IsInverted = true;
+			_quickFilter.IsInverted.Should().BeTrue();
+
+			_model.IsInverted = false;
+			_quickFilter.IsInverted.Should().BeFalse();
+
+			_model.IsInverted = true;
+			_quickFilter.IsInverted.Should().BeTrue();
+		}
+
+		[Test]
 		public void TestIsActive()
 		{
 			_model.IsActive = true;

@@ -140,6 +140,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				case "Value":
 				case "IsActive":
+				case "IsInverted":
 				case "DropType":
 				case "MatchType":
 					if (!_isChangingCurrentDataSource)

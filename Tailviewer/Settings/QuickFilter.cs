@@ -8,12 +8,14 @@ namespace Tailviewer.Settings
 		public bool IgnoreCase;
 		public QuickFilterMatchType MatchType;
 		public string Value;
+		public bool IsInverted;
 		private Guid _id;
 
 		public QuickFilter()
 		{
 			_id = Guid.NewGuid();
 			IgnoreCase = true;
+			IsInverted = false;
 		}
 
 		public Guid Id
@@ -45,6 +47,10 @@ namespace Tailviewer.Settings
 					case "ignorecase":
 						IgnoreCase = reader.ReadContentAsBool();
 						break;
+
+					case "isinclude":
+						IsInverted = reader.ReadContentAsBool();
+						break;
 				}
 			}
 
@@ -60,6 +66,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeEnum("type", MatchType);
 			writer.WriteAttributeString("value", Value);
 			writer.WriteAttributeBool("ignorecase", IgnoreCase);
+			writer.WriteAttributeBool("isinclude", IsInverted);
 		}
 	}
 }

@@ -9,6 +9,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
@@ -104,9 +105,26 @@
                                                         <RowDefinition />
                                                         <RowDefinition Height="1" />
                                                     </Grid.RowDefinitions>
-                                                    <local:QuickFilterMatchTypeToggleButton
-                                                        QuickFilterMatchType="{Binding MatchType, Mode=TwoWay}"
-                                                        Margin="0,8,0,8" />
+
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <controls2:VisibilityToggleButton
+                                                            x:Name="PART_Inverted"
+                                                            IsChecked="{Binding IsInverted, Converter={StaticResource InvertBoolConverter}}"
+                                                            Width="24"
+                                                            Height="24"
+                                                            Margin="0,8,8,8">
+                                                        </controls2:VisibilityToggleButton>
+
+                                                        <local:QuickFilterMatchTypeToggleButton
+                                                            QuickFilterMatchType="{Binding MatchType, Mode=TwoWay}"
+                                                            Grid.Column="1"
+                                                            Margin="0,8,0,8" />
+                                                    </Grid>
 
                                                     <!--<local:QuickFilterActionTypeToggleButton
                                                         Grid.Row="1"
@@ -116,6 +134,14 @@
                                                     <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="2" />
                                                 </Grid>
                                             </Grid>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsInverted}" Value="True">
+                                                    <Setter Property="ToolTip" TargetName="PART_Inverted" Value="Entries matching this filter will be EXCLUDED" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsInverted}" Value="False">
+                                                    <Setter Property="ToolTip" TargetName="PART_Inverted" Value="Only those entries matching this filter will be INCLUDED" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

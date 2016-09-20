@@ -9,6 +9,14 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class QuickFilterTest
 	{
 		[Test]
+		public void TestCtor()
+		{
+			var quickFilter = new QuickFilter();
+			quickFilter.IgnoreCase.Should().BeTrue();
+			quickFilter.IsInverted.Should().BeFalse();
+		}
+
+		[Test]
 		public void TestSubstringFilter1()
 		{
 			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
@@ -32,6 +40,18 @@ namespace Tailviewer.Test.BusinessLogic
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.None)).Should().BeTrue();
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.None)).Should().BeTrue();
 			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello Wold!", LevelFlags.None)).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestInvertFilter()
+		{
+			var quickFilter = new Tailviewer.BusinessLogic.Filters.QuickFilter(new QuickFilter())
+				{
+					Value = "foo",
+					IsInverted = true
+				};
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "foo", LevelFlags.None)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "bar", LevelFlags.None)).Should().BeTrue();
 		}
 	}
 }

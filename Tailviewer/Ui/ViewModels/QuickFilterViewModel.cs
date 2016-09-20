@@ -119,6 +119,20 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool IsInverted
+		{
+			get { return _quickFilter.IsInverted; }
+			set
+			{
+				if (value == IsInverted)
+					return;
+
+				_quickFilter.IsInverted = value;
+				UpdateValidity();
+				EmitPropertyChanged();
+			}
+		}
+
 		public string Value
 		{
 			get { return _quickFilter.Value; }

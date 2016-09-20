@@ -27,6 +27,12 @@ namespace Tailviewer.BusinessLogic.Filters
 			set { _settings.IgnoreCase = value; }
 		}
 
+		public bool IsInverted
+		{
+			get { return _settings.IsInverted; }
+			set { _settings.IsInverted = value; }
+		}
+
 		public QuickFilterMatchType MatchType
 		{
 			get { return _settings.MatchType; }
@@ -42,25 +48,29 @@ namespace Tailviewer.BusinessLogic.Filters
 		public ILogEntryFilter CreateFilter()
 		{
 			string value = Value;
+			ILogEntryFilter filter = null;
 			switch (MatchType)
 			{
 				case QuickFilterMatchType.StringFilter:
 					if (!string.IsNullOrEmpty(value))
-						return new SubstringFilter(value, IgnoreCase);
+						filter = new SubstringFilter(value, IgnoreCase);
 					break;
 
 				case QuickFilterMatchType.WildcardFilter:
 					if (!string.IsNullOrEmpty(value))
-						return new WildcardFilter(value, IgnoreCase);
+						filter = new WildcardFilter(value, IgnoreCase);
 					break;
 
 				case QuickFilterMatchType.RegexpFilter:
 					if (!string.IsNullOrEmpty(value))
-						return new RegexFilter(value, IgnoreCase);
+						filter = new RegexFilter(value, IgnoreCase);
 					break;
 			}
 
-			return null;
+			if (filter != null && IsInverted)
+				filter = new InvertFilter(filter);
+
+			return filter;
 		}
 	}
 }

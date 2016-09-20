@@ -44,8 +44,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.32.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.32\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.36.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.36\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,6 +66,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\FilterMatch.cs" />
+    <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
     <Compile Include="BusinessLogic\Filters\FilterChain.cs" />
