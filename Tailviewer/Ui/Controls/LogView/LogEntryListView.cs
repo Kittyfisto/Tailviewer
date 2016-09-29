@@ -36,13 +36,27 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("CurrentLine", typeof (LogLineIndex), typeof (LogEntryListView),
 			                            new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
 
+		public static readonly DependencyProperty ColorByLevelProperty =
+			DependencyProperty.Register("ColorByLevel", typeof (bool), typeof (LogEntryListView),
+			                            new PropertyMetadata(false, OnColorByLevelChanged));
+
+		private static void OnColorByLevelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnColorByLevelChanged((bool) args.NewValue);
+		}
+
+		private void OnColorByLevelChanged(bool colorByLevel)
+		{
+			_textCanvas.ColorByLevel = colorByLevel;
+		}
+
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 		private readonly Rectangle _cornerRectangle;
+		private readonly ScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
 		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
-		private readonly ScrollBar _horizontalScrollBar;
 		private readonly ScrollBar _verticalScrollBar;
 
 		private int _maxLineWidth;
@@ -128,6 +142,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			_timer.Start();
 		}
 
+		public bool ColorByLevel
+		{
+			get { return (bool) GetValue(ColorByLevelProperty); }
+			set { SetValue(ColorByLevelProperty, value); }
+		}
+
 		public LogLineIndex CurrentLine
 		{
 			get { return (LogLineIndex) GetValue(CurrentLineProperty); }
@@ -191,7 +211,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			double width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
-			var upperWidth = (int)Math.Ceiling(width);
+			var upperWidth = (int) Math.Ceiling(width);
 
 			// Setting an integer is an atomic operation and thus no
 			// special synchronization is required.
@@ -223,14 +243,14 @@ namespace Tailviewer.Ui.Controls.LogView
 			LogFileSection current = _textCanvas.CurrentlyVisibleSection;
 			if (index != LogLineIndex.Invalid)
 			{
-				_textCanvas.CurrentLine = (int)index;
+				_textCanvas.CurrentLine = (int) index;
 				//< We don't want to call BringIntoView() everytime because that one scrolls to fully
 				// bring a line into view. This would mean that if the currently visible section changed
 				// so that the top line is only partially visible, then this method would always bring
 				// it fully visible. Removing the following filter would completely remove per pixel scrolling...
 				if (current.Index != index)
 				{
-					_verticalScrollBar.Value = (int)index * TextHelper.LineHeight;
+					_verticalScrollBar.Value = (int) index*TextHelper.LineHeight;
 				}
 			}
 		}
@@ -242,7 +262,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnOnSelectionChanged(HashSet<LogLineIndex> selectedIndices)
 		{
-			var fn = SelectionChanged;
+			Action<IEnumerable<LogLineIndex>> fn = SelectionChanged;
 			if (fn != null)
 				fn(selectedIndices);
 		}
@@ -271,13 +291,13 @@ namespace Tailviewer.Ui.Controls.LogView
 				_verticalScrollBar.Value += (max - height);
 			}
 
-			var logFile = LogFile;
+			ILogFile logFile = LogFile;
 			if (logFile != null)
 			{
-				var count = logFile.Count;
+				int count = logFile.Count;
 				if (count > 0)
 				{
-					if (logLineIndex < count-1)
+					if (logLineIndex < count - 1)
 					{
 						FollowTail = false;
 					}
@@ -409,7 +429,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
 
-				_maxLineWidth = (int)Math.Ceiling(TextHelper.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
+				_maxLineWidth = (int) Math.Ceiling(TextHelper.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
 				UpdateScrollViewerRegions();
 				_textCanvas.DetermineVerticalOffset();
 				_textCanvas.UpdateVisibleSection();
@@ -425,7 +445,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void MatchScrollbarValueToCurrentLine()
 		{
-			var value = _textCanvas.CurrentLine*TextHelper.LineHeight;
+			double value = _textCanvas.CurrentLine*TextHelper.LineHeight;
 			if (value >= 0 && value <= _verticalScrollBar.Maximum)
 			{
 				_verticalScrollBar.Value = value;

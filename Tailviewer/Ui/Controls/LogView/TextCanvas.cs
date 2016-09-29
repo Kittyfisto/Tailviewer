@@ -39,6 +39,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private double _yOffset;
 		private string _stringFilter;
 		private ILogEntryFilter _filter;
+		private bool _colorByLevel;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
 		{
@@ -147,6 +148,19 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		public bool ColorByLevel
+		{
+			get { return _colorByLevel; }
+			set
+			{
+				if (value == _colorByLevel)
+					return;
+
+				_colorByLevel = value;
+				UpdateVisibleLines();
+			}
+		}
+
 		public event Action<LogFileSection> VisibleSectionChanged;
 
 		public void UpdateVisibleSection()
@@ -165,7 +179,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			double y = _yOffset;
 			foreach (TextLine textLine in _visibleTextLines)
 			{
-				textLine.Render(drawingContext, x, y, ActualWidth);
+				textLine.Render(drawingContext, x, y, ActualWidth, ColorByLevel);
 				y += TextHelper.LineHeight;
 			}
 		}
@@ -199,7 +213,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_logFile.GetSection(_currentlyVisibleSection, data);
 			for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 			{
-				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices)
+				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
 					{
 						Filter = _filter
 					};

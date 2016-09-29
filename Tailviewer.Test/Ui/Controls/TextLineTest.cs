@@ -22,9 +22,31 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
+		public void TestColorByLevel1()
+		{
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, false);
+			textLine.ColorByLevel.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestColorByLevel2()
+		{
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			textLine.ColorByLevel.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestColorByLevel3()
+		{
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			textLine.ColorByLevel = false;
+			textLine.ColorByLevel.Should().BeFalse();
+		}
+
+		[Test]
 		public void TestHighlight2()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			var segments = textLine.Segments.ToList();
 			segments.Count.Should().Be(1);
 			segments[0].FormattedText.Text.Should().Be("foobar");
@@ -33,7 +55,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestHighlight1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected)
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true)
 				{
 					Filter = Filter.Create("oo")
 				};
@@ -48,7 +70,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that changing the filter on a TextLine results in segments changing")]
 		public void TestHighlight3()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.Segments.Count().Should().Be(1);
 			textLine.Segments.First().FormattedText.Text.Should().Be("foobar");
 
@@ -63,22 +85,22 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestForegroundBrush1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.ErrorForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.ErrorForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
 		}
 
@@ -87,44 +109,44 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_selected.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
 		}
 
 		[Test]
 		public void TestBackgroundBrush1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.WarningBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
 		}
 
@@ -133,22 +155,22 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_hovered.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.WarningHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 		}
 
@@ -157,22 +179,22 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_selected.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
 		}
 	}

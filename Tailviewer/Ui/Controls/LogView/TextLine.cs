@@ -13,17 +13,18 @@ namespace Tailviewer.Ui.Controls.LogView
 	/// </summary>
 	public sealed class TextLine
 	{
-		private readonly LogLine _logLine;
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
-		private readonly HashSet<LogLineIndex> _selectedIndices;
-
-		private Brush _lastForegroundBrush;
+		private readonly LogLine _logLine;
 		private readonly List<TextSegment> _segments;
+		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private ILogEntryFilter _filter;
+		private Brush _lastForegroundBrush;
+		private bool _colorByLevel;
 
 		public TextLine(LogLine logLine,
-			HashSet<LogLineIndex> hoveredIndices,
-			HashSet<LogLineIndex> selectedIndices)
+		                HashSet<LogLineIndex> hoveredIndices,
+		                HashSet<LogLineIndex> selectedIndices,
+		                bool colorByLevel)
 		{
 			if (logLine == null) throw new ArgumentNullException("logLine");
 			if (hoveredIndices == null) throw new ArgumentNullException("hoveredIndices");
@@ -33,11 +34,25 @@ namespace Tailviewer.Ui.Controls.LogView
 			_hoveredIndices = hoveredIndices;
 			_selectedIndices = selectedIndices;
 			_segments = new List<TextSegment>();
+			_colorByLevel = colorByLevel;
 		}
 
 		public LogLine LogLine
 		{
 			get { return _logLine; }
+		}
+
+		public bool ColorByLevel
+		{
+			get { return _colorByLevel; }
+			set
+			{
+				if (value == _colorByLevel)
+					return;
+
+				_colorByLevel = value;
+				_segments.Clear();
+			}
 		}
 
 		public bool IsHovered
@@ -49,24 +64,26 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get
 			{
-				switch (_logLine.Level)
+				if (_colorByLevel)
 				{
-					case LevelFlags.Fatal:
-					case LevelFlags.Error:
-						return TextHelper.ErrorForegroundBrush;
-
-					default:
-						if (IsSelected)
-						{
-							return TextHelper.SelectedForegroundBrush;
-						}
-						if (IsHovered)
-						{
-							return TextHelper.HoveredForegroundBrush;
-						}
-
-						return TextHelper.NormalForegroundBrush;
+					switch (_logLine.Level)
+					{
+						case LevelFlags.Fatal:
+						case LevelFlags.Error:
+							return TextHelper.ErrorForegroundBrush;
+					}
 				}
+
+				if (IsSelected)
+				{
+					return TextHelper.SelectedForegroundBrush;
+				}
+				if (IsHovered)
+				{
+					return TextHelper.HoveredForegroundBrush;
+				}
+
+				return TextHelper.NormalForegroundBrush;
 			}
 		}
 
@@ -78,34 +95,45 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					return TextHelper.SelectedBackgroundBrush;
 				}
-				if (IsHovered)
+
+				if (_colorByLevel)
 				{
+					if (IsHovered)
+					{
+						switch (_logLine.Level)
+						{
+							case LevelFlags.Fatal:
+							case LevelFlags.Error:
+								return TextHelper.ErrorHighlightBackgroundBrush;
+
+							case LevelFlags.Warning:
+								return TextHelper.WarningHighlightBackgroundBrush;
+
+							default:
+								return TextHelper.NormalHighlightBackgroundBrush;
+						}
+					}
+
 					switch (_logLine.Level)
 					{
 						case LevelFlags.Fatal:
 						case LevelFlags.Error:
-							return TextHelper.ErrorHighlightBackgroundBrush;
+							return TextHelper.ErrorBackgroundBrush;
 
 						case LevelFlags.Warning:
-							return TextHelper.WarningHighlightBackgroundBrush;
+							return TextHelper.WarningBackgroundBrush;
 
 						default:
-							return TextHelper.NormalHighlightBackgroundBrush;
+							return TextHelper.NormalBackgroundBrush;
 					}
 				}
 
-				switch (_logLine.Level)
+				if (IsHovered)
 				{
-					case LevelFlags.Fatal:
-					case LevelFlags.Error:
-						return TextHelper.ErrorBackgroundBrush;
-
-					case LevelFlags.Warning:
-						return TextHelper.WarningBackgroundBrush;
-
-					default:
-						return TextHelper.NormalBackgroundBrush;
+					return TextHelper.NormalHighlightBackgroundBrush;
 				}
+
+				return TextHelper.NormalBackgroundBrush;
 			}
 		}
 
@@ -135,20 +163,20 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void CreateTextIfNecessary()
 		{
-			var regularForegroundBrush = ForegroundBrush;
+			Brush regularForegroundBrush = ForegroundBrush;
 			if (_segments.Count == 0 || _lastForegroundBrush != regularForegroundBrush)
 			{
 				_segments.Clear();
 
-				var message = _logLine.Message;
-				var highlightedBrush = TextHelper.HighlightedForegroundBrush;
-				var filter = _filter;
+				string message = _logLine.Message;
+				Brush highlightedBrush = TextHelper.HighlightedForegroundBrush;
+				ILogEntryFilter filter = _filter;
 				if (filter != null)
 				{
 					string substring;
 					int lastIndex = 0;
-					var matches = filter.Match(_logLine);
-					foreach (var match in matches)
+					List<FilterMatch> matches = filter.Match(_logLine);
+					foreach (FilterMatch match in matches)
 					{
 						if (match.Index > lastIndex)
 						{
@@ -176,9 +204,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		public void Render(DrawingContext drawingContext,
-			double xOffset,
-			double y,
-			double actualWidth)
+		                   double xOffset,
+		                   double y,
+		                   double actualWidth,
+		                   bool colorByLevel)
 		{
 			CreateTextIfNecessary();
 
@@ -188,13 +217,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			double x = xOffset;
 			for (int i = 0; i < _segments.Count; ++i)
 			{
-				var segment = _segments[i];
+				TextSegment segment = _segments[i];
 				Brush brush = segment.IsRegular ? regularBackgroundBrush : highlightedBackgroundBrush;
 				if (brush != null)
 				{
 					var rect = new Rect(x, y,
-										segment.Width,
-										TextHelper.LineHeight);
+					                    segment.Width,
+					                    TextHelper.LineHeight);
 					drawingContext.DrawRectangle(brush, null, rect);
 				}
 
@@ -203,8 +232,8 @@ namespace Tailviewer.Ui.Controls.LogView
 					if (x < actualWidth && regularBackgroundBrush != null)
 					{
 						var rect = new Rect(x, y,
-											actualWidth - x,
-											TextHelper.LineHeight);
+						                    actualWidth - x,
+						                    TextHelper.LineHeight);
 						drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
 					}
 				}
