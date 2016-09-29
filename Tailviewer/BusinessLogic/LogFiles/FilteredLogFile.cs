@@ -94,7 +94,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					LogLineIndex index = section.Index + i;
 					int sourceIndex = _indices[(int) index];
 					LogLine line = _source.GetLine(sourceIndex);
-					dest[i] = line;
+					dest[i] = new LogLine((int)index, line.LogEntryIndex, line.Message, line.Level, line.Timestamp);
 				}
 			}
 		}
@@ -104,7 +104,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			lock (_indices)
 			{
 				int sourceIndex = _indices[index];
-				return _source.GetLine(sourceIndex);
+				var line = _source.GetLine(sourceIndex);
+				return new LogLine(index, line.LogEntryIndex, line.Message, line.Level, line.Timestamp);
 			}
 		}
 

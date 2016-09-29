@@ -289,5 +289,45 @@ namespace Tailviewer.Test.BusinessLogic
 				sections[1].Should().Be(new LogFileSection(new LogLineIndex(0), 2));
 			}
 		}
+
+		[Test]
+		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
+		public void TestGetSection1()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("yikes", true, LevelFlags.All)))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.None));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				var section = file.GetSection(new LogFileSection(0, 1));
+				section.Should().NotBeNull();
+				section.Length.Should().Be(1);
+				section[0].LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				section[0].Message.Should().Be("Yikes");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
+		public void TestGetLine1()
+		{
+			using (var file = new FilteredLogFile(_logFile.Object, Filter.Create("yikes", true, LevelFlags.All)))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.None));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+
+				file.Start(TimeSpan.Zero);
+				file.Wait();
+
+				var line = file.GetLine(0);
+				line.LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				line.Message.Should().Be("Yikes");
+			}
+		}
 	}
 }

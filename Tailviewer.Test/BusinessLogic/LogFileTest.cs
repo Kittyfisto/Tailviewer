@@ -201,23 +201,23 @@ namespace Tailviewer.Test.BusinessLogic
 					LogLine[] section = filtered.GetSection(new LogFileSection(0, 5));
 					section.Should().Equal(new[]
 						{
-							new LogLine(0,
+							new LogLine(0, 0,
 							            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
 							            LevelFlags.Info,
 							            new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified)),
-							new LogLine(5,
+							new LogLine(1, 5,
 							            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
 							            LevelFlags.Info,
 							            new DateTime(2015, 10, 7, 19, 50, 59, 081)),
-							new LogLine(7,
+							new LogLine(2, 7,
 							            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
 							            LevelFlags.Info,
 							            new DateTime(2015, 10, 7, 19, 50, 59, 171)),
-							new LogLine(165340,
+							new LogLine(3, 165340,
 							            "2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure",
 							            LevelFlags.Info,
 							            new DateTime(2015, 10, 7, 19, 51, 42, 481)),
-							new LogLine(165341,
+							new LogLine(4, 165341,
 							            "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...",
 							            LevelFlags.Info,
 							            new DateTime(2015, 10, 7, 19, 51, 42, 483))
