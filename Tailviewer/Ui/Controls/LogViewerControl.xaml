@@ -45,7 +45,7 @@
                        ToolTip="Open file in explorer" />
             </Button>
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"
                 x:Name="PART_FollowTail"
@@ -53,7 +53,7 @@
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"
                 x:Name="PART_ShowLineNumbers"
@@ -61,7 +61,7 @@
                 IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, ElementName=This}"
                 Content="Line Numbers" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"
                 x:Name="PART_ColorByLevel"
@@ -69,7 +69,7 @@
                 IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, ElementName=This}"
                 Content="Color by level" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 Width="41"
@@ -77,35 +77,35 @@
                 IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
                 Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
                 Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
                 Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
                 Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
                 Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
 
-            <controls:TextToggleButton
+            <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
