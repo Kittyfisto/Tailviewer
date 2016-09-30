@@ -160,6 +160,15 @@ namespace Tailviewer.Ui.ViewModels
 			viewModel.PropertyChanged -= QuickFilterOnPropertyChanged;
 
 			_settings.Save();
+
+			if (viewModel.IsActive)
+			{
+				// If we've just deleted an active filter then we most definately need
+				// to filter the log file again...
+				var fn = OnFiltersChanged;
+				if (fn != null)
+					fn();
+			}
 		}
 	}
 }

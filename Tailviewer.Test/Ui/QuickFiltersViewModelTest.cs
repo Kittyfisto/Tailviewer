@@ -100,5 +100,46 @@ namespace Tailviewer.Test.Ui
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
 			changed.Should().Be(1, "Because changing the current data source MUST apply ");
 		}
+
+		[Test]
+		[Description("Verifies that removing an active quick-filter causes the OnFiltersChanged event to be fired")]
+		public void TestRemove1()
+		{
+			QuickFilter filter1 = _quickFilters.Add();
+			var dataSource = new SingleDataSource(new DataSource("daw") { Id = Guid.NewGuid() });
+			dataSource.ActivateQuickFilter(filter1.Id);
+
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			var filter1Model = model.Observable.First();
+
+			int changed = 0;
+			model.OnFiltersChanged += () => ++changed;
+
+			filter1Model.RemoveCommand.Execute(null);
+			model.Observable.Should().BeEmpty("because we've just removed the only quick filter");
+			changed.Should().Be(1, "because removing an active quick-filter should always fire the OnFiltersChanged event");
+		}
+
+		[Test]
+		[Description("Verifies that removing an inactive quick-filter does NOT cause the OnFiltersChanged event to be fired")]
+		public void TestRemove2()
+		{
+			QuickFilter filter1 = _quickFilters.Add();
+			var dataSource = new SingleDataSource(new DataSource("daw") { Id = Guid.NewGuid() });
+			dataSource.ActivateQuickFilter(filter1.Id);
+
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			var filter1Model = model.Observable.First();
+			filter1Model.IsActive = false;
+
+			int changed = 0;
+			model.OnFiltersChanged += () => ++changed;
+
+			filter1Model.RemoveCommand.Execute(null);
+			model.Observable.Should().BeEmpty("because we've just removed the only quick filter");
+			changed.Should().Be(0, "because removing an inactive quick-filter should never fire the OnFiltersChanged event");
+		}
 	}
 }
