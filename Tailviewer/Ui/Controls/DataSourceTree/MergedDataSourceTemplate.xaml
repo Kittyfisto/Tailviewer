@@ -21,7 +21,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="24" />
             </Grid.ColumnDefinitions>
 
             <Grid Margin="8,4,0,4">
@@ -30,20 +30,7 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{Binding DisplayName}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                    Value="True">
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource TextBrushSelected}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <controls:FlatTextBlock Text="{Binding DisplayName}" />
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
@@ -67,9 +54,9 @@
                 </Grid>
             </Grid>
 
-            <controls:RemoveButton VerticalAlignment="Stretch"
+            <controls:RemoveButton x:Name="PART_RemoveDataSource"
+                                   VerticalAlignment="Stretch"
                                    HorizontalAlignment="Right"
-                                   IsInverted="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                    Command="{Binding RemoveCommand}"
                                    Grid.Column="1"
                                    HorizontalContentAlignment="Right" />

@@ -6,11 +6,19 @@
                     mc:Ignorable="d">
 
     <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style x:Key="DataSourceTreeViewItemStyle" TargetType="{x:Type TreeViewItem}">
         <Setter Property="IsExpanded" Value="True" />
+        <!-- IsInverted is an inherited, attached dependency property and, as such,
+             travels down the entire visual tree. We use this to ensure that our content
+             renders properly when we are selected (darker background => the foreground of
+             our content should be white-ish). However we don't want this property to travel
+             to our child TreeViewItems, and therefore have to set the property to false, by default
+        -->
+        <Setter Property="controls:Properties.IsInverted" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TreeViewItem}">
@@ -26,9 +34,9 @@
 
                         <Border Grid.ColumnSpan="2" Background="{TemplateBinding Background}" />
                         <controls:ExpanderToggleButton x:Name="PART_Expander"
-                                                       IsInverted="{TemplateBinding IsSelected}"
                                                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                                        Margin="4"
+                                                       Padding="0"
                                                        Width="24"
                                                        Height="24"
                                                        />
@@ -44,10 +52,28 @@
                         <Trigger Property="HasItems" Value="false">
                             <Setter Property="Visibility" TargetName="PART_Expander" Value="Collapsed" />
                         </Trigger>
+
+                        <!-- When we're not selected -->
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter Property="Background"
-                                    Value="{StaticResource BackgroundBrushSelected}" />
+                            <Setter Property="controls:Properties.IsInverted" Value="False" />
                         </Trigger>
+
+                        <!-- When we're selected -->
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />
+                            <Setter Property="controls:Properties.IsInverted" Value="True" />
+                        </Trigger>
+                        
+                        <!-- When we're selected, but NOT focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsFocused" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource BackgroundBrushSelectedUnfocused}" />
+                            <Setter Property="controls:Properties.IsInverted" Value="False" />
+                        </MultiTrigger>
+                        
                         <!-- We want to hide our items in case we're collapsed  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -56,6 +82,7 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="Visibility" TargetName="ItemsHost" Value="Collapsed" />
                         </MultiTrigger>
+
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />

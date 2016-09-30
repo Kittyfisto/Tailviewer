@@ -20,7 +20,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="24" />
             </Grid.ColumnDefinitions>
 
             <Grid Margin="8,4,16,4">
@@ -31,48 +31,13 @@
                 </Grid.RowDefinitions>
 
                 <!-- Name -->
-                <TextBlock Text="{Binding DisplayName}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                    Value="True">
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource TextBrushSelected}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                <controls:FlatTextBlock Text="{Binding DisplayName}" />
 
                 <!-- Folder -->
-                <TextBlock Text="{Binding Folder}"
+                <controls:SubTextBlock Text="{Binding Folder}"
                            ToolTip="{Binding Folder}"
                            TextTrimming="CharacterEllipsis"
-                           Grid.Row="1">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                    Value="True">
-                                    <Setter Property="Foreground"
-                                            Value="#DAECF7" />
-                                </DataTrigger>
-                                <DataTrigger
-                                    Binding="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
-                                    Value="False">
-                                    <Setter Property="Foreground"
-                                            Value="#B7B7B7" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                           Grid.Row="1" />
 
                 <!-- Misc: Skipped, etc... -->
                 <Grid Grid.Row="2">
@@ -99,8 +64,6 @@
 
             <controls:RemoveButton VerticalAlignment="Stretch"
                                    HorizontalAlignment="Right"
-                                   IsInverted="{Binding IsSelected, RelativeSource=
-{RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}"
                                    Command="{Binding RemoveCommand}"
                                    Grid.Column="1" />
         </Grid>

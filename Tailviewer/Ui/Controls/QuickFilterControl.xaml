@@ -64,8 +64,8 @@
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
                                                         <ColumnDefinition />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="24" />
+                                                        <ColumnDefinition Width="24" />
                                                     </Grid.ColumnDefinitions>
 
                                                     <CheckBox

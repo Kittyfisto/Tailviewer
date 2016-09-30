@@ -39,7 +39,7 @@ namespace Tailviewer
 					MaxSizeRollBackups = 20,
 					MaximumFileSize = "1GB",
 					RollingStyle = RollingFileAppender.RollingMode.Size,
-					StaticLogFileName = true
+					StaticLogFileName = false
 				};
 			fileAppender.ActivateOptions();
 			hierarchy.Root.AddAppender(fileAppender);

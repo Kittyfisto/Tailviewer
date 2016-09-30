@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.AutoUpdates;

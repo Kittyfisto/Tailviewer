@@ -30,6 +30,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -48,7 +49,7 @@
                   Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                 <StackPanel Orientation="Horizontal" Margin="8">
                     <TextBlock Text="A new version is ready to be downloaded from github"
-                               Foreground="{StaticResource TextBrushSelected}"
+                               Foreground="{StaticResource TextBrushInverted}"
                                VerticalAlignment="Center" />
                     <Button Content="Got it"
                             Command="{Binding GotItCommand}"
