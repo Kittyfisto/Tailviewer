@@ -64,6 +64,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			InputBindings.Add(new MouseBinding(new DelegateCommand(OnMouseWheelDown), MouseWheelGesture.WheelDown));
 
 			SizeChanged += OnSizeChanged;
+			GotFocus += OnGotFocus;
+			LostFocus += OnLostFocus;
 
 			Focusable = true;
 			ClipToBounds = true;
@@ -168,6 +170,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			_currentlyVisibleSection = CalculateVisibleSection();
 		}
 
+		private void OnGotFocus(object sender, RoutedEventArgs routedEventArgs)
+		{
+			UpdateVisibleLines();
+		}
+
+		private void OnLostFocus(object sender, RoutedEventArgs routedEventArgs)
+		{
+			UpdateVisibleLines();
+		}
+
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);
@@ -215,7 +227,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
 					{
-						Filter = _filter
+						Filter = _filter,
+						IsFocused = IsFocused
 					};
 				_visibleTextLines.Add(line);
 			}

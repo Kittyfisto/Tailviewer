@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private ILogEntryFilter _filter;
 		private Brush _lastForegroundBrush;
 		private bool _colorByLevel;
+		private bool _isFocused;
 
 		public TextLine(LogLine logLine,
 		                HashSet<LogLineIndex> hoveredIndices,
@@ -35,6 +36,20 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = selectedIndices;
 			_segments = new List<TextSegment>();
 			_colorByLevel = colorByLevel;
+			_isFocused = true;
+		}
+
+		public bool IsFocused
+		{
+			get { return _isFocused; }
+			set
+			{
+				if (value == _isFocused)
+					return;
+
+				_isFocused = value;
+				_segments.Clear();
+			}
 		}
 
 		public LogLine LogLine
@@ -76,8 +91,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				if (IsSelected)
 				{
-					return TextHelper.SelectedForegroundBrush;
+					if (IsFocused)
+						return TextHelper.SelectedForegroundBrush;
+
+					return TextHelper.NormalForegroundBrush;
 				}
+
 				if (IsHovered)
 				{
 					return TextHelper.HoveredForegroundBrush;
@@ -93,7 +112,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				if (IsSelected)
 				{
-					return TextHelper.SelectedBackgroundBrush;
+					if (IsFocused)
+						return TextHelper.SelectedBackgroundBrush;
+
+					return TextHelper.SelectedUnfocusedBackgroundBrush;
 				}
 
 				if (_colorByLevel)
