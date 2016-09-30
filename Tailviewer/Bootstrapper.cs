@@ -13,10 +13,10 @@ namespace Tailviewer
 		: AbstractBootstrapper
 	{
 		[STAThread]
-		public static int Main()
+		public static int Main(string[] args)
 		{
 			SetupLoggers();
-			return App.Start();
+			return App.Start(args);
 		}
 
 		private static void SetupLoggers()

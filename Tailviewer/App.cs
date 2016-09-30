@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -21,10 +22,11 @@ namespace Tailviewer
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public static int Start()
+		public static int Start(string[] args)
 		{
 			InstallExceptionHandlers();
 			Log.InfoFormat("Starting tailviewer...");
+			Log.InfoFormat("Commandline arguments: {0}", args);
 			LogEnvironment();
 
 			ApplicationSettings settings = ApplicationSettings.Create();
@@ -37,9 +39,30 @@ namespace Tailviewer
 				//       (maybe we should preserve an old version)
 			}
 
+			
+
 			using (var dataSources = new DataSources(settings.DataSources))
 			using (var updater = new AutoUpdater(settings.AutoUpdate))
 			{
+				if (args.Length > 0)
+				{
+					var filePath = args[0];
+					if (File.Exists(filePath))
+					{
+						// Not only do we want to add this file to the list of data sources,
+						// but we also want to select it so the user can view it immediately, regardless
+						// of what was selected previously.
+						var dataSource = dataSources.AddDataSource(filePath);
+						settings.DataSources.SelectedItem = dataSource.Id;
+					}
+					else
+					{
+						Log.ErrorFormat("File '{0}' does not exist, won't open it!", filePath);
+					}
+				}
+
+				
+
 				var quickFilters = new QuickFilters(settings.QuickFilters);
 				var application = new App();
 				Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
