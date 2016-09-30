@@ -26,7 +26,7 @@ namespace Tailviewer
 		{
 			InstallExceptionHandlers();
 			Log.InfoFormat("Starting tailviewer...");
-			Log.InfoFormat("Commandline arguments: {0}", args);
+			Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 			LogEnvironment();
 
 			ApplicationSettings settings = ApplicationSettings.Create();
@@ -96,6 +96,7 @@ namespace Tailviewer
 			builder.AppendFormat("Operating System: {0}, {1}\r\n",
 			                     Environment.OSVersion,
 			                     Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
+			builder.AppendFormat("Current directory: {0}", Directory.GetCurrentDirectory());
 
 			Log.InfoFormat("Environment: {0}", builder);
 		}
