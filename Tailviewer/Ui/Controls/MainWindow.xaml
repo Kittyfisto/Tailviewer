@@ -120,12 +120,36 @@
                     ItemsSource="{Binding QuickFilters}"
                     AddCommand="{Binding AddQuickFilterCommand}" />
 
+                <controls3:MoreButton Grid.Column="4"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      Width="26"
+                                      Height="26"
+                                      TextBlock.FontSize="14">
+                    <controls3:MoreButton.ContextMenu>
+                        <controls3:FlatContextMenu HorizontalOffset="-119"
+                                                   AnchorAlignment="Right"
+                                                   Placement="Bottom"
+                                                   VerticalOffset="-10">
+                            <controls3:FlatMenuItem Header="Check for Updates..." Command="{Binding CheckForUpdatesCommand}" />
+                            <controls3:FlatMenuItem Header="About Tailviewer..." Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
+                        </controls3:FlatContextMenu>
+                    </controls3:MoreButton.ContextMenu>
+                </controls3:MoreButton>
+
                 <controls3:AlertControl
                     Grid.ColumnSpan="5"
                     Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                     Exception="{Binding Exception}"
                     CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
+            
+            <controls3:AboutControl Grid.RowSpan="2"
+                                    x:Name="PART_About"
+                                    Foreground="#333333">
+                <controls:AboutContent />
+            </controls3:AboutControl>
+            
         </Grid>
 
     </AdornerDecorator>

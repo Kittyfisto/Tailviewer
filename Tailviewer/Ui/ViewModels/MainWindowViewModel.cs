@@ -26,6 +26,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
+		private readonly ICommand _chekForUpdatesCommand;
 
 		private readonly DispatcherTimer _timer;
 		private readonly IAutoUpdater _updater;
@@ -72,10 +73,16 @@ namespace Tailviewer.Ui.ViewModels
 			_gotItCommand = new DelegateCommand(GotIt);
 
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
+			_chekForUpdatesCommand = new DelegateCommand(CheckForUpdates, () => false);
 
 			ChangeDataSource(CurrentDataSource);
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
+		}
+
+		private void CheckForUpdates()
+		{
+			throw new NotImplementedException();
 		}
 
 		private void AddDataSource()
@@ -257,6 +264,11 @@ namespace Tailviewer.Ui.ViewModels
 		public ICommand AddDataSourceCommand
 		{
 			get { return _addDataSourceCommand; }
+		}
+
+		public ICommand CheckForUpdatesCommand
+		{
+			get { return _chekForUpdatesCommand; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

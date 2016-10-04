@@ -35,6 +35,7 @@
                         <Border Grid.ColumnSpan="2" Background="{TemplateBinding Background}" />
                         <controls:ExpanderToggleButton x:Name="PART_Expander"
                                                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                       Foreground="Black"
                                                        Margin="4"
                                                        Padding="0"
                                                        Width="24"
@@ -69,6 +70,7 @@
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsFocused" Value="False" />
+                                <Condition SourceName="PART_Expander" Property="IsFocused" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" Value="{StaticResource BackgroundBrushSelectedUnfocused}" />
                             <Setter Property="controls:Properties.IsInverted" Value="False" />

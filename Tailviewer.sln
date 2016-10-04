@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4875D242-F178-48B4-B86D-397650126A32}"
 	ProjectSection(SolutionItems) = preProject
-		installer.nsi = installer.nsi
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject

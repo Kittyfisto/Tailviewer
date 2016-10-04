@@ -8,6 +8,13 @@ namespace Tailviewer
 		public static readonly string ApplicationTitle;
 		public static readonly string MainWindowTitle;
 		public static readonly Version ApplicationVersion;
+		public static string ApplicationLicense
+		{
+			get
+			{
+				return Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
+			}
+		}
 
 		static Constants()
 		{

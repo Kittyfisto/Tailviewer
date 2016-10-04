@@ -29,21 +29,26 @@
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="Quick Filters"
                                            Foreground="DarkGray"
+                                           VerticalAlignment="Center"
                                            FontSize="14"
-                                           Margin="8,8,0,0" />
+                                           Margin="8,0,0,0" />
 
                                 <controls2:AddButton
                                     Grid.Column="1"
                                     Width="26"
                                     Height="26"
                                     ToolTip="Add new quick filter"
+                                    VerticalAlignment="Center"
                                     Command="{TemplateBinding AddCommand}" />
+
+
                             </Grid>
 
                             <ScrollViewer
@@ -116,8 +121,7 @@
                                                             x:Name="PART_Inverted"
                                                             IsChecked="{Binding IsInverted, Converter={StaticResource InvertBoolConverter}}"
                                                             Width="24"
-                                                            Height="24"
-                                                            Margin="0,8,8,8">
+                                                            Height="24">
                                                         </controls2:VisibilityToggleButton>
 
                                                         <local:QuickFilterMatchTypeToggleButton
@@ -136,10 +140,12 @@
                                             </Grid>
                                             <DataTemplate.Triggers>
                                                 <DataTrigger Binding="{Binding IsInverted}" Value="True">
-                                                    <Setter Property="ToolTip" TargetName="PART_Inverted" Value="Entries matching this filter will be EXCLUDED" />
+                                                    <Setter Property="ToolTip" TargetName="PART_Inverted"
+                                                            Value="Entries matching this filter will be EXCLUDED" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsInverted}" Value="False">
-                                                    <Setter Property="ToolTip" TargetName="PART_Inverted" Value="Only those entries matching this filter will be INCLUDED" />
+                                                    <Setter Property="ToolTip" TargetName="PART_Inverted"
+                                                            Value="Only those entries matching this filter will be INCLUDED" />
                                                 </DataTrigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>
