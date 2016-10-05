@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 
 namespace Installer
@@ -21,6 +22,12 @@ namespace Installer
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
 			((MainWindowViewModel) DataContext).Update();
+		}
+
+		private void DisplayLicense(object sender, RequestNavigateEventArgs e)
+		{
+			var licenseWindow = new LicenseWindow();
+			licenseWindow.ShowDialog();
 		}
 	}
 }

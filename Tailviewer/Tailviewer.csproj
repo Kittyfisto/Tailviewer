@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.51.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.51\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.56.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.56\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -97,6 +97,7 @@
     <Compile Include="Ui\Controls\AboutContent.xaml.cs">
       <DependentUpon>AboutContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\AboutViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -268,11 +269,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\FONTLOG.txt" />
-    <None Include="Resources\Fonts\OFL.txt" />
+    <Resource Include="Licenses\Inconsolata\OFL.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Licenses\Log4Net\LICENSE-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Licenses\Log4Net\" />
-    <Folder Include="Licenses\Metrolib\" />
+    <Resource Include="Licenses\Metrolib\License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

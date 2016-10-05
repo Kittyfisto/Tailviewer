@@ -33,12 +33,13 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <StackPanel>
                     <TextBlock HorizontalAlignment="Left">
-                        <Run Text="Installation will install " />
+                        <Run Text="Installation will install approx. " />
                         <Run Text="{Binding InstallationSize, Mode=OneWay}" />
                         <Run Text=" to:" />
                     </TextBlock>
@@ -57,9 +58,11 @@
                 <TextBlock Grid.Row="1"
                            TextWrapping="Wrap">
                     <Run Text="You must agree to the " />
-                    <Run Text="License Terms" />
-                    <Run
-                        Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available" />
+                    <Hyperlink RequestNavigate="DisplayLicense"
+                               NavigateUri="https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE">
+                        License Terms
+                    </Hyperlink>
+                    <Run Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available." />
                 </TextBlock>
 
                 <CheckBox
@@ -67,7 +70,8 @@
                     Content="I agree to the License terms"
                     IsChecked="{Binding AgreeToLicense, Mode=TwoWay}" />
 
-                <Button Grid.Row="3"
+
+                <Button Grid.Row="4"
                         VerticalAlignment="Bottom"
                         Command="{Binding InstallationCommand}">
                     <Button.Content>

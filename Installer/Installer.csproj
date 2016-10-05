@@ -42,8 +42,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Metrolib, Version=0.1.51.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.51\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.56.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.56\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -58,6 +58,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="LicenseWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -68,6 +72,9 @@
     <Compile Include="Exceptions\DeleteFileException.cs" />
     <Compile Include="Exceptions\FileIOException.cs" />
     <Compile Include="Installer.cs" />
+    <Compile Include="LicenseWindow.xaml.cs">
+      <DependentUpon>LicenseWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -134,7 +141,9 @@
     <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\FONTLOG.txt">
       <Link>InstallationFiles\Fonts\FONTLOG.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\OFL.txt">
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Tailviewer\Licenses\Inconsolata\OFL.txt">
       <Link>InstallationFiles\Fonts\OFL.txt</Link>
     </EmbeddedResource>
   </ItemGroup>
