@@ -292,8 +292,11 @@ namespace Tailviewer.Test.BusinessLogic
 						stream.SetLength(0);
 					}
 
-					WaitUntil(() => filtered.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					// filtered.Count is changed *before* the event is fired and thus we have to wait
+					// for sections to be filled.
+					WaitUntil(() => sections.Count == 1, TimeSpan.FromSeconds(1)).Should().BeTrue();
 					sections.Should().Equal(new[] {LogFileSection.Reset});
+					filtered.Count.Should().Be(0);
 				}
 			}
 		}
