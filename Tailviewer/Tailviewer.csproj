@@ -271,12 +271,20 @@
     <None Include="Resources\Fonts\FONTLOG.txt" />
     <Resource Include="Licenses\Inconsolata\OFL.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Licenses\GoogleMaterialDesignIcons\License.txt" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Licenses\Log4Net\LICENSE-2.0.txt" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Licenses\Metrolib\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Licenses\MaterialDesignIcons\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Licenses\NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

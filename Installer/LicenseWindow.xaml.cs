@@ -18,7 +18,7 @@ namespace Installer
 					_licenseText = reader.ReadToEnd();
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				_licenseText =
 					"Unable to display license text. Please go to https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE to view the license terms.";

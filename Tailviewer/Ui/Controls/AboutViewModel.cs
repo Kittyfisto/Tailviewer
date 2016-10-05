@@ -21,7 +21,12 @@ namespace Tailviewer.Ui.Controls
 				{
 					Dependency.CreateFrom<ILog>("https://logging.apache.org/log4net/", "Licenses/Log4Net/LICENSE-2.0.txt"),
 					Dependency.CreateFrom<FlatListView>("https://github.com/Kittyfisto/Metrolib", "Licenses/Metrolib/License.txt"),
-					new Dependency("Inconsolata", new Version(1, 16), "https://fonts.google.com/specimen/Inconsolata", "Licenses/Inconsolata/OFL.txt")
+					new Dependency("Inconsolata", new Version(1, 16), "https://fonts.google.com/specimen/Inconsolata",
+					               "Licenses/Inconsolata/OFL.txt"),
+					new Dependency("Google Material Design Icons", new Version(3, 0, 1, 0),
+					               "https://github.com/google/material-design-icons", "Licenses/GoogleMaterialDesignIcons/License.txt"),
+					new Dependency("Material Design Icons", new Version(1, 7, 22, 0),
+					               "https://github.com/Templarian/MaterialDesign", "Licenses/MaterialDesignIcons/License.txt")
 				};
 			SelectedDependency = _dependencies[0];
 		}
