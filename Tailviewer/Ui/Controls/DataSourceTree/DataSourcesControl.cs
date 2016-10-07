@@ -37,7 +37,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			FilteredItemsSourcePropertyKey.DependencyProperty;
 
 		public static readonly DependencyProperty StringFilterProperty =
-			DependencyProperty.Register("StringFilter", typeof (string), typeof (LogViewerControl),
+			DependencyProperty.Register("SearchTerm", typeof (string), typeof (LogViewerControl),
 			                            new PropertyMetadata(null, OnStringFilterChanged));
 
 		public static readonly DependencyProperty AddDataSourceCommandProperty =

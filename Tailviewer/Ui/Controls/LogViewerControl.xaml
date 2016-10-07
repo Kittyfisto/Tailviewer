@@ -4,7 +4,8 @@
              xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
-             x:Name="This">
+             x:Name="This"
+             Background="White">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -112,11 +113,11 @@
                 IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
                 Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
-            <controls:FilterTextBox
+            <controls:SearchTextBox
+                x:Name="PART_SearchBox"
                 Margin="0,0,8,8"
-                x:Name="PART_StringFilter"
-                FilterText="{Binding DataSource.StringFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                Watermark="Filter log file (Ctrl+F)" />
+                Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
+                Watermark="Search log file (Ctrl+F)" />
         </WrapPanel>
 
         <Grid Grid.Row="1"

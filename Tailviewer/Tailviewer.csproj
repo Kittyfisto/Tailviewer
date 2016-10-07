@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.56\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.61.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.61\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,7 +66,8 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
-    <Compile Include="BusinessLogic\Filters\FilterMatch.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
+    <Compile Include="BusinessLogic\LogLineMatch.cs" />
     <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
@@ -84,6 +85,11 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />

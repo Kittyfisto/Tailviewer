@@ -41,6 +41,15 @@ namespace Tailviewer.BusinessLogic.Filters
 			return filters;
 		}
 
+		public static ILogEntryFilter Create(LevelFlags levelFilter,
+		                                     IEnumerable<ILogEntryFilter> additionalFilters = null)
+		{
+			var filters = new List<ILogEntryFilter> {new LevelFilter(levelFilter)};
+			if (additionalFilters != null)
+				filters.AddRange(additionalFilters);
+			return Create(filters);
+		}
+
 		public static ILogEntryFilter Create(string substringFilter,
 		                                     bool ignoreCase,
 		                                     LevelFlags levelFilter,

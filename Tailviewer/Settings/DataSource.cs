@@ -35,7 +35,7 @@ namespace Tailviewer.Settings
 		public Guid ParentId;
 
 		public HashSet<LogLineIndex> SelectedLogLines;
-		public string StringFilter;
+		public string SearchTerm;
 		public LogLineIndex VisibleLogLine;
 		public double HorizontalOffset;
 
@@ -74,7 +74,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("file", File);
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeBool("showlinenumbers", ShowLineNumbers);
-			writer.WriteAttributeString("stringfilter", StringFilter);
+			writer.WriteAttributeString("searchterm", SearchTerm);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
@@ -114,7 +114,8 @@ namespace Tailviewer.Settings
 						break;
 
 					case "stringfilter":
-						StringFilter = reader.Value;
+					case "searchterm":
+						SearchTerm = reader.Value;
 						break;
 
 					case "levelfilter":

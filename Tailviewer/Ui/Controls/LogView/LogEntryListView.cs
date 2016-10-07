@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using log4net;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -166,6 +167,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FollowTailProperty, value); }
 		}
 
+		public ILogFileSearch Search
+		{
+			set { _textCanvas.Search = value; }
+		}
+
 		internal int PendingModificationsCount
 		{
 			get { return _pendingModificationsCount; }
@@ -200,12 +206,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		public TextCanvas PartTextCanvas
 		{
 			get { return _textCanvas; }
-		}
-
-		public string StringFilter
-		{
-			get { return _textCanvas.StringFilter; }
-			set { _textCanvas.StringFilter = value; }
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)

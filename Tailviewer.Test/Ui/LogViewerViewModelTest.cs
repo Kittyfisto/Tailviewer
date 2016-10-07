@@ -9,6 +9,7 @@ using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Test.BusinessLogic;
+using Tailviewer.Test.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.Ui
@@ -99,14 +100,14 @@ namespace Tailviewer.Test.Ui
 				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
 				dataSource.LogFile.Wait();
 
-				dataSourceModel.StringFilter = "i";
+				dataSourceModel.SearchTerm = "i";
 				dataSource.FilteredLogFile.Wait();
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
-				dataSourceModel.StringFilter = "in";
-				dataSourceModel.StringFilter = "inf";
-				dataSourceModel.StringFilter = "info";
+				dataSourceModel.SearchTerm = "in";
+				dataSourceModel.SearchTerm = "inf";
+				dataSourceModel.SearchTerm = "info";
 
 				// Now we wait for the very last filter operation to complete
 				dataSource.FilteredLogFile.Wait();
@@ -162,7 +163,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.StringFilter).Returns("");
+			dataSource.Setup(x => x.SearchTerm).Returns("");
 			dataSource.Setup(x => x.QuickFilterChain).Returns(new List<ILogEntryFilter> {new Mock<ILogEntryFilter>().Object});
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 
@@ -184,7 +185,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.StringFilter).Returns("s");
+			dataSource.Setup(x => x.SearchTerm).Returns("s");
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);

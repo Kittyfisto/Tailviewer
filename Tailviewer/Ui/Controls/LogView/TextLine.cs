@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -197,8 +198,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					string substring;
 					int lastIndex = 0;
-					List<FilterMatch> matches = filter.Match(_logLine);
-					foreach (FilterMatch match in matches)
+					List<LogLineMatch> matches = filter.Match(_logLine);
+					foreach (LogLineMatch match in matches)
 					{
 						if (match.Index > lastIndex)
 						{

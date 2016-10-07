@@ -258,7 +258,6 @@ namespace Tailviewer.Ui.Controls
 			{
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				PART_ListView.FollowTail = newValue.FollowTail;
-				PART_ListView.StringFilter = newValue.StringFilter;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
 			}
@@ -480,10 +479,6 @@ namespace Tailviewer.Ui.Controls
 					PART_ListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
 					break;
 
-				case "StringFilter":
-					PART_ListView.StringFilter = DataSource.StringFilter;
-					break;
-
 				case "LevelsFilter":
 					OnLevelsChanged();
 					break;
@@ -506,7 +501,7 @@ namespace Tailviewer.Ui.Controls
 
 		public void FocusStringFilter()
 		{
-			FilterTextBox element = PART_StringFilter;
+			SearchTextBox element = PART_SearchBox;
 			if (element != null)
 			{
 				element.Focus();

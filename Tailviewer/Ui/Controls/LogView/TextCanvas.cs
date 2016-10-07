@@ -10,8 +10,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Metrolib.Controls;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using log4net;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.Controls.LogView
 	/// </summary>
 	public sealed class TextCanvas
 		: FrameworkElement
+		, ILogFileSearchListener
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -37,9 +38,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		private ILogFile _logFile;
 		private double _xOffset;
 		private double _yOffset;
-		private string _stringFilter;
-		private ILogEntryFilter _filter;
 		private bool _colorByLevel;
+		private ILogFileSearch _search;
+		private List<LogMatch> _searchMatches;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
 		{
@@ -120,36 +121,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _yOffset; }
 		}
 
-		public string StringFilter
-		{
-			get { return _stringFilter; }
-			set
-			{
-				_stringFilter = value;
-				if (string.IsNullOrWhiteSpace(value))
-				{
-					Filter = null;
-				}
-				else
-				{
-					Filter = BusinessLogic.Filters.Filter.Create(value);
-				}
-			}
-		}
-
-		public ILogEntryFilter Filter
-		{
-			get { return _filter; }
-			set
-			{
-				_filter = value;
-				foreach (var line in _visibleTextLines)
-				{
-					line.Filter = value;
-				}
-			}
-		}
-
 		public bool ColorByLevel
 		{
 			get { return _colorByLevel; }
@@ -160,6 +131,19 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				_colorByLevel = value;
 				UpdateVisibleLines();
+			}
+		}
+
+		public ILogFileSearch Search
+		{
+			get { return _search; }
+			set
+			{
+				if (_search != null)
+					_search.RemoveListener(this);
+				_search = value;
+				if (_search != null)
+					Search.AddListener(this);
 			}
 		}
 
@@ -227,7 +211,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
 					{
-						Filter = _filter,
 						IsFocused = IsFocused
 					};
 				_visibleTextLines.Add(line);
@@ -615,5 +598,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		#endregion Mouse Events
+
+		public void OnSearchModified(List<LogMatch> matches)
+		{
+			_searchMatches = matches;
+		}
 	}
 }

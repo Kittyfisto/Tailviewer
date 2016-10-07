@@ -16,6 +16,9 @@ namespace Tailviewer.BusinessLogic.Filters
 
 		public SubstringFilter(string stringFilter, bool ignoreCase)
 		{
+			if (string.IsNullOrEmpty(stringFilter))
+				throw new ArgumentException("stringFilter may not be empty");
+
 			StringFilter = stringFilter;
 			Comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
 		}
@@ -43,16 +46,19 @@ namespace Tailviewer.BusinessLogic.Filters
 			return true;
 		}
 
-		public List<FilterMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(LogLine line)
 		{
-			var ret = new List<FilterMatch>();
+			var ret = new List<LogLineMatch>();
 			Match(line, ret);
 			return ret;
 		}
 
-		public void Match(LogLine line, List<FilterMatch> matches)
+		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			var message = line.Message;
+			if (message == null)
+				return;
+
 			int startIndex = 0;
 			do
 			{
@@ -61,7 +67,7 @@ namespace Tailviewer.BusinessLogic.Filters
 					break;
 
 				var length = StringFilter.Length;
-				matches.Add(new FilterMatch(startIndex, length));
+				matches.Add(new LogLineMatch(startIndex, length));
 				startIndex += length;
 			} while (startIndex < message.Length - 1);
 		}

@@ -26,15 +26,15 @@ namespace Tailviewer.BusinessLogic.Filters
 			return !_filter.PassesFilter(logLine);
 		}
 
-		public List<FilterMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(LogLine line)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding
 			// the actual filter text (since we're the inversion of the inner filter).
 			// This is really not helpful and thus we don't mark any text at all...
-			return new List<FilterMatch>();
+			return new List<LogLineMatch>();
 		}
 
-		public void Match(LogLine line, List<FilterMatch> matches)
+		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding
 			// the actual filter text (since we're the inversion of the inner filter).

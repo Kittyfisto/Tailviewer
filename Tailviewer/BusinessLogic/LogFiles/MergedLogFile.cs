@@ -308,7 +308,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			if (numRemoved > 0)
 			{
-				Listeners.OnRead(-1);
+				Listeners.Reset();
 				Listeners.OnRead(_indices.Count);
 			}
 		}

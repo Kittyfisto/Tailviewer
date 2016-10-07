@@ -65,14 +65,14 @@ namespace Tailviewer.BusinessLogic.Filters
 			return true;
 		}
 
-		public List<FilterMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(LogLine line)
 		{
-			var ret = new List<FilterMatch>();
+			var ret = new List<LogLineMatch>();
 			Match(line, ret);
 			return ret;
 		}
 
-		public void Match(LogLine line, List<FilterMatch> matches)
+		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			foreach (var filter in _filters)
 			{

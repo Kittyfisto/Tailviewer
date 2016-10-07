@@ -40,12 +40,12 @@ namespace Tailviewer.BusinessLogic.Filters
 			return true;
 		}
 
-		public List<FilterMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(LogLine line)
 		{
-			return new List<FilterMatch>();
+			return new List<LogLineMatch>();
 		}
 
-		public void Match(LogLine line, List<FilterMatch> matches)
+		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			
 		}

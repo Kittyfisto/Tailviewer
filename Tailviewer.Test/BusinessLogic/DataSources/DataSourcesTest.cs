@@ -4,9 +4,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
-using DataSources = Tailviewer.Settings.DataSources;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class DataSourcesTest
@@ -14,7 +13,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new DataSources();
+			_settings = new Tailviewer.Settings.DataSources();
 			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_settings);
 		}
 
@@ -24,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_dataSources.Dispose();
 		}
 
-		private DataSources _settings;
+		private Tailviewer.Settings.DataSources _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
 
 		[Test]
@@ -44,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that adding a group also creates and adds a corresponding settings object")]
 		public void TestAddGroup1()
 		{
-			var settings = new DataSources();
+			var settings = new Tailviewer.Settings.DataSources();
 			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
 			{
 				MergedDataSource group = dataSources.AddGroup();
@@ -66,7 +65,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that a business object is created for every data source")]
 		public void TestCtor1()
 		{
-			var settings = new DataSources
+			var settings = new Tailviewer.Settings.DataSources
 				{
 					new DataSource(@"E:\Code\test.log")
 						{
@@ -86,7 +85,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that data sources are added to a parent, when specified")]
 		public void TestCtor2()
 		{
-			var settings = new DataSources
+			var settings = new Tailviewer.Settings.DataSources
 				{
 					new DataSource("test1.log")
 						{
@@ -125,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that data sources are added to the correct parent")]
 		public void TestCtor3()
 		{
-			var settings = new DataSources
+			var settings = new Tailviewer.Settings.DataSources
 				{
 					new DataSource("test1.log")
 						{

@@ -9,6 +9,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -26,6 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _noEntriesExplanation;
 		private string _noEntriesSubtext;
 		private int _totalLogEntryCount;
+		private ILogFileSearch _search;
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
@@ -41,6 +43,7 @@ namespace Tailviewer.Ui.ViewModels
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 
 			SetCurrentLogFile(null, _dataSource.DataSource.FilteredLogFile);
+			Search = _dataSource.DataSource.Search;
 		}
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
@@ -62,6 +65,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_currentLogFile = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public ILogFileSearch Search
+		{
+			get { return _search; }
+			private set
+			{
+				if (value == _search)
+					return;
+
+				_search = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -226,10 +242,13 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			switch (args.PropertyName)
 			{
-				case "StringFilter":
 				case "LevelsFilter":
 				case "OtherFilter":
 					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
+					break;
+
+				case "SearchTerm":
+					Search = _dataSource.DataSource.Search;
 					break;
 			}
 		}
@@ -258,7 +277,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = "Not a single log entry matches the level selection";
 					NoEntriesSubtext = null;
 				}
-				else if (!string.IsNullOrEmpty(dataSource.StringFilter))
+				else if (!string.IsNullOrEmpty(dataSource.SearchTerm))
 				{
 					NoEntriesExplanation = "Not a single log entry matches the log file filter";
 					NoEntriesSubtext = null;

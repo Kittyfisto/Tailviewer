@@ -49,7 +49,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		bool ColorByLevel { get; set; }
 
-		string StringFilter { get; set; }
+		string SearchTerm { get; set; }
 
 		DateTime LastViewed { get; }
 

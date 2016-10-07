@@ -38,6 +38,46 @@ namespace Tailviewer.Test.Ui.Controls
 
 		[Test]
 		[STAThread]
+		[Ignore("Doesn't work yet")]
+		[Description(
+			"Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
+		public void TestChangeDataSource1()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.FollowTail).Returns(true);
+
+			_control.DataSource = dataSource.Object;
+			_control.PartListView.FollowTail.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		public void TestChangeDataSource2()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(false);
+
+			_control.ShowLineNumbers = true;
+			_control.DataSource = dataSource.Object;
+			_control.ShowLineNumbers.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
+		public void TestChangeDataSource3()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.ShowLineNumbers).Returns(true);
+
+			_control.ShowLineNumbers = false;
+			_control.DataSource = dataSource.Object;
+			_control.ShowLineNumbers.Should().BeTrue();
+		}
+
+		[Test]
+		[STAThread]
 		public void TestChangeLevelAll()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.All;
@@ -106,6 +146,122 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowWarning.Should().BeTrue();
 			_control.ShowError.Should().BeFalse();
 			_control.ShowFatal.Should().BeFalse();
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
+		public void TestChangeLogView1()
+		{
+			// TODO: This test requires that the template be fully loaded (or the control changed to a user control)
+
+			var oldLog = new Mock<IDataSourceViewModel>();
+			var oldDataSource = new Mock<IDataSource>();
+			var oldLogFile = new Mock<ILogFile>();
+			oldLogFile.Setup(x => x.Count).Returns(10000);
+			oldDataSource.Setup(x => x.FilteredLogFile).Returns(oldLogFile.Object);
+			oldDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
+			oldLog.SetupProperty(x => x.VisibleLogLine);
+			oldLog.Object.VisibleLogLine = 42;
+			var oldLogView = new LogViewerViewModel(oldLog.Object, _dispatcher);
+			_control.LogView = oldLogView;
+
+
+			var newLog = new Mock<IDataSourceViewModel>();
+			var newDataSource = new Mock<IDataSource>();
+			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			newDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
+			newLog.SetupProperty(x => x.VisibleLogLine);
+			newLog.Object.VisibleLogLine = 1;
+			var newLogView = new LogViewerViewModel(newLog.Object, _dispatcher);
+			_control.LogView = newLogView;
+
+			oldLog.Object.VisibleLogLine.Should()
+			      .Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
+			newLog.Object.VisibleLogLine.Should()
+			      .Be(1, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
+		}
+
+		[Test]
+		[STAThread]
+		[Description(
+			"Verifies that the VisibleLogLine of a data source is properly propagated through all controls when the data source is changed"
+			)]
+		public void TestChangeLogView2()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(100);
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			dataSourceViewModel.Setup(x => x.VisibleLogLine).Returns(new LogLineIndex(42));
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+
+			_control.LogView = logView;
+			_control.CurrentLogLine.Should().Be(42);
+			_control.PartListView.CurrentLine.Should().Be(42);
+			_control.PartListView.PartTextCanvas.CurrentLine.Should().Be(42);
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when a new data source is attached, its Selection is used")]
+		public void TestChangeLogView3()
+		{
+			_control.DataSource = null;
+
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(100);
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+
+			_control.LogView = logView;
+			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
+		}
+
+		[Test]
+		[STAThread]
+		[Description(
+			"Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting"
+			)]
+		public void TestChangeLogView4()
+		{
+			_control.DataSource = null;
+
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(100);
+			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
+			dataSourceViewModel.Setup(x => x.SearchTerm).Returns("Foobar");
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+
+			_control.PART_SearchBox.Text.Should().Be(string.Empty);
+
+			_control.LogView = logView;
+			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
+			_control.PART_SearchBox.Text.Should().Be("Foobar");
+		}
+
+		[Test]
+		[STAThread]
+		public void TestChangeSelection1()
+		{
+			_dataSource.SelectedLogLines.Should().BeEmpty();
+			_control.Select(new LogLineIndex(1));
+			_dataSource.SelectedLogLines.Should().Equal(new[] {new LogLineIndex(1)});
 		}
 
 		[Test]
@@ -267,157 +423,6 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowError = true;
 			_control.ShowFatal = true;
 			_control.ShowAll.Should().BeTrue();
-		}
-
-		[Test]
-		[STAThread]
-		[Ignore("Doesn't work yet")]
-		[Description("Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
-		public void TestChangeDataSource1()
-		{
-			var dataSource = new Mock<IDataSourceViewModel>();
-			dataSource.Setup(x => x.FollowTail).Returns(true);
-
-			_control.DataSource = dataSource.Object;
-			_control.PartListView.FollowTail.Should().BeTrue();
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
-		public void TestChangeDataSource2()
-		{
-			var dataSource = new Mock<IDataSourceViewModel>();
-			dataSource.Setup(x => x.ShowLineNumbers).Returns(false);
-
-			_control.ShowLineNumbers = true;
-			_control.DataSource = dataSource.Object;
-			_control.ShowLineNumbers.Should().BeFalse();
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
-		public void TestChangeDataSource3()
-		{
-			var dataSource = new Mock<IDataSourceViewModel>();
-			dataSource.Setup(x => x.ShowLineNumbers).Returns(true);
-
-			_control.ShowLineNumbers = false;
-			_control.DataSource = dataSource.Object;
-			_control.ShowLineNumbers.Should().BeTrue();
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
-		public void TestChangeLogView1()
-		{
-			// TODO: This test requires that the template be fully loaded (or the control changed to a user control)
-
-			var oldLog = new Mock<IDataSourceViewModel>();
-			var oldDataSource = new Mock<IDataSource>();
-			var oldLogFile = new Mock<ILogFile>();
-			oldLogFile.Setup(x => x.Count).Returns(10000);
-			oldDataSource.Setup(x => x.FilteredLogFile).Returns(oldLogFile.Object);
-			oldDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
-			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
-			oldLog.SetupProperty(x => x.VisibleLogLine);
-			oldLog.Object.VisibleLogLine = 42;
-			var oldLogView = new LogViewerViewModel(oldLog.Object, _dispatcher);
-			_control.LogView = oldLogView;
-
-
-			var newLog = new Mock<IDataSourceViewModel>();
-			var newDataSource = new Mock<IDataSource>();
-			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			newDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
-			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
-			newLog.SetupProperty(x => x.VisibleLogLine);
-			newLog.Object.VisibleLogLine = 1;
-			var newLogView = new LogViewerViewModel(newLog.Object, _dispatcher);
-			_control.LogView = newLogView;
-
-			oldLog.Object.VisibleLogLine.Should().Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
-			newLog.Object.VisibleLogLine.Should().Be(1, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that the VisibleLogLine of a data source is properly propagated through all controls when the data source is changed")]
-		public void TestChangeLogView2()
-		{
-			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
-			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
-			dataSourceViewModel.Setup(x => x.VisibleLogLine).Returns(new LogLineIndex(42));
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
-
-			_control.LogView = logView;
-			_control.CurrentLogLine.Should().Be(42);
-			_control.PartListView.CurrentLine.Should().Be(42);
-			_control.PartListView.PartTextCanvas.CurrentLine.Should().Be(42);
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that when a new data source is attached, its Selection is used")]
-		public void TestChangeLogView3()
-		{
-			_control.DataSource = null;
-
-			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
-			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
-			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
-
-			_control.LogView = logView;
-			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
-		}
-
-		[Test]
-		[STAThread]
-		[Description("Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting")]
-		public void TestChangeLogView4()
-		{
-			_control.DataSource = null;
-
-			var dataSource = new Mock<IDataSource>();
-			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
-			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
-			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
-			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> { new LogLineIndex(42) });
-			dataSourceViewModel.Setup(x => x.StringFilter).Returns("Foobar");
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
-
-			_control.PART_StringFilter.FilterText.Should().BeNull();
-			_control.PART_ListView.StringFilter.Should().BeNull();
-
-			_control.LogView = logView;
-			_control.SelectedIndices.Should().Equal(new[] { new LogLineIndex(42) });
-			_control.PART_StringFilter.FilterText.Should().Be("Foobar");
-			_control.PART_ListView.StringFilter.Should().Be("Foobar");
-		}
-
-		[Test]
-		[STAThread]
-		public void TestChangeSelection1()
-		{
-			_dataSource.SelectedLogLines.Should().BeEmpty();
-			_control.Select(new LogLineIndex(1));
-			_dataSource.SelectedLogLines.Should().Equal(new[] {new LogLineIndex(1)});
 		}
 	}
 }

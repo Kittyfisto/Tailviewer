@@ -22,13 +22,13 @@ namespace Tailviewer.BusinessLogic.Filters
 		/// where each entry marks the Start and Length of the match, relative to the start of the line.
 		/// </summary>
 		/// <returns></returns>
-		List<FilterMatch> Match(LogLine line);
+		List<LogLineMatch> Match(LogLine line);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="line"></param>
 		/// <param name="matches"></param>
-		void Match(LogLine line, List<FilterMatch> matches);
+		void Match(LogLine line, List<LogLineMatch> matches);
 	}
 }

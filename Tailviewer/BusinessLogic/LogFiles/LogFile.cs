@@ -274,7 +274,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
-			Listeners.OnRead(-1);
+			Listeners.Reset();
 		}
 
 		private LevelFlags DetermineLevel(string line, List<KeyValuePair<int, LevelFlags>> levels)

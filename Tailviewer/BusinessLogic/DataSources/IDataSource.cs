@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -16,6 +17,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		ILogFile LogFile { get; }
 		ILogFile FilteredLogFile { get; }
+		ILogFileSearch Search { get; }
 
 		DateTime LastModified { get; }
 		DateTime LastViewed { get; set; }
@@ -23,7 +25,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		string FullFileName { get; }
 		bool FollowTail { get; set; }
 		bool ShowLineNumbers { get; set; }
-		string StringFilter { get; set; }
+		string SearchTerm { get; set; }
 		LevelFlags LevelFilter { get; set; }
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }

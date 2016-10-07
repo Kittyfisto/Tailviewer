@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MergedLogFileAcceptanceTest

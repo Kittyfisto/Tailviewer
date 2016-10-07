@@ -2,10 +2,12 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class SingleDataSourceAcceptanceTest
@@ -34,10 +36,10 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			_dataSource.LogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
-			_dataSource.FilteredLogFile.Should().BeSameAs(_dataSource.LogFile,
-			                                              "Because without a filter being active, the filtered log file should simply be the original log file");
 
+			_dataSource.LogFile.Wait();
 			_dataSource.FilteredLogFile.Wait();
+
 			_dataSource.LogFile.Count.Should().Be(165342);
 			_dataSource.FilteredLogFile.Count.Should().Be(165342);
 		}
@@ -58,7 +60,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			_dataSource.LogFile.Wait();
 
-			_dataSource.StringFilter = "info";
+			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Wait();
 			_dataSource.FilteredLogFile.Count.Should().Be(5);

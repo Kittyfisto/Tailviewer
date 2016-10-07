@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -13,6 +14,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
+
+		private readonly LogFileProxy _logFile;
+		private readonly LogFileSearchProxy _logFileSearch;
+
+		private ILogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
 		private ILogFile _lastRegisteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
@@ -25,11 +31,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
+
+			_logFile = new LogFileProxy();
+			_logFileSearch = new LogFileSearchProxy();
+			CreateSearch();
 		}
 
 		public ILogFile FilteredLogFile
 		{
-			get { return _filteredLogFile; }
+			get { return _logFile; }
+		}
+
+		public ILogFileSearch Search
+		{
+			get { return _logFileSearch; }
 		}
 
 		/// <summary>
@@ -48,16 +63,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public string StringFilter
+		public string SearchTerm
 		{
-			get { return _settings.StringFilter; }
+			get { return _settings.SearchTerm; }
 			set
 			{
-				if (value == StringFilter)
+				if (value == SearchTerm)
 					return;
 
-				_settings.StringFilter = value;
-				CreateFilteredLogFile();
+				_settings.SearchTerm = value;
+				CreateSearch();
 			}
 		}
 
@@ -223,27 +238,28 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_lastRegisteredLogFile = LogFile;
 			}
 
-			string stringFilter = StringFilter;
-			LevelFlags levelFilter = LevelFilter;
+			if (_filteredLogFile != null)
+				_filteredLogFile.Dispose();
 
-			ILogFile newLogFile;
-			ILogEntryFilter filter = Filter.Create(stringFilter, true, levelFilter, _quickFilterChain);
+			LevelFlags levelFilter = LevelFilter;
+			ILogEntryFilter filter = Filter.Create(levelFilter, _quickFilterChain);
 			if (filter != null)
 			{
-				newLogFile = LogFile.AsFiltered(filter, _maximumWaitTime);
+				_filteredLogFile = LogFile.AsFiltered(filter, _maximumWaitTime);
+				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
-				newLogFile = LogFile;
+				_filteredLogFile = null;
+				_logFile.InnerLogFile = LogFile;
 			}
+		}
 
-			if (_filteredLogFile != null)
-			{
-				if (_filteredLogFile != LogFile)
-					_filteredLogFile.Dispose();
-			}
-
-			_filteredLogFile = newLogFile;
+		private void CreateSearch()
+		{
+			var term = SearchTerm;
+			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_logFile, term) : null;
+			_logFileSearch.InnerSearch = _currentSearch;
 		}
 
 		private sealed class Counter

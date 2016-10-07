@@ -282,15 +282,15 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public string StringFilter
+		public string SearchTerm
 		{
-			get { return _dataSource.StringFilter; }
+			get { return _dataSource.SearchTerm; }
 			set
 			{
-				if (value == StringFilter)
+				if (value == SearchTerm)
 					return;
 
-				_dataSource.StringFilter = value;
+				_dataSource.SearchTerm = value;
 				EmitPropertyChanged();
 			}
 		}

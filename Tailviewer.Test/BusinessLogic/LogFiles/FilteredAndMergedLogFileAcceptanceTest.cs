@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class FilteredAndMergedLogFileAcceptanceTest

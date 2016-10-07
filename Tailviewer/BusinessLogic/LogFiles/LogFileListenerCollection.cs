@@ -44,6 +44,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public void Reset()
+		{
+			OnRead(-1);
+		}
+
 		public void OnRead(int numberOfLinesRead)
 		{
 			lock (_listeners)

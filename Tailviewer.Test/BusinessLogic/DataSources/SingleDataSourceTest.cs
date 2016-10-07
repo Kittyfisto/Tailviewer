@@ -5,11 +5,23 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class SingleDataSourceTest
 	{
+		[Test]
+		public void TestCtor()
+		{
+			using (var source = new SingleDataSource(new DataSource(@"E:\somelogfile.txt") { Id = Guid.NewGuid() }))
+			{
+				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
+				source.LevelFilter.Should().Be(LevelFlags.All);
+				source.SearchTerm.Should().BeNull();
+				source.FollowTail.Should().BeFalse();
+			}
+		}
+
 		[Test]
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()

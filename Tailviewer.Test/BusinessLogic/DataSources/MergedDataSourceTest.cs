@@ -5,7 +5,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class MergedDataSourceTest
@@ -66,7 +66,7 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestChangeFilter1()
 		{
 			ILogFile logFile1 = _merged.LogFile;
-			_merged.StringFilter = "foo";
+			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
 			var dataSource1 = new SingleDataSource(settings1);
 			_merged.Add(dataSource1);

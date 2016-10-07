@@ -42,8 +42,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.56.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.56\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.61.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.61\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -67,18 +67,21 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\AbstractTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
-    <Compile Include="BusinessLogic\DataSourcesTest.cs" />
-    <Compile Include="BusinessLogic\DataSourceTest.cs" />
-    <Compile Include="BusinessLogic\FilteredAndMergedLogFileAcceptanceTest.cs" />
-    <Compile Include="BusinessLogic\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileAcceptanceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
-    <Compile Include="BusinessLogic\MergedDataSourceTest.cs" />
-    <Compile Include="BusinessLogic\MergedLogFileAcceptanceTest.cs" />
-    <Compile Include="BusinessLogic\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MergedLogFileAcceptanceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
-    <Compile Include="BusinessLogic\SingleDataSourceAcceptanceTest.cs" />
-    <Compile Include="BusinessLogic\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceAcceptanceTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
@@ -96,7 +99,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
-    <Compile Include="BusinessLogic\LogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileTest.cs" />
     <Compile Include="Ui\Controls\LogViewerControlTest.cs" />
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogFileTest
