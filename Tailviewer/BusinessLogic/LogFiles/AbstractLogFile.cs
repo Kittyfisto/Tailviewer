@@ -105,7 +105,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public bool Wait(TimeSpan waitTime)
+		public virtual bool Wait(TimeSpan waitTime)
 		{
 			DateTime start = DateTime.Now;
 			while (DateTime.Now - start < waitTime)

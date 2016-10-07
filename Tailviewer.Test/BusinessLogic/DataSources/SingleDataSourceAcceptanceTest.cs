@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
@@ -37,8 +38,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSource.LogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			_dataSource.LogFile.Wait();
 			_dataSource.FilteredLogFile.Wait();
+
+			Thread.Sleep(TimeSpan.FromSeconds(1));
 
 			_dataSource.LogFile.Count.Should().Be(165342);
 			_dataSource.FilteredLogFile.Count.Should().Be(165342);

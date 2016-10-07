@@ -73,6 +73,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			EndOfSectionReset();
 		}
 
+		public override bool Wait(TimeSpan waitTime)
+		{
+			var started = DateTime.Now;
+			if (!_source.Wait(waitTime))
+				return false;
+
+			var elapsed = DateTime.Now - started;
+			var remaining = waitTime - elapsed;
+			if (remaining < TimeSpan.Zero)
+				remaining = TimeSpan.Zero;
+
+			return base.Wait(remaining);
+		}
+
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)

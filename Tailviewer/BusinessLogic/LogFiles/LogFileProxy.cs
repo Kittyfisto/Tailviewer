@@ -145,6 +145,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				logFile.Wait();
 		}
 
+		public bool Wait(TimeSpan waitTime)
+		{
+			ILogFile logFile = _innerLogFile;
+			if (logFile != null)
+				return logFile.Wait(waitTime);
+
+			return true;
+		}
+
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);

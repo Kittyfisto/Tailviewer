@@ -26,6 +26,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		int MaxCharactersPerLine { get; }
 
 		void Wait();
+		bool Wait(TimeSpan waitTime);
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		void RemoveListener(ILogFileListener listener);
 
