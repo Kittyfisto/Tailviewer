@@ -200,5 +200,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					new LogFileSection(400, 150)
 				});
 		}
+
+		[Test]
+		[Description("Verifies that OnLogFileModified calls from log files that aren't the current inner one are ignored")]
+		public void TestListen4()
+		{
+			var proxy = new LogFileProxy(_logFile.Object);
+			proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
+
+			new Action(() => proxy.OnLogFileModified(new Mock<ILogFile>().Object, new LogFileSection(0, 1))).ShouldNotThrow();
+			_modifications.Should().Equal(new[] {LogFileSection.Reset}, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+
+			new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).ShouldNotThrow();
+			_modifications.Should().Equal(new[] {LogFileSection.Reset}, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+		}
 	}
 }
