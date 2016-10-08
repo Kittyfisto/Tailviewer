@@ -599,7 +599,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		#endregion Mouse Events
 
-		public void OnSearchModified(List<LogMatch> matches)
+		public void OnSearchModified(ILogFileSearch listener, List<LogMatch> matches)
 		{
 			_searchMatches = matches;
 		}

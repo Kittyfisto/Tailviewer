@@ -4,6 +4,6 @@ namespace Tailviewer.BusinessLogic.Searches
 {
 	public interface ILogFileSearchListener
 	{
-		void OnSearchModified(List<LogMatch> matches);
+		void OnSearchModified(ILogFileSearch sender, List<LogMatch> matches);
 	}
 }

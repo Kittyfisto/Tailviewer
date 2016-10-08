@@ -11,11 +11,13 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly object _syncRoot;
 		private ILogFileSearch _innerSearch;
+		private List<LogMatch> _matches;
 
 		public LogFileSearchProxy()
 		{
 			_listeners = new List<ILogFileSearchListener>();
 			_syncRoot = new object();
+			_matches = new List<LogMatch>();
 		}
 
 		public LogFileSearchProxy(ILogFileSearch innerSearch)
@@ -29,29 +31,25 @@ namespace Tailviewer.BusinessLogic.Searches
 			get { return _innerSearch; }
 			set
 			{
-				if (value == _innerSearch)
-					return;
+				lock (_syncRoot)
+				{
+					if (value == _innerSearch)
+						return;
 
-				if(_innerSearch != null)
-					_innerSearch.RemoveListener(this);
-				_innerSearch = value;
-				if (_innerSearch != null)
-					_innerSearch.AddListener(this);
+					if (_innerSearch != null)
+						_innerSearch.RemoveListener(this);
+					_innerSearch = value;
 
-				OnSearchModified(Matches.ToList());
+					// AddListener automatically forwards the current list of matches to us (and we, in turn, forward them as well).
+					if (_innerSearch != null)
+						_innerSearch.AddListener(this);
+				}
 			}
 		}
 
 		public IEnumerable<LogMatch> Matches
 		{
-			get
-			{
-				var search = _innerSearch;
-				if (search != null)
-					return search.Matches;
-
-				return Enumerable.Empty<LogMatch>();
-			}
+			get { return _matches; }
 		}
 
 		public void AddListener(ILogFileSearchListener listener)
@@ -59,7 +57,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			lock (_syncRoot)
 			{
 				_listeners.Add(listener);
-				listener.OnSearchModified(Matches.ToList());
+				listener.OnSearchModified(this, Matches.ToList());
 			}
 		}
 
@@ -87,14 +85,27 @@ namespace Tailviewer.BusinessLogic.Searches
 				search.Wait();
 		}
 
-		public void OnSearchModified(List<LogMatch> matches)
+		public void OnSearchModified(ILogFileSearch sender, List<LogMatch> matches)
 		{
 			lock (_syncRoot)
 			{
-				foreach (var listener in _listeners)
-				{
-					listener.OnSearchModified(matches);
-				}
+				// We need to make sure that we don't forward search results from a previously
+				// _innerSearch. We can do so by ensuring that the sender is most definately
+				// our current _innerSearch (and also by ensuring a correct order when replacing
+				// it).
+				if (sender != _innerSearch)
+					return;
+
+				_matches = matches;
+				EmitSearchModified(_matches);
+			}
+		}
+
+		private void EmitSearchModified(IEnumerable<LogMatch> matches)
+		{
+			foreach (var listener in _listeners)
+			{
+				listener.OnSearchModified(this, matches.ToList());
 			}
 		}
 	}

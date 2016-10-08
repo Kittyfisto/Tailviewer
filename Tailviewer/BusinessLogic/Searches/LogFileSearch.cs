@@ -97,7 +97,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			lock (_syncRoot)
 			{
 				_listeners.Add(listener);
-				listener.OnSearchModified(_matches.ToList());
+				listener.OnSearchModified(this, _matches.ToList());
 			}
 		}
 
@@ -209,7 +209,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		{
 			foreach (ILogFileSearchListener listener in _listeners)
 			{
-				listener.OnSearchModified(_matches.ToList());
+				listener.OnSearchModified(this, _matches.ToList());
 			}
 		}
 	}

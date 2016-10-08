@@ -20,16 +20,21 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void Setup()
 		{
 			_search = new Mock<ILogFileSearch>();
+			_search.Setup(x => x.Matches).Returns(Enumerable.Empty<LogMatch>());
 			_listeners = new List<ILogFileSearchListener>();
 			_search.Setup(x => x.AddListener(It.IsAny<ILogFileSearchListener>()))
-			       .Callback((ILogFileSearchListener listener) => _listeners.Add(listener));
+			       .Callback((ILogFileSearchListener listener) =>
+				       {
+					       _listeners.Add(listener);
+						   listener.OnSearchModified(_search.Object, _search.Object.Matches.ToList());
+				       });
 			_search.Setup(x => x.RemoveListener(It.IsAny<ILogFileSearchListener>()))
 			       .Callback((ILogFileSearchListener listener) => _listeners.Remove(listener));
 
 			_listener = new Mock<ILogFileSearchListener>();
 			_matches = new List<LogMatch>();
-			_listener.Setup(x => x.OnSearchModified(It.IsAny<List<LogMatch>>()))
-			         .Callback((List<LogMatch> matches) =>
+			_listener.Setup(x => x.OnSearchModified(It.IsAny<ILogFileSearch>(), It.IsAny<List<LogMatch>>()))
+			         .Callback((ILogFileSearch sender, List<LogMatch> matches) =>
 				         {
 					         _matches.Clear();
 					         _matches.AddRange(matches);
@@ -41,6 +46,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		{
 			var proxy = new LogFileSearchProxy(_search.Object);
 			proxy.InnerSearch.Should().BeSameAs(_search.Object);
+			proxy.Matches.Should().NotBeNull();
 			proxy.Matches.Should().BeEmpty();
 		}
 
@@ -49,6 +55,15 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		{
 			var proxy = new LogFileSearchProxy(_search.Object);
 			_search.Verify(x => x.AddListener(It.IsAny<ILogFileSearchListener>()), Times.Once);
+		}
+
+		[Test]
+		public void TestCtor3()
+		{
+			var proxy = new LogFileSearchProxy();
+			proxy.InnerSearch.Should().BeNull();
+			proxy.Matches.Should().NotBeNull();
+			proxy.Matches.Should().BeEmpty();
 		}
 
 		[Test]
@@ -97,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			_search.Setup(x => x.Matches).Returns(matches.ToList);
 			foreach (var listener in _listeners)
 			{
-				listener.OnSearchModified(matches.ToList());
+				listener.OnSearchModified(_search.Object, matches.ToList());
 			}
 		}
 	}
