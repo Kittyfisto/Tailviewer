@@ -7,7 +7,6 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -35,7 +34,6 @@ namespace Tailviewer.Ui.ViewModels
 		private int _warningCount;
 		private string _searchTerm;
 		private int _currentMatchIndex;
-		private List<LogMatch> _searchMatches;
 		private int _searchMatchCount;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
@@ -43,6 +41,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 
 			_dataSource = dataSource;
+			_searchTerm = dataSource.SearchTerm;
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 			_startSearchCommand = new DelegateCommand(StartSearch);
@@ -311,19 +310,6 @@ namespace Tailviewer.Ui.ViewModels
 		public ICommand StartSearchCommand { get { return _startSearchCommand; } }
 		public ICommand StopSearchCommand { get { return _stopSearchCommand; } }
 
-		public IEnumerable<LogMatch> SearchMatches
-		{
-			get { return _searchMatches; }
-			private set
-			{
-				if (value == _searchMatches)
-					return;
-
-				_searchMatches = new List<LogMatch>(value);
-				EmitPropertyChanged();
-			}
-		}
-
 		public int SearchMatchCount
 		{
 			get { return _searchMatchCount; }
@@ -364,7 +350,6 @@ namespace Tailviewer.Ui.ViewModels
 			SearchMatchCount = 0;
 			CurrentMatchIndex = -1;
 			_dataSource.SearchTerm = null;
-			_searchMatches.Clear();
 		}
 
 		#endregion
@@ -441,6 +426,7 @@ namespace Tailviewer.Ui.ViewModels
 			FileSize = _dataSource.FileSize;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
+			SearchMatchCount = _dataSource.Search.Count;
 
 			if (NewLogLineCount != newBefore)
 			{

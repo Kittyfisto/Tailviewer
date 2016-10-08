@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -13,7 +15,7 @@ namespace Tailviewer.Test.Ui
 	public sealed class SingleDataSourceViewModelTest
 	{
 		[Test]
-		public void TestCtor()
+		public void TestCtor1()
 		{
 			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
 				{
@@ -24,6 +26,19 @@ namespace Tailviewer.Test.Ui
 				var model = new SingleDataSourceViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 				model.Id.Should().Be(settings.Id);
+			}
+		}
+
+		[Test]
+		public void TestCtor2()
+		{
+			using (var source = new SingleDataSource(new DataSource{Id=Guid.NewGuid(), File = @"C:\temp\foo.txt", SearchTerm = "foobar"}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			{
+				source.SearchTerm.Should().Be("foobar");
+
+				var model = new SingleDataSourceViewModel(source);
+				model.FileName.Should().Be("foo.txt");
+				model.SearchTerm.Should().Be("foobar");
 			}
 		}
 

@@ -6,7 +6,6 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -55,7 +54,6 @@ namespace Tailviewer.Ui.ViewModels
 		string SearchTerm { get; set; }
 		ICommand StartSearchCommand { get; }
 		ICommand StopSearchCommand { get; }
-		IEnumerable<LogMatch> SearchMatches { get; }
 		int SearchMatchCount { get; }
 		int CurrentMatchIndex { get; set; }
 
