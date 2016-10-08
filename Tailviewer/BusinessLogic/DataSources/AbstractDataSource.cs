@@ -91,7 +91,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DateTime LastModified
 		{
-			get { return LogFile.LastModified; }
+			get { return UnfilteredLogFile.LastModified; }
 		}
 
 		public DateTime LastViewed
@@ -126,7 +126,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}
 
-		public abstract ILogFile LogFile { get; }
+		public abstract ILogFile UnfilteredLogFile { get; }
 
 		public int NoLevelCount
 		{
@@ -210,7 +210,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public Size FileSize
 		{
-			get { return LogFile.FileSize; }
+			get { return UnfilteredLogFile.FileSize; }
 		}
 
 		public bool ColorByLevel
@@ -221,7 +221,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Dispose()
 		{
-			LogFile.Dispose();
+			UnfilteredLogFile.Dispose();
 		}
 
 		public override string ToString()
@@ -231,11 +231,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		protected void CreateFilteredLogFile()
 		{
-			if (LogFile != _lastRegisteredLogFile)
+			if (UnfilteredLogFile != _lastRegisteredLogFile)
 			{
 				// Our counter doesn't really do anything so it can be called instantly...
-				LogFile.AddListener(_counter, TimeSpan.Zero, 1000);
-				_lastRegisteredLogFile = LogFile;
+				UnfilteredLogFile.AddListener(_counter, TimeSpan.Zero, 1000);
+				_lastRegisteredLogFile = UnfilteredLogFile;
 			}
 
 			if (_filteredLogFile != null)
@@ -245,13 +245,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 			ILogEntryFilter filter = Filter.Create(levelFilter, _quickFilterChain);
 			if (filter != null)
 			{
-				_filteredLogFile = LogFile.AsFiltered(filter, _maximumWaitTime);
+				_filteredLogFile = UnfilteredLogFile.AsFiltered(filter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_logFile.InnerLogFile = LogFile;
+				_logFile.InnerLogFile = UnfilteredLogFile;
 			}
 		}
 

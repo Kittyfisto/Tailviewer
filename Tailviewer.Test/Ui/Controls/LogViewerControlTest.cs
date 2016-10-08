@@ -160,7 +160,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var oldLogFile = new Mock<ILogFile>();
 			oldLogFile.Setup(x => x.Count).Returns(10000);
 			oldDataSource.Setup(x => x.FilteredLogFile).Returns(oldLogFile.Object);
-			oldDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			oldDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
 			oldLog.SetupProperty(x => x.VisibleLogLine);
 			oldLog.Object.VisibleLogLine = 42;
@@ -171,7 +171,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var newLog = new Mock<IDataSourceViewModel>();
 			var newDataSource = new Mock<IDataSource>();
 			newDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
-			newDataSource.Setup(x => x.LogFile).Returns(new Mock<ILogFile>().Object);
+			newDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
 			newLog.SetupProperty(x => x.VisibleLogLine);
 			newLog.Object.VisibleLogLine = 1;
@@ -194,7 +194,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
@@ -217,7 +217,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
@@ -240,7 +240,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(100);
-			dataSource.Setup(x => x.LogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);

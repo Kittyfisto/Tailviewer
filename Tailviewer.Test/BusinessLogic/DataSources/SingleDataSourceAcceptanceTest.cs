@@ -35,21 +35,21 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
-			_dataSource.LogFile.Should().NotBeNull();
+			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
 			_dataSource.FilteredLogFile.Wait();
 
 			Thread.Sleep(TimeSpan.FromSeconds(1));
 
-			_dataSource.LogFile.Count.Should().Be(165342);
+			_dataSource.UnfilteredLogFile.Count.Should().Be(165342);
 			_dataSource.FilteredLogFile.Count.Should().Be(165342);
 		}
 
 		[Test]
 		public void TestLevleFilter1()
 		{
-			_dataSource.LogFile.Wait();
+			_dataSource.UnfilteredLogFile.Wait();
 
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
@@ -60,7 +60,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestStringFilter1()
 		{
-			_dataSource.LogFile.Wait();
+			_dataSource.UnfilteredLogFile.Wait();
 
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();

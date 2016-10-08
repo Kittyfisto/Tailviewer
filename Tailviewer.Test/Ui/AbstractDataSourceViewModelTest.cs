@@ -22,7 +22,7 @@ namespace Tailviewer.Test.Ui
 			_logFile = new Mock<ILogFile>();
 
 			_dataSource = new Mock<IDataSource>();
-			_dataSource.Setup(x => x.LogFile).Returns(_logFile.Object);
+			_dataSource.Setup(x => x.UnfilteredLogFile).Returns(_logFile.Object);
 			_dataSource.Setup(x => x.Settings).Returns(_settings);
 			_dataSource.SetupProperty(x => x.LastViewed);
 

@@ -234,7 +234,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCounts()
 		{
 			LogEntryCount = _currentLogFile.Count;
-			TotalLogEntryCount = _dataSource.DataSource.LogFile.Count;
+			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.Count;
 			UpdateNoEntriesExplanation();
 		}
 
@@ -256,7 +256,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateNoEntriesExplanation()
 		{
 			IDataSource dataSource = _dataSource.DataSource;
-			ILogFile source = dataSource.LogFile;
+			ILogFile source = dataSource.UnfilteredLogFile;
 			ILogFile filtered = dataSource.FilteredLogFile;
 
 			if (filtered.Count == 0)

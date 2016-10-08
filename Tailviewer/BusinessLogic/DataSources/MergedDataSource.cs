@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly HashSet<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
-		private MergedLogFile _logFile;
+		private MergedLogFile _unfilteredLogFile;
 
 		public MergedDataSource(DataSource settings)
 			: this(settings, TimeSpan.FromMilliseconds(100))
@@ -36,9 +36,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _dataSources; }
 		}
 
-		public override ILogFile LogFile
+		public override ILogFile UnfilteredLogFile
 		{
-			get { return _logFile; }
+			get { return _unfilteredLogFile; }
 		}
 
 		public void Add(IDataSource dataSource)
@@ -68,13 +68,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateLogFile()
 		{
-			if (_logFile != null)
+			if (_unfilteredLogFile != null)
 			{
-				_logFile.Dispose();
+				_unfilteredLogFile.Dispose();
 			}
 
-			_logFile = new MergedLogFile(_dataSources.Select(x => x.LogFile));
-			_logFile.Start(_maximumWaitTime);
+			_unfilteredLogFile = new MergedLogFile(_dataSources.Select(x => x.UnfilteredLogFile));
+			_unfilteredLogFile.Start(_maximumWaitTime);
 			CreateFilteredLogFile();
 		}
 	}

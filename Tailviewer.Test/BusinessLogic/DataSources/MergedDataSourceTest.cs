@@ -41,9 +41,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
 			var dataSource = new SingleDataSource(settings);
 			_merged.Add(dataSource);
-			_merged.LogFile.Should().NotBeNull();
-			_merged.LogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.LogFile).Sources.Should().Equal(new object[] {dataSource.LogFile});
+			_merged.UnfilteredLogFile.Should().NotBeNull();
+			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
+			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource.UnfilteredLogFile});
 		}
 
 		[Test]
@@ -52,10 +52,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
 			var dataSource = new SingleDataSource(settings);
-			ILogFile logFile1 = _merged.LogFile;
+			ILogFile logFile1 = _merged.UnfilteredLogFile;
 
 			_merged.Add(dataSource);
-			ILogFile logFile2 = _merged.LogFile;
+			ILogFile logFile2 = _merged.UnfilteredLogFile;
 
 			logFile2.Should().NotBeSameAs(logFile1);
 			((AbstractLogFile) logFile1).IsDisposed.Should().BeTrue();
@@ -65,12 +65,12 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the data source disposed of the merged log file")]
 		public void TestChangeFilter1()
 		{
-			ILogFile logFile1 = _merged.LogFile;
+			ILogFile logFile1 = _merged.UnfilteredLogFile;
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
 			var dataSource1 = new SingleDataSource(settings1);
 			_merged.Add(dataSource1);
-			ILogFile logFile2 = _merged.LogFile;
+			ILogFile logFile2 = _merged.UnfilteredLogFile;
 
 			logFile2.Should().NotBeSameAs(logFile1);
 			((AbstractLogFile) logFile1).IsDisposed.Should().BeTrue();
@@ -96,15 +96,15 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the log-file of a newly created group is empty")]
 		public void TestCtor3()
 		{
-			_merged.LogFile.Should().NotBeNull("Because a log file should be present at all times");
-			_merged.LogFile.Count.Should().Be(0);
+			_merged.UnfilteredLogFile.Should().NotBeNull("Because a log file should be present at all times");
+			_merged.UnfilteredLogFile.Count.Should().Be(0);
 		}
 
 		[Test]
 		[Description("Verifies that the log-file of a newly created group is actually a MergedLogFile")]
 		public void TestCtor4()
 		{
-			_merged.LogFile.Should().BeOfType<MergedLogFile>();
+			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
 		}
 
 		[Test]
@@ -132,9 +132,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);
-			_merged.LogFile.Should().NotBeNull();
-			_merged.LogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.LogFile).Sources.Should().Equal(new object[] {dataSource1.LogFile});
+			_merged.UnfilteredLogFile.Should().NotBeNull();
+			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
+			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource1.UnfilteredLogFile});
 		}
 	}
 }

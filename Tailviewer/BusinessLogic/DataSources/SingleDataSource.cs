@@ -7,7 +7,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	internal sealed class SingleDataSource
 		: AbstractDataSource
 	{
-		private readonly ILogFile _logFile;
+		private readonly ILogFile _unfilteredLogFile;
 
 		public SingleDataSource(DataSource settings)
 			: this(settings, TimeSpan.FromMilliseconds(100))
@@ -19,20 +19,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			var logFile = new LogFile(settings.File);
 			logFile.Start();
-			_logFile = logFile;
+			_unfilteredLogFile = logFile;
 			CreateFilteredLogFile();
 		}
 
-		public SingleDataSource(DataSource settings, ILogFile logFile, TimeSpan maximumWaitTime)
+		public SingleDataSource(DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
 			: base(settings, maximumWaitTime)
 		{
-			_logFile = logFile;
+			_unfilteredLogFile = unfilteredLogFile;
 			CreateFilteredLogFile();
 		}
 
-		public override ILogFile LogFile
+		public override ILogFile UnfilteredLogFile
 		{
-			get { return _logFile; }
+			get { return _unfilteredLogFile; }
 		}
 	}
 }

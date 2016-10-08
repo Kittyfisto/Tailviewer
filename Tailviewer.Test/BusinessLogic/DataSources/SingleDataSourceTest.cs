@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\LevelCounts.txt") {Id = Guid.NewGuid()}))
 			{
-				dataSource.LogFile.Wait();
+				dataSource.UnfilteredLogFile.Wait();
 
 				dataSource.TotalCount.Should().Be(21);
 				dataSource.DebugCount.Should().Be(1);
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\20Mb.txt") {Id = Guid.NewGuid()}))
 			{
-				dataSource.LogFile.Wait();
+				dataSource.UnfilteredLogFile.Wait();
 
 				dataSource.TotalCount.Should().Be(165342);
 				dataSource.DebugCount.Should().Be(165337);
@@ -72,9 +72,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\DifferentLevels.txt") {Id = Guid.NewGuid()}))
 			{
-				dataSource.LogFile.Wait();
-				dataSource.LogFile.Count.Should().Be(6);
-				LogLine[] lines = dataSource.LogFile.GetSection(new LogFileSection(0, 6));
+				dataSource.UnfilteredLogFile.Wait();
+				dataSource.UnfilteredLogFile.Count.Should().Be(6);
+				LogLine[] lines = dataSource.UnfilteredLogFile.GetSection(new LogFileSection(0, 6));
 				lines[0].Message.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				lines[0].Level.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
 

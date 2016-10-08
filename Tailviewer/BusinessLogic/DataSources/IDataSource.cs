@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
-		ILogFile LogFile { get; }
+		ILogFile UnfilteredLogFile { get; }
 		ILogFile FilteredLogFile { get; }
 		ILogFileSearch Search { get; }
 
