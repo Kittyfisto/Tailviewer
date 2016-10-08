@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Tailviewer.BusinessLogic.Searches
@@ -72,22 +71,6 @@ namespace Tailviewer.BusinessLogic.Searches
 			{
 				_listeners.Remove(listener);
 			}
-		}
-
-		public bool Wait(TimeSpan maximumWaitTime)
-		{
-			ILogFileSearch search = _innerSearch;
-			if (search != null)
-				return search.Wait(maximumWaitTime);
-
-			return true;
-		}
-
-		public void Wait()
-		{
-			ILogFileSearch search = _innerSearch;
-			if (search != null)
-				search.Wait();
 		}
 
 		public void OnSearchModified(ILogFileSearch sender, List<LogMatch> matches)

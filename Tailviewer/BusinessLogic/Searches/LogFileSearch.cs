@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Scheduling;
@@ -22,7 +21,6 @@ namespace Tailviewer.BusinessLogic.Searches
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly SubstringFilter _filter;
-		private readonly ManualResetEventSlim _finished;
 		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly ILogFile _logFile;
 		private readonly LogLine[] _logLinesBuffer;
@@ -50,7 +48,6 @@ namespace Tailviewer.BusinessLogic.Searches
 
 			_logFile = logFile;
 			_filter = new SubstringFilter(searchTerm, true);
-			_finished = new ManualResetEventSlim();
 			_matches = new List<LogMatch>();
 			_syncRoot = new object();
 			_listeners = new List<ILogFileSearchListener>();
@@ -75,7 +72,6 @@ namespace Tailviewer.BusinessLogic.Searches
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
-			_finished.Reset();
 		}
 
 		public IEnumerable<LogMatch> Matches
@@ -117,26 +113,6 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		public bool Wait(TimeSpan maximumWaitTime)
-		{
-			DateTime started = DateTime.Now;
-			if (!_logFile.Wait(maximumWaitTime))
-				return false;
-
-			TimeSpan elapsed = DateTime.Now - started;
-			TimeSpan remaining = maximumWaitTime - elapsed;
-			if (remaining < TimeSpan.Zero)
-				remaining = TimeSpan.Zero;
-
-			return _finished.Wait(remaining);
-		}
-
-		public void Wait()
-		{
-			_logFile.Wait();
-			_finished.Wait();
-		}
-
 		private void FilterAllPending()
 		{
 			LogFileSection section;
@@ -155,8 +131,6 @@ namespace Tailviewer.BusinessLogic.Searches
 					AppendMatches(section);
 				}
 			}
-
-			_finished.Set();
 		}
 
 		private void AppendMatches(LogFileSection section)

@@ -171,6 +171,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_listeners.OnRead(500);
 			_listeners.OnRead(600);
+
+			WaitUntil(() => _modifications.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
 			_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -188,6 +190,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_listeners.OnRead(500);
 			_listeners.Reset();
 			_listeners.OnRead(600);
+
+			WaitUntil(() => _modifications.Count >= 4, TimeSpan.FromSeconds(5)).Should().BeTrue();
 			_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -206,6 +210,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_listeners.OnRead(500);
 			_listeners.Invalidate(400, 100);
 			_listeners.OnRead(550);
+
+			WaitUntil(() => _modifications.Count >= 4, TimeSpan.FromSeconds(5)).Should().BeTrue();
 			_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -237,7 +243,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
 			proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 
-			WaitUntil(() => _modifications.Count == 2, TimeSpan.FromSeconds(50))
+			WaitUntil(() => _modifications.Count >= 2, TimeSpan.FromSeconds(50))
 				.Should().BeTrue("because the changes should've eventually been forwarded to the listener");
 			_modifications.Should().Equal(new[]
 				{

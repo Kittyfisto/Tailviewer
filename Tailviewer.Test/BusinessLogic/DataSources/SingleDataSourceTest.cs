@@ -15,6 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class SingleDataSourceTest
+		: AbstractTest
 	{
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
@@ -146,7 +147,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.None));
 				_listeners.OnRead(1);
 				dataSource.SearchTerm = "foobar";
-				dataSource.Search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+				//dataSource.Search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+				WaitUntil(() => dataSource.Search.Count >= 1, TimeSpan.FromSeconds(5)).Should().BeTrue();
 				var matches = dataSource.Search.Matches.ToList();
 				matches.Should().Equal(new[] {new LogMatch(0, new LogLineMatch(6, 6))});
 			}

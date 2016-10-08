@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 {
 	[TestFixture]
 	public sealed class LogFileSearchTest
+		: AbstractTest
 	{
 		private List<LogLine> _entries;
 		private Mock<ILogFile> _logFile;
@@ -70,7 +71,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		{
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "foobar"))
 			{
-				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because the search should have finished going through 0 log lines in a few seconds");
 				search.Matches.Should().BeEmpty("because the source is empty");
 			}
 		}
@@ -81,7 +81,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			Add("Hello World!");
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
-				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+				WaitUntil(() => search.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
 				var matches = search.Matches.ToList();
 				matches.Should().Equal(new[]
 					{
@@ -99,35 +99,13 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.AddListener(_listener.Object);
-				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+				WaitUntil(() => search.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
 				_matches.Should().Equal(new[]
 					{
 						new LogMatch(0, new LogLineMatch(2, 1)),
 						new LogMatch(0, new LogLineMatch(3, 1)),
 						new LogMatch(0, new LogLineMatch(9, 1))
 					});
-			}
-		}
-
-		[Test]
-		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
-		public void TestWait1()
-		{
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
-			{
-				search.Wait();
-				_logFile.Verify(x => x.Wait(), Times.Once);
-			}
-		}
-
-		[Test]
-		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
-		public void TestWait2()
-		{
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
-			{
-				search.Wait(TimeSpan.FromSeconds(1));
-				_logFile.Verify(x => x.Wait(It.Is<TimeSpan>(y => y == TimeSpan.FromSeconds(1))), Times.Once);
 			}
 		}
 

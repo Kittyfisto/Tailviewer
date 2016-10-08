@@ -261,23 +261,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			// If, for some reason, we receive an event from a previous log file,
-			// then we ignore it so our listeners are not confused.
-			if (logFile != _innerLogFile)
-				return;
-
-			if (section.IsReset)
-			{
-				_listeners.Reset();
-			}
-			else if (section.InvalidateSection)
-			{
-				_listeners.Invalidate((int)section.Index, section.Count);
-			}
-			else
-			{
-				_listeners.OnRead((int)(section.Index + section.Count));
-			}
+			_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(logFile, section));
 		}
 	}
 }

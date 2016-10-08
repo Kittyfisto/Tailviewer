@@ -12,6 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 {
 	[TestFixture]
 	public sealed class LogFileSearchProxyAcceptanceTest
+		: AbstractTest
 	{
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
@@ -60,7 +61,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
 			{
 				var proxy = new LogFileSearchProxy(search);
-				proxy.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because we should be able to search through the file in a few seconds");
+
+				WaitUntil(() => proxy.Count >= 1, TimeSpan.FromSeconds(1))
+					.Should().BeTrue("because we should be able to search through the file in a few seconds");
 
 				proxy.Matches.Should().Equal(new[]
 					{
@@ -80,7 +83,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 
 				AddEntry("Hello World!");
 				AddEntry("Foobar");
-				proxy.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because we should be able to search through the file in a few seconds");
+
+				WaitUntil(() => proxy.Count >= 1, TimeSpan.FromSeconds(5))
+					.Should().BeTrue("because we should be able to search through the file in a few seconds");
 
 				proxy.Matches.Should().Equal(new[]
 					{
