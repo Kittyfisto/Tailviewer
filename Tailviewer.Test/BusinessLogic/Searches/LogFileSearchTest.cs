@@ -39,6 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				        });
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
 
 			_matches = new List<LogMatch>();
 			_listener = new Mock<ILogFileSearchListener>();
@@ -91,6 +92,28 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 						new LogMatch(0, new LogLineMatch(3, 1)),
 						new LogMatch(0, new LogLineMatch(9, 1))
 					});
+			}
+		}
+
+		[Test]
+		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
+		public void TestWait1()
+		{
+			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			{
+				search.Wait();
+				_logFile.Verify(x => x.Wait(), Times.Once);
+			}
+		}
+
+		[Test]
+		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
+		public void TestWait2()
+		{
+			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			{
+				search.Wait(TimeSpan.FromSeconds(1));
+				_logFile.Verify(x => x.Wait(It.Is<TimeSpan>(y => y == TimeSpan.FromSeconds(1))), Times.Once);
 			}
 		}
 

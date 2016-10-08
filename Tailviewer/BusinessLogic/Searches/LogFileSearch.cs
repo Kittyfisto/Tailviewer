@@ -111,11 +111,21 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public bool Wait(TimeSpan maximumWaitTime)
 		{
-			return _finished.Wait(maximumWaitTime);
+			var started = DateTime.Now;
+			if (!_logFile.Wait(maximumWaitTime))
+				return false;
+
+			var elapsed = DateTime.Now - started;
+			var remaining = maximumWaitTime - elapsed;
+			if (remaining < TimeSpan.Zero)
+				remaining = TimeSpan.Zero;
+
+			return _finished.Wait(remaining);
 		}
 
 		public void Wait()
 		{
+			_logFile.Wait();
 			_finished.Wait();
 		}
 

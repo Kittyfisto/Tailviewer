@@ -121,6 +121,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
 		}
 
 		[Test]
