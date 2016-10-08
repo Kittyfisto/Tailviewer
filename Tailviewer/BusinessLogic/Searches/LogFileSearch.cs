@@ -34,6 +34,10 @@ namespace Tailviewer.BusinessLogic.Searches
 		private volatile bool _isDisposed;
 
 		public LogFileSearch(ILogFile logFile, string searchTerm)
+			: this(logFile, searchTerm, TimeSpan.FromMilliseconds(10))
+		{}
+
+		public LogFileSearch(ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
 		{
 			if (logFile == null)
 				throw new ArgumentNullException("logFile");
@@ -54,7 +58,7 @@ namespace Tailviewer.BusinessLogic.Searches
 				};
 
 			const int maximumLineCount = 1000;
-			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
+			_maximumWaitTime = maximumWaitTime;
 			_logLinesBuffer = new LogLine[maximumLineCount];
 			_matchesBuffer = new List<LogLineMatch>();
 			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);

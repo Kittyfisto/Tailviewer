@@ -258,7 +258,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private void CreateSearch()
 		{
 			var term = SearchTerm;
-			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_logFile, term) : null;
+			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_logFile, term, _maximumWaitTime) : null;
 			_logFileSearch.InnerSearch = _currentSearch;
 		}
 

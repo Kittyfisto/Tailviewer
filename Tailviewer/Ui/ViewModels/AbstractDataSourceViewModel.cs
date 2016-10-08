@@ -7,6 +7,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -15,6 +16,8 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly IDataSource _dataSource;
 		private readonly ICommand _removeCommand;
+		private readonly ICommand _startSearchCommand;
+		private readonly ICommand _stopSearchCommand;
 
 		private int _debugCount;
 		private int _errorCount;
@@ -30,13 +33,21 @@ namespace Tailviewer.Ui.ViewModels
 		private IDataSourceViewModel _parent;
 		private int _totalCount;
 		private int _warningCount;
+		private string _searchTerm;
+		private int _currentMatchIndex;
+		private List<LogMatch> _searchMatches;
+		private int _searchMatchCount;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
 			if (dataSource == null) throw new ArgumentNullException("dataSource");
 
 			_dataSource = dataSource;
+
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+			_startSearchCommand = new DelegateCommand(StartSearch);
+			_stopSearchCommand = new DelegateCommand(StopSearch);
+
 			Update();
 		}
 
@@ -282,18 +293,81 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		#region Searches
+
 		public string SearchTerm
 		{
-			get { return _dataSource.SearchTerm; }
+			get { return _searchTerm; }
 			set
 			{
-				if (value == SearchTerm)
+				if (value == _searchTerm)
 					return;
 
-				_dataSource.SearchTerm = value;
+				_searchTerm = value;
 				EmitPropertyChanged();
 			}
 		}
+
+		public ICommand StartSearchCommand { get { return _startSearchCommand; } }
+		public ICommand StopSearchCommand { get { return _stopSearchCommand; } }
+
+		public IEnumerable<LogMatch> SearchMatches
+		{
+			get { return _searchMatches; }
+			private set
+			{
+				if (value == _searchMatches)
+					return;
+
+				_searchMatches = new List<LogMatch>(value);
+				EmitPropertyChanged();
+			}
+		}
+
+		public int SearchMatchCount
+		{
+			get { return _searchMatchCount; }
+			private set
+			{
+				if (value == _searchMatchCount)
+					return;
+
+				_searchMatchCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int CurrentMatchIndex
+		{
+			get { return _currentMatchIndex; }
+			set
+			{
+				if (value == _currentMatchIndex)
+					return;
+
+				_currentMatchIndex = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		private void StartSearch()
+		{
+			if (!string.IsNullOrEmpty(_searchTerm))
+			{
+				_dataSource.SearchTerm = _searchTerm;
+				CurrentMatchIndex = -1;
+			}
+		}
+
+		private void StopSearch()
+		{
+			SearchMatchCount = 0;
+			CurrentMatchIndex = -1;
+			_dataSource.SearchTerm = null;
+			_searchMatches.Clear();
+		}
+
+		#endregion
 
 		public DateTime LastViewed
 		{

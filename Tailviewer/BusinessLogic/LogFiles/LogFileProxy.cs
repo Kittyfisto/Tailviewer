@@ -16,11 +16,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		, ILogFileListener
 	{
 		private readonly LogFileListenerCollection _listeners;
+		private readonly object _syncRoot;
 		private ILogFile _innerLogFile;
 
 		public LogFileProxy()
 		{
 			_listeners = new LogFileListenerCollection(this);
+			_syncRoot = new object();
 		}
 
 		public LogFileProxy(ILogFile innerLogFile)
@@ -34,24 +36,35 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _innerLogFile; }
 			set
 			{
-				if (value == _innerLogFile)
-					return;
-
-				if (_innerLogFile != null)
+				// We need to synchronize this method with the one where we forward
+				// modified events. This is because the correctness of data depends on the
+				// listeners receiving events in the correct order.
+				// Without a lock, it might be possible to have the following order:
+				// - Reset
+				// - OnLogFileModified(oldLogFile, huge section)
+				// - OnLogFileModified(newLogFile, 0 - n)
+				// Obviously this would result in a incorrect view of the log file.
+				lock (_syncRoot)
 				{
-					_innerLogFile.RemoveListener(this);
-				}
+					if (value == _innerLogFile)
+						return;
 
-				_innerLogFile = value;
+					if (_innerLogFile != null)
+					{
+						_innerLogFile.RemoveListener(this);
+					}
 
-				// We're now representing a different log file.
-				// To the outside, we model this as a simple reset, followed
-				// by the content of the new logfile...
-				_listeners.Reset();
+					_innerLogFile = value;
 
-				if (_innerLogFile != null)
-				{
-					_innerLogFile.AddListener(this, TimeSpan.Zero, 1000);
+					// We're now representing a different log file.
+					// To the outside, we model this as a simple reset, followed
+					// by the content of the new logfile...
+					_listeners.Reset();
+
+					if (_innerLogFile != null)
+					{
+						_innerLogFile.AddListener(this, TimeSpan.Zero, 1000);
+					}
 				}
 			}
 		}
@@ -199,22 +212,27 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			// If, for some reason, we receive an event from a previous log file,
-			// then we ignore it so our listeners are not confused.
-			if (logFile != _innerLogFile)
-				return;
+			// See InnerLogFile.Set for the reason why.
+			// TLDR: Ensure correct order of events sent to listeners.
+			lock (_syncRoot)
+			{
+				// If, for some reason, we receive an event from a previous log file,
+				// then we ignore it so our listeners are not confused.
+				if (logFile != _innerLogFile)
+					return;
 
-			if (section.IsReset)
-			{
-				_listeners.Reset();
-			}
-			else if (section.InvalidateSection)
-			{
-				_listeners.Invalidate((int) section.Index, section.Count);
-			}
-			else
-			{
-				_listeners.OnRead((int) (section.Index + section.Count));
+				if (section.IsReset)
+				{
+					_listeners.Reset();
+				}
+				else if (section.InvalidateSection)
+				{
+					_listeners.Invalidate((int)section.Index, section.Count);
+				}
+				else
+				{
+					_listeners.OnRead((int)(section.Index + section.Count));
+				}
 			}
 		}
 	}
