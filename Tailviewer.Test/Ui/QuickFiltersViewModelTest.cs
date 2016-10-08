@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
@@ -14,6 +15,18 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class QuickFiltersViewModelTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -23,12 +36,13 @@ namespace Tailviewer.Test.Ui
 
 		private QuickFilters _quickFilters;
 		private ApplicationSettings _settings;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(new DataSource("sw") {Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("sw") {Id = Guid.NewGuid()});
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
@@ -38,7 +52,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(new DataSource("sw") {Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("sw") { Id = Guid.NewGuid() });
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
 
@@ -54,7 +68,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
 			model.CurrentDataSource =
-				new SingleDataSourceViewModel(new SingleDataSource(new DataSource("adw") {Id = Guid.NewGuid()}));
+				new SingleDataSourceViewModel(new SingleDataSource(_scheduler, new DataSource("adw") { Id = Guid.NewGuid() }));
 
 			int numFilterChanges = 0;
 			QuickFilterViewModel filter = model.AddQuickFilter();
@@ -91,7 +105,7 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor2()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(new DataSource("daw") {Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
@@ -106,7 +120,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove1()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
@@ -126,7 +140,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove2()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);

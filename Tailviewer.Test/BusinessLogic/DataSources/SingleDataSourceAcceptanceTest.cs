@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 
@@ -13,6 +14,18 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class SingleDataSourceAcceptanceTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -20,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				{
 					Id = Guid.NewGuid()
 				};
-			_dataSource = new SingleDataSource(_settings, TimeSpan.FromMilliseconds(100));
+			_dataSource = new SingleDataSource(_scheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
 
 		[TearDown]
@@ -31,6 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private DataSource _settings;
 		private SingleDataSource _dataSource;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		public void TestCtor()

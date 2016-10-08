@@ -216,9 +216,6 @@ namespace Tailviewer.Ui.ViewModels
 				if (_currentDataSourceLogView == value)
 					return;
 
-				if (_currentDataSourceLogView != null)
-					_currentDataSourceLogView.Dispose();
-
 				_currentDataSourceLogView = value;
 				if (value != null)
 				{

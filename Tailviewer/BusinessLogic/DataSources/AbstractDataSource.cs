@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
@@ -11,6 +12,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	internal abstract class AbstractDataSource
 		: IDataSource
 	{
+		private readonly TaskScheduler _taskScheduler;
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
@@ -23,16 +25,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private ILogFile _lastRegisteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 
-		protected AbstractDataSource(DataSource settings, TimeSpan maximumWaitTime)
+		protected AbstractDataSource(TaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
+			if (taskScheduler == null)
+				throw new ArgumentNullException("taskScheduler");
 			if (settings == null) throw new ArgumentNullException("settings");
 			if (settings.Id == Guid.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
 
+			_taskScheduler = taskScheduler;
 			_settings = settings;
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
 
-			_logFile = new LogFileProxy();
+			_logFile = new LogFileProxy(taskScheduler);
 			_logFileSearch = new LogFileSearchProxy();
 			CreateSearch();
 		}
@@ -258,7 +263,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private void CreateSearch()
 		{
 			var term = SearchTerm;
-			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_logFile, term, _maximumWaitTime) : null;
+			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _logFile, term, _maximumWaitTime) : null;
 			_logFileSearch.InnerSearch = _currentSearch;
 		}
 

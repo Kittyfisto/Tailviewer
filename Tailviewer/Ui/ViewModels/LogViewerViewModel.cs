@@ -16,7 +16,6 @@ namespace Tailviewer.Ui.ViewModels
 	public sealed class LogViewerViewModel
 		: INotifyPropertyChanged
 		  , ILogFileListener
-		  , IDisposable
 	{
 		private readonly IDataSourceViewModel _dataSource;
 		private readonly IDispatcher _dispatcher;
@@ -36,7 +35,6 @@ namespace Tailviewer.Ui.ViewModels
 
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
-			_dataSource.PropertyChanged += DataSourceOnPropertyChanged;
 
 			_dispatcher = dispatcher;
 
@@ -165,11 +163,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public void Dispose()
-		{
-			_dataSource.PropertyChanged -= DataSourceOnPropertyChanged;
-		}
-
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			lock (_pendingSections)
@@ -236,21 +229,6 @@ namespace Tailviewer.Ui.ViewModels
 			LogEntryCount = _currentLogFile.Count;
 			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.Count;
 			UpdateNoEntriesExplanation();
-		}
-
-		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
-		{
-			switch (args.PropertyName)
-			{
-				case "LevelsFilter":
-				case "OtherFilter":
-					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
-					break;
-
-				case "SearchTerm":
-					Search = _dataSource.DataSource.Search;
-					break;
-			}
 		}
 
 		private void UpdateNoEntriesExplanation()

@@ -52,8 +52,6 @@ namespace Tailviewer.Ui.ViewModels
 		#region Search
 
 		string SearchTerm { get; set; }
-		ICommand StartSearchCommand { get; }
-		ICommand StopSearchCommand { get; }
 		int SearchMatchCount { get; }
 		int CurrentMatchIndex { get; set; }
 

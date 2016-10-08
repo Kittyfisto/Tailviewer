@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -12,17 +13,30 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class DataSourcesViewModelTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
 			_settings = new ApplicationSettings("dawddwa");
-			_dataSources = new DataSources(_settings.DataSources);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
 		}
 
 		private ApplicationSettings _settings;
 		private DataSources _dataSources;
 		private DataSourcesViewModel _model;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		[Description("Verifies that adding the first data source sets it to be selected")]
@@ -140,7 +154,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
-			_dataSources = new DataSources(_settings.DataSources);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
 			_model.Observable.Count.Should().Be(2);
 			IDataSourceViewModel viewModel = _model.Observable[0];
@@ -167,7 +181,7 @@ namespace Tailviewer.Test.Ui
 			var source = new DataSource("foo") {Id = Guid.NewGuid(), ParentId = Guid.NewGuid()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_settings.DataSources);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources)).ShouldNotThrow();
 			_model.Observable.Count.Should().Be(2);
 			IDataSourceViewModel viewModel = _model.Observable[0];
@@ -516,7 +530,7 @@ namespace Tailviewer.Test.Ui
 			_settings = new ApplicationSettings("foobar");
 			var source = new DataSource("foo") {Id = Guid.NewGuid()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_settings.DataSources);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
 			IDataSourceViewModel viewModel = _model.Observable[0];
 			viewModel.RemoveCommand.Execute(null);
@@ -541,7 +555,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
 			_settings.DataSources.Add(group);
-			_dataSources = new DataSources(_settings.DataSources);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
 			var merged = (MergedDataSourceViewModel) _model.Observable[0];
 			IDataSourceViewModel viewModel1 = merged.Observable.ElementAt(0);

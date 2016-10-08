@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -14,6 +15,20 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class SingleDataSourceViewModelTest
 	{
+		private TaskScheduler _scheduler;
+
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[Test]
 		public void TestCtor1()
 		{
@@ -21,7 +36,7 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = Guid.NewGuid()
 				};
-			using (var source = new SingleDataSource(settings))
+			using (var source = new SingleDataSource(_scheduler, settings))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
@@ -32,7 +47,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor2()
 		{
-			using (var source = new SingleDataSource(new DataSource{Id=Guid.NewGuid(), File = @"C:\temp\foo.txt", SearchTerm = "foobar"}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			using (var source = new SingleDataSource(_scheduler, new DataSource { Id = Guid.NewGuid(), File = @"C:\temp\foo.txt", SearchTerm = "foobar" }, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
 				source.SearchTerm.Should().Be("foobar");
 
@@ -47,7 +62,7 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = Guid.NewGuid()}))
+					new SingleDataSource(_scheduler, new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") { Id = Guid.NewGuid() }))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				model.RemoveCommand.Should().NotBeNull();
@@ -61,7 +76,7 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = Guid.NewGuid()}))
+					new SingleDataSource(_scheduler, new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") { Id = Guid.NewGuid() }))
 			{
 				var model = new SingleDataSourceViewModel(source);
 				var calls = new List<IDataSourceViewModel>();
@@ -79,7 +94,7 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = Guid.NewGuid()
 				};
-			using (var dataSource = new SingleDataSource(settings))
+			using (var dataSource = new SingleDataSource(_scheduler, settings))
 			{
 				var model = new SingleDataSourceViewModel(dataSource);
 				var chain = new[] {new SubstringFilter("foobar", true)};

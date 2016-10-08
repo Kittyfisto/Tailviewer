@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
@@ -17,6 +18,19 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFile> _logFile;
 		private List<LogMatch> _matches;
 		private Mock<ILogFileSearchListener> _listener;
+		private TaskScheduler _scheduler;
+
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
 
 		[SetUp]
 		public void SetUp()
@@ -54,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestCtor1()
 		{
-			using (var search = new LogFileSearch(_logFile.Object, "foobar"))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "foobar"))
 			{
 				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because the search should have finished going through 0 log lines in a few seconds");
 				search.Matches.Should().BeEmpty("because the source is empty");
@@ -65,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void TestCtor2()
 		{
 			Add("Hello World!");
-			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
 				var matches = search.Matches.ToList();
@@ -82,7 +96,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void TestAddListener1()
 		{
 			Add("Hello World!");
-			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.AddListener(_listener.Object);
 				search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
@@ -99,7 +113,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
 		public void TestWait1()
 		{
-			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.Wait();
 				_logFile.Verify(x => x.Wait(), Times.Once);
@@ -110,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Description("Verifies that Wait() waits for the original data source (otherwise Wait() would be meaningless)")]
 		public void TestWait2()
 		{
-			using (var search = new LogFileSearch(_logFile.Object, "l"))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.Wait(TimeSpan.FromSeconds(1));
 				_logFile.Verify(x => x.Wait(It.Is<TimeSpan>(y => y == TimeSpan.FromSeconds(1))), Times.Once);

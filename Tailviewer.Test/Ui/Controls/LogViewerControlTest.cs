@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
@@ -15,11 +16,23 @@ namespace Tailviewer.Test.Ui.Controls
 	[TestFixture]
 	public sealed class LogViewerControlTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[SetUp]
 		[STAThread]
 		public void SetUp()
 		{
-			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar") {Id = Guid.NewGuid()}));
+			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(_scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
 			_control = new LogViewerControl
 				{
 					DataSource = _dataSource,
@@ -35,6 +48,7 @@ namespace Tailviewer.Test.Ui.Controls
 		private LogViewerControl _control;
 		private ManualDispatcher _dispatcher;
 		private SingleDataSourceViewModel _dataSource;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		[STAThread]
@@ -338,7 +352,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[STAThread]
 		public void TestCtor()
 		{
-			var source = new SingleDataSourceViewModel(new SingleDataSource(new DataSource("Foobar") {Id = Guid.NewGuid()}));
+			var source = new SingleDataSourceViewModel(new SingleDataSource(_scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl

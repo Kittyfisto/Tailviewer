@@ -55,6 +55,13 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestCtor()
+		{
+			_viewModel.SearchMatchCount.Should().Be(0);
+			_viewModel.CurrentMatchIndex.Should().Be(-1);
+		}
+
+		[Test]
 		[Description(
 			"Verifies that the number of new log lines is NOT increased when the last modified timestamp is less than the last viewed one"
 			)]

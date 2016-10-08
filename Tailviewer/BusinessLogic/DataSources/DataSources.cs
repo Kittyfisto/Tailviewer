@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using log4net;
 
@@ -20,11 +21,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
+		private readonly TaskScheduler _taskScheduler;
 
-		public DataSources(Settings.DataSources settings)
+		public DataSources(TaskScheduler taskScheduler, Settings.DataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 
+			_taskScheduler = taskScheduler;
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
 			_syncRoot = new object();
 			_settings = settings;
@@ -106,11 +109,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 				AbstractDataSource dataSource;
 				if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new SingleDataSource(settings, _maximumWaitTime);
+					dataSource = new SingleDataSource(_taskScheduler, settings, _maximumWaitTime);
 				}
 				else
 				{
-					dataSource = new MergedDataSource(settings, _maximumWaitTime);
+					dataSource = new MergedDataSource(_taskScheduler, settings, _maximumWaitTime);
 				}
 
 				_dataSources.Add(dataSource);

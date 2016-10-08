@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
@@ -15,14 +16,27 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class SingleDataSourceTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
 		private List<LogLine> _entries;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		public void TestCtor()
 		{
-			using (var source = new SingleDataSource(new DataSource(@"E:\somelogfile.txt") { Id = Guid.NewGuid() }))
+			using (var source = new SingleDataSource(_scheduler, new DataSource(@"E:\somelogfile.txt") { Id = Guid.NewGuid() }))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);
@@ -35,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\LevelCounts.txt") {Id = Guid.NewGuid()}))
+			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = Guid.NewGuid() }))
 			{
 				dataSource.UnfilteredLogFile.Wait();
 
@@ -53,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount2()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\20Mb.txt") {Id = Guid.NewGuid()}))
+			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\20Mb.txt") { Id = Guid.NewGuid() }))
 			{
 				dataSource.UnfilteredLogFile.Wait();
 
@@ -70,7 +84,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the level of a log line is unambigously defined")]
 		public void TestLevelPrecedence()
 		{
-			using (var dataSource = new SingleDataSource(new DataSource(@"TestData\DifferentLevels.txt") {Id = Guid.NewGuid()}))
+			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
 			{
 				dataSource.UnfilteredLogFile.Wait();
 				dataSource.UnfilteredLogFile.Count.Should().Be(6);
@@ -127,7 +141,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(CreateDataSource(), _logFile.Object, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))
 			{
 				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.None));
 				_listeners.OnRead(1);

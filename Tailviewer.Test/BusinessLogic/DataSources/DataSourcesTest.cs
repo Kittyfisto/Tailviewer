@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -10,11 +11,23 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class DataSourcesTest
 	{
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
 			_settings = new Tailviewer.Settings.DataSources();
-			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_settings);
+			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_scheduler, _settings);
 		}
 
 		[TearDown]
@@ -25,6 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private Tailviewer.Settings.DataSources _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
+		private TaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd()
@@ -44,7 +58,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAddGroup1()
 		{
 			var settings = new Tailviewer.Settings.DataSources();
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_scheduler, settings))
 			{
 				MergedDataSource group = dataSources.AddGroup();
 				group.Should().NotBeNull();
@@ -72,7 +86,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 							Id = Guid.NewGuid()
 						}
 				};
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_scheduler, settings))
 			{
 				dataSources.Count.Should().Be(1);
 				IDataSource dataSource = dataSources.First();
@@ -105,7 +119,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[0].ParentId = merged.Id;
 			settings[1].ParentId = merged.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_scheduler, settings))
 			{
 				dataSources.Count.Should().Be(4, "Because we've loaded 4 data sources");
 				var mergedDataSource = dataSources[3] as MergedDataSource;
@@ -149,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[1].ParentId = merged2.Id;
 			settings[2].ParentId = merged3.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(settings))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_scheduler, settings))
 			{
 				dataSources.Count.Should().Be(6, "Because we've loaded 6 data sources");
 				var mergedDataSource1 = dataSources[3] as MergedDataSource;

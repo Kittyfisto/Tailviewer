@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
@@ -15,6 +16,19 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
 		private List<LogLine> _entries;
+		private TaskScheduler _scheduler;
+
+		[TestFixtureSetUp]
+		public void TestFixtureSetUp()
+		{
+			_scheduler = new TaskScheduler();
+		}
+
+		[TestFixtureTearDown]
+		public void TestFixtureTearDown()
+		{
+			_scheduler.Dispose();
+		}
 
 		[SetUp]
 		public void Setup()
@@ -43,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			AddEntry("Hello World!");
 			AddEntry("Foobar");
 
-			using (var search = new LogFileSearch(_logFile.Object, "Foobar", TimeSpan.Zero))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
 			{
 				var proxy = new LogFileSearchProxy(search);
 				proxy.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because we should be able to search through the file in a few seconds");
@@ -60,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Description("Verifies that the search delivers correct results when the file is modified while the search is performed")]
 		public void TestSearch2()
 		{
-			using (var search = new LogFileSearch(_logFile.Object, "Foobar", TimeSpan.Zero))
+			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
 			{
 				var proxy = new LogFileSearchProxy(search);
 

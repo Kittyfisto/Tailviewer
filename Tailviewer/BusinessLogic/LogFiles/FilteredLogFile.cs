@@ -129,6 +129,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			StartTask();
 		}
 
+		public override string ToString()
+		{
+			return string.Format("{0} (Filtered)", _source);
+		}
+
 		protected override void Run(CancellationToken token)
 		{
 			var entries = new LogLine[BatchSize];

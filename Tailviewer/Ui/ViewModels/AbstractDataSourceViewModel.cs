@@ -44,8 +44,6 @@ namespace Tailviewer.Ui.ViewModels
 			_searchTerm = dataSource.SearchTerm;
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
-			_startSearchCommand = new DelegateCommand(StartSearch);
-			_stopSearchCommand = new DelegateCommand(StopSearch);
 
 			Update();
 		}
@@ -303,12 +301,21 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_searchTerm = value;
+
+				if (string.IsNullOrEmpty(value))
+				{
+					SearchMatchCount = 0;
+					CurrentMatchIndex = -1;
+					_dataSource.SearchTerm = null;
+				}
+				else
+				{
+					_dataSource.SearchTerm = value;
+				}
+
 				EmitPropertyChanged();
 			}
 		}
-
-		public ICommand StartSearchCommand { get { return _startSearchCommand; } }
-		public ICommand StopSearchCommand { get { return _stopSearchCommand; } }
 
 		public int SearchMatchCount
 		{
@@ -334,22 +341,6 @@ namespace Tailviewer.Ui.ViewModels
 				_currentMatchIndex = value;
 				EmitPropertyChanged();
 			}
-		}
-
-		private void StartSearch()
-		{
-			if (!string.IsNullOrEmpty(_searchTerm))
-			{
-				_dataSource.SearchTerm = _searchTerm;
-				CurrentMatchIndex = -1;
-			}
-		}
-
-		private void StopSearch()
-		{
-			SearchMatchCount = 0;
-			CurrentMatchIndex = -1;
-			_dataSource.SearchTerm = null;
 		}
 
 		#endregion
@@ -427,6 +418,7 @@ namespace Tailviewer.Ui.ViewModels
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchMatchCount = _dataSource.Search.Count;
+			EnsureSearchIndexInBounds();
 
 			if (NewLogLineCount != newBefore)
 			{
@@ -438,6 +430,19 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					_lastSeenLogLine = TotalCount;
 				}
+			}
+		}
+
+		private void EnsureSearchIndexInBounds()
+		{
+			if (_searchMatchCount > 0)
+			{
+				if (_currentMatchIndex < 1 || _currentMatchIndex >= _searchMatchCount)
+					CurrentMatchIndex = 0;
+			}
+			else
+			{
+				CurrentMatchIndex = -1;
 			}
 		}
 

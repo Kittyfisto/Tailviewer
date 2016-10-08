@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Scheduling;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.Searches
@@ -29,17 +30,19 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly List<LogLineMatch> _matchesBuffer;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
-		private readonly Thread _searchThread;
+		private readonly IPeriodicTask _task;
+		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
-		private volatile bool _isDisposed;
 
-		public LogFileSearch(ILogFile logFile, string searchTerm)
-			: this(logFile, searchTerm, TimeSpan.FromMilliseconds(10))
+		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm)
+			: this(taskScheduler, logFile, searchTerm, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
-		public LogFileSearch(ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
+		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
 		{
+			if (taskScheduler == null)
+				throw new ArgumentNullException("taskScheduler");
 			if (logFile == null)
 				throw new ArgumentNullException("logFile");
 			if (string.IsNullOrEmpty(searchTerm))
@@ -52,28 +55,21 @@ namespace Tailviewer.BusinessLogic.Searches
 			_syncRoot = new object();
 			_listeners = new List<ILogFileSearchListener>();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
-			_searchThread = new Thread(DoFilter)
-				{
-					Name = string.Format("Search {0}", logFile),
-					IsBackground = true
-				};
+			_scheduler = taskScheduler;
 
 			const int maximumLineCount = 1000;
 			_maximumWaitTime = maximumWaitTime;
 			_logLinesBuffer = new LogLine[maximumLineCount];
 			_matchesBuffer = new List<LogLineMatch>();
 			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);
-			_searchThread.Start();
+
+			_task = _scheduler.StartPeriodic(FilterAllPending, TimeSpan.FromMilliseconds(100), string.Format("Search {0}", logFile));
 		}
 
 		public void Dispose()
 		{
 			_logFile.RemoveListener(this);
-			_isDisposed = true;
-			if (!_searchThread.Join(TimeSpan.FromSeconds(1)))
-			{
-				Log.WarnFormat("Failed to join search thread in 1 second, continuing anyways...");
-			}
+			_scheduler.RemovePeriodic(_task);
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -139,23 +135,6 @@ namespace Tailviewer.BusinessLogic.Searches
 		{
 			_logFile.Wait();
 			_finished.Wait();
-		}
-
-		private void DoFilter()
-		{
-			while (!_isDisposed)
-			{
-				try
-				{
-					FilterAllPending();
-
-					Thread.Sleep(_maximumWaitTime);
-				}
-				catch (Exception e)
-				{
-					Log.ErrorFormat("Cauhgt unexpected exception: {0}", e);
-				}
-			}
 		}
 
 		private void FilterAllPending()

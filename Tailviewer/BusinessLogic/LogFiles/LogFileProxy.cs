@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Reflection;
 using Metrolib;
+using Tailviewer.BusinessLogic.Scheduling;
+using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -15,20 +20,69 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: ILogFile
 		, ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly ITaskScheduler _taskScheduler;
 		private readonly LogFileListenerCollection _listeners;
-		private readonly object _syncRoot;
+		private readonly ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
+		private readonly IPeriodicTask _task;
 		private ILogFile _innerLogFile;
 
-		public LogFileProxy()
+		public LogFileProxy(ITaskScheduler taskScheduler)
 		{
+			if (taskScheduler == null)
+				throw new ArgumentNullException("taskScheduler");
+
+			_taskScheduler = taskScheduler;
+			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
 			_listeners = new LogFileListenerCollection(this);
-			_syncRoot = new object();
+
+			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100));
 		}
 
-		public LogFileProxy(ILogFile innerLogFile)
-			: this()
+		public LogFileProxy(ITaskScheduler taskScheduler, ILogFile innerLogFile)
+			: this(taskScheduler)
 		{
 			InnerLogFile = innerLogFile;
+		}
+
+		private void RunOnce()
+		{
+			KeyValuePair<ILogFile, LogFileSection> pair;
+			while (_pendingSections.TryDequeue(out pair))
+			{
+				var sender = pair.Key;
+				var innerLogFile = _innerLogFile;
+				var section = pair.Value;
+				if (sender != innerLogFile)
+				{
+					// If, for some reason, we receive an event from a previous log file,
+					// then we ignore it so our listeners are not confused.
+					Log.DebugFormat(
+						"Skipping pending modification '{0}' from '{1}' because it is no longer our current log file '{2}'",
+						section, sender, innerLogFile);
+				}
+				else
+				{
+					if (section.IsReset)
+					{
+						_listeners.Reset();
+					}
+					else if (section.InvalidateSection)
+					{
+						_listeners.Invalidate((int)section.Index, section.Count);
+					}
+					else
+					{
+						_listeners.OnRead((int)(section.Index + section.Count));
+					}
+				}
+			}
+
+			// This line is extremely important because listeners are allowed to limit how often they are notified.
+			// This means that even when there is NO modification to the source, we still need to notify the collection
+			// so it can check if enough time has ellapsed to finally notify listener.
+			_listeners.OnRead(_listeners.CurrentLineIndex);
 		}
 
 		public ILogFile InnerLogFile
@@ -36,35 +90,24 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _innerLogFile; }
 			set
 			{
-				// We need to synchronize this method with the one where we forward
-				// modified events. This is because the correctness of data depends on the
-				// listeners receiving events in the correct order.
-				// Without a lock, it might be possible to have the following order:
-				// - Reset
-				// - OnLogFileModified(oldLogFile, huge section)
-				// - OnLogFileModified(newLogFile, 0 - n)
-				// Obviously this would result in a incorrect view of the log file.
-				lock (_syncRoot)
+				if (value == _innerLogFile)
+					return;
+
+				if (_innerLogFile != null)
 				{
-					if (value == _innerLogFile)
-						return;
+					_innerLogFile.RemoveListener(this);
+				}
 
-					if (_innerLogFile != null)
-					{
-						_innerLogFile.RemoveListener(this);
-					}
+				_innerLogFile = value;
 
-					_innerLogFile = value;
+				// We're now representing a different log file.
+				// To the outside, we model this as a simple reset, followed
+				// by the content of the new logfile...
+				_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(_innerLogFile, LogFileSection.Reset));
 
-					// We're now representing a different log file.
-					// To the outside, we model this as a simple reset, followed
-					// by the content of the new logfile...
-					_listeners.Reset();
-
-					if (_innerLogFile != null)
-					{
-						_innerLogFile.AddListener(this, TimeSpan.Zero, 1000);
-					}
+				if (_innerLogFile != null)
+				{
+					_innerLogFile.AddListener(this, TimeSpan.Zero, 1000);
 				}
 			}
 		}
@@ -76,6 +119,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				logFile.Dispose();
 			}
+			_taskScheduler.RemovePeriodic(_task);
 		}
 
 		public DateTime? StartTimestamp
@@ -169,14 +213,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
-			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
+			// I think the traditional listeners collection doesn't work here because
+			// we're not telling it constantly to check if the specified amount of time has elapsed
+			// and therefore listeners of static files won't get the right notifications.
+			// We can fix this temporarily by immediately forwarding events, but that can't be
+			// the solution.
+			_listeners.AddListener(listener, TimeSpan.Zero, maximumLineCount);
 		}
 
 		public override string ToString()
 		{
 			var logFile = _innerLogFile;
 			if (logFile != null)
-				return logFile.ToString();
+				return string.Format("{0} (Proxy)", logFile);
 
 			return "<Empty>";
 		}
@@ -212,27 +261,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			// See InnerLogFile.Set for the reason why.
-			// TLDR: Ensure correct order of events sent to listeners.
-			lock (_syncRoot)
-			{
-				// If, for some reason, we receive an event from a previous log file,
-				// then we ignore it so our listeners are not confused.
-				if (logFile != _innerLogFile)
-					return;
+			// If, for some reason, we receive an event from a previous log file,
+			// then we ignore it so our listeners are not confused.
+			if (logFile != _innerLogFile)
+				return;
 
-				if (section.IsReset)
-				{
-					_listeners.Reset();
-				}
-				else if (section.InvalidateSection)
-				{
-					_listeners.Invalidate((int)section.Index, section.Count);
-				}
-				else
-				{
-					_listeners.OnRead((int)(section.Index + section.Count));
-				}
+			if (section.IsReset)
+			{
+				_listeners.Reset();
+			}
+			else if (section.InvalidateSection)
+			{
+				_listeners.Invalidate((int)section.Index, section.Count);
+			}
+			else
+			{
+				_listeners.OnRead((int)(section.Index + section.Count));
 			}
 		}
 	}
