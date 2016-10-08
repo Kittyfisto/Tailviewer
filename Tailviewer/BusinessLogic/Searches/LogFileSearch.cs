@@ -88,8 +88,8 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			_finished.Reset();
 			_pendingModifications.Enqueue(section);
+			_finished.Reset();
 		}
 
 		public void AddListener(ILogFileSearchListener listener)
