@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -25,6 +26,7 @@ namespace Tailviewer.Test.Ui
 			_dataSource.Setup(x => x.UnfilteredLogFile).Returns(_logFile.Object);
 			_dataSource.Setup(x => x.Settings).Returns(_settings);
 			_dataSource.SetupProperty(x => x.LastViewed);
+			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			_viewModel = new DataSourceViewModel(_dataSource.Object);
 		}

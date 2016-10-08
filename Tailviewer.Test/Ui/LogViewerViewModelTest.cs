@@ -7,8 +7,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
-using Tailviewer.Test.BusinessLogic;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
 
@@ -35,6 +35,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
@@ -57,6 +58,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
@@ -81,6 +83,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
@@ -144,6 +147,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.None);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
@@ -166,6 +170,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.SearchTerm).Returns("");
 			dataSource.Setup(x => x.QuickFilterChain).Returns(new List<ILogEntryFilter> {new Mock<ILogEntryFilter>().Object});
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
@@ -187,6 +192,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
 			dataSource.Setup(x => x.SearchTerm).Returns("s");
 			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.All);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
 			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
