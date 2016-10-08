@@ -6,7 +6,7 @@ namespace Tailviewer.BusinessLogic.Searches
 {
 	public sealed class LogFileSearchProxy
 		: ILogFileSearch
-		, ILogFileSearchListener
+		  , ILogFileSearchListener
 	{
 		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly object _syncRoot;
@@ -52,6 +52,11 @@ namespace Tailviewer.BusinessLogic.Searches
 			get { return _matches; }
 		}
 
+		public int Count
+		{
+			get { return _matches.Count; }
+		}
+
 		public void AddListener(ILogFileSearchListener listener)
 		{
 			lock (_syncRoot)
@@ -71,7 +76,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public bool Wait(TimeSpan maximumWaitTime)
 		{
-			var search = _innerSearch;
+			ILogFileSearch search = _innerSearch;
 			if (search != null)
 				return search.Wait(maximumWaitTime);
 
@@ -80,7 +85,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void Wait()
 		{
-			var search = _innerSearch;
+			ILogFileSearch search = _innerSearch;
 			if (search != null)
 				search.Wait();
 		}
@@ -103,7 +108,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		private void EmitSearchModified(IEnumerable<LogMatch> matches)
 		{
-			foreach (var listener in _listeners)
+			foreach (ILogFileSearchListener listener in _listeners)
 			{
 				listener.OnSearchModified(this, matches.ToList());
 			}

@@ -15,13 +15,13 @@ namespace Tailviewer.BusinessLogic.Searches
 	/// </summary>
 	public sealed class LogFileSearch
 		: ILogFileSearch
-		, IDisposable
-		, ILogFileListener
+		  , IDisposable
+		  , ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ManualResetEventSlim _finished;
 		private readonly SubstringFilter _filter;
+		private readonly ManualResetEventSlim _finished;
 		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly ILogFile _logFile;
 		private readonly LogLine[] _logLinesBuffer;
@@ -35,7 +35,8 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public LogFileSearch(ILogFile logFile, string searchTerm)
 			: this(logFile, searchTerm, TimeSpan.FromMilliseconds(10))
-		{}
+		{
+		}
 
 		public LogFileSearch(ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
 		{
@@ -65,17 +66,6 @@ namespace Tailviewer.BusinessLogic.Searches
 			_searchThread.Start();
 		}
 
-		public IEnumerable<LogMatch> Matches
-		{
-			get
-			{
-				lock (_syncRoot)
-				{
-					return _matches.ToList();
-				}
-			}
-		}
-
 		public void Dispose()
 		{
 			_logFile.RemoveListener(this);
@@ -90,6 +80,28 @@ namespace Tailviewer.BusinessLogic.Searches
 		{
 			_pendingModifications.Enqueue(section);
 			_finished.Reset();
+		}
+
+		public IEnumerable<LogMatch> Matches
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _matches.ToList();
+				}
+			}
+		}
+
+		public int Count
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _matches.Count;
+				}
+			}
 		}
 
 		public void AddListener(ILogFileSearchListener listener)
@@ -111,12 +123,12 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public bool Wait(TimeSpan maximumWaitTime)
 		{
-			var started = DateTime.Now;
+			DateTime started = DateTime.Now;
 			if (!_logFile.Wait(maximumWaitTime))
 				return false;
 
-			var elapsed = DateTime.Now - started;
-			var remaining = maximumWaitTime - elapsed;
+			TimeSpan elapsed = DateTime.Now - started;
+			TimeSpan remaining = maximumWaitTime - elapsed;
 			if (remaining < TimeSpan.Zero)
 				remaining = TimeSpan.Zero;
 
@@ -184,7 +196,7 @@ namespace Tailviewer.BusinessLogic.Searches
 					{
 						lock (_syncRoot)
 						{
-							foreach (var logLineMatch in _matchesBuffer)
+							foreach (LogLineMatch logLineMatch in _matchesBuffer)
 							{
 								var match = new LogMatch(line.LineIndex, logLineMatch);
 								_matches.Add(match);

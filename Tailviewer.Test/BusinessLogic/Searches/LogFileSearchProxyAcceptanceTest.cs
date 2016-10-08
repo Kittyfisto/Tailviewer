@@ -52,6 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 					{
 						new LogMatch(1, new LogLineMatch(0, 6))
 					});
+				proxy.Count.Should().Be(1);
 			}
 		}
 
@@ -71,6 +72,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 					{
 						new LogMatch(1, new LogLineMatch(0, 6))
 					});
+				proxy.Count.Should().Be(1);
 			}
 		}
 

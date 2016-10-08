@@ -48,6 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			proxy.InnerSearch.Should().BeSameAs(_search.Object);
 			proxy.Matches.Should().NotBeNull();
 			proxy.Matches.Should().BeEmpty();
+			proxy.Count.Should().Be(0);
 		}
 
 		[Test]
@@ -64,6 +65,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			proxy.InnerSearch.Should().BeNull();
 			proxy.Matches.Should().NotBeNull();
 			proxy.Matches.Should().BeEmpty();
+			proxy.Count.Should().Be(0);
 		}
 
 		[Test]
