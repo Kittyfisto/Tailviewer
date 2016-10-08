@@ -79,6 +79,7 @@
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Scheduling\PeriodicTaskTest.cs" />
+    <Compile Include="BusinessLogic\Scheduling\TaskQueueTest.cs" />
     <Compile Include="BusinessLogic\Scheduling\TaskSchedulerTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />

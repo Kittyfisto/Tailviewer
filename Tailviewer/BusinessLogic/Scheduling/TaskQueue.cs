@@ -20,6 +20,17 @@ namespace Tailviewer.BusinessLogic.Scheduling
 			_pendingTasks = new List<PeriodicTask>();
 		}
 
+		public int Count
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _tasks.Count;
+				}
+			}
+		}
+
 		public void Add(PeriodicTask task)
 		{
 			if (task == null)

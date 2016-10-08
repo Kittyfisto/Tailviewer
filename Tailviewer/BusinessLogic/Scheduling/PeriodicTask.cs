@@ -10,15 +10,17 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly Action _callback;
+		private readonly long _id;
 		private readonly TimeSpan _minimumWaitTime;
 		private readonly string _name;
 		private DateTime _lastInvocation;
 
-		public PeriodicTask(Action callback, TimeSpan minimumWaitTime, string name = null)
+		public PeriodicTask(long id, Action callback, TimeSpan minimumWaitTime, string name = null)
 		{
 			if (callback == null)
 				throw new ArgumentNullException("callback");
 
+			_id = id;
 			_callback = callback;
 			_minimumWaitTime = minimumWaitTime;
 			_name = name;
@@ -38,6 +40,11 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		/// </summary>
 		public bool IsRemoved { get; set; }
 
+		public long Id
+		{
+			get { return _id; }
+		}
+
 		public string Name
 		{
 			get { return _name; }
@@ -53,6 +60,11 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		{
 			remainingWaitTime = now - _lastInvocation;
 			return remainingWaitTime >= _minimumWaitTime;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("#{0} ({1})", _id, _name);
 		}
 
 		public void Run()

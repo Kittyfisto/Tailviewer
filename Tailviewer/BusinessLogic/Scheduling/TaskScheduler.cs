@@ -21,7 +21,8 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		private readonly System.Threading.Tasks.TaskScheduler _scheduler;
 		private readonly Thread _schedulingThread;
 		private readonly ManualResetEvent _taskAdded;
-		private readonly TaskQueue _taskQueue;
+		private readonly TaskQueue _periodicTaskQueue;
+		private long _lastTaskId;
 
 		public TaskScheduler()
 			: this(System.Threading.Tasks.TaskScheduler.Default)
@@ -34,7 +35,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 				throw new ArgumentNullException("scheduler");
 
 			_scheduler = scheduler;
-			_taskQueue = new TaskQueue();
+			_periodicTaskQueue = new TaskQueue();
 			_taskAdded = new ManualResetEvent(false);
 			_disposed = new ManualResetEvent(false);
 			_schedulingThread = new Thread(SchedulePeriodicTasks)
@@ -48,10 +49,13 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		public void Dispose()
 		{
 			_disposed.Set();
-			if (!_schedulingThread.Join(TimeSpan.FromSeconds(1)))
-			{
-				Log.WarnFormat("Unable to join thread in time, continuing anyways...");
-			}
+			// There's really no benefit to waiting until the thread has finished
+			// executing, therefore we return immediately...
+		}
+
+		public int PeriodicTaskCount
+		{
+			get { return _periodicTaskQueue.Count; }
 		}
 
 		/// <summary>
@@ -93,8 +97,15 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		/// <returns></returns>
 		public IPeriodicTask StartPeriodic(Action callback, TimeSpan minimumWaitTime, string name = null)
 		{
-			var task = new PeriodicTask(callback, minimumWaitTime, name);
-			_taskQueue.Add(task);
+			long id = Interlocked.Increment(ref _lastTaskId);
+			var task = new PeriodicTask(id, callback, minimumWaitTime, name);
+
+			if (Log.IsDebugEnabled)
+			{
+				Log.DebugFormat("Starting periodic task {0} at {1}ms intervals", task, minimumWaitTime.TotalMilliseconds);
+			}
+
+			_periodicTaskQueue.Add(task);
 			_taskAdded.Set();
 			return task;
 		}
@@ -109,7 +120,12 @@ namespace Tailviewer.BusinessLogic.Scheduling
 			if (actualTask == null)
 				return false;
 
-			return _taskQueue.Remove(actualTask);
+			if (Log.IsDebugEnabled)
+			{
+				Log.DebugFormat("Removing periodic task {0}", task);
+			}
+
+			return _periodicTaskQueue.Remove(actualTask);
 		}
 
 		private void SchedulePeriodicTasks()
@@ -189,7 +205,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		{
 			int tasksRun = 0;
 			PeriodicTask task;
-			while (_taskQueue.TryDequeuePendingTask(DateTime.Now, out task, out remainingMinimumWaitTime))
+			while (_periodicTaskQueue.TryDequeuePendingTask(DateTime.Now, out task, out remainingMinimumWaitTime))
 			{
 				BeginRunTaskOnce(task);
 				++tasksRun;
@@ -206,7 +222,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 
 		private void PeriodicTaskFinished(PeriodicTask task)
 		{
-			_taskQueue.EnqueuePending(task);
+			_periodicTaskQueue.EnqueuePending(task);
 			_taskAdded.Set();
 		}
 	}

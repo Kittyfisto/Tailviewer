@@ -10,6 +10,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly TimeSpan _maximumTime;
 		private int _lastNumberOfLines;
 		private DateTime _lastReportedTime;
+		private bool _sentAnyData;
 
 		public LogFileListenerNotifier(ILogFile logFile, ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
 		{
@@ -22,6 +23,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_maximumCount = maximumCount;
 
 			Reset();
+
+			_sentAnyData = true;
 		}
 
 		public int LastNumberOfLines
@@ -33,6 +36,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			_lastNumberOfLines = 0;
 			_lastReportedTime = DateTime.Now;
+			_sentAnyData = false;
 		}
 
 		public void OnRead(int numberOfLinesRead)
@@ -43,13 +47,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (now - _lastReportedTime >= _maximumTime)
 				{
 					Report(numberOfLinesRead, now);
+					_sentAnyData = true;
 				}
 				else if (numberOfLinesRead - _lastNumberOfLines >= _maximumCount)
 				{
 					Report(numberOfLinesRead, now);
+					_sentAnyData = true;
 				}
 			}
-			else
+			else if (_sentAnyData) //< We want to avoid sending multiple successive reset events
 			{
 				Reset();
 				_listener.OnLogFileModified(_logFile, LogFileSection.Reset);

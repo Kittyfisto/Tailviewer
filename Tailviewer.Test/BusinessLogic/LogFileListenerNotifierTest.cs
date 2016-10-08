@@ -190,5 +190,19 @@ namespace Tailviewer.Test.BusinessLogic
 				);
 			notifier.LastNumberOfLines.Should().Be(9);
 		}
+
+		[Test]
+		[Description("Verifies that only the first of subsequent sequential reset events is forwarded")]
+		public void TestInvalidate5()
+		{
+			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromMilliseconds(100), 100);
+			notifier.OnRead(1);
+			notifier.OnRead(-1);
+			_changes.Should().Equal(new[] {LogFileSection.Reset});
+			notifier.OnRead(-1);
+			_changes.Should().Equal(new[] {LogFileSection.Reset});
+			notifier.OnRead(-1);
+			_changes.Should().Equal(new[] {LogFileSection.Reset});
+		}
 	}
 }

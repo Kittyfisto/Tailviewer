@@ -235,9 +235,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var proxy = new LogFileProxy(_scheduler, _logFile.Object);
 			proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
-			proxy.OnLogFileModified(new Mock<ILogFile>().Object, new LogFileSection(0, 1));
+			proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 
-			WaitUntil(() => _modifications.Count == 2, TimeSpan.FromSeconds(5))
+			WaitUntil(() => _modifications.Count == 2, TimeSpan.FromSeconds(50))
 				.Should().BeTrue("because the changes should've eventually been forwarded to the listener");
 			_modifications.Should().Equal(new[]
 				{

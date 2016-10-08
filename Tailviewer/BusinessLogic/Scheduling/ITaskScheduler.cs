@@ -11,6 +11,11 @@ namespace Tailviewer.BusinessLogic.Scheduling
 	public interface ITaskScheduler
 	{
 		/// <summary>
+		///     The amount of periodic tasks currently running.
+		/// </summary>
+		int PeriodicTaskCount { get; }
+
+		/// <summary>
 		///     Creates and starts a new task.
 		///     The given <paramref name="callback" /> will be executed exactly once.
 		/// </summary>
@@ -40,7 +45,12 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		IPeriodicTask StartPeriodic(Action callback, TimeSpan minimumWaitTime, string name = null);
 
 		/// <summary>
+		///     Removes a periodic task.
+		///     Its callback will no longer be invoked (eventually).
 		/// </summary>
+		/// <remarks>
+		///     DOES NOT BLOCK UNTIL THE CALLBACK IS FINISHED.
+		/// </remarks>
 		/// <param name="task"></param>
 		/// <returns></returns>
 		bool RemovePeriodic(IPeriodicTask task);
