@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,18 +16,12 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFileSearchListener> _listener;
 		private List<LogMatch> _matches;
 		private List<ILogFileSearchListener> _listeners;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
@@ -109,7 +102,8 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				proxy.AddListener(_listener.Object);
 				proxy.InnerSearch = _search.Object;
 
-				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
 				_matches.Should().Equal(new[] { new LogMatch(5, new LogLineMatch(4, 1)) });
 			}
 		}
@@ -123,8 +117,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				_matches.Should().BeEmpty();
 
 				EmitSearchModified(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
+				
+				_scheduler.RunOnce();
 
-				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
 			}
 		}
@@ -138,7 +133,8 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 
 				proxy.AddListener(_listener.Object);
 
-				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
 				_matches.Should().Equal(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
 			}
 		}

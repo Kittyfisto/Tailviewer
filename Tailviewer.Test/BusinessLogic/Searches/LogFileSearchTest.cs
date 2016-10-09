@@ -18,12 +18,12 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFile> _logFile;
 		private List<LogMatch> _matches;
 		private Mock<ILogFileSearchListener> _listener;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
+			_scheduler = new ManualTaskScheduler();
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
@@ -52,12 +52,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 							 _matches.Clear();
 							 _matches.AddRange(matches);
 						 });
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-			_scheduler.Dispose();
 		}
 
 		[Test]
@@ -89,7 +83,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			Add("Hello World!");
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
-				search.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
+				search.Count.Should().Be(3);
 				var matches = search.Matches.ToList();
 				matches.Should().Equal(new[]
 					{
@@ -107,7 +103,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.AddListener(_listener.Object);
-				_matches.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
+
+				_scheduler.RunOnce();
+
 				_matches.Should().Equal(new[]
 					{
 						new LogMatch(0, new LogLineMatch(2, 1)),

@@ -69,6 +69,7 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
   </ItemGroup>

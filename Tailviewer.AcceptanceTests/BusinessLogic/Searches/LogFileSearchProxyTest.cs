@@ -8,10 +8,10 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 
-namespace Tailviewer.Test.BusinessLogic.Searches
+namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 {
 	[TestFixture]
-	public sealed class LogFileSearchProxyAcceptanceTest
+	public sealed class LogFileSearchProxyTest
 	{
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
