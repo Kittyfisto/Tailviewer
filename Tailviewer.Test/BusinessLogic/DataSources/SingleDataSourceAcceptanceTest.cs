@@ -13,25 +13,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class SingleDataSourceAcceptanceTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			_scheduler = new TaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
+			_scheduler = new TaskScheduler();
 			_settings = new DataSource(LogFileTest.File20Mb)
-				{
-					Id = Guid.NewGuid()
-				};
+			{
+				Id = Guid.NewGuid()
+			};
 			_dataSource = new SingleDataSource(_scheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
 
@@ -39,6 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TearDown()
 		{
 			_dataSource.Dispose();
+			_scheduler.Dispose();
 		}
 
 		private DataSource _settings;
@@ -48,10 +38,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+
 			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
-
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.UnfilteredLogFile.Count.Should().Be(165342);
 			_dataSource.FilteredLogFile.Count.Should().Be(165342);
@@ -60,12 +50,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestLevleFilter1()
 		{
-			_dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached)
-			           .ShouldEventually().BeTrue();
-
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
-
 			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
@@ -83,6 +69,20 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
+		}
+
+		[Test]
+		[Description("Verifies that the levels are counted correctly")]
+		public void TestLevelCount1()
+		{
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+
+			_dataSource.TotalCount.Should().Be(165342);
+			_dataSource.DebugCount.Should().Be(165337);
+			_dataSource.InfoCount.Should().Be(5);
+			_dataSource.WarningCount.Should().Be(0);
+			_dataSource.ErrorCount.Should().Be(0);
+			_dataSource.FatalCount.Should().Be(0);
 		}
 	}
 }

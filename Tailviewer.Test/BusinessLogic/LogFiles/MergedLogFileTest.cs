@@ -115,11 +115,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			source.Add(new LogLine(0, 0, "foobar", LevelFlags.Info, DateTime.Now));
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 1));
-			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
-			// TODO: This code is broken - the following assert failed with count = 0: FIND THE RACE CONDITION!!!!
-			merged.Count.Should().Be(1);
-
+			merged.Property(x => x.Count).ShouldEventually().Be(1);
 			data.Should().Equal(source);
 		}
 
@@ -137,10 +134,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.Add(new LogLine(0, "a", LevelFlags.Info, DateTime.Now));
 			source.Add(new LogLine(1, "b", LevelFlags.Debug, DateTime.Now));
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 2));
-			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-			merged.Count.Should().Be(2);
-
+			merged.Property(x => x.Count).ShouldEventually().Be(2);
 			data.Should().Equal(source);
 		}
 
