@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			_syncRoot = new object();
 			_matches = new List<LogMatch>();
 
-			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search");
+			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search Proxy");
 		}
 
 		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFileSearch innerSearch)

@@ -21,21 +21,10 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFileSearchListener> _listener;
 		private TaskScheduler _scheduler;
 
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			_scheduler = new TaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
+			_scheduler = new TaskScheduler();
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
@@ -66,6 +55,12 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 						 });
 		}
 
+		[TearDown]
+		public void TearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[Test]
 		public void TestCtor1()
 		{
@@ -73,6 +68,20 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			{
 				search.Matches.Should().BeEmpty("because the source is empty");
 			}
+		}
+
+		[Test]
+		public void TestDispose()
+		{
+			LogFileSearch search;
+			using (search = new LogFileSearch(_scheduler, _logFile.Object, "foobar"))
+			{
+				search.IsDisposed.Should().BeFalse();
+				_scheduler.PeriodicTaskCount.Should().Be(1);
+			}
+
+			search.IsDisposed.Should().BeTrue();
+			_scheduler.PeriodicTaskCount.Should().Be(0);
 		}
 
 		[Test]

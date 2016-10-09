@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
 			_listeners = new LogFileListenerCollection(this);
 
-			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search Proxy");
+			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Log File Proxy");
 		}
 
 		public LogFileProxy(ITaskScheduler taskScheduler, ILogFile innerLogFile)

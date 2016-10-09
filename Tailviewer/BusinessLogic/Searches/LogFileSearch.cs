@@ -61,7 +61,9 @@ namespace Tailviewer.BusinessLogic.Searches
 			_matchesBuffer = new List<LogLineMatch>();
 			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);
 
-			_task = _scheduler.StartPeriodic(FilterAllPending, TimeSpan.FromMilliseconds(100), string.Format("Search {0}", logFile));
+			_task = _scheduler.StartPeriodic(FilterAllPending,
+			                                 TimeSpan.FromMilliseconds(100),
+			                                 string.Format("Search {0}", logFile));
 		}
 
 		public void Dispose()
