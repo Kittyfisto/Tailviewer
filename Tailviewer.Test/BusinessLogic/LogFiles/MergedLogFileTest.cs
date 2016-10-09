@@ -151,7 +151,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			IEnumerable<LogLine> data = Listen(merged);
+			var data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			DateTime timestamp = DateTime.Now;
@@ -161,9 +161,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			source2.Add(new LogLine(1, "b", LevelFlags.Debug, timestamp));
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
-			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-			merged.Count.Should().Be(2);
+			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+			merged.Property(x => x.Count).ShouldEventually().Be(2);
+			data.Property(x => x.Count).ShouldEventually().Be(2);
 
 			data.Should().Equal(new object[] {source1[0], source2[0]});
 		}
@@ -177,7 +178,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new Mock<ILogFile>();
 			source2.Setup(x => x.EndOfSourceReached).Returns(true);
 			var merged = new MergedLogFile(source1.Object, source2.Object);
-			IEnumerable<LogLine> data = Listen(merged);
+			var data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, "a", LevelFlags.Warning, DateTime.Now));
@@ -186,11 +187,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 3));
 
 			merged.Property(x => x.Count).ShouldEventually().Be(2);
+			data.Property(x => x.Count).ShouldEventually().Be(2);
 
 			data.Should().Equal(new[]
 				{
 					new LogLine(0, 0, source[0]),
-					new LogLine(1, 1, source[2]),
+					new LogLine(1, 1, source[2])
 				});
 		}
 
@@ -244,7 +246,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			IEnumerable<LogLine> data = Listen(merged);
+			var data = Listen(merged);
 			IEnumerable<LogFileSection> changes = ListenToChanges(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
@@ -255,7 +257,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile2.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
+
 			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+			data.Property(x => x.Count).ShouldEventually().Be(2);
 
 			data.Should().Equal(source2);
 			changes.Should().Equal(new[]
