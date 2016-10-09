@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_listeners = new LogFileListenerCollection(_logFile.Object);
-			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
+			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
 					.Callback(
 						(LogFileSection section, LogLine[] entries) =>
@@ -48,7 +48,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			        .Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
 		}
 
 		[Test]

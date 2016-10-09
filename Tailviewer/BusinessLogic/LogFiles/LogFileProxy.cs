@@ -178,6 +178,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public bool EndOfSourceReached
+		{
+			get
+			{
+				ILogFile logFile = _innerLogFile;
+				if (logFile != null)
+					return logFile.EndOfSourceReached;
+
+				return false;
+			}
+		}
+
 		public int Count
 		{
 			get
@@ -200,22 +212,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				return 0;
 			}
-		}
-
-		public void Wait()
-		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-				logFile.Wait();
-		}
-
-		public bool Wait(TimeSpan waitTime)
-		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-				return logFile.Wait(waitTime);
-
-			return true;
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

@@ -18,15 +18,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		bool Exists { get; }
 
+		/// <summary>
+		///     Whether or not this log file has reached the end of its data source.
+		/// </summary>
+		bool EndOfSourceReached { get; }
+
 		int Count { get; }
 
 		/// <summary>
-		/// The maximum amount of characters of a single <see cref="LogLine"/>.
+		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
 		int MaxCharactersPerLine { get; }
 
-		void Wait();
-		bool Wait(TimeSpan waitTime);
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		void RemoveListener(ILogFileListener listener);
 

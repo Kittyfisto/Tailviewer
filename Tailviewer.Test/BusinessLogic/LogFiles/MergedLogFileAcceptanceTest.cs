@@ -20,10 +20,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var merged = new MergedLogFile(source))
 			{
 				source.Start();
-				source.Wait();
+				source.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Start(TimeSpan.FromMilliseconds(1));
-				merged.Wait();
+				merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Count.Should().Be(source.Count);
 				merged.FileSize.Should().Be(source.FileSize);
@@ -50,10 +50,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				merged.Start(TimeSpan.Zero);
 
 				source1.Start();
-				source1.Wait();
+				source1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				source2.Start();
-				source2.Wait();
+				source2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				WaitUntil(() => merged.Count == 8, TimeSpan.FromSeconds(2))
 					.Should().BeTrue("Because the merged file should've been finished after 2 seconds");

@@ -13,14 +13,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly CancellationTokenSource _cancellationTokenSource;
-		private readonly ManualResetEvent _endOfSectionHandle;
 		private readonly LogFileListenerCollection _listeners;
 		private readonly Task _readTask;
 		private bool _isDisposed;
+		private volatile bool _endOfSourceReached;
 
 		protected AbstractLogFile()
 		{
-			_endOfSectionHandle = new ManualResetEvent(false);
 			_cancellationTokenSource = new CancellationTokenSource();
 			_listeners = new LogFileListenerCollection(this);
 			_readTask = new Task(Run,
@@ -57,12 +56,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public abstract int MaxCharactersPerLine { get; }
 
-		public void Wait()
+		public abstract bool Exists { get; }
+
+		public virtual bool EndOfSourceReached
 		{
-			Wait(TimeSpan.MaxValue);
+			get { return _endOfSourceReached; }
 		}
 
-		public abstract bool Exists { get; }
 		public abstract DateTime? StartTimestamp { get; }
 		public abstract DateTime LastModified { get; }
 		public abstract Size FileSize { get; }
@@ -87,14 +87,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		protected void EndOfSectionReset()
+		protected void SetEndOfSourceReached()
 		{
-			_endOfSectionHandle.Reset();
+			_endOfSourceReached = true;
 		}
 
-		protected void EndOfSectionReached()
+		protected void ResetEndOfSourceReached()
 		{
-			_endOfSectionHandle.Set();
+			_endOfSourceReached = false;
 		}
 
 		protected void StartTask()
@@ -103,21 +103,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				_readTask.Start();
 			}
-		}
-
-		public virtual bool Wait(TimeSpan waitTime)
-		{
-			DateTime start = DateTime.Now;
-			while (DateTime.Now - start < waitTime)
-			{
-				if (_endOfSectionHandle.WaitOne(TimeSpan.FromMilliseconds(100)))
-					return true;
-
-				if (_readTask.IsFaulted)
-					throw _readTask.Exception;
-			}
-
-			return false;
 		}
 	}
 }

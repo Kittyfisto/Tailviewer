@@ -62,7 +62,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestLevleFilter1()
 		{
-			_dataSource.UnfilteredLogFile.Wait();
+			_dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached)
+			           .ShouldEventually().BeTrue();
 
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
@@ -76,7 +77,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestStringFilter1()
 		{
-			_dataSource.UnfilteredLogFile.Wait();
+			_dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached)
+					   .ShouldEventually().BeTrue();
 
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();

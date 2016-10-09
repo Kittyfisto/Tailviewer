@@ -165,7 +165,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					{
 						OnReset(null, out numberOfLinesRead, out lastPosition);
 						_exists = false;
-						EndOfSectionReached();
+						SetEndOfSourceReached();
 
 						// We want to avoid keeping this task busy by checking the file's presence
 						// as fast as possible, therefore we sleep for quite some time - the user won't be mad
@@ -196,7 +196,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 							{
 								token.ThrowIfCancellationRequested();
 
-								EndOfSectionReset();
+								ResetEndOfSourceReached();
 								++numberOfLinesRead;
 
 								LevelFlags level = DetermineLevel(line, levels);
@@ -236,7 +236,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						}
 
 						Listeners.OnRead(numberOfLinesRead);
-						EndOfSectionReached();
+						SetEndOfSourceReached();
 
 						if (token.WaitHandle.WaitOne(sleepTime))
 							break;

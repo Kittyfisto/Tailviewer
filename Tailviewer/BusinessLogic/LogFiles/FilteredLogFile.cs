@@ -36,6 +36,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _source.Exists; }
 		}
 
+		public override bool EndOfSourceReached
+		{
+			get { return _source.EndOfSourceReached & base.EndOfSourceReached; }
+		}
+
 		public override DateTime? StartTimestamp
 		{
 			get { return _source.StartTimestamp; }
@@ -70,21 +75,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
-			EndOfSectionReset();
-		}
-
-		public override bool Wait(TimeSpan waitTime)
-		{
-			var started = DateTime.Now;
-			if (!_source.Wait(waitTime))
-				return false;
-
-			var elapsed = DateTime.Now - started;
-			var remaining = waitTime - elapsed;
-			if (remaining < TimeSpan.Zero)
-				remaining = TimeSpan.Zero;
-
-			return base.Wait(remaining);
+			ResetEndOfSourceReached();
 		}
 
 		public override void GetSection(LogFileSection section, LogLine[] dest)
@@ -173,7 +164,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					TryAddLogLine(lastLogEntry);
 					Listeners.OnRead(_indices.Count);
 
-					EndOfSectionReached();
+					SetEndOfSourceReached();
 
 					// There's no more data, let's wait for more (or until we're disposed)
 					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));

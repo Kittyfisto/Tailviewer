@@ -115,10 +115,10 @@ namespace Tailviewer.Test.Ui
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
-				dataSource.UnfilteredLogFile.Wait();
+				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 				dataSourceModel.SearchTerm = "i";
-				dataSource.FilteredLogFile.Wait();
+				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 				// We have waited for that filter operation to finish, HOWEVER, did not invoke the dispatcher.
 				// This causes all modifications from that operation to stay in the view-model's queue
 
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.Ui
 				dataSourceModel.SearchTerm = "info";
 
 				// Now we wait for the very last filter operation to complete
-				dataSource.FilteredLogFile.Wait();
+				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 				// And then dispatch ALL events at ONCE.
 				// We expect the view model to completely ignore the old changes!
 				_dispatcher.InvokeAll();

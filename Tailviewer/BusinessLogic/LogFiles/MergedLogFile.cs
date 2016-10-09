@@ -63,6 +63,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public override bool EndOfSourceReached
+		{
+			get
+			{
+				return _sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached;
+			}
+		}
+
 		public override DateTime? StartTimestamp
 		{
 			get { return _startTimestamp; }
@@ -97,7 +105,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
-			EndOfSectionReset();
+			ResetEndOfSourceReached();
 		}
 
 		public override void GetSection(LogFileSection section, LogLine[] dest)
@@ -223,7 +231,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						);
 
 					Listeners.OnRead(_indices.Count);
-					EndOfSectionReached();
+					SetEndOfSourceReached();
 					Thread.Sleep(TimeSpan.FromMilliseconds(10));
 				}
 			}

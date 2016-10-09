@@ -43,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				        });
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
+			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 
 			_matches = new List<LogMatch>();
 			_listener = new Mock<ILogFileSearchListener>();

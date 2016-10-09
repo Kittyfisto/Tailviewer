@@ -28,11 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 						merged.Start(TimeSpan.FromMilliseconds(10));
 						filtered.Start(TimeSpan.FromMilliseconds(10));
 
-						source1.Wait();
-						source2.Wait();
-						merged.Wait();
-						filtered.Wait();
-						filtered.Count.Should().Be(1);
+						filtered.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 					}
 				}
 			}

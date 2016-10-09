@@ -73,7 +73,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = Guid.NewGuid() }))
 			{
-				dataSource.UnfilteredLogFile.Wait();
+				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				dataSource.TotalCount.Should().Be(21);
 				dataSource.DebugCount.Should().Be(1);
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\20Mb.txt") { Id = Guid.NewGuid() }))
 			{
-				dataSource.UnfilteredLogFile.Wait();
+				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				dataSource.TotalCount.Should().Be(165342);
 				dataSource.DebugCount.Should().Be(165337);
@@ -108,7 +108,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
 			{
-				dataSource.UnfilteredLogFile.Wait();
+				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				dataSource.UnfilteredLogFile.Count.Should().Be(6);
 				LogLine[] lines = dataSource.UnfilteredLogFile.GetSection(new LogFileSection(0, 6));
 				lines[0].Message.Should().Be("DEBUG ERROR WARN FATAL INFO");
@@ -157,7 +157,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.Wait(It.IsAny<TimeSpan>())).Returns(true);
+			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 		}
 
 		[Test]
