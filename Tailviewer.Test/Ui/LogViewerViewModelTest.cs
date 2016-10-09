@@ -115,7 +115,7 @@ namespace Tailviewer.Test.Ui
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
-				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 
 				dataSourceModel.SearchTerm = "i";
 				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
