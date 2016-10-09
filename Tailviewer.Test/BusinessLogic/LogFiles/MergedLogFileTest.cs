@@ -259,7 +259,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
 
 			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-			data.Property(x => x.Count).ShouldEventually().Be(2);
+			data.Property(x => x.Count).ShouldEventually().Be(1);
 
 			data.Should().Equal(source2);
 			changes.Should().Equal(new[]
