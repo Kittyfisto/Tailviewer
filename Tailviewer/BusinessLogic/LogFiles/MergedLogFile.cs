@@ -13,7 +13,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     <see cref="LogLine" />s which have no <see cref="LogLine.Timestamp" /> set (or who's parent doesn't)
 	///     are discarded from this representation.
 	/// </summary>
-	internal sealed class MergedLogFile
+	public sealed class MergedLogFile
 		: AbstractLogFile
 		  , ILogFileListener
 	{

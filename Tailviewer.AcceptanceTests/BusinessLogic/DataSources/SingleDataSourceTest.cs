@@ -1,23 +1,23 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
-using Tailviewer.Test.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.DataSources
+namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceAcceptanceTest
+	public sealed class SingleDataSourceTest
 	{
 		[SetUp]
 		public void SetUp()
 		{
 			_scheduler = new TaskScheduler();
-			_settings = new DataSource(LogFileAcceptanceTest.File20Mb)
+			_settings = new DataSource(LogFileTest.File20Mb)
 			{
 				Id = Guid.NewGuid()
 			};

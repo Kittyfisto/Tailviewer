@@ -5,7 +5,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	internal sealed class SingleDataSource
+	public sealed class SingleDataSource
 		: AbstractDataSource
 	{
 		private readonly ILogFile _unfilteredLogFile;

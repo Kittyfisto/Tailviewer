@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -10,7 +9,7 @@ using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
-	internal sealed class LogFile
+	public sealed class LogFile
 		: AbstractLogFile
 	{
 		private static readonly ILog Log =

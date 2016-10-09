@@ -3,10 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class MergedLogFileAcceptanceTest
+	public sealed class MergedLogFileTest
 	{
 		[Test]
 		[Ignore(
@@ -15,7 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
-			using (var source = new LogFile(LogFileAcceptanceTest.File20Mb))
+			using (var source = new LogFile(LogFileTest.File20Mb))
 			using (var merged = new MergedLogFile(source))
 			{
 				source.Start();
@@ -42,8 +42,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void Test2SmallSources()
 		{
-			using (var source1 = new LogFile(LogFileAcceptanceTest.File2Entries))
-			using (var source2 = new LogFile(LogFileAcceptanceTest.File2Lines))
+			using (var source1 = new LogFile(LogFileTest.File2Entries))
+			using (var source2 = new LogFile(LogFileTest.File2Lines))
 			using (var merged = new MergedLogFile(source1, source2))
 			{
 				merged.Start(TimeSpan.Zero);
@@ -77,8 +77,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestLive1And2()
 		{
-			using (var source1 = new LogFile(LogFileAcceptanceTest.FileTestLive1))
-			using (var source2 = new LogFile(LogFileAcceptanceTest.FileTestLive2))
+			using (var source1 = new LogFile(LogFileTest.FileTestLive1))
+			using (var source2 = new LogFile(LogFileTest.FileTestLive2))
 			using (var merged = new MergedLogFile(source1, source2))
 			{
 				source1.Start();

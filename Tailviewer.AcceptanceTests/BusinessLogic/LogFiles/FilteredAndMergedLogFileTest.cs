@@ -5,17 +5,17 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class FilteredAndMergedLogFileAcceptanceTest
+	public sealed class FilteredAndMergedLogFileTest
 	{
 		[Test]
 		[Ignore]
 		public void Test()
 		{
-			using (var source1 = new LogFile(LogFileAcceptanceTest.File2Entries))
-			using (var source2 = new LogFile(LogFileAcceptanceTest.File2Lines))
+			using (var source1 = new LogFile(LogFileTest.File2Entries))
+			using (var source2 = new LogFile(LogFileTest.File2Lines))
 			{
 				var sources = new List<ILogFile> {source1, source2};
 				using (var merged = new MergedLogFile(sources))

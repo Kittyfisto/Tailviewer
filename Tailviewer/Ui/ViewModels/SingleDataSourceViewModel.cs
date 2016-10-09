@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.ViewModels
 	/// <summary>
 	///     Represents a data source and is capable
 	/// </summary>
-	internal sealed class SingleDataSourceViewModel
+	public sealed class SingleDataSourceViewModel
 		: AbstractDataSourceViewModel
 	{
 		private readonly IDataSource _dataSource;

@@ -85,23 +85,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
-		[Description("Verifies that the levels are counted correctly")]
-		public void TestLevelCount2()
-		{
-			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\20Mb.txt") { Id = Guid.NewGuid() }))
-			{
-				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-
-				dataSource.TotalCount.Should().Be(165342);
-				dataSource.DebugCount.Should().Be(165337);
-				dataSource.InfoCount.Should().Be(5);
-				dataSource.WarningCount.Should().Be(0);
-				dataSource.ErrorCount.Should().Be(0);
-				dataSource.FatalCount.Should().Be(0);
-			}
-		}
-
-		[Test]
 		[Description("Verifies that the level of a log line is unambigously defined")]
 		public void TestLevelPrecedence()
 		{

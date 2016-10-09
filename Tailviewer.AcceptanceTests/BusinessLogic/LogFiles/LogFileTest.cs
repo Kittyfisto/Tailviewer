@@ -7,12 +7,13 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Test;
 using log4net;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogFileAcceptanceTest
+	public sealed class LogFileTest
 	{
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";

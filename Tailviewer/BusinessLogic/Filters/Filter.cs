@@ -4,7 +4,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal static class Filter
+	public static class Filter
 	{
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{

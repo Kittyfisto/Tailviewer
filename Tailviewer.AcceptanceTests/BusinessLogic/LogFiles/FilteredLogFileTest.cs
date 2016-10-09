@@ -7,12 +7,12 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class FilteredLogFileAcceptanceTest
+	public sealed class FilteredLogFileTest
 	{
-		private const string File20Mb = LogFileAcceptanceTest.File20Mb;
+		private const string File20Mb = LogFileTest.File20Mb;
 
 		[Test]
 		public void TestFilter1()

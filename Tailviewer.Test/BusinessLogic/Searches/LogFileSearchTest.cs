@@ -107,7 +107,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.AddListener(_listener.Object);
-				search.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
+				_matches.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[]
 					{
 						new LogMatch(0, new LogLineMatch(2, 1)),

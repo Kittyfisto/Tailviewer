@@ -10,13 +10,11 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal abstract class AbstractDataSourceViewModel
+	public abstract class AbstractDataSourceViewModel
 		: IDataSourceViewModel
 	{
 		private readonly IDataSource _dataSource;
 		private readonly ICommand _removeCommand;
-		private readonly ICommand _startSearchCommand;
-		private readonly ICommand _stopSearchCommand;
 
 		private int _debugCount;
 		private int _errorCount;

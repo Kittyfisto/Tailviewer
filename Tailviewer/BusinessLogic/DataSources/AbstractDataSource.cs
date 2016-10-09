@@ -9,7 +9,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	internal abstract class AbstractDataSource
+	public abstract class AbstractDataSource
 		: IDataSource
 	{
 		private readonly TaskScheduler _taskScheduler;

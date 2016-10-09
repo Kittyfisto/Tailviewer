@@ -8,7 +8,7 @@ namespace Tailviewer.BusinessLogic.Filters
 	/// <summary>
 	///     A filter that looks for a substring in a (possibly) bigger string.
 	/// </summary>
-	internal sealed class SubstringFilter
+	public sealed class SubstringFilter
 		: ILogEntryFilter
 	{
 		public readonly StringComparison Comparison;

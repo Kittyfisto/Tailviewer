@@ -67,14 +67,11 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileAcceptanceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\FilteredLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MergedLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
@@ -84,7 +81,6 @@
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
@@ -103,7 +99,6 @@
     <Compile Include="Logger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileAcceptanceTest.cs" />
     <Compile Include="Ui\Controls\LogViewerControlTest.cs" />
     <Compile Include="Ui\LogViewerViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
