@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			return changes;
 		}
 
-		private static IEnumerable<LogLine> Listen(ILogFile logFile)
+		private static List<LogLine> Listen(ILogFile logFile)
 		{
 			var data = new List<LogLine>();
 			var listener = new Mock<ILogFileListener>();
@@ -195,8 +195,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")
-		]
+		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")]
 		public void TestMerge5()
 		{
 			var source1 = new List<LogLine>();
@@ -206,7 +205,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
 			var merged = new MergedLogFile(logFile1.Object, logFile2.Object);
-			IEnumerable<LogLine> data = Listen(merged);
+			var data = Listen(merged);
 			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			var later = new DateTime(2016, 2, 16);
@@ -218,9 +217,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			source2.Add(new LogLine(0, "c", LevelFlags.Error, earlier));
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
-			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-			merged.Count.Should().Be(2);
+			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+			merged.Property(x => x.Count).ShouldEventually().Be(2);
+			data.Property(x => x.Count).ShouldEventually().Be(2);
 
 			data.Should().Equal(new object[]
 				{
