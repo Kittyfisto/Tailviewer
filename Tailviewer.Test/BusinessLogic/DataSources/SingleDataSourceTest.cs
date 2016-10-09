@@ -47,6 +47,27 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		[Description("Verifies that the data source disposes of all of its resources")]
+		public void TestDispose()
+		{
+			LogFileProxy permanentLogFile;
+			LogFileSearchProxy permanentSearch;
+
+			SingleDataSource source;
+			using (source = new SingleDataSource(_scheduler, new DataSource(@"E:\somelogfile.txt") {Id = Guid.NewGuid()}))
+			{
+				permanentLogFile = (LogFileProxy) source.FilteredLogFile;
+				permanentSearch = (LogFileSearchProxy) source.Search;
+
+				permanentLogFile.IsDisposed.Should().BeFalse();
+				permanentSearch.IsDisposed.Should().BeFalse();
+			}
+			source.IsDisposed.Should().BeTrue();
+			permanentLogFile.IsDisposed.Should().BeTrue();
+			permanentSearch.IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{

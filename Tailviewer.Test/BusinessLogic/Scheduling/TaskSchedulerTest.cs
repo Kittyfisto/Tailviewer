@@ -33,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 			{
 				var task = scheduler.StartPeriodic(() => { }, TimeSpan.FromSeconds(1));
 				task.Should().NotBeNull();
-				scheduler.RemovePeriodic(task).Should().BeTrue();
+				scheduler.StopPeriodic(task).Should().BeTrue();
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 					.Should()
 					.BeTrue("because our periodic task should've been executed 100 times in 5 seconds");
 
-				scheduler.RemovePeriodic(task);
+				scheduler.StopPeriodic(task);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 		{
 			using (var scheduler = new TaskScheduler())
 			{
-				scheduler.RemovePeriodic(new Mock<IPeriodicTask>().Object).Should().BeFalse();
+				scheduler.StopPeriodic(new Mock<IPeriodicTask>().Object).Should().BeFalse();
 			}
 		}
 	}

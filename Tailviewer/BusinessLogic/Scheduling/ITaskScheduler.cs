@@ -6,7 +6,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 	/// <summary>
 	///     Similar to <see cref="System.Threading.Tasks.TaskScheduler" />, it is capable of scheduling tasks.
 	///     Can also schedule periodic tasks that are executed with a minimum time between them (until removed).
-	///     <see cref="StartPeriodic" /> and <see cref="RemovePeriodic" />.
+	///     <see cref="StartPeriodic" /> and <see cref="StopPeriodic" />.
 	/// </summary>
 	public interface ITaskScheduler
 	{
@@ -53,6 +53,6 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		/// </remarks>
 		/// <param name="task"></param>
 		/// <returns></returns>
-		bool RemovePeriodic(IPeriodicTask task);
+		bool StopPeriodic(IPeriodicTask task);
 	}
 }

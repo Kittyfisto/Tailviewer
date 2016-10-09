@@ -27,6 +27,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly IPeriodicTask _task;
 		private ILogFile _innerLogFile;
+		private bool _isDisposed;
 
 		public LogFileProxy(ITaskScheduler taskScheduler)
 		{
@@ -37,7 +38,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
 			_listeners = new LogFileListenerCollection(this);
 
-			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100));
+			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search Proxy");
 		}
 
 		public LogFileProxy(ITaskScheduler taskScheduler, ILogFile innerLogFile)
@@ -119,7 +120,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				logFile.Dispose();
 			}
-			_taskScheduler.RemovePeriodic(_task);
+			_taskScheduler.StopPeriodic(_task);
+			_isDisposed = true;
+		}
+
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
 		}
 
 		public DateTime? StartTimestamp

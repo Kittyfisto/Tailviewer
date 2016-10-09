@@ -17,13 +17,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
 
-		private readonly LogFileProxy _logFile;
-		private readonly LogFileSearchProxy _logFileSearch;
+		private readonly LogFileProxy _permanentLogFile;
+		private readonly LogFileSearchProxy _permanentSearch;
 
-		private ILogFileSearch _currentSearch;
+		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
 		private ILogFile _lastRegisteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private bool _isDisposed;
 
 		protected AbstractDataSource(TaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
@@ -37,19 +38,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
 
-			_logFile = new LogFileProxy(taskScheduler);
-			_logFileSearch = new LogFileSearchProxy();
+			_permanentLogFile = new LogFileProxy(taskScheduler);
+			_permanentSearch = new LogFileSearchProxy(taskScheduler);
 			CreateSearch();
 		}
 
 		public ILogFile FilteredLogFile
 		{
-			get { return _logFile; }
+			get { return _permanentLogFile; }
 		}
 
 		public ILogFileSearch Search
 		{
-			get { return _logFileSearch; }
+			get { return _permanentSearch; }
 		}
 
 		/// <summary>
@@ -226,7 +227,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Dispose()
 		{
+			_permanentLogFile.Dispose();
+			_permanentSearch.Dispose();
+
+			DisposeCurrentSearch();
 			UnfilteredLogFile.Dispose();
+
+			_isDisposed = true;
+		}
+
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
 		}
 
 		public override string ToString()
@@ -251,20 +263,31 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (filter != null)
 			{
 				_filteredLogFile = UnfilteredLogFile.AsFiltered(filter, _maximumWaitTime);
-				_logFile.InnerLogFile = _filteredLogFile;
+				_permanentLogFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_logFile.InnerLogFile = UnfilteredLogFile;
+				_permanentLogFile.InnerLogFile = UnfilteredLogFile;
 			}
 		}
 
 		private void CreateSearch()
 		{
+			DisposeCurrentSearch();
+
 			var term = SearchTerm;
-			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _logFile, term, _maximumWaitTime) : null;
-			_logFileSearch.InnerSearch = _currentSearch;
+			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _permanentLogFile, term, _maximumWaitTime) : null;
+			_permanentSearch.InnerSearch = _currentSearch;
+		}
+
+		private void DisposeCurrentSearch()
+		{
+			if (_currentSearch != null)
+			{
+				_currentSearch.Dispose();
+				_currentSearch = null;
+			}
 		}
 
 		private sealed class Counter

@@ -31,6 +31,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly IPeriodicTask _task;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
+		private bool _isDisposed;
 
 		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm)
 			: this(taskScheduler, logFile, searchTerm, TimeSpan.FromMilliseconds(10))
@@ -66,7 +67,8 @@ namespace Tailviewer.BusinessLogic.Searches
 		public void Dispose()
 		{
 			_logFile.RemoveListener(this);
-			_scheduler.RemovePeriodic(_task);
+			_scheduler.StopPeriodic(_task);
+			_isDisposed = true;
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -83,6 +85,11 @@ namespace Tailviewer.BusinessLogic.Searches
 					return _matches.ToList();
 				}
 			}
+		}
+
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
 		}
 
 		public int Count

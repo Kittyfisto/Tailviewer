@@ -1,28 +1,51 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.BusinessLogic.Scheduling;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
 	public sealed class LogFileSearchProxy
 		: ILogFileSearch
-		  , ILogFileSearchListener
+		, ILogFileSearchListener
+		, IDisposable
 	{
 		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly object _syncRoot;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly IPeriodicTask _task;
 		private ILogFileSearch _innerSearch;
 		private List<LogMatch> _matches;
+		private bool _isDisposed;
 
-		public LogFileSearchProxy()
+		public LogFileSearchProxy(ITaskScheduler taskScheduler)
 		{
+			if (taskScheduler == null)
+				throw new ArgumentNullException("taskScheduler");
+
 			_listeners = new List<ILogFileSearchListener>();
+			_taskScheduler = taskScheduler;
 			_syncRoot = new object();
 			_matches = new List<LogMatch>();
+
+			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search");
 		}
 
-		public LogFileSearchProxy(ILogFileSearch innerSearch)
-			: this()
+		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFileSearch innerSearch)
+			: this(taskScheduler)
 		{
 			InnerSearch = innerSearch;
+		}
+
+		public void Dispose()
+		{
+			_taskScheduler.StopPeriodic(_task);
+			_isDisposed = true;
+		}
+
+		public bool IsDisposed
+		{
+			get { return _isDisposed; }
 		}
 
 		public ILogFileSearch InnerSearch
@@ -87,6 +110,11 @@ namespace Tailviewer.BusinessLogic.Searches
 				_matches = matches;
 				EmitSearchModified(_matches);
 			}
+		}
+
+		private void RunOnce()
+		{
+			
 		}
 
 		private void EmitSearchModified(IEnumerable<LogMatch> matches)

@@ -59,9 +59,8 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			AddEntry("Foobar");
 
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
+			using (var proxy = new LogFileSearchProxy(_scheduler, search))
 			{
-				var proxy = new LogFileSearchProxy(search);
-
 				WaitUntil(() => proxy.Count >= 1, TimeSpan.FromSeconds(1))
 					.Should().BeTrue("because we should be able to search through the file in a few seconds");
 
@@ -78,9 +77,8 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void TestSearch2()
 		{
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
+			using (var proxy = new LogFileSearchProxy(_scheduler, search))
 			{
-				var proxy = new LogFileSearchProxy(search);
-
 				AddEntry("Hello World!");
 				AddEntry("Foobar");
 
