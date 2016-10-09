@@ -189,9 +189,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.Add(new LogLine(1, "b", LevelFlags.Info));
 			source.Add(new LogLine(2, "c", LevelFlags.Error, DateTime.Now));
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 3));
-			merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-			merged.Count.Should().Be(2);
+			merged.Property(x => x.Count).ShouldEventually().Be(2);
 
 			data.Should().Equal(new[]
 				{

@@ -195,7 +195,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				file.Start();
 
-				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue("because we should be able to read the entire file in a few seconds");
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20), "because we should be able to read the entire file in a few seconds");
 				file.Count.Should().Be(165342);
 				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
