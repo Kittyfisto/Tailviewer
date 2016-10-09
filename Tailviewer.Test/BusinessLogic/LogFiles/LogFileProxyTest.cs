@@ -16,12 +16,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		private LogFileListenerCollection _listeners;
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _modifications;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[SetUp]
 		public void Setup()
 		{
-			_scheduler = new DefaultTaskScheduler();
+			_scheduler = new ManualTaskScheduler();
 
 			_logFile = new Mock<ILogFile>();
 			_listeners = new LogFileListenerCollection(_logFile.Object);
@@ -34,12 +34,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_modifications = new List<LogFileSection>();
 			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
 			         .Callback((ILogFile logFile, LogFileSection section) => _modifications.Add(section));
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-			_scheduler.Dispose();
 		}
 
 		[Test]
@@ -195,7 +189,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.OnRead(500);
 				_listeners.OnRead(600);
 
-				_modifications.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -216,7 +211,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.Reset();
 				_listeners.OnRead(600);
 
-				_modifications.Property(x => x.Count).ShouldEventually().Be(4, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -238,7 +234,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.Invalidate(400, 100);
 				_listeners.OnRead(550);
 
-				_modifications.Property(x => x.Count).ShouldEventually().Be(4, TimeSpan.FromSeconds(5));
+				_scheduler.RunOnce();
+
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -274,8 +271,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
 				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 
-				_modifications.Property(x => x.Count).ShouldEventually().Be(2, TimeSpan.FromSeconds(50),
-				                                                            "because the changes should've eventually been forwarded to the listener");
+				_scheduler.RunOnce();
+
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
