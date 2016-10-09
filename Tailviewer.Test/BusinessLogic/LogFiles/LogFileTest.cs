@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -405,15 +406,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Action(() => logFile = new LogFile(fileName)).ShouldNotThrow();
 
 				logFile.Start();
-				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
-				logFile.Exists.Should().BeFalse("Because the specified file doesn't exist");
+				WaitUntil(() => !logFile.Exists, TimeSpan.FromSeconds(5))
+					.Should().BeTrue("Because the specified file doesn't exist");
 
 				File.WriteAllText(fileName, "Hello World!");
-				Thread.Sleep(TimeSpan.FromMilliseconds(500));
-				logFile.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue();
-				logFile.Exists.Should().BeTrue("Because the file has been created now");
 
-				logFile.Count.Should().Be(1, "Because one line was written to the file");
+				WaitUntil(() => logFile.Exists, TimeSpan.FromSeconds(5))
+					.Should().BeTrue("Because the file has been created now");
+
+				WaitUntil(() => logFile.Count >= 1, TimeSpan.FromSeconds(5))
+					.Should().BeTrue("Because one line was written to the file");
+
 				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
 			}
 			finally
@@ -507,7 +510,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
-				file.Wait();
+
+				WaitUntil(() => changes.Count >= 3, TimeSpan.FromSeconds(5))
+					.Should().BeTrue();
 
 				changes.Should().Equal(new[]
 					{
@@ -530,7 +535,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
-				file.Wait();
+
+				WaitUntil(() => changes.Count >= 7, TimeSpan.FromSeconds(5))
+					.Should().BeTrue();
 
 				changes.Should().Equal(new[]
 					{
@@ -568,7 +575,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new LogFile(File20Mb))
 			{
 				file.Start();
-				file.Wait();
+
+				WaitUntil(() => file.Count >= 165342, TimeSpan.FromSeconds(20))
+					.Should().BeTrue();
+
 				file.Dispose();
 
 				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
@@ -598,9 +608,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
-				file.Wait();
 
-				sections.Count.Should().Be(165343);
+				WaitUntil(() => sections.Count >= 165343, TimeSpan.FromSeconds(20))
+					.Should().BeTrue();
+
 				sections[0].Should().Be(LogFileSection.Reset);
 				for (int i = 1; i < sections.Count; ++i)
 				{
@@ -620,7 +631,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.MaxCharactersPerLine.Should().Be(0);
 
 				file.Start();
-				file.Wait();
+
+				WaitUntil(() => file.Count >= 165342, TimeSpan.FromSeconds(20))
+					.Should().BeTrue();
 
 				file.Count.Should().Be(165342);
 				file.MaxCharactersPerLine.Should().Be(218);
