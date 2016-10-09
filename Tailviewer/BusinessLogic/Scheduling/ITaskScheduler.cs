@@ -36,6 +36,11 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		///     Creates and starts a new periodic task.
 		///     Periodic tasks (as the name suggests) are tasks that are periodically invoked (instead of just once).
 		/// </summary>
+		/// <remarks>
+		///     Contrary to timers, the <paramref name="callback" /> is never invoked in parallel.
+		///     If the callback's execution time is greater than the minimum wait time (or the system is saturated) then
+		///     the callback will be invoked as fast as possible, but no additional invocations queue up.
+		/// </remarks>
 		/// <param name="callback"></param>
 		/// <param name="minimumWaitTime">
 		///     The minimum time that should ellapsed between two successive calls to <paramref name="callback" />

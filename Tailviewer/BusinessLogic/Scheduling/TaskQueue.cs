@@ -5,13 +5,33 @@ using log4net;
 
 namespace Tailviewer.BusinessLogic.Scheduling
 {
+	/// <summary>
+	///     This class is responsible for holding a set of <see cref="PeriodicTask" />s.
+	///     On top of this, it keeps track of whether a task is currently being executed or pending.
+	/// </summary>
+	/// <example>
+	///     var queue = new TaskQueue();
+	///     queue.Add(new PeriodicTask);
+	///     PeriodicTask nextTask;
+	///     if (queue.TryDequeuePendingTask(out nextTask))
+	///     {
+	///        try
+	///        {
+	///           nextTask.Run();
+	///        }
+	///        finally
+	///        {
+	///           queue.Enqueue(nextTask);
+	///        }
+	///     }
+	/// </example>
 	internal sealed class TaskQueue
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly HashSet<PeriodicTask> _tasks;
 		private readonly List<PeriodicTask> _pendingTasks;
 		private readonly object _syncRoot;
+		private readonly HashSet<PeriodicTask> _tasks;
 
 		public TaskQueue()
 		{
@@ -38,53 +58,9 @@ namespace Tailviewer.BusinessLogic.Scheduling
 
 			lock (_syncRoot)
 			{
-				if (task.IsRemoved)
+				if (_tasks.Add(task))
 				{
-					if (Log.IsDebugEnabled)
-					{
-						Log.DebugFormat("Periodic task '{0}' has been removed and will no longer be added to the qeueue",
-										task);
-					}
-				}
-				else
-				{
-					if (Log.IsDebugEnabled)
-					{
-						Log.DebugFormat("Periodic task '{0}' has finished executing and is added to the task queue once more");
-					}
-
-					if (_tasks.Add(task))
-					{
-						_pendingTasks.Add(task);
-					}
-				}
-			}
-		}
-
-		public void EnqueuePending(PeriodicTask task)
-		{
-			if (task == null)
-				throw new ArgumentNullException("task");
-
-			lock (_syncRoot)
-			{
-				if (task.IsRemoved)
-				{
-					if (Log.IsDebugEnabled)
-					{
-						Log.DebugFormat("Periodic task '{0}' has been removed and will no longer be added to the qeueue",
-										task);
-					}
-				}
-				else
-				{
-					if (Log.IsDebugEnabled)
-					{
-						Log.DebugFormat("Periodic task '{0}' has finished executing and is added to the task queue once more");
-					}
-
-					if (!_pendingTasks.Contains(task))
-						_pendingTasks.Add(task);
+					_pendingTasks.Add(task);
 				}
 			}
 		}
@@ -109,6 +85,48 @@ namespace Tailviewer.BusinessLogic.Scheduling
 			}
 		}
 
+		#region Queueing
+
+		public void EnqueuePending(PeriodicTask task)
+		{
+			if (task == null)
+				throw new ArgumentNullException("task");
+
+			lock (_syncRoot)
+			{
+				if (task.IsRemoved)
+				{
+					if (Log.IsDebugEnabled)
+					{
+						Log.DebugFormat("Periodic task '{0}' has been removed and will no longer be added to the qeueue",
+						                task);
+					}
+				}
+				else
+				{
+					if (Log.IsDebugEnabled)
+					{
+						Log.DebugFormat("Periodic task '{0}' has finished executing and is added to the task queue once more",
+						                task);
+					}
+
+					if (!_pendingTasks.Contains(task))
+						_pendingTasks.Add(task);
+				}
+			}
+		}
+
+		public bool TryDequeuePendingTask(out PeriodicTask task)
+		{
+			return TryDequeuePendingTask(DateTime.Now, out task);
+		}
+
+		public bool TryDequeuePendingTask(DateTime now, out PeriodicTask task)
+		{
+			TimeSpan unused;
+			return TryDequeuePendingTask(now, out task, out unused);
+		}
+
 		public bool TryDequeuePendingTask(DateTime now, out PeriodicTask task, out TimeSpan remainingMinimumWaitTime)
 		{
 			remainingMinimumWaitTime = TimeSpan.MaxValue;
@@ -117,7 +135,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 			{
 				for (int i = 0; i < _pendingTasks.Count; ++i)
 				{
-					var possibleTask = _pendingTasks[i];
+					PeriodicTask possibleTask = _pendingTasks[i];
 
 					TimeSpan remaining;
 					if (possibleTask.ShouldRun(now, out remaining))
@@ -136,5 +154,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 			task = null;
 			return false;
 		}
+
+		#endregion
 	}
 }

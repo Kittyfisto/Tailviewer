@@ -16,6 +16,7 @@ namespace Tailviewer.BusinessLogic.Scheduling
 		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ManualResetEvent _disposed;
 
 		private readonly System.Threading.Tasks.TaskScheduler _scheduler;

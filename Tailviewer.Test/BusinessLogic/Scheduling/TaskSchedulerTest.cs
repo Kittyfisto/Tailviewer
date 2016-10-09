@@ -44,6 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 			{
 				int counter = 0;
 				var task = scheduler.StartPeriodic(() => ++counter, TimeSpan.Zero);
+
 				WaitUntil(() => counter >= 100, TimeSpan.FromSeconds(5))
 					.Should()
 					.BeTrue("because our periodic task should've been executed 100 times in 5 seconds");
