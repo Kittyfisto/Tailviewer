@@ -87,8 +87,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),
 				                                                    "Because the merged file should've been finished");
-				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
-				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
+				merged.Property(x => x.FileSize).ShouldEventually().Be(source1.FileSize + source2.FileSize);
+				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source1.StartTimestamp);
 
 				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
 
