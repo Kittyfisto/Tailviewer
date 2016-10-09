@@ -115,9 +115,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
-				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				file.Count.Should().Be(2);
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+				file.Property(x => x.Count).ShouldEventually().Be(2, "because we've invalidated the last 2 out of 4 lines");
 			}
 		}
 
