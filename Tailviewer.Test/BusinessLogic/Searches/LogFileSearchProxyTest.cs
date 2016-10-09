@@ -12,7 +12,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 {
 	[TestFixture]
 	public sealed class LogFileSearchProxyTest
-		: AbstractTest
 	{
 		private Mock<ILogFileSearch> _search;
 		private Mock<ILogFileSearchListener> _listener;
@@ -110,7 +109,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				proxy.AddListener(_listener.Object);
 				proxy.InnerSearch = _search.Object;
 
-				WaitUntil(() => _matches.Count >= 1, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[] { new LogMatch(5, new LogLineMatch(4, 1)) });
 			}
 		}
@@ -125,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 
 				EmitSearchModified(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
 
-				WaitUntil(() => _matches.Count >= 1, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
 			}
 		}
@@ -139,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 
 				proxy.AddListener(_listener.Object);
 
-				WaitUntil(() => _matches.Count >= 1, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_matches.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[] { new LogMatch(0, new LogLineMatch(5, 10)) });
 			}
 		}

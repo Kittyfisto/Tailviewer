@@ -7,7 +7,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MergedLogFileAcceptanceTest
-		: AbstractTest
 	{
 		[Test]
 		[Ignore(
@@ -55,8 +54,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				source2.Start();
 				source2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				WaitUntil(() => merged.Count == 8, TimeSpan.FromSeconds(2))
-					.Should().BeTrue("Because the merged file should've been finished after 2 seconds");
+				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
+				                                                    "Because the merged file should've been finished");
 				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
 				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
 
@@ -86,8 +85,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				source2.Start();
 				merged.Start(TimeSpan.Zero);
 
-				WaitUntil(() => merged.Count == 19, TimeSpan.FromSeconds(2))
-					.Should().BeTrue("Because the merged file should've been finished after 2 seconds");
+				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),
+				                                                    "Because the merged file should've been finished");
 				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
 				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
 

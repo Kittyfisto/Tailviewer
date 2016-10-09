@@ -13,7 +13,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogFileTest
-		: AbstractTest
 	{
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";
@@ -47,13 +46,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				{
 					stream.SetLength(0);
 
-					WaitUntil(() => logFile.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					logFile.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
 					logFile.Count.Should().Be(0);
 
 					writer.WriteLine("Hello World!");
 					writer.Flush();
 
-					WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1)).Should().BeTrue();
+					logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 					logFile.Entries.Should().Equal(new[]
 						{
 							new LogLine(0, "Hello World!", LevelFlags.None)
@@ -83,20 +82,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				logFile.Start();
 
-				WaitUntil(() => logFile.Count >= 1, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 
 				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 				{
 					stream.SetLength(0);
 
-					WaitUntil(() => logFile.Count == 0, TimeSpan.FromSeconds(1)).Should().BeTrue();
-					logFile.Count.Should().Be(0);
+					logFile.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
+
 					sections.Should().Equal(new[]
 						{
-							new LogFileSection(-1, 0),
+							LogFileSection.Reset,
 							new LogFileSection(0, 1),
-							new LogFileSection(-1, 0)
+							LogFileSection.Reset
 						});
 				}
 			}
@@ -112,8 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				logFile.Start();
 
-				WaitUntil(() => logFile.Count >= 1, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 
 				new Action(() =>
 					{
@@ -158,8 +155,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Action(() => logFile = new LogFile("dadwdawdw")).ShouldNotThrow();
 				logFile.Start();
 
-				WaitUntil(() => !logFile.Exists, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				logFile.Property(x => x.Exists).ShouldEventually().BeFalse(TimeSpan.FromSeconds(5));
 
 				logFile.Exists.Should().BeFalse("Because the specified file doesn't exist");
 			}
@@ -179,8 +176,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Action(() => logFile = new LogFile(File2Lines)).ShouldNotThrow();
 				logFile.Start();
 
-				WaitUntil(() => logFile.Exists, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				logFile.Property(x => x.Exists).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 				logFile.Exists.Should().BeTrue("Because the specified file does exist");
 			}
@@ -198,9 +195,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				file.Start();
 
-				WaitUntil(() => file.Count >= 165342, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
-
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue("because we should be able to read the entire file in a few seconds");
+				file.Count.Should().Be(165342);
 				file.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				LogLine[] section = file.GetSection(new LogFileSection(0, 10));
@@ -254,6 +250,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLive1()
 		{
 			const string fname = "TestLive1.log";
+
+			if (File.Exists(fname))
+				File.Delete(fname);
+
 			using (var logger = new Logger(fname))
 			using (var logFile = new LogFile(fname))
 			{
@@ -261,7 +261,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				logFile.Count.Should().Be(0);
 
 				Log.Info("Test");
-				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
+
+				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 			}
 		}
 
@@ -269,6 +270,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLive2()
 		{
 			const string fname = "TestLive2.log";
+
+			if (File.Exists(fname))
+				File.Delete(fname);
+
 			using (var logger = new Logger(fname))
 			using (var logFile = new LogFile(fname))
 			{
@@ -276,10 +281,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				logFile.Count.Should().Be(0);
 
 				Log.Info("Hello");
-				WaitUntil(() => logFile.Count == 1, TimeSpan.FromSeconds(1));
+				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 
 				Log.Info("world!");
-				WaitUntil(() => logFile.Count == 2, TimeSpan.FromSeconds(1));
+				logFile.Property(x => x.Count).ShouldEventually().Be(2, TimeSpan.FromSeconds(5));
 			}
 		}
 
@@ -297,16 +302,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Action(() => logFile = new LogFile(fileName)).ShouldNotThrow();
 
 				logFile.Start();
-				WaitUntil(() => !logFile.Exists, TimeSpan.FromSeconds(5))
-					.Should().BeTrue("Because the specified file doesn't exist");
+				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				logFile.Property(x => x.Exists).ShouldEventually().BeFalse(TimeSpan.FromSeconds(5),
+				                                                           "Because the specified file doesn't exist");
 
 				File.WriteAllText(fileName, "Hello World!");
 
-				WaitUntil(() => logFile.Exists, TimeSpan.FromSeconds(5))
-					.Should().BeTrue("Because the file has been created now");
-
-				WaitUntil(() => logFile.Count >= 1, TimeSpan.FromSeconds(5))
-					.Should().BeTrue("Because one line was written to the file");
+				logFile.Property(x => x.Exists).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5),
+				                                                          "Because the file has been created now");
+				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5),
+																		  "Because one line was written to the file");
 
 				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
 			}
@@ -402,8 +407,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
 
-				WaitUntil(() => changes.Count >= 3, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				changes.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
 
 				changes.Should().Equal(new[]
 					{
@@ -427,8 +431,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
 
-				WaitUntil(() => changes.Count >= 7, TimeSpan.FromSeconds(5))
-					.Should().BeTrue();
+				changes.Property(x => x.Count).ShouldEventually().Be(7, TimeSpan.FromSeconds(5));
 
 				changes.Should().Equal(new[]
 					{
@@ -467,8 +470,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				file.Start();
 
-				WaitUntil(() => file.Count >= 165342, TimeSpan.FromSeconds(20))
-					.Should().BeTrue();
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 
 				file.Dispose();
 
@@ -500,8 +502,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 				file.Start();
 
-				WaitUntil(() => sections.Count >= 165343, TimeSpan.FromSeconds(20))
-					.Should().BeTrue();
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
+				file.Count.Should().Be(165342);
 
 				sections[0].Should().Be(LogFileSection.Reset);
 				for (int i = 1; i < sections.Count; ++i)
@@ -522,9 +524,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.MaxCharactersPerLine.Should().Be(0);
 
 				file.Start();
-
-				WaitUntil(() => file.Count >= 165342, TimeSpan.FromSeconds(20))
-					.Should().BeTrue();
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 
 				file.Count.Should().Be(165342);
 				file.MaxCharactersPerLine.Should().Be(218);

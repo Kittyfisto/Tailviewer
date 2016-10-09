@@ -72,5 +72,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				_currentLineIndex = firstIndex;
 			}
 		}
+
+		public void Flush()
+		{
+			lock (_listeners)
+			{
+				foreach (LogFileListenerNotifier notifier in _listeners.Values)
+				{
+					notifier.Flush(_currentLineIndex, DateTime.Now);
+				}
+			}
+		}
 	}
 }

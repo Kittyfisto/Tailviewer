@@ -11,7 +11,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class FilteredLogFileAcceptanceTest
-		: AbstractTest
 	{
 		private const string File20Mb = LogFileTest.File20Mb;
 
@@ -110,31 +109,30 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				using (FilteredLogFile filtered = file.AsFiltered(Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
 				{
-					filtered.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
-
-					filtered.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
-					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
-						{
-							new LogLine(0, "INFO - Test", LevelFlags.Info)
-						});
-
 					var listener = new Mock<ILogFileListener>();
 					var sections = new List<LogFileSection>();
 					listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
 							.Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
+					filtered.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
+						{
+							new LogLine(0, "INFO - Test", LevelFlags.Info)
+						});
+
 					using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 					{
 						stream.SetLength(0);
 					}
 
-					// filtered.Count is changed *before* the event is fired and thus we have to wait
-					// for sections to be filled.
-					sections.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(1));
-
-					sections.Should().Equal(new[] { LogFileSection.Reset });
-					filtered.Count.Should().Be(0);
+					filtered.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
+					filtered.EndOfSourceReached.Should().BeTrue();
+					sections.Should().Equal(new object[]
+						{
+							new LogFileSection(0, 1),
+							LogFileSection.Reset
+						});
 				}
 			}
 		}

@@ -8,7 +8,6 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 {
 	[TestFixture]
 	public sealed class TaskSchedulerTest
-		: AbstractTest
 	{
 		[Test]
 		public void TestDispose1()
@@ -45,9 +44,9 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 				int counter = 0;
 				var task = scheduler.StartPeriodic(() => ++counter, TimeSpan.Zero);
 
-				WaitUntil(() => counter >= 100, TimeSpan.FromSeconds(5))
-					.Should()
-					.BeTrue("because our periodic task should've been executed 100 times in 5 seconds");
+				new object().Property(x => counter).ShouldEventually().BeGreaterOrEqual(100,
+				                                                                        TimeSpan.FromSeconds(5),
+				                                                                        "because our periodic task should've been executed at least 100 times by now");
 
 				scheduler.StopPeriodic(task);
 			}

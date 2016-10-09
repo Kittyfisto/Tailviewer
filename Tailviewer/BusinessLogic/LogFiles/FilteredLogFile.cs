@@ -269,6 +269,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return true;
 			}
 
+			if (logEntry.Count > 0)
+			{
+				int n = 0;
+			}
+
 			return false;
 		}
 	}

@@ -12,7 +12,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 {
 	[TestFixture]
 	public sealed class SingleDataSourceAcceptanceTest
-		: AbstractTest
 	{
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
@@ -52,8 +51,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			WaitUntil(() => _dataSource.FilteredLogFile.Count >= 165342, TimeSpan.FromSeconds(5))
-				.Should().BeTrue();
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.UnfilteredLogFile.Count.Should().Be(165342);
 			_dataSource.FilteredLogFile.Count.Should().Be(165342);
@@ -68,8 +66,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			WaitUntil(() => _dataSource.FilteredLogFile.Count >= 5, TimeSpan.FromSeconds(5))
-				.Should().BeTrue();
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
 		}
@@ -83,8 +80,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			WaitUntil(() => _dataSource.FilteredLogFile.Count >= 5, TimeSpan.FromSeconds(5))
-				.Should().BeTrue();
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
 		}

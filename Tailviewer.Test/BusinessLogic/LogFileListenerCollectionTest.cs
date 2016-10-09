@@ -43,5 +43,77 @@ namespace Tailviewer.Test.BusinessLogic
 			collection.Invalidate(0, 1);
 			collection.CurrentLineIndex.Should().Be(0);
 		}
+
+		[Test]
+		[Description("Verifies that Flush() forces calling the OnLogFileModified method, even when neither the maximum amount of lines has been reached, nor the maximum amount of time has ellapsed")]
+		public void TestFlush1()
+		{
+			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+
+			var listener = new Mock<ILogFileListener>();
+			var sections = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+
+			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+			collection.OnRead(1);
+
+			sections.Should().Equal(new object[]
+				{
+					LogFileSection.Reset
+				});
+
+			collection.Flush();
+			sections.Should().Equal(new object[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 1)
+				}, "Because Flush() should force calling the OnLogFileModified method");
+		}
+
+		[Test]
+		public void TestFlush2()
+		{
+			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+
+			var listener = new Mock<ILogFileListener>();
+			var sections = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+
+			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+			collection.OnRead(1);
+
+			collection.Flush();
+			collection.Flush();
+			sections.Should().Equal(new object[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 1)
+				}, "Because Flush() shouldn't forward the same result to the same listener more than once");
+		}
+
+		[Test]
+		public void TestFlush3()
+		{
+			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+
+			var listener = new Mock<ILogFileListener>();
+			var sections = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+					.Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+
+			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+			collection.OnRead(1);
+			collection.Flush();
+			collection.OnRead(2);
+			collection.Flush();
+			sections.Should().Equal(new object[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 1),
+					new LogFileSection(1, 1)
+				});
+		}
 	}
 }

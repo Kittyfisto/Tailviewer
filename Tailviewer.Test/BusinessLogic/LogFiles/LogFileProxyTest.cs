@@ -11,7 +11,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogFileProxyTest
-		: AbstractTest
 	{
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
@@ -196,7 +195,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.OnRead(500);
 				_listeners.OnRead(600);
 
-				WaitUntil(() => _modifications.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_modifications.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -217,7 +216,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.Reset();
 				_listeners.OnRead(600);
 
-				WaitUntil(() => _modifications.Count >= 4, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_modifications.Property(x => x.Count).ShouldEventually().Be(4, TimeSpan.FromSeconds(5));
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -239,7 +238,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_listeners.Invalidate(400, 100);
 				_listeners.OnRead(550);
 
-				WaitUntil(() => _modifications.Count >= 4, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				_modifications.Property(x => x.Count).ShouldEventually().Be(4, TimeSpan.FromSeconds(5));
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,
@@ -275,8 +274,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
 				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 
-				WaitUntil(() => _modifications.Count >= 2, TimeSpan.FromSeconds(50))
-					.Should().BeTrue("because the changes should've eventually been forwarded to the listener");
+				_modifications.Property(x => x.Count).ShouldEventually().Be(2, TimeSpan.FromSeconds(50),
+				                                                            "because the changes should've eventually been forwarded to the listener");
 				_modifications.Should().Equal(new[]
 				{
 					LogFileSection.Reset,

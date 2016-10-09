@@ -10,7 +10,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class FilteredLogFileTest
-		: AbstractTest
 	{
 		[SetUp]
 		public void SetUp()
@@ -295,7 +294,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.Start(TimeSpan.Zero);
 				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				WaitUntil(() => sections.Count > 1, TimeSpan.FromMilliseconds(1000)).Should().BeTrue();
+				sections.Property(x => x.Count).ShouldEventually().Be(2, TimeSpan.FromSeconds(1));
 				sections[0].Should().Be(LogFileSection.Reset);
 				sections[1].Should().Be(new LogFileSection(new LogLineIndex(0), 2));
 			}

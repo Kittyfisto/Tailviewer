@@ -92,6 +92,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that EndOfSourceReached tests if the inner sources are too")]
+		public void TestEndOfSourceReached1()
+		{
+			var source = new Mock<ILogFile>();
+			var logFile = new MergedLogFile(source.Object);
+			source.Verify(x => x.EndOfSourceReached, Times.Never);
+			logFile.EndOfSourceReached.Should().BeFalse("because the original source hasn't reached its end");
+			source.Verify(x => x.EndOfSourceReached, Times.Once);
+		}
+
+		[Test]
 		public void TestMerge1()
 		{
 			var source = new List<LogLine>();

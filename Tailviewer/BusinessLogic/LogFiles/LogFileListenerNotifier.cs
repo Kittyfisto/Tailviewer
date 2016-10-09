@@ -39,6 +39,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_sentAnyData = false;
 		}
 
+		public void Flush(int numberOfLinesRead, DateTime now)
+		{
+			Report(numberOfLinesRead, now);
+			_sentAnyData = true;
+		}
+
 		public void OnRead(int numberOfLinesRead)
 		{
 			if (numberOfLinesRead >= 0)
@@ -46,13 +52,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				DateTime now = DateTime.Now;
 				if (now - _lastReportedTime >= _maximumTime)
 				{
-					Report(numberOfLinesRead, now);
-					_sentAnyData = true;
+					Flush(numberOfLinesRead, now);
 				}
 				else if (numberOfLinesRead - _lastNumberOfLines >= _maximumCount)
 				{
-					Report(numberOfLinesRead, now);
-					_sentAnyData = true;
+					Flush(numberOfLinesRead, now);
 				}
 			}
 			else if (_sentAnyData) //< We want to avoid sending multiple successive reset events

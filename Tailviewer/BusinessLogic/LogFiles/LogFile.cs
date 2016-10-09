@@ -32,6 +32,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Listeners
 
 		private readonly string _fileName;
+		private readonly string _fullFilename;
 		private DateTime _lastModified;
 
 		#endregion
@@ -56,6 +57,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (fileName == null) throw new ArgumentNullException("fileName");
 
 			_fileName = fileName;
+			_fullFilename = fileName;
+			if (!Path.IsPathRooted(_fullFilename))
+				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();

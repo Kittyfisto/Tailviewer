@@ -13,7 +13,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 {
 	[TestFixture]
 	public sealed class LogFileSearchTest
-		: AbstractTest
 	{
 		private List<LogLine> _entries;
 		private Mock<ILogFile> _logFile;
@@ -90,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			Add("Hello World!");
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
-				WaitUntil(() => search.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				search.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
 				var matches = search.Matches.ToList();
 				matches.Should().Equal(new[]
 					{
@@ -108,7 +107,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
 			{
 				search.AddListener(_listener.Object);
-				WaitUntil(() => search.Count >= 3, TimeSpan.FromSeconds(5)).Should().BeTrue();
+				search.Property(x => x.Count).ShouldEventually().Be(3, TimeSpan.FromSeconds(5));
 				_matches.Should().Equal(new[]
 					{
 						new LogMatch(0, new LogLineMatch(2, 1)),
