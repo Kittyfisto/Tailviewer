@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new TaskScheduler();
-			_settings = new DataSource(LogFileTest.File20Mb)
+			_settings = new DataSource(LogFileAcceptanceTest.File20Mb)
 			{
 				Id = Guid.NewGuid()
 			};

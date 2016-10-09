@@ -111,7 +111,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileTest.File20Mb) {Id = Guid.NewGuid()}))
+			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileAcceptanceTest.File20Mb) {Id = Guid.NewGuid()}))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);

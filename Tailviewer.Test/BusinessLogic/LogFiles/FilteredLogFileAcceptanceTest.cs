@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class FilteredLogFileAcceptanceTest
 	{
-		private const string File20Mb = LogFileTest.File20Mb;
+		private const string File20Mb = LogFileAcceptanceTest.File20Mb;
 
 		[Test]
 		public void TestFilter1()
