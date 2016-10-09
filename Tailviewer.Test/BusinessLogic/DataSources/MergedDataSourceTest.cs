@@ -14,13 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
@@ -35,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private MergedDataSource _merged;
 		private DataSource _settings;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		[Description("Verifies that adding a data source to a group sets the parent id of the settings object")]

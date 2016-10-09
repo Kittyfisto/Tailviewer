@@ -14,13 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
@@ -38,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private Tailviewer.Settings.DataSources _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd()

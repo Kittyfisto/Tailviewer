@@ -23,7 +23,7 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new ApplicationSettings("adwad");
 			_dispatcher = new ManualDispatcher();
-			_scheduler = new DefaultTaskScheduler();
+			_scheduler = new ManualTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_updater = new Mock<IAutoUpdater>();
@@ -46,7 +46,7 @@ namespace Tailviewer.Test.Ui
 		private QuickFilters _quickFilters;
 		private ApplicationSettings _settings;
 		private Mock<IAutoUpdater> _updater;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		public void TestChangeDataSource1()

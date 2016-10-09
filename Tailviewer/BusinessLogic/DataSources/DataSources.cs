@@ -21,9 +21,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
-		private readonly DefaultTaskScheduler _taskScheduler;
+		private readonly ITaskScheduler _taskScheduler;
 
-		public DataSources(DefaultTaskScheduler taskScheduler, Settings.DataSources settings)
+		public DataSources(ITaskScheduler taskScheduler, Settings.DataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 

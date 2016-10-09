@@ -10,21 +10,21 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogFile _unfilteredLogFile;
 
-		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings)
+		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(100))
 		{
 		}
 
-		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			var logFile = new LogFile(settings.File);
+			var logFile = new LogFile(taskScheduler, settings.File);
 			logFile.Start();
 			_unfilteredLogFile = logFile;
 			CreateFilteredLogFile();
 		}
 
-		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
+		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_unfilteredLogFile = unfilteredLogFile;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -14,16 +15,30 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 	{
 		private const string File20Mb = LogFileTest.File20Mb;
 
+		private DefaultTaskScheduler _scheduler;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_scheduler = new DefaultTaskScheduler();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[Test]
 		public void TestFilter1()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				file.Start();
 
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
-				using (FilteredLogFile filtered = file.AsFiltered(Filter.Create("info")))
+				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, Filter.Create("info")))
 				{
 					filtered.Property(x => x.Count).ShouldEventually().Be(5, TimeSpan.FromSeconds(5));
 					filtered.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
@@ -59,13 +74,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestFilter2()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				file.Start();
 
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
-				using (FilteredLogFile filtered = file.AsFiltered(Filter.Create("info")))
+				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, Filter.Create("info")))
 				{
 					var listener = new Mock<ILogFileListener>();
 					var sections = new List<LogFileSection>();
@@ -99,7 +114,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("INFO - Test");
 			}
 
-			using (var file = new LogFile(fname))
+			using (var file = new LogFile(_scheduler, fname))
 			{
 				file.Start();
 
@@ -107,7 +122,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				file.Property(x=> x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 
-				using (FilteredLogFile filtered = file.AsFiltered(Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
+				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, Filter.Create("e", LevelFlags.All), TimeSpan.Zero))
 				{
 					var listener = new Mock<ILogFileListener>();
 					var sections = new List<LogFileSection>();
@@ -128,11 +143,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 					filtered.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
 					filtered.EndOfSourceReached.Should().BeTrue();
-					sections.Should().Equal(new object[]
-						{
-							new LogFileSection(0, 1),
-							LogFileSection.Reset
-						});
+					sections.Should().EndWith(LogFileSection.Reset);
 				}
 			}
 		}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -16,18 +15,6 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class LogViewerViewModelTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -35,7 +22,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		private ManualDispatcher _dispatcher;
-		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		public void TestDataSourceDoesntExist1()

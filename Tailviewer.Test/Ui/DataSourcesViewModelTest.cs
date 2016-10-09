@@ -16,13 +16,7 @@ namespace Tailviewer.Test.Ui
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
@@ -36,7 +30,7 @@ namespace Tailviewer.Test.Ui
 		private ApplicationSettings _settings;
 		private DataSources _dataSources;
 		private DataSourcesViewModel _model;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		[Description("Verifies that adding the first data source sets it to be selected")]

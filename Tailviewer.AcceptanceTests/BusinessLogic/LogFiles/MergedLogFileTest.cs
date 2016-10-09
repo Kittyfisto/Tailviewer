@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -8,6 +9,20 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class MergedLogFileTest
 	{
+		private DefaultTaskScheduler _scheduler;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_scheduler = new DefaultTaskScheduler();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[Test]
 		[Ignore(
 			"Doesn't work anymore because the actual source file is not ordered by time strictly ascending - several lines are completely out of order"
@@ -15,8 +30,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
-			using (var source = new LogFile(LogFileTest.File20Mb))
-			using (var merged = new MergedLogFile(source))
+			using (var source = new LogFile(_scheduler, LogFileTest.File20Mb))
+			using (var merged = new MergedLogFile(_scheduler, source))
 			{
 				source.Start();
 				source.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
@@ -42,9 +57,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void Test2SmallSources()
 		{
-			using (var source1 = new LogFile(LogFileTest.File2Entries))
-			using (var source2 = new LogFile(LogFileTest.File2Lines))
-			using (var merged = new MergedLogFile(source1, source2))
+			using (var source1 = new LogFile(_scheduler, LogFileTest.File2Entries))
+			using (var source2 = new LogFile(_scheduler, LogFileTest.File2Lines))
+			using (var merged = new MergedLogFile(_scheduler, source1, source2))
 			{
 				merged.Start(TimeSpan.Zero);
 
@@ -77,9 +92,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestLive1And2()
 		{
-			using (var source1 = new LogFile(LogFileTest.FileTestLive1))
-			using (var source2 = new LogFile(LogFileTest.FileTestLive2))
-			using (var merged = new MergedLogFile(source1, source2))
+			using (var source1 = new LogFile(_scheduler, LogFileTest.FileTestLive1))
+			using (var source2 = new LogFile(_scheduler, LogFileTest.FileTestLive2))
+			using (var merged = new MergedLogFile(_scheduler, source1, source2))
 			{
 				source1.Start();
 				source2.Start();

@@ -13,21 +13,15 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settings = new Tailviewer.Settings.DataSources();
-			_scheduler = new DefaultTaskScheduler();
+			_scheduler = new ManualTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings);
 			_model = new MergedDataSourceViewModel(_dataSources.AddGroup());
-		}
-
-		[Test]
-		public void TearDown()
-		{
-			_scheduler.Dispose();
 		}
 
 		private MergedDataSourceViewModel _model;
 		private DataSources _dataSources;
 		private Tailviewer.Settings.DataSources _settings;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd1()

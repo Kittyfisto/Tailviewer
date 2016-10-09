@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Tailviewer.BusinessLogic.Filters;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -12,14 +13,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return entries;
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ILogEntryFilter filter)
+		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogEntryFilter filter)
 		{
-			return AsFiltered(logFile, filter, TimeSpan.FromMilliseconds(10));
+			return AsFiltered(logFile, scheduler, filter, TimeSpan.FromMilliseconds(10));
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ILogEntryFilter filter, TimeSpan maximumWaitTime)
+		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogEntryFilter filter, TimeSpan maximumWaitTime)
 		{
-			var file = new FilteredLogFile(logFile, filter);
+			var file = new FilteredLogFile(scheduler, logFile, filter);
 			file.Start(maximumWaitTime);
 			return file;
 		}

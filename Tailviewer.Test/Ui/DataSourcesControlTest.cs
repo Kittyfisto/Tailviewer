@@ -16,13 +16,7 @@ namespace Tailviewer.Test.Ui
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			_scheduler.Dispose();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
@@ -33,7 +27,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		private DataSourcesControl _control;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		[STAThread]

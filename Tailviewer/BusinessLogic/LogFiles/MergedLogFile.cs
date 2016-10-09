@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -30,15 +31,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
 
-		public MergedLogFile(IEnumerable<ILogFile> sources)
-			: this(sources.ToArray())
+		public MergedLogFile(ITaskScheduler scheduler, IEnumerable<ILogFile> sources)
+			: this(scheduler, sources.ToArray())
 		{
 		}
 
-		public MergedLogFile(params ILogFile[] sources)
+		public MergedLogFile(ITaskScheduler scheduler, params ILogFile[] sources)
+			: base(scheduler)
 		{
 			if (sources == null) throw new ArgumentNullException("sources");
-			if (sources.Any(x => x == null)) throw new ArgumentException("sources", "sources.Any(x => x == null)");
+			if (sources.Any(x => x == null)) throw new ArgumentException("sources.Any(x => x == null)", "sources");
 
 			_sources = sources;
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
@@ -132,109 +134,107 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return actualLine;
 		}
 
-		protected override void Run(CancellationToken token)
+		protected override void RunOnce(CancellationToken token)
 		{
-			while (!token.IsCancellationRequested)
+			PendingModification modification;
+			while (_pendingModifications.TryDequeue(out modification))
 			{
-				PendingModification modification;
-				if (_pendingModifications.TryDequeue(out modification))
+				if (token.IsCancellationRequested)
+					return;
+
+				if (modification.Section.IsReset)
 				{
-					if (modification.Section.IsReset)
-					{
-						Clear(modification.LogFile);
-					}
-					else if (modification.Section.InvalidateSection)
-					{
-						// This one only needs to be implemented when MergedLogFiles use other
-						// MergedLogFiles as source.
-						throw new NotImplementedException();
-					}
-					else
-					{
-						for (int i = 0; i < modification.Section.Count; ++i)
-						{
-							LogLineIndex sourceIndex = modification.Section.Index + i;
-							LogLine newLogLine = modification.LogFile.GetLine((int) sourceIndex);
-							if (newLogLine.Timestamp != null)
-							{
-								// We need to find out where this new entry (or entries) is/are to be inserted.
-								int insertionIndex = _indices.Count;
-								for (int n = _indices.Count - 1; n >= 0; --n)
-								{
-									Index idx = _indices[n];
-									LogLine entry = idx.LogFile.GetLine(idx.SourceLineIndex);
-									if (entry.Timestamp <= newLogLine.Timestamp)
-									{
-										insertionIndex = n + 1;
-										break;
-									}
-									if (entry.Timestamp > newLogLine.Timestamp)
-									{
-										// We know that we MIGHT have to insert the new item *before*
-										// the current entry, but we can't stop looking yet until
-										// we've either reached the first entry or find an entry
-										// that is *before* the new entry... => hence no break here!
-										insertionIndex = n;
-									}
-								}
-
-								int mergedLogEntryIndex = GetMergedLogEntryIndex(modification.LogFile, insertionIndex, newLogLine);
-								var index = new Index((int) sourceIndex,
-								                      mergedLogEntryIndex,
-								                      newLogLine.LogEntryIndex,
-								                      modification.LogFile);
-								if (insertionIndex < _indices.Count)
-								{
-									// TODO: We need to re-evaluate the entire file until this point
-									//       in order to determine the maximum number of characters again,
-									//       which could be less because of the invalidation...
-
-									InvalidateOnward(insertionIndex, modification.LogFile, newLogLine);
-								}
-
-								lock (_syncRoot)
-								{
-									_indices.Insert(insertionIndex, index);
-									_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message.Length);
-								}
-
-								Listeners.OnRead(_indices.Count);
-							}
-						}
-					}
+					Clear(modification.LogFile);
+				}
+				else if (modification.Section.InvalidateSection)
+				{
+					// This one only needs to be implemented when MergedLogFiles use other
+					// MergedLogFiles as source.
+					throw new NotImplementedException();
 				}
 				else
 				{
-					_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.FileSize);
-					_lastModified = _sources.Aggregate(DateTime.MinValue,
-					                                   (a, file) =>
-						                                   {
-							                                   DateTime modified = file.LastModified;
-							                                   if (modified > a)
-								                                   return modified;
+					for (int i = 0; i < modification.Section.Count; ++i)
+					{
+						LogLineIndex sourceIndex = modification.Section.Index + i;
+						LogLine newLogLine = modification.LogFile.GetLine((int)sourceIndex);
+						if (newLogLine.Timestamp != null)
+						{
+							// We need to find out where this new entry (or entries) is/are to be inserted.
+							int insertionIndex = _indices.Count;
+							for (int n = _indices.Count - 1; n >= 0; --n)
+							{
+								Index idx = _indices[n];
+								LogLine entry = idx.LogFile.GetLine(idx.SourceLineIndex);
+								if (entry.Timestamp <= newLogLine.Timestamp)
+								{
+									insertionIndex = n + 1;
+									break;
+								}
+								if (entry.Timestamp > newLogLine.Timestamp)
+								{
+									// We know that we MIGHT have to insert the new item *before*
+									// the current entry, but we can't stop looking yet until
+									// we've either reached the first entry or find an entry
+									// that is *before* the new entry... => hence no break here!
+									insertionIndex = n;
+								}
+							}
 
-							                                   return a;
-						                                   }
-						);
-					_startTimestamp = _sources.Aggregate((DateTime?) null,
-					                                     (a, file) =>
-						                                     {
-							                                     DateTime? startTime = file.StartTimestamp;
-							                                     if (startTime == null)
-								                                     return a;
-							                                     if (a == null)
-								                                     return startTime;
-							                                     if (startTime < a)
-								                                     return startTime;
-							                                     return a;
-						                                     }
-						);
+							int mergedLogEntryIndex = GetMergedLogEntryIndex(modification.LogFile, insertionIndex, newLogLine);
+							var index = new Index((int)sourceIndex,
+												  mergedLogEntryIndex,
+												  newLogLine.LogEntryIndex,
+												  modification.LogFile);
+							if (insertionIndex < _indices.Count)
+							{
+								// TODO: We need to re-evaluate the entire file until this point
+								//       in order to determine the maximum number of characters again,
+								//       which could be less because of the invalidation...
 
-					Listeners.OnRead(_indices.Count);
-					SetEndOfSourceReached();
-					Thread.Sleep(TimeSpan.FromMilliseconds(10));
+								InvalidateOnward(insertionIndex, modification.LogFile, newLogLine);
+							}
+
+							lock (_syncRoot)
+							{
+								_indices.Insert(insertionIndex, index);
+								_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message.Length);
+							}
+
+							Listeners.OnRead(_indices.Count);
+						}
+					}
 				}
 			}
+
+
+			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.FileSize);
+			_lastModified = _sources.Aggregate(DateTime.MinValue,
+											   (a, file) =>
+											   {
+												   DateTime modified = file.LastModified;
+												   if (modified > a)
+													   return modified;
+
+												   return a;
+											   }
+				);
+			_startTimestamp = _sources.Aggregate((DateTime?)null,
+												 (a, file) =>
+												 {
+													 DateTime? startTime = file.StartTimestamp;
+													 if (startTime == null)
+														 return a;
+													 if (a == null)
+														 return startTime;
+													 if (startTime < a)
+														 return startTime;
+													 return a;
+												 }
+				);
+
+			Listeners.OnRead(_indices.Count);
+			SetEndOfSourceReached();
 		}
 
 		/// <summary>

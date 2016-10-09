@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -23,6 +24,20 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private DefaultTaskScheduler _scheduler;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_scheduler = new DefaultTaskScheduler();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_scheduler.Dispose();
+		}
+
 		[Test]
 		public void TestClear1()
 		{
@@ -34,7 +49,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("Test");
 			}
 
-			using (var logFile = new LogFile(fname))
+			using (var logFile = new LogFile(_scheduler, fname))
 			{
 				logFile.Start();
 
@@ -73,7 +88,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("Test");
 			}
 
-			using (var logFile = new LogFile(fname))
+			using (var logFile = new LogFile(_scheduler, fname))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
@@ -107,7 +122,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			const string fname = "TestDelete1.log";
 			File.WriteAllText(fname, "Test");
 
-			using (var logFile = new LogFile(fname))
+			using (var logFile = new LogFile(_scheduler, fname))
 			{
 				logFile.Start();
 
@@ -153,7 +168,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			LogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new LogFile("dadwdawdw")).ShouldNotThrow();
+				new Action(() => logFile = new LogFile(_scheduler, "dadwdawdw")).ShouldNotThrow();
 				logFile.Start();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
@@ -174,7 +189,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			LogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new LogFile(File2Lines)).ShouldNotThrow();
+				new Action(() => logFile = new LogFile(_scheduler, File2Lines)).ShouldNotThrow();
 				logFile.Start();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
@@ -192,7 +207,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSection1()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				file.Start();
 
@@ -256,7 +271,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				File.Delete(fname);
 
 			using (var logger = new Logger(fname))
-			using (var logFile = new LogFile(fname))
+			using (var logFile = new LogFile(_scheduler, fname))
 			{
 				logFile.Start();
 				logFile.Count.Should().Be(0);
@@ -276,7 +291,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				File.Delete(fname);
 
 			using (var logger = new Logger(fname))
-			using (var logFile = new LogFile(fname))
+			using (var logFile = new LogFile(_scheduler, fname))
 			{
 				logFile.Start();
 				logFile.Count.Should().Be(0);
@@ -300,7 +315,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 
-				new Action(() => logFile = new LogFile(fileName)).ShouldNotThrow();
+				new Action(() => logFile = new LogFile(_scheduler, fileName)).ShouldNotThrow();
 
 				logFile.Start();
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
@@ -398,7 +413,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestRead2Lines()
 		{
-			using (var file = new LogFile(File2Lines))
+			using (var file = new LogFile(_scheduler, File2Lines))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -422,7 +437,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestRead2LogEntries()
 		{
-			using (var file = new LogFile(File2Entries))
+			using (var file = new LogFile(_scheduler, File2Entries))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -467,7 +482,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadAll1()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				file.Start();
 
@@ -493,7 +508,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadAll2()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
@@ -520,7 +535,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the maximum number of characters for all lines is determined correctly")]
 		public void TestReadAll3()
 		{
-			using (var file = new LogFile(File20Mb))
+			using (var file = new LogFile(_scheduler, File20Mb))
 			{
 				file.MaxCharactersPerLine.Should().Be(0);
 

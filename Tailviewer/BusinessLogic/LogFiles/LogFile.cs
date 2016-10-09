@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Metrolib;
 using log4net;
 
@@ -33,7 +34,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private readonly string _fileName;
 		private readonly string _fullFilename;
+		private readonly List<KeyValuePair<int, LevelFlags>> _levels;
 		private DateTime _lastModified;
+		private int _numberOfLinesRead;
+		private int _nextLogEntryIndex;
+		private long _lastPosition;
+		private LevelFlags _previousLevel;
+		private DateTime? _previousTimestamp;
 
 		#endregion
 
@@ -52,7 +59,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				};
 		}
 
-		public LogFile(string fileName)
+		public LogFile(ITaskScheduler scheduler, string fileName)
+			: base(scheduler)
 		{
 			if (fileName == null) throw new ArgumentNullException("fileName");
 
@@ -63,6 +71,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
+
+			_previousLevel = LevelFlags.None;
+			_levels = new List<KeyValuePair<int, LevelFlags>>();
 		}
 		
 		public override string ToString()
@@ -151,117 +162,98 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			StartTask();
 		}
 
-		protected override void Run(CancellationToken token)
+		protected override void RunOnce(CancellationToken token)
 		{
-			int numberOfLinesRead = 0;
-			int nextLogEntryIndex = 0;
-			long lastPosition = 0;
-			var previousLevel = LevelFlags.None;
-			DateTime? previousTimestamp = null;
-			var levels = new List<KeyValuePair<int, LevelFlags>>();
-			TimeSpan sleepTime = TimeSpan.FromMilliseconds(200);
-
-			while (!token.IsCancellationRequested)
+			try
 			{
-				try
+				if (!File.Exists(_fileName))
 				{
-					if (!File.Exists(_fileName))
+					OnReset(null, out _numberOfLinesRead, out _lastPosition);
+					_exists = false;
+					SetEndOfSourceReached();
+				}
+				else
+				{
+					using (var stream = new FileStream(_fileName,
+													   FileMode.Open,
+													   FileAccess.Read,
+													   FileShare.ReadWrite))
+					using (var reader = new StreamReader(stream))
 					{
-						OnReset(null, out numberOfLinesRead, out lastPosition);
-						_exists = false;
-						SetEndOfSourceReached();
-
-						// We want to avoid keeping this task busy by checking the file's presence
-						// as fast as possible, therefore we sleep for quite some time - the user won't be mad
-						// if changes appear a few 100ms after the fact.
-						Thread.Sleep(sleepTime);
-					}
-					else
-					{
-						using (var stream = new FileStream(_fileName,
-						                                   FileMode.Open,
-						                                   FileAccess.Read,
-						                                   FileShare.ReadWrite))
-						using (var reader = new StreamReader(stream))
+						_exists = true;
+						_lastModified = File.GetLastWriteTime(_fileName);
+						if (stream.Length >= _lastPosition)
 						{
-							_exists = true;
-							_lastModified = File.GetLastWriteTime(_fileName);
-							if (stream.Length >= lastPosition)
+							stream.Position = _lastPosition;
+						}
+						else
+						{
+							OnReset(stream, out _numberOfLinesRead, out _lastPosition);
+						}
+
+						string line;
+						while ((line = reader.ReadLine()) != null)
+						{
+							token.ThrowIfCancellationRequested();
+
+							ResetEndOfSourceReached();
+							++_numberOfLinesRead;
+
+							LevelFlags level = DetermineLevel(line, _levels);
+
+							DateTime? timestamp;
+							int logEntryIndex;
+							if (level != LevelFlags.None)
 							{
-								stream.Position = lastPosition;
+								timestamp = ParseTimestamp(line);
+								logEntryIndex = _nextLogEntryIndex;
+								++_nextLogEntryIndex;
 							}
 							else
 							{
-								OnReset(stream, out numberOfLinesRead, out lastPosition);
-							}
-
-							string line;
-							while ((line = reader.ReadLine()) != null)
-							{
-								token.ThrowIfCancellationRequested();
-
-								ResetEndOfSourceReached();
-								++numberOfLinesRead;
-
-								LevelFlags level = DetermineLevel(line, levels);
-
-								DateTime? timestamp;
-								int logEntryIndex;
-								if (level != LevelFlags.None)
+								if (_nextLogEntryIndex > 0)
 								{
-									timestamp = ParseTimestamp(line);
-									logEntryIndex = nextLogEntryIndex;
-									++nextLogEntryIndex;
+									logEntryIndex = _nextLogEntryIndex - 1;
 								}
 								else
 								{
-									if (nextLogEntryIndex > 0)
-									{
-										logEntryIndex = nextLogEntryIndex - 1;
-									}
-									else
-									{
-										logEntryIndex = 0;
-									}
-
-									// This line belongs to the previous line and together they form
-									// (part of) a log entry. Even though only a single line mentions
-									// the log level, all lines are given the same log level.
-									level = previousLevel;
-									timestamp = previousTimestamp;
+									logEntryIndex = 0;
 								}
 
-								Add(line, level, numberOfLinesRead, logEntryIndex, timestamp);
-								previousLevel = level;
-								previousTimestamp = timestamp;
+								// This line belongs to the previous line and together they form
+								// (part of) a log entry. Even though only a single line mentions
+								// the log level, all lines are given the same log level.
+								level = _previousLevel;
+								timestamp = _previousTimestamp;
 							}
 
-							lastPosition = stream.Position;
+							Add(line, level, _numberOfLinesRead, logEntryIndex, timestamp);
+							_previousLevel = level;
+							_previousTimestamp = timestamp;
 						}
 
-						Listeners.OnRead(numberOfLinesRead);
-						SetEndOfSourceReached();
-
-						if (token.WaitHandle.WaitOne(sleepTime))
-							break;
+						_lastPosition = stream.Position;
 					}
+
+					Listeners.OnRead(_numberOfLinesRead);
+					SetEndOfSourceReached();
 				}
-				catch (FileNotFoundException e)
-				{
-					Log.Debug(e);
-				}
-				catch (DirectoryNotFoundException e)
-				{
-					Log.Debug(e);
-				}
-				catch (OperationCanceledException e)
-				{
-					Log.Debug(e);
-				}
-				catch (Exception e)
-				{
-					Log.Debug(e);
-				}
+			}
+			catch (FileNotFoundException e)
+			{
+				Log.Debug(e);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Log.Debug(e);
+			}
+			catch (OperationCanceledException e)
+			{
+				Log.Debug(e);
+			}
+			catch (Exception e)
+			{
+				Log.Debug(e);
 			}
 		}
 

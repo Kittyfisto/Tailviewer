@@ -12,16 +12,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly HashSet<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly ITaskScheduler _taskScheduler;
 		private MergedLogFile _unfilteredLogFile;
 
-		public MergedDataSource(DefaultTaskScheduler taskScheduler, DataSource settings)
+		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(100))
 		{
 		}
 
-		public MergedDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
+			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;
 			_dataSources = new HashSet<IDataSource>();
 			UpdateLogFile();
@@ -74,7 +76,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_unfilteredLogFile.Dispose();
 			}
 
-			_unfilteredLogFile = new MergedLogFile(_dataSources.Select(x => x.UnfilteredLogFile));
+			_unfilteredLogFile = new MergedLogFile(_taskScheduler, _dataSources.Select(x => x.UnfilteredLogFile));
 			_unfilteredLogFile.Start(_maximumWaitTime);
 			CreateFilteredLogFile();
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 
@@ -9,7 +10,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public sealed class FilteredLogFile
 		: AbstractLogFile
-		  , ILogFileListener
+		, ILogFileListener
 	{
 		private const int BatchSize = 1000;
 
@@ -17,10 +18,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly List<int> _indices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
+		private readonly LogLine[] _buffer;
+
 		private LogFileSection _fullSourceSection;
 		private int _maxCharactersPerLine;
+		private int _currentSourceIndex;
+		private readonly List<LogLine> _lastLogEntry;
 
-		public FilteredLogFile(ILogFile source, ILogEntryFilter filter)
+		public FilteredLogFile(ITaskScheduler scheduler, ILogFile source, ILogEntryFilter filter)
+			: base(scheduler)
 		{
 			if (source == null) throw new ArgumentNullException("source");
 			if (filter == null) throw new ArgumentNullException("filter");
@@ -29,6 +35,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_filter = filter;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
+			_buffer = new LogLine[BatchSize];
+			_lastLogEntry = new List<LogLine>();
 		}
 
 		public override bool Exists
@@ -125,77 +133,68 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return string.Format("{0} (Filtered)", _source);
 		}
 
-		protected override void Run(CancellationToken token)
+		protected override void RunOnce(CancellationToken token)
 		{
-			var entries = new LogLine[BatchSize];
-			int currentSourceIndex = 0;
-			var lastLogEntry = new List<LogLine>();
-
-			while (!token.IsCancellationRequested)
+			LogFileSection section;
+			while (_pendingModifications.TryDequeue(out section) && !token.IsCancellationRequested)
 			{
-				LogFileSection section;
-				while (_pendingModifications.TryDequeue(out section))
+				if (section.IsReset)
 				{
-					if (section.IsReset)
-					{
-						Clear();
-						lastLogEntry.Clear();
-						currentSourceIndex = 0;
-					}
-					else if (section.InvalidateSection)
-					{
-						LogLineIndex startIndex = section.Index;
-						_fullSourceSection = new LogFileSection(0, (int) startIndex);
-
-						if (currentSourceIndex > _fullSourceSection.LastIndex)
-							currentSourceIndex = (int) section.Index;
-
-						Invalidate(currentSourceIndex);
-						RemoveInvalidatedLines(lastLogEntry, currentSourceIndex);
-					}
-					else
-					{
-						_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
-					}
+					Clear();
+					_lastLogEntry.Clear();
+					_currentSourceIndex = 0;
 				}
-
-				if (_fullSourceSection.IsEndOfSection(currentSourceIndex))
+				else if (section.InvalidateSection)
 				{
-					TryAddLogLine(lastLogEntry);
-					Listeners.OnRead(_indices.Count);
+					LogLineIndex startIndex = section.Index;
+					_fullSourceSection = new LogFileSection(0, (int)startIndex);
 
-					SetEndOfSourceReached();
+					if (_currentSourceIndex > _fullSourceSection.LastIndex)
+						_currentSourceIndex = (int)section.Index;
 
-					// There's no more data, let's wait for more (or until we're disposed)
-					token.WaitHandle.WaitOne(TimeSpan.FromMilliseconds(10));
+					Invalidate(_currentSourceIndex);
+					RemoveInvalidatedLines(_lastLogEntry, _currentSourceIndex);
 				}
 				else
 				{
-					int remaining = _fullSourceSection.Index + _fullSourceSection.Count - currentSourceIndex;
-					int nextCount = Math.Min(remaining, BatchSize);
-					var nextSection = new LogFileSection(currentSourceIndex, nextCount);
-					_source.GetSection(nextSection, entries);
-
-					for (int i = 0; i < nextCount; ++i)
-					{
-						if (token.IsCancellationRequested)
-							break;
-
-						LogLine line = entries[i];
-						if (lastLogEntry.Count == 0 || lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
-						{
-							lastLogEntry.Add(line);
-						}
-						else if (line.LogEntryIndex != lastLogEntry[0].LogEntryIndex)
-						{
-							TryAddLogLine(lastLogEntry);
-							lastLogEntry.Clear();
-							lastLogEntry.Add(line);
-						}
-					}
-
-					currentSourceIndex += nextCount;
+					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 				}
+			}
+
+			if (!_fullSourceSection.IsEndOfSection(_currentSourceIndex))
+			{
+				int remaining = _fullSourceSection.Index + _fullSourceSection.Count - _currentSourceIndex;
+				int nextCount = Math.Min(remaining, BatchSize);
+				var nextSection = new LogFileSection(_currentSourceIndex, nextCount);
+				_source.GetSection(nextSection, _buffer);
+
+				for (int i = 0; i < nextCount; ++i)
+				{
+					if (token.IsCancellationRequested)
+						break;
+
+					LogLine line = _buffer[i];
+					if (_lastLogEntry.Count == 0 || _lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
+					{
+						_lastLogEntry.Add(line);
+					}
+					else if (line.LogEntryIndex != _lastLogEntry[0].LogEntryIndex)
+					{
+						TryAddLogLine(_lastLogEntry);
+						_lastLogEntry.Clear();
+						_lastLogEntry.Add(line);
+					}
+				}
+
+				_currentSourceIndex += nextCount;
+			}
+
+			if (_fullSourceSection.IsEndOfSection(_currentSourceIndex))
+			{
+				TryAddLogLine(_lastLogEntry);
+				Listeners.OnRead(_indices.Count);
+
+				SetEndOfSourceReached();
 			}
 		}
 
