@@ -109,7 +109,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		[LocalTest("Won't run on AppVeyor right now - investitage why...")]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
-		public void TestFilter1()
+		public void TestSearch1()
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileTest.File20Mb) {Id = Guid.NewGuid()}))
 			{

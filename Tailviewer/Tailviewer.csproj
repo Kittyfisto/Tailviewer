@@ -92,6 +92,7 @@
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
     <Compile Include="BusinessLogic\Scheduling\TaskScheduler.cs" />

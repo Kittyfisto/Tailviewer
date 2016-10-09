@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Scheduling;
@@ -11,9 +12,11 @@ namespace Tailviewer.BusinessLogic.Searches
 		, IDisposable
 	{
 		private readonly List<ILogFileSearchListener> _listeners;
+		private readonly ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>> _pendingMatches;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IPeriodicTask _task;
+
 		private ILogFileSearch _innerSearch;
 		private List<LogMatch> _matches;
 		private bool _isDisposed;
@@ -23,6 +26,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			if (taskScheduler == null)
 				throw new ArgumentNullException("taskScheduler");
 
+			_pendingMatches = new ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>>();
 			_listeners = new List<ILogFileSearchListener>();
 			_taskScheduler = taskScheduler;
 			_syncRoot = new object();
@@ -98,23 +102,27 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void OnSearchModified(ILogFileSearch sender, List<LogMatch> matches)
 		{
-			lock (_syncRoot)
-			{
-				// We need to make sure that we don't forward search results from a previously
-				// _innerSearch. We can do so by ensuring that the sender is most definately
-				// our current _innerSearch (and also by ensuring a correct order when replacing
-				// it).
-				if (sender != _innerSearch)
-					return;
-
-				_matches = matches;
-				EmitSearchModified(_matches);
-			}
+			_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(sender, matches));
 		}
 
 		private void RunOnce()
 		{
-			
+			KeyValuePair<ILogFileSearch, List<LogMatch>> pair;
+			while (_pendingMatches.TryDequeue(out pair))
+			{
+				var sender = pair.Key;
+				var matches = pair.Value;
+
+				// We need to make sure that we don't forward search results from a previously
+				// _innerSearch. We can do so by ensuring that the sender is most definately
+				// our current _innerSearch (and also by ensuring a correct order when replacing
+				// it).
+				if (sender == _innerSearch)
+				{
+					_matches = matches;
+					EmitSearchModified(_matches);
+				}
+			}
 		}
 
 		private void EmitSearchModified(IEnumerable<LogMatch> matches)

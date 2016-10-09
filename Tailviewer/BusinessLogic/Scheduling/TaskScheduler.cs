@@ -210,6 +210,10 @@ namespace Tailviewer.BusinessLogic.Scheduling
 				BeginRunTaskOnce(task);
 				++tasksRun;
 			}
+
+			if (remainingMinimumWaitTime < TimeSpan.Zero)
+				remainingMinimumWaitTime = TimeSpan.Zero;
+
 			return tasksRun;
 		}
 

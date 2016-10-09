@@ -20,8 +20,8 @@ namespace Tailviewer.BusinessLogic.Searches
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly LogFileSearchListenerCollection _listeners;
 		private readonly SubstringFilter _filter;
-		private readonly List<ILogFileSearchListener> _listeners;
 		private readonly ILogFile _logFile;
 		private readonly LogLine[] _logLinesBuffer;
 		private readonly List<LogMatch> _matches;
@@ -51,7 +51,7 @@ namespace Tailviewer.BusinessLogic.Searches
 			_filter = new SubstringFilter(searchTerm, true);
 			_matches = new List<LogMatch>();
 			_syncRoot = new object();
-			_listeners = new List<ILogFileSearchListener>();
+			_listeners = new LogFileSearchListenerCollection(this);
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_scheduler = taskScheduler;
 
@@ -105,19 +105,12 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void AddListener(ILogFileSearchListener listener)
 		{
-			lock (_syncRoot)
-			{
-				_listeners.Add(listener);
-				listener.OnSearchModified(this, _matches.ToList());
-			}
+			_listeners.AddListener(listener);
 		}
 
 		public void RemoveListener(ILogFileSearchListener listener)
 		{
-			lock (_syncRoot)
-			{
-				_listeners.Remove(listener);
-			}
+			_listeners.RemoveListener(listener);
 		}
 
 		private void FilterAllPending()
@@ -130,8 +123,9 @@ namespace Tailviewer.BusinessLogic.Searches
 					lock (_syncRoot)
 					{
 						_matches.Clear();
-						NotifyListeners();
 					}
+
+					_listeners.EmitSearchChanged(_matches);
 				}
 				else
 				{
@@ -161,8 +155,10 @@ namespace Tailviewer.BusinessLogic.Searches
 								var match = new LogMatch(line.LineIndex, logLineMatch);
 								_matches.Add(match);
 							}
-							NotifyListeners();
 						}
+
+						_listeners.EmitSearchChanged(_matches);
+
 						_matchesBuffer.Clear();
 					}
 				}
@@ -174,14 +170,6 @@ namespace Tailviewer.BusinessLogic.Searches
 				// either pending or soon to be. So not doing anything else to handle
 				// this exception is fine.
 				Log.DebugFormat("Caught exception while searching log file: {0}", e);
-			}
-		}
-
-		private void NotifyListeners()
-		{
-			foreach (ILogFileSearchListener listener in _listeners)
-			{
-				listener.OnSearchModified(this, _matches.ToList());
 			}
 		}
 	}
