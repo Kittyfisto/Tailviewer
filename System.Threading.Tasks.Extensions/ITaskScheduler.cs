@@ -47,6 +47,23 @@
 		IPeriodicTask StartPeriodic(Action callback, TimeSpan minimumWaitTime, string name = null);
 
 		/// <summary>
+		///     Creates and starts a new periodic task.
+		///     Periodic tasks (as the name suggests) are tasks that are periodically invoked (instead of just once).
+		/// </summary>
+		/// <remarks>
+		///     Contrary to timers, the <paramref name="callback" /> is never invoked in parallel.
+		///     If the callback's execution time is greater than the minimum wait time (or the system is saturated) then
+		///     the callback will be invoked as fast as possible, but no additional invocations queue up.
+		/// </remarks>
+		/// <remarks>
+		///     The callback gets to decide when it wants to be scheduled the next time.
+		/// </remarks>
+		/// <param name="callback"></param>
+		/// <param name="name">The name of the task, for debugging purposes</param>
+		/// <returns></returns>
+		IPeriodicTask StartPeriodic(Func<TimeSpan> callback, string name = null);
+
+		/// <summary>
 		///     Removes a periodic task.
 		///     Its callback will no longer be invoked (eventually).
 		/// </summary>

@@ -101,7 +101,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		protected void StartTask()
 		{
-			_readTask = _scheduler.StartPeriodic(Run, TimeSpan.FromMilliseconds(1), ToString());
+			_readTask = _scheduler.StartPeriodic(Run, TimeSpan.FromMilliseconds(10), ToString());
 		}
 	}
 }

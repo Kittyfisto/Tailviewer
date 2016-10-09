@@ -50,6 +50,16 @@ namespace System.Threading.Tasks
 			return task;
 		}
 
+		public IPeriodicTask StartPeriodic(Func<TimeSpan> callback, string name = null)
+		{
+			var task = new PeriodicTask(Interlocked.Increment(ref _lastId), callback, name);
+			lock (_syncRoot)
+			{
+				_tasks.Add(task);
+			}
+			return task;
+		}
+
 		public bool StopPeriodic(IPeriodicTask task)
 		{
 			var actualTask = task as PeriodicTask;

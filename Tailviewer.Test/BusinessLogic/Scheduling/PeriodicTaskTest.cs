@@ -15,7 +15,6 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 			task.Id.Should().Be(42);
 			task.IsRemoved.Should().BeFalse();
 			task.LastInvocation.Should().Be(DateTime.MinValue);
-			task.MinimumWaitTime.Should().Be(TimeSpan.FromSeconds(1));
 		}
 	}
 }
