@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -14,12 +14,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly TimeSpan _maximumWaitTime;
 		private MergedLogFile _unfilteredLogFile;
 
-		public MergedDataSource(TaskScheduler taskScheduler, DataSource settings)
+		public MergedDataSource(DefaultTaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(100))
 		{
 		}
 
-		public MergedDataSource(TaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		public MergedDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_maximumWaitTime = maximumWaitTime;

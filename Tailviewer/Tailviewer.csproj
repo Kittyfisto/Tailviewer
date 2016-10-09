@@ -66,7 +66,6 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
-    <Compile Include="BusinessLogic\Scheduling\IPeriodicTask.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogLineMatch.cs" />
     <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
@@ -86,16 +85,12 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
-    <Compile Include="BusinessLogic\Scheduling\ITaskScheduler.cs" />
-    <Compile Include="BusinessLogic\Scheduling\PeriodicTask.cs" />
-    <Compile Include="BusinessLogic\Scheduling\TaskQueue.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
-    <Compile Include="BusinessLogic\Scheduling\TaskScheduler.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />
@@ -297,6 +292,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Licenses\NewFolder1\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\System.Threading.Tasks.Extensions\System.Threading.Tasks.Extensions.csproj">
+      <Project>{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}</Project>
+      <Name>System.Threading.Tasks.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

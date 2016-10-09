@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
@@ -16,7 +16,7 @@ namespace Tailviewer.Test.Ui
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]
@@ -43,7 +43,7 @@ namespace Tailviewer.Test.Ui
 		private QuickFilterViewModel _model;
 		private DataSource _dataSourceSettings;
 		private List<string> _changes;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		public void TestChangeType()

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
@@ -18,12 +18,12 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFile> _logFile;
 		private List<LogMatch> _matches;
 		private Mock<ILogFileSearchListener> _listener;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))

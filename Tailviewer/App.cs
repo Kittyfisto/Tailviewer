@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Metrolib;
 using Tailviewer.BusinessLogic.AutoUpdates;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
@@ -40,7 +40,7 @@ namespace Tailviewer
 				//       (maybe we should preserve an old version)
 			}
 
-			using (var taskScheduler = new TaskScheduler())
+			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var dataSources = new DataSources(taskScheduler, settings.DataSources))
 			using (var updater = new AutoUpdater(settings.AutoUpdate))
 			{

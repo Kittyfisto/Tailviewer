@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertions.Extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Threading.Tasks.Extensions", "System.Threading.Tasks.Extensions\System.Threading.Tasks.Extensions.csproj", "{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{502F427E-C55C-4A8B-BCF9-9D8AE7451570}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{502F427E-C55C-4A8B-BCF9-9D8AE7451570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{502F427E-C55C-4A8B-BCF9-9D8AE7451570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

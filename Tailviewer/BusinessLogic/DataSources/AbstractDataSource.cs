@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Settings;
 
@@ -12,7 +12,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	public abstract class AbstractDataSource
 		: IDataSource
 	{
-		private readonly TaskScheduler _taskScheduler;
+		private readonly DefaultTaskScheduler _taskScheduler;
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
@@ -26,7 +26,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
 
-		protected AbstractDataSource(TaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		protected AbstractDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException("taskScheduler");

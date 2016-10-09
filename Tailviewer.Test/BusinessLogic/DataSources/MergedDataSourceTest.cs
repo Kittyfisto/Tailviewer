@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -14,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]
@@ -35,7 +35,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private MergedDataSource _merged;
 		private DataSource _settings;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		[Description("Verifies that adding a data source to a group sets the parent id of the settings object")]

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
@@ -17,12 +17,12 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private Mock<ILogFileSearchListener> _listener;
 		private List<LogMatch> _matches;
 		private List<ILogFileSearchListener> _listeners;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]

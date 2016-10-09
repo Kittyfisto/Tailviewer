@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -14,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private Tailviewer.Settings.DataSources _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd()

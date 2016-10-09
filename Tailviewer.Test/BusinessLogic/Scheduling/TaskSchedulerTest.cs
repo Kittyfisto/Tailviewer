@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Scheduling;
 
 namespace Tailviewer.Test.BusinessLogic.Scheduling
 {
@@ -12,14 +12,14 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 		[Test]
 		public void TestDispose1()
 		{
-			var scheduler = new TaskScheduler();
+			var scheduler = new DefaultTaskScheduler();
 			new Action(scheduler.Dispose).ShouldNotThrow();
 		}
 
 		[Test]
 		public void TestStart1()
 		{
-			using (var scheduler = new TaskScheduler())
+			using (var scheduler = new DefaultTaskScheduler())
 			{
 				scheduler.Start(() => "foobar").Result.Should().Be("foobar");
 			}
@@ -28,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 		[Test]
 		public void TestStartPeriodic1()
 		{
-			using (var scheduler = new TaskScheduler())
+			using (var scheduler = new DefaultTaskScheduler())
 			{
 				var task = scheduler.StartPeriodic(() => { }, TimeSpan.FromSeconds(1));
 				task.Should().NotBeNull();
@@ -39,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 		[Test]
 		public void TestStartPeriodic2()
 		{
-			using (var scheduler = new TaskScheduler())
+			using (var scheduler = new DefaultTaskScheduler())
 			{
 				int counter = 0;
 				var task = scheduler.StartPeriodic(() => ++counter, TimeSpan.Zero);
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.Scheduling
 		[Test]
 		public void TestRemovePeriodic1()
 		{
-			using (var scheduler = new TaskScheduler())
+			using (var scheduler = new DefaultTaskScheduler())
 			{
 				scheduler.StopPeriodic(new Mock<IPeriodicTask>().Object).Should().BeFalse();
 			}

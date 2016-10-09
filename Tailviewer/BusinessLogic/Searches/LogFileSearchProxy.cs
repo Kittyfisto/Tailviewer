@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.BusinessLogic.Scheduling;
+using System.Threading.Tasks;
 
 namespace Tailviewer.BusinessLogic.Searches
 {

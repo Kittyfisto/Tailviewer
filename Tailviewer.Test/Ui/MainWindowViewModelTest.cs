@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.AutoUpdates;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -23,7 +23,7 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new ApplicationSettings("adwad");
 			_dispatcher = new ManualDispatcher();
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_updater = new Mock<IAutoUpdater>();
@@ -46,7 +46,7 @@ namespace Tailviewer.Test.Ui
 		private QuickFilters _quickFilters;
 		private ApplicationSettings _settings;
 		private Mock<IAutoUpdater> _updater;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		public void TestChangeDataSource1()

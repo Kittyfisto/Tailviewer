@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tailviewer.BusinessLogic.Scheduling
+﻿namespace System.Threading.Tasks
 {
 	public interface IPeriodicTask
 	{

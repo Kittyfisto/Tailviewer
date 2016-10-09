@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 
-namespace Tailviewer.BusinessLogic.Scheduling
+namespace System.Threading.Tasks
 {
 	/// <summary>
 	///     This class is responsible for holding a set of <see cref="PeriodicTask" />s.

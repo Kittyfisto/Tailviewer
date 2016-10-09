@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -15,12 +15,12 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class SingleDataSourceViewModelTest
 	{
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]

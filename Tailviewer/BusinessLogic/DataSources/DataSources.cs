@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Tailviewer.BusinessLogic.Scheduling;
+using System.Threading.Tasks;
 using Tailviewer.Settings;
 using log4net;
 
@@ -21,9 +21,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly Settings.DataSources _settings;
 		private readonly object _syncRoot;
-		private readonly TaskScheduler _taskScheduler;
+		private readonly DefaultTaskScheduler _taskScheduler;
 
-		public DataSources(TaskScheduler taskScheduler, Settings.DataSources settings)
+		public DataSources(DefaultTaskScheduler taskScheduler, Settings.DataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException("settings");
 

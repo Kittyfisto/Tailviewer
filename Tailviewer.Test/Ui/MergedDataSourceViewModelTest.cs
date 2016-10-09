@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.Ui
@@ -13,7 +13,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settings = new Tailviewer.Settings.DataSources();
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings);
 			_model = new MergedDataSourceViewModel(_dataSources.AddGroup());
 		}
@@ -27,7 +27,7 @@ namespace Tailviewer.Test.Ui
 		private MergedDataSourceViewModel _model;
 		private DataSources _dataSources;
 		private Tailviewer.Settings.DataSources _settings;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		public void TestAdd1()

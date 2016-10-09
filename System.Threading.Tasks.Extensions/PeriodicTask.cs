@@ -1,8 +1,7 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using log4net;
 
-namespace Tailviewer.BusinessLogic.Scheduling
+namespace System.Threading.Tasks
 {
 	internal sealed class PeriodicTask
 		: IPeriodicTask

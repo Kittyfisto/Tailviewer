@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
-using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.AcceptanceTests.Ui
@@ -17,7 +16,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 		}
 
 		[TestFixtureTearDown]
@@ -33,7 +32,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		}
 
 		private ManualDispatcher _dispatcher;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[Test]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]

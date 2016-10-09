@@ -1,17 +1,14 @@
-﻿using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using log4net;
 
-namespace Tailviewer.BusinessLogic.Scheduling
+namespace System.Threading.Tasks
 {
 	/// <summary>
 	///     Similar to <see cref="System.Threading.Tasks.TaskScheduler" />, it is capable of scheduling tasks.
 	///     Can also schedule periodic tasks that are executed with a minimum time between them (until removed).
 	///     <see cref="StartPeriodic" /> and <see cref="StopPeriodic" />.
 	/// </summary>
-	public sealed class TaskScheduler
+	public sealed class DefaultTaskScheduler
 		: ITaskScheduler
 		, IDisposable
 	{
@@ -19,18 +16,18 @@ namespace Tailviewer.BusinessLogic.Scheduling
 
 		private readonly ManualResetEvent _disposed;
 
-		private readonly System.Threading.Tasks.TaskScheduler _scheduler;
+		private readonly TaskScheduler _scheduler;
 		private readonly Thread _schedulingThread;
 		private readonly ManualResetEvent _taskAdded;
 		private readonly TaskQueue _periodicTaskQueue;
 		private long _lastTaskId;
 
-		public TaskScheduler()
-			: this(System.Threading.Tasks.TaskScheduler.Default)
+		public DefaultTaskScheduler()
+			: this(TaskScheduler.Default)
 		{
 		}
 
-		private TaskScheduler(System.Threading.Tasks.TaskScheduler scheduler)
+		private DefaultTaskScheduler(TaskScheduler scheduler)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException("scheduler");

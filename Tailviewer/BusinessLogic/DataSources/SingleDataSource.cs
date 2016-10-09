@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -10,12 +10,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogFile _unfilteredLogFile;
 
-		public SingleDataSource(TaskScheduler taskScheduler, DataSource settings)
+		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(100))
 		{
 		}
 
-		public SingleDataSource(TaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			var logFile = new LogFile(settings.File);
@@ -24,7 +24,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			CreateFilteredLogFile();
 		}
 
-		public SingleDataSource(TaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
+		public SingleDataSource(DefaultTaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_unfilteredLogFile = unfilteredLogFile;

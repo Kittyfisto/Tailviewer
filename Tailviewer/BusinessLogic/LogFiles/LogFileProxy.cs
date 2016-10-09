@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Metrolib;
-using Tailviewer.BusinessLogic.Scheduling;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles

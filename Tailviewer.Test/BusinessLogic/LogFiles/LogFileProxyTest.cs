@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Scheduling;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -16,12 +16,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		private LogFileListenerCollection _listeners;
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _modifications;
-		private TaskScheduler _scheduler;
+		private DefaultTaskScheduler _scheduler;
 
 		[SetUp]
 		public void Setup()
 		{
-			_scheduler = new TaskScheduler();
+			_scheduler = new DefaultTaskScheduler();
 
 			_logFile = new Mock<ILogFile>();
 			_listeners = new LogFileListenerCollection(_logFile.Object);

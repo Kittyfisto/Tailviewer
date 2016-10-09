@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Tailviewer.BusinessLogic.Scheduling
+﻿namespace System.Threading.Tasks
 {
 	/// <summary>
 	///     Similar to <see cref="System.Threading.Tasks.TaskScheduler" />, it is capable of scheduling tasks.

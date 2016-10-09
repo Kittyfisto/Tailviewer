@@ -141,6 +141,10 @@
       <Project>{84ac8610-64bc-4d66-83ae-eaf48d1be0c8}</Project>
       <Name>FluentAssertions.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\System.Threading.Tasks.Extensions\System.Threading.Tasks.Extensions.csproj">
+      <Project>{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}</Project>
+      <Name>System.Threading.Tasks.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
       <Name>Tailviewer</Name>

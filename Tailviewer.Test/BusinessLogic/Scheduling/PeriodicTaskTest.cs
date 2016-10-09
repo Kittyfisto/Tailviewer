@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Scheduling;
 
 namespace Tailviewer.Test.BusinessLogic.Scheduling
 {
