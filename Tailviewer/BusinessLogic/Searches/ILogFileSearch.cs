@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
 	public interface ILogFileSearch
+		: IDisposable
 	{
 		/// <summary>
 		///     The list of matches found in the source.

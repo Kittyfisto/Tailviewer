@@ -16,9 +16,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly DataSource _settings;
-
-		private readonly LogFileProxy _permanentLogFile;
-		private readonly LogFileSearchProxy _permanentSearch;
+		private readonly LogFileProxy _logFile;
+		private readonly LogFileSearchProxy _search;
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
@@ -38,19 +37,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
 
-			_permanentLogFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_permanentSearch = new LogFileSearchProxy(taskScheduler);
+			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
+			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
 			CreateSearch();
 		}
 
 		public ILogFile FilteredLogFile
 		{
-			get { return _permanentLogFile; }
+			get { return _logFile; }
 		}
 
 		public ILogFileSearch Search
 		{
-			get { return _permanentSearch; }
+			get { return _search; }
 		}
 
 		/// <summary>
@@ -227,8 +226,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Dispose()
 		{
-			_permanentLogFile.Dispose();
-			_permanentSearch.Dispose();
+			_logFile.Dispose();
+			_search.Dispose();
 
 			DisposeCurrentSearch();
 			UnfilteredLogFile.Dispose();
@@ -263,12 +262,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (filter != null)
 			{
 				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, filter, _maximumWaitTime);
-				_permanentLogFile.InnerLogFile = _filteredLogFile;
+				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_permanentLogFile.InnerLogFile = UnfilteredLogFile;
+				_logFile.InnerLogFile = UnfilteredLogFile;
 			}
 		}
 
@@ -277,8 +276,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			DisposeCurrentSearch();
 
 			var term = SearchTerm;
-			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _permanentLogFile, term, _maximumWaitTime) : null;
-			_permanentSearch.InnerSearch = _currentSearch;
+			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _logFile, term, _maximumWaitTime) : null;
+			_search.SearchTerm = SearchTerm;
 		}
 
 		private void DisposeCurrentSearch()

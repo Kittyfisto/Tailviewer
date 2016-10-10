@@ -50,16 +50,26 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		}
 
 		[Test]
+		public void TestCtor1()
+		{
+			using (var proxy = new LogFileSearchProxy(_scheduler, _logFile.Object, TimeSpan.Zero))
+			{
+				proxy.SearchTerm.Should().BeNull();
+				proxy.Count.Should().Be(0);
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the search delivers correct results when the file is completely available before the search is started")]
 		public void TestSearch1()
 		{
 			AddEntry("Hello World!");
 			AddEntry("Foobar");
 
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
-			using (var proxy = new LogFileSearchProxy(_scheduler, search))
+			using (var proxy = new LogFileSearchProxy(_scheduler, _logFile.Object, TimeSpan.Zero))
 			{
-				proxy.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5), "because we should be able to search through the file in a few seconds");
+				proxy.SearchTerm = "foobar";
+				proxy.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5000000), "because we should be able to search through the file in a few seconds");
 
 				proxy.Matches.Should().Equal(new[]
 					{
@@ -73,9 +83,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		[Description("Verifies that the search delivers correct results when the file is modified while the search is performed")]
 		public void TestSearch2()
 		{
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "Foobar", TimeSpan.Zero))
-			using (var proxy = new LogFileSearchProxy(_scheduler, search))
+			using (var proxy = new LogFileSearchProxy(_scheduler, _logFile.Object, TimeSpan.Zero))
 			{
+				proxy.SearchTerm = "Foobar";
+
 				AddEntry("Hello World!");
 				AddEntry("Foobar");
 

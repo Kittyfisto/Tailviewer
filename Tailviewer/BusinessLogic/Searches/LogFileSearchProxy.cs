@@ -3,48 +3,43 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
 	public sealed class LogFileSearchProxy
 		: ILogFileSearch
 		, ILogFileSearchListener
-		, IDisposable
 	{
 		private readonly List<ILogFileSearchListener> _listeners;
+		private readonly ILogFile _logFile;
+		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>> _pendingMatches;
 		private readonly object _syncRoot;
-		private readonly ITaskScheduler _taskScheduler;
 		private readonly IPeriodicTask _task;
+		private readonly ITaskScheduler _taskScheduler;
 
-		private ILogFileSearch _innerSearch;
-		private List<LogMatch> _matches;
+		private LogFileSearch _innerSearch;
 		private bool _isDisposed;
+		private List<LogMatch> _matches;
+		private string _searchTerm;
 
-		public LogFileSearchProxy(ITaskScheduler taskScheduler)
+		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFile logFile, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException("taskScheduler");
+			if (logFile == null)
+				throw new ArgumentNullException("logFile");
 
 			_pendingMatches = new ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>>();
+			_logFile = logFile;
 			_listeners = new List<ILogFileSearchListener>();
 			_taskScheduler = taskScheduler;
 			_syncRoot = new object();
 			_matches = new List<LogMatch>();
+			_maximumWaitTime = maximumWaitTime;
 
-			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Search Proxy");
-		}
-
-		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFileSearch innerSearch)
-			: this(taskScheduler)
-		{
-			InnerSearch = innerSearch;
-		}
-
-		public void Dispose()
-		{
-			_taskScheduler.StopPeriodic(_task);
-			_isDisposed = true;
+			_task = _taskScheduler.StartPeriodic(RunOnce, _maximumWaitTime, "Search Proxy");
 		}
 
 		public bool IsDisposed
@@ -52,18 +47,32 @@ namespace Tailviewer.BusinessLogic.Searches
 			get { return _isDisposed; }
 		}
 
-		public ILogFileSearch InnerSearch
+		public string SearchTerm
 		{
-			get { return _innerSearch; }
+			get { return _searchTerm; }
+			set
+			{
+				if (value == _searchTerm)
+					return;
+
+				_searchTerm = value;
+				InnerSearch = !string.IsNullOrEmpty(value)
+					              ? CreateNewSearch(_taskScheduler, _logFile, value, _maximumWaitTime)
+					              : null;
+			}
+		}
+
+		private LogFileSearch InnerSearch
+		{
 			set
 			{
 				lock (_syncRoot)
 				{
-					if (value == _innerSearch)
-						return;
-
 					if (_innerSearch != null)
+					{
 						_innerSearch.RemoveListener(this);
+						_innerSearch.Dispose();
+					}
 
 					_innerSearch = value;
 
@@ -82,6 +91,17 @@ namespace Tailviewer.BusinessLogic.Searches
 					}
 				}
 			}
+		}
+
+		public void Dispose()
+		{
+			if (_innerSearch != null)
+			{
+				_innerSearch.Dispose();
+			}
+
+			_taskScheduler.StopPeriodic(_task);
+			_isDisposed = true;
 		}
 
 		public IEnumerable<LogMatch> Matches
@@ -113,7 +133,17 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
 		{
+			KeyValuePair<ILogFileSearch, List<LogMatch>> unused;
+			while(_pendingMatches.TryDequeue(out unused))
+			{}
+
 			_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(sender, matches.ToList()));
+		}
+
+		private static LogFileSearch CreateNewSearch(ITaskScheduler scheduler, ILogFile logfile, string searchterm,
+		                                              TimeSpan maximumwaittime)
+		{
+			return new LogFileSearch(scheduler, logfile, searchterm, maximumwaittime);
 		}
 
 		private void RunOnce()
@@ -121,8 +151,8 @@ namespace Tailviewer.BusinessLogic.Searches
 			KeyValuePair<ILogFileSearch, List<LogMatch>> pair;
 			while (_pendingMatches.TryDequeue(out pair))
 			{
-				var sender = pair.Key;
-				var matches = pair.Value;
+				ILogFileSearch sender = pair.Key;
+				List<LogMatch> matches = pair.Value;
 
 				// We need to make sure that we don't forward search results from a previously
 				// _innerSearch. We can do so by ensuring that the sender is most definately
@@ -138,9 +168,12 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		private void EmitSearchModified(IEnumerable<LogMatch> matches)
 		{
-			foreach (ILogFileSearchListener listener in _listeners)
+			lock (_syncRoot)
 			{
-				listener.OnSearchModified(this, matches.ToList());
+				foreach (ILogFileSearchListener listener in _listeners)
+				{
+					listener.OnSearchModified(this, matches.ToList());
+				}
 			}
 		}
 	}

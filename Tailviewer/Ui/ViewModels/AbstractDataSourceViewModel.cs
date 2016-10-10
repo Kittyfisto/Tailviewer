@@ -350,18 +350,19 @@ namespace Tailviewer.Ui.ViewModels
 				_currentMatchIndex = value;
 				EmitPropertyChanged();
 
-				SelectedLineOfCurrentMatch();
+				SelectLineOfCurrentMatch();
 			}
 		}
 
 		#endregion
 
-		private void SelectedLineOfCurrentMatch()
+		private void SelectLineOfCurrentMatch()
 		{
 			if (_searchResults.Matches.Count > _currentMatchIndex && _currentMatchIndex != -1)
 			{
 				var match = _searchResults.Matches[_currentMatchIndex];
 				SelectedLogLines = new HashSet<LogLineIndex> { match.Index };
+				VisibleLogLine = match.Index;
 			}
 		}
 
@@ -445,7 +446,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				if (wasoutside)
 				{
-					SelectedLineOfCurrentMatch();
+					SelectLineOfCurrentMatch();
 				}
 			}
 

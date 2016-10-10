@@ -94,6 +94,8 @@
     <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatchIndex.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatchSection.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />

@@ -145,8 +145,11 @@ namespace Tailviewer.BusinessLogic.Searches
 				// is correct:
 				_logFile.GetSection(section, _logLinesBuffer);
 
-				foreach (LogLine line in _logLinesBuffer)
+				bool added = false;
+				for (int i = 0; i < section.Count; ++i)
 				{
+					var line = _logLinesBuffer[i];
+
 					_filter.Match(line, _matchesBuffer);
 					if (_matchesBuffer.Count > 0)
 					{
@@ -159,10 +162,14 @@ namespace Tailviewer.BusinessLogic.Searches
 							}
 						}
 
-						_listeners.EmitSearchChanged(_matches);
-
 						_matchesBuffer.Clear();
+						added = true;
 					}
+				}
+
+				if (added)
+				{
+					_listeners.EmitSearchChanged(_matches);
 				}
 			}
 			catch (IndexOutOfRangeException e)

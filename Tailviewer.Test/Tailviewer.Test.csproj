@@ -78,7 +78,6 @@
     <Compile Include="BusinessLogic\Scheduling\PeriodicTaskTest.cs" />
     <Compile Include="BusinessLogic\Scheduling\TaskQueueTest.cs" />
     <Compile Include="BusinessLogic\Scheduling\TaskSchedulerTest.cs" />
-    <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
