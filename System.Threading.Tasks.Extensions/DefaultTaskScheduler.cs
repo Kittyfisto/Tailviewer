@@ -155,7 +155,8 @@ namespace System.Threading.Tasks
 
 		private void RunOnce(PeriodicTask periodicTask)
 		{
-			var waitTask = Task.Delay(periodicTask.NextWaitTime);
+			var remainingWaitTime = periodicTask.RemainingTimeUntilNextInvocation;
+			var waitTask = Task.Delay(remainingWaitTime);
 			var actualTask = waitTask.ContinueWith(unused =>
 				{
 					periodicTask.Run();

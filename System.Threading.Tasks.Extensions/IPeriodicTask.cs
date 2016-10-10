@@ -3,16 +3,13 @@
 	public interface IPeriodicTask
 	{
 		/// <summary>
-		/// 
+		///     The name of this task for debugging purposes.
 		/// </summary>
 		string Name { get; }
 
 		/// <summary>
-		///     Tests if this task should run now.
+		///     The amount of time that should still ellapse until the next invocation of this periodic task.
 		/// </summary>
-		/// <param name="now"></param>
-		/// <param name="remainingWaitTime"></param>
-		/// <returns></returns>
-		bool ShouldRun(DateTime now, out TimeSpan remainingWaitTime);
+		TimeSpan RemainingTimeUntilNextInvocation { get; }
 	}
 }

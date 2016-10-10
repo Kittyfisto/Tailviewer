@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using log4net;
 
 namespace System.Threading.Tasks
@@ -14,6 +15,7 @@ namespace System.Threading.Tasks
 		public static readonly TimeSpan DefaultWaitTime = TimeSpan.FromMilliseconds(10);
 
 		private readonly Func<TimeSpan> _callback;
+		private readonly Stopwatch _stopwatch;
 		private readonly long _id;
 		private readonly string _name;
 		private readonly TimeSpan _defaultWaitTime;
@@ -43,6 +45,8 @@ namespace System.Threading.Tasks
 			_callback = callback;
 			_name = name;
 			_defaultWaitTime = DefaultWaitTime;
+			_stopwatch = new Stopwatch();
+			_stopwatch.Start();
 		}
 
 		public DateTime LastInvocation
@@ -64,26 +68,21 @@ namespace System.Threading.Tasks
 			get { return _numFailures; }
 		}
 
-		public TimeSpan NextWaitTime
+		public TimeSpan RemainingTimeUntilNextInvocation
 		{
-			get { return _nextWaitTime; }
+			get
+			{
+				var elapsed = _stopwatch.Elapsed;
+				var remaining = _nextWaitTime - elapsed;
+				if (remaining < TimeSpan.Zero)
+					return TimeSpan.Zero;
+				return remaining;
+			}
 		}
 
 		public string Name
 		{
 			get { return _name; }
-		}
-
-		/// <summary>
-		///     Tests if this task should run now.
-		/// </summary>
-		/// <param name="now"></param>
-		/// <param name="remainingWaitTime"></param>
-		/// <returns></returns>
-		public bool ShouldRun(DateTime now, out TimeSpan remainingWaitTime)
-		{
-			remainingWaitTime = now - _lastInvocation;
-			return remainingWaitTime >= _nextWaitTime;
 		}
 
 		public override string ToString()
@@ -99,6 +98,7 @@ namespace System.Threading.Tasks
 		{
 			try
 			{
+				_stopwatch.Restart();
 				_nextWaitTime = _callback();
 			}
 			catch (Exception e)
