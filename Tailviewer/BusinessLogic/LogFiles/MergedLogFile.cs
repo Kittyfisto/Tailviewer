@@ -25,18 +25,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly ILogFile[] _sources;
 		private readonly object _syncRoot;
+		private readonly TimeSpan _maximumWaitTime;
 		private Size _fileSize;
 		private DateTime _lastModified;
 
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
 
-		public MergedLogFile(ITaskScheduler scheduler, IEnumerable<ILogFile> sources)
-			: this(scheduler, sources.ToArray())
+		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
+			: this(scheduler, maximumWaitTime, sources.ToArray())
 		{
 		}
 
-		public MergedLogFile(ITaskScheduler scheduler, params ILogFile[] sources)
+		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, params ILogFile[] sources)
 			: base(scheduler)
 		{
 			if (sources == null) throw new ArgumentNullException("sources");
@@ -46,6 +47,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_indices = new List<Index>();
 			_syncRoot = new object();
+			_maximumWaitTime = maximumWaitTime;
+
+			foreach (ILogFile logFile in _sources)
+			{
+				logFile.AddListener(this, maximumWaitTime, BatchSize);
+			}
+			StartTask();
 		}
 
 		public IEnumerable<ILogFile> Sources
@@ -134,13 +142,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return actualLine;
 		}
 
-		protected override void RunOnce(CancellationToken token)
+		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			PendingModification modification;
 			while (_pendingModifications.TryDequeue(out modification))
 			{
 				if (token.IsCancellationRequested)
-					return;
+					return TimeSpan.Zero;
 
 				if (modification.Section.IsReset)
 				{
@@ -235,6 +243,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			Listeners.OnRead(_indices.Count);
 			SetEndOfSourceReached();
+
+			return _maximumWaitTime;
 		}
 
 		/// <summary>
@@ -319,15 +329,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				Listeners.Reset();
 				Listeners.OnRead(_indices.Count);
 			}
-		}
-
-		public void Start(TimeSpan maximumWaitTime)
-		{
-			foreach (ILogFile logFile in _sources)
-			{
-				logFile.AddListener(this, maximumWaitTime, BatchSize);
-			}
-			StartTask();
 		}
 
 		/// <summary>

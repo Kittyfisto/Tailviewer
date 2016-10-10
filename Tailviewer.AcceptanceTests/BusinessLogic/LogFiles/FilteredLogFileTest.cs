@@ -34,8 +34,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = new LogFile(_scheduler, File20Mb))
 			{
-				file.Start();
-
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
 				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, Filter.Create("info")))
@@ -76,8 +74,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = new LogFile(_scheduler, File20Mb))
 			{
-				file.Start();
-
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
 				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, Filter.Create("info")))
@@ -93,6 +89,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 					sections.Should().Equal(new object[]
 						{
+							LogFileSection.Reset,
 							new LogFileSection(0, 1),
 							new LogFileSection(1, 1),
 							new LogFileSection(2, 1),
@@ -116,8 +113,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var file = new LogFile(_scheduler, fname))
 			{
-				file.Start();
-
 				file.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 
 				file.Property(x=> x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));

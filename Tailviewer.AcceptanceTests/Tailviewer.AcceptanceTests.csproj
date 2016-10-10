@@ -67,6 +67,7 @@
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />

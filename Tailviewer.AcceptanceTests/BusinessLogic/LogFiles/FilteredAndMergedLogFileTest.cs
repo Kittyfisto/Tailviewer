@@ -33,16 +33,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source2 = new LogFile(_scheduler, LogFileTest.File2Lines))
 			{
 				var sources = new List<ILogFile> {source1, source2};
-				using (var merged = new MergedLogFile(_scheduler, sources))
+				using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(10), sources))
 				{
 					var filter = new SubstringFilter("foo", true);
-					using (var filtered = new FilteredLogFile(_scheduler, merged, filter))
+					using (var filtered = new FilteredLogFile(_scheduler, TimeSpan.FromMilliseconds(10), merged, filter))
 					{
-						source1.Start();
-						source2.Start();
-						merged.Start(TimeSpan.FromMilliseconds(10));
-						filtered.Start(TimeSpan.FromMilliseconds(10));
-
 						filtered.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 					}
 				}

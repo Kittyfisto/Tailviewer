@@ -12,20 +12,21 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: AbstractLogFile
 		, ILogFileListener
 	{
-		private const int BatchSize = 1000;
+		private const int BatchSize = 10000;
 
 		private readonly ILogEntryFilter _filter;
 		private readonly List<int> _indices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
 		private readonly LogLine[] _buffer;
+		private readonly TimeSpan _maximumWaitTime;
 
 		private LogFileSection _fullSourceSection;
 		private int _maxCharactersPerLine;
 		private int _currentSourceIndex;
 		private readonly List<LogLine> _lastLogEntry;
 
-		public FilteredLogFile(ITaskScheduler scheduler, ILogFile source, ILogEntryFilter filter)
+		public FilteredLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
 			: base(scheduler)
 		{
 			if (source == null) throw new ArgumentNullException("source");
@@ -37,6 +38,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_indices = new List<int>();
 			_buffer = new LogLine[BatchSize];
 			_lastLogEntry = new List<LogLine>();
+			_maximumWaitTime = maximumWaitTime;
+
+			_source.AddListener(this, maximumWaitTime, BatchSize);
+			StartTask();
 		}
 
 		public override bool Exists
@@ -122,18 +127,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public void Start(TimeSpan maximumWaitTime)
-		{
-			_source.AddListener(this, maximumWaitTime, BatchSize);
-			StartTask();
-		}
-
 		public override string ToString()
 		{
 			return string.Format("{0} (Filtered)", _source);
 		}
 
-		protected override void RunOnce(CancellationToken token)
+		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			LogFileSection section;
 			while (_pendingModifications.TryDequeue(out section) && !token.IsCancellationRequested)
@@ -196,6 +195,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				SetEndOfSourceReached();
 			}
+
+			return _maximumWaitTime;
 		}
 
 		private static void RemoveInvalidatedLines(List<LogLine> lastLogEntry, int currentSourceIndex)

@@ -31,12 +31,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public void Test20Mb()
 		{
 			using (var source = new LogFile(_scheduler, LogFileTest.File20Mb))
-			using (var merged = new MergedLogFile(_scheduler, source))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source))
 			{
-				source.Start();
 				source.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				merged.Start(TimeSpan.FromMilliseconds(1));
 				merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Count.Should().Be(source.Count);
@@ -59,20 +57,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source1 = new LogFile(_scheduler, LogFileTest.File2Entries))
 			using (var source2 = new LogFile(_scheduler, LogFileTest.File2Lines))
-			using (var merged = new MergedLogFile(_scheduler, source1, source2))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2))
 			{
-				merged.Start(TimeSpan.Zero);
-
-				source1.Start();
 				source1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				source2.Start();
 				source2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
 				                                                    "Because the merged file should've been finished");
-				merged.FileSize.Should().Be(source1.FileSize + source2.FileSize);
-				merged.StartTimestamp.Should().Be(source1.StartTimestamp);
+				merged.Property(x => x.FileSize).ShouldEventually().Be(source1.FileSize + source2.FileSize);
+				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source1.StartTimestamp);
 
 				LogLine[] source1Lines = source1.GetSection(new LogFileSection(0, source1.Count));
 				LogLine[] source2Lines = source2.GetSection(new LogFileSection(0, source2.Count));
@@ -94,12 +88,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source1 = new LogFile(_scheduler, LogFileTest.FileTestLive1))
 			using (var source2 = new LogFile(_scheduler, LogFileTest.FileTestLive2))
-			using (var merged = new MergedLogFile(_scheduler, source1, source2))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2))
 			{
-				source1.Start();
-				source2.Start();
-				merged.Start(TimeSpan.Zero);
-
 				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),
 				                                                    "Because the merged file should've been finished");
 				merged.Property(x => x.FileSize).ShouldEventually().Be(source1.FileSize + source2.FileSize);

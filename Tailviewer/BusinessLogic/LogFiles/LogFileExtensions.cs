@@ -20,8 +20,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogEntryFilter filter, TimeSpan maximumWaitTime)
 		{
-			var file = new FilteredLogFile(scheduler, logFile, filter);
-			file.Start(maximumWaitTime);
+			var file = new FilteredLogFile(scheduler, maximumWaitTime, logFile, filter);
 			return file;
 		}
 	}

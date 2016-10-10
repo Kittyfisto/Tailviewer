@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -24,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			return source;
 		}
 
-		private static IEnumerable<LogFileSection> ListenToChanges(ILogFile logFile)
+		private static List<LogFileSection> ListenToChanges(ILogFile logFile)
 		{
 			var changes = new List<LogFileSection>();
 			var listener = new Mock<ILogFileListener>();
@@ -72,31 +73,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new Mock<ILogFile>();
 
 			MergedLogFile logFile = null;
-			new Action(() => logFile = new MergedLogFile(_scheduler, source1.Object, source2.Object))
+			new Action(() => logFile = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object))
 				.ShouldNotThrow();
 			logFile.Should().NotBeNull();
 		}
 
 		[Test]
-		[Description("Verifies that disposing a non-started logfile works")]
+		[Description("Verifies that disposing a logfile works")]
 		public void TestDispose1()
 		{
 			var source1 = new Mock<ILogFile>();
 			var source2 = new Mock<ILogFile>();
 
-			var logFile = new MergedLogFile(_scheduler, source1.Object, source2.Object);
-			new Action(logFile.Dispose).ShouldNotThrow();
-		}
-
-		[Test]
-		[Description("Verifies that disposing a started logfile works")]
-		public void TestDispose2()
-		{
-			var source1 = new Mock<ILogFile>();
-			var source2 = new Mock<ILogFile>();
-
-			var logFile = new MergedLogFile(_scheduler, source1.Object, source2.Object);
-			logFile.Start(TimeSpan.FromMilliseconds(1));
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			new Action(logFile.Dispose).ShouldNotThrow();
 		}
 
@@ -105,7 +94,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEndOfSourceReached1()
 		{
 			var source = new Mock<ILogFile>();
-			var logFile = new MergedLogFile(_scheduler, source.Object);
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source.Object);
 			source.Verify(x => x.EndOfSourceReached, Times.Never);
 			logFile.EndOfSourceReached.Should().BeFalse("because the original source hasn't reached its end");
 			source.Verify(x => x.EndOfSourceReached, Times.Once);
@@ -118,9 +107,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			source2.Setup(x => x.EndOfSourceReached).Returns(true);
-			var merged = new MergedLogFile(_scheduler, source1.Object, source2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			IEnumerable<LogLine> data = Listen(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, 0, "foobar", LevelFlags.Info, DateTime.Now));
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 1));
@@ -137,9 +125,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			source2.Setup(x => x.EndOfSourceReached).Returns(true);
-			var merged = new MergedLogFile(_scheduler, source1.Object, source2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			IEnumerable<LogLine> data = Listen(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, "a", LevelFlags.Info, DateTime.Now));
 			source.Add(new LogLine(1, "b", LevelFlags.Debug, DateTime.Now));
@@ -161,9 +148,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new List<LogLine>();
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
-			var merged = new MergedLogFile(_scheduler, logFile1.Object, logFile2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
 			var data = Listen(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			DateTime timestamp = DateTime.Now;
 			source1.Add(new LogLine(0, "a", LevelFlags.Info, timestamp));
@@ -188,9 +174,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			Mock<ILogFile> source1 = CreateLogFile(source);
 			var source2 = new Mock<ILogFile>();
 			source2.Setup(x => x.EndOfSourceReached).Returns(true);
-			var merged = new MergedLogFile(_scheduler, source1.Object, source2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			var data = Listen(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			source.Add(new LogLine(0, "a", LevelFlags.Warning, DateTime.Now));
 			source.Add(new LogLine(1, "b", LevelFlags.Info));
@@ -216,9 +201,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new List<LogLine>();
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
-			var merged = new MergedLogFile(_scheduler, logFile1.Object, logFile2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
 			var data = Listen(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
 
 			var later = new DateTime(2016, 2, 16);
 			var earlier = new DateTime(2016, 2, 15);
@@ -256,10 +240,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source2.Add(new LogLine(0, 0, "Hello World", LevelFlags.Info, timestamp));
 			Mock<ILogFile> logFile2 = CreateLogFile(source2);
 
-			var merged = new MergedLogFile(_scheduler, logFile1.Object, logFile2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
 			var data = Listen(merged);
-			IEnumerable<LogFileSection> changes = ListenToChanges(merged);
-			merged.Start(TimeSpan.FromMilliseconds(1));
+			var changes = ListenToChanges(merged);
+
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
@@ -273,11 +257,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.EndOfSourceReached.Should().BeTrue();
 
 			data.Should().Equal(source2);
-			changes.Should().Equal(new[]
-				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
-				});
+
+			int count = changes.Count;
+			changes.ElementAt(count - 2).Should().Be(LogFileSection.Reset);
+			changes.ElementAt(count - 1).Should().Be(new LogFileSection(0, 1));
 		}
 
 		[Test]
@@ -291,9 +274,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				      (ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) =>
 				      listeners.Add(Tuple.Create(listener, maximumWaitTime, maximumLineCount)));
 
-			var logFile = new MergedLogFile(_scheduler, source.Object);
 			TimeSpan waitTime = TimeSpan.FromSeconds(1);
-			new Action(() => logFile.Start(waitTime)).ShouldNotThrow();
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromSeconds(1), source.Object);
+
 			listeners.Count.Should()
 			         .Be(1, "Because the merged file should have registered exactly 1 listener with the source file");
 			listeners[0].Item1.Should().NotBeNull();

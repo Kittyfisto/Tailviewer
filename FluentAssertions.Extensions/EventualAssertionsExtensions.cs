@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
@@ -69,6 +70,19 @@ namespace FluentAssertions
 			completeMessage.AppendMessage(message);
 
 			throw new AssertionException(completeMessage.ToString());
+		}
+
+		public static void Equal<T>(this EventualAssertions<IEnumerable<T>> that, IEnumerable<T> expectedEnumeration,
+		                            string message = null)
+		{
+			Equal(that, expectedEnumeration, DefaultWaitTime, message);
+		}
+
+		public static void Equal<T>(this EventualAssertions<IEnumerable<T>> that, IEnumerable<T> expectedEnumeration,
+		                            TimeSpan maximumWaitTime,
+		                            string message = null)
+		{
+			throw new NotImplementedException();
 		}
 
 		private static bool IsTrue<T>(this EventualAssertions<T> that, Predicate<T> predicate, TimeSpan maximumWaitTime, out T finalValue)

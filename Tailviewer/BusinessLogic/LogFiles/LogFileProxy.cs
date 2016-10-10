@@ -28,8 +28,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly IPeriodicTask _task;
 		private ILogFile _innerLogFile;
 		private bool _isDisposed;
+		private readonly TimeSpan _maximumWaitTime;
 
-		public LogFileProxy(ITaskScheduler taskScheduler)
+		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException("taskScheduler");
@@ -38,16 +39,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
 			_listeners = new LogFileListenerCollection(this);
 
-			_task = _taskScheduler.StartPeriodic(RunOnce, TimeSpan.FromMilliseconds(100), "Log File Proxy");
+			_task = _taskScheduler.StartPeriodic(RunOnce, "Log File Proxy");
+			_maximumWaitTime = maximumWaitTime;
 		}
 
-		public LogFileProxy(ITaskScheduler taskScheduler, ILogFile innerLogFile)
-			: this(taskScheduler)
+		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogFile innerLogFile)
+			: this(taskScheduler, maximumWaitTime)
 		{
 			InnerLogFile = innerLogFile;
 		}
 
-		private void RunOnce()
+		private TimeSpan RunOnce()
 		{
 			KeyValuePair<ILogFile, LogFileSection> pair;
 			while (_pendingSections.TryDequeue(out pair))
@@ -84,6 +86,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			// This means that even when there is NO modification to the source, we still need to notify the collection
 			// so it can check if enough time has ellapsed to finally notify listener.
 			_listeners.OnRead(_listeners.CurrentLineIndex);
+			return TimeSpan.FromMilliseconds(10);
 		}
 
 		public ILogFile InnerLogFile
@@ -108,7 +111,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				if (_innerLogFile != null)
 				{
-					_innerLogFile.AddListener(this, TimeSpan.Zero, 1000);
+					_innerLogFile.AddListener(this, _maximumWaitTime, 10000);
 				}
 			}
 		}
@@ -216,12 +219,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
-			// I think the traditional listeners collection doesn't work here because
-			// we're not telling it constantly to check if the specified amount of time has elapsed
-			// and therefore listeners of static files won't get the right notifications.
-			// We can fix this temporarily by immediately forwarding events, but that can't be
-			// the solution.
-			_listeners.AddListener(listener, TimeSpan.Zero, maximumLineCount);
+			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
 		public override string ToString()

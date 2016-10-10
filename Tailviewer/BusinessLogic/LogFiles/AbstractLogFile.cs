@@ -69,12 +69,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public abstract void GetSection(LogFileSection section, LogLine[] dest);
 		public abstract LogLine GetLine(int index);
 
-		protected abstract void RunOnce(CancellationToken token);
+		protected abstract TimeSpan RunOnce(CancellationToken token);
 
-		private void Run()
+		private TimeSpan Run()
 		{
 			CancellationToken token = _cancellationTokenSource.Token;
-			RunOnce(token);
+			return RunOnce(token);
 		}
 
 		protected void SetEndOfSourceReached()
@@ -101,7 +101,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		protected void StartTask()
 		{
-			_readTask = _scheduler.StartPeriodic(Run, TimeSpan.FromMilliseconds(10), ToString());
+			_readTask = _scheduler.StartPeriodic(Run, ToString());
 		}
 	}
 }

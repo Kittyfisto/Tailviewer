@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_maximumWaitTime = maximumWaitTime;
 			_counter = new LogFileCounter();
 
-			_permanentLogFile = new LogFileProxy(taskScheduler);
+			_permanentLogFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_permanentSearch = new LogFileSearchProxy(taskScheduler);
 			CreateSearch();
 		}

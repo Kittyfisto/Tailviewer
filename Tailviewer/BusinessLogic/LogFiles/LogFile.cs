@@ -74,6 +74,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_previousLevel = LevelFlags.None;
 			_levels = new List<KeyValuePair<int, LevelFlags>>();
+
+			StartTask();
 		}
 		
 		public override string ToString()
@@ -157,12 +159,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public void Start()
-		{
-			StartTask();
-		}
-
-		protected override void RunOnce(CancellationToken token)
+		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			try
 			{
@@ -255,6 +252,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				Log.Debug(e);
 			}
+
+			return TimeSpan.FromMilliseconds(100);
 		}
 
 		private void OnReset(FileStream stream,

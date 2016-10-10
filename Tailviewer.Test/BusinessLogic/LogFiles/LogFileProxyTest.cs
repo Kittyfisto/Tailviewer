@@ -39,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCtor1()
 		{
-			using (var proxy = new LogFileProxy(_scheduler))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
 			{
 				proxy.InnerLogFile.Should().BeNull();
 				proxy.MaxCharactersPerLine.Should().Be(0);
@@ -57,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the proxy registers a listener on the inner log file")]
 		public void TestCtor2()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Verify(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
 			}
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that changing the inner log file causes the proxy to unregister the previously registered listener from the old file")]
 		public void TestInnerLogFile1()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.InnerLogFile = null;
 				_logFile.Verify(x => x.RemoveListener(It.IsAny<ILogFileListener>()), Times.Once);
@@ -77,7 +77,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetLine()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.GetLine(42);
 				_logFile.Verify(l => l.GetLine(It.Is<int>(x => x == 42)), Times.Once);
@@ -87,7 +87,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSection()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.GetSection(new LogFileSection(42, 101), new LogLine[101]);
 
@@ -100,7 +100,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestExists()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.Exists).Returns(true);
 				proxy.Exists.Should().BeTrue();
@@ -112,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestFileSize()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(12));
 				proxy.FileSize.Should().Be(Size.FromBytes(12));
@@ -124,7 +124,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCount()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.Count).Returns(42);
 				proxy.Count.Should().Be(42);
@@ -136,7 +136,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestStartTimestamp()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.StartTimestamp).Returns(new DateTime(2016, 10, 7, 14, 46, 00));
 				proxy.StartTimestamp.Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
@@ -148,7 +148,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestMaxCharactersPerLine()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				_logFile.Setup(x => x.MaxCharactersPerLine).Returns(101);
 				proxy.MaxCharactersPerLine.Should().Be(101);
@@ -160,7 +160,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestDispose1()
 		{
-			var proxy = new LogFileProxy(_scheduler);
+			var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero);
 			_scheduler.PeriodicTaskCount.Should().Be(1);
 
 			proxy.IsDisposed.Should().BeFalse();
@@ -172,7 +172,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestDispose2()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.Dispose();
 				_logFile.Verify(l => l.Dispose(), Times.Once);
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestListen1()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -203,7 +203,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestListen2()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -226,7 +226,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestListen3()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -250,7 +250,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that OnLogFileModified calls from log files that aren't the current inner one are ignored")]
 		public void TestListen4()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
@@ -259,25 +259,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).ShouldNotThrow();
 				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
-			}
-		}
-
-		[Test]
-		[Description("Verifies that OnlogFileModified is eventually called when a non-zero maximum wait time is used (and the max limit is not reached)")]
-		public void TestListen5()
-		{
-			using (var proxy = new LogFileProxy(_scheduler, _logFile.Object))
-			{
-				proxy.AddListener(_listener.Object, TimeSpan.FromSeconds(1), 1000);
-				proxy.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
-
-				_scheduler.RunOnce();
-
-				_modifications.Should().Equal(new[]
-				{
-					LogFileSection.Reset,
-					new LogFileSection(0, 1)
-				});
 			}
 		}
 	}

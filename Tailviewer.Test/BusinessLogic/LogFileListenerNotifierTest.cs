@@ -36,6 +36,7 @@ namespace Tailviewer.Test.BusinessLogic
 
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 1),
 					new LogFileSection(1, 1),
 					new LogFileSection(2, 1),
@@ -47,6 +48,8 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestCurrentLineChanged2()
 		{
 			var notifier = new LogFileListenerNotifier(_logFile.Object, _listener.Object, TimeSpan.FromHours(1), 4);
+			_changes.Clear();
+
 			notifier.OnRead(1);
 			_changes.Should().BeEmpty();
 			notifier.OnRead(2);
@@ -68,6 +71,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(4);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 4)
 				});
 		}
@@ -79,11 +83,13 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(1000);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 1000)
 				});
 			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 1000),
 					new LogFileSection(1000, 1000)
 				});
@@ -96,6 +102,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(2000);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 1000),
 					new LogFileSection(1000, 1000)
 				});
@@ -120,6 +127,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.Invalidate(0, 1);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 1),
 					new LogFileSection(0, 1, true)
 				});
@@ -137,6 +145,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.Invalidate(0, 12);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 10),
 					new LogFileSection(0, 10, true)
 				},
@@ -157,6 +166,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.Invalidate(0, 22);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 10),
 					new LogFileSection(10, 10),
 					new LogFileSection(0, 20, true)
@@ -177,6 +187,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.OnRead(9);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 9)
 				});
 
@@ -184,6 +195,7 @@ namespace Tailviewer.Test.BusinessLogic
 			notifier.Invalidate(10, 25);
 			_changes.Should().Equal(new[]
 				{
+					LogFileSection.Reset,
 					new LogFileSection(0, 9)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
