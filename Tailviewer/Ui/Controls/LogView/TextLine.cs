@@ -210,7 +210,7 @@ namespace Tailviewer.Ui.Controls.LogView
 						lastIndex = match.Index + match.Count;
 					}
 
-					if (lastIndex < message.Length - 1)
+					if (lastIndex <= message.Length - 1)
 					{
 						substring = message.Substring(lastIndex);
 						_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
@@ -248,21 +248,21 @@ namespace Tailviewer.Ui.Controls.LogView
 					drawingContext.DrawRectangle(brush, null, rect);
 				}
 
+				var topLeft = new Point(x, y);
+				drawingContext.DrawText(segment.FormattedText, topLeft);
+
+				x += segment.Width;
+
 				if (i == _segments.Count - 1)
 				{
 					if (x < actualWidth && regularBackgroundBrush != null)
 					{
 						var rect = new Rect(x, y,
-						                    actualWidth - x,
-						                    TextHelper.LineHeight);
+											actualWidth - x,
+											TextHelper.LineHeight);
 						drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
 					}
 				}
-
-				var topLeft = new Point(x, y);
-				drawingContext.DrawText(segment.FormattedText, topLeft);
-
-				x += segment.Width;
 			}
 		}
 	}

@@ -89,6 +89,43 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
+		[Description("Verifies that a line is correctly split into different sections")]
+		public void TestHighlight4()
+		{
+			var results = new SearchResults();
+			results.Add(new LogMatch(0, new LogLineMatch(28, 4)));
+
+			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.None), _hovered,
+			                            _selected, true)
+				{
+					SearchResults = results
+				};
+
+			textLine.Segments.Count().Should().Be(3);
+			textLine.Segments.ElementAt(0).Text.Should().Be(".NET Environment: 4.0.30319.");
+			textLine.Segments.ElementAt(1).Text.Should().Be("4200");
+			textLine.Segments.ElementAt(2).Text.Should().Be("0");
+		}
+
+		[Test]
+		[Description("Verifies that a line is correctly split into different sections")]
+		public void TestHighlight5()
+		{
+			var results = new SearchResults();
+			results.Add(new LogMatch(0, new LogLineMatch(28, 5)));
+
+			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.None), _hovered,
+										_selected, true)
+			{
+				SearchResults = results
+			};
+
+			textLine.Segments.Count().Should().Be(2);
+			textLine.Segments.ElementAt(0).Text.Should().Be(".NET Environment: 4.0.30319.");
+			textLine.Segments.ElementAt(1).Text.Should().Be("42000");
+		}
+
+		[Test]
 		public void TestForegroundBrush1()
 		{
 			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);

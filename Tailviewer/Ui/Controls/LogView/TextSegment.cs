@@ -18,6 +18,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			IsRegular = isRegular;
 		}
 
+		public string Text
+		{
+			get { return FormattedText.Text; }
+		}
+
+		public override string ToString()
+		{
+			return Text;
+		}
+
 		/// <summary>
 		/// The estimation of TextHelper.EstimateWidthUpperLimit is way off
 		/// when there are tabs in the text. This poses a problem when drawing multiple
