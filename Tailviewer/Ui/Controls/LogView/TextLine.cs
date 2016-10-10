@@ -197,7 +197,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					string substring;
 					int lastIndex = 0;
-					foreach (LogLineMatch match in searchResults[_logLine.LineIndex])
+					foreach (LogLineMatch match in searchResults.MatchesByLine[_logLine.LineIndex])
 					{
 						if (match.Index > lastIndex)
 						{

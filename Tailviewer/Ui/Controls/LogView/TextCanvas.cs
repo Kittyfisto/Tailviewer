@@ -121,6 +121,16 @@ namespace Tailviewer.Ui.Controls.LogView
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{
 			get { return _selectedIndices; }
+			set
+			{
+				if (_selectedIndices.HasEqualContent(value))
+					return;
+
+				_selectedIndices.Clear();
+				if (value != null)
+					_selectedIndices.AddRange(value);
+				UpdateVisibleLines();
+			}
 		}
 
 		public double YOffset

@@ -485,14 +485,19 @@ namespace Tailviewer.Ui.Controls
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			var dataSource = ((IDataSourceViewModel) sender);
 			switch (args.PropertyName)
 			{
 				case "FollowTail":
-					PART_ListView.FollowTail = ((IDataSourceViewModel) sender).FollowTail;
+					PART_ListView.FollowTail = dataSource.FollowTail;
 					break;
 
 				case "LevelsFilter":
 					OnLevelsChanged();
+					break;
+
+				case "SelectedLogLines":
+					PART_ListView.SelectedIndices = dataSource.SelectedLogLines;
 					break;
 			}
 		}

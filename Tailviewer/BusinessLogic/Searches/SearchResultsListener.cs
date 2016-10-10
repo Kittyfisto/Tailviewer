@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
@@ -8,61 +6,28 @@ namespace Tailviewer.BusinessLogic.Searches
 		: ILogFileSearchListener
 		, ISearchResults
 	{
-		private readonly Dictionary<LogLineIndex, List<LogLineMatch>> _matchesByLine;
-		private List<LogMatch> _matches;
+		private readonly SearchResults _results;
 
 		public SearchResultsListener()
 		{
-			_matchesByLine = new Dictionary<LogLineIndex, List<LogLineMatch>>();
-			_matches = new List<LogMatch>();
+			_results = new SearchResults();
 		}
 
-		public int Count
+		public ISearchResultsByLogLineIndex MatchesByLine
 		{
-			get { return _matchesByLine.Count; }
+			get { return _results.MatchesByLine; }
 		}
 
-		public IEnumerable<LogMatch> Matches
+		IReadOnlyList<LogMatch> ISearchResults.Matches
 		{
-			get { return _matches; }
-		}
-
-		public bool TryGetMatches(LogLineIndex index, out IEnumerable<LogLineMatch> matches)
-		{
-			List<LogLineMatch> values;
-			if (_matchesByLine.TryGetValue(index, out values))
-			{
-				matches = values;
-				return true;
-			}
-
-			matches = Enumerable.Empty<LogLineMatch>();
-			return false;
-		}
-
-		public IEnumerable<LogLineMatch> this[int index]
-		{
-			get
-			{
-				IEnumerable<LogLineMatch> matches;
-				TryGetMatches(index, out matches);
-				return matches;
-			}
+			get { return _results.Matches; }
 		}
 
 		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
 		{
-			_matches = matches.ToList();
-			_matchesByLine.Clear();
-			foreach (var match in _matches)
+			foreach (var match in matches)
 			{
-				List<LogLineMatch> lineMatches;
-				if (!_matchesByLine.TryGetValue(match.Index, out lineMatches))
-				{
-					lineMatches = new List<LogLineMatch>();
-					_matchesByLine.Add(match.Index, lineMatches);
-				}
-				lineMatches.Add(match.Match);
+				_results.Add(match);
 			}
 		}
 	}

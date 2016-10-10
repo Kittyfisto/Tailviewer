@@ -196,6 +196,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{
 			get { return _textCanvas.SelectedIndices; }
+			set { _textCanvas.SelectedIndices = value; }
 		}
 
 		public TextCanvas PartTextCanvas

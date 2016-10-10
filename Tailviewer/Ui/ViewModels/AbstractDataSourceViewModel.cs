@@ -7,6 +7,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -15,6 +16,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly IDataSource _dataSource;
 		private readonly ICommand _removeCommand;
+		private readonly DispatchedSearchResults _searchResults;
 
 		private int _debugCount;
 		private int _errorCount;
@@ -40,6 +42,8 @@ namespace Tailviewer.Ui.ViewModels
 
 			_dataSource = dataSource;
 			_searchTerm = dataSource.SearchTerm;
+			_searchResults = new DispatchedSearchResults();
+			dataSource.Search.AddListener(_searchResults);
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 
@@ -228,7 +232,14 @@ namespace Tailviewer.Ui.ViewModels
 		public HashSet<LogLineIndex> SelectedLogLines
 		{
 			get { return _dataSource.SelectedLogLines; }
-			set { _dataSource.SelectedLogLines = value; }
+			set
+			{
+				if (ReferenceEquals(value, _dataSource.SelectedLogLines))
+					return;
+
+				_dataSource.SelectedLogLines = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public TimeSpan LastWrittenAge
@@ -338,10 +349,21 @@ namespace Tailviewer.Ui.ViewModels
 
 				_currentMatchIndex = value;
 				EmitPropertyChanged();
+
+				SelectedLineOfCurrentMatch();
 			}
 		}
 
 		#endregion
+
+		private void SelectedLineOfCurrentMatch()
+		{
+			if (_searchResults.Matches.Count > _currentMatchIndex && _currentMatchIndex != -1)
+			{
+				var match = _searchResults.Matches[_currentMatchIndex];
+				SelectedLogLines = new HashSet<LogLineIndex> { match.Index };
+			}
+		}
 
 		public DateTime LastViewed
 		{
@@ -417,6 +439,15 @@ namespace Tailviewer.Ui.ViewModels
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchMatchCount = _dataSource.Search.Count;
 			EnsureSearchIndexInBounds();
+
+			bool wasoutside = _searchResults.Matches.Count <= _currentMatchIndex && _currentMatchIndex != -1;
+			if (_searchResults.Update())
+			{
+				if (wasoutside)
+				{
+					SelectedLineOfCurrentMatch();
+				}
+			}
 
 			if (NewLogLineCount != newBefore)
 			{

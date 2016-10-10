@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
@@ -35,31 +34,6 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		public int Count
-		{
-			get { return _actualResults.Count; }
-		}
-
-		public IEnumerable<LogMatch> Matches
-		{
-			get { return _actualResults.Matches; }
-		}
-
-		public bool TryGetMatches(LogLineIndex index, out IEnumerable<LogLineMatch> matches)
-		{
-			return _actualResults.TryGetMatches(index, out matches);
-		}
-
-		public IEnumerable<LogLineMatch> this[int index]
-		{
-			get
-			{
-				IEnumerable<LogLineMatch> matches;
-				TryGetMatches(index, out matches);
-				return matches;
-			}
-		}
-
 		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
 		{
 			lock (_syncRoot)
@@ -67,6 +41,16 @@ namespace Tailviewer.BusinessLogic.Searches
 				_matches = matches.ToList();
 				_modified = true;
 			}
+		}
+
+		public ISearchResultsByLogLineIndex MatchesByLine
+		{
+			get { return _actualResults.MatchesByLine; }
+		}
+
+		public IReadOnlyList<LogMatch> Matches
+		{
+			get { return _actualResults.Matches; }
 		}
 	}
 }
