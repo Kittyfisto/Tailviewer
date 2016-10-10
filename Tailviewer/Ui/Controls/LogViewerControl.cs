@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
 
@@ -17,6 +18,10 @@ namespace Tailviewer.Ui.Controls
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogViewerControl),
 			                            new PropertyMetadata(default(ILogFile)));
+
+		public static readonly DependencyProperty SearchProperty =
+			DependencyProperty.Register("Search", typeof (ILogFileSearch), typeof (LogViewerControl),
+			                            new PropertyMetadata(default(ILogFileSearch)));
 
 		public static readonly DependencyProperty DataSourceProperty =
 			DependencyProperty.Register("DataSource", typeof (IDataSourceViewModel), typeof (LogViewerControl),
@@ -81,35 +86,6 @@ namespace Tailviewer.Ui.Controls
 			PART_ListView.HorizontalScrollBar.ValueChanged += HorizontalScrollBarOnValueChanged;
 		}
 
-		public void Select(LogLineIndex index)
-		{
-			PART_ListView.Select(index);
-		}
-
-		public void Select(IEnumerable<LogLineIndex> indices)
-		{
-			PART_ListView.Select(indices);
-		}
-
-		public void Select(params LogLineIndex[] indices)
-		{
-			PART_ListView.Select(indices);
-		}
-
-		private void SetHorizontalOffset(double horizontalOffset)
-		{
-			PART_ListView.SetHorizontalOffset(horizontalOffset);
-		}
-
-		private void PartListViewOnSelectionChanged(IEnumerable<LogLineIndex> logLineIndices)
-		{
-			var dataSource = DataSource;
-			if (dataSource != null)
-			{
-				dataSource.SelectedLogLines = new HashSet<LogLineIndex>(logLineIndices);
-			}
-		}
-
 		public LogViewerViewModel LogView
 		{
 			get { return (LogViewerViewModel) GetValue(LogViewProperty); }
@@ -132,6 +108,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ILogFile) GetValue(LogFileProperty); }
 			set { SetValue(LogFileProperty, value); }
+		}
+
+		public ILogFileSearch Search
+		{
+			get { return (ILogFileSearch)GetValue(SearchProperty); }
+			set { SetValue(SearchProperty, value); }
 		}
 
 		public string DetailedErrorMessage
@@ -210,6 +192,35 @@ namespace Tailviewer.Ui.Controls
 			get { return PART_ListView; }
 		}
 
+		public void Select(LogLineIndex index)
+		{
+			PART_ListView.Select(index);
+		}
+
+		public void Select(IEnumerable<LogLineIndex> indices)
+		{
+			PART_ListView.Select(indices);
+		}
+
+		public void Select(params LogLineIndex[] indices)
+		{
+			PART_ListView.Select(indices);
+		}
+
+		private void SetHorizontalOffset(double horizontalOffset)
+		{
+			PART_ListView.SetHorizontalOffset(horizontalOffset);
+		}
+
+		private void PartListViewOnSelectionChanged(IEnumerable<LogLineIndex> logLineIndices)
+		{
+			IDataSourceViewModel dataSource = DataSource;
+			if (dataSource != null)
+			{
+				dataSource.SelectedLogLines = new HashSet<LogLineIndex>(logLineIndices);
+			}
+		}
+
 		private static void OnLogViewChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnLogViewChanged((LogViewerViewModel) args.OldValue,
@@ -231,7 +242,8 @@ namespace Tailviewer.Ui.Controls
 				{
 					newView.PropertyChanged += LogViewOnPropertyChanged;
 					DataSource = newView.DataSource;
-					LogFile = newView.CurrentLogFile;
+					LogFile = newView.LogFile;
+					Search = newView.Search;
 					CurrentLogLine = newView.DataSource.VisibleLogLine;
 					Select(newView.DataSource.SelectedLogLines);
 					SetHorizontalOffset(newView.DataSource.HorizontalOffset);
@@ -268,8 +280,8 @@ namespace Tailviewer.Ui.Controls
 		{
 			switch (args.PropertyName)
 			{
-				case "CurrentLogFile":
-					LogFile = LogView.CurrentLogFile;
+				case "LogFile":
+					LogFile = LogView.LogFile;
 					break;
 			}
 		}
@@ -494,7 +506,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void HorizontalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
-			var dataSource = DataSource;
+			IDataSourceViewModel dataSource = DataSource;
 			if (dataSource != null && !_changingLogView)
 				dataSource.HorizontalOffset = args.NewValue;
 		}

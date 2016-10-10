@@ -64,11 +64,22 @@ namespace Tailviewer.BusinessLogic.Searches
 
 					if (_innerSearch != null)
 						_innerSearch.RemoveListener(this);
+
 					_innerSearch = value;
 
-					// AddListener automatically forwards the current list of matches to us (and we, in turn, forward them as well).
 					if (_innerSearch != null)
+					{
+						// When we have a new search then attaching ourselves as a listener is enough
+						// to be notified about that searches current status.
 						_innerSearch.AddListener(this);
+					}
+					else
+					{
+						// However when we're placing the old search with a null search, then
+						// we must notify listeners about that (otherwise they still think the last
+						// match is the current state, which it is obviously no longer).
+						_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(null, new List<LogMatch>()));
+					}
 				}
 			}
 		}
@@ -100,9 +111,9 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		public void OnSearchModified(ILogFileSearch sender, List<LogMatch> matches)
+		public void OnSearchModified(ILogFileSearch sender, IEnumerable<LogMatch> matches)
 		{
-			_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(sender, matches));
+			_pendingMatches.Enqueue(new KeyValuePair<ILogFileSearch, List<LogMatch>>(sender, matches.ToList()));
 		}
 
 		private void RunOnce()

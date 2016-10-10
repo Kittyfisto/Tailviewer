@@ -42,7 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			_listener = new Mock<ILogFileSearchListener>();
 			_matches = new List<LogMatch>();
 			_listener.Setup(x => x.OnSearchModified(It.IsAny<ILogFileSearch>(), It.IsAny<List<LogMatch>>()))
-			         .Callback((ILogFileSearch sender, List<LogMatch> matches) =>
+			         .Callback((ILogFileSearch sender, IEnumerable<LogMatch> matches) =>
 				         {
 					         _matches.Clear();
 					         _matches.AddRange(matches);
@@ -105,6 +105,26 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 				_scheduler.RunOnce();
 
 				_matches.Should().Equal(new[] { new LogMatch(5, new LogLineMatch(4, 1)) });
+			}
+		}
+
+		[Test]
+		[Description("Verifies that when the inner search is replaced with a null search, then listeners are notified about that")]
+		public void TestInnerSearch3()
+		{
+			using (var proxy = new LogFileSearchProxy(_scheduler))
+			{
+				proxy.InnerSearch = _search.Object;
+				proxy.AddListener(_listener.Object);
+
+				EmitSearchModified(new[] { new LogMatch(5, new LogLineMatch(4, 1)) });
+				_scheduler.RunOnce();
+
+				_matches.Should().Equal(new[] { new LogMatch(5, new LogLineMatch(4, 1)) });
+
+				proxy.InnerSearch = null;
+				_scheduler.RunOnce();
+				_matches.Should().BeEmpty();
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IDispatcher _dispatcher;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
-		private ILogFile _currentLogFile;
+		private ILogFile _logFile;
 		private int _logEntryCount;
 		private string _noEntriesExplanation;
 		private string _noEntriesSubtext;
@@ -40,8 +40,11 @@ namespace Tailviewer.Ui.ViewModels
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 
-			SetCurrentLogFile(null, _dataSource.DataSource.FilteredLogFile);
+			LogFile = _dataSource.DataSource.FilteredLogFile;
+			LogFile.AddListener(this, _maximumWaitTime, 1000);
 			Search = _dataSource.DataSource.Search;
+
+			UpdateCounts();
 		}
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
@@ -51,18 +54,18 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override string ToString()
 		{
-			return _currentLogFile.ToString();
+			return _logFile.ToString();
 		}
 
-		public ILogFile CurrentLogFile
+		public ILogFile LogFile
 		{
-			get { return _currentLogFile; }
+			get { return _logFile; }
 			private set
 			{
-				if (value == _currentLogFile)
+				if (value == _logFile)
 					return;
 
-				_currentLogFile = value;
+				_logFile = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -158,7 +161,6 @@ namespace Tailviewer.Ui.ViewModels
 				if (_dataSource != null)
 				{
 					_dataSource.QuickFilterChain = value;
-					SetCurrentLogFile(_currentLogFile, _dataSource.DataSource.FilteredLogFile);
 				}
 			}
 		}
@@ -170,32 +172,12 @@ namespace Tailviewer.Ui.ViewModels
 				if (section == LogFileSection.Reset)
 					_pendingSections.Clear();
 
-				_pendingSections.Add(new KeyValuePair<ILogFile, LogFileSection>(_currentLogFile, section));
+				_pendingSections.Add(new KeyValuePair<ILogFile, LogFileSection>(_logFile, section));
 				_dispatcher.BeginInvoke(Synchronize, DispatcherPriority.Background);
 			}
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void SetCurrentLogFile(ILogFile oldLogFile, ILogFile newLogFile)
-		{
-			if (oldLogFile == newLogFile)
-				return;
-
-			if (oldLogFile != null)
-			{
-				oldLogFile.RemoveListener(this);
-			}
-
-			CurrentLogFile = newLogFile;
-
-			if (newLogFile != null)
-			{
-				newLogFile.AddListener(this, _maximumWaitTime, 1000);
-			}
-
-			UpdateCounts();
-		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
@@ -210,7 +192,7 @@ namespace Tailviewer.Ui.ViewModels
 				foreach (var pair in _pendingSections)
 				{
 					ILogFile file = pair.Key;
-					if (file != _currentLogFile)
+					if (file != _logFile)
 						continue; //< This message belongs to an old change and must be ignored
 
 
@@ -226,7 +208,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void UpdateCounts()
 		{
-			LogEntryCount = _currentLogFile.Count;
+			LogEntryCount = _logFile.Count;
 			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.Count;
 			UpdateNoEntriesExplanation();
 		}

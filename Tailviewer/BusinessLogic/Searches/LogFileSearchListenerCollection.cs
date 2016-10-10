@@ -37,14 +37,14 @@ namespace Tailviewer.BusinessLogic.Searches
 			}
 		}
 
-		public void EmitSearchChanged(List<LogMatch> matches)
+		public void EmitSearchChanged(IEnumerable<LogMatch> matches)
 		{
 			lock (_listeners)
 			{
-				_matches = matches;
+				_matches = matches.ToList();
 				foreach (var listener in _listeners)
 				{
-					listener.OnSearchModified(_sender, _matches.ToList());
+					listener.OnSearchModified(_sender, _matches);
 				}
 			}
 		}

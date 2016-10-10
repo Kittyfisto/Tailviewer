@@ -47,7 +47,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			_matches = new List<LogMatch>();
 			_listener = new Mock<ILogFileSearchListener>();
 			_listener.Setup(x => x.OnSearchModified(It.IsAny<ILogFileSearch>(), It.IsAny<List<LogMatch>>()))
-					 .Callback((ILogFileSearch sender, List<LogMatch> matches) =>
+					 .Callback((ILogFileSearch sender, IEnumerable<LogMatch> matches) =>
 						 {
 							 _matches.Clear();
 							 _matches.AddRange(matches);

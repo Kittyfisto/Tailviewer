@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -18,7 +18,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly LogLine _logLine;
 		private readonly List<TextSegment> _segments;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
-		private ILogEntryFilter _filter;
+		private ISearchResults _searchResults;
 		private Brush _lastForegroundBrush;
 		private bool _colorByLevel;
 		private bool _isFocused;
@@ -165,22 +165,21 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _selectedIndices.Contains(_logLine.LineIndex); }
 		}
 
-		public ILogEntryFilter Filter
-		{
-			get { return _filter; }
-			set
-			{
-				_filter = value;
-				_segments.Clear();
-			}
-		}
-
 		public IEnumerable<TextSegment> Segments
 		{
 			get
 			{
 				CreateTextIfNecessary();
 				return _segments;
+			}
+		}
+
+		public ISearchResults SearchResults
+		{
+			set
+			{
+				_searchResults = value;
+				_segments.Clear();
 			}
 		}
 
@@ -193,13 +192,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				string message = _logLine.Message;
 				Brush highlightedBrush = TextHelper.HighlightedForegroundBrush;
-				ILogEntryFilter filter = _filter;
-				if (filter != null)
+				var searchResults = _searchResults;
+				if (searchResults != null)
 				{
 					string substring;
 					int lastIndex = 0;
-					List<LogLineMatch> matches = filter.Match(_logLine);
-					foreach (LogLineMatch match in matches)
+					foreach (LogLineMatch match in searchResults[_logLine.LineIndex])
 					{
 						if (match.Index > lastIndex)
 						{

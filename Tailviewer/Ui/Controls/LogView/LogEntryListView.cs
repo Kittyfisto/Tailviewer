@@ -25,6 +25,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogEntryListView),
 			                            new PropertyMetadata(null, OnLogFileChanged));
 
+		public static readonly DependencyProperty SearchProperty =
+			DependencyProperty.Register("Search", typeof (ILogFileSearch), typeof (LogEntryListView),
+			                            new PropertyMetadata(null, OnSearchChanged));
+
 		public static readonly DependencyProperty FollowTailProperty =
 			DependencyProperty.Register("FollowTail", typeof (bool), typeof (LogEntryListView),
 			                            new PropertyMetadata(false, OnFollowTailChanged));
@@ -40,16 +44,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly DependencyProperty ColorByLevelProperty =
 			DependencyProperty.Register("ColorByLevel", typeof (bool), typeof (LogEntryListView),
 			                            new PropertyMetadata(false, OnColorByLevelChanged));
-
-		private static void OnColorByLevelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((LogEntryListView) dependencyObject).OnColorByLevelChanged((bool) args.NewValue);
-		}
-
-		private void OnColorByLevelChanged(bool colorByLevel)
-		{
-			_textCanvas.ColorByLevel = colorByLevel;
-		}
 
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 		private readonly Rectangle _cornerRectangle;
@@ -167,11 +161,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FollowTailProperty, value); }
 		}
 
-		public ILogFileSearch Search
-		{
-			set { _textCanvas.Search = value; }
-		}
-
 		internal int PendingModificationsCount
 		{
 			get { return _pendingModificationsCount; }
@@ -191,6 +180,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (ILogFile) GetValue(LogFileProperty); }
 			set { SetValue(LogFileProperty, value); }
+		}
+
+		public ILogFileSearch Search
+		{
+			get { return (ILogFileSearch)GetValue(SearchProperty); }
+			set { SetValue(SearchProperty, value); }
 		}
 
 		public List<TextLine> VisibleTextLines
@@ -218,6 +213,26 @@ namespace Tailviewer.Ui.Controls.LogView
 			_maxLineWidth = Math.Max(_maxLineWidth, upperWidth);
 
 			Interlocked.Increment(ref _pendingModificationsCount);
+		}
+
+		private static void OnSearchChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnSearchChanged((ILogFileSearch) args.NewValue);
+		}
+
+		private void OnSearchChanged(ILogFileSearch search)
+		{
+			_textCanvas.Search = search;
+		}
+
+		private static void OnColorByLevelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnColorByLevelChanged((bool) args.NewValue);
+		}
+
+		private void OnColorByLevelChanged(bool colorByLevel)
+		{
+			_textCanvas.ColorByLevel = colorByLevel;
 		}
 
 		private static void OnCurrentLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)

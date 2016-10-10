@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -21,7 +22,6 @@ namespace Tailviewer.Ui.Controls.LogView
 	/// </summary>
 	public sealed class TextCanvas
 		: FrameworkElement
-		, ILogFileSearchListener
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -31,6 +31,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private readonly ScrollBar _verticalScrollBar;
 		private readonly List<TextLine> _visibleTextLines;
+		private readonly DispatchedSearchResults _searchResults;
+		private readonly DispatcherTimer _timer;
 
 		private int _currentLine;
 		private LogFileSection _currentlyVisibleSection;
@@ -40,7 +42,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		private double _yOffset;
 		private bool _colorByLevel;
 		private ILogFileSearch _search;
-		private List<LogMatch> _searchMatches;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
 		{
@@ -53,6 +54,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
+			_searchResults = new DispatchedSearchResults();
+			_timer = new DispatcherTimer();
+			_timer.Tick += OnUpdate;
+			_timer.Interval = TimeSpan.FromMilliseconds(1000.0/60);
 
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnCopyToClipboard), Key.C, ModifierKeys.Control));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveDown), Key.Down, ModifierKeys.None));
@@ -67,6 +72,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			SizeChanged += OnSizeChanged;
 			GotFocus += OnGotFocus;
 			LostFocus += OnLostFocus;
+			Loaded += OnLoaded;
+			Unloaded += OnUnloaded;
 
 			Focusable = true;
 			ClipToBounds = true;
@@ -140,10 +147,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			set
 			{
 				if (_search != null)
-					_search.RemoveListener(this);
+					_search.RemoveListener(_searchResults);
 				_search = value;
 				if (_search != null)
-					Search.AddListener(this);
+					Search.AddListener(_searchResults);
 			}
 		}
 
@@ -162,6 +169,26 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnLostFocus(object sender, RoutedEventArgs routedEventArgs)
 		{
 			UpdateVisibleLines();
+		}
+
+		private void OnUpdate(object sender, EventArgs e)
+		{
+			if (_searchResults.Update())
+			{
+				// The search has been modified and we need to
+				// check which lines have a match in them...
+				UpdateVisibleLines();
+			}
+		}
+
+		private void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			_timer.Start();
+		}
+
+		private void OnUnloaded(object sender, RoutedEventArgs e)
+		{
+			_timer.Stop();
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)
@@ -211,7 +238,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
 					{
-						IsFocused = IsFocused
+						IsFocused = IsFocused,
+						SearchResults = _searchResults
 					};
 				_visibleTextLines.Add(line);
 			}
@@ -598,10 +626,5 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		#endregion Mouse Events
-
-		public void OnSearchModified(ILogFileSearch listener, List<LogMatch> matches)
-		{
-			_searchMatches = matches;
-		}
 	}
 }

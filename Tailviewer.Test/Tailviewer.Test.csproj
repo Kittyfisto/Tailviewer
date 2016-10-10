@@ -81,6 +81,7 @@
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />

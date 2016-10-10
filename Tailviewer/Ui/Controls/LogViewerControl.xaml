@@ -133,6 +133,7 @@
             x:Name="PART_ListView"
             Grid.Row="2"
             LogFile="{Binding LogFile, ElementName=This}"
+            Search="{Binding Search, ElementName=This}"
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"

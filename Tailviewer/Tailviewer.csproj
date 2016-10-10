@@ -85,12 +85,16 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
+    <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
+    <Compile Include="BusinessLogic\Searches\ISearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
     <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />

@@ -2,8 +2,9 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Test.Ui.Controls
@@ -44,26 +45,29 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		public void TestHighlight2()
-		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
-			var segments = textLine.Segments.ToList();
-			segments.Count.Should().Be(1);
-			segments[0].FormattedText.Text.Should().Be("foobar");
-		}
-
-		[Test]
 		public void TestHighlight1()
 		{
+			var results = new SearchResults();
+			results.Add(new LogMatch(0, new LogLineMatch(1, 2)));
+
 			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true)
 				{
-					Filter = Filter.Create("oo")
+					SearchResults = results
 				};
 			var segments = textLine.Segments.ToList();
 			segments.Count.Should().Be(3);
 			segments[0].FormattedText.Text.Should().Be("f");
 			segments[1].FormattedText.Text.Should().Be("oo");
 			segments[2].FormattedText.Text.Should().Be("bar");
+		}
+
+		[Test]
+		public void TestHighlight2()
+		{
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var segments = textLine.Segments.ToList();
+			segments.Count.Should().Be(1);
+			segments[0].FormattedText.Text.Should().Be("foobar");
 		}
 
 		[Test]
@@ -74,7 +78,9 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine.Segments.Count().Should().Be(1);
 			textLine.Segments.First().FormattedText.Text.Should().Be("foobar");
 
-			textLine.Filter = Filter.Create("oo");
+			var results = new SearchResults();
+			results.Add(new LogMatch(0, new LogLineMatch(1, 2)));
+			textLine.SearchResults = results;
 			var segments = textLine.Segments.ToList();
 			segments.Count.Should().Be(3);
 			segments[0].FormattedText.Text.Should().Be("f");
