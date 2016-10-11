@@ -45,9 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.66.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Metrolib">
       <HintPath>..\packages\Metrolib.0.1.66\lib\net45\Metrolib.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />

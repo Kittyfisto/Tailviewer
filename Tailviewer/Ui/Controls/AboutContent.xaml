@@ -16,11 +16,17 @@
             <Grid HorizontalAlignment="Center" Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBlock Text="Tailviewer"
                            FontSize="32" />
-                <controls:FlatScrollViewer Grid.Row="1">
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <controls:OpenInNewHyperlink Text="Website" NavigateUri="https://kittyfisto.github.io/Tailviewer/" />
+                    <controls:OpenInNewHyperlink Margin="4,0,0,0" Text="Source" NavigateUri="https://github.com/Kittyfisto/Tailviewer" />
+                </StackPanel>
+                
+                <controls:FlatScrollViewer Grid.Row="2">
                     <TextBlock Text="{x:Static tailviewer:Constants.ApplicationLicense}"
                                Margin="0,8,0,0" />
                 </controls:FlatScrollViewer>
