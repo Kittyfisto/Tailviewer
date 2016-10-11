@@ -1,6 +1,0 @@
-{
-  "name": "Tailviewer",
-  "tagline": "A fast, free and open source log viewer for Windows",
-  "body": "# Welcome Tailviewer.\r\nTailviewer is a log file viewer for Windows that allows you to view text based log files both offline and in real-time. It is easy to use, incredibly fast and free to use.\r\n\r\n## Features\r\nTailviewer can display any text based log file and allows tailing, searching and filtering. \r\n\r\n### Notifications\r\nTailviewer automatically notifies you when an opened log file is modified so you never miss a thing!\r\n\r\n### Filtering\r\nYou can perform sub string, wildcard and regular expression searches through log files.\r\n\r\n",
-  "note": "Don't delete this file! It's used internally to help with page regeneration."
-}
