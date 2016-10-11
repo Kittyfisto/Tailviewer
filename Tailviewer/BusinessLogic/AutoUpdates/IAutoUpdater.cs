@@ -9,7 +9,16 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		/// </summary>
 		Version AppVersion { get; }
 
+		/// <summary>
+		/// 
+		/// </summary>
 		VersionInfo LatestVersion { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void CheckForUpdatesAsync();
+
 		event Action<VersionInfo> LatestVersionChanged;
 	}
 }

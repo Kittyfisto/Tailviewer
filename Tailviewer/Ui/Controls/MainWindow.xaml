@@ -47,18 +47,34 @@
 
             <Grid Background="{StaticResource BackgroundBrushSelected}"
                   Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <StackPanel Orientation="Horizontal" Margin="8">
-                    <TextBlock Text="A new version is ready to be downloaded from github"
-                               Foreground="{StaticResource TextBrushInverted}"
-                               VerticalAlignment="Center" />
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Foreground="{StaticResource TextBrushInverted}"
+                               VerticalAlignment="Center">
+                        <Run Text="A newer version" />
+                        <Run Text="{Binding LatestVersion, Mode=OneWay, StringFormat='({0})'}" />
+                        <Run Text="is available." />
+                    </TextBlock>
+
+                    <controls3:OpenInNewHyperlink
+                        Margin="8,4,4,4"
+                        Text="Download"
+                        Grid.Column="1"
+                        NavigateUri="{Binding LatestVersionUri}"
+                        Foreground="{StaticResource TextBrushInverted}"
+                        VerticalAlignment="Center" />
+
                     <Button Content="Got it"
                             Command="{Binding GotItCommand}"
+                            Grid.Column="3"
                             Margin="4" Padding="4" />
-                    <!--
-                    <Button Content="Download" Margin="4" Padding="4" />
-                    <Button Content="Not now" Margin="4" Padding="4" />
-                    -->
-                </StackPanel>
+                </Grid>
             </Grid>
 
             <Grid Grid.Row="1">
@@ -131,8 +147,10 @@
                                                    AnchorAlignment="Right"
                                                    Placement="Bottom"
                                                    VerticalOffset="-10">
-                            <controls3:FlatMenuItem Header="Check for Updates..." Command="{Binding CheckForUpdatesCommand}" />
-                            <controls3:FlatMenuItem Header="About Tailviewer..." Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
+                            <controls3:FlatMenuItem Header="Check for Updates..."
+                                                    Command="{Binding CheckForUpdatesCommand}" />
+                            <controls3:FlatMenuItem Header="About Tailviewer..."
+                                                    Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
                         </controls3:FlatContextMenu>
                     </controls3:MoreButton.ContextMenu>
                 </controls3:MoreButton>
@@ -143,13 +161,13 @@
                     Exception="{Binding Exception}"
                     CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
-            
+
             <controls3:AboutControl Grid.RowSpan="2"
                                     x:Name="PART_About"
                                     Foreground="#333333">
                 <controls:AboutContent />
             </controls3:AboutControl>
-            
+
         </Grid>
 
     </AdornerDecorator>

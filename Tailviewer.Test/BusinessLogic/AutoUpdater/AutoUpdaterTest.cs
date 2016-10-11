@@ -11,18 +11,18 @@ namespace Tailviewer.Test.BusinessLogic.AutoUpdater
 		[Test]
 		public void TestParse()
 		{
-			byte[] data = File.ReadAllBytes(@"TestData\query_version.xml");
+			byte[] data = File.ReadAllBytes(@"TestData\version.xml");
 			VersionInfo version;
 			Tailviewer.BusinessLogic.AutoUpdates.AutoUpdater.Parse(data, out version);
 			version.Should().NotBeNull();
 
 			version.Beta.Major.Should().Be(0);
-			version.Beta.Minor.Should().Be(1);
-			version.Beta.Build.Should().Be(80);
+			version.Beta.Minor.Should().Be(2);
+			version.Beta.Build.Should().Be(67);
 
-			version.Release.Major.Should().Be(0);
-			version.Release.Minor.Should().Be(1);
-			version.Release.Build.Should().Be(57);
+			version.Stable.Major.Should().Be(0);
+			version.Stable.Minor.Should().Be(2);
+			version.Stable.Build.Should().Be(60);
 		}
 	}
 }

@@ -14,19 +14,13 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 	internal sealed class AutoUpdater
 		: IDisposable, IAutoUpdater
 	{
-#if DEBUG
-		private const string Server = "http://localhost";
-		private const ushort Port = 8080;
-#else
-		private const string Server = "http://tailviewer-1223.appspot.com";
-		private const ushort Port = 80;
-#endif
+		private const string Server = "https://kittyfisto.github.io";
+		private const string VersionFile = "Tailviewer/downloads/version.xml";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static readonly Version CurrentAppVersion;
 
-		private readonly Task<VersionInfo> _updateTask;
 		private readonly object _syncRoot;
 		private AutoUpdateSettings _settings;
 		private VersionInfo _latestVersion;
@@ -49,8 +43,12 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			_syncRoot = new object();
 			_settings = settings;
 			_latestVersionChanged = new List<Action<VersionInfo>>();
-			_updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
-			_updateTask.ContinueWith(OnVersionChecked);
+		}
+
+		public void CheckForUpdatesAsync()
+		{
+			var updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
+			updateTask.ContinueWith(OnVersionChecked);
 		}
 
 		public event Action<VersionInfo> LatestVersionChanged
@@ -66,7 +64,13 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					}
 				}
 			}
-			remove { _latestVersionChanged.Remove(value); }
+			remove
+			{
+				lock (_syncRoot)
+				{
+					_latestVersionChanged.Remove(value);
+				}
+			}
 		}
 
 		private void OnVersionChecked(Task<VersionInfo> task)
@@ -112,9 +116,9 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		internal static Uri BuildVersionCheckUri()
 		{
-			string address = string.Format("{0}:{1}/query_version",
+			string address = string.Format("{0}/{1}",
 			                               Server,
-			                               Port);
+			                               VersionFile);
 			var uri = new Uri(address);
 			return uri;
 		}
@@ -155,7 +159,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		internal static void Parse(byte[] data, out VersionInfo latestVersions)
 		{
-			latestVersions = new VersionInfo(null, null);
+			latestVersions = new VersionInfo(null, null, null, null);
 
 			using (var stream = new MemoryStream(data))
 			using (XmlReader reader = XmlReader.Create(stream))
@@ -174,31 +178,45 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		private static void ReadVersions(XmlReader versions, out VersionInfo latestVersions)
 		{
-			Version latestBeta = null;
-			Version latestRelease = null;
+			Version beta = null;
+			Uri betaAddress = null;
+			Version stable = null;
+			Uri stableAddress = null;
 
 			while (versions.Read())
 			{
 				switch (versions.Name)
 				{
-					case "release":
-						latestRelease = ReadVersion(versions);
+					case "stable":
+						stable = ReadVersion(versions, out stableAddress);
 						break;
 
 					case "beta":
-						latestBeta = ReadVersion(versions);
+						beta = ReadVersion(versions, out betaAddress);
 						break;
 				}
 			}
 
-			latestVersions = new VersionInfo(latestBeta, latestRelease);
+			latestVersions = new VersionInfo(beta, betaAddress, stable, stableAddress);
 		}
 
-		private static Version ReadVersion(XmlReader versions)
+		private static Version ReadVersion(XmlReader versions, out Uri address)
 		{
-			int major = int.Parse(versions.GetAttribute("major"));
-			int minor = int.Parse(versions.GetAttribute("minor"));
-			int build = int.Parse(versions.GetAttribute("build"));
+			var path = versions.GetAttribute("path");
+			var fullPath = string.Format("{0}/Tailviewer/downloads/{1}", Server, path);
+			if (!Uri.TryCreate(fullPath, UriKind.Absolute, out address))
+				return null;
+
+			int major;
+			int minor;
+			int build;
+			if (!int.TryParse(versions.GetAttribute("major"), NumberStyles.Integer, CultureInfo.InvariantCulture, out major))
+				return null;
+			if (!int.TryParse(versions.GetAttribute("minor"), NumberStyles.Integer, CultureInfo.InvariantCulture, out minor))
+				return null;
+			if (!int.TryParse(versions.GetAttribute("build"), NumberStyles.Integer, CultureInfo.InvariantCulture, out build))
+				return null;
+
 			return new Version(major, minor, build);
 		}
 	}

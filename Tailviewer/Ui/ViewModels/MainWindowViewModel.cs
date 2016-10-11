@@ -26,7 +26,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
-		private readonly ICommand _chekForUpdatesCommand;
+		private readonly ICommand _checkForUpdatesCommand;
 
 		private readonly DispatcherTimer _timer;
 		private readonly IAutoUpdater _updater;
@@ -38,6 +38,8 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isUpdateAvailable;
 		private bool _showUpdateAvailable;
 		private string _windowTitle;
+		private Version _latestVersion;
+		private Uri _latestVersionUri;
 
 		public MainWindowViewModel(ApplicationSettings settings,
 		                           DataSources dataSources,
@@ -73,16 +75,17 @@ namespace Tailviewer.Ui.ViewModels
 			_gotItCommand = new DelegateCommand(GotIt);
 
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
-			_chekForUpdatesCommand = new DelegateCommand(CheckForUpdates, () => false);
+			_checkForUpdatesCommand = new DelegateCommand(CheckForUpdates);
 
 			ChangeDataSource(CurrentDataSource);
+			_updater.CheckForUpdatesAsync();
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
 		}
 
 		private void CheckForUpdates()
 		{
-			throw new NotImplementedException();
+			_updater.CheckForUpdatesAsync();
 		}
 
 		private void AddDataSource()
@@ -124,6 +127,32 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public Version LatestVersion
+		{
+			get { return _latestVersion; }
+			private set
+			{
+				if (value == _latestVersion)
+					return;
+
+				_latestVersion = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public Uri LatestVersionUri
+		{
+			get { return _latestVersionUri; }
+			private set
+			{
+				if (value == _latestVersionUri)
+					return;
+
+				_latestVersionUri = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public bool IsUpdateAvailable
 		{
 			get { return _isUpdateAvailable; }
@@ -133,10 +162,6 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_isUpdateAvailable = value;
-				if (value)
-				{
-					ShowUpdateAvailable = true;
-				}
 				EmitPropertyChanged();
 			}
 		}
@@ -265,7 +290,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public ICommand CheckForUpdatesCommand
 		{
-			get { return _chekForUpdatesCommand; }
+			get { return _checkForUpdatesCommand; }
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -279,11 +304,14 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_dispatcher.BeginInvoke(() =>
 				{
-					Version latest = versionInfo.Beta;
+					Version latest = versionInfo.Stable;
 					Version current = _updater.AppVersion;
 					if (current != null && latest != null && latest > current)
 					{
 						IsUpdateAvailable = true;
+						ShowUpdateAvailable = true;
+						LatestVersion = latest;
+						LatestVersionUri = versionInfo.StableAddress;
 					}
 				});
 		}

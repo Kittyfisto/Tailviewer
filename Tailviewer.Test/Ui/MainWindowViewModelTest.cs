@@ -142,12 +142,12 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestUpdateAvailable()
+		public void TestUpdateAvailable1()
 		{
 			var changes = new List<string>();
 			_mainWindow.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
 			_updater.Setup(x => x.AppVersion).Returns(new Version(1, 0, 0));
-			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(new Version(1, 0, 1), null));
+			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
 
 			_mainWindow.IsUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
 			_mainWindow.ShowUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
@@ -155,7 +155,29 @@ namespace Tailviewer.Test.Ui
 			_dispatcher.InvokeAll();
 			_mainWindow.IsUpdateAvailable.Should().BeTrue();
 			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
-			changes.Should().Equal(new object[] {"ShowUpdateAvailable", "IsUpdateAvailable"});
+			changes.Should().BeEquivalentTo(new object[] { "ShowUpdateAvailable", "IsUpdateAvailable", "LatestVersion" });
+		}
+
+		[Test]
+		public void TestUpdateAvailable2()
+		{
+			_updater.Setup(x => x.AppVersion).Returns(new Version(1, 0, 0));
+			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
+
+			_dispatcher.InvokeAll();
+			_mainWindow.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
+			_mainWindow.GotItCommand.Execute(null);
+
+			_mainWindow.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.ShowUpdateAvailable.Should().BeFalse();
+
+			_mainWindow.CheckForUpdatesCommand.Execute(null);
+			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
+			_dispatcher.InvokeAll();
+
+			_mainWindow.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
 		}
 	}
 }

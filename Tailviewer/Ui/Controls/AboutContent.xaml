@@ -22,8 +22,8 @@
                 <TextBlock Text="Tailviewer"
                            FontSize="32" />
                 <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <controls:OpenInNewHyperlink Text="Website" NavigateUri="https://kittyfisto.github.io/Tailviewer/" />
-                    <controls:OpenInNewHyperlink Margin="4,0,0,0" Text="Source" NavigateUri="https://github.com/Kittyfisto/Tailviewer" />
+                    <controls:OpenInNewHyperlink Text="Website" NavigateUri="{x:Static tailviewer:Constants.ProjectPage}" />
+                    <controls:OpenInNewHyperlink Margin="4,0,0,0" Text="Source" NavigateUri="{x:Static tailviewer:Constants.GithubPage}" />
                 </StackPanel>
                 
                 <controls:FlatScrollViewer Grid.Row="2">

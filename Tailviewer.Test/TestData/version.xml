@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<versions>
+  <stable major="0" minor="2" build="60" path="stable/Tailviewer-setup.exe" />
+  <beta major="0" minor="2" build="67" path="beta/0.2.67/Tailviewer-setup.exe" />
+</versions>

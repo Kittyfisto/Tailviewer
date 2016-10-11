@@ -5,19 +5,26 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 	public sealed class VersionInfo
 	{
 		public readonly Version Beta;
-		public readonly Version Release;
+		public readonly Uri BetaAddress;
+		public readonly Version Stable;
+		public readonly Uri StableAddress;
 
-		public VersionInfo(Version beta, Version release)
+		public VersionInfo(Version beta,
+		                   Uri betaAddress,
+		                   Version stable,
+		                   Uri stableAddress)
 		{
 			Beta = beta;
-			Release = release;
+			BetaAddress = betaAddress;
+			Stable = stable;
+			StableAddress = stableAddress;
 		}
 
 		public override string ToString()
 		{
-			return string.Format("Beta: {0}, Release: {1}",
+			return string.Format("Beta: {0}, Stable: {1}",
 			                     Beta != null ? Beta.ToString() : "none",
-			                     Release != null ? Release.ToString() : "none");
+			                     Stable != null ? Stable.ToString() : "none");
 		}
 	}
 }
