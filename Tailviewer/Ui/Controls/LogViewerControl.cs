@@ -496,6 +496,10 @@ namespace Tailviewer.Ui.Controls
 					OnLevelsChanged();
 					break;
 
+				case "VisibleLogLine":
+					CurrentLogLine = dataSource.VisibleLogLine;
+					break;
+
 				case "SelectedLogLines":
 					PART_ListView.SelectedIndices = dataSource.SelectedLogLines;
 					break;

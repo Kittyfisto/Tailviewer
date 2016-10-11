@@ -120,8 +120,8 @@
                 Width="200"
                 RequiresExplicitSearchStart="False"
                 Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                OccurenceCount="{Binding DataSource.SearchMatchCount, ElementName=This}"
-                CurrentOccurenceIndex="{Binding DataSource.CurrentMatchIndex, Mode=TwoWay, ElementName=This}"
+                OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
+                CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
                 Watermark="Search log file (Ctrl+F)" />
         </WrapPanel>
 

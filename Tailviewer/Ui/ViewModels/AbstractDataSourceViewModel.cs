@@ -33,8 +33,8 @@ namespace Tailviewer.Ui.ViewModels
 		private int _totalCount;
 		private int _warningCount;
 		private string _searchTerm;
-		private int _currentMatchIndex;
-		private int _searchMatchCount;
+		private int _currentSearchResultIndex;
+		private int _searchResultCount;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -46,6 +46,7 @@ namespace Tailviewer.Ui.ViewModels
 			dataSource.Search.AddListener(_searchResults);
 
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
+			_currentSearchResultIndex = -1;
 
 			Update();
 		}
@@ -220,7 +221,14 @@ namespace Tailviewer.Ui.ViewModels
 		public LogLineIndex VisibleLogLine
 		{
 			get { return _dataSource.VisibleLogLine; }
-			set { _dataSource.VisibleLogLine = value; }
+			set
+			{
+				if (value == _dataSource.VisibleLogLine)
+					return;
+
+				_dataSource.VisibleLogLine = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public double HorizontalOffset
@@ -313,8 +321,8 @@ namespace Tailviewer.Ui.ViewModels
 
 				if (string.IsNullOrEmpty(value))
 				{
-					SearchMatchCount = 0;
-					CurrentMatchIndex = -1;
+					SearchResultCount = 0;
+					CurrentSearchResultIndex = -1;
 					_dataSource.SearchTerm = null;
 				}
 				else
@@ -326,28 +334,40 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public int SearchMatchCount
+		public int SearchResultCount
 		{
-			get { return _searchMatchCount; }
+			get { return _searchResultCount; }
 			private set
 			{
-				if (value == _searchMatchCount)
+				if (value == _searchResultCount)
 					return;
 
-				_searchMatchCount = value;
+				_searchResultCount = value;
 				EmitPropertyChanged();
+
+				if (SearchResultCount > 0)
+				{
+					if (CurrentSearchResultIndex < 1 || CurrentSearchResultIndex >= SearchResultCount)
+					{
+						CurrentSearchResultIndex = 0;
+					}
+				}
+				else
+				{
+					CurrentSearchResultIndex = -1;
+				}
 			}
 		}
 
-		public int CurrentMatchIndex
+		public int CurrentSearchResultIndex
 		{
-			get { return _currentMatchIndex; }
+			get { return _currentSearchResultIndex; }
 			set
 			{
-				if (value == _currentMatchIndex)
+				if (value == _currentSearchResultIndex)
 					return;
 
-				_currentMatchIndex = value;
+				_currentSearchResultIndex = value;
 				EmitPropertyChanged();
 
 				SelectLineOfCurrentMatch();
@@ -358,9 +378,9 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void SelectLineOfCurrentMatch()
 		{
-			if (_searchResults.Matches.Count > _currentMatchIndex && _currentMatchIndex != -1)
+			if (_searchResults.Matches.Count > _currentSearchResultIndex && _currentSearchResultIndex != -1)
 			{
-				var match = _searchResults.Matches[_currentMatchIndex];
+				var match = _searchResults.Matches[_currentSearchResultIndex];
 				SelectedLogLines = new HashSet<LogLineIndex> { match.Index };
 				VisibleLogLine = match.Index;
 			}
@@ -438,17 +458,8 @@ namespace Tailviewer.Ui.ViewModels
 			FileSize = _dataSource.FileSize;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
-			SearchMatchCount = _dataSource.Search.Count;
-			EnsureSearchIndexInBounds();
 
-			bool wasoutside = _searchResults.Matches.Count <= _currentMatchIndex && _currentMatchIndex != -1;
-			if (_searchResults.Update())
-			{
-				if (wasoutside)
-				{
-					SelectLineOfCurrentMatch();
-				}
-			}
+			UpdateSearch();
 
 			if (NewLogLineCount != newBefore)
 			{
@@ -463,16 +474,34 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		private void EnsureSearchIndexInBounds()
+		private LogMatch? SelectedSearchResult
 		{
-			if (_searchMatchCount > 0)
+			get
 			{
-				if (_currentMatchIndex < 1 || _currentMatchIndex >= _searchMatchCount)
-					CurrentMatchIndex = 0;
+				var index = CurrentSearchResultIndex;
+				if (index >= 0 && index < _searchResults.Matches.Count)
+					return _searchResults.Matches[index];
+
+				return null;
 			}
-			else
+		}
+
+		private void UpdateSearch()
+		{
+			var seleted = SelectedSearchResult;
+
+			bool searchResultsChanged = _searchResults.Update();
+			SearchResultCount = _searchResults.Matches.Count;
+
+			//bool wasoutside = _searchResults.Matches.Count <= _currentSearchResultIndex && _currentSearchResultIndex != -1;
+			if (searchResultsChanged)
 			{
-				CurrentMatchIndex = -1;
+				// It's possible that the currently selected match has changed in line number.
+				var nowSelected = SelectedSearchResult;
+				if (!Equals(seleted, nowSelected) && nowSelected != null)
+				{
+					SelectLineOfCurrentMatch();
+				}
 			}
 		}
 

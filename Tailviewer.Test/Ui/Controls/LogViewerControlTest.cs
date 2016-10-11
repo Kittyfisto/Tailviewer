@@ -432,5 +432,31 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowFatal = true;
 			_control.ShowAll.Should().BeTrue();
 		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
+		public void TestChangeSelectedLogLines()
+		{
+			_dataSource.SelectedLogLines = new HashSet<LogLineIndex>
+				{
+					new LogLineIndex(42),
+					new LogLineIndex(108)
+				};
+			_control.SelectedIndices.Should().BeEquivalentTo(new[]
+				{
+					new LogLineIndex(42),
+					new LogLineIndex(108)
+				}, "because the control is expected to listen to changes of the data source");
+		}
+
+		[Test]
+		[STAThread]
+		[Description("Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
+		public void TestChangeVisibleLogLine()
+		{
+			_dataSource.VisibleLogLine = new LogLineIndex(9001);
+			_control.CurrentLogLine.Should().Be(new LogLineIndex(9001), "because the control is expected to listen to changes of the data source");
+		}
 	}
 }

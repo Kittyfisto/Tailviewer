@@ -27,6 +27,7 @@ namespace Tailviewer.Test.Ui
 			_dataSource.Setup(x => x.Settings).Returns(_settings);
 			_dataSource.SetupProperty(x => x.LastViewed);
 			_dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+			_dataSource.SetupProperty(x => x.VisibleLogLine);
 
 			_viewModel = new DataSourceViewModel(_dataSource.Object);
 		}
@@ -57,8 +58,8 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor()
 		{
-			_viewModel.SearchMatchCount.Should().Be(0);
-			_viewModel.CurrentMatchIndex.Should().Be(-1);
+			_viewModel.SearchResultCount.Should().Be(0);
+			_viewModel.CurrentSearchResultIndex.Should().Be(-1);
 		}
 
 		[Test]
@@ -155,6 +156,20 @@ namespace Tailviewer.Test.Ui
 			changes.Count.Should().BeInRange(2, 3);
 			changes.Should().Contain("TotalCount");
 			changes.Should().Contain("NewLogLineCount");
+		}
+
+		[Test]
+		public void TestVisibleLogLine()
+		{
+			var changes = new List<string>();
+			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+
+			_viewModel.VisibleLogLine = new LogLineIndex(108);
+			changes.Should().Equal(new[] {"VisibleLogLine"});
+
+			changes.Clear();
+			_viewModel.VisibleLogLine = new LogLineIndex(108);
+			changes.Should().BeEmpty("Because the property hasn't changed");
 		}
 	}
 }
