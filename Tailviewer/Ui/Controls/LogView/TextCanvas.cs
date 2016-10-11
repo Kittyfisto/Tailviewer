@@ -42,6 +42,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private double _yOffset;
 		private bool _colorByLevel;
 		private ILogFileSearch _search;
+		private int _selectedSearchResultIndex;
 
 		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
 		{
@@ -133,6 +134,18 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		private LogMatch? SelectedSearchResult
+		{
+			get
+			{
+				var index = _selectedSearchResultIndex;
+				if (index >= 0 && index < _searchResults.Matches.Count)
+					return _searchResults.Matches[index];
+
+				return null;
+			}
+		}
+
 		public double YOffset
 		{
 			get { return _yOffset; }
@@ -164,6 +177,26 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		public int SelectedSearchResultIndex
+		{
+			get { return _selectedSearchResultIndex; }
+			set
+			{
+				if (value == _selectedSearchResultIndex)
+					return;
+
+				_selectedSearchResultIndex = value;
+				var result = SelectedSearchResult;
+				if (result != null)
+				{
+					var index = result.Value.Index;
+					RequestBringIntoView(index);
+					SetSelected(index, SelectMode.Replace);
+					InvalidateVisual();
+				}
+			}
+		}
+
 		public event Action<LogFileSection> VisibleSectionChanged;
 
 		public void UpdateVisibleSection()
@@ -183,8 +216,15 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnUpdate(object sender, EventArgs e)
 		{
+			var result = SelectedSearchResult;
 			if (_searchResults.Update())
 			{
+				var currentResult = SelectedSearchResult;
+				if (!Equals(result, currentResult) && currentResult != null)
+				{
+					ChangeSelectionAndBringIntoView(currentResult.Value.Index);
+				}
+
 				// The search has been modified and we need to
 				// check which lines have a match in them...
 				UpdateVisibleLines();

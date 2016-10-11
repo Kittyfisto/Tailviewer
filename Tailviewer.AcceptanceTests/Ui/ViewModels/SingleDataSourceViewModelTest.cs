@@ -22,7 +22,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		}
 
 		[Test]
-		[Description("Verifies that once the search has results, the view model automatically marks and jumps to the first occurence")]
+		[Description("Verifies that the number of search results is properly forwarded to the view model upon Update()")]
 		public void TestSearch1()
 		{
 			var settings = new DataSource(LogFileTest.File2Mb) { Id = Guid.NewGuid() };
@@ -43,8 +43,6 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				model.Update();
 				model.SearchResultCount.Should().Be(334);
 				model.CurrentSearchResultIndex.Should().Be(0);
-				model.SelectedLogLines.Should().Equal(new[] {new LogLineIndex(44)});
-				model.VisibleLogLine.Should().Be(new LogLineIndex(44));
 			}
 		}
 	}

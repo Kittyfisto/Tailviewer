@@ -204,6 +204,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _textCanvas; }
 		}
 
+		public int SelectedSearchResultIndex
+		{
+			get { return _textCanvas.SelectedSearchResultIndex; }
+			set {_textCanvas.SelectedSearchResultIndex = value;}
+		}
+
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			double width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);

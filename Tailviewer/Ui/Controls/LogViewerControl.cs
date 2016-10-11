@@ -270,6 +270,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				PART_ListView.FollowTail = newValue.FollowTail;
+				PART_ListView.SelectedSearchResultIndex = newValue.CurrentSearchResultIndex;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
 			}
@@ -502,6 +503,10 @@ namespace Tailviewer.Ui.Controls
 
 				case "SelectedLogLines":
 					PART_ListView.SelectedIndices = dataSource.SelectedLogLines;
+					break;
+
+				case "CurrentSearchResultIndex":
+					PART_ListView.SelectedSearchResultIndex = dataSource.CurrentSearchResultIndex;
 					break;
 			}
 		}
