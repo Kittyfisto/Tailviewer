@@ -34,10 +34,10 @@
 
                             <Grid>
                                 <TextBlock Text="Data sources"
-                                       Foreground="DarkGray"
-                                       FontSize="14"
+                                           Foreground="DarkGray"
+                                           FontSize="14"
                                            VerticalAlignment="Center"
-                                       Margin="8,0,0,0" />
+                                           Margin="8,0,0,0" />
 
                                 <controls2:AddButton
                                     Grid.Column="1"
@@ -57,15 +57,15 @@
                                 FilterText="{Binding StringFilter, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                 Watermark="Filter data sources (Ctrl+E)" />
 
-                            <TreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
-                                      x:Name="PART_DataSources"
-                                      Margin="0,8,0,0"
-                                      BorderThickness="0"
-                                      SnapsToDevicePixels="True"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                      ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                      ItemContainerStyle="{StaticResource DataSourceTreeViewItemStyle}"
-                                      Grid.Row="2" />
+                            <controls2:FlatTreeView ItemsSource="{TemplateBinding FilteredItemsSource}"
+                                                    x:Name="PART_DataSources"
+                                                    Margin="0,8,0,0"
+                                                    BorderThickness="0"
+                                                    SnapsToDevicePixels="True"
+                                                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                    ItemContainerStyle="{StaticResource DataSourceTreeViewItemStyle}"
+                                                    Grid.Row="2" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

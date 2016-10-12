@@ -165,7 +165,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			_partDataSources = (TreeView) GetTemplateChild(PART_DataSources);
 			_partDataSources.AllowDrop = true;
 			_partDataSources.SelectedItemChanged += PartDataSourcesOnSelectedItemChanged;
-			_partDataSources.PreviewMouseMove += PartDataSourcesOnPreviewMouseMove;
+			_partDataSources.MouseMove += PartDataSourcesOnMouseMove;
 			_partDataSources.DragOver += PartDataSourcesOnDragOver;
 			_partDataSources.DragEnter += PartDataSourcesOnDragEnter;
 			_partDataSources.DragLeave += PartDataSourcesOnDragLeave;
@@ -339,13 +339,14 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			return null;
 		}
 
-		private void PartDataSourcesOnPreviewMouseMove(object sender, MouseEventArgs e)
+		private void PartDataSourcesOnMouseMove(object sender, MouseEventArgs e)
 		{
 			if (DragLayer.ShouldStartDrag(e))
 			{
 				IDataSourceViewModel source = SelectedItem;
 				TreeViewItem treeViewItem = SelectedTreeViewItem;
-				if (((MainWindowViewModel) DataContext).CanBeDragged(source))
+
+				if (treeViewItem.IsMouseOver && ((MainWindowViewModel) DataContext).CanBeDragged(source))
 				{
 					DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
 				}

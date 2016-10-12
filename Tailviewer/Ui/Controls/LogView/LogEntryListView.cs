@@ -9,6 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Metrolib.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
@@ -46,13 +47,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			                            new PropertyMetadata(false, OnColorByLevelChanged));
 
 		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
-		private readonly Rectangle _cornerRectangle;
-		private readonly ScrollBar _horizontalScrollBar;
+		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
 		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
-		private readonly ScrollBar _verticalScrollBar;
+		private readonly FlatScrollBar _verticalScrollBar;
 
 		private int _maxLineWidth;
 		private int _pendingModificationsCount;
@@ -77,19 +77,21 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
-			_verticalScrollBar = new ScrollBar
+			_verticalScrollBar = new FlatScrollBar
 				{
 					Name = "PART_VerticalScrollBar",
+					Thickness = 10
 				};
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, 0);
 			_verticalScrollBar.SetValue(ColumnProperty, 2);
 
-			_horizontalScrollBar = new ScrollBar
+			_horizontalScrollBar = new FlatScrollBar
 				{
 					Name = "PART_HorizontalScrollBar",
 					Orientation = Orientation.Horizontal,
+					Thickness = 10
 				};
 			_horizontalScrollBar.SetValue(RowProperty, 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, 0);
@@ -118,20 +120,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberCanvas.SetValue(RowProperty, 0);
 			_lineNumberCanvas.SetValue(ColumnProperty, 0);
 
-			_cornerRectangle = new Rectangle
-				{
-					Width = 17,
-					Height = 17,
-					Fill = new SolidColorBrush(Color.FromRgb(0xce, 0xce, 0xce))
-				};
-			_cornerRectangle.SetValue(RowProperty, 1);
-			_cornerRectangle.SetValue(ColumnProperty, 2);
-
 			Children.Add(_lineNumberCanvas);
 			Children.Add(_textCanvas);
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
-			Children.Add(_cornerRectangle);
 
 			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
 			_timer.Start();
@@ -492,17 +484,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				UpdateHorizontalScrollbar();
 				UpdateVerticalScrollbar();
-				UpdateCornerRectangle();
 			}
-		}
-
-		private void UpdateCornerRectangle()
-		{
-			_cornerRectangle.Visibility =
-				_horizontalScrollBar.Visibility == Visibility.Visible &&
-				_verticalScrollBar.Visibility == Visibility.Visible
-					? Visibility.Visible
-					: Visibility.Collapsed;
 		}
 
 		private void UpdateHorizontalScrollbar()

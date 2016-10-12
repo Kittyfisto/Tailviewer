@@ -10,7 +10,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style x:Key="DataSourceTreeViewItemStyle" TargetType="{x:Type TreeViewItem}">
+    <Style x:Key="DataSourceTreeViewItemStyle" TargetType="{x:Type controls:FlatTreeViewItem}">
         <Setter Property="IsExpanded" Value="True" />
         <!-- IsInverted is an inherited, attached dependency property and, as such,
              travels down the entire visual tree. We use this to ensure that our content
@@ -21,7 +21,7 @@
         <Setter Property="controls:Properties.IsInverted" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                <ControlTemplate TargetType="{x:Type controls:FlatTreeViewItem}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

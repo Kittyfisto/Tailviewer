@@ -48,10 +48,10 @@
                                     VerticalAlignment="Center"
                                     Command="{TemplateBinding AddCommand}" />
 
-
                             </Grid>
 
-                            <ScrollViewer
+                            <controls2:FlatScrollViewer
+                                ScrollBarThickness="7"
                                 Margin="0,8,0,0"
                                 Grid.Row="1">
                                 <ItemsControl
@@ -71,6 +71,7 @@
                                                         <ColumnDefinition />
                                                         <ColumnDefinition Width="24" />
                                                         <ColumnDefinition Width="24" />
+                                                        <ColumnDefinition Width="10" />
                                                     </Grid.ColumnDefinitions>
 
                                                     <CheckBox
@@ -151,7 +152,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                            </ScrollViewer>
+                            </controls2:FlatScrollViewer>
                         </Grid>
 
                     </Border>

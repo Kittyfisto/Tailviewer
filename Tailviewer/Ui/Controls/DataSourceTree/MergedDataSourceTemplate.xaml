@@ -22,6 +22,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="24" />
+                <ColumnDefinition Width="12" />
             </Grid.ColumnDefinitions>
 
             <Grid Margin="8,4,0,4">
