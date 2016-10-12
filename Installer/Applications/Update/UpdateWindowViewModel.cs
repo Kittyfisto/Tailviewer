@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows;
 using Metrolib;
 
 namespace Installer.Applications.Update
@@ -109,20 +110,18 @@ namespace Installer.Applications.Update
 		{
 			_dispatcher.BeginInvoke(() =>
 				{
-					string result;
 					if (task.IsFaulted)
 					{
-						result = "failed";
+						InstallationResult = "failed";
 						HasFailed = true;
 						ErrorMessage = FormatErrorMessage(task.Exception);
+						IsPostInstallation = true;
 					}
 					else
 					{
-						result = "succeeded";
+						_installer.Launch();
+						Application.Current.Shutdown();
 					}
-
-					InstallationResult = result;
-					IsPostInstallation = true;
 				});
 		}
 	}

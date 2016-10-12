@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace Installer
 		private readonly string _prefix;
 		private Size _installedSize;
 		private double _progress;
+		private string _installationPath;
 
 		public Installer()
 		{
@@ -58,6 +60,7 @@ namespace Installer
 		public void Run(string installationPath)
 		{
 			DateTime start = DateTime.Now;
+			_installationPath = installationPath;
 
 			try
 			{
@@ -177,6 +180,12 @@ namespace Installer
 				Log.InfoFormat("Creating directory '{0}'", directory);
 				Directory.CreateDirectory(directory);
 			}
+		}
+
+		public void Launch()
+		{
+			string app = Path.Combine(_installationPath, "Tailviewer.exe");
+			Process.Start(app);
 		}
 	}
 }

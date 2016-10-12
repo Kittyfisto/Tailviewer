@@ -204,8 +204,7 @@ namespace Installer.Applications.Install
 
 		private void DoLaunch()
 		{
-			string app = Path.Combine(_installationPath, "Tailviewer.exe");
-			Process.Start(app);
+			_installer.Launch();
 			Application.Current.Shutdown();
 		}
 
