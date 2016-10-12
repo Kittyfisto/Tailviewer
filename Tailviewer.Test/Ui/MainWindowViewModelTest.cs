@@ -145,7 +145,7 @@ namespace Tailviewer.Test.Ui
 		public void TestUpdateAvailable1()
 		{
 			var changes = new List<string>();
-			_mainWindow.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+			_mainWindow.AutoUpdater.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
 			_updater.Setup(x => x.AppVersion).Returns(new Version(1, 0, 0));
 			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
 
