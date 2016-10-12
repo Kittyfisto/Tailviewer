@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -10,6 +11,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using log4net;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -18,6 +20,8 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ICommand _closeErrorDialogCommand;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly SettingsViewModel _settings;
@@ -323,6 +327,12 @@ namespace Tailviewer.Ui.ViewModels
 						ShowUpdateAvailable = true;
 						LatestVersion = latest;
 						LatestVersionUri = versionInfo.StableAddress;
+
+						Log.InfoFormat("A newer version ({0}) is available to be downloaded", latest);
+					}
+					else
+					{
+						Log.InfoFormat("You are running the latest version!");
 					}
 				});
 		}

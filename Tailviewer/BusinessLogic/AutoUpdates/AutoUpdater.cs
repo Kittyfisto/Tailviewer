@@ -133,7 +133,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 					Uri uri = BuildVersionCheckUri();
 
-					Log.DebugFormat("Looking for newest version on '{0}", uri);
+					Log.InfoFormat("Looking for newest version on '{0}", uri);
 					byte[] data = client.DownloadData(uri);
 
 					Log.DebugFormat("Parsing response ({0} bytes)",
