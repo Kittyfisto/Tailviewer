@@ -39,6 +39,13 @@ namespace Tailviewer
 			return string.Equals(value, "true", StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		public static byte[] ReadContentAsBase64(this XmlReader reader)
+		{
+			string stringValue = reader.Value;
+			var value = Convert.FromBase64String(stringValue);
+			return value;
+		}
+
 		public static void WriteAttributeDateTime(this XmlWriter writer, string localName, DateTime value)
 		{
 			string stringValue = value.Ticks.ToString(CultureInfo.InvariantCulture);
@@ -70,6 +77,15 @@ namespace Tailviewer
 		public static void WriteAttributeEnum<T>(this XmlWriter writer, string localName, T value)
 		{
 			writer.WriteAttributeString(localName, value.ToString());
+		}
+
+		public static void WriteAttributeBase64(this XmlWriter writer, string localName, byte[] value)
+		{
+			var stringValue = value != null
+				                  ? Convert.ToBase64String(value)
+				                  : string.Empty;
+
+			writer.WriteAttributeString(localName, stringValue);
 		}
 	}
 }

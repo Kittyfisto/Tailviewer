@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly ICommand _closeErrorDialogCommand;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
+		private readonly SettingsViewModel _settings;
 		private readonly IDispatcher _dispatcher;
 		private readonly ICommand _gotItCommand;
 		private readonly ICommand _addDataSourceCommand;
@@ -56,6 +57,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSourcesViewModel.PropertyChanged += DataSourcesViewModelOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
+			_settings = new SettingsViewModel(settings);
 
 			_timer = new DispatcherTimer
 				{
@@ -75,12 +77,16 @@ namespace Tailviewer.Ui.ViewModels
 			_gotItCommand = new DelegateCommand(GotIt);
 
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
+
 			_checkForUpdatesCommand = new DelegateCommand(CheckForUpdates);
 
 			ChangeDataSource(CurrentDataSource);
-			_updater.CheckForUpdatesAsync();
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
+			if (_settings.CheckForUpdates)
+			{
+				_updater.CheckForUpdatesAsync();
+			}
 		}
 
 		private void CheckForUpdates()
@@ -231,6 +237,11 @@ namespace Tailviewer.Ui.ViewModels
 				_isLogFileOpen = value;
 				EmitPropertyChanged();
 			}
+		}
+
+		public SettingsViewModel Settings
+		{
+			get { return _settings; }
 		}
 
 		public LogViewerViewModel CurrentDataSourceLogView

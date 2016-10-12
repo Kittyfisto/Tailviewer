@@ -45,10 +45,12 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib">
-      <HintPath>..\packages\Metrolib.0.1.66\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Metrolib.0.1.71\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -109,8 +111,8 @@
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterMatchType.cs" />
-    <Compile Include="Ui\Controls\AboutContent.xaml.cs">
-      <DependentUpon>AboutContent.xaml</DependentUpon>
+    <Compile Include="Ui\Controls\AboutControl.xaml.cs">
+      <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
@@ -130,6 +132,9 @@
     <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
     <Compile Include="Ui\Controls\LogView\LogEntryListView.cs" />
+    <Compile Include="Ui\Controls\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />
@@ -140,6 +145,7 @@
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
+    <Compile Include="Ui\ViewModels\SettingsViewModel.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
@@ -174,7 +180,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\AboutContent.xaml">
+    <Page Include="Ui\Controls\AboutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -224,6 +230,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\DataSourceTree\DataSourcesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

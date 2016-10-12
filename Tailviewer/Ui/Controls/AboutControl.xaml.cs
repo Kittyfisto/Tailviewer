@@ -1,8 +1,8 @@
 ﻿namespace Tailviewer.Ui.Controls
 {
-	public partial class AboutContent
+	public partial class AboutControl
 	{
-		public AboutContent()
+		public AboutControl()
 		{
 			InitializeComponent();
 

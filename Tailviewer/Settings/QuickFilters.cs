@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class QuickFilters
+	public sealed class QuickFilters
 		: List<QuickFilter>
 	{
 		public void Restore(XmlReader reader)

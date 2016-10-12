@@ -130,7 +130,12 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 				using (var client = new WebClient())
 				{
 					client.UseDefaultCredentials = true;
-					client.Proxy = WebRequest.GetSystemWebProxy();
+					var proxy = WebRequest.GetSystemWebProxy();
+					var credentials = _settings.GetProxyCredentials();
+					if (credentials != null)
+						proxy.Credentials = credentials;
+					client.Proxy = proxy;
+
 					Uri uri = BuildVersionCheckUri();
 
 					Log.DebugFormat("Looking for newest version on '{0}", uri);

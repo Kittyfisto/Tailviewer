@@ -149,6 +149,8 @@
                                                    VerticalOffset="-10">
                             <controls3:FlatMenuItem Header="Check for Updates..."
                                                     Command="{Binding CheckForUpdatesCommand}" />
+                            <controls3:FlatMenuItem Header="Settings..."
+                                                    Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
                             <controls3:FlatMenuItem Header="About Tailviewer..."
                                                     Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
                         </controls3:FlatContextMenu>
@@ -162,11 +164,19 @@
                     CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
 
-            <controls3:AboutControl Grid.RowSpan="2"
-                                    x:Name="PART_About"
-                                    Foreground="#333333">
-                <controls:AboutContent />
-            </controls3:AboutControl>
+            <controls3:PageOverlay Grid.RowSpan="2"
+                                   x:Name="PART_Settings"
+                                   Header="Settings"
+                                   Foreground="#333333">
+                <controls:SettingsControl DataContext="{Binding Settings}" />
+            </controls3:PageOverlay>
+
+            <controls3:PageOverlay Grid.RowSpan="2"
+                                   x:Name="PART_About"
+                                   Header="About"
+                                   Foreground="#333333">
+                <controls:AboutControl />
+            </controls3:PageOverlay>
 
         </Grid>
 

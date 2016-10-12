@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class QuickFilter
+	public sealed class QuickFilter
 	{
 		public bool IgnoreCase;
 		public QuickFilterMatchType MatchType;

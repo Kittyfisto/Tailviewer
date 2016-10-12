@@ -6,7 +6,7 @@ using log4net;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class DataSources
+	public sealed class DataSources
 		: List<DataSource>
 	{
 		private static readonly ILog Log =

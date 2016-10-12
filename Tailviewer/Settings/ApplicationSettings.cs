@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Xml;
+using log4net;
 
 namespace Tailviewer.Settings
 {
-	internal sealed class ApplicationSettings
+	public sealed class ApplicationSettings
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly AutoUpdateSettings _autoUpdate;
 
 		private readonly DataSources _dataSources;
@@ -102,8 +106,9 @@ namespace Tailviewer.Settings
 					return true;
 				}
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				return false;
 			}
 		}
@@ -155,6 +160,7 @@ namespace Tailviewer.Settings
 			}
 			catch (Exception e)
 			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Tailviewer.Ui.Controls.AboutContent"
+﻿<UserControl x:Class="Tailviewer.Ui.Controls.AboutControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,7 +23,7 @@
                            FontSize="32" />
                 <StackPanel Orientation="Horizontal" Grid.Row="1">
                     <controls:OpenInNewHyperlink Text="Website" NavigateUri="{x:Static tailviewer:Constants.ProjectPage}" />
-                    <controls:OpenInNewHyperlink Margin="4,0,0,0" Text="Source" NavigateUri="{x:Static tailviewer:Constants.GithubPage}" />
+                    <controls:OpenInNewHyperlink Margin="8,0,0,0" Text="Source" NavigateUri="{x:Static tailviewer:Constants.GithubPage}" />
                 </StackPanel>
                 
                 <controls:FlatScrollViewer Grid.Row="2">
