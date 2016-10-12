@@ -195,25 +195,32 @@ namespace Tailviewer.Ui.Controls.LogView
 				var searchResults = _searchResults;
 				if (searchResults != null)
 				{
-					string substring;
-					int lastIndex = 0;
-					foreach (LogLineMatch match in searchResults.MatchesByLine[_logLine.LineIndex])
+					try
 					{
-						if (match.Index > lastIndex)
+						string substring;
+						int lastIndex = 0;
+						foreach (LogLineMatch match in searchResults.MatchesByLine[_logLine.LineIndex])
 						{
-							substring = message.Substring(lastIndex, match.Index - lastIndex);
-							_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+							if (match.Index > lastIndex)
+							{
+								substring = message.Substring(lastIndex, match.Index - lastIndex);
+								_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+							}
+
+							substring = message.Substring(match.Index, match.Count);
+							_segments.Add(new TextSegment(substring, highlightedBrush, isRegular: false));
+							lastIndex = match.Index + match.Count;
 						}
 
-						substring = message.Substring(match.Index, match.Count);
-						_segments.Add(new TextSegment(substring, highlightedBrush, isRegular: false));
-						lastIndex = match.Index + match.Count;
+						if (lastIndex <= message.Length - 1)
+						{
+							substring = message.Substring(lastIndex);
+							_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+						}
 					}
-
-					if (lastIndex <= message.Length - 1)
+					catch (Exception)
 					{
-						substring = message.Substring(lastIndex);
-						_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+						_segments.Add(new TextSegment(message, regularForegroundBrush, isRegular: true));
 					}
 				}
 				else

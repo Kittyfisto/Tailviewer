@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -239,6 +240,24 @@ namespace Tailviewer.Test.Ui.Controls
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
+		}
+
+		[Test]
+		[Description("Verifies that no exception is thrown when a 'bad' search result was specified")]
+		public void TestIncorrectSearchResult()
+		{
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var searchResults = new SearchResults();
+			searchResults.Add(new LogLineIndex(0), new LogLineMatch(42, 101));
+			
+			new Action(() => textLine.SearchResults = searchResults).ShouldNotThrow();
+
+			IEnumerable<TextSegment> segments = null;
+			new Action(() => segments = textLine.Segments).ShouldNotThrow();
+
+			segments.Should().NotBeEmpty();
+			segments.Count().Should().Be(1);
+			segments.ElementAt(0).Text.Should().Be("foobar", "because if, for some reason, highlighting doesn't work, then the original, non-highlithed, line should be displayed");
 		}
 	}
 }
