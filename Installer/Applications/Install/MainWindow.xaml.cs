@@ -2,7 +2,7 @@
 using System.Windows.Navigation;
 using System.Windows.Threading;
 
-namespace Installer
+namespace Installer.Applications.Install
 {
 	public partial class MainWindow
 	{

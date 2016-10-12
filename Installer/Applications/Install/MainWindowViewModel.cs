@@ -11,9 +11,8 @@ using System.Windows.Input;
 using Installer.Exceptions;
 using Metrolib;
 using Application = System.Windows.Application;
-using Size = Metrolib.Size;
 
-namespace Installer
+namespace Installer.Applications.Install
 {
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged

@@ -2,8 +2,9 @@
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Threading;
-using Metrolib;
+using Installer.Applications.Install;
+using Installer.Applications.SilentInstall;
+using Installer.Applications.Update;
 
 namespace Installer
 {
@@ -13,22 +14,32 @@ namespace Installer
 		private static string _subFolder;
 
 		[STAThread]
-		public static int Main()
+		public static int Main(string[] args)
 		{
 			InstallExceptionHandlers();
 
 			EnableEmbeddedDependencyLoading("Installer", "InstallationFiles");
 
-			return Run();
+			return Run(args);
 		}
 
-		private static int Run()
+		private static int Run(string[] args)
 		{
-			var app = new Application();
-			var dispatcher = new UiDispatcher(Dispatcher.CurrentDispatcher);
-			var window = new MainWindow(new MainWindowViewModel(dispatcher));
-			window.Show();
-			return app.Run();
+			var arguments = Arguments.Parse(args);
+			switch (arguments.Mode)
+			{
+				case Mode.Install:
+					return InstallApplication.Run(arguments);
+
+				case Mode.SilentInstall:
+					return SilentInstallApplication.Run(arguments);
+
+				case Mode.Update:
+					return UpdateApplication.Run(arguments);
+
+				default:
+					return -1;
+			}
 		}
 
 		/// <summary>

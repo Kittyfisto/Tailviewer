@@ -1,11 +1,12 @@
-﻿<Window x:Class="Installer.LicenseWindow"
+﻿<Window x:Class="Installer.Applications.Install.LicenseWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:installer="clr-namespace:Installer"
+        xmlns:install="clr-namespace:Installer.Applications.Install"
         Title="MIT License"
         Height="500" Width="400">
     <Grid Margin="8">
         <ScrollViewer>
-            <TextBlock Text="{Binding LicenseText, RelativeSource={RelativeSource AncestorType={x:Type installer:LicenseWindow}}}"
+            <TextBlock Text="{Binding LicenseText, RelativeSource={RelativeSource AncestorType={x:Type install:LicenseWindow}}}"
                        TextWrapping="Wrap" />
         </ScrollViewer>
     </Grid>

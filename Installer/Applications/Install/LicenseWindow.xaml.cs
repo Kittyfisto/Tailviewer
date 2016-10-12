@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace Installer
+namespace Installer.Applications.Install
 {
 	public partial class LicenseWindow
 	{
