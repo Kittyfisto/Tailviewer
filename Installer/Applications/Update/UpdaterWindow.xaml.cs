@@ -18,9 +18,9 @@ namespace Installer.Applications.Update
 			DataContext = updateWindowViewModel;
 		}
 
-		private void TimerOnTick(object sender, EventArgs e)
+		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			
+			((UpdateWindowViewModel)DataContext).Update();
 		}
 	}
 }

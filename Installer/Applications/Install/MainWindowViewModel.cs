@@ -1,21 +1,17 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
-using Installer.Exceptions;
 using Metrolib;
 using Application = System.Windows.Application;
 
 namespace Installer.Applications.Install
 {
 	public sealed class MainWindowViewModel
-		: INotifyPropertyChanged
+		: AbstractViewModel
 	{
 		private readonly Version _appVersion;
 		private readonly ICommand _browseCommand;
@@ -196,8 +192,6 @@ namespace Installer.Applications.Install
 			}
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
 		public void Update()
 		{
 			InstallationProgress = _installer.Progress;
@@ -274,30 +268,6 @@ namespace Installer.Applications.Install
 				});
 		}
 
-		private string FormatErrorMessage(AggregateException exception)
-		{
-			var builder = new StringBuilder();
-			foreach (Exception inner in exception.InnerExceptions)
-			{
-				FormatErrorMessage(builder, inner);
-			}
-			return builder.ToString();
-		}
-
-		private void FormatErrorMessage(StringBuilder builder, Exception inner)
-		{
-			var file = inner as FileIoException;
-			if (file != null)
-			{
-				builder.AppendLine(inner.Message);
-			}
-			else
-			{
-				builder.AppendLine(inner.Message);
-				builder.AppendLine(inner.StackTrace);
-			}
-		}
-
 		private void Installation()
 		{
 			_installer.Run(_installationPath);
@@ -324,12 +294,6 @@ namespace Installer.Applications.Install
 		private void UpdateCanInstall()
 		{
 			_installationCommand.RaiseCanExecuteChanged();
-		}
-
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

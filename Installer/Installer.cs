@@ -6,11 +6,14 @@ using System.Reflection;
 using System.Threading;
 using Installer.Exceptions;
 using Metrolib;
+using log4net;
 
 namespace Installer
 {
 	internal sealed class Installer : IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly Assembly _assembly;
 		private readonly List<string> _files;
 		private readonly Size _installationSize;
@@ -62,6 +65,10 @@ namespace Installer
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
 			}
+			catch (Exception e)
+			{
+				Log.FatalFormat("Unable to complete installation: {0}", e);
+			}
 			finally
 			{
 				DateTime end = DateTime.Now;
@@ -87,6 +94,8 @@ namespace Installer
 		{
 			string name = Path.GetFileName(filePath);
 			string dir = Path.GetDirectoryName(filePath);
+
+			Log.InfoFormat("Removing {0}", filePath);
 
 			try
 			{
@@ -136,7 +145,9 @@ namespace Installer
 
 			try
 			{
-				Directory.CreateDirectory(directory);
+				CreateDirectory(directory);
+
+				Log.InfoFormat("Writing file '{0}'", destFilePath);
 
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 				using (Stream source = _assembly.GetManifestResourceStream(sourceFilePath))
@@ -156,6 +167,15 @@ namespace Installer
 			catch (Exception e)
 			{
 				throw new CopyFileException(fileName, directory, e);
+			}
+		}
+
+		private void CreateDirectory(string directory)
+		{
+			if (!Directory.Exists(directory))
+			{
+				Log.InfoFormat("Creating directory '{0}'", directory);
+				Directory.CreateDirectory(directory);
 			}
 		}
 	}

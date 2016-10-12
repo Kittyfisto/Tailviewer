@@ -62,6 +62,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\AbstractViewModel.cs" />
     <Compile Include="Applications\SilentInstall\SilentInstallApplication.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="Applications\Install\InstallApplication.cs" />

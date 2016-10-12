@@ -1,12 +1,16 @@
 ﻿<Window x:Class="Installer.Applications.Update.UpdaterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:installer="clr-namespace:Installer"
-        Title="UpdaterWindow"
-        Height="100"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        mc:Ignorable="d"
+        xmlns:installer="clr-namespace:Installer" xmlns:install="clr-namespace:Installer.Applications.Update"
+        d:DataContext="{d:DesignInstance install:UpdateWindowViewModel}"
+        Height="115"
         Width="300"
         ResizeMode="NoResize"
-        Padding="8">
-    <Grid>
+        Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
+    <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -23,6 +27,7 @@
                      Minimum="0"
                      Maximum="1"
                      Height="12"
+                     Margin="0,8,0,0"
                      VerticalAlignment="Center"
                      Value="{Binding InstallationProgress, Mode=OneWay}" />
     </Grid>

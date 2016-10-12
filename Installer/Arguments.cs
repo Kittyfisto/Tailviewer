@@ -1,7 +1,12 @@
-﻿namespace Installer
+﻿using System.Reflection;
+using log4net;
+
+namespace Installer
 {
 	public sealed class Arguments
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public readonly Mode Mode;
 		public readonly string InstallationPath;
 
@@ -31,7 +36,8 @@
 			if (args == null || args.Length < 2)
 				return Install();
 
-			switch (args[0])
+			var mode = args[0];
+			switch (mode)
 			{
 				case "update":
 					return Update(args[1]);
@@ -40,6 +46,7 @@
 					return SilentInstall(args[1]);
 
 				default:
+					Log.WarnFormat("Unable to parse '{0}', defaulting to install...", mode);
 					return Install();
 			}
 		}
