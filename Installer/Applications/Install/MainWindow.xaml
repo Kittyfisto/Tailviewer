@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
         xmlns:install="clr-namespace:Installer.Applications.Install"
+        xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib" xmlns:installer="clr-namespace:Installer"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance install:MainWindowViewModel}"
         Height="600" Width="480"
@@ -63,7 +64,8 @@
                                NavigateUri="https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE">
                         License Terms
                     </Hyperlink>
-                    <Run Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available." />
+                    <Run
+                        Text=" before you can install the product. Tailviewer automatically notifies you when an update becomes available." />
                 </TextBlock>
 
                 <CheckBox
@@ -120,11 +122,24 @@
                 <Grid Grid.Row="1"
                       Margin="0,4,0,4"
                       Visibility="{Binding HasFailed, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
                     <Border BorderBrush="Black" BorderThickness="1"
                             Padding="4">
-                        <TextBlock TextWrapping="Wrap"
-                                   Text="{Binding ErrorMessage, Mode=OneWay}" />
+                        <controls:FlatScrollViewer>
+                            <TextBlock TextWrapping="Wrap"
+                                       Text="{Binding ErrorMessage, Mode=OneWay}" />
+                        </controls:FlatScrollViewer>
                     </Border>
+
+                    <controls:OpenInNewHyperlink Grid.Row="1"
+                                                 ProcessName="notepad.exe"
+                                                 ProcessStartArguments="{x:Static installer:Constants.InstallationLog}"
+                                                 Text="Open installation log" />
                 </Grid>
 
                 <Button Grid.Row="2"

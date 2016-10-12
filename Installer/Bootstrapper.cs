@@ -45,9 +45,7 @@ namespace Installer
 			var fileAppender = new RollingFileAppender
 			{
 				AppendToFile = false,
-				File =
-					Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tailviewer",
-								 "Installation.log"),
+				File = Constants.InstallationLog,
 				Layout = patternLayout,
 				MaxSizeRollBackups = 3,
 				MaximumFileSize = "1GB",

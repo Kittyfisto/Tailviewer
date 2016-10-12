@@ -5,30 +5,62 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         xmlns:installer="clr-namespace:Installer" xmlns:install="clr-namespace:Installer.Applications.Update"
+        xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+        xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
         d:DataContext="{d:DesignInstance install:UpdateWindowViewModel}"
         Height="115"
         Width="300"
         ResizeMode="NoResize"
         Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
+
+    <Window.Resources>
+        <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+        <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    </Window.Resources>
+
     <Grid Margin="8">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <Grid Visibility="{Binding IsPostInstallation, Converter={StaticResource BoolTrueToCollapsedConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   FontSize="30">
-            <Run Text="Updating" />
-            <Run Text="{x:Static installer:Constants.ApplicationTitle}" />
-        </TextBlock>
+            <TextBlock Grid.Row="0"
+                       FontSize="30">
+                <Run Text="Updating" />
+                <Run Text="{x:Static installer:Constants.ApplicationTitle}" />
+            </TextBlock>
 
-        <ProgressBar Grid.Row="1"
-                     HorizontalAlignment="Stretch"
-                     Minimum="0"
-                     Maximum="1"
-                     Height="12"
-                     Margin="0,8,0,0"
-                     VerticalAlignment="Center"
-                     Value="{Binding InstallationProgress, Mode=OneWay}" />
+            <ProgressBar Grid.Row="1"
+                         HorizontalAlignment="Stretch"
+                         Minimum="0"
+                         Maximum="1"
+                         Height="12"
+                         Margin="0,8,0,0"
+                         VerticalAlignment="Center"
+                         Value="{Binding InstallationProgress, Mode=OneWay}" />
+        </Grid>
+
+        <Grid Visibility="{Binding IsPostInstallation, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       FontSize="30"
+                       Text="Update failed" />
+
+            <controls:FlatScrollViewer Grid.Row="1">
+                <TextBlock TextWrapping="Wrap"
+                           Text="{Binding ErrorMessage, Mode=OneWay}" />
+            </controls:FlatScrollViewer>
+            
+            <controls:OpenInNewHyperlink Grid.Row="2"
+                                         ProcessName="notepad.exe"
+                                         ProcessStartArguments="{x:Static installer:Constants.InstallationLog}"
+                                         Text="Open installation log" />
+        </Grid>
     </Grid>
 </Window>

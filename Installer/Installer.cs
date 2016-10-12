@@ -71,6 +71,7 @@ namespace Installer
 			catch (Exception e)
 			{
 				Log.FatalFormat("Unable to complete installation: {0}", e);
+				throw;
 			}
 			finally
 			{

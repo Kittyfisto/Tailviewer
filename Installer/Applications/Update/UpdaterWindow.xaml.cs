@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Threading;
 
 namespace Installer.Applications.Update
@@ -6,6 +7,7 @@ namespace Installer.Applications.Update
 	public partial class UpdaterWindow
 	{
 		private readonly DispatcherTimer _timer;
+		private readonly UpdateWindowViewModel _model;
 
 		public UpdaterWindow(UpdateWindowViewModel updateWindowViewModel)
 		{
@@ -15,12 +17,26 @@ namespace Installer.Applications.Update
 			_timer.Tick += TimerOnTick;
 			_timer.Start();
 
-			DataContext = updateWindowViewModel;
+			DataContext = _model = updateWindowViewModel;
+			updateWindowViewModel.PropertyChanged += UpdateWindowViewModelOnPropertyChanged;
+		}
+
+		private void UpdateWindowViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case "HasFailed":
+					if (_model.HasFailed)
+					{
+						Height = 400;
+					}
+					break;
+			}
 		}
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			((UpdateWindowViewModel)DataContext).Update();
+			_model.Update();
 		}
 	}
 }
