@@ -28,7 +28,7 @@
             <Run Text="is available." />
             </TextBlock>
 
-            <Button Content="Install"
+            <Button Content="{Binding InstallTitle}"
                 Command="{Binding InstallCommand}"
                 Grid.Column="2"
                 Margin="4" Padding="4" />

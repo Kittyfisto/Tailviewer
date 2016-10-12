@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private readonly IDispatcher _dispatcher;
 		private readonly ICommand _gotItCommand;
-		private readonly ICommand _installCommand;
+		private readonly DelegateCommand _installCommand;
 		private readonly AutoUpdateSettings _settings;
 		private readonly IAutoUpdater _updater;
 		private bool _isUpdateAvailable;
@@ -28,6 +28,8 @@ namespace Tailviewer.Ui.ViewModels
 		private Version _latestVersion;
 		private Uri _latestVersionUri;
 		private bool _showUpdateAvailable;
+		private string _installTitle;
+		private Task _installationTask;
 
 		public AutoUpdateViewModel(IAutoUpdater updater, AutoUpdateSettings settings, IDispatcher dispatcher)
 		{
@@ -41,9 +43,10 @@ namespace Tailviewer.Ui.ViewModels
 			_updater = updater;
 			_settings = settings;
 			_dispatcher = dispatcher;
-			_installCommand = new DelegateCommand(Install);
+			_installCommand = new DelegateCommand(Install, CanInstall);
 			_gotItCommand = new DelegateCommand(GotIt);
 			_checkForUpdatesCommand = new DelegateCommand(CheckForUpdates);
+			_installTitle = "Install";
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
 			if (_settings.CheckForUpdates)
@@ -61,6 +64,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_latestVersion = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string InstallTitle
+		{
+			get { return _installTitle; }
+			private set
+			{
+				if (value == _installTitle)
+					return;
+
+				_installTitle = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -126,10 +142,18 @@ namespace Tailviewer.Ui.ViewModels
 			_updater.CheckForUpdatesAsync();
 		}
 
+		private bool CanInstall()
+		{
+			return _installationTask == null;
+		}
+
 		private void Install()
 		{
-			Task task = _updater.Install(_latest);
-			task.ContinueWith(Shutdown);
+			_installationTask = _updater.Install(_latest);
+			_installationTask.ContinueWith(Shutdown);
+
+			InstallTitle = "Downloading...";
+			_installCommand.RaiseCanExecuteChanged();
 		}
 
 		private void Shutdown(Task unused)

@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml;
 using Tailviewer.Settings;
 using log4net;
