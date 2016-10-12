@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Xml;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
 
@@ -43,6 +47,95 @@ namespace Tailviewer.Test.Settings
 			_settings.ProxyUsername = "foo";
 			_settings.ProxyPassword = "bar";
 			_settings.GetProxyCredentials().Should().NotBeNull();
+		}
+
+		[Test]
+		public void TestGetWebProxy1()
+		{
+			_settings.ProxyServer = null;
+			_settings.ProxyUsername = null;
+			_settings.ProxyPassword = null;
+			new Action(() => _settings.GetWebProxy()).ShouldNotThrow();
+			var proxy = _settings.GetWebProxy();
+			proxy.Should().NotBeNull();
+			proxy.Credentials.Should().BeNull();
+		}
+
+		[Test]
+		public void TestGetWebProxy2()
+		{
+			_settings.ProxyServer = "http://eumex.ip";
+			var proxy = _settings.GetWebProxy();
+			proxy.Should().NotBeNull();
+			proxy.Should().BeOfType<WebProxy>();
+			((WebProxy)proxy).Address.Should().Be(new Uri("http://eumex.ip"));
+			proxy.Credentials.Should().BeNull();
+		}
+
+		[Test]
+		public void TestGetWebProxy3()
+		{
+			_settings.ProxyUsername = "foo";
+			_settings.ProxyPassword = "bar";
+			var proxy = _settings.GetWebProxy();
+			var credentials = proxy.Credentials;
+			credentials.Should().NotBeNull();
+			credentials.Should().BeOfType<NetworkCredential>();
+			((NetworkCredential) credentials).UserName.Should().Be("foo");
+			((NetworkCredential) credentials).SecurePassword.Length.Should().Be(3);
+			((NetworkCredential) credentials).Password.Should().Be("bar");
+		}
+
+		[Test]
+		public void TestGetWebProxy4()
+		{
+			_settings.ProxyServer = "http://eumex.ip";
+			_settings.ProxyUsername = "foo";
+			_settings.ProxyPassword = "bar";
+			var proxy = _settings.GetWebProxy();
+			var credentials = proxy.Credentials;
+			credentials.Should().NotBeNull();
+			proxy.Should().BeOfType<WebProxy>();
+			((WebProxy)proxy).Address.Should().Be(new Uri("http://eumex.ip"));
+		}
+
+		[Test]
+		public void TestStoreRestore()
+		{
+			_settings.ProxyServer = "http://eumex.ip";
+			_settings.ProxyUsername = "foo";
+			_settings.ProxyPassword = "bar";
+			_settings.AutomaticallyInstallUpdates = true;
+			_settings.CheckForUpdates = true;
+
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = XmlWriter.Create(stream))
+				{
+					writer.WriteStartElement("xml");
+					writer.WriteStartElement("autoupdate");
+					_settings.Save(writer);
+					writer.WriteEndElement();
+					writer.WriteEndElement();
+				}
+
+				stream.Position = 0;
+
+				using (var reader = XmlReader.Create(stream))
+				{
+					var settings = new AutoUpdateSettings();
+					reader.Read();
+					reader.Read();
+					reader.Read();
+					settings.Restore(reader);
+
+					settings.CheckForUpdates.Should().BeTrue();
+					settings.AutomaticallyInstallUpdates.Should().BeTrue();
+					settings.ProxyServer.Should().Be("http://eumex.ip");
+					settings.ProxyUsername.Should().Be("foo");
+					settings.ProxyPassword.Should().Be("bar");
+				}
+			}
 		}
 	}
 }

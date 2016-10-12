@@ -22,9 +22,10 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		public static readonly Version CurrentAppVersion;
 
 		private readonly object _syncRoot;
-		private AutoUpdateSettings _settings;
-		private VersionInfo _latestVersion;
+		private readonly AutoUpdateSettings _settings;
 		private readonly List<Action<VersionInfo>> _latestVersionChanged;
+
+		private VersionInfo _latestVersion;
 
 		static AutoUpdater()
 		{
@@ -116,9 +117,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		internal static Uri BuildVersionCheckUri()
 		{
-			string address = string.Format("{0}/{1}",
-			                               Server,
-			                               VersionFile);
+			string address = string.Format("{0}/{1}", Server, VersionFile);
 			var uri = new Uri(address);
 			return uri;
 		}
@@ -130,11 +129,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 				using (var client = new WebClient())
 				{
 					client.UseDefaultCredentials = true;
-					var proxy = WebRequest.GetSystemWebProxy();
-					var credentials = _settings.GetProxyCredentials();
-					if (credentials != null)
-						proxy.Credentials = credentials;
-					client.Proxy = proxy;
+					client.Proxy = _settings.GetWebProxy();
 
 					Uri uri = BuildVersionCheckUri();
 

@@ -47,6 +47,8 @@ namespace Tailviewer.Settings
 			}
 			set
 			{
+				CreatePasswordSaltIfNecessary();
+
 				try
 				{
 					if (!string.IsNullOrEmpty(value))
@@ -119,6 +121,11 @@ namespace Tailviewer.Settings
 				}
 			}
 
+			CreatePasswordSaltIfNecessary();
+		}
+
+		private void CreatePasswordSaltIfNecessary()
+		{
 			if (_passwordSalt == null || _passwordSalt.Length != 20)
 			{
 				using (var rng = new RNGCryptoServiceProvider())
@@ -148,6 +155,22 @@ namespace Tailviewer.Settings
 
 			var credentials = new NetworkCredential(username, securePassword);
 			return credentials;
+		}
+
+		public IWebProxy GetWebProxy()
+		{
+			var credentials = GetProxyCredentials();
+			if (!string.IsNullOrEmpty(ProxyServer))
+			{
+				return new WebProxy(ProxyServer, true, null, credentials);
+			}
+
+			var proxy = WebRequest.GetSystemWebProxy();
+			if (credentials != null)
+			{
+				proxy.Credentials = credentials;
+			}
+			return proxy;
 		}
 	}
 }
