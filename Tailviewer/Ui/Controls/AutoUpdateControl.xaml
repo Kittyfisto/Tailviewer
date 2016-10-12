@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Tailviewer.Ui.Controls.AutoUpdateControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:AutoUpdateViewModel}"
+             d:DesignHeight="50" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource BackgroundBrushSelected}">
+        <Grid Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Foreground="{StaticResource TextBrushInverted}"
+                   VerticalAlignment="Center">
+            <Run Text="A newer version" />
+            <Run Text="{Binding LatestVersion, Mode=OneWay, StringFormat='({0})'}" />
+            <Run Text="is available." />
+            </TextBlock>
+
+            <Button Content="Install"
+                Command="{Binding InstallCommand}"
+                Grid.Column="2"
+                Margin="4" Padding="4" />
+
+            <Button Content="Got it"
+                Command="{Binding GotItCommand}"
+                Grid.Column="3"
+                Margin="4" Padding="4" />
+        </Grid>
+    </Grid>
+</UserControl>

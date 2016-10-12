@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Tailviewer.BusinessLogic.AutoUpdates
 {
@@ -10,14 +11,18 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		Version AppVersion { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		VersionInfo LatestVersion { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		void CheckForUpdatesAsync();
+
+		 /// <summary>
+		///     Downloads and installs the latest version.
+		/// </summary>
+		/// <param name="latest"></param>
+		Task Install(VersionInfo latest);
 
 		event Action<VersionInfo> LatestVersionChanged;
 	}

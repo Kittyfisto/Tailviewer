@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
@@ -115,6 +116,9 @@
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
+      <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -141,6 +145,7 @@
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
@@ -181,6 +186,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\AboutControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\AutoUpdateControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

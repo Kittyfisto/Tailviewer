@@ -51,8 +51,7 @@ namespace Tailviewer.Settings
 
 		public static ApplicationSettings Create()
 		{
-			string appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			string fileName = Path.Combine(appDataLocal, Constants.ApplicationTitle, "settings");
+			string fileName = Path.Combine(Constants.AppDataLocalFolder, "settings");
 			fileName += ".xml";
 			return new ApplicationSettings(fileName);
 		}

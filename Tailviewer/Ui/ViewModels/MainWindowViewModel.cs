@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
+using Microsoft.Win32;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
-using log4net;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -20,31 +19,22 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+		private readonly ICommand _addDataSourceCommand;
+		private readonly AutoUpdateViewModel _autoUpdater;
 		private readonly ICommand _closeErrorDialogCommand;
 		private readonly DataSourcesViewModel _dataSourcesViewModel;
-		private readonly SettingsViewModel _settings;
 		private readonly IDispatcher _dispatcher;
-		private readonly ICommand _gotItCommand;
-		private readonly ICommand _addDataSourceCommand;
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
-		private readonly ICommand _checkForUpdatesCommand;
-
+		private readonly SettingsViewModel _settings;
 		private readonly DispatcherTimer _timer;
-		private readonly IAutoUpdater _updater;
 
 		private LogViewerViewModel _currentDataSourceLogView;
 		private Exception _exception;
 		private bool _hasError;
 		private bool _isLogFileOpen;
-		private bool _isUpdateAvailable;
-		private bool _showUpdateAvailable;
 		private string _windowTitle;
-		private Version _latestVersion;
-		private Uri _latestVersionUri;
 
 		public MainWindowViewModel(ApplicationSettings settings,
 		                           DataSources dataSources,
@@ -70,7 +60,7 @@ namespace Tailviewer.Ui.ViewModels
 			_timer.Tick += TimerOnTick;
 			_timer.Start();
 
-			_updater = updater;
+			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, dispatcher);
 
 			_dispatcher = dispatcher;
 			WindowTitle = Constants.MainWindowTitle;
@@ -78,102 +68,14 @@ namespace Tailviewer.Ui.ViewModels
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
-			_gotItCommand = new DelegateCommand(GotIt);
-
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
 
-			_checkForUpdatesCommand = new DelegateCommand(CheckForUpdates);
-
 			ChangeDataSource(CurrentDataSource);
-
-			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
-			if (_settings.CheckForUpdates)
-			{
-				_updater.CheckForUpdatesAsync();
-			}
 		}
 
-		private void CheckForUpdates()
+		public AutoUpdateViewModel AutoUpdater
 		{
-			_updater.CheckForUpdatesAsync();
-		}
-
-		private void AddDataSource()
-		{
-			// Create OpenFileDialog 
-			var dlg = new Microsoft.Win32.OpenFileDialog
-				{
-					DefaultExt = ".log",
-					Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
-					Multiselect = true
-				};
-
-			// Display OpenFileDialog by calling ShowDialog method 
-			if (dlg.ShowDialog() == true)
-			{
-				var selectedFiles = dlg.FileNames;
-				foreach (var fileName in selectedFiles)
-				{
-					OpenFile(fileName);
-				}
-			}
-		}
-
-		public ICommand GotItCommand
-		{
-			get { return _gotItCommand; }
-		}
-
-		public bool ShowUpdateAvailable
-		{
-			get { return _showUpdateAvailable; }
-			private set
-			{
-				if (value == _showUpdateAvailable)
-					return;
-
-				_showUpdateAvailable = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public Version LatestVersion
-		{
-			get { return _latestVersion; }
-			private set
-			{
-				if (value == _latestVersion)
-					return;
-
-				_latestVersion = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public Uri LatestVersionUri
-		{
-			get { return _latestVersionUri; }
-			private set
-			{
-				if (value == _latestVersionUri)
-					return;
-
-				_latestVersionUri = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public bool IsUpdateAvailable
-		{
-			get { return _isUpdateAvailable; }
-			private set
-			{
-				if (value == _isUpdateAvailable)
-					return;
-
-				_isUpdateAvailable = value;
-				EmitPropertyChanged();
-			}
+			get { return _autoUpdater; }
 		}
 
 		public ICommand SelectPreviousDataSourceCommand
@@ -303,38 +205,27 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _addDataSourceCommand; }
 		}
 
-		public ICommand CheckForUpdatesCommand
-		{
-			get { return _checkForUpdatesCommand; }
-		}
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private void GotIt()
+		private void AddDataSource()
 		{
-			ShowUpdateAvailable = false;
-		}
-
-		private void UpdaterOnLatestVersionChanged(VersionInfo versionInfo)
-		{
-			_dispatcher.BeginInvoke(() =>
+			// Create OpenFileDialog 
+			var dlg = new OpenFileDialog
 				{
-					Version latest = versionInfo.Stable;
-					Version current = _updater.AppVersion;
-					if (current != null && latest != null && latest > current)
-					{
-						IsUpdateAvailable = true;
-						ShowUpdateAvailable = true;
-						LatestVersion = latest;
-						LatestVersionUri = versionInfo.StableAddress;
+					DefaultExt = ".log",
+					Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+					Multiselect = true
+				};
 
-						Log.InfoFormat("A newer version ({0}) is available to be downloaded", latest);
-					}
-					else
-					{
-						Log.InfoFormat("You are running the latest version!");
-					}
-				});
+			// Display OpenFileDialog by calling ShowDialog method 
+			if (dlg.ShowDialog() == true)
+			{
+				string[] selectedFiles = dlg.FileNames;
+				foreach (string fileName in selectedFiles)
+				{
+					OpenFile(fileName);
+				}
+			}
 		}
 
 		private void DataSourcesViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)

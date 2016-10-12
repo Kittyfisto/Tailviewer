@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 using Tailviewer.Settings;
 using log4net;
@@ -12,7 +14,8 @@ using log4net;
 namespace Tailviewer.BusinessLogic.AutoUpdates
 {
 	internal sealed class AutoUpdater
-		: IDisposable, IAutoUpdater
+		: IAutoUpdater
+		, IDisposable
 	{
 		private const string Server = "https://kittyfisto.github.io";
 		private const string VersionFile = "Tailviewer/downloads/version.xml";
@@ -50,6 +53,11 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		{
 			var updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
 			updateTask.ContinueWith(OnVersionChecked);
+		}
+
+		public Task Install(VersionInfo latest)
+		{
+			return Task.Factory.StartNew(() => DownloadAndInstall(latest.Stable, latest.StableAddress));
 		}
 
 		public event Action<VersionInfo> LatestVersionChanged
@@ -120,6 +128,75 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			string address = string.Format("{0}/{1}", Server, VersionFile);
 			var uri = new Uri(address);
 			return uri;
+		}
+
+		private void DownloadAndInstall(Version version, Uri uri)
+		{
+			try
+			{
+				var data = Download(version, uri);
+				var fileName = SaveInstaller(version, uri, data);
+				StartInstallation(fileName);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to perform update: {0}", e);
+			}
+		}
+
+		private byte[] Download(Version version, Uri uri)
+		{
+			try
+			{
+				Log.InfoFormat("Downloading 'v{0}' from '{1}'", version, uri);
+
+				using (var client = new WebClient())
+				{
+					client.UseDefaultCredentials = true;
+					client.Proxy = _settings.GetWebProxy();
+
+					var data = client.DownloadData(uri);
+					return data;
+				}
+			}
+			catch (WebException e)
+			{
+				Log.WarnFormat("Unable to download the newest version: {0}", e);
+				throw;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while downloading newest version: {0}", e);
+				throw;
+			}
+		}
+
+		private string SaveInstaller(Version version, Uri uri, byte[] data)
+		{
+			var fileName = Path.GetFileName(uri.AbsolutePath);
+			var fullPath = Path.Combine(Constants.DownloadFolder, version.ToString(), fileName);
+
+			Log.InfoFormat("Saving installer to '{0}'", fullPath);
+
+			var directory = Path.GetDirectoryName(fullPath);
+			if (!Directory.Exists(directory))
+				Directory.CreateDirectory(directory);
+
+			File.WriteAllBytes(fullPath, data);
+			return fullPath;
+		}
+
+		private void StartInstallation(string fileName)
+		{
+			try
+			{
+				var arguments = string.Format("update \"{0}\"", Constants.ApplicationFolder);
+				Process.Start(new ProcessStartInfo(fileName, arguments));
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while starting updater: {0}", e);
+			}
 		}
 
 		private VersionInfo QueryNewestVersions()

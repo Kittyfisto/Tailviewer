@@ -67,6 +67,8 @@ namespace Installer
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
+
+				Log.InfoFormat("Installation succeeded");
 			}
 			catch (Exception e)
 			{

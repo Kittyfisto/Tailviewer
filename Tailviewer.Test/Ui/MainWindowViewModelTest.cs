@@ -149,12 +149,12 @@ namespace Tailviewer.Test.Ui
 			_updater.Setup(x => x.AppVersion).Returns(new Version(1, 0, 0));
 			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
 
-			_mainWindow.IsUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
-			_mainWindow.ShowUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
+			_mainWindow.AutoUpdater.IsUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
+			_mainWindow.AutoUpdater.ShowUpdateAvailable.Should().BeFalse("Because these changes should be dispatched first");
 
 			_dispatcher.InvokeAll();
-			_mainWindow.IsUpdateAvailable.Should().BeTrue();
-			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.ShowUpdateAvailable.Should().BeTrue();
 			changes.Should().BeEquivalentTo(new object[] { "ShowUpdateAvailable", "IsUpdateAvailable", "LatestVersion" });
 		}
 
@@ -165,19 +165,19 @@ namespace Tailviewer.Test.Ui
 			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
 
 			_dispatcher.InvokeAll();
-			_mainWindow.IsUpdateAvailable.Should().BeTrue();
-			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
-			_mainWindow.GotItCommand.Execute(null);
+			_mainWindow.AutoUpdater.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.ShowUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.GotItCommand.Execute(null);
 
-			_mainWindow.IsUpdateAvailable.Should().BeTrue();
-			_mainWindow.ShowUpdateAvailable.Should().BeFalse();
+			_mainWindow.AutoUpdater.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.ShowUpdateAvailable.Should().BeFalse();
 
-			_mainWindow.CheckForUpdatesCommand.Execute(null);
+			_mainWindow.AutoUpdater.CheckForUpdatesCommand.Execute(null);
 			_updater.Raise(x => x.LatestVersionChanged += null, new VersionInfo(null, null, new Version(1, 0, 1), null));
 			_dispatcher.InvokeAll();
 
-			_mainWindow.IsUpdateAvailable.Should().BeTrue();
-			_mainWindow.ShowUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.IsUpdateAvailable.Should().BeTrue();
+			_mainWindow.AutoUpdater.ShowUpdateAvailable.Should().BeTrue();
 		}
 	}
 }
