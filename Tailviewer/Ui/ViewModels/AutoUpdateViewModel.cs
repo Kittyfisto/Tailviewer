@@ -51,7 +51,7 @@ namespace Tailviewer.Ui.ViewModels
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
 			if (_settings.CheckForUpdates)
 			{
-				_updater.CheckForUpdatesAsync();
+				_updater.CheckForUpdates();
 			}
 		}
 
@@ -139,7 +139,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void CheckForUpdates()
 		{
-			_updater.CheckForUpdatesAsync();
+			_updater.CheckForUpdates();
 		}
 
 		private bool CanInstall()

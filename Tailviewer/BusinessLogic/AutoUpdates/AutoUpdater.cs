@@ -48,7 +48,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			_latestVersionChanged = new List<Action<VersionInfo>>();
 		}
 
-		public void CheckForUpdatesAsync()
+		public void CheckForUpdates()
 		{
 			var updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
 			updateTask.ContinueWith(OnVersionChecked);

@@ -16,7 +16,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		/// <summary>
 		/// </summary>
-		void CheckForUpdatesAsync();
+		void CheckForUpdates();
 
 		 /// <summary>
 		///     Downloads and installs the latest version.
