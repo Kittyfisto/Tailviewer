@@ -4,12 +4,14 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib.Controls;
 using Tailviewer.Ui.ViewModels;
+using log4net;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
@@ -17,6 +19,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof (FilterTextBox))]
 	internal class DataSourcesControl : Control
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public const string PART_DataSources = "PART_DataSources";
 		public const string PART_DataSourceSearch = "PART_DataSourceSearch";
 
@@ -366,7 +370,14 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		/// <returns></returns>
 		private TreeViewItem GetTreeViewItem(IDataSourceViewModel item)
 		{
-			ItemContainerGenerator containerGenerator = _partDataSources.ItemContainerGenerator;
+			var partDataSources = _partDataSources;
+			if (partDataSources == null)
+			{
+				Log.Warn("Unable to get the selected tree view item: _partDataSources is not set!");
+				return null;
+			}
+
+			ItemContainerGenerator containerGenerator = partDataSources.ItemContainerGenerator;
 			return GetTreeViewItem(containerGenerator, item);
 		}
 
