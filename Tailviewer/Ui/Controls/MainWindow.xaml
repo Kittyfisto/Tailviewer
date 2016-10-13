@@ -1,20 +1,20 @@
-﻿<Window x:Class="Tailviewer.Ui.Controls.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
-        xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
-        xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
-        xmlns:controls3="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-        mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-        Title="{Binding WindowTitle}"
-        x:Name="This"
-        AllowDrop="True"
-        MinWidth="640"
-        MinHeight="480"
-        Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
+﻿<controls3:ChromelessWindow x:Class="Tailviewer.Ui.Controls.MainWindow"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
+                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                            xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
+                            xmlns:controls3="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                            mc:Ignorable="d"
+                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+                            Title="{Binding WindowTitle}"
+                            x:Name="This"
+                            AllowDrop="True"
+                            MinWidth="640"
+                            MinHeight="480"
+                            Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
 
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="F"
@@ -153,4 +153,4 @@
 
     </AdornerDecorator>
 
-</Window>
+</controls3:ChromelessWindow>
