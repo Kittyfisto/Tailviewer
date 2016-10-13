@@ -41,6 +41,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private long _lastPosition;
 		private LevelFlags _previousLevel;
 		private DateTime? _previousTimestamp;
+		private long? _fileSize;
 
 		#endregion
 
@@ -92,17 +93,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			get
 			{
-				if (!File.Exists(_fileName))
+				var size = _fileSize;
+				if (size == null)
 					return Size.Zero;
 
-				try
-				{
-					return Size.FromBytes(new FileInfo(_fileName).Length);
-				}
-				catch (Exception)
-				{
-					return Size.Zero;
-				}
+				return Size.FromBytes(size.Value);
 			}
 		}
 
@@ -167,6 +162,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					OnReset(null, out _numberOfLinesRead, out _lastPosition);
 					_exists = false;
+					_fileSize = null;
 					SetEndOfSourceReached();
 				}
 				else
@@ -178,7 +174,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					using (var reader = new StreamReader(stream))
 					{
 						_exists = true;
-						_lastModified = File.GetLastWriteTime(_fileName);
+						var info = new FileInfo(_fileName);
+						_lastModified = info.LastWriteTime;
+						_fileSize = info.Length;
 						if (stream.Length >= _lastPosition)
 						{
 							stream.Position = _lastPosition;
