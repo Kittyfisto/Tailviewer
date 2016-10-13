@@ -12,6 +12,7 @@
 
     <Style x:Key="DataSourceTreeViewItemStyle" TargetType="{x:Type controls:FlatTreeViewItem}">
         <Setter Property="IsExpanded" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
         <!-- IsInverted is an inherited, attached dependency property and, as such,
              travels down the entire visual tree. We use this to ensure that our content
              renders properly when we are selected (darker background => the foreground of
