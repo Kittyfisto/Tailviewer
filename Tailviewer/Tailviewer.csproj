@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.75.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.75\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.77.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.77\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -298,9 +298,7 @@
   <ItemGroup>
     <Resource Include="Licenses\MaterialDesignIcons\License.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Licenses\NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\System.Threading.Tasks.Extensions\System.Threading.Tasks.Extensions.csproj">
       <Project>{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}</Project>

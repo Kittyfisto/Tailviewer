@@ -1,20 +1,20 @@
-﻿<controls3:ChromelessWindow x:Class="Tailviewer.Ui.Controls.MainWindow"
-                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                            xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
-                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
-                            xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
-                            xmlns:controls3="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                            mc:Ignorable="d"
-                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-                            Title="{Binding WindowTitle}"
-                            x:Name="This"
-                            AllowDrop="True"
-                            MinWidth="640"
-                            MinHeight="480"
-                            Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
+﻿<metrolib:ChromelessWindow x:Class="Tailviewer.Ui.Controls.MainWindow"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
+                           xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
+                           xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
+                           xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                           mc:Ignorable="d"
+                           d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+                           Title="{Binding WindowTitle}"
+                           x:Name="This"
+                           AllowDrop="True"
+                           MinWidth="640"
+                           MinHeight="480"
+                           Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
 
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="F"
@@ -36,6 +36,46 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+
+    <metrolib:ChromelessWindow.Header>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="30" />
+            </Grid.ColumnDefinitions>
+            <metrolib:EmailToggleButton Grid.Column="1"
+                                        VerticalContentAlignment="Top"
+                                        HorizontalContentAlignment="Right"
+                                        Padding="1">
+                <metrolib:NotificationBadge>
+                    <TextBlock Text="1 new" FontSize="6" />
+                </metrolib:NotificationBadge>
+                <metrolib:FlatToggleButton.ContextMenu>
+                    <metrolib:FlatContextMenu>
+
+                    </metrolib:FlatContextMenu>
+                </metrolib:FlatToggleButton.ContextMenu>
+            </metrolib:EmailToggleButton>
+
+            <metrolib:MoreButton Grid.Column="2"
+                                 TextBlock.FontSize="14">
+                <metrolib:MoreButton.ContextMenu>
+                    <metrolib:FlatContextMenu HorizontalOffset="-119"
+                                              AnchorAlignment="Right"
+                                              Placement="Bottom"
+                                              VerticalOffset="-10">
+                        <metrolib:FlatMenuItem Header="Check for Updates..."
+                                               Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
+                        <metrolib:FlatMenuItem Header="Settings..."
+                                               Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
+                        <metrolib:FlatMenuItem Header="About Tailviewer..."
+                                               Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
+                    </metrolib:FlatContextMenu>
+                </metrolib:MoreButton.ContextMenu>
+            </metrolib:MoreButton>
+        </Grid>
+    </metrolib:ChromelessWindow.Header>
 
     <AdornerDecorator x:Name="PART_DragDecorator"
                       SnapsToDevicePixels="True">
@@ -107,50 +147,38 @@
                     ItemsSource="{Binding QuickFilters}"
                     AddCommand="{Binding AddQuickFilterCommand}" />
 
-                <controls3:MoreButton Grid.Column="4"
-                                      HorizontalAlignment="Right"
-                                      VerticalAlignment="Top"
-                                      Width="26"
-                                      Height="26"
-                                      TextBlock.FontSize="14">
-                    <controls3:MoreButton.ContextMenu>
-                        <controls3:FlatContextMenu HorizontalOffset="-119"
-                                                   AnchorAlignment="Right"
-                                                   Placement="Bottom"
-                                                   VerticalOffset="-10">
-                            <controls3:FlatMenuItem Header="Check for Updates..."
-                                                    Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
-                            <controls3:FlatMenuItem Header="Settings..."
-                                                    Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
-                            <controls3:FlatMenuItem Header="About Tailviewer..."
-                                                    Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
-                        </controls3:FlatContextMenu>
-                    </controls3:MoreButton.ContextMenu>
-                </controls3:MoreButton>
+                <StackPanel Grid.Column="4"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Height="32">
 
-                <controls3:AlertControl
+
+                </StackPanel>
+
+                <metrolib:AlertControl
                     Grid.ColumnSpan="5"
                     Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                     Exception="{Binding Exception}"
                     CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
 
-            <controls3:PageOverlay Grid.RowSpan="2"
-                                   x:Name="PART_Settings"
-                                   Header="Settings"
-                                   Foreground="#333333">
+            <metrolib:PageOverlay Grid.RowSpan="2"
+                                  x:Name="PART_Settings"
+                                  Header="Settings"
+                                  Foreground="#333333">
                 <controls:SettingsControl DataContext="{Binding Settings}" />
-            </controls3:PageOverlay>
+            </metrolib:PageOverlay>
 
-            <controls3:PageOverlay Grid.RowSpan="2"
-                                   x:Name="PART_About"
-                                   Header="About"
-                                   Foreground="#333333">
+            <metrolib:PageOverlay Grid.RowSpan="2"
+                                  x:Name="PART_About"
+                                  Header="About"
+                                  Foreground="#333333">
                 <controls:AboutControl />
-            </controls3:PageOverlay>
+            </metrolib:PageOverlay>
 
         </Grid>
 
     </AdornerDecorator>
 
-</controls3:ChromelessWindow>
+</metrolib:ChromelessWindow>
