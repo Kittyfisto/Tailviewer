@@ -8,6 +8,7 @@
                            xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
+                           xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -31,10 +32,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -48,17 +50,11 @@
             <metrolib:EmailToggleButton Grid.Column="1"
                                         VerticalContentAlignment="Top"
                                         HorizontalContentAlignment="Right"
+                                        IsChecked="{Binding ActionCenter.IsOpen}"
                                         Padding="1">
                 <metrolib:NotificationBadge>
-                    <TextBlock Text="{Binding ActionCenter.UnreadCount}" FontSize="6" />
+                    <TextBlock Text="{Binding ActionCenter.UnreadCount}" FontSize="8" />
                 </metrolib:NotificationBadge>
-                <metrolib:FlatToggleButton.ContextMenu>
-                    <metrolib:FlatContextMenu>
-                        <metrolib:MenuItemContentControl>
-                            <actionCenter:ActionCenterControl DataContext="{Binding ActionCenter}" />
-                        </metrolib:MenuItemContentControl>
-                    </metrolib:FlatContextMenu>
-                </metrolib:FlatToggleButton.ContextMenu>
             </metrolib:EmailToggleButton>
 
             <metrolib:MoreButton Grid.Column="2"
@@ -83,98 +79,105 @@
     <AdornerDecorator x:Name="PART_DragDecorator"
                       SnapsToDevicePixels="True">
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <controls:AutoUpdateControl DataContext="{Binding AutoUpdater}"
-                                        Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
+                <controls:AutoUpdateControl DataContext="{Binding AutoUpdater}"
+                                            Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <dataSourceTree:DataSourcesControl
-                    Width="240"
-                    x:Name="PART_DataSources"
-                    ItemsSource="{Binding RecentFiles}"
-                    AddDataSourceCommand="{Binding AddDataSourceCommand}"
-                    SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
+                    <dataSourceTree:DataSourcesControl
+                        Width="240"
+                        x:Name="PART_DataSources"
+                        ItemsSource="{Binding RecentFiles}"
+                        AddDataSourceCommand="{Binding AddDataSourceCommand}"
+                        SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
 
-                <Grid Grid.Column="1"
-                      Width="1"
-                      Background="{StaticResource SeparatorBrush}" />
+                    <Grid Grid.Column="1"
+                          Width="1"
+                          Background="{StaticResource SeparatorBrush}" />
 
-                <Grid Grid.Column="2">
-                    <Grid Width="200"
-                          Height="150"
-                          VerticalAlignment="Center"
-                          HorizontalAlignment="Center">
-                        <TextBlock Text="Drag n' drop or select one or more files from the left in order to view them"
-                                   TextWrapping="Wrap"
-                                   FontSize="16"
-                                   Margin="10"
-                                   Foreground="DodgerBlue"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center" />
-                        <Rectangle StrokeDashArray="4 4"
-                                   Stroke="DodgerBlue"
-                                   StrokeThickness="2"
-                                   RadiusX="10"
-                                   RadiusY="10" />
+                    <Grid Grid.Column="2">
+                        <Grid Width="200"
+                              Height="150"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center">
+                            <TextBlock
+                                Text="Drag n' drop or select one or more files from the left in order to view them"
+                                TextWrapping="Wrap"
+                                FontSize="16"
+                                Margin="10"
+                                Foreground="DodgerBlue"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center" />
+                            <Rectangle StrokeDashArray="4 4"
+                                       Stroke="DodgerBlue"
+                                       StrokeThickness="2"
+                                       RadiusX="10"
+                                       RadiusY="10" />
+                        </Grid>
+
+                        <controls:LogViewerControl
+                            Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                            x:Name="PART_LogFileView"
+                            LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                            TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                            ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
+                            DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
+                            LogView="{Binding CurrentDataSourceLogView}" />
                     </Grid>
 
-                    <controls:LogViewerControl
-                        Visibility="{Binding IsLogFileOpen, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                        x:Name="PART_LogFileView"
-                        LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                        TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
-                        ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
-                        DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
-                        LogView="{Binding CurrentDataSourceLogView}" />
+                    <Grid Grid.Column="3"
+                          Width="1"
+                          Background="{StaticResource SeparatorBrush}" />
+
+                    <controls:QuickFilterControl
+                        Grid.Column="4"
+                        Width="200"
+                        ItemsSource="{Binding QuickFilters}"
+                        AddCommand="{Binding AddQuickFilterCommand}" />
+
+                    <StackPanel Grid.Column="4"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Height="32">
+
+                    </StackPanel>
+
+                    <metrolib:AlertControl
+                        Grid.ColumnSpan="5"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                        Exception="{Binding Exception}"
+                        CloseCommand="{Binding CloseErrorDialogCommand}" />
                 </Grid>
-
-                <Grid Grid.Column="3"
-                      Width="1"
-                      Background="{StaticResource SeparatorBrush}" />
-
-                <controls:QuickFilterControl
-                    Grid.Column="4"
-                    Width="200"
-                    ItemsSource="{Binding QuickFilters}"
-                    AddCommand="{Binding AddQuickFilterCommand}" />
-
-                <StackPanel Grid.Column="4"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            Height="32">
-
-
-                </StackPanel>
-
-                <metrolib:AlertControl
-                    Grid.ColumnSpan="5"
-                    Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                    Exception="{Binding Exception}"
-                    CloseCommand="{Binding CloseErrorDialogCommand}" />
             </Grid>
 
-            <metrolib:PageOverlay Grid.RowSpan="2"
-                                  x:Name="PART_Settings"
+            <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
+                                              DataContext="{Binding ActionCenter}"
+                                              Visibility="{Binding IsOpen, Converter={StaticResource BoolFalseToHiddenConverter}}"
+                                              Width="250"
+                                              VerticalAlignment="Stretch"
+                                              HorizontalAlignment="Right" />
+
+            <metrolib:PageOverlay x:Name="PART_Settings"
                                   Header="Settings"
                                   Foreground="#333333">
                 <controls:SettingsControl DataContext="{Binding Settings}" />
             </metrolib:PageOverlay>
 
-            <metrolib:PageOverlay Grid.RowSpan="2"
-                                  x:Name="PART_About"
+            <metrolib:PageOverlay x:Name="PART_About"
                                   Header="About"
                                   Foreground="#333333">
                 <controls:AboutControl />

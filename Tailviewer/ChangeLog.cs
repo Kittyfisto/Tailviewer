@@ -23,10 +23,10 @@ namespace Tailviewer
 		{
 			AllChanges = new List<Change>();
 
-			Add0280();
+			AddMostRect();
 		}
 
-		private static void Add0280()
+		private static void AddMostRect()
 		{
 			var features = new[]
 				{
@@ -43,7 +43,7 @@ namespace Tailviewer
 					"Changed scrollbar style to 'flat'",
 					"Changed window style to chromeless"
 				};
-			var change = new Change(new Version(0, 2, 81), features, bugfixes, misc);
+			var change = new Change(Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 	}

@@ -1,19 +1,69 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ViewModels.ActionCenter">
+                    xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ViewModels.ActionCenter"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
 
     <Geometry x:Key="Info">M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z</Geometry>
     <Geometry x:Key="Warning">M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z</Geometry>
     <Geometry x:Key="Error">M11,4.5H13V15.5H11V4.5M13,17.5V19.5H11V17.5H13Z</Geometry>
-    
+
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+
+    <DataTemplate x:Key="BulletinPoint" DataType="{x:Type system:String}">
+        <TextBlock Text="{Binding}"
+                   TextWrapping="Wrap"
+                   FontSize="12" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="FeatureListTemplate">
+        <TextBlock Text="{Binding}"
+                   Foreground="{StaticResource ForegroundBrush}"
+                   FontSize="12"
+                   FontWeight="SemiBold" />
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type actionCenter:ChangeViewModel}">
         <Grid Margin="6">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
+            <TextBlock Text="{Binding Title}"
+                       FontWeight="SemiBold" />
+            <controls:FlatGroupBox x:Name="PART_Features"
+                                   Header="Features:"
+                                   Grid.Row="1"
+                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                   Visibility="{Binding HasFeatures, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <controls:BulletinItemsControl ItemsSource="{Binding Features}"
+                                               BulletinMargin="4,6,4,4"
+                                               ItemTemplate="{StaticResource BulletinPoint}" />
+            </controls:FlatGroupBox>
+            <controls:FlatGroupBox x:Name="PART_Bugfixes"
+                                   Header="Bugfixes:"
+                                   Grid.Row="2"
+                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                   Visibility="{Binding HasBugfixes, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <controls:BulletinItemsControl ItemsSource="{Binding Bugfixes}"
+                                               BulletinMargin="4,6,4,4"
+                                               ItemTemplate="{StaticResource BulletinPoint}" />
+            </controls:FlatGroupBox>
+            <controls:FlatGroupBox x:Name="PART_Misc"
+                                   Header="Miscellaneous"
+                                   Grid.Row="3"
+                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                   Visibility="{Binding HasMisc, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <controls:BulletinItemsControl ItemsSource="{Binding Misc}"
+                                               BulletinMargin="4,6,4,4"
+                                               ItemTemplate="{StaticResource BulletinPoint}" />
+            </controls:FlatGroupBox>
         </Grid>
     </DataTemplate>
-    
+
     <DataTemplate DataType="{x:Type actionCenter:NotificationViewModel}">
         <Grid Margin="6">
             <Grid.ColumnDefinitions>
@@ -31,7 +81,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-    
+
                 <TextBlock Text="{Binding Timestamp}" />
                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
             </Grid>

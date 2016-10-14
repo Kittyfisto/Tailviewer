@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAdd2()
 		{
 			_viewModel.Notifications.Should().BeEmpty();
-			_actionCenter.Add(Notification.CreateInfo("Hello World!"));
+			_actionCenter.Add(Notification.CreateInfo("Foo", "Hello World!"));
 			_dispatcher.InvokeAll();
 			_viewModel.Notifications.Count().Should().Be(1);
 			_viewModel.UnreadCount.Should().Be(1);

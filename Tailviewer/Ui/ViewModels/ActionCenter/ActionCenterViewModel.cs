@@ -18,6 +18,13 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 
 		private bool _hasNewMessages;
 		private int _unreadCount;
+		private bool _isOpen;
+
+		public ActionCenterViewModel()
+		{
+			_notifications = new ObservableCollection<INotificationViewModel>();
+			AddNotification(ChangeLog.MostRecent);
+		}
 
 		public ActionCenterViewModel(IDispatcher dispatcher, IActionCenter actionCenter)
 		{
@@ -91,6 +98,19 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 				EmitPropertyChanged();
 
 				HasNewMessages = UnreadCount > 0;
+			}
+		}
+
+		public bool IsOpen
+		{
+			get { return _isOpen; }
+			set
+			{
+				if (value == _isOpen)
+					return;
+
+				_isOpen = value;
+				EmitPropertyChanged();
 			}
 		}
 

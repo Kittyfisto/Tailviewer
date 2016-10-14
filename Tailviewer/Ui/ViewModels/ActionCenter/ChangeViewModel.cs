@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic.ActionCenter;
 
@@ -8,7 +9,7 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 {
 	public sealed class ChangeViewModel
 		: INotificationViewModel
-		, INotifyPropertyChanged
+		  , INotifyPropertyChanged
 	{
 		private readonly Change _change;
 		private bool _isRead;
@@ -26,6 +27,21 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 			get { return _change.Version; }
 		}
 
+		public bool HasFeatures
+		{
+			get { return Features.Any(); }
+		}
+
+		public bool HasBugfixes
+		{
+			get { return Bugfixes.Any(); }
+		}
+
+		public bool HasMisc
+		{
+			get { return Misc.Any(); }
+		}
+
 		public IEnumerable<string> Features
 		{
 			get { return _change.Features; }
@@ -39,6 +55,11 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 		public IEnumerable<string> Misc
 		{
 			get { return _change.Misc; }
+		}
+
+		public string Title
+		{
+			get { return _change.Title; }
 		}
 
 		public bool IsRead

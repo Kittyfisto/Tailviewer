@@ -24,6 +24,11 @@ namespace Tailviewer
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		public App()
+		{
+			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
+		}
+
 		public static int Start(string[] args)
 		{
 			InstallExceptionHandlers();

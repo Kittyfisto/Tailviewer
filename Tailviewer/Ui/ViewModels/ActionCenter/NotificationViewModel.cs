@@ -32,6 +32,11 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 			get { return _notification.Level; }
 		}
 
+		public string Title
+		{
+			get { return _notification.Title; }
+		}
+
 		public bool IsRead
 		{
 			get { return _isRead; }

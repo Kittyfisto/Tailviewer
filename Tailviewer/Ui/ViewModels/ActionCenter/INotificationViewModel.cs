@@ -2,6 +2,7 @@
 {
 	public interface INotificationViewModel
 	{
+		string Title { get; }
 		bool IsRead { get; }
 	}
 }

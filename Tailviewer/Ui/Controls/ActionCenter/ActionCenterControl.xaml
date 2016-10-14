@@ -7,13 +7,16 @@
              xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ViewModels.ActionCenter"
              xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
              mc:Ignorable="d"
-             Width="200"
+             d:DesignWidth="300"
+             d:DesignHeight="300"
              d:DataContext="{d:DesignInstance actionCenter:ActionCenterViewModel}"
+             BorderThickness="1,0,0,0"
              Background="White">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ActionCenterItem.xaml" />
                 <ResourceDictionary Source="NotificationTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
@@ -21,19 +24,39 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <UserControl.BorderBrush>
+        <StaticResource ResourceKey="SeparatorBrush" />
+    </UserControl.BorderBrush>
+
+    <UserControl.Foreground>
+        <StaticResource ResourceKey="ForegroundBrush" />
+    </UserControl.Foreground>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
+        <Border Background="{StaticResource BackgroundBrushSelected}">
+            <TextBlock Text="Action Center"
+                       FontSize="28"
+                       VerticalAlignment="Center"
+                       Margin="8"
+                       Foreground="{StaticResource ForegroundBrushInverted}" />
+        </Border>
+
         <controls:FlatScrollViewer VerticalScrollBarVisibility="Auto"
-                                   HorizontalScrollBarVisibility="Hidden"
                                    Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding Notifications}" />
+            <controls:FlatListView ItemsSource="{Binding Notifications}"
+                                   BorderThickness="0"
+                                   ItemContainerStyle="{StaticResource ActionCenterItemStyle}"/>
         </controls:FlatScrollViewer>
+
         <TextBlock Text="No new messages"
                    TextWrapping="Wrap"
+                   Grid.Row="1"
+                   Margin="8"
                    Visibility="{Binding HasNewMessages, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
     </Grid>
 </UserControl>
