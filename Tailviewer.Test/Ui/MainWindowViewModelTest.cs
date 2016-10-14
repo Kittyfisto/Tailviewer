@@ -6,6 +6,7 @@ using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -26,10 +27,12 @@ namespace Tailviewer.Test.Ui
 			_scheduler = new ManualTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
+			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
 			                                      _quickFilters,
+			                                      _actionCenter,
 			                                      _updater.Object,
 			                                      _dispatcher);
 		}
@@ -47,6 +50,7 @@ namespace Tailviewer.Test.Ui
 		private ApplicationSettings _settings;
 		private Mock<IAutoUpdater> _updater;
 		private ManualTaskScheduler _scheduler;
+		private ActionCenter _actionCenter;
 
 		[Test]
 		public void TestChangeDataSource1()

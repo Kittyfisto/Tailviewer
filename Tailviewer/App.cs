@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Metrolib;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
@@ -64,6 +65,8 @@ namespace Tailviewer
 				
 
 				var quickFilters = new QuickFilters(settings.QuickFilters);
+				var actionCenter = new ActionCenter();
+				actionCenter.Add(ChangeLog.MostRecent);
 				var application = new App();
 				Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 				var uiDispatcher = new UiDispatcher(dispatcher);
@@ -74,6 +77,7 @@ namespace Tailviewer
 						DataContext = new MainWindowViewModel(settings,
 						                                      dataSources,
 						                                      quickFilters,
+						                                      actionCenter,
 						                                      updater,
 						                                      uiDispatcher)
 					};

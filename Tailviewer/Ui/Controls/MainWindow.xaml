@@ -7,6 +7,7 @@
                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                            xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                           xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -49,11 +50,13 @@
                                         HorizontalContentAlignment="Right"
                                         Padding="1">
                 <metrolib:NotificationBadge>
-                    <TextBlock Text="1 new" FontSize="6" />
+                    <TextBlock Text="{Binding ActionCenter.UnreadCount}" FontSize="6" />
                 </metrolib:NotificationBadge>
                 <metrolib:FlatToggleButton.ContextMenu>
                     <metrolib:FlatContextMenu>
-
+                        <metrolib:MenuItemContentControl>
+                            <actionCenter:ActionCenterControl DataContext="{Binding ActionCenter}" />
+                        </metrolib:MenuItemContentControl>
                     </metrolib:FlatContextMenu>
                 </metrolib:FlatToggleButton.ContextMenu>
             </metrolib:EmailToggleButton>

@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.77.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.77\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.81.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.81\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -64,6 +64,10 @@
     <Compile Include="App.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Change.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
@@ -101,6 +105,7 @@
     <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
+    <Compile Include="ChangeLog.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
@@ -116,6 +121,9 @@
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml.cs">
+      <DependentUpon>ActionCenterControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
@@ -145,8 +153,13 @@
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Ui\ViewModels\ActionCenter\ActionCenterViewModel.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Level.cs" />
+    <Compile Include="Ui\ViewModels\ActionCenter\ChangeViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ActionCenter\NotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
@@ -186,6 +199,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\AboutControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\NotificationTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

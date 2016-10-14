@@ -8,9 +8,11 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
 using Microsoft.Win32;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.ViewModels.ActionCenter;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -19,16 +21,31 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		private readonly ICommand _addDataSourceCommand;
-		private readonly AutoUpdateViewModel _autoUpdater;
-		private readonly ICommand _closeErrorDialogCommand;
-		private readonly DataSourcesViewModel _dataSourcesViewModel;
+		#region Dispatching
+
 		private readonly IDispatcher _dispatcher;
+		private readonly DispatcherTimer _timer;
+
+		#endregion
+
+		#region ViewModels
+
+		private readonly ActionCenterViewModel _actionCenter;
+		private readonly AutoUpdateViewModel _autoUpdater;
+		private readonly DataSourcesViewModel _dataSourcesViewModel;
 		private readonly QuickFiltersViewModel _quickFilters;
+		private readonly SettingsViewModel _settings;
+
+		#endregion
+
+		#region Commands
+
+		private readonly ICommand _addDataSourceCommand;
+		private readonly ICommand _closeErrorDialogCommand;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
-		private readonly SettingsViewModel _settings;
-		private readonly DispatcherTimer _timer;
+
+		#endregion
 
 		private LogViewerViewModel _currentDataSourceLogView;
 		private Exception _exception;
@@ -39,6 +56,7 @@ namespace Tailviewer.Ui.ViewModels
 		public MainWindowViewModel(ApplicationSettings settings,
 		                           DataSources dataSources,
 		                           QuickFilters quickFilters,
+		                           IActionCenter actionCenter,
 		                           IAutoUpdater updater,
 		                           IDispatcher dispatcher)
 		{
@@ -52,6 +70,7 @@ namespace Tailviewer.Ui.ViewModels
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
 			_settings = new SettingsViewModel(settings);
+			_actionCenter = new ActionCenterViewModel(dispatcher, actionCenter);
 
 			_timer = new DispatcherTimer
 				{
@@ -71,6 +90,11 @@ namespace Tailviewer.Ui.ViewModels
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
 
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		public ActionCenterViewModel ActionCenter
+		{
+			get { return _actionCenter; }
 		}
 
 		public AutoUpdateViewModel AutoUpdater

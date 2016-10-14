@@ -21,7 +21,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Foreground="{StaticResource TextBrushInverted}"
+            <TextBlock Foreground="{StaticResource ForegroundBrushInverted}"
                    VerticalAlignment="Center">
             <Run Text="A newer version" />
             <Run Text="{Binding LatestVersion, Mode=OneWay, StringFormat='({0})'}" />
