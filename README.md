@@ -6,7 +6,7 @@ Tailviewer is a free and active open-source log file viewer.
 
 Tailviewer is supported on Windows 7, 8 and 10 and requires .NET 4.5 or higher.
 
-You can download the newest application from https://ci.appveyor.com/project/Kittyfisto/sharptail/build/artifacts.
+Head on over to https://kittyfisto.github.io/Tailviewer/ in order to download the newest version.
 
 ![Tailviewer application](/Screenshot1.png?raw=true)  
 
@@ -16,7 +16,7 @@ Tailviewer supports live filtering on medium to large (< 1Gb) log files.
 
 ## Installation
 
-Simply download the latest build from https://ci.appveyor.com/project/Kittyfisto/sharptail/build/artifacts.
+Simply download the latest version from https://kittyfisto.github.io/Tailviewer/.
 
 ## Contributing
 
