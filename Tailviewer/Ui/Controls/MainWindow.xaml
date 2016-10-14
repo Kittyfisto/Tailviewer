@@ -53,7 +53,10 @@
                                         IsChecked="{Binding ActionCenter.IsOpen}"
                                         Padding="1">
                 <metrolib:EmailToggleButton.ContextMenu>
-                    <metrolib:FlatContextMenu>
+                    <metrolib:FlatContextMenu AnchorAlignment="Right"
+                                              HorizontalOffset="-226"
+                                              Placement="Bottom"
+                                              VerticalOffset="-2">
                         <metrolib:MenuItemContentControl Padding="0">
                             <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
                                                               DataContext="{Binding ActionCenter}"
@@ -71,7 +74,7 @@
             <metrolib:MoreButton Grid.Column="2"
                                  TextBlock.FontSize="14">
                 <metrolib:MoreButton.ContextMenu>
-                    <metrolib:FlatContextMenu HorizontalOffset="-119"
+                    <metrolib:FlatContextMenu HorizontalOffset="-118"
                                               AnchorAlignment="Right"
                                               Placement="Bottom"
                                               VerticalOffset="-10">
