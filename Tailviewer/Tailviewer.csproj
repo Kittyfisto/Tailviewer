@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.85.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.85\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.86.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.86\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -153,6 +153,7 @@
     <Compile Include="Ui\DragLayer.cs" />
     <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Ui\ViewModels\ActionCenter\AbstractNotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\ActionCenter\ActionCenterViewModel.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Level.cs" />
     <Compile Include="Ui\ViewModels\ActionCenter\ChangeViewModel.cs" />

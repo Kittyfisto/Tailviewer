@@ -1,18 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic.ActionCenter;
 
 namespace Tailviewer.Ui.ViewModels.ActionCenter
 {
 	public sealed class NotificationViewModel
-		: INotificationViewModel
-		, INotifyPropertyChanged
+		: AbstractNotificationViewModel
 	{
 		private readonly Notification _notification;
-		private bool _isRead;
 
 		public NotificationViewModel(Notification notification)
+			: base(notification)
 		{
 			_notification = notification;
 		}
@@ -30,32 +27,6 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 		public Level Level
 		{
 			get { return _notification.Level; }
-		}
-
-		public string Title
-		{
-			get { return _notification.Title; }
-		}
-
-		public bool IsRead
-		{
-			get { return _isRead; }
-			set
-			{
-				if (value == _isRead)
-					return;
-
-				_isRead = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

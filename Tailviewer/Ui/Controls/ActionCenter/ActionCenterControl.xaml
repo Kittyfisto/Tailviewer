@@ -10,7 +10,6 @@
              d:DesignWidth="300"
              d:DesignHeight="300"
              d:DataContext="{d:DesignInstance actionCenter:ActionCenterViewModel}"
-             BorderThickness="1,0,0,0"
              Background="White">
 
     <UserControl.Resources>
@@ -23,10 +22,6 @@
             <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-
-    <UserControl.BorderBrush>
-        <StaticResource ResourceKey="SeparatorBrush" />
-    </UserControl.BorderBrush>
 
     <UserControl.Foreground>
         <StaticResource ResourceKey="ForegroundBrush" />

@@ -54,17 +54,29 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 			var basic = notification as Notification;
 			if (basic != null)
 			{
-				_notifications.Add(new NotificationViewModel(basic));
+				Add(new NotificationViewModel(basic));
 			}
 			else
 			{
 				var change = notification as Change;
 				if (change != null)
 				{
-					_notifications.Add(new ChangeViewModel(change));
+					Add(new ChangeViewModel(change));
 				}
 			}
 
+			UpdateUnreadCount();
+		}
+
+		private void Add(INotificationViewModel notificationViewModel)
+		{
+			notificationViewModel.OnRemove += Remove;
+			_notifications.Add(notificationViewModel);
+		}
+
+		private void Remove(INotificationViewModel notificationViewModel)
+		{
+			_notifications.Remove(notificationViewModel);
 			UpdateUnreadCount();
 		}
 

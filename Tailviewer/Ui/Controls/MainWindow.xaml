@@ -7,8 +7,8 @@
                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                            xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                           xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                            xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                           xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -52,6 +52,17 @@
                                         HorizontalContentAlignment="Right"
                                         IsChecked="{Binding ActionCenter.IsOpen}"
                                         Padding="1">
+                <metrolib:EmailToggleButton.ContextMenu>
+                    <metrolib:FlatContextMenu>
+                        <metrolib:MenuItemContentControl Padding="0">
+                            <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
+                                                              DataContext="{Binding ActionCenter}"
+                                                              Width="250"
+                                                              VerticalAlignment="Stretch"
+                                                              HorizontalAlignment="Right" />
+                        </metrolib:MenuItemContentControl>
+                    </metrolib:FlatContextMenu>
+                </metrolib:EmailToggleButton.ContextMenu>
                 <metrolib:NotificationBadge>
                     <TextBlock Text="{Binding ActionCenter.UnreadCount}" FontSize="8" />
                 </metrolib:NotificationBadge>
@@ -163,13 +174,6 @@
                         CloseCommand="{Binding CloseErrorDialogCommand}" />
                 </Grid>
             </Grid>
-
-            <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
-                                              DataContext="{Binding ActionCenter}"
-                                              Visibility="{Binding IsOpen, Converter={StaticResource BoolFalseToHiddenConverter}}"
-                                              Width="250"
-                                              VerticalAlignment="Stretch"
-                                              HorizontalAlignment="Right" />
 
             <metrolib:PageOverlay x:Name="PART_Settings"
                                   Header="Settings"

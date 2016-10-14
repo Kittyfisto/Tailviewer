@@ -1,6 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib">
+                    xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     
     <Style x:Key="ActionCenterItemStyle" TargetType="{x:Type list:FlatListViewItem}">
         <Setter Property="Template">
@@ -10,11 +14,27 @@
                         <Rectangle x:Name="PART_HoveredRect"
                                    Fill="{StaticResource BackgroundBrushHovered}"
                                    Opacity="0" />
-                        <ContentPresenter x:Name="PART_Header"
-                                          Margin="{TemplateBinding Padding}"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter x:Name="PART_Header"
+                                              Margin="{TemplateBinding Padding}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+
+                            <controls:RemoveButton Grid.Column="1"
+                                                   VerticalAlignment="Top"
+                                                   HorizontalAlignment="Right"
+                                                   Margin="0,4,4,0"
+                                                   Padding="0"
+                                                   Width="20"
+                                                   Height="20"
+                                                   Command="{Binding RemoveCommand}"
+                                                   Visibility="{TemplateBinding IsMouseOver, Converter={StaticResource BoolFalseToHiddenConverter}}"/>
+                        </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
