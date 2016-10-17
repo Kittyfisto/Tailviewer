@@ -41,11 +41,9 @@ namespace Tailviewer.Test.Ui
 			_actionCenter.Add(notification1);
 			_actionCenter.Add(notification2);
 			_dispatcher.InvokeAll();
-			_actionCenter.Notifications.Should().Equal(new object[]
-				{
-					notification2,
-					notification1
-				}, "Because the newest notification should be in the first place");
+			_viewModel.Notifications.Count().Should().Be(2);
+			_viewModel.Notifications.ElementAt(0).Title.Should().Be("Bar");
+			_viewModel.Notifications.ElementAt(1).Title.Should().Be("Foo");
 		}
 	}
 }
