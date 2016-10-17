@@ -41,11 +41,4 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 
 		public event Action<INotification> NotificationAdded;
 	}
-
-	public interface IActionCenter
-	{
-		void Add(INotification notification);
-		IEnumerable<INotification> Notifications { get; }
-		event Action<INotification> NotificationAdded;
-	}
 }

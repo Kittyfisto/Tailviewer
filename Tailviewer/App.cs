@@ -46,9 +46,10 @@ namespace Tailviewer
 				//       (maybe we should preserve an old version)
 			}
 
+			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var dataSources = new DataSources(taskScheduler, settings.DataSources))
-			using (var updater = new AutoUpdater(settings.AutoUpdate))
+			using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 			{
 				if (args.Length > 0)
 				{
@@ -70,7 +71,6 @@ namespace Tailviewer
 				
 
 				var quickFilters = new QuickFilters(settings.QuickFilters);
-				var actionCenter = new ActionCenter();
 				actionCenter.Add(ChangeLog.MostRecent);
 				var application = new App();
 				Dispatcher dispatcher = Dispatcher.CurrentDispatcher;

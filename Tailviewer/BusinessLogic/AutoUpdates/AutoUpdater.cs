@@ -7,6 +7,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.Settings;
 using log4net;
 
@@ -24,6 +25,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		public static readonly Version CurrentAppVersion;
 
 		private readonly object _syncRoot;
+		private readonly IActionCenter _actionCenter;
 		private readonly AutoUpdateSettings _settings;
 		private readonly List<Action<VersionInfo>> _latestVersionChanged;
 
@@ -41,9 +43,15 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		public AutoUpdater(AutoUpdateSettings settings)
+		public AutoUpdater(IActionCenter actionCenter, AutoUpdateSettings settings)
 		{
+			if (actionCenter == null)
+				throw new ArgumentNullException("actionCenter");
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
 			_syncRoot = new object();
+			_actionCenter = actionCenter;
 			_settings = settings;
 			_latestVersionChanged = new List<Action<VersionInfo>>();
 		}
@@ -224,11 +232,19 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			catch (WebException e)
 			{
 				Log.WarnFormat("Unable to query the newest version: {0}", e);
+
+				var message = e.Message;
+				_actionCenter.Add(Notification.CreateError("Check for updates", message));
+
 				return null;
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while querying newest version: {0}", e);
+
+				var message = string.Format("There was an unexpected error: {0}", e.Message);
+				_actionCenter.Add(Notification.CreateError("Check for updates", message));
+
 				return null;
 			}
 		}

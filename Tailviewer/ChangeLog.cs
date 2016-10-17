@@ -30,6 +30,7 @@ namespace Tailviewer
 			var features = new[]
 				{
 					"Added action/notification center",
+					"Errors that occur while checking for updates are displayed in action center"
 				};
 			var bugfixes = new[]
 				{

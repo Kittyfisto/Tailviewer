@@ -1,0 +1,49 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:actionCenter="clr-namespace:Tailviewer.Ui.ViewModels.ActionCenter">
+
+    <Geometry x:Key="Info">M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z</Geometry>
+    <Geometry x:Key="Warning">M13,14H11V10H13M13,18H11V16H13M1,21H23L12,2L1,21Z</Geometry>
+    <Geometry x:Key="Error">M11,4.5H13V15.5H11V4.5M13,17.5V19.5H11V17.5H13Z</Geometry>
+
+    <DataTemplate DataType="{x:Type actionCenter:NotificationViewModel}">
+        <Grid Margin="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Viewbox>
+                <Canvas Width="24" Height="24">
+                    <Path x:Name="PART_Icon" />
+                </Canvas>
+            </Viewbox>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap" Grid.Row="1" />
+                <TextBlock Text="{Binding Timestamp}" FontSize="10" Grid.Row="2" Margin="0,4,0,0" />
+            </Grid>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Level}" Value="Info">
+                <Setter TargetName="PART_Icon" Property="Data" Value="{StaticResource Info}" />
+                <Setter TargetName="PART_Icon" Property="Fill" Value="#333333" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                <Setter TargetName="PART_Icon" Property="Data" Value="{StaticResource Warning}" />
+                <Setter TargetName="PART_Icon" Property="Fill" Value="#FFC300" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Error">
+                <Setter TargetName="PART_Icon" Property="Data" Value="{StaticResource Error}" />
+                <Setter TargetName="PART_Icon" Property="Fill" Value="#E81123" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+</ResourceDictionary>

@@ -71,7 +71,7 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 		private void Add(INotificationViewModel notificationViewModel)
 		{
 			notificationViewModel.OnRemove += Remove;
-			_notifications.Add(notificationViewModel);
+			_notifications.Insert(0, notificationViewModel);
 		}
 
 		private void Remove(INotificationViewModel notificationViewModel)

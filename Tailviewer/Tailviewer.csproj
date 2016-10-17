@@ -66,6 +66,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Change.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
@@ -211,7 +212,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\ActionCenter\NotificationTemplates.xaml">
+    <Page Include="Ui\Controls\ActionCenter\NotificationTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ChangeTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

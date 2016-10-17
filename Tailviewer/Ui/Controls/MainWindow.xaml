@@ -56,6 +56,7 @@
                     <metrolib:FlatContextMenu AnchorAlignment="Right"
                                               HorizontalOffset="-226"
                                               Placement="Bottom"
+                                              IsFirstItemHovered="True"
                                               VerticalOffset="-2">
                         <metrolib:MenuItemContentControl Padding="0">
                             <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
