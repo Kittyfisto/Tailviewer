@@ -29,7 +29,7 @@ namespace Tailviewer
 
 			ApplicationTitle = "Tailviewer";
 			ApplicationVersion = name.Version;
-			MainWindowTitle = string.Format("Tailviewer, v{0}", ApplicationVersion);
+			MainWindowTitle = string.Format("Tailviewer, v{0}", ApplicationVersion.Format());
 			ProjectPage = new Uri("https://kittyfisto.github.io/Tailviewer/");
 			GithubPage = new Uri("https://github.com/Kittyfisto/Tailviewer");
 			ApplicationFolder = assembly.GetFolder();

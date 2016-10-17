@@ -44,7 +44,7 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 
 		public string Title
 		{
-			get { return string.Format("What's new in v{0}?", Version); }
+			get { return string.Format("What's new in v{0}?", Version.Format()); }
 		}
 	}
 }

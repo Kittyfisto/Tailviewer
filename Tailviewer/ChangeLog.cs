@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.ActionCenter;
 
@@ -22,10 +23,20 @@ namespace Tailviewer
 		{
 			AllChanges = new List<Change>();
 
-			AddMostRect();
+			AddV0286();
+			AddMostRecent();
 		}
 
-		private static void AddMostRect()
+		private static void AddMostRecent()
+		{
+			var features = new string[] {};
+			var bugfixes = new string[] {};
+			var misc = new string[] {};
+			var change = new Change(Constants.ApplicationVersion, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV0286()
 		{
 			var features = new[]
 				{
@@ -34,7 +45,7 @@ namespace Tailviewer
 				};
 			var bugfixes = new[]
 				{
-					"Fixed UI freeze data source on network wasn't reachable anymore",
+					"Fixed UI freeze when data source on network wasn't reachable anymore",
 					"Fixed crash in data source tree",
 					"Fixed data sources being hard to select"
 				};
@@ -43,7 +54,7 @@ namespace Tailviewer
 					"Changed scrollbar style to 'flat'",
 					"Changed window style to chromeless"
 				};
-			var change = new Change(Constants.ApplicationVersion, features, bugfixes, misc);
+			var change = new Change(new Version(0, 2, 86), features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 	}

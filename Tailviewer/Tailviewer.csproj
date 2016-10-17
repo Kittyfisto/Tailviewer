@@ -166,6 +166,7 @@
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="Ui\ViewModels\SettingsViewModel.cs" />
+    <Compile Include="VersionExtensions.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
