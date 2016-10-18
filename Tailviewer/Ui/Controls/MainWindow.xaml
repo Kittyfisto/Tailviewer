@@ -9,6 +9,7 @@
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                            xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
+                           xmlns:about="clr-namespace:Tailviewer.Ui.Controls.About"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -188,7 +189,7 @@
             <metrolib:PageOverlay x:Name="PART_About"
                                   Header="About"
                                   Foreground="#333333">
-                <controls:AboutControl />
+                <about:AboutControl />
             </metrolib:PageOverlay>
 
         </Grid>

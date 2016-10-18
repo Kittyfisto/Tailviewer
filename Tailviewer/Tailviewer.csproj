@@ -118,10 +118,20 @@
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterMatchType.cs" />
-    <Compile Include="Ui\Controls\AboutControl.xaml.cs">
+    <Compile Include="Ui\Controls\About\AboutControl.xaml.cs">
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\About\ChangelogControl.xaml.cs">
+      <DependentUpon>ChangelogControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\About\ChangelogViewModel.cs" />
+    <Compile Include="Ui\Controls\About\LicenseControl.xaml.cs">
+      <DependentUpon>LicenseControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\About\TailviewerControl.xaml.cs">
+      <DependentUpon>TailviewerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml.cs">
       <DependentUpon>ActionCenterControl.xaml</DependentUpon>
     </Compile>
@@ -201,7 +211,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\AboutControl.xaml">
+    <Page Include="Ui\Controls\About\AboutControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\About\ChangelogControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\About\LicenseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\About\TailviewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

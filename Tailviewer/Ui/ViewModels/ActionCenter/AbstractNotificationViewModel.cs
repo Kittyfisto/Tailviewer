@@ -14,11 +14,13 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 		private readonly INotification _notification;
 		private readonly ICommand _removeCommand;
 		private bool _isRead;
+		private string _title;
 
 		protected AbstractNotificationViewModel(INotification notification)
 		{
 			_notification = notification;
 			_removeCommand = new DelegateCommand(Remove);
+			_title = _notification.Title;
 		}
 
 		public event Action<INotificationViewModel> OnRemove;
@@ -37,7 +39,15 @@ namespace Tailviewer.Ui.ViewModels.ActionCenter
 
 		public string Title
 		{
-			get { return _notification.Title; }
+			get { return _title; }
+			set
+			{
+				if (value == _title)
+					return;
+
+				_title = value;
+				EmitPropertyChanged();
+			}
 		}
 
 		public bool IsRead

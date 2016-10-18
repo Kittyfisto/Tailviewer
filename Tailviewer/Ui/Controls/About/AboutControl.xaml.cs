@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.Ui.Controls
+﻿namespace Tailviewer.Ui.Controls.About
 {
 	public partial class AboutControl
 	{
