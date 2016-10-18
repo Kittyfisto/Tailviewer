@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.ActionCenter;
 
-namespace Tailviewer.Ui.ViewModels.ActionCenter
+namespace Tailviewer.Ui.Controls.ActionCenter
 {
 	public sealed class ChangeViewModel
 		: AbstractNotificationViewModel

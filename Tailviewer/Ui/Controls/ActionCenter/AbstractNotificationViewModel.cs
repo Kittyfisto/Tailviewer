@@ -5,7 +5,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
 
-namespace Tailviewer.Ui.ViewModels.ActionCenter
+namespace Tailviewer.Ui.Controls.ActionCenter
 {
 	public abstract class AbstractNotificationViewModel
 		: INotificationViewModel

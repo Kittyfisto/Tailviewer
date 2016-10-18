@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.Ui.ViewModels.ActionCenter;
+using Tailviewer.Ui.Controls.ActionCenter;
 
 namespace Tailviewer.Ui.Controls.About
 {

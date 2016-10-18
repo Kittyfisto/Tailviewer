@@ -86,7 +86,7 @@
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
-    <Compile Include="Ui\ActionCenterViewModelTest.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
     <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
     <Compile Include="Ui\Controls\DispatcherExtensions.cs" />

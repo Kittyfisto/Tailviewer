@@ -1,7 +1,7 @@
 ﻿using System;
 using Tailviewer.BusinessLogic.ActionCenter;
 
-namespace Tailviewer.Ui.ViewModels.ActionCenter
+namespace Tailviewer.Ui.Controls.ActionCenter
 {
 	public sealed class NotificationViewModel
 		: AbstractNotificationViewModel

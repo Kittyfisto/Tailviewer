@@ -3,9 +3,9 @@ using FluentAssertions;
 using Metrolib;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.Ui.ViewModels.ActionCenter;
+using Tailviewer.Ui.Controls.ActionCenter;
 
-namespace Tailviewer.Test.Ui
+namespace Tailviewer.Test.Ui.Controls.ActionCenter
 {
 	[TestFixture]
 	public sealed class ActionCenterViewModelTest
@@ -18,7 +18,7 @@ namespace Tailviewer.Test.Ui
 		public void Setup()
 		{
 			_dispatcher = new ManualDispatcher();
-			_actionCenter = new ActionCenter();
+			_actionCenter = new Tailviewer.BusinessLogic.ActionCenter.ActionCenter();
 			_viewModel = new ActionCenterViewModel(_dispatcher, _actionCenter);
 		}
 

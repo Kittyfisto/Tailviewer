@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Tailviewer.Ui.ViewModels.ActionCenter
+namespace Tailviewer.Ui.Controls.ActionCenter
 {
 	public interface INotificationViewModel
 	{
