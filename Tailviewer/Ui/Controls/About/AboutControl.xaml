@@ -21,7 +21,8 @@
             <about:LicenseControl />
         </controls:FlatTabItem>
         
-        <controls:FlatTabItem Header="Changelog">
+        <controls:FlatTabItem Header="Changelog"
+                              HorizontalContentAlignment="Center">
             <about:ChangelogControl />
         </controls:FlatTabItem>
         
