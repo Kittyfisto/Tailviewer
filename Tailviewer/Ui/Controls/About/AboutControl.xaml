@@ -22,7 +22,7 @@
         </controls:FlatTabItem>
         
         <controls:FlatTabItem Header="Changelog"
-                              HorizontalContentAlignment="Center">
+                              HorizontalContentAlignment="Stretch">
             <about:ChangelogControl />
         </controls:FlatTabItem>
         

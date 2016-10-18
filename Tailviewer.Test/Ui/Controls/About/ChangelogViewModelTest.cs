@@ -12,7 +12,7 @@ namespace Tailviewer.Test.Ui.Controls.About
 		public void TestCtor()
 		{
 			var model = new ChangelogViewModel();
-			model.Changes.Count().Should().Be(ChangeLog.Changes.Count());
+			model.Changes.Count().Should().Be(Changelog.Changes.Count());
 		}
 	}
 }

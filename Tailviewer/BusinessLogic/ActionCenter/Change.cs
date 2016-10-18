@@ -13,13 +13,20 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 		private readonly List<string> _features;
 		private readonly List<string> _misc;
 		private readonly Version _version;
+		private readonly DateTime _releaseDate;
 
-		public Change(Version version, IEnumerable<string> features, IEnumerable<string> bugfixes, IEnumerable<string> misc)
+		public Change(DateTime releaseDate, Version version, IEnumerable<string> features, IEnumerable<string> bugfixes, IEnumerable<string> misc)
 		{
+			_releaseDate = releaseDate;
 			_version = version;
 			_features = new List<string>(features);
 			_bugfixes = new List<string>(bugfixes);
 			_misc = new List<string>(misc);
+		}
+
+		public DateTime ReleaseDate
+		{
+			get { return _releaseDate; }
 		}
 
 		public Version Version

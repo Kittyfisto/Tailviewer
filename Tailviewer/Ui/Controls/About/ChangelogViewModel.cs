@@ -11,7 +11,7 @@ namespace Tailviewer.Ui.Controls.About
 
 		public ChangelogViewModel()
 		{
-			_changes = new List<ChangeViewModel>(ChangeLog.Changes.Select(CreateViewModel));
+			_changes = new List<ChangeViewModel>(Changelog.Changes.Select(CreateViewModel));
 			_changes.Reverse();
 		}
 

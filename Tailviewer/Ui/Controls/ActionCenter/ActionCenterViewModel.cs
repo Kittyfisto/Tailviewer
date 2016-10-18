@@ -23,7 +23,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 		public ActionCenterViewModel()
 		{
 			_notifications = new ObservableCollection<INotificationViewModel>();
-			AddNotification(ChangeLog.MostRecent);
+			AddNotification(Changelog.MostRecent);
 		}
 
 		public ActionCenterViewModel(IDispatcher dispatcher, IActionCenter actionCenter)

@@ -5,7 +5,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 
 namespace Tailviewer
 {
-	public static class ChangeLog
+	public static class Changelog
 	{
 		private static readonly List<Change> AllChanges;
 
@@ -19,7 +19,7 @@ namespace Tailviewer
 			get { return AllChanges; }
 		}
 
-		static ChangeLog()
+		static Changelog()
 		{
 			AllChanges = new List<Change>();
 
@@ -31,8 +31,8 @@ namespace Tailviewer
 		{
 			var features = new string[] {};
 			var bugfixes = new string[] {};
-			var misc = new string[] {};
-			var change = new Change(Constants.ApplicationVersion, features, bugfixes, misc);
+			var misc = new[] {"Added changelog"};
+			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 
@@ -54,7 +54,9 @@ namespace Tailviewer
 					"Changed scrollbar style to 'flat'",
 					"Changed window style to chromeless"
 				};
-			var change = new Change(new Version(0, 2, 86), features, bugfixes, misc);
+			var releaseDate = new DateTime(2016, 10, 17);
+			var version = new Version(0, 2, 86);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 	}

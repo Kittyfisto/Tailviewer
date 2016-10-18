@@ -25,38 +25,42 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock Text="{Binding Title}"
                        FontWeight="SemiBold" />
-            <controls:FlatGroupBox x:Name="PART_Features"
-                                   Header="Features:"
-                                   Grid.Row="1"
-                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
-                                   Visibility="{Binding HasFeatures, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <controls:BulletinItemsControl ItemsSource="{Binding Features}"
-                                               BulletinMargin="4,6,4,4"
-                                               ItemTemplate="{StaticResource BulletinPoint}" />
-            </controls:FlatGroupBox>
-            <controls:FlatGroupBox x:Name="PART_Bugfixes"
-                                   Header="Bugfixes:"
-                                   Grid.Row="2"
-                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
-                                   Visibility="{Binding HasBugfixes, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <controls:BulletinItemsControl ItemsSource="{Binding Bugfixes}"
-                                               BulletinMargin="4,6,4,4"
-                                               ItemTemplate="{StaticResource BulletinPoint}" />
-            </controls:FlatGroupBox>
-            <controls:FlatGroupBox x:Name="PART_Misc"
-                                   Header="Miscellaneous"
-                                   Grid.Row="3"
-                                   HeaderTemplate="{StaticResource FeatureListTemplate}"
-                                   Visibility="{Binding HasMisc, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <controls:BulletinItemsControl ItemsSource="{Binding Misc}"
-                                               BulletinMargin="4,6,4,4"
-                                               ItemTemplate="{StaticResource BulletinPoint}" />
-            </controls:FlatGroupBox>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <controls:FlatGroupBox x:Name="PART_Features"
+                                       Header="Features:"
+                                       HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                       Visibility="{Binding HasFeatures, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                    <controls:BulletinItemsControl ItemsSource="{Binding Features}"
+                                                   BulletinMargin="4,6,4,4"
+                                                   ItemTemplate="{StaticResource BulletinPoint}" />
+                </controls:FlatGroupBox>
+                <controls:FlatGroupBox x:Name="PART_Bugfixes"
+                                       Header="Bugfixes:"
+                                       Grid.Row="1"
+                                       HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                       Visibility="{Binding HasBugfixes, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                    <controls:BulletinItemsControl ItemsSource="{Binding Bugfixes}"
+                                                   BulletinMargin="4,6,4,4"
+                                                   ItemTemplate="{StaticResource BulletinPoint}" />
+                </controls:FlatGroupBox>
+                <controls:FlatGroupBox x:Name="PART_Misc"
+                                       Header="Miscellaneous"
+                                       Grid.Row="2"
+                                       HeaderTemplate="{StaticResource FeatureListTemplate}"
+                                       Visibility="{Binding HasMisc, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                    <controls:BulletinItemsControl ItemsSource="{Binding Misc}"
+                                                   BulletinMargin="4,6,4,4"
+                                                   ItemTemplate="{StaticResource BulletinPoint}" />
+                </controls:FlatGroupBox>
+            </Grid>
         </Grid>
     </DataTemplate>
 
