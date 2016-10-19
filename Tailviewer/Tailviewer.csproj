@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.87.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.87\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.91.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.91\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -65,6 +65,8 @@
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IBug.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\UnhandledException.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Change.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml.cs">
       <DependentUpon>ActionCenterControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\ActionCenter\BugViewModel.cs" />
     <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
@@ -232,6 +235,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\ActionCenter\ActionCenterItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\BugTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

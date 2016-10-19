@@ -31,7 +31,11 @@ namespace Tailviewer
 		{
 			var features = new string[] {};
 			var bugfixes = new string[] {};
-			var misc = new[] {"Added changelog"};
+			var misc = new[]
+				{
+					"Added changelog",
+					"Unhandled errors are logged to action center"
+				};
 			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}

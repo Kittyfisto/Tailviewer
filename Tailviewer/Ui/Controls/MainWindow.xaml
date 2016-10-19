@@ -55,14 +55,14 @@
                                         Padding="1">
                 <metrolib:EmailToggleButton.ContextMenu>
                     <metrolib:FlatContextMenu AnchorAlignment="Right"
-                                              HorizontalOffset="-226"
+                                              HorizontalOffset="-236"
                                               Placement="Bottom"
                                               IsFirstItemHovered="True"
                                               VerticalOffset="-2">
                         <metrolib:MenuItemContentControl Padding="0">
                             <actionCenter:ActionCenterControl x:Name="PART_ActionCenter"
                                                               DataContext="{Binding ActionCenter}"
-                                                              Width="250"
+                                                              Width="260"
                                                               VerticalAlignment="Stretch"
                                                               HorizontalAlignment="Right" />
                         </metrolib:MenuItemContentControl>
@@ -171,12 +171,6 @@
                                 Height="32">
 
                     </StackPanel>
-
-                    <metrolib:AlertControl
-                        Grid.ColumnSpan="5"
-                        Visibility="{Binding HasError, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                        Exception="{Binding Exception}"
-                        CloseCommand="{Binding CloseErrorDialogCommand}" />
                 </Grid>
             </Grid>
 

@@ -68,14 +68,13 @@ namespace Tailviewer
 					}
 				}
 
-				
-
 				var quickFilters = new QuickFilters(settings.QuickFilters);
 				actionCenter.Add(Changelog.MostRecent);
 				var application = new App();
 				Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 				var uiDispatcher = new UiDispatcher(dispatcher);
-				dispatcher.UnhandledException += DispatcherOnUnhandledException;
+				dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
+				TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
 
 				var window = new MainWindow(settings)
 					{
@@ -113,26 +112,6 @@ namespace Tailviewer
 		private static void InstallExceptionHandlers()
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-		}
-
-		private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
-		{
-			Exception exception = args.Exception;
-
-			Log.ErrorFormat("Caught unexpected exception on dispatcher: {0}", exception);
-
-			Window window = Current.MainWindow;
-			if (window != null)
-			{
-				var model = window.DataContext as MainWindowViewModel;
-				if (model != null && exception != null)
-				{
-					model.HasError = true;
-					model.Exception = exception;
-				}
-			}
-
-			args.Handled = true;
 		}
 
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)

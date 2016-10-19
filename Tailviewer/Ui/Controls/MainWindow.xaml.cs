@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Metrolib;
@@ -37,7 +38,6 @@ namespace Tailviewer.Ui.Controls
 			DragOver += OnDragOver;
 			Drop += OnDrop;
 			MouseMove += OnMouseMove;
-			Loaded += OnLoaded;
 
 			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
 		}
@@ -52,12 +52,6 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ICommand) GetValue(FocusLogFileSearchCommandProperty); }
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
-		}
-
-		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-		{
-			ResourceDictionary res = Resources;
-			int n = 0;
 		}
 
 		private void OnMouseMove(object sender, MouseEventArgs e)

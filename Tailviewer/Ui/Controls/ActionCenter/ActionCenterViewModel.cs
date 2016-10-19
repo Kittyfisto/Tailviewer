@@ -63,6 +63,14 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 				{
 					Add(new ChangeViewModel(change));
 				}
+				else
+				{
+					var bug = notification as IBug;
+					if (bug != null)
+					{
+						Add(new BugViewModel(bug));
+					}
+				}
 			}
 
 			UpdateUnreadCount();
@@ -70,6 +78,9 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 
 		private void Add(INotificationViewModel notificationViewModel)
 		{
+			if (_notifications.Count == BusinessLogic.ActionCenter.ActionCenter.MaximumNotificationCount)
+				_notifications.RemoveAt(_notifications.Count - 1);
+
 			notificationViewModel.OnRemove += Remove;
 			_notifications.Insert(0, notificationViewModel);
 		}

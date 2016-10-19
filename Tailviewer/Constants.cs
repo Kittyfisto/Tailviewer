@@ -12,6 +12,7 @@ namespace Tailviewer
 		public static readonly DateTime BuildDate;
 		public static readonly Uri ProjectPage;
 		public static readonly Uri GithubPage;
+		public static readonly Uri ReportBugPage;
 		public static readonly string ApplicationFolder;
 		public static readonly string AppDataLocalFolder;
 		public static readonly string DownloadFolder;
@@ -30,9 +31,11 @@ namespace Tailviewer
 
 			ApplicationTitle = "Tailviewer";
 			ApplicationVersion = name.Version;
+			BuildDate = GetLinkerTime(assembly);
 			MainWindowTitle = string.Format("Tailviewer, v{0}", ApplicationVersion.Format());
 			ProjectPage = new Uri("https://kittyfisto.github.io/Tailviewer/");
 			GithubPage = new Uri("https://github.com/Kittyfisto/Tailviewer");
+			ReportBugPage = new Uri("https://github.com/Kittyfisto/Tailviewer/issues/new");
 			ApplicationFolder = assembly.GetFolder();
 			AppDataLocalFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationTitle);
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
@@ -44,7 +47,7 @@ namespace Tailviewer
 		/// <param name="assembly"></param>
 		/// <param name="target"></param>
 		/// <returns></returns>
-		public static DateTime GetLinkerTime(this Assembly assembly, TimeZoneInfo target = null)
+		public static DateTime GetLinkerTime(Assembly assembly, TimeZoneInfo target = null)
 		{
 			var filePath = assembly.Location;
 			const int c_PeHeaderOffset = 60;

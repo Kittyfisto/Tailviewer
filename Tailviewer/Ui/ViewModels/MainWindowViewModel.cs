@@ -41,15 +41,12 @@ namespace Tailviewer.Ui.ViewModels
 		#region Commands
 
 		private readonly ICommand _addDataSourceCommand;
-		private readonly ICommand _closeErrorDialogCommand;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
 
 		#endregion
 
 		private LogViewerViewModel _currentDataSourceLogView;
-		private Exception _exception;
-		private bool _hasError;
 		private bool _isLogFileOpen;
 		private string _windowTitle;
 
@@ -86,7 +83,6 @@ namespace Tailviewer.Ui.ViewModels
 
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
-			_closeErrorDialogCommand = new DelegateCommand(CloseErrorDialog);
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
 
 			ChangeDataSource(CurrentDataSource);
@@ -110,37 +106,6 @@ namespace Tailviewer.Ui.ViewModels
 		public ICommand SelectNextDataSourceCommand
 		{
 			get { return _selectNextDataSourceCommand; }
-		}
-
-		public bool HasError
-		{
-			get { return _hasError; }
-			set
-			{
-				if (value == _hasError)
-					return;
-
-				_hasError = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public ICommand CloseErrorDialogCommand
-		{
-			get { return _closeErrorDialogCommand; }
-		}
-
-		public Exception Exception
-		{
-			get { return _exception; }
-			set
-			{
-				if (value == _exception)
-					return;
-
-				_exception = value;
-				EmitPropertyChanged();
-			}
 		}
 
 		public string WindowTitle
@@ -268,12 +233,6 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSourcesViewModel.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
 			OpenFile(value);
-		}
-
-		private void CloseErrorDialog()
-		{
-			Exception = null;
-			HasError = false;
 		}
 
 		private void SelectNextDataSource()

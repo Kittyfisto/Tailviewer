@@ -17,6 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ActionCenterItem.xaml" />
                 <ResourceDictionary Source="NotificationTemplate.xaml" />
+                <ResourceDictionary Source="BugTemplate.xaml" />
                 <ResourceDictionary Source="ChangeTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
