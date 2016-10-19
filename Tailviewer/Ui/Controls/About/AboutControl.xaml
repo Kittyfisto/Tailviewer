@@ -10,7 +10,8 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance controls1:AboutViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <tab:FlatTabControl Padding="0" Foreground="#333333">
+    <tab:FlatTabControl Padding="0" Foreground="#333333"
+                        HorizontalContentAlignment="Center">
         <controls:FlatTabItem Header="Tailviewer"
                               HorizontalContentAlignment="Stretch">
             <about:TailviewerControl />
@@ -25,11 +26,5 @@
                               HorizontalContentAlignment="Stretch">
             <about:ChangelogControl />
         </controls:FlatTabItem>
-        
-        <tab:FlatTabControl.Resources>
-            <Style TargetType="{x:Type TabPanel}">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-            </Style>
-        </tab:FlatTabControl.Resources>
     </tab:FlatTabControl>
 </UserControl>
