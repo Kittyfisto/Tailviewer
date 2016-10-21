@@ -68,6 +68,14 @@ namespace Tailviewer
 					}
 				}
 
+				if (settings.AutoUpdate.CheckForUpdates)
+				{
+					// Our initial check for updates is not due to a user action
+					// and therefore we don't need to show a notification when the
+					// application is up-to-date.
+					updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+				}
+
 				var quickFilters = new QuickFilters(settings.QuickFilters);
 				actionCenter.Add(Changelog.MostRecent);
 				var application = new App();

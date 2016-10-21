@@ -56,10 +56,10 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			_latestVersionChanged = new List<Action<VersionInfo>>();
 		}
 
-		public void CheckForUpdates()
+		public void CheckForUpdates(bool addNotificationWhenUpToDate)
 		{
 			var updateTask = Task<VersionInfo>.Factory.StartNew(QueryNewestVersions);
-			updateTask.ContinueWith(OnVersionChecked);
+			updateTask.ContinueWith(task => OnVersionChecked(task, addNotificationWhenUpToDate));
 		}
 
 		public Task Install(VersionInfo latest)
@@ -89,12 +89,31 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		private void OnVersionChecked(Task<VersionInfo> task)
+		private void OnVersionChecked(Task<VersionInfo> task, bool addNotificationWhenUpToDate)
 		{
 			try
 			{
-				VersionInfo latest = task.Result;
-				LatestVersion = latest;
+				VersionInfo latestVersion = task.Result;
+				LatestVersion = latestVersion;
+
+				Version latest = latestVersion.Stable;
+				Version current = AppVersion;
+				if (current != null && latest != null && latest > current)
+				{
+					var message = string.Format("A newer version ({0}) is available to be downloaded", latest);
+					Log.InfoFormat(message);
+					_actionCenter.Add(Notification.CreateInfo("Check for updates", message));
+				}
+				else
+				{
+					const string message = "Running the latest version";
+					Log.InfoFormat(message);
+
+					if (addNotificationWhenUpToDate)
+					{
+						_actionCenter.Add(Notification.CreateInfo("Check for updates", message));
+					}
+				}
 			}
 			catch (Exception e)
 			{
@@ -118,6 +137,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 						return;
 
 					_latestVersion = value;
+
 					foreach (var fn in _latestVersionChanged)
 					{
 						fn(value);

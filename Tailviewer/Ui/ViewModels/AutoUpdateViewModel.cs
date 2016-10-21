@@ -49,10 +49,6 @@ namespace Tailviewer.Ui.ViewModels
 			_installTitle = "Install";
 
 			_updater.LatestVersionChanged += UpdaterOnLatestVersionChanged;
-			if (_settings.CheckForUpdates)
-			{
-				_updater.CheckForUpdates();
-			}
 		}
 
 		public Version LatestVersion
@@ -139,7 +135,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void CheckForUpdates()
 		{
-			_updater.CheckForUpdates();
+			_updater.CheckForUpdates(addNotificationWhenUpToDate: true);
 		}
 
 		private bool CanInstall()

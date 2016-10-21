@@ -13,7 +13,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Viewbox>
+            <Viewbox Margin="0,0,6,0">
                 <Canvas Width="24" Height="24">
                     <Path x:Name="PART_Icon" />
                 </Canvas>

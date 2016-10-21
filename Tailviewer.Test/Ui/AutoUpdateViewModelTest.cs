@@ -58,9 +58,9 @@ namespace Tailviewer.Test.Ui
 		{
 			_viewModel.CheckForUpdatesCommand.CanExecute(null).Should().BeTrue();
 
-			_updater.Verify(x => x.CheckForUpdates(), Times.Never);
+			_updater.Verify(x => x.CheckForUpdates(true), Times.Never);
 			_viewModel.CheckForUpdatesCommand.Execute(null);
-			_updater.Verify(x => x.CheckForUpdates(), Times.Once);
+			_updater.Verify(x => x.CheckForUpdates(true), Times.Once);
 		}
 	}
 }

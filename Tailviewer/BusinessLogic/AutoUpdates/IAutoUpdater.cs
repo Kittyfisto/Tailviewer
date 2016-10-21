@@ -16,7 +16,8 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		/// <summary>
 		/// </summary>
-		void CheckForUpdates();
+		/// <param name="addNotificationWhenUpToDate">Whether or not a notification should be added when the installed version is up-to-date</param>
+		void CheckForUpdates(bool addNotificationWhenUpToDate);
 
 		 /// <summary>
 		///     Downloads and installs the latest version.
