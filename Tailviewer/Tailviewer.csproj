@@ -94,6 +94,13 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
+    <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
+    <Compile Include="BusinessLogic\LogTables\IColumnParser.cs" />
+    <Compile Include="BusinessLogic\LogTables\ILogTable.cs" />
+    <Compile Include="BusinessLogic\LogTables\Log4ColumnParser.cs" />
+    <Compile Include="BusinessLogic\LogTables\Log4PatternParser.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogFileTable.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableRow.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
@@ -120,6 +127,7 @@
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\QuickFilterMatchType.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="Ui\Controls\About\AboutControl.xaml.cs">
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
