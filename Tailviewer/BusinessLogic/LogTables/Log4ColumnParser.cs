@@ -8,6 +8,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 	{
 		private static readonly Dictionary<string, ColumnType> ColumnTypes;
 
+		private readonly string _pattern;
 		private readonly string _name;
 		private readonly ColumnType _type;
 
@@ -16,25 +17,57 @@ namespace Tailviewer.BusinessLogic.LogTables
 			ColumnTypes = new Dictionary<string, ColumnType>
 				{
 					{"timestamp", ColumnType.Timestamp},
-					{"thread", ColumnType.ThreadName},
+					{"r", ColumnType.Timestamp},
+
+					{"date", ColumnType.Date},
+					{"d", ColumnType.Date},
+
+					{"utcdate", ColumnType.UtcDate},
+
+
+					{"thread", ColumnType.Thread},
+					{"t", ColumnType.Thread},
+
+					{"identity", ColumnType.Identity},
+					{"u", ColumnType.Identity},
+
 					{"level", ColumnType.Level},
+					{"p", ColumnType.Level},
+
 					{"logger", ColumnType.Logger},
+					{"c", ColumnType.Logger},
+
 					{"message", ColumnType.Message},
+					{"m", ColumnType.Message},
+
+					{"location", ColumnType.Location},
+					{"l", ColumnType.Location},
+
+					{"file", ColumnType.File},
+					{"F", ColumnType.File},
+
+					{"type", ColumnType.Type},
+					{"C", ColumnType.Type},
+					{"class", ColumnType.Type},
+
+					{"line", ColumnType.Line},
+					{"L", ColumnType.Line},
+
+					{"method", ColumnType.Method},
+					{"M", ColumnType.Method},
 				};
 		}
 
-		public Log4ColumnParser(string subPattern)
+		private Log4ColumnParser(string pattern, string name, ColumnType type)
 		{
-			if (subPattern == null)
-				throw new ArgumentNullException("subPattern");
+			_pattern = pattern;
+			_name = name;
+			_type = type;
+		}
 
-			if (!subPattern.StartsWith("%"))
-				throw new ArgumentException("The given pattern-part must start with '%'");
-
-			int index = subPattern.IndexOf(1, c => !char.IsLetter(c));
-			int length = index != -1 ? index : subPattern.Length;
-			_name = subPattern.Substring(1, length - 1);
-			ColumnTypes.TryGetValue(_name.ToLowerInvariant(), out _type);
+		public string Pattern
+		{
+			get { return _pattern; }
 		}
 
 		public string Name
@@ -67,27 +100,34 @@ namespace Tailviewer.BusinessLogic.LogTables
 			if (pattern == null)
 				throw new ArgumentNullException("pattern");
 
-			int start = startIndex + 1;
-			if (start >= pattern.Length)
+			int columnStartIndex = pattern.IndexOf('%', startIndex);
+			if (columnStartIndex != -1)
 			{
-				patternLength = 0;
-				return null;
-			}
+				int columnEndIndex = pattern.IndexOf('%', columnStartIndex + 1);
+				if (columnEndIndex == -1)
+					columnEndIndex = pattern.Length;
 
-			int index = pattern.IndexOf(start, c => c == '%');
-			if (index == -1)
-			{
+				var subPattern = pattern.Substring(startIndex, columnEndIndex - startIndex);
+				int nameStartIndex = pattern.IndexOf(char.IsLetter, columnStartIndex + 1, columnEndIndex - columnStartIndex - 1);
+				if (nameStartIndex != -1)
+				{
+					int nameEndIndex = pattern.IndexOf(c => !char.IsLetter(c), nameStartIndex);
+					if (nameEndIndex == -1)
+						nameEndIndex = columnEndIndex;
+					string name = pattern.Substring(nameStartIndex, nameEndIndex - nameStartIndex);
+					ColumnType type;
+					ColumnTypes.TryGetValue(name, out type);
+
+					patternLength = columnEndIndex - startIndex;
+					return new Log4ColumnParser(subPattern, name, type);
+				}
+
 				patternLength = pattern.Length - startIndex;
-				if (patternLength < 0)
-					return null;
-			}
-			else
-			{
-				patternLength = index - startIndex;
+				return new Log4ColumnParser(subPattern, "<Unknown>", ColumnType.Unknown);
 			}
 
-			string subPattern = pattern.Substring(startIndex, patternLength);
-			return new Log4ColumnParser(subPattern);
+			patternLength = 0;
+			return null;
 		}
 	}
 }

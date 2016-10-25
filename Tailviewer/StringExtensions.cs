@@ -6,12 +6,12 @@ namespace Tailviewer
 	{
 		public static int IndexOf(this string that, Predicate<char> pred)
 		{
-			return IndexOf(that, 0, pred);
+			return IndexOf(that, pred, 0);
 		}
 
-		public static int IndexOf(this string that, int startIndex, Predicate<char> pred)
+		public static int IndexOf(this string that, Predicate<char> pred, int startIndex)
 		{
-			return IndexOf(that, startIndex, that.Length - startIndex, pred);
+			return IndexOf(that, pred, startIndex, that.Length - startIndex);
 		}
 
 		/// <summary>
@@ -19,11 +19,11 @@ namespace Tailviewer
 		///     If no such character has been found, -1 is returned.
 		/// </summary>
 		/// <param name="that"></param>
+		/// <param name="pred"></param>
 		/// <param name="startIndex"></param>
 		/// <param name="length"></param>
-		/// <param name="pred"></param>
 		/// <returns></returns>
-		public static int IndexOf(this string that, int startIndex, int length, Predicate<char> pred)
+		public static int IndexOf(this string that, Predicate<char> pred, int startIndex, int length)
 		{
 			if (startIndex < 0)
 				throw new ArgumentOutOfRangeException("startIndex");

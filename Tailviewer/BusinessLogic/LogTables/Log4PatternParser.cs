@@ -10,6 +10,8 @@ namespace Tailviewer.BusinessLogic.LogTables
 	/// </summary>
 	public sealed class Log4PatternParser
 	{
+		private static readonly Dictionary<string, ColumnType> ColumnTypes;
+
 		private readonly string _pattern;
 		private readonly Log4ColumnParser[] _columns;
 

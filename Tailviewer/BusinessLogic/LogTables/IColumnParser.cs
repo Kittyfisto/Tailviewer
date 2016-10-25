@@ -8,6 +8,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 	public interface IColumnParser
 	{
 		/// <summary>
+		///     The pattern of this column.
+		/// </summary>
+		string Pattern { get; }
+
+		/// <summary>
 		///     The name of this column.
 		/// </summary>
 		string Name { get; }
