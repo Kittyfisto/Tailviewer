@@ -30,6 +30,10 @@ namespace Tailviewer.BusinessLogic.Parsers
 				case ColumnType.Message:
 					return new MessageParser();
 
+				case ColumnType.Date:
+				case ColumnType.UtcDate:
+					return new DateParser(format);
+
 				default:
 					throw new KeyNotFoundException(string.Format("Unable to find a parser for '{0}'", type));
 			}

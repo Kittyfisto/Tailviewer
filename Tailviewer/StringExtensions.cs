@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer
 {
@@ -41,6 +42,13 @@ namespace Tailviewer
 			}
 
 			return -1;
+		}
+
+		[Pure]
+		public static bool ContainsAt(this string that, string value, int startIndex)
+		{
+			var sub = that.Substring(startIndex);
+			return sub.StartsWith(value);
 		}
 	}
 }

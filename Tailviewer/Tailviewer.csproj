@@ -96,13 +96,16 @@
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
     <Compile Include="BusinessLogic\Parsers\ColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
+    <Compile Include="BusinessLogic\Parsers\CsvParser.cs" />
+    <Compile Include="BusinessLogic\Parsers\DateParser.cs" />
     <Compile Include="BusinessLogic\Parsers\IColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ILogTable.cs" />
+    <Compile Include="BusinessLogic\Parsers\ILogFileParser.cs" />
     <Compile Include="BusinessLogic\Parsers\LevelParser.cs" />
     <Compile Include="BusinessLogic\Parsers\LineParser.cs" />
     <Compile Include="BusinessLogic\Parsers\Log4ColumnParser.cs" />
-    <Compile Include="BusinessLogic\Parsers\Log4PatternParser.cs" />
     <Compile Include="BusinessLogic\LogTables\LogFileTable.cs" />
+    <Compile Include="BusinessLogic\Parsers\Log4PatternParser.cs" />
     <Compile Include="BusinessLogic\Parsers\LoggerParser.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableRow.cs" />
     <Compile Include="BusinessLogic\Parsers\MessageParser.cs" />

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
@@ -14,8 +16,19 @@ namespace Tailviewer.BusinessLogic.LogTables
 	{
 		public readonly object[] Fields;
 
+		public LogTableRow(IEnumerable<object> fields)
+		{
+			if (fields == null)
+				throw new ArgumentNullException("fields");
+
+			Fields = fields.ToArray();
+		}
+
 		public LogTableRow(object[] fields)
 		{
+			if (fields == null)
+				throw new ArgumentNullException("fields");
+
 			Fields = fields;
 		}
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogTables;
+using log4net;
 
 namespace Tailviewer.BusinessLogic.Parsers
 {
@@ -14,6 +16,8 @@ namespace Tailviewer.BusinessLogic.Parsers
 	public sealed class Log4ColumnParser
 		: IColumnParser
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private static readonly Dictionary<string, ColumnType> ColumnTypes;
 		private static readonly Regex PatternRegex;
 
@@ -24,6 +28,8 @@ namespace Tailviewer.BusinessLogic.Parsers
 		private readonly ColumnType _type;
 		private readonly ColumnParser _parser;
 		private readonly string _format;
+		private readonly string _prefix;
+		private readonly string _postfix;
 
 		static Log4ColumnParser()
 		{
@@ -61,7 +67,12 @@ namespace Tailviewer.BusinessLogic.Parsers
 			PatternRegex = new Regex(@"%(-?\d+)?(\.\d+)?([a-zA-Z_][a-zA-Z0-9_]*)({[^}]+})?", RegexOptions.Compiled);
 		}
 
-		private Log4ColumnParser(string pattern, string name, string format, ColumnType type, int? minimumLength, int? maximumLength)
+		private Log4ColumnParser(string pattern,
+		                         string name,
+		                         string format,
+		                         string prefix, string postfix,
+		                         ColumnType type,
+		                         int? minimumLength, int? maximumLength)
 		{
 			_pattern = pattern;
 			_name = name;
@@ -69,6 +80,8 @@ namespace Tailviewer.BusinessLogic.Parsers
 			_type = type;
 			_minimumLength = minimumLength;
 			_maximumLength = maximumLength;
+			_prefix = prefix;
+			_postfix = postfix;
 			_parser = ColumnParser.Create(type, format);
 		}
 
@@ -97,24 +110,35 @@ namespace Tailviewer.BusinessLogic.Parsers
 			get { return _type; }
 		}
 
-		public object Parse(string line, int startIndex, out int numCharactersConsumed)
+		public string Format
 		{
-			throw new NotImplementedException();
+			get { return _format; }
 		}
 
-		public static Log4ColumnParser[] Create(string pattern)
+		public object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
-			var parsers = new List<Log4ColumnParser>();
-			Log4ColumnParser parser;
-			int startIndex = 0;
-			int columnLength;
-			while ((parser = Create(pattern, startIndex, out columnLength)) != null && columnLength > 0)
+			// Consume prefix
+			if (!line.ContainsAt(_prefix, startIndex))
 			{
-				parsers.Add(parser);
-				startIndex += columnLength;
+				numCharactersConsumed = 0;
+				return null;
 			}
 
-			return parsers.ToArray();
+			// Consume actual content
+			startIndex += _prefix.Length;
+			var content = _parser.Parse(line, startIndex, out numCharactersConsumed);
+			startIndex += numCharactersConsumed;
+
+			// Consume postfix
+			if (!line.ContainsAt(_postfix, startIndex))
+			{
+				numCharactersConsumed = 0;
+				return null;
+			}
+
+			numCharactersConsumed += _prefix.Length;
+			numCharactersConsumed += _postfix.Length;
+			return content;
 		}
 
 		public static Log4ColumnParser Create(string pattern, int startIndex, out int patternLength)
@@ -155,11 +179,31 @@ namespace Tailviewer.BusinessLogic.Parsers
 					return null;
 				}
 
-				patternLength = match.Index - startIndex + match.Length;
+				string prefix = string.Empty;
+				int prefixLength = match.Index - startIndex;
+				if (prefixLength > 0)
+				{
+					prefix = pattern.Substring(startIndex, prefixLength);
+				}
+				string postfix = string.Empty;
+				var patternEndIndex = startIndex + prefixLength + match.Length;
+				int next = pattern.IndexOf('%', patternEndIndex);
+				if (next == -1)
+					next = pattern.Length;
+				int postfixLength = next - patternEndIndex;
+				if (postfixLength > 0)
+					postfix = pattern.Substring(patternEndIndex, postfixLength);
+
+				patternLength = prefixLength + match.Length + postfixLength;
 				ColumnType type;
 				ColumnTypes.TryGetValue(name, out type);
 				string columnPattern = pattern.Substring(startIndex, patternLength);
-				return new Log4ColumnParser(columnPattern, name, format, type, minimumLength, maximumLength);
+				return new Log4ColumnParser(columnPattern,
+				                            name,
+				                            format,
+				                            prefix, postfix,
+				                            type,
+				                            minimumLength, maximumLength);
 			}
 
 			patternLength = 0;
