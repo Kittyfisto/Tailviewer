@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("System.Threading.Tasks.Extensions")]
-[assembly: AssemblyCopyright("Copyright © Kittyfisto 2016")]
+[assembly: AssemblyCopyright("Copyright © Simon Mießler 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
