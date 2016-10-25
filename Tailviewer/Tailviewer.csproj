@@ -94,12 +94,14 @@
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
+    <Compile Include="BusinessLogic\LogTables\ColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
     <Compile Include="BusinessLogic\LogTables\IColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ILogTable.cs" />
     <Compile Include="BusinessLogic\LogTables\Log4ColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Log4PatternParser.cs" />
     <Compile Include="BusinessLogic\LogTables\LogFileTable.cs" />
+    <Compile Include="BusinessLogic\LogTables\LoggerParser.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableRow.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />

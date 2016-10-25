@@ -3,13 +3,18 @@ using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
-	internal class Log4ColumnParser
+	/// <summary>
+	///     Takes care of parsing a log4net pattern that contains exactly *one* pattern such as '%logger'.
+	///     This class is mostly concerned with consuming fixed characters before and after the actual pattern data.
+	///     The actual parsing of the data (such as timestamp, etc...) is delegated to a dedicated parser for that type.
+	/// </summary>
+	public sealed class Log4ColumnParser
 		: IColumnParser
 	{
 		private static readonly Dictionary<string, ColumnType> ColumnTypes;
 
-		private readonly string _pattern;
 		private readonly string _name;
+		private readonly string _pattern;
 		private readonly ColumnType _type;
 
 		static Log4ColumnParser()
@@ -18,41 +23,28 @@ namespace Tailviewer.BusinessLogic.LogTables
 				{
 					{"timestamp", ColumnType.Timestamp},
 					{"r", ColumnType.Timestamp},
-
 					{"date", ColumnType.Date},
 					{"d", ColumnType.Date},
-
 					{"utcdate", ColumnType.UtcDate},
-
-
 					{"thread", ColumnType.Thread},
 					{"t", ColumnType.Thread},
-
 					{"identity", ColumnType.Identity},
 					{"u", ColumnType.Identity},
-
 					{"level", ColumnType.Level},
 					{"p", ColumnType.Level},
-
 					{"logger", ColumnType.Logger},
 					{"c", ColumnType.Logger},
-
 					{"message", ColumnType.Message},
 					{"m", ColumnType.Message},
-
 					{"location", ColumnType.Location},
 					{"l", ColumnType.Location},
-
 					{"file", ColumnType.File},
 					{"F", ColumnType.File},
-
 					{"type", ColumnType.Type},
 					{"C", ColumnType.Type},
 					{"class", ColumnType.Type},
-
 					{"line", ColumnType.Line},
 					{"L", ColumnType.Line},
-
 					{"method", ColumnType.Method},
 					{"M", ColumnType.Method},
 				};
@@ -78,6 +70,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public ColumnType Type
 		{
 			get { return _type; }
+		}
+
+		public object Parse(string line, int startIndex, out int numCharactersConsumed)
+		{
+			throw new NotImplementedException();
 		}
 
 		public static Log4ColumnParser[] Create(string pattern)
@@ -107,7 +104,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 				if (columnEndIndex == -1)
 					columnEndIndex = pattern.Length;
 
-				var subPattern = pattern.Substring(startIndex, columnEndIndex - startIndex);
+				string subPattern = pattern.Substring(startIndex, columnEndIndex - startIndex);
 				int nameStartIndex = pattern.IndexOf(char.IsLetter, columnStartIndex + 1, columnEndIndex - columnStartIndex - 1);
 				if (nameStartIndex != -1)
 				{

@@ -74,7 +74,9 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\Log4ColumnParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Log4PatternParserTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LoggerParserTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Scheduling\PeriodicTaskTest.cs" />

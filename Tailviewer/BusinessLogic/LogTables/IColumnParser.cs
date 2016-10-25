@@ -21,5 +21,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 		///     How the column's data is to be interpreted.
 		/// </summary>
 		ColumnType Type { get; }
+
+		/// <summary>
+		///     Parses a portion of the given line and returns the parsed data.
+		/// </summary>
+		/// <param name="line"></param>
+		/// <param name="startIndex"></param>
+		/// <param name="numCharactersConsumed">The number of characters that were consumed from line from 'startIndex' onward</param>
+		/// <returns></returns>
+		object Parse(string line, int startIndex, out int numCharactersConsumed);
 	}
 }
