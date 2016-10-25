@@ -1,18 +1,20 @@
-﻿namespace Tailviewer.BusinessLogic.Parsers
+﻿using System;
+
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
-	public sealed class TimestampParser
+	public sealed class DateParser
 		: ColumnParser
 	{
 		private readonly string _format;
 
-		public TimestampParser(string format)
+		public DateParser(string format)
 		{
 			_format = format;
 		}
 
 		public override object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -4,9 +4,9 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
-using Tailviewer.BusinessLogic.Parsers;
+using Tailviewer.BusinessLogic.LogTables.Parsers;
 
-namespace Tailviewer.Test.BusinessLogic.Parsers
+namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 {
 	[TestFixture]
 	public sealed class Log4PatternParserTest

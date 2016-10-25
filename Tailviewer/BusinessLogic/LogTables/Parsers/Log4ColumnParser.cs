@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Tailviewer.BusinessLogic.LogTables;
 using log4net;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	/// <summary>
 	///     Takes care of parsing a log4net pattern that contains exactly *one* pattern such as '%logger'.

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	/// <summary>
 	///     Is capable of parsing a log file according to a given log4(net/j/cpp) pattern into a table.

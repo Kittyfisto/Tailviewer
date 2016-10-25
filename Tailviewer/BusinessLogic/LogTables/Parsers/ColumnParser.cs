@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	public abstract class ColumnParser
 	{

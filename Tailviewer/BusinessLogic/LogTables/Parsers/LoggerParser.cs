@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	public sealed class LoggerParser
 		: ColumnParser

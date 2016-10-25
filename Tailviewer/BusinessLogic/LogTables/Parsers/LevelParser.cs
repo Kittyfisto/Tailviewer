@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	public sealed class LevelParser
 		: ColumnParser

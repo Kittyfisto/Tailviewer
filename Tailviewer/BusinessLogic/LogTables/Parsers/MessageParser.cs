@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.BusinessLogic.Parsers
+﻿namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	public sealed class MessageParser
 		: ColumnParser

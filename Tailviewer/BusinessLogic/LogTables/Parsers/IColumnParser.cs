@@ -1,7 +1,6 @@
 ﻿using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
 	/// <summary>
 	///     Responsible for extracting the data of a particular column from one or more <see cref="LogLine" />(s).
