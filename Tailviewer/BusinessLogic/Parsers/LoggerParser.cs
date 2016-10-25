@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Tailviewer.BusinessLogic.LogTables
+namespace Tailviewer.BusinessLogic.Parsers
 {
 	public sealed class LoggerParser
 		: ColumnParser
@@ -10,11 +10,6 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LoggerParser()
 		{
 			_expression = new Regex(@"([.\w]+\.)?(\w+)", RegexOptions.Compiled);
-		}
-
-		public override ColumnType Type
-		{
-			get { return ColumnType.Logger; }
 		}
 
 		public override object Parse(string line, int startIndex, out int numCharactersConsumed)

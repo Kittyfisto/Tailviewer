@@ -2,8 +2,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.BusinessLogic.Parsers;
 
-namespace Tailviewer.Test.BusinessLogic.LogTables
+namespace Tailviewer.Test.BusinessLogic.Parsers
 {
 	[TestFixture]
 	public sealed class Log4PatternParserTest
@@ -11,8 +12,8 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestCtor1()
 		{
-			var parser = new Log4PatternParser("%timestamp [%thread] %level %logger %ndc - %message%newline");
-			parser.Pattern.Should().Be("%timestamp [%thread] %level %logger %ndc - %message%newline");
+			var parser = new Log4PatternParser("%timestamp [%thread] %level %logger %line - %message%newline");
+			parser.Pattern.Should().Be("%timestamp [%thread] %level %logger %line - %message%newline");
 		}
 
 		[Test]
@@ -21,23 +22,23 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 			var parser = new Log4PatternParser("%timestamp [%thread] %level %logger - %message");
 			parser.Columns.Count().Should().Be(5);
 			parser.Columns.ElementAt(0).Type.Should().Be(ColumnType.Timestamp);
-			parser.Columns.ElementAt(0).Pattern.Should().Be("%timestamp [");
+			parser.Columns.ElementAt(0).Pattern.Should().Be("%timestamp");
 			parser.Columns.ElementAt(0).Name.Should().Be("timestamp");
 
 			parser.Columns.ElementAt(1).Type.Should().Be(ColumnType.Thread);
-			parser.Columns.ElementAt(1).Pattern.Should().Be("%thread] ");
+			parser.Columns.ElementAt(1).Pattern.Should().Be(" [%thread");
 			parser.Columns.ElementAt(1).Name.Should().Be("thread");
 
 			parser.Columns.ElementAt(2).Type.Should().Be(ColumnType.Level);
-			parser.Columns.ElementAt(2).Pattern.Should().Be("%level ");
+			parser.Columns.ElementAt(2).Pattern.Should().Be("] %level");
 			parser.Columns.ElementAt(2).Name.Should().Be("level");
 
 			parser.Columns.ElementAt(3).Type.Should().Be(ColumnType.Logger);
-			parser.Columns.ElementAt(3).Pattern.Should().Be("%logger - ");
+			parser.Columns.ElementAt(3).Pattern.Should().Be(" %logger");
 			parser.Columns.ElementAt(3).Name.Should().Be("logger");
 
 			parser.Columns.ElementAt(4).Type.Should().Be(ColumnType.Message);
-			parser.Columns.ElementAt(4).Pattern.Should().Be("%message");
+			parser.Columns.ElementAt(4).Pattern.Should().Be(" - %message");
 			parser.Columns.ElementAt(4).Name.Should().Be("message");
 		}
 

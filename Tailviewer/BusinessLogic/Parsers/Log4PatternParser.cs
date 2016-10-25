@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.LogTables
+namespace Tailviewer.BusinessLogic.Parsers
 {
 	/// <summary>
 	///     This class is responsible for parsing any given log4(net/j/cpp) pattern.

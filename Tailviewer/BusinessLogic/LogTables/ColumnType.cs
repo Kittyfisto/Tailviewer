@@ -29,12 +29,21 @@
 		///     Used to output the application supplied message associated with the logging event.
 		/// </summary>
 		Message,
+
+		/// <summary>
+		///     Used to output the level of the logging event.
+		/// </summary>
 		Level,
 
 		/// <summary>
 		///     The column contains the name of the logger.
 		/// </summary>
 		Logger,
+
+		/// <summary>
+		/// 
+		/// </summary>
+		Newline,
 
 		#region Time
 

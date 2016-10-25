@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using Metrolib.Controls;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Ui.Controls.LogView;

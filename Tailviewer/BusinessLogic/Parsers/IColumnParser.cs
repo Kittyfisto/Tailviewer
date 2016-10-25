@@ -1,6 +1,7 @@
 ﻿using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.LogTables
+namespace Tailviewer.BusinessLogic.Parsers
 {
 	/// <summary>
 	///     Responsible for extracting the data of a particular column from one or more <see cref="LogLine" />(s).
@@ -21,6 +22,16 @@ namespace Tailviewer.BusinessLogic.LogTables
 		///     How the column's data is to be interpreted.
 		/// </summary>
 		ColumnType Type { get; }
+
+		/// <summary>
+		///     The minimum length of the column, if such a boundary exists.
+		/// </summary>
+		int? MinimumLength { get; }
+
+		/// <summary>
+		///     The maximum length of the column, if such a boundary exists.
+		/// </summary>
+		int? MaximumLength { get; }
 
 		/// <summary>
 		///     Parses a portion of the given line and returns the parsed data.

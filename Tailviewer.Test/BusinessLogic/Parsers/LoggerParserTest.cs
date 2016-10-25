@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.BusinessLogic.Parsers;
 
-namespace Tailviewer.Test.BusinessLogic.LogTables
+namespace Tailviewer.Test.BusinessLogic.Parsers
 {
 	[TestFixture]
 	public sealed class LoggerParserTest
