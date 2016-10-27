@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 	public sealed class Log4PatternParser
 		: ILogFileParser
 	{
-		private readonly Log4ColumnParser[] _columns;
+		private readonly Log4ColumnParser[] _parsers;
 		private readonly string _pattern;
 
 		public Log4PatternParser(string pattern)
@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 				startIndex += columnLength;
 			}
 
-			_columns = parsers.ToArray();
+			_parsers = parsers.ToArray();
 		}
 
 		public string Pattern
@@ -36,22 +36,22 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 			get { return _pattern; }
 		}
 
-		public Log4ColumnParser[] Columns
+		public Log4ColumnParser[] Parsers
 		{
-			get { return _columns; }
+			get { return _parsers; }
 		}
 
 		[Pure]
 		public LogTableRow Parse(LogLine line)
 		{
-			var fields = new object[_columns.Length];
+			var fields = new object[_parsers.Length];
 
 			string message = line.Message;
 			int startIndex = 0;
-			for (int i = 0; i < _columns.Length; ++i)
+			for (int i = 0; i < _parsers.Length; ++i)
 			{
 				int length;
-				fields[i] = _columns[i].Parse(message, startIndex, out length);
+				fields[i] = _parsers[i].Parse(message, startIndex, out length);
 				startIndex += length;
 			}
 

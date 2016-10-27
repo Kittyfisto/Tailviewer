@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -28,21 +29,25 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		public readonly DateTime? Timestamp;
 
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, string message, LevelFlags level)
 			: this(lineIndex, lineIndex, message, level)
 		{
 		}
 
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, string message, LevelFlags level, DateTime? timestamp)
 			: this(lineIndex, lineIndex, message, level, timestamp)
 		{
 		}
 
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level)
 			: this(lineIndex, logEntryIndex, message, level, null)
 		{
 		}
 
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 		{
 			LineIndex = lineIndex;
@@ -52,6 +57,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Timestamp = timestamp;
 		}
 
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, LogLine line)
 		{
 			LineIndex = lineIndex;

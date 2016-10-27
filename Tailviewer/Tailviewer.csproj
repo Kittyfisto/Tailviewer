@@ -95,6 +95,7 @@
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
     <Compile Include="BusinessLogic\LogTables\IColumnHeader.cs" />
+    <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\CsvParser.cs" />

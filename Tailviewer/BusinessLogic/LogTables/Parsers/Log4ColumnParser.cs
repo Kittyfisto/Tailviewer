@@ -116,12 +116,14 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 
 		public object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
+			numCharactersConsumed = 0;
+
+			if (line == null)
+				return null;
+
 			// Consume prefix
 			if (!line.ContainsAt(_prefix, startIndex))
-			{
-				numCharactersConsumed = 0;
 				return null;
-			}
 
 			// Consume actual content
 			startIndex += _prefix.Length;
@@ -130,10 +132,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 
 			// Consume postfix
 			if (!line.ContainsAt(_postfix, startIndex))
-			{
-				numCharactersConsumed = 0;
 				return null;
-			}
 
 			numCharactersConsumed += _prefix.Length;
 			numCharactersConsumed += _postfix.Length;

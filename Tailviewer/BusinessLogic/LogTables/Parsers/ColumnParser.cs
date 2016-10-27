@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.LogTables.Parsers
 {
@@ -30,8 +31,10 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 					return new MessageParser();
 
 				case ColumnType.Date:
+					return new DateParser(format, DateTimeKind.Local);
+
 				case ColumnType.UtcDate:
-					return new DateParser(format);
+					return new DateParser(format, DateTimeKind.Utc);
 
 				default:
 					throw new KeyNotFoundException(string.Format("Unable to find a parser for '{0}'", type));
