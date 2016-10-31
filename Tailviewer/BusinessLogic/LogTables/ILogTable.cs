@@ -1,4 +1,5 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
+﻿using System;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
@@ -8,6 +9,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 	///     which offers each line as a string, basically.
 	/// </summary>
 	public interface ILogTable
+		: IDisposable
 	{
 		/// <summary>
 		///     The number of rows in this table.
@@ -25,5 +27,8 @@ namespace Tailviewer.BusinessLogic.LogTables
 		/// <param name="index"></param>
 		/// <returns></returns>
 		LogTableRow this[int index] { get; }
+
+		void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
+		void RemoveListener(ILogTableListener listener);
 	}
 }

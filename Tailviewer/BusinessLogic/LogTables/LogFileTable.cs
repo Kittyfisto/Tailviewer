@@ -1,4 +1,5 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
+﻿using System;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
@@ -22,6 +23,21 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LogTableRow this[int index]
 		{
 			get { throw new System.NotImplementedException(); }
+		}
+
+		public void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void RemoveListener(ILogTableListener listener)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }
