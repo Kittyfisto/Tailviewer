@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;

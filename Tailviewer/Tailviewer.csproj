@@ -80,6 +80,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\LogEntryIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogLineMatch.cs" />
     <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
@@ -90,7 +91,7 @@
     <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilter.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogLineIndex.cs" />
+    <Compile Include="BusinessLogic\LogLineIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogLine.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFile.cs" />
@@ -101,8 +102,11 @@
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
     <Compile Include="BusinessLogic\LogTables\IColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\ILogTableListener.cs" />
+    <Compile Include="BusinessLogic\LogTables\ILogTableSchema.cs" />
     <Compile Include="BusinessLogic\LogTables\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableListenerCollection.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableModification.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableSection.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />
     <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
@@ -122,7 +126,9 @@
     <Compile Include="BusinessLogic\LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="BusinessLogic\LogTables\SqliteColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTable.cs" />
+    <Compile Include="BusinessLogic\LogTables\SqliteLogTableSchema.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />

@@ -1,10 +1,14 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.BusinessLogic
 {
+	/// <summary>
+	///     Represents the index to a specific line in a log.
+	///     Lines are number from 0 onwards.
+	/// </summary>
 	public struct LogLineIndex
 		: IEquatable<LogLineIndex>
-		, IComparable<LogLineIndex>
+		  , IComparable<LogLineIndex>
 	{
 		public static readonly LogLineIndex Invalid;
 		private readonly int _value;
@@ -20,6 +24,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				throw new ArgumentOutOfRangeException("value");
 
 			_value = value;
+		}
+
+		public int CompareTo(LogLineIndex other)
+		{
+			return _value.CompareTo(other._value);
 		}
 
 		public bool Equals(LogLineIndex other)
@@ -46,11 +55,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public override int GetHashCode()
 		{
 			return _value;
-		}
-
-		public int CompareTo(LogLineIndex other)
-		{
-			return _value.CompareTo(other._value);
 		}
 
 		public override string ToString()

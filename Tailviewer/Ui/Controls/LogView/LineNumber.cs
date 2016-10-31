@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Ui.Controls.LogView
 {

@@ -7,9 +7,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 	{
 		private readonly Dictionary<ILogTableListener, LogFileListenerNotifier> _notifiers;
 		private readonly object _syncRoot;
+		private readonly ILogTable _logTable;
 
-		public LogTableListenerCollection()
+		public LogTableListenerCollection(ILogTable logTable)
 		{
+			if (logTable == null)
+				throw new ArgumentNullException("logTable");
+
+			_logTable = logTable;
 			_notifiers = new Dictionary<ILogTableListener, LogFileListenerNotifier>();
 			_syncRoot = new object();
 		}
@@ -18,7 +23,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		{
 			lock (_syncRoot)
 			{
-				var notifier = new LogFileListenerNotifier(listener, maximumWaitTime, maximumLineCount);
+				var notifier = new LogFileListenerNotifier(_logTable, listener, maximumWaitTime, maximumLineCount);
 				_notifiers.Add(listener, notifier);
 			}
 		}
@@ -28,6 +33,28 @@ namespace Tailviewer.BusinessLogic.LogTables
 			lock (_syncRoot)
 			{
 				_notifiers.Remove(listener);
+			}
+		}
+
+		public void OnRead(LogEntryIndex index, int count)
+		{
+			lock (_syncRoot)
+			{
+				foreach (var notifier in _notifiers.Values)
+				{
+					notifier.EmitChanged(new LogTableModification(index, count));
+				}
+			}
+		}
+
+		public void OnSchemaChanged(ILogTableSchema schema)
+		{
+			lock (_syncRoot)
+			{
+				foreach (var notifier in _notifiers.Values)
+				{
+					notifier.EmitChanged(new LogTableModification(schema));
+				}
 			}
 		}
 	}

@@ -6,7 +6,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Basically a handle to a specific portion of the logfile.
 	///     Call <see cref="LogFile.GetSection" /> to actually obtain the data for that portion.
 	/// </summary>
-	public struct LogFileSection : IEquatable<LogFileSection>
+	public struct LogFileSection
+		: IEquatable<LogFileSection>
 	{
 		public static readonly LogFileSection Reset;
 		public readonly int Count;

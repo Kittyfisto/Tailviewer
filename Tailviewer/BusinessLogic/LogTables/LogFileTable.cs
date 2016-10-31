@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables
@@ -15,9 +16,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { throw new System.NotImplementedException(); }
 		}
 
-		public int ColumnCount
+		public ILogTableSchema Schema
 		{
-			get { throw new System.NotImplementedException(); }
+			get { throw new NotImplementedException(); }
 		}
 
 		public LogTableRow this[int index]

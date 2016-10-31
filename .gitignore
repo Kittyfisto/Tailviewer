@@ -29,6 +29,7 @@ $tf*/
 *.nupkg
 
 /packages
+/Live
 
 # Visual C++ cache files
 ipch/

@@ -17,9 +17,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 		int RowCount { get; }
 
 		/// <summary>
-		///     The number of columns in this table.
+		///     The schema of this table.
 		/// </summary>
-		int ColumnCount { get; }
+		ILogTableSchema Schema { get; }
 
 		/// <summary>
 		///     Allows access to the n-th row of this table.
