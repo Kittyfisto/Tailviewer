@@ -45,8 +45,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.91.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.91\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.93.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.93\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -80,6 +80,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\LogDataCache.cs" />
     <Compile Include="BusinessLogic\LogEntryIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogLineMatch.cs" />
@@ -122,7 +123,7 @@
     <Compile Include="BusinessLogic\LogTables\LogFileTable.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableRow.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogEntry.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\MessageParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ThreadParser.cs" />

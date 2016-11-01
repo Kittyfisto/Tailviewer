@@ -10,12 +10,12 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class LogDataTaskQueueTest
 	{
-		private LogDataTaskQueue<LogEntryIndex, LogTableRow> _queue;
+		private LogDataTaskQueue<LogEntryIndex, LogEntry> _queue;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_queue = new LogDataTaskQueue<LogEntryIndex, LogTableRow>();
+			_queue = new LogDataTaskQueue<LogEntryIndex, LogEntry>();
 		}
 
 		[Test]
@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_queue.Count.Should().Be(1);
 
 			LogEntryIndex? index = null;
-			var row = new LogTableRow("hello", "world");
+			var row = new LogEntry("hello", "world");
 			_queue.ExecuteOne(idx =>
 				{
 					index = idx;
@@ -69,9 +69,9 @@ namespace Tailviewer.Test.BusinessLogic
 			task3.Should().NotBeNull();
 			task3.Should().NotBeSameAs(task1);
 
-			var row1 = new LogTableRow("1");
-			var row2 = new LogTableRow("2");
-			var row3 = new LogTableRow("3");
+			var row1 = new LogEntry("1");
+			var row2 = new LogEntry("2");
+			var row3 = new LogEntry("3");
 			_queue.ExecuteAll(index =>
 			{
 				if (index == 1)
@@ -80,7 +80,7 @@ namespace Tailviewer.Test.BusinessLogic
 					return row2;
 				if (index == 3)
 					return row3;
-				return new LogTableRow();
+				return new LogEntry();
 			});
 
 			task1.IsCompleted.Should().BeTrue();
@@ -101,12 +101,12 @@ namespace Tailviewer.Test.BusinessLogic
 			var task2 = _queue[new LogEntryIndex(1337)];
 			var task3 = _queue[new LogEntryIndex(1337)];
 
-			var row = new LogTableRow("42");
+			var row = new LogEntry("42");
 			_queue.ExecuteAll(index =>
 				{
 					if (index == 1337)
 						return row;
-					return new LogTableRow();
+					return new LogEntry();
 				});
 
 			task1.IsCompleted.Should().BeTrue();
@@ -132,13 +132,13 @@ namespace Tailviewer.Test.BusinessLogic
 
 			_queue.Count.Should().Be(1, "Because multiple accesses to the same row shall be optimized to one single access");
 			
-			var row = new LogTableRow("42");
+			var row = new LogEntry("42");
 			_queue.ExecuteOne(index =>
 				{
 					if (index == 1337)
 						return row;
 
-					return new LogTableRow();
+					return new LogEntry();
 				});
 
 			task1.IsCompleted.Should().BeTrue();
@@ -156,7 +156,7 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestEnqueue5()
 		{
 			var task1 = _queue[new LogEntryIndex(1337)];
-			var row = new LogTableRow("42");
+			var row = new LogEntry("42");
 			_queue.ExecuteOne(index => row);
 
 			task1.IsCompleted.Should().BeTrue();

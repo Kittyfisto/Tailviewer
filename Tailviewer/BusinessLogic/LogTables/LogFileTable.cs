@@ -26,7 +26,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { throw new NotImplementedException(); }
 		}
 
-		public Task<LogTableRow> this[int index]
+		public Task<LogEntry> this[int index]
 		{
 			get { throw new NotImplementedException(); }
 		}

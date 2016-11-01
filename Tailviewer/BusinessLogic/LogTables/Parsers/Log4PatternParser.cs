@@ -42,7 +42,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 		}
 
 		[Pure]
-		public LogTableRow Parse(LogLine line)
+		public LogEntry Parse(LogLine line)
 		{
 			var fields = new object[_parsers.Length];
 
@@ -55,11 +55,11 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 				startIndex += length;
 			}
 
-			return new LogTableRow(fields);
+			return new LogEntry(fields);
 		}
 
 		[Pure]
-		public LogTableRow Parse(IEnumerable<LogLine> entry)
+		public LogEntry Parse(IEnumerable<LogLine> entry)
 		{
 			throw new NotImplementedException();
 		}

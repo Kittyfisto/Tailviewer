@@ -21,7 +21,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		#region Data
 
-		private readonly List<LogTableRow> _rows;
+		private readonly List<LogEntry> _rows;
 		private readonly object _syncRoot;
 		private bool _exists;
 		private DateTime _lastModified;
@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 			_fileName = fileName;
 			_listeners = new LogTableListenerCollection(this);
-			_rows = new List<LogTableRow>();
+			_rows = new List<LogEntry>();
 			_syncRoot = new object();
 
 			_schema = new SQLiteLogTableSchema(string.Empty);
@@ -73,7 +73,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { return Schema; }
 		}
 
-		public Task<LogTableRow> this[int index]
+		public Task<LogEntry> this[int index]
 		{
 			get
 			{
@@ -250,14 +250,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 		}
 
 		[Pure]
-		private LogTableRow ReadRow(SQLiteDataReader reader)
+		private LogEntry ReadRow(SQLiteDataReader reader)
 		{
 			var fields = new object[reader.FieldCount];
 			for (int i = 0; i < fields.Length; ++i)
 			{
 				fields[i] = reader.GetValue(i);
 			}
-			return new LogTableRow(fields);
+			return new LogEntry(fields);
 		}
 
 		private static bool TryFindTable(SQLiteConnection connection, out string tableName)

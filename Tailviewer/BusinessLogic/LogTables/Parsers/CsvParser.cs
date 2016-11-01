@@ -19,14 +19,14 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 		}
 
 		[Pure]
-		public LogTableRow Parse(LogLine line)
+		public LogEntry Parse(LogLine line)
 		{
 			var fields = line.Message.Split(new[] {_delimiter});
-			return new LogTableRow((IEnumerable<object>)fields);
+			return new LogEntry((IEnumerable<object>)fields);
 		}
 
 		[Pure]
-		public LogTableRow Parse(IEnumerable<LogLine> entry)
+		public LogEntry Parse(IEnumerable<LogLine> entry)
 		{
 			throw new NotImplementedException();
 		}

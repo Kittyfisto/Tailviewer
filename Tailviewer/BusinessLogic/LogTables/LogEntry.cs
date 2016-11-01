@@ -12,12 +12,12 @@ namespace Tailviewer.BusinessLogic.LogTables
 	/// <remarks>
 	///     A row consists of a list of fields where each field represents the cell at the n-th row and m-th column.
 	/// </remarks>
-	public struct LogTableRow
-		: IEquatable<LogTableRow>
+	public struct LogEntry
+		: IEquatable<LogEntry>
 	{
 		public readonly object[] Fields;
 
-		public LogTableRow(IEnumerable<object> fields)
+		public LogEntry(IEnumerable<object> fields)
 		{
 			if (fields == null)
 				throw new ArgumentNullException("fields");
@@ -25,7 +25,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			Fields = fields.ToArray();
 		}
 
-		public LogTableRow(params object[] fields)
+		public LogEntry(params object[] fields)
 		{
 			if (fields == null)
 				throw new ArgumentNullException("fields");
@@ -42,7 +42,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			return string.Empty;
 		}
 
-		public bool Equals(LogTableRow other)
+		public bool Equals(LogEntry other)
 		{
 			if (ReferenceEquals(Fields, other.Fields))
 				return true;
@@ -67,7 +67,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
-			return obj is LogTableRow && Equals((LogTableRow) obj);
+			return obj is LogEntry && Equals((LogEntry) obj);
 		}
 
 		public override int GetHashCode()
@@ -75,12 +75,12 @@ namespace Tailviewer.BusinessLogic.LogTables
 			return 0;
 		}
 
-		public static bool operator ==(LogTableRow left, LogTableRow right)
+		public static bool operator ==(LogEntry left, LogEntry right)
 		{
 			return left.Equals(right);
 		}
 
-		public static bool operator !=(LogTableRow left, LogTableRow right)
+		public static bool operator !=(LogEntry left, LogEntry right)
 		{
 			return !left.Equals(right);
 		}

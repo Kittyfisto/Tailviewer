@@ -43,8 +43,8 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.1.91.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.1.91\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.1.93.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.1.93\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq">
@@ -73,6 +73,7 @@
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
     <Compile Include="BusinessLogic\LogDataTaskQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
@@ -81,7 +82,8 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableRowTest.cs" />
+    <Compile Include="BusinessLogic\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableSectionTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
