@@ -29,6 +29,6 @@ namespace Tailviewer.BusinessLogic.LogTables
 		LogTableRow this[int index] { get; }
 
 		void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
-		void RemoveListener(ILogTableListener listener);
+		bool RemoveListener(ILogTableListener listener);
 	}
 }

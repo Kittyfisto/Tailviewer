@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
-	public sealed class SqLiteLogTable
+	public sealed class SQLiteLogTable
 		: ILogTable
 	{
 		private readonly ITaskScheduler _scheduler;
@@ -18,19 +18,24 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		private readonly object _syncRoot;
 		private readonly List<LogTableRow> _rows;
-		private SqliteLogTableSchema _schema;
+		private SQLiteLogTableSchema _schema;
 		private DateTime _lastModified;
 
 		#endregion
 
-		public SqLiteLogTable(ITaskScheduler scheduler, string fileName)
+		public SQLiteLogTable(ITaskScheduler scheduler, string fileName)
 		{
+			if (scheduler == null)
+				throw new ArgumentNullException("scheduler");
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+
 			_fileName = fileName;
 			_listeners = new LogTableListenerCollection(this);
 			_rows = new List<LogTableRow>();
 			_syncRoot = new object();
 
-			_schema = new SqliteLogTableSchema();
+			_schema = new SQLiteLogTableSchema(string.Empty);
 
 			_scheduler = scheduler;
 			_task = _scheduler.StartPeriodic(Update);
@@ -94,14 +99,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 			return true;
 		}
 
-		private static SqliteLogTableSchema GetSchema(SQLiteConnection connection, string tableName)
+		private static SQLiteLogTableSchema GetSchema(SQLiteConnection connection, string tableName)
 		{
 			string sql = string.Format("PRAGMA table_info({0})", tableName);
 			using (var command = new SQLiteCommand(sql, connection))
 			using (var reader = command.ExecuteReader())
 			{
 				var values = new object[reader.FieldCount];
-				var columns = new List<SqliteColumnHeader>();
+				var columns = new List<SQLiteColumnHeader>();
 
 				while (reader.Read())
 				{
@@ -110,10 +115,10 @@ namespace Tailviewer.BusinessLogic.LogTables
 					var name = values[1] as string;
 					var type = values[2] as string;
 
-					columns.Add(new SqliteColumnHeader(name, type));
+					columns.Add(new SQLiteColumnHeader(name, type));
 				}
 
-				return new SqliteLogTableSchema(columns);
+				return new SQLiteLogTableSchema(tableName, columns);
 			}
 		}
 
@@ -128,9 +133,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
-		public ILogTableSchema Schema
+		public SQLiteLogTableSchema Schema
 		{
 			get { return _schema; }
+		}
+
+		ILogTableSchema ILogTable.Schema
+		{
+			get { return Schema; }
 		}
 
 		public LogTableRow this[int index]
@@ -149,9 +159,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
-		public void RemoveListener(ILogTableListener listener)
+		public bool RemoveListener(ILogTableListener listener)
 		{
-			_listeners.RemoveListener(listener);
+			return _listeners.RemoveListener(listener);
 		}
 
 		public void Dispose()

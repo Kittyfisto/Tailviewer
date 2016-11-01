@@ -6,13 +6,13 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.Test.BusinessLogic.LogTables
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
 {
 	[TestFixture]
-	public sealed class SqLiteLogTableAcceptanceTest
+	public sealed class SQLiteLogTableAcceptanceTest
 	{
 		private ManualTaskScheduler _scheduler;
-		private SqLiteLogTable _table;
+		private SQLiteLogTable _table;
 		private string _fileName;
 		private SQLiteConnection _connection;
 
@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 			_scheduler = new ManualTaskScheduler();
 
 			_fileName = GetFileName();
-			_table = new SqLiteLogTable(_scheduler, _fileName);
+			_table = new SQLiteLogTable(_scheduler, _fileName);
 		}
 
 		private static string GetFileName()

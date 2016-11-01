@@ -1,22 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
-	public sealed class SqliteLogTableSchema
+	public sealed class SQLiteLogTableSchema
 		: ILogTableSchema
 	{
-		private readonly ReadOnlyCollection<SqliteColumnHeader> _columnHeaders;
+		private readonly ReadOnlyCollection<SQLiteColumnHeader> _columnHeaders;
+		private readonly string _tableName;
 
-		public SqliteLogTableSchema()
+		public SQLiteLogTableSchema(string tableName)
 		{
-			_columnHeaders = new ReadOnlyCollection<SqliteColumnHeader>(new List<SqliteColumnHeader>());
+			if (tableName == null)
+				throw new ArgumentNullException("tableName");
+
+			_tableName = tableName;
+			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>());
 		}
 
-		public SqliteLogTableSchema(IList<SqliteColumnHeader> columnHeaders)
+		public SQLiteLogTableSchema(string tableName, IList<SQLiteColumnHeader> columnHeaders)
 		{
-			_columnHeaders = new ReadOnlyCollection<SqliteColumnHeader>(columnHeaders);
+			if (tableName == null)
+				throw new ArgumentNullException("tableName");
+			if (columnHeaders == null)
+				throw new ArgumentNullException("columnHeaders");
+
+			_tableName = tableName;
+			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(columnHeaders);
+		}
+
+		public string TableName
+		{
+			get { return _tableName; }
 		}
 
 		public IReadOnlyCollection<IColumnHeader> ColumnHeaders
@@ -29,16 +45,16 @@ namespace Tailviewer.BusinessLogic.LogTables
 			return string.Join(", ", _columnHeaders);
 		}
 
-		private bool Equals(SqliteLogTableSchema logTableSchema)
+		private bool Equals(SQLiteLogTableSchema logTableSchema)
 		{
-			var columns = logTableSchema._columnHeaders;
+			ReadOnlyCollection<SQLiteColumnHeader> columns = logTableSchema._columnHeaders;
 			if (columns.Count != _columnHeaders.Count)
 				return false;
 
 			for (int i = 0; i < columns.Count; ++i)
 			{
-				var column = columns[i];
-				var columnHeader = _columnHeaders[i];
+				SQLiteColumnHeader column = columns[i];
+				SQLiteColumnHeader columnHeader = _columnHeaders[i];
 				if (!Equals(column, columnHeader))
 					return false;
 			}
@@ -53,10 +69,10 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public override bool Equals(object obj)
 		{
-			if (!(obj is SqliteLogTableSchema))
+			if (!(obj is SQLiteLogTableSchema))
 				return false;
 
-			return Equals((SqliteLogTableSchema) obj);
+			return Equals((SQLiteLogTableSchema) obj);
 		}
 	}
 }

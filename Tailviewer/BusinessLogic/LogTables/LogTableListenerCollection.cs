@@ -28,11 +28,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
-		public void RemoveListener(ILogTableListener listener)
+		public bool RemoveListener(ILogTableListener listener)
 		{
 			lock (_syncRoot)
 			{
-				_notifiers.Remove(listener);
+				return _notifiers.Remove(listener);
 			}
 		}
 

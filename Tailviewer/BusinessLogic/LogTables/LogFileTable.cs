@@ -31,7 +31,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			throw new NotImplementedException();
 		}
 
-		public void RemoveListener(ILogTableListener listener)
+		public bool RemoveListener(ILogTableListener listener)
 		{
 			throw new NotImplementedException();
 		}
