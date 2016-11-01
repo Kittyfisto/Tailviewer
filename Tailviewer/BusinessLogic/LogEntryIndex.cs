@@ -46,6 +46,11 @@ namespace Tailviewer.BusinessLogic
 			return new LogEntryIndex(value);
 		}
 
+		public static LogEntryIndex operator ++(LogEntryIndex value)
+		{
+			return new LogEntryIndex(value._value + 1);
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;

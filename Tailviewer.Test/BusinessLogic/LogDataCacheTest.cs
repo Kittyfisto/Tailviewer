@@ -46,6 +46,23 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestTryGet2()
+		{
+			var line = new LogLine(42, 42, "hello World!", LevelFlags.None);
+			_cache.Add(_file1, 42, line);
+
+			LogLine actualLine;
+			_cache.TryGetValue(_file1, 42, out actualLine).Should().BeTrue();
+			actualLine.Should().Be(line);
+
+			_cache.TryGetValue(_file2, 42, out actualLine).Should().BeFalse();
+			actualLine.Should().Be(default(LogLine));
+
+			_cache.TryGetValue(_file1, 41, out actualLine).Should().BeFalse();
+			actualLine.Should().Be(default(LogLine));
+		}
+
+		[Test]
 		public void TestContains1()
 		{
 			_cache.Contains(null, LogLineIndex.Invalid).Should().BeFalse();
@@ -85,6 +102,32 @@ namespace Tailviewer.Test.BusinessLogic
 
 			_cache.Contains(_table1, 1337).Should().BeTrue();
 			_cache.Contains(_table2, 1337).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestAdd4()
+		{
+			for (int i = 0; i < 10000; ++i)
+			{
+				_cache.Add(_file1, i, new LogLine());
+			}
+
+			_cache.Count.Should().Be(10000);
+			_cache.Remove(_file1);
+			_cache.Count.Should().Be(0);
+		}
+
+		[Test]
+		public void TestAdd5()
+		{
+			for (int i = 0; i < 10000; ++i)
+			{
+				_cache.Add(_table1, i, new LogEntry());
+			}
+
+			_cache.Count.Should().Be(10000);
+			_cache.Remove(_table1);
+			_cache.Count.Should().Be(0);
 		}
 	}
 }

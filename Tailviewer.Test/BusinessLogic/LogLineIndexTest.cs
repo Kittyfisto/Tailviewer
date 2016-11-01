@@ -38,5 +38,13 @@ namespace Tailviewer.Test.BusinessLogic
 			(new LogLineIndex(1) <= new LogLineIndex(1)).Should().BeTrue();
 			(new LogLineIndex(2) <= new LogLineIndex(1)).Should().BeFalse();
 		}
+
+		[Test]
+		public void TestIncrement()
+		{
+			var idx = new LogLineIndex(0);
+			++idx;
+			idx.Should().Be(new LogLineIndex(1));
+		}
 	}
 }
