@@ -29,10 +29,10 @@ namespace Tailviewer.BusinessLogic.LogTables
 			Invalidate = false;
 		}
 
-		public LogTableModification(LogEntryIndex index, int count)
+		public LogTableModification(LogEntryIndex index, int count, bool invalidate = false)
 		{
 			Section = new LogTableSection(index, count);
-			Invalidate = false;
+			Invalidate = invalidate;
 			Schema = null;
 		}
 

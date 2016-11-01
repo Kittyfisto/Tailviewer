@@ -17,6 +17,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 		int RowCount { get; }
 
 		/// <summary>
+		///     Whether or not the datasource exists (is reachable).
+		/// </summary>
+		bool Exists { get; }
+
+		/// <summary>
 		///     The schema of this table.
 		/// </summary>
 		ILogTableSchema Schema { get; }

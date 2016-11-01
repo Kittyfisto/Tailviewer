@@ -1,19 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
 	/// <summary>
-	/// This <see cref="ILogTable"/> implementation offers a tabular view onto a <see cref="ILogFile"/>
-	/// by interpreting each log entry using a given pattern, such as the ones used by log4net.
+	///     This <see cref="ILogTable" /> implementation offers a tabular view onto a <see cref="ILogFile" />
+	///     by interpreting each log entry using a given pattern, such as the ones used by log4net.
 	/// </summary>
 	public sealed class LogFileTable
 		: ILogTable
 	{
 		public int RowCount
 		{
-			get { throw new System.NotImplementedException(); }
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool Exists
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		public ILogTableSchema Schema
@@ -23,7 +27,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public LogTableRow this[int index]
 		{
-			get { throw new System.NotImplementedException(); }
+			get { throw new NotImplementedException(); }
 		}
 
 		public void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

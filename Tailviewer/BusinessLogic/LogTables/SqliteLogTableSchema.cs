@@ -19,7 +19,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>());
 		}
 
-		public SQLiteLogTableSchema(string tableName, IList<SQLiteColumnHeader> columnHeaders)
+		public SQLiteLogTableSchema(string tableName, params SQLiteColumnHeader[] columnHeaders)
+			: this(tableName, (IEnumerable<SQLiteColumnHeader>)columnHeaders)
+		{}
+
+		public SQLiteLogTableSchema(string tableName, IEnumerable<SQLiteColumnHeader> columnHeaders)
 		{
 			if (tableName == null)
 				throw new ArgumentNullException("tableName");
@@ -27,7 +31,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 				throw new ArgumentNullException("columnHeaders");
 
 			_tableName = tableName;
-			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(columnHeaders);
+			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>(columnHeaders));
 		}
 
 		public string TableName
@@ -42,7 +46,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public override string ToString()
 		{
-			return string.Join(", ", _columnHeaders);
+			return string.Format("{0} [{1}]",
+			                     _tableName,
+			                     string.Join(", ", _columnHeaders));
 		}
 
 		private bool Equals(SQLiteLogTableSchema logTableSchema)

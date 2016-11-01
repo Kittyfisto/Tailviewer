@@ -30,6 +30,17 @@ namespace System.Threading.Tasks
 			}
 		}
 
+		public IEnumerable<IPeriodicTask> PeriodicTasks
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _tasks.ToList();
+				}
+			}
+		}
+
 		public Task Start(Action callback)
 		{
 			return Task.Factory.StartNew(callback);

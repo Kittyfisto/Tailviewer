@@ -36,13 +36,13 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
-		public void OnRead(LogEntryIndex index, int count)
+		public void OnRead(LogEntryIndex index, int count, bool invalidate = false)
 		{
 			lock (_syncRoot)
 			{
 				foreach (var notifier in _notifiers.Values)
 				{
-					notifier.EmitChanged(new LogTableModification(index, count));
+					notifier.EmitChanged(new LogTableModification(index, count, invalidate));
 				}
 			}
 		}

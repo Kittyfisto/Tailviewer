@@ -15,5 +15,12 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 			schema.ColumnHeaders.Should().NotBeNull();
 			schema.ColumnHeaders.Should().BeEmpty();
 		}
+
+		[Test]
+		public void TestToString()
+		{
+			new SQLiteLogTableSchema("logging").ToString().Should().Be("logging []");
+			new SQLiteLogTableSchema("logging", new SQLiteColumnHeader("timestamp", SQLiteDataType.DateTime)).ToString().Should().Be("logging [timestamp DATETIME]");
+		}
 	}
 }

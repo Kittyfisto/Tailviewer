@@ -78,7 +78,23 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public override string ToString()
 		{
-			return string.Format("{0} {1}", _name, _databaseType);
+			string databaseType;
+			switch (_databaseType)
+			{
+				case SQLiteDataType.DateTime:
+					databaseType = "DATETIME";
+					break;
+				case SQLiteDataType.Text:
+					databaseType = "TEXT";
+					break;
+				case SQLiteDataType.Integer:
+					databaseType = "INTEGER";
+					break;
+				default:
+					databaseType = "<OTHER>";
+					break;
+			}
+			return string.Format("{0} {1}", _name, databaseType);
 		}
 	}
 }

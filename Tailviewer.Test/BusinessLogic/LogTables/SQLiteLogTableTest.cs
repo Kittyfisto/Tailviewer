@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -10,10 +11,19 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 	[TestFixture]
 	public sealed class SQLiteLogTableTest
 	{
+		private ManualTaskScheduler _scheduler;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_scheduler = new ManualTaskScheduler();
+		}
+
 		[Test]
 		public void TestCtor1()
 		{
-			var table = new SQLiteLogTable(new ManualTaskScheduler(), "foo.db");
+			var table = new SQLiteLogTable(_scheduler, "foo.db");
+			table.Exists.Should().BeFalse("Because we haven't checked for the existance and yet, and not existing is the default assumption, for now");
 			table.RowCount.Should().Be(0, "Because the database doesn't exist and thus no data could've been retrieved");
 			table.Schema.Should().NotBeNull();
 			table.Schema.TableName.Should().BeEmpty("Because the database doesn't exist and thus no table name could be known");
@@ -25,13 +35,26 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		public void TestCtor2()
 		{
 			new Action(() => new SQLiteLogTable(null, "foo.txt")).ShouldThrow<ArgumentNullException>();
-			new Action(() => new SQLiteLogTable(new ManualTaskScheduler(), null)).ShouldThrow<ArgumentNullException>();
+			new Action(() => new SQLiteLogTable(_scheduler, null)).ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		[Description("Verifies that the constructor creates a periodic task")]
+		public void TestCtor3()
+		{
+			_scheduler.PeriodicTasks.Should().BeEmpty();
+
+			var table = new SQLiteLogTable(_scheduler, @"C:\bar\foo.db");
+
+			_scheduler.PeriodicTaskCount.Should().Be(1);
+			var task = _scheduler.PeriodicTasks.First();
+			task.Name.Should().Be(@"C:\bar\foo.db", "because the implementation should've given the task a descriptive name");
 		}
 
 		[Test]
 		public void TestAddListener1()
 		{
-			var table = new SQLiteLogTable(new ManualTaskScheduler(), "foo.db");
+			var table = new SQLiteLogTable(_scheduler, "foo.db");
 			var listener = new Mock<ILogTableListener>();
 			new Action(() => table.AddListener(listener.Object, TimeSpan.Zero, 100)).ShouldNotThrow();
 			table.RemoveListener(listener.Object).Should().BeTrue();
@@ -40,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestAddListener2()
 		{
-			var table = new SQLiteLogTable(new ManualTaskScheduler(), "foo.db");
+			var table = new SQLiteLogTable(_scheduler, "foo.db");
 			var listener1 = new Mock<ILogTableListener>();
 			var listener2 = new Mock<ILogTableListener>();
 			table.AddListener(listener1.Object, TimeSpan.Zero, 100);
@@ -51,6 +74,13 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 
 			table.RemoveListener(listener2.Object).Should().BeTrue("Because we should've successfully removed this listener");
 			table.RemoveListener(listener2.Object).Should().BeFalse("Because this listener is no longer part of the collection and thus removing it should've failed");
+		}
+
+		[Test]
+		public void TestToString()
+		{
+			var table = new SQLiteLogTable(_scheduler, "mydatabase.db");
+			table.ToString().Should().Be("mydatabase.db");
 		}
 	}
 }

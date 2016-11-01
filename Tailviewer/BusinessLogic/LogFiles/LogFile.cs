@@ -78,7 +78,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			StartTask();
 		}
-		
+
 		public override string ToString()
 		{
 			return _fileName;
