@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
@@ -10,11 +9,13 @@ using log4net;
 namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
-	///     This class is responsible for serializing access to some data source.
-	///     Is meant to be used by implementations of <see cref="ILogFile" /> and <see cref="ILogTable" /> to
-	///     serialize access to its data source.
+	///     This class is responsible for serializing asynchronous access a some data source.
+	///     Is meant to be used by implementations of <see cref="ILogFile" /> and <see cref="ILogTable" />.
 	/// </summary>
-	public sealed class LogDataTaskQueue<TIndex, TData>
+	/// <remarks>
+	/// TODO: This class should be able to spot access patterns and then retrieve multiple values with just one call (for example by requesting a range)
+	/// </remarks>
+	public sealed class LogDataAccessQueue<TIndex, TData>
 		: IDisposable
 		where TIndex : struct, IEquatable<TIndex>
 	{
@@ -24,7 +25,7 @@ namespace Tailviewer.BusinessLogic
 		private readonly Dictionary<TIndex, TaskData> _requestsByIndex;
 		private readonly object _syncRoot;
 
-		public LogDataTaskQueue()
+		public LogDataAccessQueue()
 		{
 			_syncRoot = new object();
 			_pendingRequests = new Queue<TaskData>();
@@ -113,44 +114,47 @@ namespace Tailviewer.BusinessLogic
 			return false;
 		}
 
-		public void ExecuteAll(Func<TIndex, TData> factory, CancellationTokenSource cancellationTokenSource = null)
+		public void ExecuteAll(ILogDataAccessor<TIndex, TData> accessor)
 		{
-			if (factory == null)
-				throw new ArgumentNullException("factory");
-
-			CancellationToken token = cancellationTokenSource != null
-				                          ? cancellationTokenSource.Token
-				                          : new CancellationToken();
+			if (accessor == null)
+				throw new ArgumentNullException("accessor");
 
 			TaskData data;
 			while (TryDequeue(out data))
 			{
 				// DO NOT PLACE ANY CODE BETWEEN TryDequeue and Execute, EVER
-				Execute(data, factory);
-
-				token.ThrowIfCancellationRequested();
+				Execute(data, accessor);
 			}
 		}
 
-		public void ExecuteOne(Func<TIndex, TData> factory)
+		public void ExecuteOne(ILogDataAccessor<TIndex, TData> accessor)
 		{
-			if (factory == null)
-				throw new ArgumentNullException("factory");
+			if (accessor == null)
+				throw new ArgumentNullException("accessor");
 
 			TaskData data;
 			if (TryDequeue(out data))
 			{
 				// DO NOT PLACE ANY CODE BETWEEN TryDequeue and Execute, EVER
-				Execute(data, factory);
+				Execute(data, accessor);
 			}
 		}
 
-		private void Execute(TaskData data, Func<TIndex, TData> factory)
+		private void Execute(TaskData data, ILogDataAccessor<TIndex, TData> accessor)
 		{
 			try
 			{
-				TData value = factory(data.Index);
-				data.Finished(value);
+				TData value;
+				if (accessor.TryAccess(data.Index, out value))
+				{
+					data.Finished(value);
+				}
+				else
+				{
+					// If this region of data can no longer be accessed,
+					// then we cancel the request.
+					data.Cancel();
+				}
 			}
 			catch (Exception e)
 			{

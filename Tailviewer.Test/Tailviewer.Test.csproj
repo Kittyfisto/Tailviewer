@@ -74,7 +74,7 @@
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
-    <Compile Include="BusinessLogic\LogDataTaskQueueTest.cs" />
+    <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />

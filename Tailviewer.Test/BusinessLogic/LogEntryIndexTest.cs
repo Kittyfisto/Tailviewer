@@ -15,6 +15,13 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestValue()
+		{
+			new LogEntryIndex(42).Value.Should().Be(42);
+			new LogEntryIndex(1337).Value.Should().Be(1337);
+		}
+
+		[Test]
 		public void TestEquality()
 		{
 			LogEntryIndex.Invalid.Should().Be(LogEntryIndex.Invalid);

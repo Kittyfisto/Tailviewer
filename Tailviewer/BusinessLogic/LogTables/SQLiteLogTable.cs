@@ -13,54 +13,53 @@ namespace Tailviewer.BusinessLogic.LogTables
 		: ILogTable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly string _fileName;
 		private readonly LogTableListenerCollection _listeners;
 
 		private readonly ITaskScheduler _scheduler;
+		private readonly LogDataCache _cache;
+		private readonly LogDataAccessQueue<LogEntryIndex, LogEntry> _accessQueue;
 		private readonly IPeriodicTask _task;
 
 		#region Data
 
-		private readonly List<LogEntry> _rows;
-		private readonly object _syncRoot;
+		private int _rowCount;
 		private bool _exists;
 		private DateTime _lastModified;
-		private SQLiteLogTableSchema _schema;
+		private SQLiteSchema _schema;
 
 		#endregion
 
-		public SQLiteLogTable(ITaskScheduler scheduler, string fileName)
+		public SQLiteLogTable(ITaskScheduler scheduler, LogDataCache cache, string fileName)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException("scheduler");
+			if (cache == null)
+				throw new ArgumentNullException("cache");
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 
-			_fileName = fileName;
-			_listeners = new LogTableListenerCollection(this);
-			_rows = new List<LogEntry>();
-			_syncRoot = new object();
-
-			_schema = new SQLiteLogTableSchema(string.Empty);
-
 			_scheduler = scheduler;
+			_cache = cache;
+			_fileName = fileName;
+
+			_listeners = new LogTableListenerCollection(this);
+			_accessQueue = new LogDataAccessQueue<LogEntryIndex, LogEntry>();
+
+			_schema = new SQLiteSchema(string.Empty);
+
 			_task = _scheduler.StartPeriodic(Update, ToString());
 		}
 
-		public SQLiteLogTableSchema Schema
+		public SQLiteSchema Schema
 		{
 			get { return _schema; }
 		}
 
 		public int RowCount
 		{
-			get
-			{
-				lock (_syncRoot)
-				{
-					return _rows.Count;
-				}
-			}
+			get { return _rowCount; }
 		}
 
 		public bool Exists
@@ -73,15 +72,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { return Schema; }
 		}
 
-		public Task<LogEntry> this[int index]
+		public Task<LogEntry> this[LogEntryIndex index]
 		{
 			get
 			{
-				lock (_syncRoot)
-				{
-					//return _rows[index];
-					throw new NotImplementedException();
-				}
+				return _accessQueue[index];
 			}
 		}
 
@@ -97,6 +92,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public void Dispose()
 		{
+			_accessQueue.Dispose();
 			_scheduler.StopPeriodic(_task);
 		}
 
@@ -117,19 +113,30 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 				_exists = true;
 
-				DateTime modified = info.LastWriteTime;
-				if (modified != _lastModified)
+				string connectionString = string.Format("Data Source={0};Version=3;", _fileName);
+				using (var connection = new SQLiteConnection(connectionString))
 				{
-					Log.DebugFormat("SQLITE Database {0} has been touched since our last update {1}, updating again", _fileName,
-					                _lastModified);
+					connection.Open();
 
-					UpdateFromDatabase();
+					DateTime modified = info.LastWriteTime;
+					if (modified != _lastModified)
+					{
+						Log.DebugFormat("SQLITE Database {0} has been touched since our last update {1}, retrieving schema and # of rows", _fileName,
+										_lastModified);
 
-					_lastModified = modified;
-				}
-				else
-				{
-					Log.DebugFormat("SQLITE Database {0} hasn't been touched since {1}, skipping updated", _fileName, modified);
+						UpdateSchema(connection);
+						UpdateRowCount(connection);
+
+						_lastModified = modified;
+					}
+					else
+					{
+						Log.DebugFormat("SQLITE Database {0} hasn't been touched since {1}, skipping schema update", _fileName, modified);
+					}
+
+					// We have access to the database and therefore we
+					// must now try to satisfy all access to its data.
+					_accessQueue.ExecuteAll(new SQLiteAccessor(connection, _schema, _cache, this));
 				}
 			}
 			else
@@ -141,49 +148,65 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 				_exists = false;
 				_listeners.OnRead(LogEntryIndex.Invalid, 0);
+
+				// We currently don't have access to the database and therefore
+				// we can simply reject all access to data.
+				_accessQueue.ExecuteAll(new NoLogDataAccessor<LogEntryIndex, LogEntry>());
 			}
 
 			return TimeSpan.FromMilliseconds(100);
 		}
 
-		private void UpdateFromDatabase()
+		private void UpdateSchema(SQLiteConnection connection)
 		{
-			string connectionString = string.Format("Data Source={0};Version=3;", _fileName);
-			using (var connection = new SQLiteConnection(connectionString))
+			string tableName;
+			if (TryFindTable(connection, out tableName))
 			{
-				connection.Open();
+				SQLiteSchema schema = GetSchema(connection, tableName);
+				TryChangeSchema(schema);
+			}
+			else
+			{
+				Log.WarnFormat("Unable to find a fitting table in database {0}", _fileName);
 
-				string tableName;
-				if (TryFindTable(connection, out tableName))
-				{
-					SQLiteLogTableSchema schema = GetSchema(connection, tableName);
-					if (!Equals(schema, _schema))
-					{
-						_schema = schema;
+				var schema = new SQLiteSchema(string.Empty);
+				TryChangeSchema(schema);
+			}
+		}
 
-						lock (_syncRoot)
-						{
-							_rows.Clear();
-						}
+		/// <summary>
+		///     Changes the schema of this table, if necessary.
+		/// </summary>
+		/// <param name="schema"></param>
+		private void TryChangeSchema(SQLiteSchema schema)
+		{
+			if (!Equals(_schema, schema))
+			{
+				Log.DebugFormat("Schema of {0} changed from {1} to {2}", _fileName,
+				                _schema, schema);
 
-						_listeners.OnSchemaChanged(_schema);
-						_listeners.OnRead(LogEntryIndex.Invalid, 0);
-					}
+				_schema = schema;
+				_rowCount = 0;
+				_cache.Remove(this);
+				_listeners.OnSchemaChanged(_schema);
+				_listeners.OnRead(LogEntryIndex.Invalid, 0);
+			}
+		}
 
-					int rowCount = Count(connection, tableName);
-					if (rowCount < _rows.Count)
-					{
-						int invalidateCount = _rows.Count - rowCount;
-						InvalidateSection(rowCount, invalidateCount);
-					}
-					else if (rowCount > _rows.Count)
-					{
-						ReadSection(connection, tableName, _rows.Count, rowCount - _rows.Count);
-					}
-				}
-				else
-				{
-				}
+		private void UpdateRowCount(SQLiteConnection connection)
+		{
+			int rowCount = Count(connection, _schema.TableName);
+			if (rowCount < _rowCount)
+			{
+				int invalidateCount = _rowCount - rowCount;
+				_rowCount = rowCount;
+				_listeners.OnRead(rowCount, invalidateCount, true);
+			}
+			else if (rowCount > _rowCount)
+			{
+				var old = _rowCount;
+				_rowCount = rowCount;
+				_listeners.OnRead(old, rowCount - old);
 			}
 		}
 
@@ -204,62 +227,6 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
-		/// <summary>
-		///     Invalidates a section of rows from this table.
-		/// </summary>
-		/// <param name="rowCount"></param>
-		/// <param name="invalidateCount"></param>
-		private void InvalidateSection(int rowCount, int invalidateCount)
-		{
-			lock (_syncRoot)
-			{
-				_rows.RemoveRange(rowCount, invalidateCount);
-			}
-
-			_listeners.OnRead(rowCount, invalidateCount, true);
-		}
-
-		/// <summary>
-		///     Reads a section of rows from the given table.
-		/// </summary>
-		/// <param name="connection"></param>
-		/// <param name="tableName"></param>
-		/// <param name="index"></param>
-		/// <param name="count"></param>
-		private void ReadSection(SQLiteConnection connection, string tableName, int index, int count)
-		{
-			string sql = string.Format("SELECT * FROM {0} LIMIT {1} OFFSET {2}", tableName, count, index);
-			using (var command = new SQLiteCommand(sql, connection))
-			using (SQLiteDataReader reader = command.ExecuteReader())
-			{
-				int i = 0;
-				while (reader.Read())
-				{
-					var row = ReadRow(reader);
-
-					lock (_syncRoot)
-					{
-						_rows.Add(row);
-					}
-
-					_listeners.OnRead(index + i, 1);
-
-					++i;
-				}
-			}
-		}
-
-		[Pure]
-		private LogEntry ReadRow(SQLiteDataReader reader)
-		{
-			var fields = new object[reader.FieldCount];
-			for (int i = 0; i < fields.Length; ++i)
-			{
-				fields[i] = reader.GetValue(i);
-			}
-			return new LogEntry(fields);
-		}
-
 		private static bool TryFindTable(SQLiteConnection connection, out string tableName)
 		{
 			// TODO: Find the proper table based on name and maybe columns...
@@ -267,7 +234,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			return true;
 		}
 
-		private static SQLiteLogTableSchema GetSchema(SQLiteConnection connection, string tableName)
+		private static SQLiteSchema GetSchema(SQLiteConnection connection, string tableName)
 		{
 			string sql = string.Format("PRAGMA table_info({0})", tableName);
 			using (var command = new SQLiteCommand(sql, connection))
@@ -286,7 +253,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 					columns.Add(new SQLiteColumnHeader(name, type));
 				}
 
-				return new SQLiteLogTableSchema(tableName, columns);
+				return new SQLiteSchema(tableName, columns);
 			}
 		}
 	}

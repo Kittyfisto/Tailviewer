@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,14 +9,35 @@ using Tailviewer.BusinessLogic.LogTables;
 namespace Tailviewer.Test.BusinessLogic
 {
 	[TestFixture]
-	public sealed class LogDataTaskQueueTest
+	public sealed class LogDataAccessQueueTest
 	{
-		private LogDataTaskQueue<LogEntryIndex, LogEntry> _queue;
+		private LogDataAccessQueue<LogEntryIndex, LogEntry> _queue;
+
+		sealed class Accessor
+			: ILogDataAccessor<LogEntryIndex, LogEntry>
+		{
+			private readonly Dictionary<LogEntryIndex, LogEntry> _values;
+
+			public Accessor()
+			{
+				_values = new Dictionary<LogEntryIndex, LogEntry>();
+			}
+
+			public void Add(LogEntryIndex index, LogEntry entry)
+			{
+				_values.Add(index, entry);
+			}
+
+			public bool TryAccess(LogEntryIndex index, out LogEntry data)
+			{
+				return _values.TryGetValue(index, out data);
+			}
+		}
 
 		[SetUp]
 		public void SetUp()
 		{
-			_queue = new LogDataTaskQueue<LogEntryIndex, LogEntry>();
+			_queue = new LogDataAccessQueue<LogEntryIndex, LogEntry>();
 		}
 
 		[Test]
@@ -36,15 +58,10 @@ namespace Tailviewer.Test.BusinessLogic
 
 			_queue.Count.Should().Be(1);
 
-			LogEntryIndex? index = null;
 			var row = new LogEntry("hello", "world");
-			_queue.ExecuteOne(idx =>
-				{
-					index = idx;
-					return row;
-				});
-
-			index.Should().Be(new LogEntryIndex(42), "Because the queue should've tried to access the data for the index we requested");
+			var accessor = new Accessor();
+			accessor.Add(new LogEntryIndex(42), row);
+			_queue.ExecuteOne(accessor);
 
 			task.IsCanceled.Should().BeFalse();
 			task.IsFaulted.Should().BeFalse();
@@ -69,28 +86,20 @@ namespace Tailviewer.Test.BusinessLogic
 			task3.Should().NotBeNull();
 			task3.Should().NotBeSameAs(task1);
 
-			var row1 = new LogEntry("1");
-			var row2 = new LogEntry("2");
-			var row3 = new LogEntry("3");
-			_queue.ExecuteAll(index =>
-			{
-				if (index == 1)
-					return row1;
-				if (index == 2)
-					return row2;
-				if (index == 3)
-					return row3;
-				return new LogEntry();
-			});
+			var accessor = new Accessor();
+			accessor.Add(1, new LogEntry("1"));
+			accessor.Add(2, new LogEntry("2"));
+			accessor.Add(3, new LogEntry("3"));
+			_queue.ExecuteAll(accessor);
 
 			task1.IsCompleted.Should().BeTrue();
-			task1.Result.Should().Be(row1);
+			task1.Result.Should().Be(new LogEntry("1"));
 
 			task2.IsCompleted.Should().BeTrue();
-			task2.Result.Should().Be(row2);
+			task2.Result.Should().Be(new LogEntry("2"));
 
 			task3.IsCompleted.Should().BeTrue();
-			task3.Result.Should().Be(row3);
+			task3.Result.Should().Be(new LogEntry("3"));
 		}
 
 		[Test]
@@ -102,12 +111,9 @@ namespace Tailviewer.Test.BusinessLogic
 			var task3 = _queue[new LogEntryIndex(1337)];
 
 			var row = new LogEntry("42");
-			_queue.ExecuteAll(index =>
-				{
-					if (index == 1337)
-						return row;
-					return new LogEntry();
-				});
+			var accessor = new Accessor();
+			accessor.Add(1337, row);
+			_queue.ExecuteAll(accessor);
 
 			task1.IsCompleted.Should().BeTrue();
 			task1.Result.Should().Be(row);
@@ -133,13 +139,9 @@ namespace Tailviewer.Test.BusinessLogic
 			_queue.Count.Should().Be(1, "Because multiple accesses to the same row shall be optimized to one single access");
 			
 			var row = new LogEntry("42");
-			_queue.ExecuteOne(index =>
-				{
-					if (index == 1337)
-						return row;
-
-					return new LogEntry();
-				});
+			var accessor = new Accessor();
+			accessor.Add(1337,row);
+			_queue.ExecuteOne(accessor);
 
 			task1.IsCompleted.Should().BeTrue();
 			task1.Result.Should().Be(row);
@@ -157,7 +159,9 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var task1 = _queue[new LogEntryIndex(1337)];
 			var row = new LogEntry("42");
-			_queue.ExecuteOne(index => row);
+			var accessor = new Accessor();
+			accessor.Add(1337, row);
+			_queue.ExecuteOne(accessor);
 
 			task1.IsCompleted.Should().BeTrue();
 			task1.Result.Should().Be(row);
@@ -167,7 +171,7 @@ namespace Tailviewer.Test.BusinessLogic
 			task2.Should().NotBeSameAs(task1, "Because completed/cancelled/faulted tasks may not be reused");
 			task2.IsCompleted.Should().BeFalse();
 
-			_queue.ExecuteOne(index => row);
+			_queue.ExecuteOne(accessor);
 			task2.IsCompleted.Should().BeTrue();
 			task2.Result.Should().Be(row);
 		}
@@ -187,6 +191,15 @@ namespace Tailviewer.Test.BusinessLogic
 			new Action(() => _queue.Dispose()).ShouldNotThrow();
 			task.IsCanceled.Should().BeTrue();
 			new Action(() => { var unused = task.Result; }).ShouldThrow<TaskCanceledException>();
+		}
+
+		[Test]
+		[Description("Verifies that Dispose() can be called multiple times without problems")]
+		public void TestDispose3()
+		{
+			_queue.Dispose();
+			new Action(() => _queue.Dispose()).ShouldNotThrow();
+			new Action(() => _queue.Dispose()).ShouldNotThrow();
 		}
 	}
 }

@@ -80,6 +80,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\ILogDataAccessor.cs" />
     <Compile Include="BusinessLogic\LogDataCache.cs" />
     <Compile Include="BusinessLogic\LogEntryIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
@@ -107,7 +108,7 @@
     <Compile Include="BusinessLogic\LogTables\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableModification.cs" />
-    <Compile Include="BusinessLogic\LogDataTaskQueue.cs" />
+    <Compile Include="BusinessLogic\LogDataAccessQueue.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableSection.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />
@@ -128,10 +129,12 @@
     <Compile Include="BusinessLogic\LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="BusinessLogic\LogTables\SQLiteAccessor.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteDataType.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTable.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteLogTableSchema.cs" />
+    <Compile Include="BusinessLogic\LogTables\SQLiteSchema.cs" />
+    <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />

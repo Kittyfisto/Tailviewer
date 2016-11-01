@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestCtor1()
 		{
-			var schema = new SQLiteLogTableSchema("log");
+			var schema = new SQLiteSchema("log");
 			schema.TableName.Should().Be("log");
 			schema.ColumnHeaders.Should().NotBeNull();
 			schema.ColumnHeaders.Should().BeEmpty();
@@ -19,8 +19,8 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestToString()
 		{
-			new SQLiteLogTableSchema("logging").ToString().Should().Be("logging []");
-			new SQLiteLogTableSchema("logging", new SQLiteColumnHeader("timestamp", SQLiteDataType.DateTime)).ToString().Should().Be("logging [timestamp DATETIME]");
+			new SQLiteSchema("logging").ToString().Should().Be("logging []");
+			new SQLiteSchema("logging", new SQLiteColumnHeader("timestamp", SQLiteDataType.DateTime)).ToString().Should().Be("logging [timestamp DATETIME]");
 		}
 	}
 }

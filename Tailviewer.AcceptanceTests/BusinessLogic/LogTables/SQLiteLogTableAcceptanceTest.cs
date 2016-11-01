@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogTables;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
@@ -16,14 +17,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
 		private SQLiteLogTable _table;
 		private string _fileName;
 		private SQLiteConnection _connection;
+		private LogDataCache _cache;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
+			_cache = new LogDataCache();
 
 			_fileName = GetFileName();
-			_table = new SQLiteLogTable(_scheduler, _fileName);
+			_table = new SQLiteLogTable(_scheduler, _cache, _fileName);
 		}
 
 		private static string GetFileName()
@@ -72,7 +75,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
 			command.ExecuteNonQuery();
 		}
 
-		private void AddRow(DateTime timestamp, string thread, string logger, string level, string message)
+		private void AddRow(DateTime timestamp, string thread, string level, string logger, string message)
 		{
 			try
 			{
@@ -152,16 +155,27 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
 		}
 
 		[Test]
-		[Description("")]
+		[Description("Verifies that the table is able to detect changes to the database")]
 		public void TestOneLogMessage()
 		{
 			CreateDatabase();
 			CreateTable();
 
-			AddRow(new DateTime(2016, 11, 1, 13, 06, 00), "1", "Tailviewer.AcceptanceTest", "DEBUG", "It's done");
+			AddRow(new DateTime(2016, 11, 1, 13, 06, 00), "1", "DEBUG", "Tailviewer.AcceptanceTest", "It's done");
 
 			_scheduler.RunOnce();
 			_table.RowCount.Should().Be(1, "Because the table should've retrieved the first row of the table");
+
+			var task = _table[0];
+			task.Should().NotBeNull();
+			task.IsCompleted.Should().BeFalse("Because the access will be satisfied with the next dispatcher invocation");
+
+			_scheduler.RunOnce();
+			task.IsCompleted.Should().BeTrue();
+			var entry = task.Result;
+			entry.Should().Be(new LogEntry(
+				                  new DateTime(2016, 11, 1, 13, 06, 00), "1", "DEBUG", "Tailviewer.AcceptanceTest", "It's done"
+				                  ));
 		}
 	}
 }

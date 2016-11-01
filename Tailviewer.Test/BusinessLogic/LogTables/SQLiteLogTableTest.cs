@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogTables;
 
 namespace Tailviewer.Test.BusinessLogic.LogTables
@@ -12,17 +13,19 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 	public sealed class SQLiteLogTableTest
 	{
 		private ManualTaskScheduler _scheduler;
+		private LogDataCache _cache;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
+			_cache = new LogDataCache();
 		}
 
 		[Test]
 		public void TestCtor1()
 		{
-			var table = new SQLiteLogTable(_scheduler, "foo.db");
+			var table = new SQLiteLogTable(_scheduler, _cache, "foo.db");
 			table.Exists.Should().BeFalse("Because we haven't checked for the existance and yet, and not existing is the default assumption, for now");
 			table.RowCount.Should().Be(0, "Because the database doesn't exist and thus no data could've been retrieved");
 			table.Schema.Should().NotBeNull();
@@ -34,8 +37,9 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestCtor2()
 		{
-			new Action(() => new SQLiteLogTable(null, "foo.txt")).ShouldThrow<ArgumentNullException>();
-			new Action(() => new SQLiteLogTable(_scheduler, null)).ShouldThrow<ArgumentNullException>();
+			new Action(() => new SQLiteLogTable(null, _cache, "foo.txt")).ShouldThrow<ArgumentNullException>();
+			new Action(() => new SQLiteLogTable(_scheduler, null, "foo.db")).ShouldThrow<ArgumentNullException>();
+			new Action(() => new SQLiteLogTable(_scheduler, _cache, null)).ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
@@ -44,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		{
 			_scheduler.PeriodicTasks.Should().BeEmpty();
 
-			var table = new SQLiteLogTable(_scheduler, @"C:\bar\foo.db");
+			var table = new SQLiteLogTable(_scheduler, _cache, @"C:\bar\foo.db");
 
 			_scheduler.PeriodicTaskCount.Should().Be(1);
 			var task = _scheduler.PeriodicTasks.First();
@@ -52,9 +56,21 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		}
 
 		[Test]
+		[Description("Verifies that Dispose() removes the periodic task created by the ctor")]
+		public void TestDispose()
+		{
+			_scheduler.PeriodicTasks.Should().BeEmpty();
+
+			var table = new SQLiteLogTable(_scheduler, _cache, @"C:\bar\foo.db");
+			_scheduler.PeriodicTaskCount.Should().Be(1);
+			table.Dispose();
+			_scheduler.PeriodicTaskCount.Should().Be(0);
+		}
+
+		[Test]
 		public void TestAddListener1()
 		{
-			var table = new SQLiteLogTable(_scheduler, "foo.db");
+			var table = new SQLiteLogTable(_scheduler, _cache, "foo.db");
 			var listener = new Mock<ILogTableListener>();
 			new Action(() => table.AddListener(listener.Object, TimeSpan.Zero, 100)).ShouldNotThrow();
 			table.RemoveListener(listener.Object).Should().BeTrue();
@@ -63,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestAddListener2()
 		{
-			var table = new SQLiteLogTable(_scheduler, "foo.db");
+			var table = new SQLiteLogTable(_scheduler, _cache, "foo.db");
 			var listener1 = new Mock<ILogTableListener>();
 			var listener2 = new Mock<ILogTableListener>();
 			table.AddListener(listener1.Object, TimeSpan.Zero, 100);
@@ -79,7 +95,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		[Test]
 		public void TestToString()
 		{
-			var table = new SQLiteLogTable(_scheduler, "mydatabase.db");
+			var table = new SQLiteLogTable(_scheduler, _cache, "mydatabase.db");
 			table.ToString().Should().Be("mydatabase.db");
 		}
 	}

@@ -4,13 +4,13 @@ using System.Collections.ObjectModel;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
-	public sealed class SQLiteLogTableSchema
+	public sealed class SQLiteSchema
 		: ILogTableSchema
 	{
 		private readonly ReadOnlyCollection<SQLiteColumnHeader> _columnHeaders;
 		private readonly string _tableName;
 
-		public SQLiteLogTableSchema(string tableName)
+		public SQLiteSchema(string tableName)
 		{
 			if (tableName == null)
 				throw new ArgumentNullException("tableName");
@@ -19,11 +19,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>());
 		}
 
-		public SQLiteLogTableSchema(string tableName, params SQLiteColumnHeader[] columnHeaders)
+		public SQLiteSchema(string tableName, params SQLiteColumnHeader[] columnHeaders)
 			: this(tableName, (IEnumerable<SQLiteColumnHeader>)columnHeaders)
 		{}
 
-		public SQLiteLogTableSchema(string tableName, IEnumerable<SQLiteColumnHeader> columnHeaders)
+		public SQLiteSchema(string tableName, IEnumerable<SQLiteColumnHeader> columnHeaders)
 		{
 			if (tableName == null)
 				throw new ArgumentNullException("tableName");
@@ -51,9 +51,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 			                     string.Join(", ", _columnHeaders));
 		}
 
-		private bool Equals(SQLiteLogTableSchema logTableSchema)
+		private bool Equals(SQLiteSchema schema)
 		{
-			ReadOnlyCollection<SQLiteColumnHeader> columns = logTableSchema._columnHeaders;
+			ReadOnlyCollection<SQLiteColumnHeader> columns = schema._columnHeaders;
 			if (columns.Count != _columnHeaders.Count)
 				return false;
 
@@ -75,10 +75,10 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public override bool Equals(object obj)
 		{
-			if (!(obj is SQLiteLogTableSchema))
+			if (!(obj is SQLiteSchema))
 				return false;
 
-			return Equals((SQLiteLogTableSchema) obj);
+			return Equals((SQLiteSchema) obj);
 		}
 	}
 }
