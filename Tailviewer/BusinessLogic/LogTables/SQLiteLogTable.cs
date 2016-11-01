@@ -73,13 +73,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { return Schema; }
 		}
 
-		public LogTableRow this[int index]
+		public Task<LogTableRow> this[int index]
 		{
 			get
 			{
 				lock (_syncRoot)
 				{
-					return _rows[index];
+					//return _rows[index];
+					throw new NotImplementedException();
 				}
 			}
 		}

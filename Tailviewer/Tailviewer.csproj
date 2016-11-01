@@ -106,6 +106,7 @@
     <Compile Include="BusinessLogic\LogTables\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableModification.cs" />
+    <Compile Include="BusinessLogic\LogDataTaskQueue.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableSection.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
+    <Compile Include="QueueExtensions.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />

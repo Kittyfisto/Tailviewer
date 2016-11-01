@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables
@@ -31,7 +32,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		LogTableRow this[int index] { get; }
+		Task<LogTableRow> this[int index] { get; }
 
 		void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		bool RemoveListener(ILogTableListener listener);

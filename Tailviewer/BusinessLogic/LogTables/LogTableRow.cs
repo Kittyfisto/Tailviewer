@@ -12,7 +12,8 @@ namespace Tailviewer.BusinessLogic.LogTables
 	/// <remarks>
 	///     A row consists of a list of fields where each field represents the cell at the n-th row and m-th column.
 	/// </remarks>
-	public struct LogTableRow : IEquatable<LogTableRow>
+	public struct LogTableRow
+		: IEquatable<LogTableRow>
 	{
 		public readonly object[] Fields;
 
@@ -24,7 +25,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			Fields = fields.ToArray();
 		}
 
-		public LogTableRow(object[] fields)
+		public LogTableRow(params object[] fields)
 		{
 			if (fields == null)
 				throw new ArgumentNullException("fields");
@@ -34,7 +35,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public override string ToString()
 		{
-			return string.Join(", ", Fields);
+			var fields = Fields;
+			if (fields != null)
+				return string.Join(", ", fields);
+
+			return string.Empty;
 		}
 
 		public bool Equals(LogTableRow other)

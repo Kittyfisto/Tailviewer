@@ -73,6 +73,7 @@
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\LogDataTaskQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableRowTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
