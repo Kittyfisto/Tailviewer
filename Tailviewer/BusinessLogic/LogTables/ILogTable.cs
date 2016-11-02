@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		Task<LogEntry> this[LogEntryIndex index] { get; }
+		ITask<LogEntry> this[LogEntryIndex index] { get; }
 
 		void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
 		bool RemoveListener(ILogTableListener listener);

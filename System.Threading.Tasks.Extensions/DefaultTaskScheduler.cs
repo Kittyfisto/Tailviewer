@@ -71,7 +71,7 @@ namespace System.Threading.Tasks
 		/// <summary>
 		///     Creates and starts a new task.
 		///     The given <paramref name="callback" /> will be executed exactly once.
-		///     <see cref="Task{T}.Result" /> will carry the return value of the given callback, once its available.
+		///     <see cref="NoThrowTask{T}.Result" /> will carry the return value of the given callback, once its available.
 		/// </summary>
 		/// <param name="callback"></param>
 		/// <returns></returns>

@@ -190,7 +190,8 @@ namespace Tailviewer.Test.BusinessLogic
 			var task = _queue[new LogEntryIndex(42)];
 			new Action(() => _queue.Dispose()).ShouldNotThrow();
 			task.IsCanceled.Should().BeTrue();
-			new Action(() => { var unused = task.Result; }).ShouldThrow<TaskCanceledException>();
+			new Action(() => { var unused = task.Result; }).ShouldNotThrow();
+			task.Result.Should().Be(default(LogEntry));
 		}
 
 		[Test]

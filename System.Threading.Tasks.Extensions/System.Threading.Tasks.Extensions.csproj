@@ -38,7 +38,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IPeriodicTask.cs" />
+    <Compile Include="ITask.cs" />
     <Compile Include="ITaskScheduler.cs" />
+    <Compile Include="NoThrowTask.cs" />
+    <Compile Include="NoThrowTaskCompletionSource.cs" />
     <Compile Include="ManualTaskScheduler.cs" />
     <Compile Include="PeriodicTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

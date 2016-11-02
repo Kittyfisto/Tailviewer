@@ -72,7 +72,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			get { return Schema; }
 		}
 
-		public Task<LogEntry> this[LogEntryIndex index]
+		public ITask<LogEntry> this[LogEntryIndex index]
 		{
 			get { return _accessQueue[index]; }
 		}

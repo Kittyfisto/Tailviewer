@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic
 			_requestsByIndex = new Dictionary<TIndex, TaskData>();
 		}
 
-		public Task<TData> this[TIndex index]
+		public ITask<TData> this[TIndex index]
 		{
 			get
 			{
@@ -166,15 +166,15 @@ namespace Tailviewer.BusinessLogic
 		private struct TaskData
 		{
 			public readonly TIndex Index;
-			private readonly TaskCompletionSource<TData> _completionSource;
+			private readonly NoThrowTaskCompletionSource<TData> _completionSource;
 
 			public TaskData(TIndex index)
 			{
 				Index = index;
-				_completionSource = new TaskCompletionSource<TData>();
+				_completionSource = new NoThrowTaskCompletionSource<TData>();
 			}
 
-			public Task<TData> Task
+			public ITask<TData> Task
 			{
 				get { return _completionSource.Task; }
 			}
