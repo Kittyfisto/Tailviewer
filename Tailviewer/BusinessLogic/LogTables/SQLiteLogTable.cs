@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
+using System.Security;
 using System.Threading.Tasks;
 using log4net;
 
@@ -13,20 +13,20 @@ namespace Tailviewer.BusinessLogic.LogTables
 		: ILogTable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private readonly LogDataAccessQueue<LogEntryIndex, LogEntry> _accessQueue;
+		private readonly LogDataCache _cache;
 
 		private readonly string _fileName;
 		private readonly LogTableListenerCollection _listeners;
 
 		private readonly ITaskScheduler _scheduler;
-		private readonly LogDataCache _cache;
-		private readonly LogDataAccessQueue<LogEntryIndex, LogEntry> _accessQueue;
 		private readonly IPeriodicTask _task;
 
 		#region Data
 
-		private int _rowCount;
 		private bool _exists;
 		private DateTime _lastModified;
+		private int _rowCount;
 		private SQLiteSchema _schema;
 
 		#endregion
@@ -74,10 +74,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		public Task<LogEntry> this[LogEntryIndex index]
 		{
-			get
-			{
-				return _accessQueue[index];
-			}
+			get { return _accessQueue[index]; }
 		}
 
 		public void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -103,6 +100,38 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		private TimeSpan Update()
 		{
+			try
+			{
+				CheckDatabaseAndUpdate();
+			}
+			catch (SecurityException e)
+			{
+				Log.ErrorFormat("Caught exception while checking SQLITE database {0}: {1}",
+				                _fileName,
+				                e);
+			}
+			catch (IOException e)
+			{
+				Log.ErrorFormat("Caught exception while checking SQLITE database {0}: {1}",
+				                _fileName,
+				                e);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while checking SQLITE database {0}: {1}",
+				                _fileName,
+				                e);
+			}
+
+			return TimeSpan.FromMilliseconds(100);
+		}
+
+		/// <summary>
+		///     Tests if the database file exists/is reachable and then updates the schema from the database.
+		///     At last, resource access requests will either be satisfied, or denied.
+		/// </summary>
+		private void CheckDatabaseAndUpdate()
+		{
 			var info = new FileInfo(_fileName);
 			if (info.Exists)
 			{
@@ -113,30 +142,17 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 				_exists = true;
 
-				string connectionString = string.Format("Data Source={0};Version=3;", _fileName);
-				using (var connection = new SQLiteConnection(connectionString))
+				try
 				{
-					connection.Open();
-
-					DateTime modified = info.LastWriteTime;
-					if (modified != _lastModified)
-					{
-						Log.DebugFormat("SQLITE Database {0} has been touched since our last update {1}, retrieving schema and # of rows", _fileName,
-										_lastModified);
-
-						UpdateSchema(connection);
-						UpdateRowCount(connection);
-
-						_lastModified = modified;
-					}
-					else
-					{
-						Log.DebugFormat("SQLITE Database {0} hasn't been touched since {1}, skipping schema update", _fileName, modified);
-					}
-
-					// We have access to the database and therefore we
-					// must now try to satisfy all access to its data.
-					_accessQueue.ExecuteAll(new SQLiteAccessor(connection, _schema, _cache, this));
+					UpdateFromDatabase(info.LastWriteTime);
+				}
+				catch (SQLiteException e)
+				{
+					Log.ErrorFormat("Caught exception while reading data from SQLITE database {0}: {1}", _fileName, e);
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception while reading data from SQLITE database {0}: {1}", _fileName, e);
 				}
 			}
 			else
@@ -153,10 +169,49 @@ namespace Tailviewer.BusinessLogic.LogTables
 				// we can simply reject all access to data.
 				_accessQueue.ExecuteAll(new NoLogDataAccessor<LogEntryIndex, LogEntry>());
 			}
-
-			return TimeSpan.FromMilliseconds(100);
 		}
 
+		/// <summary>
+		///     Tries to open a connection to the database, updates the current schema (if necessary) and then
+		///     satisfies all pending resource access requests.
+		/// </summary>
+		/// <param name="lastWriteTime"></param>
+		private void UpdateFromDatabase(DateTime lastWriteTime)
+		{
+			string connectionString = string.Format("Data Source={0};Version=3;", _fileName);
+			using (var connection = new SQLiteConnection(connectionString))
+			{
+				connection.Open();
+
+				if (lastWriteTime != _lastModified)
+				{
+					Log.DebugFormat("SQLITE Database {0} has been touched since our last update {1}, retrieving schema and # of rows",
+					                _fileName,
+					                _lastModified);
+
+					UpdateSchema(connection);
+					UpdateRowCount(connection);
+
+					_lastModified = lastWriteTime;
+				}
+				else
+				{
+					Log.DebugFormat("SQLITE Database {0} hasn't been touched since {1}, skipping schema update",
+					                _fileName,
+					                lastWriteTime);
+				}
+
+				// We have access to the database and therefore we
+				// must now try to satisfy all access to its data.
+				_accessQueue.ExecuteAll(new SQLiteAccessor(connection, _schema, _cache, this));
+			}
+		}
+
+		/// <summary>
+		///     Reads the current schema from the given database and then forces a schema update
+		///     of all listeners in case the schema has changed compared to the previous one.
+		/// </summary>
+		/// <param name="connection"></param>
 		private void UpdateSchema(SQLiteConnection connection)
 		{
 			string tableName;
@@ -204,7 +259,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 			else if (rowCount > _rowCount)
 			{
-				var old = _rowCount;
+				int old = _rowCount;
 				_rowCount = rowCount;
 				_listeners.OnRead(old, rowCount - old);
 			}
