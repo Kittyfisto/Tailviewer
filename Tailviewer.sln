@@ -32,6 +32,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerCore", "LoggerCore\Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileLogger", "FileLogger\FileLogger.csproj", "{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Playground", "Playground", "{AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePlayground", "TablePlayground\TablePlayground.csproj", "{FB8C063F-C298-4D1C-98E0-7150B955B41C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +78,10 @@ Global
 		{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB8C063F-C298-4D1C-98E0-7150B955B41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB8C063F-C298-4D1C-98E0-7150B955B41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB8C063F-C298-4D1C-98E0-7150B955B41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB8C063F-C298-4D1C-98E0-7150B955B41C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,5 +93,6 @@ Global
 		{DDEF8453-1C7F-4E48-B953-A4D34804DBD3} = {D49AF1FD-0F5D-4E20-BF05-89511D9F519C}
 		{0FB426C3-BF2D-4DAE-907C-C80531FA818C} = {D49AF1FD-0F5D-4E20-BF05-89511D9F519C}
 		{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0} = {D49AF1FD-0F5D-4E20-BF05-89511D9F519C}
+		{FB8C063F-C298-4D1C-98E0-7150B955B41C} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 	EndGlobalSection
 EndGlobal

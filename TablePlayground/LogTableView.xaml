@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="TablePlayground.LogTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:tablePlayground="clr-namespace:TablePlayground"
+             xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+             mc:Ignorable="d"
+             x:Name="This"
+             BorderBrush="Gray"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Border BorderThickness="1"
+            BorderBrush="Gray">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Our control consists of a simple scroll viewer that ONLY works horizontally.
+             This is because our table supports "unlimited" rows, but not columns. -->
+            <controls:FlatScrollViewer VerticalScrollBarVisibility="Hidden"
+                                       HorizontalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Border BorderThickness="0,0,1,1"
+                            BorderBrush="Gray"
+                            Margin="-1,0,-1,0">
+                        <tablePlayground:GridSplitterPanel x:Name="PART_Header">
+                            <tablePlayground:GridSplitterPanel.ItemTemplate>
+                                <DataTemplate DataType="{x:Type tablePlayground:TableHeaderItem}">
+                                    <Border BorderThickness="1,0,0,0"
+                                            BorderBrush="Gray">
+                                        <TextBlock Text="{Binding Name}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Margin="4" />
+                                    </Border>
+                                </DataTemplate>
+                            </tablePlayground:GridSplitterPanel.ItemTemplate>
+                        </tablePlayground:GridSplitterPanel>
+                    </Border>
+
+                    <tablePlayground:TableCanvas x:Name="PART_Canvas" />
+                </Grid>
+            </controls:FlatScrollViewer>
+            <!-- The vertical scrollbar is not provided by the scrollviewer because our canvas
+            doesn't present the entire table. Instead it acts as a window onto the full data set.
+            We place the vertical scroll bar next to the scrollviewer so we can manually control
+            it -->
+            <Border Grid.Column="1"
+                    Margin="0,24,0,0"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="Gray">
+                <controls:FlatScrollBar x:Name="PART_VerticalScrollbar"
+                                        Width="9"
+                                        Margin="0,0,3,12"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Stretch"
+                                        Orientation="Vertical" />
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>
