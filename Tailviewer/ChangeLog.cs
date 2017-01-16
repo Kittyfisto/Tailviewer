@@ -32,7 +32,8 @@ namespace Tailviewer
 			var features = new[]
 			{
 				"Search results are properly highlighted",
-				"Search results are always brought into view"
+				"Search results are always brought into view",
+				"Added toggle to hide empty lines"
 			};
 			var bugfixes = new string[] {};
 			var misc = new[]
