@@ -362,5 +362,63 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				line.Message.Should().Be("Yikes");
 			}
 		}
+
+		[Test]
+		[Description("Verifies that the log file queries the LogLineFilter for each added entry")]
+		public void TestSingleLineFilter1()
+		{
+			var filter = new Mock<ILogLineFilter>();
+			filter.Setup(x => x.PassesFilter(It.IsAny<LogLine>())).Returns(true);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter.Object, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				_taskScheduler.RunOnce();
+
+				filter.Verify(x => x.PassesFilter(It.Is<LogLine>(y => Equals(y, _entries[0]))), Times.AtLeastOnce,
+					"because the log file should've used our filter at least once to determine if the given log line should've been added");
+
+				file.Count.Should().Be(1, "because the filter should've passed the only log line");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the log file honors the result of the log line filter")]
+		public void TestSingleLineFilter2()
+		{
+			var filter = new Mock<ILogLineFilter>();
+			filter.Setup(x => x.PassesFilter(It.IsAny<LogLine>())).Returns(false);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter.Object, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				_taskScheduler.RunOnce();
+
+				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
+
+				_entries.Add(new LogLine(1, 0, "INFO: Something mundane", LevelFlags.Info));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(1, 0));
+				_taskScheduler.RunOnce();
+				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the log line filter is used per log line")]
+		public void TestSingleLineFilter3()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 0, "More stuff", LevelFlags.Debug));
+				_entries.Add(new LogLine(2, 0, "", LevelFlags.Debug));
+				_entries.Add(new LogLine(3, 0, "And even more stuff", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+			}
+		}
 	}
 }

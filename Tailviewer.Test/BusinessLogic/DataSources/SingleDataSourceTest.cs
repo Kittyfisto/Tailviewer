@@ -157,6 +157,18 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			}
 		}
 
+		[Test]
+		public void TestHideEmptyLines1()
+		{
+			var settings = CreateDataSource();
+			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile.Object, TimeSpan.Zero))
+			{
+				dataSource.HideEmptyLines.Should().BeFalse();
+				dataSource.HideEmptyLines = true;
+				settings.HideEmptyLines.Should().BeTrue("because the data source should modify the settings object when changed");
+			}
+		}
+
 		private DataSource CreateDataSource()
 		{
 			return new DataSource("ffff") {Id = Guid.NewGuid()};
