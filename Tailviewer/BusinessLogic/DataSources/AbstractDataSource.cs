@@ -224,6 +224,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.ColorByLevel = value; }
 		}
 
+		public bool HideEmptyLines
+		{
+			get { return _settings.HideEmptyLines; }
+			set
+			{
+				if (value == _settings.HideEmptyLines)
+					return;
+
+				_settings.HideEmptyLines = value;
+				CreateFilteredLogFile();
+			}
+		}
+
 		public void Dispose()
 		{
 			_logFile.Dispose();
@@ -258,10 +271,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_filteredLogFile.Dispose();
 
 			LevelFlags levelFilter = LevelFilter;
-			ILogEntryFilter filter = Filter.Create(levelFilter, _quickFilterChain);
-			if (filter != null)
+			ILogLineFilter logLineFilter = HideEmptyLines ? (ILogLineFilter)new EmptyLogLineFilter() : new NoFilter();
+			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
+			if (logEntryFilter != null)
 			{
-				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, filter, _maximumWaitTime);
+				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else

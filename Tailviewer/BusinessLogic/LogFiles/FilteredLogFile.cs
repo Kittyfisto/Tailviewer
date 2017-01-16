@@ -14,7 +14,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	{
 		private const int BatchSize = 10000;
 
-		private readonly ILogEntryFilter _filter;
+		private readonly ILogLineFilter _logLineFilter;
+		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
@@ -26,14 +27,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private int _currentSourceIndex;
 		private readonly List<LogLine> _lastLogEntry;
 
-		public FilteredLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
+		public FilteredLogFile(ITaskScheduler scheduler,
+			TimeSpan maximumWaitTime,
+			ILogFile source,
+			ILogLineFilter logLineFilter,
+			ILogEntryFilter logEntryFilter)
 			: base(scheduler)
 		{
 			if (source == null) throw new ArgumentNullException("source");
-			if (filter == null) throw new ArgumentNullException("filter");
 
 			_source = source;
-			_filter = filter;
+			_logLineFilter = logLineFilter ?? new NoFilter();
+			_logEntryFilter = logEntryFilter ?? new NoFilter();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
 			_buffer = new LogLine[BatchSize];
@@ -175,13 +180,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					LogLine line = _buffer[i];
 					if (_lastLogEntry.Count == 0 || _lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
 					{
-						_lastLogEntry.Add(line);
+						TryAddLogLine(line);
 					}
 					else if (line.LogEntryIndex != _lastLogEntry[0].LogEntryIndex)
 					{
-						TryAddLogLine(_lastLogEntry);
+						TryAddLogEntry(_lastLogEntry);
 						_lastLogEntry.Clear();
-						_lastLogEntry.Add(line);
+						TryAddLogLine(line);
 					}
 				}
 
@@ -190,7 +195,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			if (_fullSourceSection.IsEndOfSection(_currentSourceIndex))
 			{
-				TryAddLogLine(_lastLogEntry);
+				TryAddLogEntry(_lastLogEntry);
 				Listeners.OnRead(_indices.Count);
 
 				SetEndOfSourceReached();
@@ -249,13 +254,24 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Listeners.OnRead(-1);
 		}
 
-		private bool TryAddLogLine(List<LogLine> logEntry)
+		private void TryAddLogLine(LogLine line)
+		{
+			// We have a filter that operates on individual lines (regardless of log entry affiliation).
+			// We therefore have to evaluate each line for itself before we can even begin to consider adding a log
+			// entry.
+			if (_logLineFilter.PassesFilter(line))
+			{
+				_lastLogEntry.Add(line);
+			}
+		}
+
+		private bool TryAddLogEntry(List<LogLine> logEntry)
 		{
 			if (_indices.Count > 0 && logEntry.Count > 0 &&
 			    _indices[_indices.Count - 1] == logEntry[logEntry.Count - 1].LineIndex)
 				return true;
 
-			if (_filter.PassesFilter(logEntry))
+			if (_logEntryFilter.PassesFilter(logEntry))
 			{
 				lock (_indices)
 				{
@@ -268,12 +284,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				Listeners.OnRead(_indices.Count);
 				return true;
 			}
-
-			if (logEntry.Count > 0)
-			{
-				int n = 0;
-			}
-
+			
 			return false;
 		}
 	}

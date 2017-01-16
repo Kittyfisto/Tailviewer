@@ -80,6 +80,9 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\Filters\EmptyLogLineFilter.cs" />
+    <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
+    <Compile Include="BusinessLogic\Filters\NoFilter.cs" />
     <Compile Include="BusinessLogic\ILogDataAccessor.cs" />
     <Compile Include="BusinessLogic\LogDataCache.cs" />
     <Compile Include="BusinessLogic\LogEntryIndex.cs" />

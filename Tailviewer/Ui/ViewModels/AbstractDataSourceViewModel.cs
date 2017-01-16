@@ -304,6 +304,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool HideEmptyLines
+		{
+			get { return _dataSource.HideEmptyLines; }
+			set
+			{
+				if (value == HideEmptyLines)
+					return;
+
+				_dataSource.HideEmptyLines = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		#region Searches
 
 		public string SearchTerm

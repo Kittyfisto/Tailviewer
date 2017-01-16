@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 
 namespace Tailviewer.Settings
@@ -15,6 +14,7 @@ namespace Tailviewer.Settings
 
 		private readonly List<Guid> _activatedQuickFilters;
 		public bool ColorByLevel;
+		public bool HideEmptyLines;
 
 		public string File;
 		public bool FollowTail;
@@ -78,6 +78,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("searchterm", SearchTerm);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
+			writer.WriteAttributeBool("hideemptylines", HideEmptyLines);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
@@ -125,6 +126,10 @@ namespace Tailviewer.Settings
 
 					case "colorbylevel":
 						ColorByLevel = reader.ReadContentAsBool();
+						break;
+
+					case "hideemptylines":
+						HideEmptyLines = reader.ReadContentAsBool();
 						break;
 
 					case "visibleentryindex":

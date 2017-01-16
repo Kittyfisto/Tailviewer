@@ -36,7 +36,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(10), sources))
 				{
 					var filter = new SubstringFilter("foo", true);
-					using (var filtered = new FilteredLogFile(_scheduler, TimeSpan.FromMilliseconds(10), merged, filter))
+					using (var filtered = new FilteredLogFile(_scheduler, TimeSpan.FromMilliseconds(10), merged, null, filter))
 					{
 						filtered.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 					}

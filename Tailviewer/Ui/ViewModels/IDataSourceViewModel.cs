@@ -6,7 +6,6 @@ using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -49,6 +48,8 @@ namespace Tailviewer.Ui.ViewModels
 		bool ShowLineNumbers { get; set; }
 
 		bool ColorByLevel { get; set; }
+
+		bool HideEmptyLines { get; set; }
 
 		#region Search
 

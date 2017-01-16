@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.Settings
@@ -14,6 +13,7 @@ namespace Tailviewer.Test.Settings
 		{
 			var dataSource = new DataSource();
 			dataSource.ColorByLevel.Should().BeTrue();
+			dataSource.HideEmptyLines.Should().BeFalse();
 
 			dataSource.ActivatedQuickFilters.Should().NotBeNull();
 			dataSource.LevelFilter.Should().Be(LevelFlags.All);

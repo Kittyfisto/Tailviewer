@@ -73,6 +73,7 @@
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />
     <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
     <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />

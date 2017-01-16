@@ -6,7 +6,6 @@ using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.Settings
@@ -160,6 +159,7 @@ namespace Tailviewer.Test.Settings
 					LevelFilter = LevelFlags.Debug,
 					VisibleLogLine = new LogLineIndex(1),
 					ShowLineNumbers = false,
+					HideEmptyLines = true,
 					ActivatedQuickFilters =
 						{
 							Guid.NewGuid(),
@@ -204,13 +204,16 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].File.Should().Be(@"SharpRemote.Host.1600.log");
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].ShowLineNumbers.Should().BeFalse();
+			settings.DataSources[0].HideEmptyLines.Should().BeTrue();
 			settings.DataSources[0].SearchTerm.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
 			settings.DataSources[0].VisibleLogLine.Should().Be(new LogLineIndex(1));
 			settings.DataSources[0].ActivatedQuickFilters.Should().Equal(guids);
+
 			settings.DataSources[1].File.Should().Be(@"SharpRemote.Host.1700.log");
 			settings.DataSources[1].FollowTail.Should().BeFalse();
 			settings.DataSources[1].ShowLineNumbers.Should().BeTrue();
+			settings.DataSources[1].HideEmptyLines.Should().BeFalse();
 			settings.DataSources.SelectedItem.Should().NotBe(Guid.Empty);
 			settings.DataSources.SelectedItem.Should().Be(settings.DataSources[0].Id);
 

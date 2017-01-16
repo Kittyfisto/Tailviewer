@@ -71,6 +71,14 @@
                 Content="Color by level" />
 
             <controls:FlatToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                x:Name="PART_HideEmptyLines"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay, ElementName=This}"
+                Content="Hide empty lines" />
+
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 Width="41"

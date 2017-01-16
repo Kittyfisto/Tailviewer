@@ -13,14 +13,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return entries;
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogEntryFilter filter)
+		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogLineFilter logLineFilter, ILogEntryFilter logEntryFilter)
 		{
-			return AsFiltered(logFile, scheduler, filter, TimeSpan.FromMilliseconds(10));
+			return AsFiltered(logFile, scheduler, logLineFilter, logEntryFilter, TimeSpan.FromMilliseconds(10));
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogEntryFilter filter, TimeSpan maximumWaitTime)
+		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogLineFilter logLineFilter, ILogEntryFilter logEntryFilter, TimeSpan maximumWaitTime)
 		{
-			var file = new FilteredLogFile(scheduler, maximumWaitTime, logFile, filter);
+			var file = new FilteredLogFile(scheduler, maximumWaitTime, logFile, logLineFilter, logEntryFilter);
 			return file;
 		}
 	}
