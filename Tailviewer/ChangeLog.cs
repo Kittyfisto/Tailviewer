@@ -24,10 +24,20 @@ namespace Tailviewer
 			AllChanges = new List<Change>();
 
 			AddV0286();
+			AddV030();
 			AddMostRecent();
 		}
 
 		private static void AddMostRecent()
+		{
+			var features = new string[] {};
+			var bugfixes = new string[] { };
+			var misc = new string[] { };
+			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV030()
 		{
 			var features = new[]
 			{
@@ -41,7 +51,9 @@ namespace Tailviewer
 					"Added changelog",
 					"Unhandled errors are logged to action center"
 				};
-			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			var releaseDate = new DateTime(2017, 1, 16);
+			var version = new Version(0, 3, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 
