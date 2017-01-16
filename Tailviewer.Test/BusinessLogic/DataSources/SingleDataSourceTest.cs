@@ -143,6 +143,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		[LocalTest("Won't work on AppVeyor anymore...")]
 		public void TestSearch1()
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))

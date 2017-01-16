@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace Tailviewer.Test.BusinessLogic.Scheduling
 {
 	[TestFixture]
+	[LocalTest("Won't work on AppVeyor anymore...")]
 	public sealed class TaskSchedulerTest
 	{
 		[Test]
