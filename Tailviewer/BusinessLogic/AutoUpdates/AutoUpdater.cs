@@ -19,6 +19,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 	{
 		private const string Server = "https://kittyfisto.github.io";
 		private const string VersionFile = "Tailviewer/downloads/version.xml";
+		private const string DownloadServer = "https://github.com/Kittyfisto/Tailviewer/releases/download/";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -315,7 +316,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		private static Version ReadVersion(XmlReader versions, out Uri address)
 		{
 			var path = versions.GetAttribute("path");
-			var fullPath = string.Format("{0}/Tailviewer/downloads/{1}", Server, path);
+			var fullPath = string.Format("{0}/{1}", DownloadServer, path);
 			if (!Uri.TryCreate(fullPath, UriKind.Absolute, out address))
 				return null;
 
