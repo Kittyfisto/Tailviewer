@@ -29,7 +29,11 @@ namespace Tailviewer
 
 		private static void AddMostRecent()
 		{
-			var features = new string[] {};
+			var features = new[]
+			{
+				"Search results are properly highlighted",
+				"Search results are always brought into view"
+			};
 			var bugfixes = new string[] {};
 			var misc = new[]
 				{
