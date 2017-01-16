@@ -99,5 +99,13 @@ namespace System.Threading.Tasks
 				task.Run();
 			}
 		}
+
+		public void Run(int count)
+		{
+			for (int i = 0; i < count; ++i)
+			{
+				RunOnce();
+			}
+		}
 	}
 }

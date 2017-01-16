@@ -19,19 +19,18 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			_scheduler = new DefaultTaskScheduler();
+			_scheduler = new ManualTaskScheduler();
 		}
 
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
-			_scheduler.Dispose();
 		}
 
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
 		private List<LogLine> _entries;
-		private DefaultTaskScheduler _scheduler;
+		private ManualTaskScheduler _scheduler;
 
 		[Test]
 		public void TestCtor()
@@ -72,6 +71,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = Guid.NewGuid() }))
 			{
+				_scheduler.RunOnce();
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				dataSource.TotalCount.Should().Be(21);
@@ -90,6 +90,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
 			{
+				_scheduler.RunOnce();
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				dataSource.UnfilteredLogFile.Count.Should().Be(6);
 				LogLine[] lines = dataSource.UnfilteredLogFile.GetSection(new LogFileSection(0, 6));
@@ -143,18 +144,18 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
-		[LocalTest("Won't work on AppVeyor anymore...")]
 		public void TestSearch1()
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))
 			{
 				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.None));
 				_listeners.OnRead(1);
+				_scheduler.RunOnce();
 				dataSource.SearchTerm = "foobar";
-				//dataSource.Search.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
-				dataSource.Search.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
+				_scheduler.Run(10);
+				dataSource.Search.Count.Should().Be(1);
 				var matches = dataSource.Search.Matches.ToList();
-				matches.Should().Equal(new[] {new LogMatch(0, new LogLineMatch(6, 6))});
+				matches.Should().Equal(new LogMatch(0, new LogLineMatch(6, 6)));
 			}
 		}
 
