@@ -282,27 +282,34 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public event Action<IEnumerable<LogLineIndex>> SelectionChanged;
 
-		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex)
+		private void TextCanvasOnRequestBringIntoView(LogLineIndex logLineIndex, LogLineMatch match)
 		{
-			BringIntoView(logLineIndex);
+			BringIntoView(logLineIndex, match);
 		}
 
-		private void BringIntoView(LogLineIndex logLineIndex)
+		private void BringIntoView(LogLineIndex logLineIndex, LogLineMatch match = new LogLineMatch())
 		{
 			double height = _textCanvas.ActualHeight;
 			double offset = _textCanvas.YOffset;
 			int start = _textCanvas.CurrentLine;
 			int diff = logLineIndex - start;
-			double min = ((diff)*TextHelper.LineHeight + offset);
-			double max = ((diff + 1)*TextHelper.LineHeight + offset);
-			if (min < 0)
+			double minY = ((diff)*TextHelper.LineHeight + offset);
+			double maxY = ((diff + 1)*TextHelper.LineHeight + offset);
+			if (minY < 0)
 			{
-				_verticalScrollBar.Value += min;
+				_verticalScrollBar.Value += minY;
 			}
-			else if (max > height)
+			else if (maxY > height)
 			{
-				_verticalScrollBar.Value += (max - height);
+				_verticalScrollBar.Value += (maxY - height);
 			}
+
+			double minX = TextHelper.GlyphWidth * match.Index;
+			double maxX = TextHelper.GlyphWidth * (match.Index + match.Count);
+			var visibleMinX = _horizontalScrollBar.Value;
+			var visibleMaxX = visibleMinX + _horizontalScrollBar.ViewportSize;
+			if (maxX < visibleMinX || minX > visibleMaxX)
+				_horizontalScrollBar.Value = minX;
 
 			ILogFile logFile = LogFile;
 			if (logFile != null)

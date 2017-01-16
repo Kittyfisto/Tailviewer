@@ -244,7 +244,6 @@
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
-    <Compile Include="Settings\WindowSettings.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

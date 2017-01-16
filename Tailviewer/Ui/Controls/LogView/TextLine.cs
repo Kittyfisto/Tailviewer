@@ -240,13 +240,28 @@ namespace Tailviewer.Ui.Controls.LogView
 			CreateTextIfNecessary();
 
 			Brush regularBackgroundBrush = BackgroundBrush;
-			Brush highlightedBackgroundBrush = TextHelper.HighlightedBackgroundBrush;
 
 			double x = xOffset;
 			for (int i = 0; i < _segments.Count; ++i)
 			{
+				Brush brush;
 				TextSegment segment = _segments[i];
-				Brush brush = segment.IsRegular ? regularBackgroundBrush : highlightedBackgroundBrush;
+				if (segment.IsRegular)
+				{
+					brush = regularBackgroundBrush;
+				}
+				else
+				{
+					if (IsSelected)
+					{
+						brush = TextHelper.HighlightedSelectedBackgroundBrush;
+					}
+					else
+					{
+						brush = TextHelper.HighlightedBackgroundBrush;
+					}
+				}
+
 				if (brush != null)
 				{
 					var rect = new Rect(x, y,

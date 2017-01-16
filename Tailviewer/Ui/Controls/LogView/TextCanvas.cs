@@ -191,7 +191,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				if (result != null)
 				{
 					var index = result.Value.Index;
-					RequestBringIntoView(index);
+					RequestBringIntoView(index, result.Value.Match);
 					SetSelected(index, SelectMode.Replace);
 					InvalidateVisual();
 				}
@@ -432,9 +432,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			if (SetSelected(newIndex, SelectMode.Replace))
 			{
-				Action<LogLineIndex> fn = RequestBringIntoView;
+				var fn = RequestBringIntoView;
 				if (fn != null)
-					fn(newIndex);
+					fn(newIndex, new LogLineMatch());
 
 				InvalidateVisual();
 			}
@@ -551,7 +551,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public new event Action<LogLineIndex> RequestBringIntoView;
+		public new event Action<LogLineIndex, LogLineMatch> RequestBringIntoView;
 
 		public void OnCopyToClipboard()
 		{

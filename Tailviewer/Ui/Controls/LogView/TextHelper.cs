@@ -29,6 +29,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly Brush LineNumberForegroundBrush;
 		public static readonly Brush HighlightedForegroundBrush;
 		public static readonly Brush HighlightedBackgroundBrush;
+		public static readonly Brush HighlightedSelectedForegroundBrush;
+		public static readonly Brush HighlightedSelectedBackgroundBrush;
 		public static readonly Brush WarningBackgroundBrush;
 		public static readonly Brush WarningHighlightBackgroundBrush;
 		public static readonly Brush ErrorBackgroundBrush;
@@ -67,7 +69,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			SelectedUnfocusedBackgroundBrush.Freeze();
 
 			HighlightedForegroundBrush = Brushes.Black;
-			HighlightedBackgroundBrush = new SolidColorBrush(Color.FromRgb(246, 185, 77));
+			HighlightedBackgroundBrush = new SolidColorBrush(Color.FromRgb(255, 255, 77));
+
+			HighlightedSelectedForegroundBrush = Brushes.Black;
+			HighlightedSelectedBackgroundBrush = new SolidColorBrush(Color.FromRgb(255, 150, 50));
 
 			SelectedForegroundBrush = Brushes.White;
 			LineNumberForegroundBrush = new SolidColorBrush(Color.FromRgb(43, 145, 175));

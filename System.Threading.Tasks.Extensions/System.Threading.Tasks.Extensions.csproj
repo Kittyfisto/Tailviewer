@@ -46,6 +46,7 @@
     <Compile Include="PeriodicTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultTaskScheduler.cs" />
+    <Compile Include="Task.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

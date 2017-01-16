@@ -20,6 +20,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		#region Data
 
+		private readonly LogDataCache _cache;
+		private readonly LogDataAccessQueue<LogLineIndex, LogLine> _accessQueue;
+
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private int? _dateTimeColumn;
@@ -75,6 +78,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_previousLevel = LevelFlags.None;
 			_levels = new List<KeyValuePair<int, LevelFlags>>();
+
+			_accessQueue = new LogDataAccessQueue<LogLineIndex, LogLine>();
+			_cache = new LogDataCache();
 
 			StartTask();
 		}
