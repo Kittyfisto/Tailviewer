@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Settings;
+using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
+using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 
 namespace Tailviewer.Ui.Controls
 {

@@ -2,8 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using Metrolib.Settings;
 using log4net;
+using Metrolib;
 
 namespace Tailviewer.Settings
 {
