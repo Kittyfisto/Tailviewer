@@ -399,7 +399,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.PartTextCanvas.OnMoveStart();
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(0) });
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 51));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 50));
 			_control.FollowTail.Should().BeFalse();
 		}
 	}
