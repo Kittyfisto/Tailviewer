@@ -79,7 +79,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar = new FlatScrollBar
 				{
 					Name = "PART_VerticalScrollBar",
-					Thickness = 10
+					Thickness = 18
 				};
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
@@ -90,7 +90,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					Name = "PART_HorizontalScrollBar",
 					Orientation = Orientation.Horizontal,
-					Thickness = 10
+					Thickness = 18
 				};
 			_horizontalScrollBar.SetValue(RowProperty, 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, 0);

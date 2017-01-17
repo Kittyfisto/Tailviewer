@@ -32,7 +32,10 @@ namespace Tailviewer
 		{
 			var features = new string[] {};
 			var bugfixes = new string[] { };
-			var misc = new string[] { };
+			var misc = new[]
+			{
+				"Improved Scrollbar usability"
+			};
 			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
