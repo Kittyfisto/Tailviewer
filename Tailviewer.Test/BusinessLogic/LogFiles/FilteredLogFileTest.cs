@@ -420,5 +420,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 			}
 		}
+
+		[Test]
+		[Description("Verifies that the log file unregisters itself as a listener from the source upon being removed")]
+		public void TestDispose1()
+		{
+			var filter = new EmptyLogLineFilter();
+			FilteredLogFile file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null);
+			_logFile.Verify(x => x.AddListener(It.Is<ILogFileListener>(y => Equals(y, file)),
+				It.IsAny<TimeSpan>(),
+				It.IsAny<int>()), Times.Once, "because the filtered log file should register itself as a listener with its source");
+
+			new Action(() => file.Dispose()).ShouldNotThrow("because Dispose() must always suceed");
+
+			_logFile.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => Equals(y, file))), Times.Once,
+				"because the filtered log file should unregister itself as a listener from its source when being disposed of");
+		}
 	}
 }

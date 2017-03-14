@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -8,6 +10,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	public abstract class AbstractLogFile
 		: ILogFile
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ITaskScheduler _scheduler;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly LogFileListenerCollection _listeners;
@@ -45,12 +49,23 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_listeners.RemoveListener(listener);
 		}
 
-		public virtual void Dispose()
+		public void Dispose()
 		{
+			try
+			{
+				DisposeAdditional();
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
 			_cancellationTokenSource.Cancel();
 			_isDisposed = true;
 			_scheduler.StopPeriodic(_readTask);
 		}
+
+		protected virtual void DisposeAdditional()
+		{}
 
 		public abstract int MaxCharactersPerLine { get; }
 

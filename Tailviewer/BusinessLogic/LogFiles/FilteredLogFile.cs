@@ -49,6 +49,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			StartTask();
 		}
 
+		protected override void DisposeAdditional()
+		{
+			_source.RemoveListener(this);
+		}
+
 		public override bool Exists
 		{
 			get { return _source.Exists; }

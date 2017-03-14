@@ -31,7 +31,11 @@ namespace Tailviewer
 		private static void AddMostRecent()
 		{
 			var features = new string[] {};
-			var bugfixes = new string[] { };
+			var bugfixes = new[]
+			{
+				"Fixed degrading performance over time when filtering",
+				"Fixed memory leak when filtering"
+			};
 			var misc = new[]
 			{
 				"Improved Scrollbar usability"
