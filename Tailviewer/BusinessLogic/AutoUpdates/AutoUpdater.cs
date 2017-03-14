@@ -316,7 +316,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		private static Version ReadVersion(XmlReader versions, out Uri address)
 		{
 			var path = versions.GetAttribute("path");
-			var fullPath = string.Format("{0}/{1}", DownloadServer, path);
+			var fullPath = string.Format("{0}{1}", DownloadServer, path);
 			if (!Uri.TryCreate(fullPath, UriKind.Absolute, out address))
 				return null;
 
