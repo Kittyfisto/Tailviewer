@@ -34,7 +34,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			ILogEntryFilter logEntryFilter)
 			: base(scheduler)
 		{
-			if (source == null) throw new ArgumentNullException("source");
+			if (source == null) throw new ArgumentNullException(nameof(source));
 
 			_source = source;
 			_logLineFilter = logLineFilter ?? new NoFilter();

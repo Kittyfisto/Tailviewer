@@ -79,6 +79,14 @@
                 Content="Hide empty lines" />
 
             <controls:FlatToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                x:Name="PART_SingleLine"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay, ElementName=This}"
+                Content="Single line" />
+
+            <controls:FlatToggleButton
                 Margin="0,0,0,8"
                 Padding="4"
                 Width="41"

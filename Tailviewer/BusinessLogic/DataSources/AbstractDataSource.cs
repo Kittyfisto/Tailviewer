@@ -21,6 +21,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
+		private ILogFile _singleLineLogFile;
 		private ILogFile _lastRegisteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
@@ -237,6 +238,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
+		public bool IsSingleLine
+		{
+			get { return _settings.IsSingleLine; }
+			set
+			{
+				if (value == _settings.IsSingleLine)
+					return;
+
+				_settings.IsSingleLine = value;
+				CreateFilteredLogFile();
+			}
+		}
+
 		public void Dispose()
 		{
 			_logFile.Dispose();
@@ -258,6 +272,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ToString();
 		}
 
+		protected void SingleLogLineFilter()
+		{
+			
+		}
+
 		protected void CreateFilteredLogFile()
 		{
 			if (UnfilteredLogFile != _lastRegisteredLogFile)
@@ -267,21 +286,35 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_lastRegisteredLogFile = UnfilteredLogFile;
 			}
 
+			if (_singleLineLogFile != null)
+				_singleLineLogFile.Dispose();
+
 			if (_filteredLogFile != null)
 				_filteredLogFile.Dispose();
+
+			ILogFile filterSource;
+			if (IsSingleLine)
+			{
+				_singleLineLogFile = new SingleLineLogFile(_taskScheduler, UnfilteredLogFile, _maximumWaitTime);
+				filterSource = _singleLineLogFile;
+			}
+			else
+			{
+				filterSource = UnfilteredLogFile;
+			}
 
 			LevelFlags levelFilter = LevelFilter;
 			ILogLineFilter logLineFilter = HideEmptyLines ? (ILogLineFilter)new EmptyLogLineFilter() : new NoFilter();
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (logEntryFilter != null)
 			{
-				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
+				_filteredLogFile = filterSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_logFile.InnerLogFile = UnfilteredLogFile;
+				_logFile.InnerLogFile = filterSource;
 			}
 		}
 

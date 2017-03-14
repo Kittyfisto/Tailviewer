@@ -7,7 +7,6 @@ using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -313,6 +312,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_dataSource.HideEmptyLines = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsSingleLine
+		{
+			get { return _dataSource.IsSingleLine; }
+			set
+			{
+				if (value == IsSingleLine)
+					return;
+
+				_dataSource.IsSingleLine = value;
 				EmitPropertyChanged();
 			}
 		}

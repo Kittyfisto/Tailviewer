@@ -172,6 +172,7 @@ namespace Tailviewer.Test.Settings
 				Id = Guid.NewGuid(),
 				FollowTail = false,
 				ShowLineNumbers = true,
+				IsSingleLine = true,
 			});
 			List<Guid> guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
 			settings.QuickFilters.Add(new QuickFilter
@@ -205,6 +206,7 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[0].FollowTail.Should().BeTrue();
 			settings.DataSources[0].ShowLineNumbers.Should().BeFalse();
 			settings.DataSources[0].HideEmptyLines.Should().BeTrue();
+			settings.DataSources[0].IsSingleLine.Should().BeFalse();
 			settings.DataSources[0].SearchTerm.Should().Be("foobar");
 			settings.DataSources[0].LevelFilter.Should().Be(LevelFlags.Debug);
 			settings.DataSources[0].VisibleLogLine.Should().Be(new LogLineIndex(1));
@@ -214,6 +216,7 @@ namespace Tailviewer.Test.Settings
 			settings.DataSources[1].FollowTail.Should().BeFalse();
 			settings.DataSources[1].ShowLineNumbers.Should().BeTrue();
 			settings.DataSources[1].HideEmptyLines.Should().BeFalse();
+			settings.DataSources[1].IsSingleLine.Should().BeTrue();
 			settings.DataSources.SelectedItem.Should().NotBe(Guid.Empty);
 			settings.DataSources.SelectedItem.Should().Be(settings.DataSources[0].Id);
 

@@ -168,6 +168,24 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				dataSource.HideEmptyLines.Should().BeFalse();
 				dataSource.HideEmptyLines = true;
 				settings.HideEmptyLines.Should().BeTrue("because the data source should modify the settings object when changed");
+
+				dataSource.HideEmptyLines = false;
+				settings.HideEmptyLines.Should().BeFalse("because the data source should modify the settings object when changed");
+			}
+		}
+
+		[Test]
+		public void TestIsSingleLine()
+		{
+			var settings = CreateDataSource();
+			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile.Object, TimeSpan.Zero))
+			{
+				dataSource.IsSingleLine.Should().BeFalse();
+				dataSource.IsSingleLine = true;
+				settings.IsSingleLine.Should().BeTrue("because the data source should modify the settings object when changed");
+
+				dataSource.IsSingleLine = false;
+				settings.IsSingleLine.Should().BeFalse("because the data source should modify the settings object when changed");
 			}
 		}
 

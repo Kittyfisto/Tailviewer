@@ -35,6 +35,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		Size FileSize { get; }
 		bool ColorByLevel { get; set; }
 		bool HideEmptyLines { get; set; }
+		bool IsSingleLine { get; set; }
 		Guid Id { get; }
 		Guid ParentId { get; }
 

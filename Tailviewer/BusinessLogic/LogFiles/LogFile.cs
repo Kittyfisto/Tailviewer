@@ -37,7 +37,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private readonly string _fileName;
 		private readonly string _fullFilename;
-		private readonly List<KeyValuePair<int, LevelFlags>> _levels;
 		private DateTime _lastModified;
 		private int _numberOfLinesRead;
 		private int _nextLogEntryIndex;
@@ -77,7 +76,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_syncRoot = new object();
 
 			_previousLevel = LevelFlags.None;
-			_levels = new List<KeyValuePair<int, LevelFlags>>();
 
 			_accessQueue = new LogDataAccessQueue<LogLineIndex, LogLine>();
 			_cache = new LogDataCache();
@@ -200,7 +198,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 							ResetEndOfSourceReached();
 							++_numberOfLinesRead;
 
-							LevelFlags level = DetermineLevel(line, _levels);
+							LevelFlags level = LogLine.DetermineLevelFromLine(line);
 
 							DateTime? timestamp;
 							int logEntryIndex;
@@ -275,49 +273,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_entries.Clear();
 			Listeners.Reset();
 		}
-
-		private LevelFlags DetermineLevel(string line, List<KeyValuePair<int, LevelFlags>> levels)
-		{
-			var level = LevelFlags.None;
-			int idx = line.IndexOf("DEBUG", StringComparison.InvariantCulture);
-			if (idx != -1)
-				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Debug));
-
-			idx = line.IndexOf("INFO", StringComparison.InvariantCulture);
-			if (idx != -1)
-				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Info));
-
-			idx = line.IndexOf("WARN", StringComparison.InvariantCulture);
-			if (idx != -1)
-				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Warning));
-
-			idx = line.IndexOf("ERROR", StringComparison.InvariantCulture);
-			if (idx != -1)
-				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Error));
-
-			idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
-			if (idx != -1)
-				levels.Add(new KeyValuePair<int, LevelFlags>(idx, LevelFlags.Fatal));
-
-			int prev = int.MaxValue;
-			foreach (var pair in levels)
-			{
-				if (pair.Key < prev)
-				{
-					level = pair.Value;
-					prev = pair.Key;
-				}
-			}
-			levels.Clear();
-
-			if (prev == int.MaxValue)
-			{
-				level = LevelFlags.None;
-			}
-
-			return level;
-		}
-
+		
 		private void Add(string line, LevelFlags level, int numberOfLinesRead, int numberOfLogEntriesRead, DateTime? timestamp)
 		{
 			if (_startTimestamp == null)

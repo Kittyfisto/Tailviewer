@@ -48,7 +48,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		}
 
 		[Test]
-		public void TestLevleFilter1()
+		public void TestLevelFilter1()
 		{
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();

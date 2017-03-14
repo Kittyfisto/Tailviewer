@@ -120,5 +120,84 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			return !left.Equals(right);
 		}
+
+		public static LevelFlags DetermineLevelsFromLine(string line)
+		{
+			LevelFlags unused;
+			return DetermineLevelsFromLine(line, out unused);
+		}
+
+		public static LevelFlags DetermineLevelsFromLine(string line, out LevelFlags leftMost)
+		{
+			LevelFlags level = LevelFlags.None;
+			leftMost = LevelFlags.None;
+			int index = int.MaxValue;
+
+			if (line == null)
+				return level;
+
+			var idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Fatal;
+					index = idx;
+				}
+			}
+
+			idx = line.IndexOf("ERROR", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				level |= LevelFlags.Error;
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Error;
+					index = idx;
+				}
+			}
+
+			idx = line.IndexOf("WARN", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				level |= LevelFlags.Warning;
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Warning;
+					index = idx;
+				}
+			}
+
+			idx = line.IndexOf("INFO", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				level |= LevelFlags.Info;
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Info;
+					index = idx;
+				}
+			}
+
+			idx = line.IndexOf("DEBUG", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				level |= LevelFlags.Debug;
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Debug;
+					index = idx;
+				}
+			}
+
+			return level;
+		}
+
+		public static LevelFlags DetermineLevelFromLine(string line)
+		{
+			LevelFlags leftMost;
+			DetermineLevelsFromLine(line, out leftMost);
+			return leftMost;
+		}
 	}
 }

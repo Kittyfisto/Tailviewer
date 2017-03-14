@@ -14,6 +14,7 @@ namespace Tailviewer.Test.Settings
 			var dataSource = new DataSource();
 			dataSource.ColorByLevel.Should().BeTrue();
 			dataSource.HideEmptyLines.Should().BeFalse();
+			dataSource.IsSingleLine.Should().BeFalse();
 
 			dataSource.ActivatedQuickFilters.Should().NotBeNull();
 			dataSource.LevelFilter.Should().Be(LevelFlags.All);

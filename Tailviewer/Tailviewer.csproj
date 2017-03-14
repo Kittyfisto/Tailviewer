@@ -87,6 +87,7 @@
     <Compile Include="BusinessLogic\LogDataCache.cs" />
     <Compile Include="BusinessLogic\LogEntryIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
+    <Compile Include="BusinessLogic\LogFiles\SingleLineLogFile.cs" />
     <Compile Include="BusinessLogic\LogLineMatch.cs" />
     <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />

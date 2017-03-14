@@ -51,6 +51,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		bool HideEmptyLines { get; set; }
 
+		bool IsSingleLine { get; set; }
+
 		#region Search
 
 		string SearchTerm { get; set; }

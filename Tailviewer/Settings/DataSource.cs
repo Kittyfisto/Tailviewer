@@ -15,6 +15,7 @@ namespace Tailviewer.Settings
 		private readonly List<Guid> _activatedQuickFilters;
 		public bool ColorByLevel;
 		public bool HideEmptyLines;
+		public bool IsSingleLine;
 
 		public string File;
 		public bool FollowTail;
@@ -62,6 +63,7 @@ namespace Tailviewer.Settings
 			get { return _activatedQuickFilters; }
 		}
 
+
 		public override string ToString()
 		{
 			if (File == null)
@@ -79,6 +81,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 			writer.WriteAttributeBool("hideemptylines", HideEmptyLines);
+			writer.WriteAttributeBool("singleline", IsSingleLine);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
@@ -130,6 +133,10 @@ namespace Tailviewer.Settings
 
 					case "hideemptylines":
 						HideEmptyLines = reader.ReadContentAsBool();
+						break;
+
+					case "singleline":
+						IsSingleLine = reader.ReadContentAsBool();
 						break;
 
 					case "visibleentryindex":
