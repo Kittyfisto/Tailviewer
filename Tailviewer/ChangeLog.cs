@@ -42,7 +42,7 @@ namespace Tailviewer
 			var misc = new[]
 			{
 				"Improved Scrollbar usability",
-				"Added alternate colors to INFO/DEBUG"
+				"Added alternating row colors"
 			};
 			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);
