@@ -30,7 +30,10 @@ namespace Tailviewer
 
 		private static void AddMostRecent()
 		{
-			var features = new string[] {};
+			var features = new[]
+			{
+				"Added single/multi line toggle"
+			};
 			var bugfixes = new[]
 			{
 				"Fixed degrading performance over time when filtering",
