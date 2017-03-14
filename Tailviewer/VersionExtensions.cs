@@ -6,7 +6,8 @@ namespace Tailviewer
 	{
 		public static string Format(this Version version)
 		{
-			return version.ToString(3);
+			var value = version.ToString(3);
+			return value;
 		}
 	}
 }
