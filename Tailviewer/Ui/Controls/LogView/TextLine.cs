@@ -147,7 +147,7 @@ namespace Tailviewer.Ui.Controls.LogView
 							return TextHelper.WarningBackgroundBrush;
 
 						default:
-							return TextHelper.NormalBackgroundBrush;
+							return TextHelper.NormalBackgroundBrush.GetBrushFor(_logLine.LogEntryIndex);
 					}
 				}
 
@@ -156,10 +156,10 @@ namespace Tailviewer.Ui.Controls.LogView
 					return TextHelper.NormalHighlightBackgroundBrush;
 				}
 
-				return TextHelper.NormalBackgroundBrush;
+				return TextHelper.NormalBackgroundBrush.GetBrushFor(_logLine.LogEntryIndex);
 			}
 		}
-
+		
 		public bool IsSelected
 		{
 			get { return _selectedIndices.Contains(_logLine.LineIndex); }

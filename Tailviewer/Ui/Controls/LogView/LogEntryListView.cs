@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.Controls.LogView
 {
 	public class LogEntryListView
 		: Grid
-		  , ILogFileListener
+		, ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

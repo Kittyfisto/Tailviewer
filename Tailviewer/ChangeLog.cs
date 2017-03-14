@@ -41,7 +41,8 @@ namespace Tailviewer
 			};
 			var misc = new[]
 			{
-				"Improved Scrollbar usability"
+				"Improved Scrollbar usability",
+				"Added alternate colors to INFO/DEBUG"
 			};
 			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
 			AllChanges.Add(change);

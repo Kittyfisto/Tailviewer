@@ -185,13 +185,13 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine.BackgroundBrush.Should().Be(TextHelper.WarningBackgroundBrush);
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
+			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
+			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush);
+			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
 		}
 
 		[Test]

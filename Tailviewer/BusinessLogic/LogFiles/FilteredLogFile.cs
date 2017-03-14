@@ -17,6 +17,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly ILogLineFilter _logLineFilter;
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
+		private readonly Dictionary<int, int> _logEntryIndices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
 		private readonly LogLine[] _buffer;
@@ -26,6 +27,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private int _maxCharactersPerLine;
 		private int _currentSourceIndex;
 		private readonly List<LogLine> _lastLogEntry;
+		private int _currentLogEntryIndex;
 
 		public FilteredLogFile(ITaskScheduler scheduler,
 			TimeSpan maximumWaitTime,
@@ -41,6 +43,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
+			_logEntryIndices = new Dictionary<int, int>();
 			_buffer = new LogLine[BatchSize];
 			_lastLogEntry = new List<LogLine>();
 			_maximumWaitTime = maximumWaitTime;
@@ -119,10 +122,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				for (int i = 0; i < section.Count; ++i)
 				{
-					LogLineIndex index = section.Index + i;
-					int sourceIndex = _indices[(int) index];
-					LogLine line = _source.GetLine(sourceIndex);
-					dest[i] = new LogLine((int)index, line.LogEntryIndex, line.Message, line.Level, line.Timestamp);
+					var index = section.Index + i;
+					dest[i] = GetLine((int) index);
 				}
 			}
 		}
@@ -132,8 +133,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			lock (_indices)
 			{
 				int sourceIndex = _indices[index];
+				int logEntryIndex;
+				_logEntryIndices.TryGetValue(sourceIndex, out logEntryIndex);
 				var line = _source.GetLine(sourceIndex);
-				return new LogLine(index, line.LogEntryIndex, line.Message, line.Level, line.Timestamp);
+				return new LogLine(index, logEntryIndex, line.Message, line.Level, line.Timestamp);
 			}
 		}
 
@@ -237,6 +240,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					int sourceIndex = _indices[i];
 					if (sourceIndex >= currentSourceIndex)
 					{
+						int previousLogEntryIndex;
+						if (_logEntryIndices.TryGetValue(sourceIndex, out previousLogEntryIndex))
+						{
+							_currentLogEntryIndex = previousLogEntryIndex;
+						}
+						_logEntryIndices.Remove(sourceIndex);
+
 						_indices.RemoveAt(i);
 						++numRemoved;
 					}
@@ -255,6 +265,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			lock (_indices)
 			{
 				_indices.Clear();
+				_logEntryIndices.Clear();
+				_currentLogEntryIndex = 0;
 			}
 			Listeners.OnRead(-1);
 		}
@@ -280,10 +292,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				lock (_indices)
 				{
-					foreach (LogLine line in logEntry)
+					if (logEntry.Count > 0)
 					{
-						_indices.Add(line.LineIndex);
-						_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message.Length);
+						foreach (LogLine line in logEntry)
+						{
+							_indices.Add(line.LineIndex);
+							_logEntryIndices[line.LineIndex] = _currentLogEntryIndex;
+							_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message.Length);
+						}
+						++_currentLogEntryIndex;
 					}
 				}
 				Listeners.OnRead(_indices.Count);

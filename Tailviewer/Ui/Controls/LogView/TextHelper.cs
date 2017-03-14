@@ -19,8 +19,8 @@ namespace Tailviewer.Ui.Controls.LogView
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		public static readonly BrushHelper NormalBackgroundBrush;
 		public static readonly Brush NormalForegroundBrush;
-		public static readonly Brush NormalBackgroundBrush;
 		public static readonly Brush HoveredForegroundBrush;
 		public static readonly Brush NormalHighlightBackgroundBrush;
 		public static readonly Brush SelectedForegroundBrush;
@@ -42,8 +42,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		static TextHelper()
 		{
-			NormalBackgroundBrush = null;
+			NormalBackgroundBrush = new BrushHelper(null, Color.FromRgb(0xE8, 0xF1, 0xF7));
 			NormalForegroundBrush = Brushes.Black;
+
 			NormalHighlightBackgroundBrush = new SolidColorBrush(Color.FromRgb(242, 242, 242));
 			NormalHighlightBackgroundBrush.Freeze();
 

@@ -422,6 +422,85 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
+		public void TestSingleLineFilter4()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
+				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
+				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+
+				const string reason = "because log entry indices are supposed to be consecutive for a data source";
+				file.GetLine(0).LogEntryIndex.Should().Be(0, reason);
+				file.GetLine(1).LogEntryIndex.Should().Be(1, reason);
+				file.GetLine(2).LogEntryIndex.Should().Be(2, reason);
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
+		public void TestSingleLineFilter5()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
+				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
+				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Reset);
+				_taskScheduler.RunOnce();
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				_taskScheduler.RunOnce();
+
+				file.Count.Should().Be(1, "because only one line remains in the source");
+				file.GetLine(0).LogEntryIndex.Should().Be(0, "because log entry indices should always start at 0");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
+		public void TestSingleLineFilter6()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
+				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
+				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
+				_entries.Add(new LogLine(4, 4, "And even more stuff", LevelFlags.Debug));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 5));
+				_taskScheduler.RunOnce();
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(3, 2, true));
+				_taskScheduler.RunOnce();
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(3, 2));
+				_taskScheduler.RunOnce();
+				
+				file.Count.Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
+
+				const string reason = "because log entry indices are supposed to be consecutive for a data source";
+				file.GetLine(0).LogEntryIndex.Should().Be(0, reason);
+				file.GetLine(1).LogEntryIndex.Should().Be(1, reason);
+				file.GetLine(2).LogEntryIndex.Should().Be(2, reason);
+				file.GetLine(3).LogEntryIndex.Should().Be(3, reason);
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the log file unregisters itself as a listener from the source upon being removed")]
 		public void TestDispose1()
 		{
