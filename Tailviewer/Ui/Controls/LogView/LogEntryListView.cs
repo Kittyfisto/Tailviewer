@@ -85,6 +85,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, 0);
 			_verticalScrollBar.SetValue(ColumnProperty, 2);
+			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
+			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10*TextHelper.LineHeight);
 
 			_horizontalScrollBar = new FlatScrollBar
 				{
@@ -95,6 +97,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(RowProperty, 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, 0);
 			_horizontalScrollBar.SetValue(ColumnSpanProperty, 2);
+			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
+			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)});
