@@ -448,13 +448,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 						new LogLine(0, 0,
 						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
 						            LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(1, 0, "Foobar", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(2, 0, "Some more info", LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(3, 1,
+						new LogLine(1, 1, "Foobar", LevelFlags.None, null),
+						new LogLine(2, 2, "Some more info", LevelFlags.None, null),
+						new LogLine(3, 3,
 						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
 						            LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
-						new LogLine(4, 1, "Hey look at me", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
-						new LogLine(5, 1, "dwadawdadw", LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998))
+						new LogLine(4, 4, "Hey look at me", LevelFlags.None, null),
+						new LogLine(5, 5, "dwadawdadw", LevelFlags.None, null)
 					});
 			}
 		}
