@@ -58,29 +58,33 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var source1 = new LogFile(_scheduler, LogFileTest.File2Entries))
 			using (var source2 = new LogFile(_scheduler, LogFileTest.File2Lines))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2))
+			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
+			using (var multi2 = new MultiLineLogFile(_scheduler, source2, TimeSpan.Zero))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi1, multi2))
 			{
 				source1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-
 				source2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
-				                                                    "Because the merged file should've been finished");
-				merged.Property(x => x.FileSize).ShouldEventually().Be(source1.FileSize + source2.FileSize);
-				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source1.StartTimestamp);
+				multi1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+				multi2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				LogLine[] source1Lines = source1.GetSection(new LogFileSection(0, source1.Count));
-				LogLine[] source2Lines = source2.GetSection(new LogFileSection(0, source2.Count));
+				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
+																	"Because the merged file should've been finished");
+				merged.Property(x => x.FileSize).ShouldEventually().Be(source1.FileSize + source2.FileSize);
+				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source2.StartTimestamp);
+
+				LogLine[] source1Lines = multi1.GetSection(new LogFileSection(0, source1.Count));
+				LogLine[] source2Lines = multi2.GetSection(new LogFileSection(0, source2.Count));
 				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
 
-				mergedLines[0].Should().Be(new LogLine(0, 0, source1Lines[0]));
-				mergedLines[1].Should().Be(new LogLine(1, 0, source1Lines[1]));
-				mergedLines[2].Should().Be(new LogLine(2, 0, source1Lines[2]));
-				mergedLines[3].Should().Be(new LogLine(3, 1, source2Lines[0]));
-				mergedLines[4].Should().Be(new LogLine(4, 2, source1Lines[3]));
-				mergedLines[5].Should().Be(new LogLine(5, 2, source1Lines[4]));
-				mergedLines[6].Should().Be(new LogLine(6, 2, source1Lines[5]));
-				mergedLines[7].Should().Be(new LogLine(7, 3, source2Lines[1]));
+				mergedLines[0].Should().Be(new LogLine(0, 0, source2Lines[0]));
+				mergedLines[1].Should().Be(new LogLine(1, 1, source1Lines[0]));
+				mergedLines[2].Should().Be(new LogLine(2, 1, source1Lines[1]));
+				mergedLines[3].Should().Be(new LogLine(3, 1, source1Lines[2]));
+				mergedLines[4].Should().Be(new LogLine(4, 2, source2Lines[1]));
+				mergedLines[5].Should().Be(new LogLine(5, 3, source1Lines[3]));
+				mergedLines[6].Should().Be(new LogLine(6, 3, source1Lines[4]));
+				mergedLines[7].Should().Be(new LogLine(7, 3, source1Lines[5]));
 			}
 		}
 
