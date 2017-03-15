@@ -201,12 +201,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_lastModified = _source.LastModified;
 			_fileSize = _source.FileSize;
 
+			Listeners.OnRead((int)_currentSourceIndex);
+
 			if (_source.EndOfSourceReached && _fullSourceSection.IsEndOfSection(_currentSourceIndex))
 			{
 				SetEndOfSourceReached();
 			}
-
-			Listeners.OnRead((int)_currentSourceIndex);
 
 			return _maximumWaitTime;
 		}

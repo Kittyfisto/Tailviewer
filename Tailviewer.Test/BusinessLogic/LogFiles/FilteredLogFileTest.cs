@@ -40,13 +40,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		private ManualTaskScheduler _taskScheduler;
 
 		[Test]
-		public void TestEndOfSourceReached()
+		public void TestEndOfSourceReached1()
 		{
+			_logFile.Setup(x => x.EndOfSourceReached).Returns(false);
+
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				_logFile.Verify(x => x.EndOfSourceReached, Times.Never);
-				var unused = file.EndOfSourceReached;
-				_logFile.Verify(x => x.EndOfSourceReached, Times.Once);
+				file.EndOfSourceReached.Should().BeFalse("because the filtered log file hasn't even inspected the source yet");
+
+				_taskScheduler.RunOnce();
+				file.EndOfSourceReached.Should().BeFalse("because the source isn't at its own end yet");
+
+				_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
+				file.EndOfSourceReached.Should().BeFalse("because the filtered log file hasn't processed the latest changes to the source yet");
+
+				_taskScheduler.RunOnce();
+				file.EndOfSourceReached.Should().BeTrue("because the source is finished and the filtered log file has processed all changes from the source");
 			}
 		}
 

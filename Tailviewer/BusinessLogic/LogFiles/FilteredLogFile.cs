@@ -62,11 +62,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { return _source.Exists; }
 		}
 
-		public override bool EndOfSourceReached
-		{
-			get { return _source.EndOfSourceReached & base.EndOfSourceReached; }
-		}
-
 		public override DateTime? StartTimestamp
 		{
 			get { return _source.StartTimestamp; }
@@ -206,7 +201,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				TryAddLogEntry(_lastLogEntry);
 				Listeners.OnRead(_indices.Count);
 
-				SetEndOfSourceReached();
+				if (_source.EndOfSourceReached)
+					SetEndOfSourceReached();
 			}
 
 			return _maximumWaitTime;
