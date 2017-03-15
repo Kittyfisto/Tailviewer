@@ -322,15 +322,18 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 			int major;
 			int minor;
+			int patch;
 			int build;
 			if (!int.TryParse(versions.GetAttribute("major"), NumberStyles.Integer, CultureInfo.InvariantCulture, out major))
 				return null;
 			if (!int.TryParse(versions.GetAttribute("minor"), NumberStyles.Integer, CultureInfo.InvariantCulture, out minor))
 				return null;
+			if (!int.TryParse(versions.GetAttribute("patch"), NumberStyles.Integer, CultureInfo.InvariantCulture, out patch))
+				return null;
 			if (!int.TryParse(versions.GetAttribute("build"), NumberStyles.Integer, CultureInfo.InvariantCulture, out build))
 				return null;
 
-			return new Version(major, minor, build);
+			return new Version(major, minor, patch, build);
 		}
 	}
 }

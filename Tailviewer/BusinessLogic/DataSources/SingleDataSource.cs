@@ -20,14 +20,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			var logFile = new LogFile(taskScheduler, settings.File);
 			_unfilteredLogFile = logFile;
-			CreateFilteredLogFile();
+			OnUnfilteredLogFileChanged();
 		}
 
 		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_unfilteredLogFile = unfilteredLogFile;
-			CreateFilteredLogFile();
+			OnUnfilteredLogFileChanged();
 		}
 
 		public override ILogFile UnfilteredLogFile

@@ -46,7 +46,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		[Test]
 		[Description("Verifies that the data source disposes of all of its resources")]
-		public void TestDispose()
+		public void TestDispose1()
 		{
 			LogFileProxy permanentLogFile;
 			LogFileSearchProxy permanentSearch;
@@ -63,6 +63,17 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			source.IsDisposed.Should().BeTrue();
 			permanentLogFile.IsDisposed.Should().BeTrue();
 			permanentSearch.IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
+		[Description("Verifies that the data source stops all periodic tasks upon being disposed of")]
+		public void TestDispose2()
+		{
+			SingleDataSource source = new SingleDataSource(_scheduler,
+				new DataSource(@"E:\somelogfile.txt") {Id = Guid.NewGuid()});
+			_scheduler.PeriodicTaskCount.Should().BeGreaterThan(0);
+			source.Dispose();
+			_scheduler.PeriodicTaskCount.Should().Be(0);
 		}
 
 		[Test]
@@ -90,10 +101,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
 			{
-				_scheduler.RunOnce();
+				_scheduler.Run(count: 2);
+
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				dataSource.UnfilteredLogFile.Count.Should().Be(6);
-				LogLine[] lines = dataSource.UnfilteredLogFile.GetSection(new LogFileSection(0, 6));
+				LogLine[] lines = dataSource.FilteredLogFile.GetSection(new LogFileSection(0, 6));
 				lines[0].Message.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				lines[0].Level.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
 

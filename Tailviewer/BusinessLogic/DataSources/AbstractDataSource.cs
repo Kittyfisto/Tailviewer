@@ -21,16 +21,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
-		private ILogFile _singleLineLogFile;
-		private ILogFile _lastRegisteredLogFile;
+		private ILogFile _filterSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
 
 		protected AbstractDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
-				throw new ArgumentNullException("taskScheduler");
-			if (settings == null) throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(taskScheduler));
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (settings.Id == Guid.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
 
 			_taskScheduler = taskScheduler;
@@ -133,6 +132,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		public abstract ILogFile UnfilteredLogFile { get; }
+
+		protected ILogFile FilterSource
+		{
+			get
+			{
+				return _filterSource;
+			}
+		}
 
 		public int NoLevelCount
 		{
@@ -247,7 +254,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 					return;
 
 				_settings.IsSingleLine = value;
-				CreateFilteredLogFile();
+				CreateMultiLineLogFile();
 			}
 		}
 
@@ -257,6 +264,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_search.Dispose();
 
 			DisposeCurrentSearch();
+			FilteredLogFile?.Dispose();
+			FilterSource?.Dispose();
 			UnfilteredLogFile.Dispose();
 
 			_isDisposed = true;
@@ -272,49 +281,51 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ToString();
 		}
 
-		protected void SingleLogLineFilter()
+		/// <summary>
+		/// Must be called by suclasses when the <see cref="UnfilteredLogFile"/> property changes
+		/// (i.e. returns a different object).
+		/// </summary>
+		protected void OnUnfilteredLogFileChanged()
 		{
-			
+			CreateMultiLineLogFile();
 		}
 
-		protected void CreateFilteredLogFile()
+		protected void CreateMultiLineLogFile()
 		{
-			if (UnfilteredLogFile != _lastRegisteredLogFile)
-			{
-				// Our counter doesn't really do anything so it can be called instantly...
-				UnfilteredLogFile.AddListener(_counter, TimeSpan.Zero, 1000);
-				_lastRegisteredLogFile = UnfilteredLogFile;
-			}
-
-			if (_singleLineLogFile != null)
-				_singleLineLogFile.Dispose();
-
-			if (_filteredLogFile != null)
-				_filteredLogFile.Dispose();
-
-			ILogFile filterSource;
+			if (!ReferenceEquals(_filterSource, UnfilteredLogFile))
+				_filterSource?.Dispose();
+			
 			if (IsSingleLine)
 			{
-				_singleLineLogFile = new SingleLineLogFile(_taskScheduler, UnfilteredLogFile, _maximumWaitTime);
-				filterSource = _singleLineLogFile;
+				_filterSource = UnfilteredLogFile;
 			}
 			else
 			{
-				filterSource = UnfilteredLogFile;
+				UnfilteredLogFile.RemoveListener(_counter);
+				_filterSource = new MultiLineLogFile(_taskScheduler, UnfilteredLogFile, _maximumWaitTime);
 			}
 
+			_filterSource.AddListener(_counter, TimeSpan.Zero, 1000);
+
+			CreateFilteredLogFile();
+		}
+
+		private void CreateFilteredLogFile()
+		{
+			_filteredLogFile?.Dispose();
+			
 			LevelFlags levelFilter = LevelFilter;
 			ILogLineFilter logLineFilter = HideEmptyLines ? (ILogLineFilter)new EmptyLogLineFilter() : new NoFilter();
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (logEntryFilter != null)
 			{
-				_filteredLogFile = filterSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
+				_filteredLogFile = _filterSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_logFile.InnerLogFile = filterSource;
+				_logFile.InnerLogFile = _filterSource;
 			}
 		}
 

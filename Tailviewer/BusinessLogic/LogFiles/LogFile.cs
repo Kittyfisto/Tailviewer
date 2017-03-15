@@ -39,10 +39,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly string _fullFilename;
 		private DateTime _lastModified;
 		private int _numberOfLinesRead;
-		private int _nextLogEntryIndex;
 		private long _lastPosition;
-		private LevelFlags _previousLevel;
-		private DateTime? _previousTimestamp;
 		private long? _fileSize;
 
 		#endregion
@@ -65,7 +62,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public LogFile(ITaskScheduler scheduler, string fileName)
 			: base(scheduler)
 		{
-			if (fileName == null) throw new ArgumentNullException("fileName");
+			if (fileName == null) throw new ArgumentNullException(nameof(fileName));
 
 			_fileName = fileName;
 			_fullFilename = fileName;
@@ -74,9 +71,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
-
-			_previousLevel = LevelFlags.None;
-
+			
 			_accessQueue = new LogDataAccessQueue<LogLineIndex, LogLine>();
 			_cache = new LogDataCache();
 
@@ -144,7 +139,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			lock (_syncRoot)
 			{
 				if (section.Index + section.Count > _entries.Count)
-					throw new ArgumentOutOfRangeException("section");
+					throw new ArgumentOutOfRangeException(nameof(section));
 
 				_entries.CopyTo((int) section.Index, dest, 0, section.Count);
 			}
@@ -200,35 +195,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 							LevelFlags level = LogLine.DetermineLevelFromLine(line);
 
-							DateTime? timestamp;
-							int logEntryIndex;
-							if (level != LevelFlags.None)
-							{
-								timestamp = ParseTimestamp(line);
-								logEntryIndex = _nextLogEntryIndex;
-								++_nextLogEntryIndex;
-							}
-							else
-							{
-								if (_nextLogEntryIndex > 0)
-								{
-									logEntryIndex = _nextLogEntryIndex - 1;
-								}
-								else
-								{
-									logEntryIndex = 0;
-								}
-
-								// This line belongs to the previous line and together they form
-								// (part of) a log entry. Even though only a single line mentions
-								// the log level, all lines are given the same log level.
-								level = _previousLevel;
-								timestamp = _previousTimestamp;
-							}
-
-							Add(line, level, _numberOfLinesRead, logEntryIndex, timestamp);
-							_previousLevel = level;
-							_previousTimestamp = timestamp;
+							var timestamp = ParseTimestamp(line);
+							Add(line, level, _numberOfLinesRead, timestamp);
 						}
 
 						_lastPosition = stream.Position;
@@ -274,7 +242,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Listeners.Reset();
 		}
 		
-		private void Add(string line, LevelFlags level, int numberOfLinesRead, int numberOfLogEntriesRead, DateTime? timestamp)
+		private void Add(string line, LevelFlags level, int numberOfLinesRead, DateTime? timestamp)
 		{
 			if (_startTimestamp == null)
 				_startTimestamp = timestamp;
@@ -282,7 +250,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
-				var logLine = new LogLine(lineIndex, numberOfLogEntriesRead, line, level, timestamp);
+				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
 				_entries.Add(logLine);
 				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Length);
 			}

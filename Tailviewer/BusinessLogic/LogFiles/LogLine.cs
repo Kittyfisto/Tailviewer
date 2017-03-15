@@ -58,10 +58,30 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		[DebuggerStepThrough]
+		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
+		{
+			LineIndex = (int)lineIndex;
+			Message = message;
+			Level = level;
+			LogEntryIndex = (int)logEntryIndex;
+			Timestamp = timestamp;
+		}
+
+		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, LogLine line)
 		{
 			LineIndex = lineIndex;
 			LogEntryIndex = logEntryIndex;
+			Message = line.Message;
+			Level = line.Level;
+			Timestamp = line.Timestamp;
+		}
+
+		[DebuggerStepThrough]
+		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLine line)
+		{
+			LineIndex = (int) lineIndex;
+			LogEntryIndex = (int) logEntryIndex;
 			Message = line.Message;
 			Level = line.Level;
 			Timestamp = line.Timestamp;

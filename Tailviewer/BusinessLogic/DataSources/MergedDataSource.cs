@@ -79,7 +79,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_unfilteredLogFile = new MergedLogFile(_taskScheduler,
 			                                       _maximumWaitTime,
 			                                       _dataSources.Select(x => x.UnfilteredLogFile));
-			CreateFilteredLogFile();
+			OnUnfilteredLogFileChanged();
 		}
 	}
 }

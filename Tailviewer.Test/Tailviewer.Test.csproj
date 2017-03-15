@@ -80,8 +80,8 @@
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\SingleLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
