@@ -47,9 +47,9 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		public AutoUpdater(IActionCenter actionCenter, AutoUpdateSettings settings)
 		{
 			if (actionCenter == null)
-				throw new ArgumentNullException("actionCenter");
+				throw new ArgumentNullException(nameof(actionCenter));
 			if (settings == null)
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 
 			_syncRoot = new object();
 			_actionCenter = actionCenter;
@@ -242,7 +242,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					byte[] data = client.DownloadData(uri);
 
 					Log.DebugFormat("Parsing response ({0} bytes)",
-					                data != null ? data.Length.ToString(CultureInfo.InvariantCulture) : "null");
+					                data?.Length.ToString(CultureInfo.InvariantCulture) ?? "null");
 
 					VersionInfo versions;
 					Parse(data, out versions);
