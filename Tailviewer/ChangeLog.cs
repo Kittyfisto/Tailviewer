@@ -35,8 +35,10 @@ namespace Tailviewer
 			var features = new string[]
 			{
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
+				"Fixed bug causing a single line to be interpreted as many lines",
+				"Fixed bug causing a file to be shown as empty even when it was not"
 			};
 			var misc = new string[]
 			{
