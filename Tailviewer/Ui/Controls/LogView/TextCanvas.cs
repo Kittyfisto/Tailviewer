@@ -91,8 +91,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				_currentlyVisibleSection = value;
 				Action<LogFileSection> fn = VisibleSectionChanged;
-				if (fn != null)
-					fn(value);
+				fn?.Invoke(value);
 			}
 		}
 
@@ -170,8 +169,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { return _search; }
 			set
 			{
-				if (_search != null)
-					_search.RemoveListener(_searchResults);
+				_search?.RemoveListener(_searchResults);
 				_search = value;
 				if (_search != null)
 					Search.AddListener(_searchResults);
@@ -296,8 +294,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 
 			Action fn = VisibleLinesChanged;
-			if (fn != null)
-				fn();
+			fn?.Invoke();
 
 			InvalidateVisual();
 		}
@@ -317,8 +314,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (changed)
 			{
 				var fn = OnSelectionChanged;
-				if (fn != null)
-					fn(_selectedIndices);
+				fn?.Invoke(_selectedIndices);
 			}
 
 			return changed;
@@ -338,8 +334,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 
 				var fn = OnSelectionChanged;
-				if (fn != null)
-					fn(_selectedIndices);
+				fn?.Invoke(_selectedIndices);
 			}
 			else
 			{
@@ -380,12 +375,16 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/TextHelper.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			int linesLeft = LogFile.Count - _currentLine;
+			var logLineCount = LogFile.Count;
+			// Somebody may have specified that he wants to view line X, but if the source
+			// doesn't offer this line (yet), then we must show something else...
+			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, LogFile.Count - maxCount) : _currentLine;
+			int linesLeft = logLineCount - actualCurrentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			if (count < 0)
 				return new LogFileSection();
 
-			return new LogFileSection(_currentLine, count);
+			return new LogFileSection(actualCurrentLine, count);
 		}
 
 		public void UpdateMouseOver()
@@ -433,8 +432,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (SetSelected(newIndex, SelectMode.Replace))
 			{
 				var fn = RequestBringIntoView;
-				if (fn != null)
-					fn(newIndex, new LogLineMatch());
+				fn?.Invoke(newIndex, new LogLineMatch());
 
 				InvalidateVisual();
 			}
@@ -596,8 +594,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnMouseWheelDown()
 		{
 			Action fn = MouseWheelDown;
-			if (fn != null)
-				fn();
+			fn?.Invoke();
 
 			UpdateMouseOver();
 		}
@@ -605,8 +602,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnMouseWheelUp()
 		{
 			Action fn = MouseWheelUp;
-			if (fn != null)
-				fn();
+			fn?.Invoke();
 
 			UpdateMouseOver();
 		}
@@ -669,8 +665,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (changed)
 			{
 				var fn = OnSelectionChanged;
-				if (fn != null)
-					fn(_selectedIndices);
+				fn?.Invoke(_selectedIndices);
 			}
 
 			return changed;

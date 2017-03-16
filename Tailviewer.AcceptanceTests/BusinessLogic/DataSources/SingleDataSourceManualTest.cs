@@ -38,6 +38,32 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			using (var logFile = new LogFile(_scheduler, fname))
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
+				writer.Write("ssss");
+				writer.Flush();
+
+				_scheduler.Run(2);
+				dataSource.FilteredLogFile.Count.Should().Be(1);
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.None));
+			}
+		}
+
+		[Test]
+		[Description("Verifies that a line written to a file is correctly sent to the filtered log file")]
+		public void TestWrite2()
+		{
+			var fname = Path.GetTempFileName();
+			if (File.Exists(fname))
+				File.Delete(fname);
+
+			var settings = new DataSource(fname)
+			{
+				Id = Guid.NewGuid()
+			};
+			using (var stream = File.Open(fname, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream))
+			using (var logFile = new LogFile(_scheduler, fname))
+			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
+			{
 				writer.Write("Hello World\r\n");
 				writer.Flush();
 
@@ -49,7 +75,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 		[Test]
 		[Description("Verifies that when a file is reset, then so is the filtered log file")]
-		public void TestWrite2()
+		public void TestWrite3()
 		{
 			var fname = Path.GetTempFileName();
 			if (File.Exists(fname))
