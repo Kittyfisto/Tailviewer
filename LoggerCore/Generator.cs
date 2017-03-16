@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using log4net;
 using log4net.Core;
@@ -22,9 +21,9 @@ namespace LoggerCore
 		public Generator(ITaskScheduler taskScheduler, ILog log)
 		{
 			if (taskScheduler == null)
-				throw new ArgumentNullException("taskScheduler");
+				throw new ArgumentNullException(nameof(taskScheduler));
 			if (log == null)
-				throw new ArgumentNullException("log");
+				throw new ArgumentNullException(nameof(log));
 
 			_random = new Random();
 			_taskScheduler = taskScheduler;
