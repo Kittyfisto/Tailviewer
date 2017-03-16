@@ -103,18 +103,29 @@ namespace Installer
 
 			Log.InfoFormat("Removing {0}", filePath);
 
-			try
+			int tries = 0;
+			Exception lastException = null;
+			while(++tries < 10)
 			{
-				File.Delete(filePath);
+				try
+				{
+					File.Delete(filePath);
+					break;
+				}
+				catch (DirectoryNotFoundException)
+				{
+					// This is great, one thing less to delete...
+					break;
+				}
+				catch (Exception e)
+				{
+					Thread.Sleep(TimeSpan.FromMilliseconds(100));
+					lastException = e;
+				}
 			}
-			catch (DirectoryNotFoundException)
-			{
-				// This is great, one thing less to delete...
-			}
-			catch (Exception e)
-			{
-				throw new DeleteFileException(name, dir, e);
-			}
+
+			if (lastException != null)
+				throw new DeleteFileException(name, dir, lastException);
 		}
 
 		private void EnsureInstallationPath(string installationPath)
