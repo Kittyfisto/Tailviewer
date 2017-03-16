@@ -26,7 +26,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore]
+		[Ignore("Test isn't finished yet")]
 		public void Test()
 		{
 			using (var source1 = new LogFile(_scheduler, LogFileTest.File2Entries))

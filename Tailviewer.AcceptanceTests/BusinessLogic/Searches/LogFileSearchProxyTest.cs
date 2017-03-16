@@ -18,13 +18,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		private List<LogLine> _entries;
 		private DefaultTaskScheduler _scheduler;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			_scheduler.Dispose();

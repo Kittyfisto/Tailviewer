@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Metrolib;
@@ -15,16 +16,16 @@ using Tailviewer.Ui.ViewModels;
 namespace Tailviewer.Test.Ui.Controls
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class LogViewerControlTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
-		[STAThread]
 		public void SetUp()
 		{
 			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(_scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
@@ -46,7 +47,6 @@ namespace Tailviewer.Test.Ui.Controls
 		private ManualTaskScheduler _scheduler;
 
 		[Test]
-		[STAThread]
 		[Ignore("Doesn't work yet")]
 		[Description(
 			"Verifies that upon setting the data source, the FollowTail property is forwarded to the LogEntryListView")]
@@ -60,7 +60,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource2()
 		{
@@ -73,7 +72,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that the ShowLineNumbers value on the new data source is used")]
 		public void TestChangeDataSource3()
 		{
@@ -86,7 +84,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelAll()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.All;
@@ -98,7 +95,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelDebug()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Debug;
@@ -110,7 +106,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelError()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Error;
@@ -122,7 +117,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelFatal()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Fatal;
@@ -134,7 +128,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelInfo()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Info;
@@ -146,7 +139,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeLevelWarning()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Warning;
@@ -158,7 +150,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that changing the LogView does NOT change the currently visible line of the old view")]
 		public void TestChangeLogView1()
 		{
@@ -194,7 +185,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description(
 			"Verifies that the VisibleLogLine of a data source is properly propagated through all controls when the data source is changed"
 			)]
@@ -217,7 +207,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when a new data source is attached, its Selection is used")]
 		public void TestChangeLogView3()
 		{
@@ -238,7 +227,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description(
 			"Verifies that when a new data source is attached, the string filter of the new source is immediately used for highlighting"
 			)]
@@ -265,7 +253,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeSelection1()
 		{
 			_dataSource.SelectedLogLines.Should().BeEmpty();
@@ -274,7 +261,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeShowDebug()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -288,7 +274,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeShowError()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -302,7 +287,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeShowFatal()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -316,7 +300,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeShowInfo()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -330,7 +313,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestChangeShowWarning()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -344,7 +326,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestCtor()
 		{
 			var source = new SingleDataSourceViewModel(new SingleDataSource(_scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
@@ -362,7 +343,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestShowAll1()
 		{
 			_control.ShowAll = true;
@@ -374,7 +354,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestShowAll2()
 		{
 			_control.ShowDebug = true;
@@ -392,7 +371,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestShowAll3()
 		{
 			_control.ShowAll = true;
@@ -407,7 +385,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestShowAll4()
 		{
 			_control.ShowAll = false;
@@ -422,7 +399,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestShowAll5()
 		{
 			_control.ShowAll = false;
@@ -435,7 +411,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
 		public void TestChangeSelectedLogLines()
 		{
@@ -452,7 +427,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
 		public void TestChangeVisibleLogLine()
 		{

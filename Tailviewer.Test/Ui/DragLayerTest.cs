@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Documents;
 using NUnit.Framework;
 
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class DragLayerTest
 	{
 		[SetUp]
-		[STAThread]
 		public void SetUp()
 		{
 			_decorator = new AdornerDecorator();
@@ -19,7 +20,6 @@ namespace Tailviewer.Test.Ui
 		private AdornerDecorator _decorator;
 
 		[Test]
-		[STAThread]
 		public void TestDoDragDrop1()
 		{
 		}

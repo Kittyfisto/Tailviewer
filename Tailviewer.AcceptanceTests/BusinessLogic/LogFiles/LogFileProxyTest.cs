@@ -17,13 +17,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _modifications;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			_scheduler.Dispose();

@@ -13,8 +13,8 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class DataSourcesViewModelTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}

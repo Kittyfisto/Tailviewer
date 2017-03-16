@@ -11,8 +11,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class DataSourcesTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}

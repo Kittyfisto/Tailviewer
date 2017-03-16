@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,16 +12,16 @@ using Tailviewer.Ui.ViewModels;
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class DataSourcesControlTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}
 
 		[SetUp]
-		[STAThread]
 		public void SetUp()
 		{
 			_control = new DataSourcesControl();
@@ -30,7 +31,6 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 
 		[Test]
-		[STAThread]
 		public void TestFilter1()
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>();
@@ -39,7 +39,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter2()
 		{
 			var sources = new ObservableCollection<IDataSourceViewModel>
@@ -51,7 +50,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter3()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>();
@@ -68,7 +66,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter4()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>();
@@ -89,7 +86,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter5()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
@@ -104,7 +100,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter6()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
@@ -121,7 +116,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter7()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
@@ -143,7 +137,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		public void TestFilter8()
 		{
 			var sources = new ObservableCollection<SingleDataSourceViewModel>
@@ -165,7 +158,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that inserting an item at the first position WITHOUT a filter works")]
 		public void TestInsertAt1()
 		{
@@ -180,7 +172,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that inserting an item at the last position WITHOUT a filter works")]
 		public void TestInsertAt2()
 		{
@@ -195,7 +186,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that inserting an item in the middle WITHOUT a filter works")]
 		public void TestInsertAt3()
 		{
@@ -211,7 +201,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that inserting an item in the middle WITH a filter works")]
 		public void TestInsertAt4()
 		{
@@ -229,7 +218,6 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that inserting an item in the middle WITH a filter works")]
 		public void TestInsertAt5()
 		{

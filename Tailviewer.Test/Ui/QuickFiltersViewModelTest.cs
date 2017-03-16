@@ -15,8 +15,8 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class QuickFiltersViewModelTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}

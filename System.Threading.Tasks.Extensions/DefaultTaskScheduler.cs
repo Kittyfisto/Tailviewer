@@ -18,7 +18,6 @@ namespace System.Threading.Tasks
 		private readonly TaskScheduler _scheduler;
 		private readonly List<PeriodicTask> _tasks;
 		private long _lastTaskId;
-		private bool _isDisposed;
 
 		public DefaultTaskScheduler()
 			: this(TaskScheduler.Default)

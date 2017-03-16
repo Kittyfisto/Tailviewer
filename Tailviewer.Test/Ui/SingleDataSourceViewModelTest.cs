@@ -17,8 +17,8 @@ namespace Tailviewer.Test.Ui
 	{
 		private ManualTaskScheduler _scheduler;
 
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 		}

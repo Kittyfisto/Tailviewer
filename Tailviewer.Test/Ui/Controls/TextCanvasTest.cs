@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Controls.Primitives;
 using FluentAssertions;
 using Moq;
@@ -9,19 +10,18 @@ using Tailviewer.Ui.Controls.LogView;
 namespace Tailviewer.Test.Ui.Controls
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class TextCanvasTest
 	{
 		private TextCanvas _control;
 
 		[SetUp]
-		[STAThread]
 		public void SetUp()
 		{
 			_control = new TextCanvas(new ScrollBar(), new ScrollBar());
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that the control doesn't throw upon resizing when the current line is set to an impossible value, with regards to the log file")]
 		public void TestOnSizeChanged1()
 		{

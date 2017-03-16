@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using System.Windows.Documents;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +13,7 @@ using Tailviewer.Ui.Controls.LogView;
 namespace Tailviewer.Test.Ui.Controls
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class LogEntryListViewTest
 	{
 		private LogEntryListView _control;
@@ -20,7 +22,6 @@ namespace Tailviewer.Test.Ui.Controls
 		private List<ILogFileListener> _listeners;
 
 		[SetUp]
-		[STAThread]
 		public void SetUp()
 		{
 			_control = new LogEntryListView
@@ -53,7 +54,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		public void TestCtor()
 		{
 			_control.LogFile.Should().BeNull();
@@ -61,7 +61,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that an empty log file can be represented")]
 		public void TestSetLogFile1()
 		{
@@ -77,7 +76,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verfies that a log file with one line can be represented")]
 		public void TestSetLogFile2()
 		{
@@ -97,7 +95,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verfies that a log file with as many lines as the viewport can hold can be represented")]
 		public void TestSetLogFile3()
 		{
@@ -123,7 +120,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verfies that a log file with as one line more than the viewport can hold can be represented")]
 		public void TestSetLogFile4()
 		{
@@ -151,7 +147,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verfies that when a log file is set, its maximum number of characters for all lines is queried and used to calculate the maximum value of the horizontal scrollbar")]
 		public void TestSetLogFile5()
 		{
@@ -169,7 +164,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that the view synchronizes itself with the log file when the latter was modified after being attached")]
 		public void TestLogFileAdd1()
 		{
@@ -192,7 +186,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that the ListView is capable of handling exceptions thrown by GetSection() that indicate that the log file has shrunk")]
 		public void TestGetSectionThrows()
 		{
@@ -206,7 +199,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that if the most recent log line becomes even partially obstructed, then the view is moved to make it fully visible when FollowTail is enabled")]
 		public void TestFollowTail1()
 		{
@@ -231,7 +223,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that if FollowTail is enabled and lines are added to the log file, then the view scrolls to the bottom")]
 		public void TestFollowTail2()
 		{
@@ -258,28 +249,31 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that if the code in OnTimer throws an exception, then the exception is caught and another update is scheduled")]
 		public void TestOnTimerException()
 		{
 			_control.LogFile = _logFile.Object;
 			_control.PendingModificationsCount.Should().Be(1, "Because the control should've queried an update due to attaching to the log file");
 
+			bool insideTest = true;
 			bool exceptionThrown = false;
 			_logFile.Setup(x => x.Count).Callback(() =>
 				{
 					exceptionThrown = true;
-					throw new SystemException();
+
+					if (insideTest)
+						throw new SystemException();
 				});
 
 			new Action(() => _control.OnTimer(null, null)).ShouldNotThrow("Because any and all exceptions must be handled inside this callback");
 			_control.PendingModificationsCount.Should().Be(1, "Because another update should've been scheduled as this one wasn't fully completed");
 			exceptionThrown.Should().BeTrue("Because the control should've queried the ILogFile.Count property during its update");
+
+			insideTest = false;
 		}
 
 		[Ignore("Not finished yet")]
 		[Test]
-		[STAThread]
 		[Description("Verifies a mouse left down selects the item under it")]
 		public void TestSelect1()
 		{
@@ -295,7 +289,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that only selected lines are copied to the clipboard")]
 		public void TestCopyToClipboard1()
 		{
@@ -309,7 +302,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that multiple lines can be copied to the clipboard")]
 		public void TestCopyToClipboard2()
 		{
@@ -323,7 +315,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when the mouse wheel is used to scroll to the last line, then FollowTail is automatically enabled")]
 		public void TestMouseWheelDown1()
 		{
@@ -342,7 +333,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when the mouse wheel is used to scroll up from the last line, then FollowTail is automatically disabled")]
 		public void TestMouseWheelUp1()
 		{
@@ -362,7 +352,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when control+end is pressed, then the last line is both brought into view and selected")]
 		public void TestControlEnd()
 		{
@@ -382,7 +371,6 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[STAThread]
 		[Description("Verifies that when control+start is pressed, then the first line is both brought into view and selected")]
 		public void TestControlStart()
 		{
