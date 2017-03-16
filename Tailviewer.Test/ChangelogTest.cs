@@ -14,20 +14,6 @@ namespace Tailviewer.Test
 		public void TestUniqueness()
 		{
 			var changes = Changelog.Changes;
-			foreach (var change in changes)
-			{
-				if (change == Changelog.MostRecent)
-				{
-					change.ReleaseDate.Should().Be(Constants.BuildDate);
-					change.Version.Should().Be(Constants.ApplicationVersion);
-				}
-				else
-				{
-					change.ReleaseDate.Should().BeBefore(Constants.BuildDate);
-					change.Version.Should().NotBe(Constants.ApplicationVersion);
-				}
-			}
-
 			var dates = new HashSet<DateTime>(changes.Select(x => x.ReleaseDate));
 			dates.Count.Should().Be(changes.Count, "because no two releases should've happened on the same date");
 			var versions = new HashSet<Version>(changes.Select(x => x.Version));
