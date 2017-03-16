@@ -37,12 +37,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IOneShotTask.cs" />
     <Compile Include="IPeriodicTask.cs" />
     <Compile Include="ITask.cs" />
     <Compile Include="ITaskScheduler.cs" />
     <Compile Include="NoThrowTask.cs" />
     <Compile Include="NoThrowTaskCompletionSource.cs" />
     <Compile Include="ManualTaskScheduler.cs" />
+    <Compile Include="OneShotTask.cs" />
     <Compile Include="PeriodicTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultTaskScheduler.cs" />
