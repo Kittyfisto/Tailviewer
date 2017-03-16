@@ -24,6 +24,27 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 			_misc = new List<string>(misc);
 		}
 
+		public static Change Merge(IEnumerable<Change> changes)
+		{
+			var features = new List<string>();
+			var bugfixes = new List<string>();
+			var misc = new List<string>();
+			var version = new Version();
+			var releaseDate = DateTime.MinValue;
+			foreach (var change in changes)
+			{
+				features.AddRange(change.Features);
+				bugfixes.AddRange(change.Bugfixes);
+				misc.AddRange(change.Misc);
+				if (change.Version > version)
+				{
+					version = change.Version;
+					releaseDate = change.ReleaseDate;
+				}
+			}
+			return new Change(releaseDate, version, features, bugfixes, misc);
+		}
+
 		public DateTime ReleaseDate
 		{
 			get { return _releaseDate; }

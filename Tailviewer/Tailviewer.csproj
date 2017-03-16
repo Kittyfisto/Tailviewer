@@ -70,6 +70,7 @@
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ActionCenterExtensions.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IBug.cs" />
     <Compile Include="BusinessLogic\ActionCenter\UnhandledException.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Change.cs" />

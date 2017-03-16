@@ -9,6 +9,20 @@ namespace Tailviewer
 	{
 		private static readonly List<Change> AllChanges;
 
+		/// <summary>
+		/// Returns all changesets (i.e. effectively all patches) of the latest minor version.
+		/// </summary>
+		public static IEnumerable<Change> MostRecentPatches
+		{
+			get
+			{
+				var version = MostRecent.Version;
+				return AllChanges.Where(x => x.Version.Major == version.Major &&
+				                             x.Version.Minor == version.Minor)
+					.ToList();
+			}
+		}
+
 		public static Change MostRecent
 		{
 			get { return AllChanges.Last(); }
@@ -27,10 +41,10 @@ namespace Tailviewer
 			AddV030();
 			AddV031();
 			AddV032();
-			AddMostRecent();
+			AddV033();
 		}
 
-		private static void AddMostRecent()
+		private static void AddV033()
 		{
 			var features = new string[]
 			{
@@ -43,7 +57,8 @@ namespace Tailviewer
 			var misc = new string[]
 			{
 			};
-			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			var version = new Version(0, 3, 3);
+			var change = new Change(Constants.BuildDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 
