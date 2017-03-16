@@ -15,7 +15,7 @@ using log4net;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogFileTest
+	public sealed class LogFileRealTest
 	{
 		public const string File2Mb = @"TestData\2Mb.txt";
 		public const string File20Mb = @"TestData\20Mb.txt";

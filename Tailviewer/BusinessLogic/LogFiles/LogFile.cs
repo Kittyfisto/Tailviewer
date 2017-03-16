@@ -39,6 +39,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly string _fullFilename;
 		private DateTime _lastModified;
 		private int _numberOfLinesRead;
+		private bool _lastLineHadNewline;
+		private string _untrimmedLastLine;
 		private long _lastPosition;
 		private long? _fileSize;
 
@@ -170,7 +172,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 													   FileMode.Open,
 													   FileAccess.Read,
 													   FileShare.ReadWrite))
-					using (var reader = new StreamReader(stream))
+					using (var reader = new StreamReaderEx(stream))
 					{
 						_exists = true;
 						var info = new FileInfo(_fileName);
@@ -185,18 +187,34 @@ namespace Tailviewer.BusinessLogic.LogFiles
 							OnReset(stream, out _numberOfLinesRead, out _lastPosition);
 						}
 
-						string line;
-						while ((line = reader.ReadLine()) != null)
+						string currentLine;
+						while ((currentLine = reader.ReadLine()) != null)
 						{
 							token.ThrowIfCancellationRequested();
 
 							ResetEndOfSourceReached();
-							++_numberOfLinesRead;
 
-							LevelFlags level = LogLine.DetermineLevelFromLine(line);
+							LevelFlags level = LogLine.DetermineLevelFromLine(currentLine);
 
-							var timestamp = ParseTimestamp(line);
-							Add(line, level, _numberOfLinesRead, timestamp);
+							bool lastLineHadNewline = _lastLineHadNewline;
+							var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
+							var entryCount = _entries.Count;
+							if (entryCount > 0 && !lastLineHadNewline)
+							{
+								// We need to remove the last line and create a new line
+								// that consists of the entire content.
+								RemoveLast();
+								trimmedLine = _untrimmedLastLine + trimmedLine;
+								_untrimmedLastLine = _untrimmedLastLine + currentLine;
+							}
+							else
+							{
+								_untrimmedLastLine = currentLine;
+								++_numberOfLinesRead;
+							}
+
+							var timestamp = ParseTimestamp(trimmedLine);
+							Add(trimmedLine, level, _numberOfLinesRead, timestamp);
 						}
 
 						_lastPosition = stream.Position;
@@ -256,6 +274,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
+		}
+
+		private void RemoveLast()
+		{
+			var index = _entries.Count - 1;
+			lock (_syncRoot)
+			{
+				_entries.RemoveAt(index);
+			}
+			Listeners.Invalidate(index, 1);
 		}
 
 		private DateTime? ParseTimestamp(string line)

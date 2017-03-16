@@ -76,8 +76,9 @@
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileManualTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTableAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />

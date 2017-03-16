@@ -153,6 +153,7 @@
     <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
+    <Compile Include="BusinessLogic\StreamReaderEx.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="QueueExtensions.cs" />

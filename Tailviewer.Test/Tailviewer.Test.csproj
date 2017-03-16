@@ -104,11 +104,13 @@
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
+    <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
+    <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />

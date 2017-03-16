@@ -5,6 +5,61 @@ namespace Tailviewer
 {
 	public static class StringExtensions
 	{
+		public static bool EndsWithNewline(this string that)
+		{
+			if (that == null)
+				return false;
+
+			var length = that.Length;
+			if (length == 0)
+				return false;
+
+			if (that[length - 1] == '\n')
+				return true;
+
+			return false;
+		}
+
+		public static bool EndsWithCarriageFeedLineReturn(this string that)
+		{
+			if (that == null)
+				return false;
+
+			var length = that.Length;
+			if (length < 2)
+				return false;
+
+			if (that[length - 2] == '\r' &&
+				that[length - 1] == '\n')
+				return true;
+
+			return false;
+		}
+
+		public static string TrimNewlineEnd(this string that)
+		{
+			bool unused;
+			return TrimNewlineEnd(that, out unused);
+		}
+
+		public static string TrimNewlineEnd(this string that, out bool trimmed)
+		{
+			if (that.EndsWithCarriageFeedLineReturn())
+			{
+				trimmed = true;
+				return that.Substring(0, that.Length - 2);
+			}
+
+			if (that.EndsWithNewline())
+			{
+				trimmed = true;
+				return that.Substring(0, that.Length - 1);
+			}
+
+			trimmed = false;
+			return that;
+		}
+
 		public static int IndexOf(this string that, Predicate<char> pred)
 		{
 			return IndexOf(that, pred, 0);
@@ -27,11 +82,11 @@ namespace Tailviewer
 		public static int IndexOf(this string that, Predicate<char> pred, int startIndex, int length)
 		{
 			if (startIndex < 0)
-				throw new ArgumentOutOfRangeException("startIndex");
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
 			if (startIndex >= that.Length)
-				throw new ArgumentOutOfRangeException("startIndex");
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
 			if (startIndex + length > that.Length)
-				throw new ArgumentOutOfRangeException("length");
+				throw new ArgumentOutOfRangeException(nameof(length));
 
 			int totalLength = startIndex + length;
 			for (int i = startIndex; i < totalLength; ++i)

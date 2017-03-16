@@ -25,8 +25,8 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Description("Verifies that the number of search results is properly forwarded to the view model upon Update()")]
 		public void TestSearch1()
 		{
-			var settings = new DataSource(LogFileTest.File2Mb) { Id = Guid.NewGuid() };
-			using (var logFile = new LogFile(_taskScheduler, LogFileTest.File2Mb))
+			var settings = new DataSource(LogFileRealTest.File2Mb) { Id = Guid.NewGuid() };
+			using (var logFile = new LogFile(_taskScheduler, LogFileRealTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(dataSource);

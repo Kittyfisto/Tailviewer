@@ -14,7 +14,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class FilteredLogFileTest
 	{
-		private const string File20Mb = LogFileTest.File20Mb;
+		private const string File20Mb = LogFileRealTest.File20Mb;
 
 		private DefaultTaskScheduler _scheduler;
 
