@@ -25,10 +25,27 @@ namespace Tailviewer
 
 			AddV0286();
 			AddV030();
+			AddV031();
 			AddMostRecent();
 		}
 
 		private static void AddMostRecent()
+		{
+			var features = new string[]
+			{
+			};
+			var bugfixes = new[]
+			{
+				"Fixed bug causing diplication of lines"
+			};
+			var misc = new string[]
+			{
+			};
+			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV031()
 		{
 			var features = new[]
 			{
