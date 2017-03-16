@@ -6,6 +6,7 @@ using NUnit.Framework;
 namespace Tailviewer.Test
 {
 	[SetUpFixture]
+	[Parallelizable(ParallelScope.Fixtures)]
 	public sealed class AssemblySetup
 	{
 		[OneTimeSetUp]
