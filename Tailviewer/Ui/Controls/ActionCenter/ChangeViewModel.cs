@@ -14,7 +14,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 			:base(change)
 		{
 			if (change == null)
-				throw new ArgumentNullException("change");
+				throw new ArgumentNullException(nameof(change));
 
 			_change = change;
 		}

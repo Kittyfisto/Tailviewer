@@ -529,10 +529,7 @@ namespace Tailviewer.Ui.Controls
 		public void FocusStringFilter()
 		{
 			SearchTextBox element = PART_SearchBox;
-			if (element != null)
-			{
-				element.Focus();
-			}
+			element?.Focus();
 		}
 	}
 }

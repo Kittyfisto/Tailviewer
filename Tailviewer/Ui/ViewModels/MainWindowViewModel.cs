@@ -57,10 +57,10 @@ namespace Tailviewer.Ui.ViewModels
 		                           IAutoUpdater updater,
 		                           IDispatcher dispatcher)
 		{
-			if (dataSources == null) throw new ArgumentNullException("dataSources");
-			if (quickFilters == null) throw new ArgumentNullException("quickFilters");
-			if (updater == null) throw new ArgumentNullException("updater");
-			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
+			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
+			if (updater == null) throw new ArgumentNullException(nameof(updater));
+			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
 			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
 			_dataSourcesViewModel.PropertyChanged += DataSourcesViewModelOnPropertyChanged;
@@ -314,8 +314,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		public QuickFilterViewModel AddQuickFilter()

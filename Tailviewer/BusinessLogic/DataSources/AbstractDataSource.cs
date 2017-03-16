@@ -413,11 +413,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			private void AddRange(ILogFile logFile, LogFileSection section)
 			{
-				LogLine previousLine;
-				if (_lines.Count > 0)
-					previousLine = _lines[_lines.Count - 1];
-				else
-					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
+				var previousLine = _lines.Count > 0
+					? _lines[_lines.Count - 1]
+					: new LogLine(-1, -1, null, LevelFlags.None);
 
 				LogLine[] lines = logFile.GetSection(section);
 				for (int i = 0; i < section.Count; ++i)
@@ -431,11 +429,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			private void RemoveRange(LogFileSection section)
 			{
-				LogLine previousLine;
-				if (section.Index > 0)
-					previousLine = _lines[(int) section.Index];
-				else
-					previousLine = new LogLine(-1, -1, null, LevelFlags.None);
+				var previousLine = section.Index > 0
+					? _lines[(int) section.Index]
+					: new LogLine(-1, -1, null, LevelFlags.None);
 
 				for (int i = 0; i < section.Count; ++i)
 				{

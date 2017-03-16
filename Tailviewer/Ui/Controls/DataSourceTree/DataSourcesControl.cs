@@ -261,12 +261,9 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			if (IsValidDrop(e, out dropInfo))
 			{
 				var vm = DataContext as MainWindowViewModel;
-				if (vm != null)
-				{
-					vm.OnDropped(dropInfo.Source.ViewModel,
-					             dropInfo.Target.ViewModel,
-					             dropInfo.Type);
-				}
+				vm?.OnDropped(dropInfo.Source.ViewModel,
+					dropInfo.Target.ViewModel,
+					dropInfo.Type);
 
 				e.Handled = true;
 			}
@@ -517,10 +514,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public void FocusSearch()
 		{
 			FilterTextBox element = _partDataSourceSearch;
-			if (element != null)
-			{
-				element.Focus();
-			}
+			element?.Focus();
 		}
 
 		public static UIElement GetItemContainerFromItemsControl(ItemsControl itemsControl)

@@ -36,7 +36,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
-			if (dataSource == null) throw new ArgumentNullException("dataSource");
+			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
 
 			_dataSource = dataSource;
 			_searchTerm = dataSource.SearchTerm;
@@ -432,14 +432,7 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _parent; }
 			set
 			{
-				if (value == null)
-				{
-					_dataSource.Settings.ParentId = Guid.Empty;
-				}
-				else
-				{
-					_dataSource.Settings.ParentId = value.DataSource.Id;
-				}
+				_dataSource.Settings.ParentId = value?.DataSource.Id ?? Guid.Empty;
 				_parent = value;
 				IsGrouped = value != null;
 			}
@@ -496,15 +489,12 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OnRemoveDataSource()
 		{
-			Action<IDataSourceViewModel> fn = Remove;
-			if (fn != null)
-				fn(this);
+			Remove?.Invoke(this);
 		}
 
 		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

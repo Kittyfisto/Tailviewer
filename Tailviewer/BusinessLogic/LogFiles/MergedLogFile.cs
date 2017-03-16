@@ -40,8 +40,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, params ILogFile[] sources)
 			: base(scheduler)
 		{
-			if (sources == null) throw new ArgumentNullException("sources");
-			if (sources.Any(x => x == null)) throw new ArgumentException("sources.Any(x => x == null)", "sources");
+			if (sources == null) throw new ArgumentNullException(nameof(sources));
+			if (sources.Any(x => x == null)) throw new ArgumentException("sources.Any(x => x == null)", nameof(sources));
 
 			_sources = sources;
 			_pendingModifications = new ConcurrentQueue<PendingModification>();

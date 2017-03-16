@@ -13,7 +13,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public SQLiteSchema(string tableName)
 		{
 			if (tableName == null)
-				throw new ArgumentNullException("tableName");
+				throw new ArgumentNullException(nameof(tableName));
 
 			_tableName = tableName;
 			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>());
@@ -26,9 +26,9 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public SQLiteSchema(string tableName, IEnumerable<SQLiteColumnHeader> columnHeaders)
 		{
 			if (tableName == null)
-				throw new ArgumentNullException("tableName");
+				throw new ArgumentNullException(nameof(tableName));
 			if (columnHeaders == null)
-				throw new ArgumentNullException("columnHeaders");
+				throw new ArgumentNullException(nameof(columnHeaders));
 
 			_tableName = tableName;
 			_columnHeaders = new ReadOnlyCollection<SQLiteColumnHeader>(new List<SQLiteColumnHeader>(columnHeaders));

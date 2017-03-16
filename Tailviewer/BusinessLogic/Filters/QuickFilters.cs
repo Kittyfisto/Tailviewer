@@ -12,7 +12,7 @@ namespace Tailviewer.BusinessLogic.Filters
 
 		public QuickFilters(Settings.QuickFilters settings)
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
 			_syncRoot = new object();
 			_settings = settings;

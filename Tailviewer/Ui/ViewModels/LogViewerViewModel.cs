@@ -31,8 +31,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
 		{
-			if (dataSource == null) throw new ArgumentNullException("dataSource");
-			if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
+			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
@@ -148,11 +148,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get
 			{
-				IDataSourceViewModel source = _dataSource;
-				if (source == null)
-					return null;
-
-				return source.QuickFilterChain;
+				return _dataSource?.QuickFilterChain;
 			}
 			set
 			{
@@ -182,8 +178,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		private void Synchronize()

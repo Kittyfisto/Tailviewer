@@ -27,9 +27,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 
 		private void Remove()
 		{
-			var fn = OnRemove;
-			if (fn != null)
-				fn(this);
+			OnRemove?.Invoke(this);
 		}
 
 		public ICommand RemoveCommand
@@ -67,8 +65,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

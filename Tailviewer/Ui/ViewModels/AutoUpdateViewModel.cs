@@ -34,11 +34,11 @@ namespace Tailviewer.Ui.ViewModels
 		public AutoUpdateViewModel(IAutoUpdater updater, AutoUpdateSettings settings, IDispatcher dispatcher)
 		{
 			if (updater == null)
-				throw new ArgumentNullException("updater");
+				throw new ArgumentNullException(nameof(updater));
 			if (settings == null)
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 			if (dispatcher == null)
-				throw new ArgumentNullException("dispatcher");
+				throw new ArgumentNullException(nameof(dispatcher));
 
 			_updater = updater;
 			_settings = settings;
@@ -188,8 +188,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

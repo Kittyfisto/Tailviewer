@@ -12,7 +12,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LogTableListenerCollection(ILogTable logTable)
 		{
 			if (logTable == null)
-				throw new ArgumentNullException("logTable");
+				throw new ArgumentNullException(nameof(logTable));
 
 			_logTable = logTable;
 			_notifiers = new Dictionary<ILogTableListener, LogFileListenerNotifier>();

@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		public LogMatchSection(LogMatchIndex index, int count, bool invalidateSection = false)
 		{
 			if (count < 0)
-				throw new ArgumentOutOfRangeException("count");
+				throw new ArgumentOutOfRangeException(nameof(count));
 
 			Index = index;
 			Count = count;

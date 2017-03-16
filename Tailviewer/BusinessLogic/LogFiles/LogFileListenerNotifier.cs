@@ -14,8 +14,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public LogFileListenerNotifier(ILogFile logFile, ILogFileListener listener, TimeSpan maximumTime, int maximumCount)
 		{
-			if (logFile == null) throw new ArgumentNullException("logFile");
-			if (listener == null) throw new ArgumentNullException("listener");
+			if (logFile == null) throw new ArgumentNullException(nameof(logFile));
+			if (listener == null) throw new ArgumentNullException(nameof(listener));
 
 			_logFile = logFile;
 			_listener = listener;

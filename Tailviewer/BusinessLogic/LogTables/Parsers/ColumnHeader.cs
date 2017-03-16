@@ -10,7 +10,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 		public ColumnHeader(string name)
 		{
 			if (name == null)
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 
 			_name = name;
 		}

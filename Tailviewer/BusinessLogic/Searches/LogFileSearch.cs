@@ -41,9 +41,9 @@ namespace Tailviewer.BusinessLogic.Searches
 		public LogFileSearch(ITaskScheduler taskScheduler, ILogFile logFile, string searchTerm, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
-				throw new ArgumentNullException("taskScheduler");
+				throw new ArgumentNullException(nameof(taskScheduler));
 			if (logFile == null)
-				throw new ArgumentNullException("logFile");
+				throw new ArgumentNullException(nameof(logFile));
 			if (string.IsNullOrEmpty(searchTerm))
 				throw new ArgumentException("searchTerm may not be empty");
 

@@ -28,9 +28,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel)
 		{
-			if (logLine == null) throw new ArgumentNullException("logLine");
-			if (hoveredIndices == null) throw new ArgumentNullException("hoveredIndices");
-			if (selectedIndices == null) throw new ArgumentNullException("selectedIndices");
+			if (logLine == null) throw new ArgumentNullException(nameof(logLine));
+			if (hoveredIndices == null) throw new ArgumentNullException(nameof(hoveredIndices));
+			if (selectedIndices == null) throw new ArgumentNullException(nameof(selectedIndices));
 
 			_logLine = logLine;
 			_hoveredIndices = hoveredIndices;
@@ -252,14 +252,9 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 				else
 				{
-					if (IsSelected)
-					{
-						brush = TextHelper.HighlightedSelectedBackgroundBrush;
-					}
-					else
-					{
-						brush = TextHelper.HighlightedBackgroundBrush;
-					}
+					brush = IsSelected
+						? TextHelper.HighlightedSelectedBackgroundBrush
+						: TextHelper.HighlightedBackgroundBrush;
 				}
 
 				if (brush != null)

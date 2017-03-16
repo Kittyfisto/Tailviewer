@@ -26,8 +26,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public QuickFiltersViewModel(ApplicationSettings settings, QuickFilters quickFilters)
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
-			if (quickFilters == null) throw new ArgumentNullException("quickFilters");
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
+			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 
 			_settings = settings;
 			_quickFilters = quickFilters;
@@ -62,15 +62,13 @@ namespace Tailviewer.Ui.ViewModels
 					_isChangingCurrentDataSource = true;
 
 					_currentDataSource = value;
-					IDataSource source = value != null ? value.DataSource : null;
+					IDataSource source = value?.DataSource;
 					foreach (QuickFilterViewModel viewModel in _viewModels)
 					{
 						viewModel.CurrentDataSource = source;
 					}
 
-					Action fn = OnFiltersChanged;
-					if (fn != null)
-						fn();
+					OnFiltersChanged?.Invoke();
 				}
 				finally
 				{
@@ -97,7 +95,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var viewModel = new QuickFilterViewModel(quickFilter, OnRemoveQuickFilter)
 				{
-					CurrentDataSource = _currentDataSource != null ? _currentDataSource.DataSource : null
+					CurrentDataSource = _currentDataSource?.DataSource
 				};
 			viewModel.PropertyChanged += QuickFilterOnPropertyChanged;
 			_viewModels.Add(viewModel);
@@ -145,9 +143,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "MatchType":
 					if (!_isChangingCurrentDataSource)
 					{
-						Action fn = OnFiltersChanged;
-						if (fn != null)
-							fn();
+						OnFiltersChanged?.Invoke();
 					}
 					break;
 			}
@@ -165,9 +161,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				// If we've just deleted an active filter then we most definately need
 				// to filter the log file again...
-				var fn = OnFiltersChanged;
-				if (fn != null)
-					fn();
+				OnFiltersChanged?.Invoke();
 			}
 		}
 	}

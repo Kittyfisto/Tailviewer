@@ -13,7 +13,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		public LogFileSearchListenerCollection(ILogFileSearch sender)
 		{
 			if (sender == null)
-				throw new ArgumentNullException("sender");
+				throw new ArgumentNullException(nameof(sender));
 
 			_sender = sender;
 			_listeners = new List<ILogFileSearchListener>();

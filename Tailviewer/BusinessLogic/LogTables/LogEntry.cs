@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LogEntry(IEnumerable<object> fields)
 		{
 			if (fields == null)
-				throw new ArgumentNullException("fields");
+				throw new ArgumentNullException(nameof(fields));
 
 			Fields = fields.ToArray();
 		}
@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LogEntry(params object[] fields)
 		{
 			if (fields == null)
-				throw new ArgumentNullException("fields");
+				throw new ArgumentNullException(nameof(fields));
 
 			Fields = fields;
 		}

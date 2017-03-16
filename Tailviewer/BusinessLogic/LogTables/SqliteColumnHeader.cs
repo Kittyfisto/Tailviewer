@@ -16,7 +16,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public SQLiteColumnHeader(string name, SQLiteDataType databaseType)
 		{
 			if (name == null)
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 
 			_name = name;
 			_databaseType = databaseType;

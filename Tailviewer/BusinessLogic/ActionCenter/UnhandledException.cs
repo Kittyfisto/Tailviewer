@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 		public UnhandledException(Exception exception)
 		{
 			if (exception == null)
-				throw new ArgumentNullException("exception");
+				throw new ArgumentNullException(nameof(exception));
 
 			_exception = exception;
 		}

@@ -39,9 +39,7 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 				_notifications.Add(notification);
 			}
 
-			var fn = NotificationAdded;
-			if (fn != null)
-				fn(notification);
+			NotificationAdded?.Invoke(notification);
 		}
 
 		public IEnumerable<INotification> Notifications

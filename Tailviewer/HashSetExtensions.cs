@@ -13,12 +13,8 @@ namespace Tailviewer
 
 				return true;
 			}
-			if (other == null)
-			{
-				return false;
-			}
 
-			if (that.Count != other.Count)
+			if (that.Count != other?.Count)
 				return false;
 
 			foreach (var value in that)

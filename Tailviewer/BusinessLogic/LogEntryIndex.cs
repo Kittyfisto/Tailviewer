@@ -21,7 +21,7 @@ namespace Tailviewer.BusinessLogic
 		public LogEntryIndex(int value)
 		{
 			if (value < -1)
-				throw new ArgumentOutOfRangeException("value");
+				throw new ArgumentOutOfRangeException(nameof(value));
 
 			_value = value;
 		}

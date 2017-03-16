@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 					break;
 
 				default:
-					throw new ArgumentOutOfRangeException("kind");
+					throw new ArgumentOutOfRangeException(nameof(kind));
 			}
 
 			switch (format)

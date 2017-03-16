@@ -13,7 +13,7 @@ namespace Tailviewer.Ui.ViewModels
 		public SettingsViewModel(ApplicationSettings settings)
 		{
 			if (settings == null)
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 
 			_settings = settings;
 		}
@@ -97,8 +97,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

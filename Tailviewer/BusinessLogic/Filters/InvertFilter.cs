@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		public InvertFilter(ILogEntryFilter filter)
 		{
 			if (filter == null)
-				throw new ArgumentNullException("filter");
+				throw new ArgumentNullException(nameof(filter));
 
 			_filter = filter;
 		}

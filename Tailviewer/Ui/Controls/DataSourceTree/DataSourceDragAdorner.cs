@@ -52,10 +52,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			_leftOffset = left;
 			_topOffset = top;
-			if (_adornerLayer != null)
-			{
-				_adornerLayer.Update(AdornedElement);
-			}
+			_adornerLayer?.Update(AdornedElement);
 		}
 
 		public override GeneralTransform GetDesiredTransform(GeneralTransform transform)

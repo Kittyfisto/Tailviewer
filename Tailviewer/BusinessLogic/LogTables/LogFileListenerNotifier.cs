@@ -13,7 +13,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		                               int maximumLineCount)
 		{
 			if (logTable == null)
-				throw new ArgumentNullException("logTable");
+				throw new ArgumentNullException(nameof(logTable));
 
 			_logTable = logTable;
 			_listener = listener;

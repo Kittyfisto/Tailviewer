@@ -33,7 +33,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
-				throw new ArgumentNullException("taskScheduler");
+				throw new ArgumentNullException(nameof(taskScheduler));
 
 			_taskScheduler = taskScheduler;
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
@@ -97,10 +97,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (value == _innerLogFile)
 					return;
 
-				if (_innerLogFile != null)
-				{
-					_innerLogFile.RemoveListener(this);
-				}
+				_innerLogFile?.RemoveListener(this);
 
 				_innerLogFile = value;
 
@@ -109,20 +106,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				// by the content of the new logfile...
 				_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(_innerLogFile, LogFileSection.Reset));
 
-				if (_innerLogFile != null)
-				{
-					_innerLogFile.AddListener(this, _maximumWaitTime, 10000);
-				}
+				_innerLogFile?.AddListener(this, _maximumWaitTime, 10000);
 			}
 		}
 
 		public void Dispose()
 		{
 			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				logFile.Dispose();
-			}
+			logFile?.Dispose();
 			_taskScheduler.StopPeriodic(_task);
 			_isDisposed = true;
 		}
@@ -136,11 +127,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			get
 			{
-				ILogFile logFile = _innerLogFile;
-				if (logFile != null)
-					return logFile.StartTimestamp;
-
-				return null;
+				return _innerLogFile?.StartTimestamp;
 			}
 		}
 

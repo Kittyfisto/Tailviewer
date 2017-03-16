@@ -14,7 +14,6 @@ namespace Tailviewer.Ui
 		private static AdornerLayer _adornerLayer;
 		private static DataSourceDropAdorner _dropAdorner;
 		private static DataSourceArrangeAdorner _arrangeAdorner;
-		private static int i = 0;
 
 		public static AdornerLayer AdornerLayer
 		{
@@ -78,7 +77,7 @@ namespace Tailviewer.Ui
 
 		public static void AdornDropTarget(DropInfo dropInfo)
 		{
-			if (dropInfo == null) throw new ArgumentNullException("dropInfo");
+			if (dropInfo == null) throw new ArgumentNullException(nameof(dropInfo));
 			if (dropInfo.Type == DataSourceDropType.None)
 				throw new ArgumentException("dropInfo.DropType may not be set to none");
 

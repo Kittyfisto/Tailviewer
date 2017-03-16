@@ -25,7 +25,7 @@ namespace Tailviewer.Ui.Controls
 
 		internal MainWindow(ApplicationSettings settings)
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
 			_settings = settings;
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);

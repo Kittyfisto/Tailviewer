@@ -27,9 +27,9 @@ namespace Tailviewer.BusinessLogic.Searches
 		public LogFileSearchProxy(ITaskScheduler taskScheduler, ILogFile logFile, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
-				throw new ArgumentNullException("taskScheduler");
+				throw new ArgumentNullException(nameof(taskScheduler));
 			if (logFile == null)
-				throw new ArgumentNullException("logFile");
+				throw new ArgumentNullException(nameof(logFile));
 
 			_pendingMatches = new ConcurrentQueue<KeyValuePair<ILogFileSearch, List<LogMatch>>>();
 			_logFile = logFile;
@@ -95,10 +95,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 		public void Dispose()
 		{
-			if (_innerSearch != null)
-			{
-				_innerSearch.Dispose();
-			}
+			_innerSearch?.Dispose();
 
 			_taskScheduler.StopPeriodic(_task);
 			_isDisposed = true;

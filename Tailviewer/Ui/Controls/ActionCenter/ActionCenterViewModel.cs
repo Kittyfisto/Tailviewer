@@ -29,9 +29,9 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 		public ActionCenterViewModel(IDispatcher dispatcher, IActionCenter actionCenter)
 		{
 			if (dispatcher == null)
-				throw new ArgumentNullException("dispatcher");
+				throw new ArgumentNullException(nameof(dispatcher));
 			if (actionCenter == null)
-				throw new ArgumentNullException("actionCenter");
+				throw new ArgumentNullException(nameof(actionCenter));
 
 			_dispatcher = dispatcher;
 			_notifications = new ObservableCollection<INotificationViewModel>();
@@ -141,8 +141,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		private void UpdateUnreadCount()

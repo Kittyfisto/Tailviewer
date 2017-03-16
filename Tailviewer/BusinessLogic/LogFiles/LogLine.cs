@@ -125,7 +125,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				var hashCode = (int) Level;
 				hashCode = (hashCode*397) ^ LineIndex;
 				hashCode = (hashCode*397) ^ LogEntryIndex;
-				hashCode = (hashCode*397) ^ (Message != null ? Message.GetHashCode() : 0);
+				hashCode = (hashCode*397) ^ (Message?.GetHashCode() ?? 0);
 				hashCode = (hashCode*397) ^ Timestamp.GetHashCode();
 				return hashCode;
 			}

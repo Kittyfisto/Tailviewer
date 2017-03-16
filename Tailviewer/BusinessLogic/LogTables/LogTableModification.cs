@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public LogTableModification(ILogTableSchema schema)
 		{
 			if (schema == null)
-				throw new ArgumentNullException("schema");
+				throw new ArgumentNullException(nameof(schema));
 
 			Schema = schema;
 			Section = new LogTableSection(LogEntryIndex.Invalid, 0);

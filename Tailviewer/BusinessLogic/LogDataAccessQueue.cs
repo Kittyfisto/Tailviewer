@@ -117,7 +117,7 @@ namespace Tailviewer.BusinessLogic
 		public void ExecuteAll(ILogDataAccessor<TIndex, TData> accessor)
 		{
 			if (accessor == null)
-				throw new ArgumentNullException("accessor");
+				throw new ArgumentNullException(nameof(accessor));
 
 			TaskData data;
 			while (TryDequeue(out data))
@@ -130,7 +130,7 @@ namespace Tailviewer.BusinessLogic
 		public void ExecuteOne(ILogDataAccessor<TIndex, TData> accessor)
 		{
 			if (accessor == null)
-				throw new ArgumentNullException("accessor");
+				throw new ArgumentNullException(nameof(accessor));
 
 			TaskData data;
 			if (TryDequeue(out data))

@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public LogFileListenerCollection(ILogFile logFile)
 		{
-			if (logFile == null) throw new ArgumentNullException("logFile");
+			if (logFile == null) throw new ArgumentNullException(nameof(logFile));
 
 			_logFile = logFile;
 			_listeners = new Dictionary<ILogFileListener, LogFileListenerNotifier>();

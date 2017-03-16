@@ -77,7 +77,7 @@ namespace Tailviewer.BusinessLogic
 		public void AddRange(ILogFile logFile, LogLineIndex startIndex, IEnumerable<LogLine> logLines)
 		{
 			if (logFile == null)
-				throw new ArgumentNullException("logFile");
+				throw new ArgumentNullException(nameof(logFile));
 
 			lock (_syncRoot)
 			{
@@ -175,7 +175,7 @@ namespace Tailviewer.BusinessLogic
 		public void Add(ILogTable logTable, LogEntryIndex index, LogEntry logEntry)
 		{
 			if (logTable == null)
-				throw new ArgumentNullException("logTable");
+				throw new ArgumentNullException(nameof(logTable));
 
 			lock (_syncRoot)
 			{
@@ -193,7 +193,7 @@ namespace Tailviewer.BusinessLogic
 		public void AddRange(ILogTable logTable, LogEntryIndex startIndex, IEnumerable<LogEntry> logEntries)
 		{
 			if (logTable == null)
-				throw new ArgumentNullException("logTable");
+				throw new ArgumentNullException(nameof(logTable));
 
 			lock (_syncRoot)
 			{

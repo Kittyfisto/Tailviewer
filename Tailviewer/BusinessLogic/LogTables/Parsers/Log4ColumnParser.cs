@@ -142,7 +142,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 		public static Log4ColumnParser Create(string pattern, int startIndex, out int patternLength)
 		{
 			if (pattern == null)
-				throw new ArgumentNullException("pattern");
+				throw new ArgumentNullException(nameof(pattern));
 
 			Match match = PatternRegex.Match(pattern, startIndex);
 			if (match.Success)

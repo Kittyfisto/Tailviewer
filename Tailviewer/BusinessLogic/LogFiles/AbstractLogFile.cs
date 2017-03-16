@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		protected AbstractLogFile(ITaskScheduler scheduler)
 		{
 			if (scheduler == null)
-				throw new ArgumentNullException("scheduler");
+				throw new ArgumentNullException(nameof(scheduler));
 
 			_scheduler = scheduler;
 			_cancellationTokenSource = new CancellationTokenSource();

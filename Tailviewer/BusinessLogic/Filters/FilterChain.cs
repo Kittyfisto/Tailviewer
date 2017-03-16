@@ -16,10 +16,10 @@ namespace Tailviewer.BusinessLogic.Filters
 
 		public FilterChain(IEnumerable<ILogEntryFilter> filters)
 		{
-			if (filters == null) throw new ArgumentNullException("filters");
+			if (filters == null) throw new ArgumentNullException(nameof(filters));
 
 			_filters = filters.ToArray();
-			if (_filters.Any(x => x == null)) throw new ArgumentNullException("filters");
+			if (_filters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)

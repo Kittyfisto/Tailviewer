@@ -25,7 +25,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DataSources(ITaskScheduler taskScheduler, Settings.DataSources settings)
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);

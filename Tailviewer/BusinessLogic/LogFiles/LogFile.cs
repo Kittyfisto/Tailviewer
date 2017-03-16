@@ -134,7 +134,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (section.Count < 0)
 				throw new ArgumentOutOfRangeException("section.Count");
 			if (dest == null)
-				throw new ArgumentNullException("dest");
+				throw new ArgumentNullException(nameof(dest));
 			if (dest.Length < section.Count)
 				throw new ArgumentOutOfRangeException("section.Count");
 

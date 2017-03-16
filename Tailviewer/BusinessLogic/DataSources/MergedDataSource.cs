@@ -71,10 +71,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateLogFile()
 		{
-			if (_unfilteredLogFile != null)
-			{
-				_unfilteredLogFile.Dispose();
-			}
+			_unfilteredLogFile?.Dispose();
 
 			_unfilteredLogFile = new MergedLogFile(_taskScheduler,
 			                                       _maximumWaitTime,

@@ -21,8 +21,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
 		{
-			if (quickFilter == null) throw new ArgumentNullException("quickFilter");
-			if (onRemove == null) throw new ArgumentNullException("onRemove");
+			if (quickFilter == null) throw new ArgumentNullException(nameof(quickFilter));
+			if (onRemove == null) throw new ArgumentNullException(nameof(onRemove));
 
 			_quickFilter = quickFilter;
 			_removeCommand = new DelegateCommand(() => onRemove(this));
@@ -183,8 +183,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		public ILogEntryFilter CreateFilter()

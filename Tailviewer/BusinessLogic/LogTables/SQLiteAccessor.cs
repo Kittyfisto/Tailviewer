@@ -26,13 +26,13 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public SQLiteAccessor(SQLiteConnection connection, SQLiteSchema schema, LogDataCache cache, ILogTable logTable)
 		{
 			if (connection == null)
-				throw new ArgumentNullException("connection");
+				throw new ArgumentNullException(nameof(connection));
 			if (schema == null)
-				throw new ArgumentNullException("schema");
+				throw new ArgumentNullException(nameof(schema));
 			if (cache == null)
-				throw new ArgumentNullException("cache");
+				throw new ArgumentNullException(nameof(cache));
 			if (logTable == null)
-				throw new ArgumentNullException("logTable");
+				throw new ArgumentNullException(nameof(logTable));
 
 			_connection = connection;
 			_schema = schema;

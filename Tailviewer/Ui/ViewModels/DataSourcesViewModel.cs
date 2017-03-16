@@ -23,8 +23,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
-			if (settings == null) throw new ArgumentNullException("settings");
-			if (dataSources == null) throw new ArgumentNullException("dataSources");
+			if (settings == null) throw new ArgumentNullException(nameof(settings));
+			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 
 			_settings = settings;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
@@ -133,7 +133,7 @@ namespace Tailviewer.Ui.ViewModels
 		private IDataSourceViewModel CreateViewModel(IDataSource dataSource)
 		{
 			if (dataSource == null)
-				throw new ArgumentNullException("dataSource");
+				throw new ArgumentNullException(nameof(dataSource));
 
 			IDataSourceViewModel viewModel;
 			var single = dataSource as SingleDataSource;
@@ -408,8 +408,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

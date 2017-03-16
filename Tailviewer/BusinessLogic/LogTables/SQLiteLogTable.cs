@@ -34,11 +34,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 		public SQLiteLogTable(ITaskScheduler scheduler, LogDataCache cache, string fileName)
 		{
 			if (scheduler == null)
-				throw new ArgumentNullException("scheduler");
+				throw new ArgumentNullException(nameof(scheduler));
 			if (cache == null)
-				throw new ArgumentNullException("cache");
+				throw new ArgumentNullException(nameof(cache));
 			if (fileName == null)
-				throw new ArgumentNullException("fileName");
+				throw new ArgumentNullException(nameof(fileName));
 
 			_scheduler = scheduler;
 			_cache = cache;
