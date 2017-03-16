@@ -14,7 +14,7 @@ namespace Tailviewer
 			get { return AllChanges.Last(); }
 		}
 
-		public static IEnumerable<Change> Changes
+		public static IReadOnlyList<Change> Changes
 		{
 			get { return AllChanges; }
 		}
@@ -26,10 +26,26 @@ namespace Tailviewer
 			AddV0286();
 			AddV030();
 			AddV031();
+			AddV032();
 			AddMostRecent();
 		}
 
 		private static void AddMostRecent()
+		{
+			var features = new string[]
+			{
+			};
+			var bugfixes = new string[]
+			{
+			};
+			var misc = new string[]
+			{
+			};
+			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV032()
 		{
 			var features = new string[]
 			{
@@ -41,7 +57,9 @@ namespace Tailviewer
 			var misc = new string[]
 			{
 			};
-			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			var releaseDate = new DateTime(2017, 3, 16);
+			var version = new Version(0, 3, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 
@@ -61,7 +79,9 @@ namespace Tailviewer
 				"Improved Scrollbar usability",
 				"Added alternating row colors"
 			};
-			var change = new Change(Constants.BuildDate, Constants.ApplicationVersion, features, bugfixes, misc);
+			var releaseDate = new DateTime(2017, 3, 14);
+			var version = new Version(0, 3, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
 
