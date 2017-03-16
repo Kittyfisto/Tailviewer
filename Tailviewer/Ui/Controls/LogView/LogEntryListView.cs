@@ -279,9 +279,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnOnSelectionChanged(HashSet<LogLineIndex> selectedIndices)
 		{
-			Action<IEnumerable<LogLineIndex>> fn = SelectionChanged;
-			if (fn != null)
-				fn(selectedIndices);
+			SelectionChanged?.Invoke(selectedIndices);
 		}
 
 		public event Action<IEnumerable<LogLineIndex>> SelectionChanged;
@@ -321,14 +319,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				int count = logFile.Count;
 				if (count > 0)
 				{
-					if (logLineIndex < count - 1)
-					{
-						FollowTail = false;
-					}
-					else
-					{
-						FollowTail = true;
-					}
+					FollowTail = logLineIndex >= count - 1;
 				}
 			}
 		}
@@ -383,9 +374,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				ScrollToBottom();
 			}
 
-			Action<bool> fn = FollowTailChanged;
-			if (fn != null)
-				fn(followTail);
+			FollowTailChanged?.Invoke(followTail);
 		}
 
 		private void ScrollToBottom()
@@ -442,10 +431,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnLogFileChanged(ILogFile oldValue, ILogFile newValue)
 		{
-			if (oldValue != null)
-			{
-				oldValue.RemoveListener(this);
-			}
+			oldValue?.RemoveListener(this);
 
 			_textCanvas.LogFile = newValue;
 
