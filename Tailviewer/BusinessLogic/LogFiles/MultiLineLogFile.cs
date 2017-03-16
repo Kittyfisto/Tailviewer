@@ -151,20 +151,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			LogFileSection section;
 			while (_pendingModifications.TryDequeue(out section) && !token.IsCancellationRequested)
+			{
 				if (section.IsReset)
 				{
-					_fullSourceSection = new LogFileSection(0, 0);
-					_currentSourceIndex = 0;
-					_currentLogEntry = new LogEntryInfo(-1, 0);
-					lock (_indices)
-					{
-						_indices.Clear();
-					}
+					Clear();
 				}
 				else
 				{
 					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 				}
+			}
 
 			if (!_fullSourceSection.IsEndOfSection(_currentSourceIndex))
 			{
@@ -209,6 +205,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 			return _maximumWaitTime;
+		}
+
+		private void Clear()
+		{
+			_fullSourceSection = new LogFileSection(0, 0);
+			_currentSourceIndex = 0;
+			_currentLogEntry = new LogEntryInfo(-1, 0);
+			lock (_indices)
+			{
+				_indices.Clear();
+			}
+			Listeners.OnRead(-1);
 		}
 
 		private struct LogEntryInfo

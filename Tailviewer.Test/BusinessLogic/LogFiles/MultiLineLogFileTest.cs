@@ -258,6 +258,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that receiving a Reset() actually causes the Reset() to be forwarded to all listeners")]
+		public void TestReset3()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
+
+			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+
+			_lines.Clear();
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
+			_taskScheduler.RunOnce();
+
+			_sections.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 1),
+				LogFileSection.Reset
+			});
+		}
+
+		[Test]
 		public void TestOneEntry1()
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);

@@ -72,7 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceManualTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />

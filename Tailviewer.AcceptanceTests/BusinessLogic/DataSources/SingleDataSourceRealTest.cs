@@ -11,7 +11,7 @@ using Tailviewer.Settings;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceTest
+	public sealed class SingleDataSourceRealTest
 	{
 		[SetUp]
 		public void SetUp()
