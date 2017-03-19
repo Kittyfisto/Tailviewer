@@ -12,21 +12,36 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public static readonly LogFileSection Reset;
 		public readonly int Count;
 		public readonly LogLineIndex Index;
-		public readonly bool InvalidateSection;
+		public readonly bool IsInvalidate;
 
 		static LogFileSection()
 		{
 			Reset = new LogFileSection(LogLineIndex.Invalid, 0);
 		}
 
-		public LogFileSection(LogLineIndex index, int count, bool invalidateSection = false)
+		public static LogFileSection Invalidate(LogLineIndex index, int count)
+		{
+			return new LogFileSection(index, count, true);
+		}
+
+		private LogFileSection(LogLineIndex index, int count, bool isInvalidate)
 		{
 			if (count < 0)
 				throw new ArgumentOutOfRangeException(nameof(count));
 
 			Index = index;
 			Count = count;
-			InvalidateSection = invalidateSection;
+			IsInvalidate = isInvalidate;
+		}
+
+		public LogFileSection(LogLineIndex index, int count)
+		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count));
+
+			Index = index;
+			Count = count;
+			IsInvalidate = false;
 		}
 
 		public bool IsReset
@@ -54,7 +69,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (Index == LogLineIndex.Invalid && Count == 0)
 				return "Reset";
 
-			if (InvalidateSection)
+			if (IsInvalidate)
 				return string.Format("Invalidated [{0}, #{1}]", Index, Count);
 
 			return string.Format("Changed [{0}, #{1}]", Index, Count);

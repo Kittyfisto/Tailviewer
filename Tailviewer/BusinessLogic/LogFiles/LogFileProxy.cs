@@ -71,7 +71,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					{
 						_listeners.Reset();
 					}
-					else if (section.InvalidateSection)
+					else if (section.IsInvalidate)
 					{
 						_listeners.Invalidate((int)section.Index, section.Count);
 					}

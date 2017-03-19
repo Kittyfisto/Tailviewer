@@ -156,6 +156,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					Clear();
 				}
+				else if (section.IsInvalidate)
+				{
+					Invalidate(section);
+				}
 				else
 				{
 					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
@@ -205,6 +209,29 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 			return _maximumWaitTime;
+		}
+
+		private void Invalidate(LogFileSection section)
+		{
+			var firstInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, section.Index);
+			var lastInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, section.LastIndex);
+			var invalidateCount = lastInvalidIndex - firstInvalidIndex + 1;
+
+			_fullSourceSection = new LogFileSection(0, (int)firstInvalidIndex);
+			if (_fullSourceSection.Count > 0)
+				_currentSourceIndex = _fullSourceSection.LastIndex;
+			else
+				_currentSourceIndex = 0;
+
+			lock (_indices)
+			{
+				var toRemove = _indices.Count - lastInvalidIndex;
+				if (toRemove > 0)
+				{
+					_indices.RemoveRange((int)firstInvalidIndex, toRemove);
+				}
+			}
+			Listeners.Invalidate((int) firstInvalidIndex, invalidateCount);
 		}
 
 		private void Clear()

@@ -240,7 +240,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				{
 					LogFileSection.Reset,
 					new LogFileSection(0, 500),
-					new LogFileSection(400, 100, true),
+					LogFileSection.Invalidate(400, 100),
 					new LogFileSection(400, 150)
 				});
 			}

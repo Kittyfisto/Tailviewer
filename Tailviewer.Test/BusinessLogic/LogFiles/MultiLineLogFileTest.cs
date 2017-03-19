@@ -34,17 +34,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 						LogFileSection.Reset);
 				});
 
-			_sections = new List<LogFileSection>();
+			_changes = new List<LogFileSection>();
 			_listener = new Mock<ILogFileListener>();
 			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
-					 .Callback((ILogFile l, LogFileSection s) => _sections.Add(s));
+					 .Callback((ILogFile l, LogFileSection s) => _changes.Add(s));
 
 		}
 
 		private Mock<ILogFile> _source;
 		private List<LogLine> _lines;
 		private ManualTaskScheduler _taskScheduler;
-		private List<LogFileSection> _sections;
+		private List<LogFileSection> _changes;
 		private Mock<ILogFileListener> _listener;
 
 		[Test]
@@ -272,12 +272,73 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
 			_taskScheduler.RunOnce();
 
-			_sections.Should().Equal(new object[]
+			_changes.Should().Equal(new object[]
 			{
 				LogFileSection.Reset,
 				new LogFileSection(0, 1),
 				LogFileSection.Reset
 			});
+		}
+
+		[Test]
+		public void TestOneLine1()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+
+			_lines.Add(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
+
+			_lines[0] = new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info);
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info));
+		}
+
+		[Test]
+		public void TestOneLine2()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
+
+			_lines.Add(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
+
+			_lines[0] = new LogLine(0, 0, "Hello World!", LevelFlags.None);
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(0);
+
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+			_changes.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 1),
+				LogFileSection.Invalidate(0, 1),
+				new LogFileSection(0, 1)
+			});
+
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+		}
+
+		[Test]
+		public void TestOneLine3()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+
+			_lines.Add(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
 		}
 
 		[Test]
@@ -327,15 +388,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info));
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
 			_taskScheduler.RunOnce();
-			_sections.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
+			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
 
-			_sections.Clear();
+			_changes.Clear();
 			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.None));
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
 			_taskScheduler.RunOnce();
-			_sections.Should().Equal(new object[]
+			_changes.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 1, invalidateSection: true),
+				LogFileSection.Invalidate(0, 1),
 				new LogFileSection(0, 2)
 			});
 		}
@@ -354,20 +415,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_lines.Add(new LogLine(1, 1, "INFO: hello", LevelFlags.Info));
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
 			_taskScheduler.RunOnce();
-			_sections.Should().Equal(new object[]
+			_changes.Should().Equal(new object[]
 			{
 				LogFileSection.Reset,
 				new LogFileSection(0, 1),
 				new LogFileSection(1, 1)
 			});
 
-			_sections.Clear();
+			_changes.Clear();
 			_lines.Add(new LogLine(2, 2, "world!", LevelFlags.None));
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(2, 1));
 			_taskScheduler.RunOnce();
-			_sections.Should().Equal(new object[]
+			_changes.Should().Equal(new object[]
 			{
-				new LogFileSection(1, 1, invalidateSection: true),
+				LogFileSection.Invalidate(1, 1),
 				new LogFileSection(1, 2)
 			});
 		}

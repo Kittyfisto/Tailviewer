@@ -151,7 +151,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					_lastLogEntry.Clear();
 					_currentSourceIndex = 0;
 				}
-				else if (section.InvalidateSection)
+				else if (section.IsInvalidate)
 				{
 					LogLineIndex startIndex = section.Index;
 					_fullSourceSection = new LogFileSection(0, (int)startIndex);

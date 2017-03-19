@@ -47,7 +47,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					        {
 						        data.Clear();
 					        }
-					        else if (section.InvalidateSection)
+					        else if (section.IsInvalidate)
 					        {
 						        data.RemoveRange((int) section.Index, section.Count);
 					        }

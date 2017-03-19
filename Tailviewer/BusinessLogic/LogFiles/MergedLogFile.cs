@@ -154,7 +154,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					Clear(modification.LogFile);
 				}
-				else if (modification.Section.InvalidateSection)
+				else if (modification.Section.IsInvalidate)
 				{
 					// This one only needs to be implemented when MergedLogFiles use other
 					// MergedLogFiles as source.

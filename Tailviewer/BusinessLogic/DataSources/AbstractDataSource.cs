@@ -401,7 +401,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				{
 					Clear();
 				}
-				else if (section.InvalidateSection)
+				else if (section.IsInvalidate)
 				{
 					RemoveRange(section);
 				}

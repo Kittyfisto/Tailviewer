@@ -129,7 +129,7 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					LogFileSection.Reset,
 					new LogFileSection(0, 1),
-					new LogFileSection(0, 1, true)
+					LogFileSection.Invalidate(0, 1)
 				});
 			notifier.LastNumberOfLines.Should().Be(0);
 		}
@@ -147,7 +147,7 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					LogFileSection.Reset,
 					new LogFileSection(0, 10),
-					new LogFileSection(0, 10, true)
+					LogFileSection.Invalidate(0, 10)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);
@@ -169,7 +169,7 @@ namespace Tailviewer.Test.BusinessLogic
 					LogFileSection.Reset,
 					new LogFileSection(0, 10),
 					new LogFileSection(10, 10),
-					new LogFileSection(0, 20, true)
+					LogFileSection.Invalidate(0, 20)
 				},
 			                        "Because the notifier should've reported only the first 10 changes and therefore Invalidate() only had to invalidate those 10 changes"
 				);

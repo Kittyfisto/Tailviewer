@@ -92,7 +92,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			// they don't need to be notified of the invalidation either.
 			if (invalidateCount > 0)
 			{
-				var section = new LogFileSection(firstIndex, invalidateCount, true);
+				var section = LogFileSection.Invalidate(firstIndex, invalidateCount);
 				_listener.OnLogFileModified(_logFile, section);
 				_lastNumberOfLines = firstIndex;
 			}

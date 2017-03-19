@@ -116,9 +116,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				LogFileSection.Reset,
 				new LogFileSection(0, 1),
-				new LogFileSection(0, 1, true),
+				LogFileSection.Invalidate(0, 1),
 				new LogFileSection(0, 1),
-				new LogFileSection(0, 1, true),
+				LogFileSection.Invalidate(0, 1),
 				new LogFileSection(0, 1)
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 

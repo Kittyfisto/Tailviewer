@@ -132,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					});
 
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
 
 				_taskScheduler.RunOnce();
 
@@ -164,7 +164,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(4);
 
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
@@ -177,7 +177,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 						new LogFileSection(1, 1),
 						new LogFileSection(2, 1),
 						new LogFileSection(3, 1),
-						new LogFileSection(2, 2, true)
+						LogFileSection.Invalidate(2, 2)
 					});
 			}
 		}
@@ -207,7 +207,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(2, 2, true));
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue("Because the filtered log file should be finished");
@@ -220,7 +220,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 						new LogFileSection(1, 1),
 						new LogFileSection(2, 1),
 						new LogFileSection(3, 1),
-						new LogFileSection(2, 2, true)
+						LogFileSection.Invalidate(2, 2)
 					});
 			}
 		}
@@ -493,7 +493,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 5));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(3, 2, true));
+				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(3, 2));
 				_taskScheduler.RunOnce();
 
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(3, 2));
