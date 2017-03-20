@@ -2,8 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using log4net;
 using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -20,6 +22,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: AbstractLogFile
 			, ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private const int BatchSize = 10000;
 		private readonly LogLine[] _buffer;
 		private readonly List<LogEntryInfo> _indices;
@@ -196,12 +200,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 
 				_currentSourceIndex += remaining;
-
-				if (_indices.Count != _currentSourceIndex)
-				{
-					int n = 0;
-				}
-
 			}
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
@@ -212,7 +210,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			if (_indices.Count != _currentSourceIndex)
 			{
-				int n = 0;
+				Log.ErrorFormat("Inconsistency detected: We have {0} indices for {1} lines", _indices.Count,
+					_currentSourceIndex);
 			}
 			
 			Listeners.OnRead((int)_currentSourceIndex);
