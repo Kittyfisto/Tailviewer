@@ -35,6 +35,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private DateTime? _startTimestamp;
+		//private readonly List<LogFileSection> _allModifications;
 
 		public MultiLineLogFile(ITaskScheduler taskScheduler, ILogFile source, TimeSpan maximumWaitTime)
 			: base(taskScheduler)
@@ -44,6 +45,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
+			//_allModifications = new List<LogFileSection>();
 			_indices = new List<LogEntryInfo>();
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 
@@ -164,6 +166,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 				}
+				//_allModifications.Add(section);
 			}
 
 			if (!_fullSourceSection.IsEndOfSection(_currentSourceIndex))
@@ -193,6 +196,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 
 				_currentSourceIndex += remaining;
+
+				if (_indices.Count != _currentSourceIndex)
+				{
+					int n = 0;
+				}
+
 			}
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
@@ -201,6 +210,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_lastModified = _source.LastModified;
 			_fileSize = _source.FileSize;
 
+			if (_indices.Count != _currentSourceIndex)
+			{
+				int n = 0;
+			}
+			
 			Listeners.OnRead((int)_currentSourceIndex);
 
 			if (_source.EndOfSourceReached && _fullSourceSection.IsEndOfSection(_currentSourceIndex))
@@ -219,9 +233,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_fullSourceSection = new LogFileSection(0, (int)firstInvalidIndex);
 			if (_fullSourceSection.Count > 0)
-				_currentSourceIndex = _fullSourceSection.LastIndex;
+			{
+				// It's possible (likely) that we've received an invalidation for a region of the source
+				// that we've already processed (i.e. created indices for). If that's the case, then we need
+				// to rewind the index. Otherwise nothing needs to be done...
+				var newIndex = _fullSourceSection.LastIndex + 1;
+				if (newIndex < _currentSourceIndex)
+					_currentSourceIndex = newIndex;
+			}
 			else
+			{
 				_currentSourceIndex = 0;
+			}
 
 			lock (_indices)
 			{
@@ -229,10 +252,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (toRemove > 0)
 				{
 					_indices.RemoveRange((int)firstInvalidIndex, toRemove);
-					_currentLogEntry = new LogEntryInfo(firstInvalidIndex-1, 0);
+					_currentLogEntry = new LogEntryInfo(firstInvalidIndex - 1, 0);
 				}
 			}
-			Listeners.Invalidate((int) firstInvalidIndex, invalidateCount);
+			Listeners.Invalidate((int)firstInvalidIndex, invalidateCount);
 		}
 
 		private void Clear()

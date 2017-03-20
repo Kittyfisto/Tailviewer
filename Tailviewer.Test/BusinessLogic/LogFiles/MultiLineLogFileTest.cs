@@ -516,6 +516,63 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestManyEntries4()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+
+			_lines.Add(new LogLine(0, 0, "Foo", LevelFlags.None));
+			_lines.Add(new LogLine(1, 1, "INFO: Bar", LevelFlags.Info));
+
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
+			_taskScheduler.RunOnce();
+			logFile.GetSection(new LogFileSection(0, 2))
+				.Should().Equal(new object[]
+				{
+					new LogLine(0, 0, "Foo", LevelFlags.None),
+					new LogLine(1, 1, "INFO: Bar", LevelFlags.Info)
+				});
+
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 1));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(1);
+
+			_lines[1] = new LogLine(1, 1, "Bar", LevelFlags.None);
+			_lines.Add(new LogLine(2, 2, "INFO: Sup", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(3);
+			logFile.GetSection(new LogFileSection(0, 3))
+				.Should().Equal(new object[]
+				{
+					new LogLine(0, 0, "Foo", LevelFlags.None),
+					new LogLine(1, 0, "Bar", LevelFlags.None),
+					new LogLine(2, 1, "INFO: Sup", LevelFlags.Info)
+				});
+		}
+
+		[Test]
+		[Description("Verifies that the log file correctly processes multiple events in one run")]
+		public void TestManyEntries5()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			_lines.Add(new LogLine(0, 0, "Foo", LevelFlags.None));
+			_lines.Add(new LogLine(1, 1, "Bar", LevelFlags.None));
+			_lines.Add(new LogLine(2, 2, "INFO: Sup", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 3));
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 2));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(3);
+			logFile.GetSection(new LogFileSection(0, 3))
+				.Should().Equal(new object[]
+				{
+					new LogLine(0, 0, "Foo", LevelFlags.None),
+					new LogLine(1, 0, "Bar", LevelFlags.None),
+					new LogLine(2, 1, "INFO: Sup", LevelFlags.Info)
+				});
+		}
+
+		[Test]
 		[Description("Verifies that GetSection can return many entries")]
 		public void TestGetSection()
 		{
