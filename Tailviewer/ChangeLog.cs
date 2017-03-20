@@ -70,7 +70,7 @@ namespace Tailviewer
 			};
 			var bugfixes = new[]
 			{
-				"Fixed bug causing diplication of lines"
+				"Fixed bug causing duplication of lines"
 			};
 			var misc = new string[]
 			{
