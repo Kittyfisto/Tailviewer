@@ -31,6 +31,11 @@ namespace Tailviewer.BusinessLogic
 			get { return _value; }
 		}
 
+		public bool IsInvalid
+		{
+			get { return this == Invalid; }
+		}
+
 		public int CompareTo(LogEntryIndex other)
 		{
 			return _value.CompareTo(other._value);

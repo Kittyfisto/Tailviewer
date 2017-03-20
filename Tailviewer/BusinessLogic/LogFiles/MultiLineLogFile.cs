@@ -177,7 +177,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					for (var i = 0; i < remaining; ++i)
 					{
 						var line = _buffer[i];
-						if (line.Level != LevelFlags.None)
+						if (line.Level != LevelFlags.None || _currentLogEntry.EntryIndex.IsInvalid)
 							_currentLogEntry = _currentLogEntry.NextEntry(line.LineIndex);
 						else if (_currentLogEntry.FirstLineIndex < lastCount && resetIndex == null)
 							resetIndex = _currentLogEntry.FirstLineIndex;
@@ -229,6 +229,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (toRemove > 0)
 				{
 					_indices.RemoveRange((int)firstInvalidIndex, toRemove);
+					_currentLogEntry = new LogEntryInfo(firstInvalidIndex-1, 0);
 				}
 			}
 			Listeners.Invalidate((int) firstInvalidIndex, invalidateCount);

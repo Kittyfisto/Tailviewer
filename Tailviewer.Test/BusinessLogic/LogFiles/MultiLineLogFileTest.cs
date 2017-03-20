@@ -294,6 +294,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_lines[0] = new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info);
 			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(0, 1));
 			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(0);
+
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
 			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info));
 		}
