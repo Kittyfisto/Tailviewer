@@ -10,6 +10,29 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class LogLineTest
 	{
 		[Test]
+		public void TestCtor1()
+		{
+			var line = new LogLine(1, 2, "Foobar", LevelFlags.Info);
+			line.LineIndex.Should().Be(1);
+			line.OriginalLineIndex.Should().Be(1);
+			line.LogEntryIndex.Should().Be(2);
+			line.Message.Should().Be("Foobar");
+			line.Level.Should().Be(LevelFlags.Info);
+			line.Timestamp.Should().NotHaveValue();
+		}
+
+		[Test]
+		public void TestCtor3()
+		{
+			var line = new LogLine(1, 500, 2, "Foobar", LevelFlags.Error);
+			line.LineIndex.Should().Be(1);
+			line.OriginalLineIndex.Should().Be(500);
+			line.LogEntryIndex.Should().Be(2);
+			line.Message.Should().Be("Foobar");
+			line.Level.Should().Be(LevelFlags.Error);
+		}
+
+		[Test]
 		public void TestDetermineLevelsFromLine1()
 		{
 			new Action(() => LogLine.DetermineLevelFromLine(null)).ShouldNotThrow();

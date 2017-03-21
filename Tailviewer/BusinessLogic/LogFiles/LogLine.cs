@@ -18,6 +18,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public readonly int LineIndex;
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public readonly int OriginalLineIndex;
+
+		/// <summary>
 		///     The index of the log entry this line belongs to.
 		/// </summary>
 		public readonly int LogEntryIndex;
@@ -48,43 +53,40 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		[DebuggerStepThrough]
-		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level)
+			: this(lineIndex, originalLineIndex, logEntryIndex, message, level, null)
 		{
-			LineIndex = lineIndex;
-			Message = message;
-			Level = level;
-			LogEntryIndex = logEntryIndex;
-			Timestamp = timestamp;
 		}
+
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
+			: this(lineIndex, lineIndex, logEntryIndex, message, level, timestamp)
+		{}
 
 		[DebuggerStepThrough]
 		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
-		{
-			LineIndex = (int)lineIndex;
-			Message = message;
-			Level = level;
-			LogEntryIndex = (int)logEntryIndex;
-			Timestamp = timestamp;
-		}
+			: this((int)lineIndex, (int)logEntryIndex, message, level, timestamp)
+		{}
 
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, LogLine line)
-		{
-			LineIndex = lineIndex;
-			LogEntryIndex = logEntryIndex;
-			Message = line.Message;
-			Level = line.Level;
-			Timestamp = line.Timestamp;
-		}
+			: this(lineIndex, logEntryIndex, line.Message, line.Level, line.Timestamp)
+		{}
 
 		[DebuggerStepThrough]
 		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLine line)
+			: this((int)lineIndex, (int)logEntryIndex, line.Message, line.Level, line.Timestamp)
+		{}
+
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 		{
-			LineIndex = (int) lineIndex;
-			LogEntryIndex = (int) logEntryIndex;
-			Message = line.Message;
-			Level = line.Level;
-			Timestamp = line.Timestamp;
+			LineIndex = lineIndex;
+			OriginalLineIndex = originalLineIndex;
+			Message = message;
+			Level = level;
+			LogEntryIndex = logEntryIndex;
+			Timestamp = timestamp;
 		}
 
 		public bool Equals(LogLine other)
