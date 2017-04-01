@@ -152,7 +152,9 @@ namespace Installer
 
 		private string Patch(string fileName)
 		{
-			return fileName.Replace("Fonts.", "Fonts\\");
+			return fileName.Replace("Fonts.", "Fonts\\")
+				.Replace("x64.", "x64\\")
+				.Replace("x86.", "x86\\");
 		}
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
