@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Message.Should().Be("Foobar");
 			line.Level.Should().Be(LevelFlags.Error);
 		}
-
+		
 		[Test]
 		public void TestDetermineLevelsFromLine1()
 		{

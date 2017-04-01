@@ -43,6 +43,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Threading.Extensions, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.0.6\lib\net45\System.Threading.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -109,10 +113,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\System.Threading.Tasks.Extensions\System.Threading.Tasks.Extensions.csproj">
-      <Project>{2CC8FEE6-C702-49EB-8FA3-4399D47BB756}</Project>
-      <Name>System.Threading.Tasks.Extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
       <Name>Tailviewer</Name>

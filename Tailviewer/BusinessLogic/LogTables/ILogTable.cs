@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogTables

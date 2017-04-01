@@ -2,7 +2,7 @@
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;

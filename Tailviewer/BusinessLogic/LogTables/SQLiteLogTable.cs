@@ -4,7 +4,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
 using System.Security;
-using System.Threading.Tasks;
+using System.Threading;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.LogTables

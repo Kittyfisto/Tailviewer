@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogTables;
 
