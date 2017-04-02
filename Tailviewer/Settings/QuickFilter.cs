@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using Metrolib.Extensions;
 
 namespace Tailviewer.Settings
 {

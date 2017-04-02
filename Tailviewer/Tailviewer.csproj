@@ -47,8 +47,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.2.2.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.3\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.5\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -236,8 +236,6 @@
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="Ui\ViewModels\SettingsViewModel.cs" />
-    <Compile Include="VersionExtensions.cs" />
-    <Compile Include="XmlExtensions.cs" />
     <Compile Include="Ui\Controls\QuickFilterControl.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />

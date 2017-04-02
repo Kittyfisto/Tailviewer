@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using log4net;
+using Metrolib.Extensions;
 
 namespace Tailviewer.Settings
 {
