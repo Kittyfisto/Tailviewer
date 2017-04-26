@@ -3,10 +3,10 @@
                     xmlns:local="clr-namespace:NewDesign.Dashboard">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Widgets\WidgetControl.xaml" />
         <ResourceDictionary Source="Layout\HorizontalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Layout\VerticalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Widgets\LineCount\LineCountDataTemplate.xaml" />
+        <ResourceDictionary Source="Widgets\QuickInfo\QuickInfoDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
     
     <Style TargetType="{x:Type local:DashboardControl}">
@@ -15,10 +15,22 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DashboardControl}">
                     <Border Background="{TemplateBinding Background}">
-                        <Grid Margin="6,6,0,0">
-                            <ItemsControl ItemsSource="{TemplateBinding Layouts}">
+                        <Grid>
+                            <!--<Grid.RowDefinitions>
+                                <RowDefinition Height="40" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            
+                            <Border Background="{DynamicResource SecondaryBrush}">
                                 
-                            </ItemsControl>
+                            </Border>-->
+                            
+                            <Grid Margin="6,6,0,0"
+                                  Grid.Row="1">
+                                <ItemsControl ItemsSource="{TemplateBinding Layouts}">
+
+                                </ItemsControl>
+                            </Grid>
                         </Grid>
                     </Border>
                 </ControlTemplate>

@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NewDesign.Dashboard.Widgets.QuickInfo"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:widgets="clr-namespace:NewDesign.Dashboard.Widgets"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <converters:BoolTrueToHiddenConverter x:Key="BoolTrueToHiddenConverter" />
+    <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+
+    <DataTemplate DataType="{x:Type local:QuickInfoViewModel}">
+        <Grid IsSharedSizeScope="True"
+              Margin="0,0,0,6">
+            <ItemsControl ItemsSource="{Binding Infos}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:INamedValueViewModel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="NameColumn" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Margin="6,6,6,0">
+                                <TextBlock Text="{Binding Name}"
+                                           Visibility="{Binding Path=(widgets:Widget.IsEditing), RelativeSource={RelativeSource Self},Converter={StaticResource BoolTrueToHiddenConverter}}"
+                                           FontSize="24" />
+                                <controls:WatermarkTextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                           Visibility="{Binding Path=(widgets:Widget.IsEditing), RelativeSource={RelativeSource Self}, Converter={StaticResource BoolFalseToHiddenConverter}}" />
+                            </Grid>
+
+                            <TextBlock Text="{Binding Value}"
+                                       Grid.Column="1"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Margin="0,6,6,0" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

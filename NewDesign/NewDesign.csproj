@@ -63,14 +63,21 @@
     <Compile Include="Dashboard\DashboardControl.cs" />
     <Compile Include="Dashboard\Layout\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Layout\IWidgetLayoutViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\Widget.cs" />
     <Compile Include="Dashboard\Widgets\IWidgetViewModel.cs" />
-    <Compile Include="Dashboard\Widgets\LineCount\AbstractWidgetViewModel.cs" />
-    <Compile Include="Dashboard\Widgets\WidgetControl.cs" />
+    <Compile Include="Dashboard\Widgets\AbstractWidgetViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfo\INamedValueViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfo\NamedValueViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfo\QuickInfoViewModel.cs" />
     <Compile Include="Dashboard\Layout\WidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Widgets\LineCount\LineCountViewModel.cs" />
     <Compile Include="DataSource.cs" />
     <Compile Include="IconConverter.cs" />
     <Compile Include="MainWindowViewModel.cs" />
+    <Page Include="Colors.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dashboard\DashboardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,7 +90,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dashboard\Widgets\WidgetControl.xaml">
+    <Page Include="Dashboard\Layout\WidgetStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dashboard\Widgets\QuickInfo\QuickInfoDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

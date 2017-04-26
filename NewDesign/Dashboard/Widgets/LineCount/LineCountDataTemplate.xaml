@@ -8,10 +8,17 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            
-            <TextBlock Text="{Binding Count}" />
+
+            <TextBlock Text="{Binding Count}"
+                       HorizontalAlignment="Center"
+                       FontSize="48"
+                       FontWeight="Bold"
+                       Margin="6" />
             <TextBlock Text="{Binding Caption}"
-                       Grid.Row="1"/>
+                       HorizontalAlignment="Center"
+                       Grid.Row="1"
+                       FontSize="16"
+                       Margin="6,0,6,6" />
             
         </Grid>
     </DataTemplate>
