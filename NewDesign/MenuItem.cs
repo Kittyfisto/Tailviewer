@@ -1,8 +1,8 @@
 ﻿namespace NewDesign
 {
-	public sealed class DataSource
+	public sealed class MenuItem
 	{
-		public DataSource(string icon, string title)
+		public MenuItem(string icon, string title)
 		{
 			Icon = icon;
 			Title = title;

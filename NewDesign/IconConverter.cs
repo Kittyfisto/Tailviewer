@@ -8,6 +8,7 @@ namespace NewDesign
 		: IValueConverter
 	{
 		public object Home { get; set; }
+		public object Data { get; set; }
 		public object Visualise { get; set; }
 		public object Raw { get; set; }
 		public object Settings { get; set; }
@@ -20,6 +21,8 @@ namespace NewDesign
 			var name = (string) value;
 			if (name == "Home")
 				return Home;
+			if (name == "Data")
+				return Data;
 			if (name == "Visualise")
 				return Visualise;
 			if (name == "Raw")

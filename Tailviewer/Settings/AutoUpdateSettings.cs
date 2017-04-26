@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using log4net;
-using Metrolib.Extensions;
+using Metrolib;
 
 namespace Tailviewer.Settings
 {

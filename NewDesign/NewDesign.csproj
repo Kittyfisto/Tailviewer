@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Metrolib, Version=0.2.2.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.5\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.17\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -71,7 +71,7 @@
     <Compile Include="Dashboard\Widgets\QuickInfo\QuickInfoViewModel.cs" />
     <Compile Include="Dashboard\Layout\WidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Widgets\LineCount\LineCountViewModel.cs" />
-    <Compile Include="DataSource.cs" />
+    <Compile Include="MenuItem.cs" />
     <Compile Include="IconConverter.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Page Include="Colors.xaml">

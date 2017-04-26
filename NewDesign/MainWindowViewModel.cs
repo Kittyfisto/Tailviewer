@@ -9,23 +9,24 @@ namespace NewDesign
 		: INotifyPropertyChanged
 	{
 		private object _selectedViewModel;
-		private DataSource _selectedTask;
+		private MenuItem _selectedTask;
 
 		public MainWindowViewModel()
 		{
-			Tasks = new List<DataSource>
+			Tasks = new List<MenuItem>
 			{
-				new DataSource("Home", "Home"),
-				new DataSource("Visualise", "Visualise"),
-				new DataSource("Raw", "Raw"),
-				new DataSource("Settings", "Settings")
+				new MenuItem("Home", "Home"),
+				new MenuItem("Data", "Data"),
+				new MenuItem("Visualise", "Visualise"),
+				new MenuItem("Raw", "Raw"),
+				new MenuItem("Settings", "Settings")
 			};
 			SelectedTask = Tasks[1];
 		}
 
-		public List<DataSource> Tasks { get; }
+		public List<MenuItem> Tasks { get; }
 
-		public DataSource SelectedTask
+		public MenuItem SelectedTask
 		{
 			get { return _selectedTask; }
 			set
