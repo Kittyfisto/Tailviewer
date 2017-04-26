@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TablePlayground", "TablePla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPlayground", "ControlPlayground\ControlPlayground.csproj", "{1EC55724-9284-4110-BCA3-87B779B2B093}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewDesign", "NewDesign\NewDesign.csproj", "{7C8AC96A-F577-4C33-BD93-DF7C23359969}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{1EC55724-9284-4110-BCA3-87B779B2B093}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC55724-9284-4110-BCA3-87B779B2B093}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC55724-9284-4110-BCA3-87B779B2B093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,5 +96,6 @@ Global
 		{7C9A0C73-DBF5-4CC6-8756-38FFB3B3ECA0} = {D49AF1FD-0F5D-4E20-BF05-89511D9F519C}
 		{FB8C063F-C298-4D1C-98E0-7150B955B41C} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 		{1EC55724-9284-4110-BCA3-87B779B2B093} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
+		{7C8AC96A-F577-4C33-BD93-DF7C23359969} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 	EndGlobalSection
 EndGlobal

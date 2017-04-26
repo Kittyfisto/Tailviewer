@@ -1,0 +1,121 @@
+﻿<controls:ChromelessWindow x:Class="NewDesign.MainWindow"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:local="clr-namespace:NewDesign"
+                           xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                           xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib"
+                           d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+                           mc:Ignorable="d"
+                           Title="Tailviewer"
+                           HideTitle="True"
+                           BorderThickness="0,0,1,1"
+                           Height="350" Width="525"
+                           MinWidth="640"
+                           MinHeight="480">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+                <ResourceDictionary Source="Dashboard/DashboardControl.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Geometry x:Key="Home">M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z</Geometry>
+            <Geometry x:Key="Visualise">M17.45,15.18L22,7.31V19L22,21H2V3H4V15.54L9.5,6L16,9.78L20.24,2.45L21.97,3.45L16.74,12.5L10.23,8.75L4.31,19H6.57L10.96,11.44L17.45,15.18Z</Geometry>
+            <Geometry x:Key="Raw">M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z</Geometry>
+            <Geometry x:Key="Settings">M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z</Geometry>
+
+            <local:IconConverter x:Key="IconConverter"
+                                 Home="{StaticResource Home}"
+                                 Visualise="{StaticResource Visualise}"
+                                 Raw="{StaticResource Raw}"
+                                 Settings="{StaticResource Settings}" />
+
+            <Color x:Key="Primary">#f50057</Color>
+            <Color x:Key="PrimaryLight">#ff5983</Color>
+            <Color x:Key="PrimaryLighter">#FF668E</Color>
+            <Color x:Key="PrimaryDark">#bb002f</Color>
+            <Color x:Key="PrimaryForeground">#FFFFFF</Color>
+
+            <Color x:Key="Secondary">#2196f3</Color>
+            <Color x:Key="SecondaryLight">#6ec6ff</Color>
+            <Color x:Key="SecondaryLighter">#7CCDFF</Color>
+            <Color x:Key="SecondaryDark">#0069c0</Color>
+            <Color x:Key="SecondaryForeground">#000000</Color>
+
+            <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+            <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}" />
+            <SolidColorBrush x:Key="PrimaryLighterBrush" Color="{StaticResource PrimaryLighter}" />
+            <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}" />
+            <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{StaticResource PrimaryForeground}" />
+
+            <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
+            <SolidColorBrush x:Key="SecondaryLightBrush" Color="{StaticResource SecondaryLight}" />
+            <SolidColorBrush x:Key="SecondaryLighterBrush" Color="{StaticResource SecondaryLighter}" />
+            <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{StaticResource SecondaryDark}" />
+            <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="{StaticResource SecondaryForeground}" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <controls:ChromelessWindow.Header>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Border Background="{StaticResource PrimaryBrush}">
+                <TextBlock Text="Tailviewer"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="16" />
+            </Border>
+        </Grid>
+    </controls:ChromelessWindow.Header>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <controls:FlatListView ItemsSource="{Binding Tasks}"
+                               SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                               Background="{StaticResource PrimaryBrush}"
+                               BorderThickness="0">
+            <ListView.Resources>
+                <SolidColorBrush x:Key="BackgroundBrushHovered" Color="{StaticResource PrimaryLight}" />
+                <SolidColorBrush x:Key="BackgroundBrushSelected" Color="{StaticResource PrimaryLight}" />
+                <SolidColorBrush x:Key="BackgroundBrushSelectedAndHovered" Color="{StaticResource PrimaryLighter}" />
+                <Style TargetType="{x:Type list:FlatListViewItem}">
+                    <Setter Property="BorderThickness" Value="0,0,0,0" />
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:DataSource}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Viewbox Width="24" Height="24">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{StaticResource PrimaryForegroundBrush}"
+                                      Data="{Binding Icon, Converter={StaticResource IconConverter}}" />
+                            </Canvas>
+                        </Viewbox>
+                        <controls:FlatTextBlock Grid.Column="1"
+                                                Margin="8,0,0,0"
+                                                Text="{Binding Title}"
+                                                VerticalAlignment="Center"
+                                                TextTrimming="CharacterEllipsis"
+                                                Foreground="{StaticResource PrimaryForegroundBrush}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </controls:FlatListView>
+        <ContentPresenter Grid.Column="1"
+                          Content="{Binding SelectedViewModel}" />
+    </Grid>
+</controls:ChromelessWindow>
