@@ -63,12 +63,13 @@
     <Compile Include="Dashboard\DashboardControl.cs" />
     <Compile Include="Dashboard\Layout\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Layout\IWidgetLayoutViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfos\QuickInfoViewModel.cs" />
     <Compile Include="Dashboard\Widgets\Widget.cs" />
     <Compile Include="Dashboard\Widgets\IWidgetViewModel.cs" />
     <Compile Include="Dashboard\Widgets\AbstractWidgetViewModel.cs" />
-    <Compile Include="Dashboard\Widgets\QuickInfo\INamedValueViewModel.cs" />
-    <Compile Include="Dashboard\Widgets\QuickInfo\NamedValueViewModel.cs" />
-    <Compile Include="Dashboard\Widgets\QuickInfo\QuickInfoViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfos\INamedValueViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfos\NamedValueViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\QuickInfos\QuickInfosViewModel.cs" />
     <Compile Include="Dashboard\Layout\WidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Widgets\LineCount\LineCountViewModel.cs" />
     <Compile Include="MenuItem.cs" />
@@ -94,7 +95,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dashboard\Widgets\QuickInfo\QuickInfoDataTemplate.xaml">
+    <Page Include="Dashboard\Widgets\QuickInfos\QuickInfosDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

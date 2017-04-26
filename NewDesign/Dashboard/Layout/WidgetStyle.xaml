@@ -14,7 +14,10 @@
                           x:Name="Widget"
                           Background="Transparent"
                           Margin="0,0,6,6">
-                        <ContentPresenter Content="{Binding}" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid x:Name="Toolbar" VerticalAlignment="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -28,6 +31,8 @@
                                                        Width="20"
                                                        Height="20" />
                         </Grid>
+                        <ContentPresenter Content="{Binding}"
+                                          Grid.Row="1"/>
                     </Grid>
                     <DataTemplate.Triggers>
                         <MultiTrigger>

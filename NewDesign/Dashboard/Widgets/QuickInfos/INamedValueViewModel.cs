@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 
-namespace NewDesign.Dashboard.Widgets.QuickInfo
+namespace NewDesign.Dashboard.Widgets.QuickInfos
 {
 	public interface INamedValueViewModel
 		: INotifyPropertyChanged
 	{
-		string Name { get; set; }
+		string Name { get; }
 		object Value { get; }
 	}
 }

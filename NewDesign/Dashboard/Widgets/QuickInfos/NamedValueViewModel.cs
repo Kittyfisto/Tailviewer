@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace NewDesign.Dashboard.Widgets.QuickInfo
+namespace NewDesign.Dashboard.Widgets.QuickInfos
 {
-	public sealed class NamedValueViewModel
+	public class NamedValueViewModel
 		: INamedValueViewModel
 	{
 		private object _value;
@@ -43,7 +43,7 @@ namespace NewDesign.Dashboard.Widgets.QuickInfo
 			}
 		}
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}

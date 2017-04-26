@@ -6,9 +6,9 @@
         <ResourceDictionary Source="Layout\HorizontalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Layout\VerticalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Widgets\LineCount\LineCountDataTemplate.xaml" />
-        <ResourceDictionary Source="Widgets\QuickInfo\QuickInfoDataTemplate.xaml" />
+        <ResourceDictionary Source="Widgets\QuickInfos\QuickInfosDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    
+
     <Style TargetType="{x:Type local:DashboardControl}">
         <Setter Property="Background" Value="White" />
         <Setter Property="Template">
@@ -25,8 +25,7 @@
                                 
                             </Border>-->
                             
-                            <Grid Margin="6,6,0,0"
-                                  Grid.Row="1">
+                            <Grid Margin="6,6,0,0">
                                 <ItemsControl ItemsSource="{TemplateBinding Layouts}">
 
                                 </ItemsControl>

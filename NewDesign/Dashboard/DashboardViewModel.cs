@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using NewDesign.Dashboard.Layout;
 using NewDesign.Dashboard.Widgets.LineCount;
-using NewDesign.Dashboard.Widgets.QuickInfo;
+using NewDesign.Dashboard.Widgets.QuickInfos;
 
 namespace NewDesign.Dashboard
 {
@@ -27,9 +27,9 @@ namespace NewDesign.Dashboard
 							Count = 1120121,
 							Caption = "Log Entries"
 						},
-						new QuickInfoViewModel(
-							new NamedValueViewModel("Version", new Version(2,0,0)),
-							new NamedValueViewModel("Build", 12351)
+						new QuickInfosViewModel(
+							new QuickInfoViewModel("Version", new Version(2,0,0)),
+							new QuickInfoViewModel("Build", 12351)
 							)
 						{
 							

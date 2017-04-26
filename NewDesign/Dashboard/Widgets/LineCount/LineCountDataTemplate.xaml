@@ -3,12 +3,8 @@
                     xmlns:local="clr-namespace:NewDesign.Dashboard.Widgets.LineCount">
     
     <DataTemplate DataType="{x:Type local:LineCountViewModel}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
             <TextBlock Text="{Binding Count}"
                        HorizontalAlignment="Center"
                        FontSize="48"
@@ -16,11 +12,9 @@
                        Margin="6" />
             <TextBlock Text="{Binding Caption}"
                        HorizontalAlignment="Center"
-                       Grid.Row="1"
                        FontSize="16"
                        Margin="6,0,6,6" />
-            
-        </Grid>
+        </StackPanel>
     </DataTemplate>
     
 </ResourceDictionary>
