@@ -1,12 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:NewDesign.Dashboard">
+                    xmlns:local="clr-namespace:NewDesign.Dashboard"
+                    xmlns:sidePanel="clr-namespace:NewDesign.SidePanel">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Layout\HorizontalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Layout\VerticalLayoutDataTemplate.xaml" />
         <ResourceDictionary Source="Widgets\LineCount\LineCountDataTemplate.xaml" />
         <ResourceDictionary Source="Widgets\QuickInfos\QuickInfosDataTemplate.xaml" />
+        <ResourceDictionary Source="Widgets\Events\EventsDataTemplate.xaml" />
+        <ResourceDictionary Source="Widgets\WidgetSidePanelDataTemplate.xaml" />
+        <ResourceDictionary Source="..\SidePanel\SidePanelControl.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type local:DashboardControl}">
@@ -16,20 +20,19 @@
                 <ControlTemplate TargetType="{x:Type local:DashboardControl}">
                     <Border Background="{TemplateBinding Background}">
                         <Grid>
-                            <!--<Grid.RowDefinitions>
-                                <RowDefinition Height="40" />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            
-                            <Border Background="{DynamicResource SecondaryBrush}">
-                                
-                            </Border>-->
-                            
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
                             <Grid Margin="6,6,0,0">
                                 <ItemsControl ItemsSource="{TemplateBinding Layouts}">
 
                                 </ItemsControl>
                             </Grid>
+
+                            <sidePanel:SidePanelControl Grid.Column="1"
+                                                        SidePanels="{TemplateBinding SidePanels}"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -38,7 +41,8 @@
     </Style>
 
     <DataTemplate DataType="{x:Type local:DashboardViewModel}">
-        <local:DashboardControl Layouts="{Binding Layouts}" />
+        <local:DashboardControl Layouts="{Binding Layouts}"
+                                SidePanels="{Binding SidePanels}"/>
     </DataTemplate>
 
 </ResourceDictionary>

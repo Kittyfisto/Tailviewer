@@ -12,7 +12,8 @@
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <!--<metrolib:GridPanel Orientation="Horizontal" />-->
-                    <StackPanel Orientation="Horizontal" />
+                    <!--<StackPanel Orientation="Horizontal" />-->
+                    <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NewDesign.Dashboard.Widgets.Events">
+    
+    <DataTemplate x:Key="EventTemplate" DataType="{x:Type local:EventViewModel}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Text="{Binding Timestamp}" />
+            <TextBlock Text="{Binding Value}"
+                       Grid.Column="1" />
+        </Grid>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type local:EventsViewModel}">
+        <Grid IsSharedSizeScope="True">
+            <ItemsControl ItemsSource="{Binding Events}"
+                          ItemTemplate="{StaticResource EventTemplate}">
+                
+            </ItemsControl>
+        </Grid>
+    </DataTemplate>
+    
+</ResourceDictionary>

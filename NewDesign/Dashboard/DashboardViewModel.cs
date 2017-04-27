@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using NewDesign.Dashboard.Layout;
+using NewDesign.Dashboard.Widgets;
 using NewDesign.Dashboard.Widgets.LineCount;
 using NewDesign.Dashboard.Widgets.QuickInfos;
 
@@ -13,6 +14,7 @@ namespace NewDesign.Dashboard
 		: INotifyPropertyChanged
 	{
 		private readonly ObservableCollection<WidgetLayoutViewModel> _layouts;
+		private readonly ObservableCollection<ISidePanelViewModel> _sidePanels;
 
 		public DashboardViewModel()
 		{
@@ -37,9 +39,15 @@ namespace NewDesign.Dashboard
 					}
 				}
 			};
+
+			_sidePanels = new ObservableCollection<ISidePanelViewModel>
+			{
+				new WidgetSidePanelViewModel()
+			};
 		}
 
 		public IEnumerable<WidgetLayoutViewModel> Layouts => _layouts;
+		public IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

@@ -21,7 +21,7 @@ namespace NewDesign
 				new MenuItem("Raw", "Raw"),
 				new MenuItem("Settings", "Settings")
 			};
-			SelectedTask = Tasks[1];
+			SelectedTask = Tasks[2];
 		}
 
 		public List<MenuItem> Tasks { get; }
@@ -37,7 +37,7 @@ namespace NewDesign
 				_selectedTask = value;
 				EmitPropertyChanged();
 
-				if (value == Tasks[1])
+				if (value == Tasks[2])
 				{
 					SelectedViewModel = new DashboardViewModel();
 				}

@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Metrolib, Version=0.2.2.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.17\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.18\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -61,8 +61,12 @@
     </ApplicationDefinition>
     <Compile Include="Dashboard\DashboardViewModel.cs" />
     <Compile Include="Dashboard\DashboardControl.cs" />
+    <Compile Include="Dashboard\ISidePanelViewModel.cs" />
     <Compile Include="Dashboard\Layout\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Dashboard\Layout\IWidgetLayoutViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\Events\EventsViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\Events\EventViewModel.cs" />
+    <Compile Include="Dashboard\Widgets\WidgetSidePanelViewModel.cs" />
     <Compile Include="Dashboard\Widgets\QuickInfos\QuickInfoViewModel.cs" />
     <Compile Include="Dashboard\Widgets\Widget.cs" />
     <Compile Include="Dashboard\Widgets\IWidgetViewModel.cs" />
@@ -75,6 +79,7 @@
     <Compile Include="MenuItem.cs" />
     <Compile Include="IconConverter.cs" />
     <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="SidePanel\SidePanelControl.cs" />
     <Page Include="Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -95,11 +100,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dashboard\Widgets\Events\EventsDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dashboard\Widgets\QuickInfos\QuickInfosDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dashboard\Widgets\LineCount\LineCountDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dashboard\Widgets\WidgetSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -115,6 +128,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SidePanel\SidePanelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
