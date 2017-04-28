@@ -121,6 +121,8 @@
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
+    <Compile Include="Settings\Dashboard\Analysers\Event\EventsAnalyserSettingsTest.cs" />
+    <Compile Include="Settings\Dashboard\Analysers\Event\EventSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
