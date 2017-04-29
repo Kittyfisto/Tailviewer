@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.BusinessLogic.Dashboard.Analysers;
+using Tailviewer.BusinessLogic.Analysers;
 
 namespace Tailviewer.BusinessLogic.Dashboard
 {

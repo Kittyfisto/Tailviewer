@@ -1,12 +1,16 @@
-﻿using System;
+using System;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Dashboard.Analysers
+namespace Tailviewer.BusinessLogic.Analysers
 {
-	public sealed class CounterLogAnalyser
+	public sealed class QuickInfoLogAnalyser
 		: LogAnalyser
 	{
+		public QuickInfoLogAnalyser(ILogFile source, TimeSpan maximumWaitTime, int maximumLineCount)
+		{
+		}
+
 		protected override void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section)
 		{
 			throw new NotImplementedException();

@@ -1,7 +1,6 @@
 using System.Xml;
 using Metrolib;
-using Tailviewer.BusinessLogic.Dashboard.Analysers;
-using Tailviewer.BusinessLogic.Dashboard.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysers.Event;
 
 namespace Tailviewer.Settings.Dashboard.Analysers.Event
 {

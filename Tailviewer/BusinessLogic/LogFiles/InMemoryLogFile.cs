@@ -7,19 +7,16 @@ using Metrolib;
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
-	/// TODO: Use this implementation is tests, where applicable (should reduce number of mocks...).
+	///     TODO: Use this implementation is tests, where applicable (should reduce number of mocks...).
 	/// </summary>
 	public sealed class InMemoryLogFile
 		: ILogFile
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-		private readonly object _syncRoot;
 		private readonly List<LogLine> _lines;
 		private readonly LogFileListenerCollection _listeners;
-		private int _maxCharactersPerLine;
-		private DateTime _lastModified;
-		private DateTime? _startTimestamp;
+
+		private readonly object _syncRoot;
 
 		public InMemoryLogFile()
 		{
@@ -30,12 +27,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public void Dispose()
 		{
-			
 		}
 
-		public DateTime? StartTimestamp => _startTimestamp;
+		public DateTime? StartTimestamp { get; private set; }
 
-		public DateTime LastModified => _lastModified;
+		public DateTime LastModified { get; private set; }
 
 		public Size FileSize => Size.Zero;
 
@@ -45,7 +41,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public int Count => _lines.Count;
 
-		public int MaxCharactersPerLine => _maxCharactersPerLine;
+		public int MaxCharactersPerLine { get; private set; }
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -80,14 +76,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				if (_lines.Count > 0)
 				{
 					_lines.Clear();
-					_maxCharactersPerLine = 0;
-					_startTimestamp = null;
+					MaxCharactersPerLine = 0;
+					StartTimestamp = null;
 					Touch();
 				}
 			}
 		}
 
-		public void RemoveRange(LogLineIndex index, int count)
+		/// <summary>
+		///     Removes everything from the given index onwards until the end.
+		/// </summary>
+		/// <param name="index"></param>
+		public void RemoveFrom(LogLineIndex index)
 		{
 			lock (_syncRoot)
 			{
@@ -104,21 +104,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 
 				var available = _lines.Count - index;
-				int actualCount = Math.Min(available, count);
-				if (actualCount != count)
-				{
-					Log.WarnFormat("Trying to remove ({0}) more lines than available ({1})", count, available);
-				}
-
-				_lines.RemoveRange((int) index, actualCount);
-				_listeners.Invalidate((int) index, actualCount);
+				_lines.RemoveRange((int) index, available);
+				_listeners.Invalidate((int) index, available);
 				Touch();
 			}
 		}
 
 		private void Touch()
 		{
-			_lastModified = DateTime.Now;
+			LastModified = DateTime.Now;
 		}
 
 		public void AddEntry(string message, LevelFlags level)
@@ -139,11 +133,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				else
 				{
 					index = 0;
-					_startTimestamp = timestamp;
+					StartTimestamp = timestamp;
 				}
 
 				_lines.Add(new LogLine(_lines.Count, index, message, level, timestamp));
-				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, message.Length);
+				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, message.Length);
 				Touch();
 			}
 		}

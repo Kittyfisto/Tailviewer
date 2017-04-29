@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Dashboard.Analysers
+namespace Tailviewer.BusinessLogic.Analysers
 {
 	/// <summary>
 	///     The interface for an analyser, responsible for looking at a <see cref="ILogFile" /> or <see cref="ILogTable" />

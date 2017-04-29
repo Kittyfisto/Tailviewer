@@ -7,7 +7,7 @@ using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Dashboard.Analysers
+namespace Tailviewer.BusinessLogic.Analysers
 {
 	public abstract class LogAnalyser
 		: ILogAnalyser
@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic.Dashboard.Analysers
 		{
 			try
 			{
-				_stopwatch.Start();
+				StartMeasure();
 				OnLogFileModifiedInternal(logFile, section);
 			}
 			catch (Exception e)
@@ -42,9 +42,19 @@ namespace Tailviewer.BusinessLogic.Dashboard.Analysers
 			}
 			finally
 			{
-				_stopwatch.Stop();
-				_elapsed += _stopwatch.Elapsed;
+				StopMeasure();
 			}
+		}
+
+		protected void StartMeasure()
+		{
+			_stopwatch.Start();
+		}
+
+		protected void StopMeasure()
+		{
+			_stopwatch.Stop();
+			_elapsed += _stopwatch.Elapsed;
 		}
 
 		private void AddException(Exception exception)
@@ -100,7 +110,7 @@ namespace Tailviewer.BusinessLogic.Dashboard.Analysers
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
 		}
-
+		
 		protected abstract void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section);
 
 		protected abstract void OnLogTableModifiedInternal(ILogTable logTable, LogTableModification modification);
