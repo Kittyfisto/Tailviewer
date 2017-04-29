@@ -87,7 +87,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\Dashboard\Analysers\CounterLogAnalyser.cs" />
-    <Compile Include="BusinessLogic\Dashboard\Analysers\EventsLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Dashboard\Analysers\Event\EventsLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Dashboard\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
     <Compile Include="BusinessLogic\Dashboard\Analysers\QuickInfoLogAnalyser.cs" />

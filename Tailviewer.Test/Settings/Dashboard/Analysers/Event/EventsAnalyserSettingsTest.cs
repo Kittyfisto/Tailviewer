@@ -55,6 +55,12 @@ namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 						xmlReader.MoveToElement();
 						var actualSettings = (EventsAnalyserSettings)AnalyserSettings.Restore(xmlReader);
 						actualSettings.MaxEvents.Should().Be(9999);
+						actualSettings.Events.Count.Should().Be(1);
+						actualSettings.Events[0].Name.Should().Be("My custom event");
+						actualSettings.Events[0].FilterType.Should().Be(QuickFilterMatchType.RegexpFilter);
+						actualSettings.Events[0].FilterExpression.Should().Be("%d");
+						actualSettings.Events[0].IgnoreCase.Should().BeTrue();
+						actualSettings.Events[0].DisplayExpression.Should().Be("A wild number appeared!");
 					}
 				}
 			}
