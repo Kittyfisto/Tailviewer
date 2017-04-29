@@ -1,5 +1,4 @@
 using System.Xml;
-using Metrolib;
 using Tailviewer.BusinessLogic.Analysers.Event;
 
 namespace Tailviewer.Settings.Dashboard.Analysers.Event
@@ -10,10 +9,7 @@ namespace Tailviewer.Settings.Dashboard.Analysers.Event
 	public sealed class EventSettings
 	{
 		public string Name;
-		public bool IgnoreCase;
-		public QuickFilterMatchType FilterType;
 		public string FilterExpression;
-		public string DisplayExpression;
 
 		public void Restore(XmlReader reader)
 		{
@@ -25,17 +21,8 @@ namespace Tailviewer.Settings.Dashboard.Analysers.Event
 					case "name":
 						Name = reader.ReadContentAsString();
 						break;
-					case "ignorecase":
-						IgnoreCase = reader.ReadContentAsBool();
-						break;
 					case "filterexpression":
 						FilterExpression = reader.ReadContentAsString();
-						break;
-					case "filtertype":
-						FilterType = reader.ReadContentAsEnum<QuickFilterMatchType>();
-						break;
-					case "displayexpression":
-						DisplayExpression = reader.ReadContentAsString();
 						break;
 				}
 			}
@@ -44,10 +31,7 @@ namespace Tailviewer.Settings.Dashboard.Analysers.Event
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("name", Name);
-			writer.WriteAttributeBool("ignorecase", IgnoreCase);
 			writer.WriteAttributeString("filterexpression", FilterExpression);
-			writer.WriteAttributeEnum("filtertype", FilterType);
-			writer.WriteAttributeString("displayexpression", DisplayExpression);
 		}
 	}
 }

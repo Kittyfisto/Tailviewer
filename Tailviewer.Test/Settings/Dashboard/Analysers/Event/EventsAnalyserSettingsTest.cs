@@ -3,7 +3,6 @@ using System.IO;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Settings;
 using Tailviewer.Settings.Dashboard.Analysers;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
 
@@ -25,10 +24,7 @@ namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 						new EventSettings
 						{
 							Name = "My custom event",
-							FilterType = QuickFilterMatchType.RegexpFilter,
 							FilterExpression = "%d",
-							IgnoreCase = true,
-							DisplayExpression = "A wild number appeared!"
 						}
 					}
 				};
@@ -57,10 +53,7 @@ namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 						actualSettings.MaxEvents.Should().Be(9999);
 						actualSettings.Events.Count.Should().Be(1);
 						actualSettings.Events[0].Name.Should().Be("My custom event");
-						actualSettings.Events[0].FilterType.Should().Be(QuickFilterMatchType.RegexpFilter);
 						actualSettings.Events[0].FilterExpression.Should().Be("%d");
-						actualSettings.Events[0].IgnoreCase.Should().BeTrue();
-						actualSettings.Events[0].DisplayExpression.Should().Be("A wild number appeared!");
 					}
 				}
 			}
