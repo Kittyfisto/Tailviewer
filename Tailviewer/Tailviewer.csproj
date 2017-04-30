@@ -124,10 +124,12 @@
     <Compile Include="BusinessLogic\LogTables\IColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\ILogTableListener.cs" />
     <Compile Include="BusinessLogic\LogTables\ILogTableSchema.cs" />
+    <Compile Include="BusinessLogic\LogTables\InMemoryLogTable.cs" />
     <Compile Include="BusinessLogic\LogTables\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableModification.cs" />
     <Compile Include="BusinessLogic\LogDataAccessQueue.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableSchema.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableSection.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />

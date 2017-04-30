@@ -15,12 +15,17 @@ namespace Tailviewer.BusinessLogic.LogTables
 		/// <summary>
 		///     The number of rows in this table.
 		/// </summary>
-		int RowCount { get; }
+		int Count { get; }
 
 		/// <summary>
 		///     Whether or not the datasource exists (is reachable).
 		/// </summary>
 		bool Exists { get; }
+
+		/// <summary>
+		///     When this table was last modified.
+		/// </summary>
+		DateTime LastModified { get; }
 
 		/// <summary>
 		///     The schema of this table.

@@ -27,7 +27,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		{
 			var table = new SQLiteLogTable(_scheduler, _cache, "foo.db");
 			table.Exists.Should().BeFalse("Because we haven't checked for the existance and yet, and not existing is the default assumption, for now");
-			table.RowCount.Should().Be(0, "Because the database doesn't exist and thus no data could've been retrieved");
+			table.Count.Should().Be(0, "Because the database doesn't exist and thus no data could've been retrieved");
 			table.Schema.Should().NotBeNull();
 			table.Schema.TableName.Should().BeEmpty("Because the database doesn't exist and thus no table name could be known");
 			table.Schema.ColumnHeaders.Should().NotBeNull();

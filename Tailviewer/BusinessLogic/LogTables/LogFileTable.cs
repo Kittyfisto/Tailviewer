@@ -11,12 +11,17 @@ namespace Tailviewer.BusinessLogic.LogTables
 	public sealed class LogFileTable
 		: ILogTable
 	{
-		public int RowCount
+		public int Count
 		{
 			get { throw new NotImplementedException(); }
 		}
 
 		public bool Exists
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public DateTime LastModified
 		{
 			get { throw new NotImplementedException(); }
 		}

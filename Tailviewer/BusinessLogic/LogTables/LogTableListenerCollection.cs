@@ -47,6 +47,11 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
+		public void Invalidate(int index, int available)
+		{
+			OnRead(index, available, invalidate: true);
+		}
+
 		public void OnSchemaChanged(ILogTableSchema schema)
 		{
 			lock (_syncRoot)

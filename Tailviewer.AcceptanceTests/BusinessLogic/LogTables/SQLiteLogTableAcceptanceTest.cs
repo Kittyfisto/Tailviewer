@@ -164,7 +164,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogTables
 			AddRow(new DateTime(2016, 11, 1, 13, 06, 00), "1", "DEBUG", "Tailviewer.AcceptanceTest", "It's done");
 
 			_scheduler.RunOnce();
-			_table.RowCount.Should().Be(1, "Because the table should've retrieved the first row of the table");
+			_table.Count.Should().Be(1, "Because the table should've retrieved the first row of the table");
 
 			var task = _table[0];
 			task.Should().NotBeNull();

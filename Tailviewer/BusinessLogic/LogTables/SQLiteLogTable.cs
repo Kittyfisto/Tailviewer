@@ -52,12 +52,17 @@ namespace Tailviewer.BusinessLogic.LogTables
 			_task = _scheduler.StartPeriodic(Update, ToString());
 		}
 
+		public DateTime LastModified
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		public SQLiteSchema Schema
 		{
 			get { return _schema; }
 		}
 
-		public int RowCount
+		public int Count
 		{
 			get { return _rowCount; }
 		}
@@ -250,7 +255,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 		private void UpdateRowCount(SQLiteConnection connection)
 		{
-			int rowCount = Count(connection, _schema.TableName);
+			int rowCount = CountRows(connection, _schema.TableName);
 			if (rowCount < _rowCount)
 			{
 				int invalidateCount = _rowCount - rowCount;
@@ -271,7 +276,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		/// <param name="connection"></param>
 		/// <param name="tableName"></param>
 		/// <returns></returns>
-		private static int Count(SQLiteConnection connection, string tableName)
+		private static int CountRows(SQLiteConnection connection, string tableName)
 		{
 			string sql = string.Format("SELECT COUNT(*) FROM {0}", tableName);
 			using (var command = new SQLiteCommand(sql, connection))
