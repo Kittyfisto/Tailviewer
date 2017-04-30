@@ -106,6 +106,8 @@
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\InMemoryLogTableTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableSectionTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />

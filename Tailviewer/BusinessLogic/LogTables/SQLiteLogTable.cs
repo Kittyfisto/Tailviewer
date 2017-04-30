@@ -168,7 +168,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 				}
 
 				_exists = false;
-				_listeners.OnRead(LogEntryIndex.Invalid, 0);
+				_listeners.Reset();
 
 				// We currently don't have access to the database and therefore
 				// we can simply reject all access to data.
@@ -249,7 +249,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 				_rowCount = 0;
 				_cache.Remove(this);
 				_listeners.OnSchemaChanged(_schema);
-				_listeners.OnRead(LogEntryIndex.Invalid, 0);
+				_listeners.Reset();
 			}
 		}
 
@@ -259,14 +259,14 @@ namespace Tailviewer.BusinessLogic.LogTables
 			if (rowCount < _rowCount)
 			{
 				int invalidateCount = _rowCount - rowCount;
+				int first = _rowCount;
 				_rowCount = rowCount;
-				_listeners.OnRead(rowCount, invalidateCount, true);
+				_listeners.Invalidate(first, invalidateCount);
 			}
 			else if (rowCount > _rowCount)
 			{
-				int old = _rowCount;
 				_rowCount = rowCount;
-				_listeners.OnRead(old, rowCount - old);
+				_listeners.OnRead(_rowCount);
 			}
 		}
 

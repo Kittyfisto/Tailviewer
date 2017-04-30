@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.Analysers.Event
 			var fields = new object[count];
 			for (int i = 0; i < count; ++i)
 			{
-				fields[i] = captures[i];
+				fields[i] = captures[i].Value;
 			}
 
 			return fields;

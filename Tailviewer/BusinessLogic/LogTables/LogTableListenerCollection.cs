@@ -5,9 +5,10 @@ namespace Tailviewer.BusinessLogic.LogTables
 {
 	public sealed class LogTableListenerCollection
 	{
-		private readonly Dictionary<ILogTableListener, LogFileListenerNotifier> _notifiers;
+		private readonly Dictionary<ILogTableListener, LogTableListenerNotifier> _notifiers;
 		private readonly object _syncRoot;
 		private readonly ILogTable _logTable;
+		private int _currentEntryIndex;
 
 		public LogTableListenerCollection(ILogTable logTable)
 		{
@@ -15,7 +16,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 				throw new ArgumentNullException(nameof(logTable));
 
 			_logTable = logTable;
-			_notifiers = new Dictionary<ILogTableListener, LogFileListenerNotifier>();
+			_notifiers = new Dictionary<ILogTableListener, LogTableListenerNotifier>();
 			_syncRoot = new object();
 		}
 
@@ -23,8 +24,12 @@ namespace Tailviewer.BusinessLogic.LogTables
 		{
 			lock (_syncRoot)
 			{
-				var notifier = new LogFileListenerNotifier(_logTable, listener, maximumWaitTime, maximumLineCount);
-				_notifiers.Add(listener, notifier);
+				if (!_notifiers.ContainsKey(listener))
+				{
+					var notifier = new LogTableListenerNotifier(_logTable, listener, maximumWaitTime, maximumLineCount);
+					_notifiers.Add(listener, notifier);
+					notifier.OnRead(_currentEntryIndex);
+				}
 			}
 		}
 
@@ -36,20 +41,33 @@ namespace Tailviewer.BusinessLogic.LogTables
 			}
 		}
 
-		public void OnRead(LogEntryIndex index, int count, bool invalidate = false)
+		public void OnRead(int numberOfEntriesRead)
 		{
 			lock (_syncRoot)
 			{
-				foreach (var notifier in _notifiers.Values)
+				foreach (LogTableListenerNotifier notifier in _notifiers.Values)
 				{
-					notifier.EmitChanged(new LogTableModification(index, count, invalidate));
+					notifier.OnRead(numberOfEntriesRead);
 				}
+				_currentEntryIndex = numberOfEntriesRead;
 			}
 		}
 
-		public void Invalidate(int index, int available)
+		public void Invalidate(int firstIndex, int count)
 		{
-			OnRead(index, available, invalidate: true);
+			lock (_syncRoot)
+			{
+				foreach (LogTableListenerNotifier notifier in _notifiers.Values)
+				{
+					notifier.Invalidate(firstIndex, count);
+				}
+				_currentEntryIndex = firstIndex;
+			}
+		}
+
+		public void Reset()
+		{
+			OnRead(-1);
 		}
 
 		public void OnSchemaChanged(ILogTableSchema schema)

@@ -18,10 +18,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_currentLineIndex = -1;
 		}
 
-		public int CurrentLineIndex
-		{
-			get { return _currentLineIndex; }
-		}
+		public int CurrentLineIndex => _currentLineIndex;
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{

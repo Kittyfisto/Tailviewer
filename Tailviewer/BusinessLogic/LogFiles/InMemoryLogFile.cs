@@ -140,6 +140,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, message.Length);
 				Touch();
 			}
+
+			_listeners.OnRead(_lines.Count);
 		}
 	}
 }

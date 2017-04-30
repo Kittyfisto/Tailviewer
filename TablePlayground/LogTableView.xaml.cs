@@ -59,7 +59,7 @@ namespace TablePlayground
 			{
 				Dispatcher.BeginInvoke(new Action(() => OnSchemaChanged(modification.Schema)));
 			}
-			else if (modification.Invalidate)
+			else if (modification.IsInvalidate)
 			{
 				Dispatcher.BeginInvoke(new Action(() => OnInvalidated(modification.Section)));
 			}

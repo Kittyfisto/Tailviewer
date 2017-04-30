@@ -11,6 +11,11 @@ namespace Tailviewer.Settings.Dashboard.Analysers.Event
 		public string Name;
 		public string FilterExpression;
 
+		public override string ToString()
+		{
+			return string.Format("{0}, {1}", Name, FilterExpression);
+		}
+
 		public void Restore(XmlReader reader)
 		{
 			for (int i = 0; i < reader.AttributeCount; ++i)

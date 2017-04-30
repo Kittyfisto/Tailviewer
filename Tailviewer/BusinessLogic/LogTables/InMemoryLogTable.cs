@@ -61,7 +61,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			lock (_syncRoot)
 			{
 				_entries.Add(entry);
-				_listeners.OnRead(_entries.Count, 1);
+				_listeners.OnRead(_entries.Count);
 				Touch();
 			}
 		}

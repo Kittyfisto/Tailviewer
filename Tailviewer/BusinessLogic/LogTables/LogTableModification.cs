@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogTables
 {
@@ -10,7 +11,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 	{
 		public static readonly LogTableModification Reset;
 
-		public readonly bool Invalidate;
+		public readonly bool IsInvalidate;
 		public readonly LogTableSection Section;
 		public readonly ILogTableSchema Schema;
 
@@ -26,19 +27,25 @@ namespace Tailviewer.BusinessLogic.LogTables
 
 			Schema = schema;
 			Section = new LogTableSection(LogEntryIndex.Invalid, 0);
-			Invalidate = false;
+			IsInvalidate = false;
 		}
 
-		public LogTableModification(LogEntryIndex index, int count, bool invalidate = false)
+		public LogTableModification(LogEntryIndex index, int count, bool isInvalidate = false)
 		{
 			Section = new LogTableSection(index, count);
-			Invalidate = invalidate;
+			IsInvalidate = isInvalidate;
 			Schema = null;
+		}
+
+		[Pure]
+		public static LogTableModification Invalidate(int firstIndex, int invalidateCount)
+		{
+			return new LogTableModification(firstIndex, invalidateCount, true);
 		}
 
 		public bool Equals(LogTableModification other)
 		{
-			return Section.Equals(other.Section) && Invalidate.Equals(other.Invalidate);
+			return Section.Equals(other.Section) && IsInvalidate.Equals(other.IsInvalidate);
 		}
 
 		public override bool Equals(object obj)
@@ -51,7 +58,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 		{
 			unchecked
 			{
-				return (Section.GetHashCode()*397) ^ Invalidate.GetHashCode();
+				return (Section.GetHashCode() * 397) ^ IsInvalidate.GetHashCode();
 			}
 		}
 
@@ -73,7 +80,7 @@ namespace Tailviewer.BusinessLogic.LogTables
 			if (Schema != null)
 				return string.Format("Schema changed to {0}", Schema);
 
-			if (Invalidate)
+			if (IsInvalidate)
 				return string.Format("Invalidated {0}", Section);
 
 			return string.Format("Changed {0}", Section);

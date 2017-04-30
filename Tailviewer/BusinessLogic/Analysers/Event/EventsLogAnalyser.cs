@@ -2,7 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
@@ -22,6 +24,8 @@ namespace Tailviewer.BusinessLogic.Analysers.Event
 	public sealed class EventsLogAnalyser
 		: LogAnalyser
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private const int MaximumLineCount = 10000;
 
 		private readonly LogLine[] _buffer;
@@ -49,11 +53,26 @@ namespace Tailviewer.BusinessLogic.Analysers.Event
 			_events = new InMemoryLogTable();
 			_indices = new List<LogLineIndex>();
 			_eventDefinitions = new List<LogEventDefinition>(settings.Events.Count);
-			_eventDefinitions.AddRange(settings.Events.Select(x => new LogEventDefinition(x)));
+			_eventDefinitions.AddRange(settings.Events.Select(x => TryCreateDefinition(x)).Where(x => x != null));
 			_modifications = new ConcurrentQueue<LogFileSection>();
 
 			_source.AddListener(this, maximumWaitTime, MaximumLineCount);
 			_task = _scheduler.StartPeriodic(DoWork, TimeSpan.FromMilliseconds(100));
+		}
+
+		private LogEventDefinition TryCreateDefinition(EventSettings settings)
+		{
+			try
+			{
+				return new LogEventDefinition(settings);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to create event definition from {0}: {1}",
+					settings,
+					e);
+				return null;
+			}
 		}
 
 		/// <summary>

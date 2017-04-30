@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Metrolib;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -10,6 +12,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class InMemoryLogFileTest
 	{
+		private Mock<ILogFileListener> _listener;
+		private List<LogFileSection> _modifications;
+
+		[SetUp]
+		public void Setup()
+		{
+			_modifications = new List<LogFileSection>();
+			_listener = new Mock<ILogFileListener>();
+			_listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+				.Callback((ILogFile logFile, LogFileSection section) =>
+				{
+					_modifications.Add(section);
+				});
+		}
+
 		[Test]
 		public void TestConstruction1()
 		{
@@ -62,6 +79,45 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.MaxCharactersPerLine.Should().Be(2);
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.MaxCharactersPerLine.Should().Be(13);
+		}
+
+		[Test]
+		[Description("Verifies that an added listener is notified of changes")]
+		public void TestAddEntry5()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
+			logFile.AddEntry("Hi", LevelFlags.Info);
+			_modifications.Should()
+				.Equal(new object[]
+				{
+					LogFileSection.Reset,
+					new LogFileSection(0, 1)
+				});
+		}
+
+		[Test]
+		[Description("Verifies that a listener is notified of changes immediately while being added")]
+		public void TestAddListener1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
+			_modifications.Should().Equal(new object[] {LogFileSection.Reset});
+		}
+
+		[Test]
+		[Description("Verifies that a listener is notified of changes immediately while being added")]
+		public void TestAddListener2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Foo", LevelFlags.None);
+
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
+			_modifications.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 1)
+			});
 		}
 
 		[Test]
