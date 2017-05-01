@@ -89,7 +89,7 @@ namespace Tailviewer.Test.Ui
 			_quickFilters.Add().Value = "bar";
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
-			List<QuickFilterViewModel> filters = model.Observable.ToList();
+			List<QuickFilterViewModel> filters = model.QuickFilters.ToList();
 			filters.Count.Should().Be(2);
 			filters[0].Value.Should().Be("foo");
 			filters[1].Value.Should().Be("bar");
@@ -119,13 +119,13 @@ namespace Tailviewer.Test.Ui
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
-			var filter1Model = model.Observable.First();
+			var filter1Model = model.QuickFilters.First();
 
 			int changed = 0;
 			model.OnFiltersChanged += () => ++changed;
 
 			filter1Model.RemoveCommand.Execute(null);
-			model.Observable.Should().BeEmpty("because we've just removed the only quick filter");
+			model.QuickFilters.Should().BeEmpty("because we've just removed the only quick filter");
 			changed.Should().Be(1, "because removing an active quick-filter should always fire the OnFiltersChanged event");
 		}
 
@@ -139,14 +139,14 @@ namespace Tailviewer.Test.Ui
 
 			var model = new QuickFiltersViewModel(_settings, _quickFilters);
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
-			var filter1Model = model.Observable.First();
+			var filter1Model = model.QuickFilters.First();
 			filter1Model.IsActive = false;
 
 			int changed = 0;
 			model.OnFiltersChanged += () => ++changed;
 
 			filter1Model.RemoveCommand.Execute(null);
-			model.Observable.Should().BeEmpty("because we've just removed the only quick filter");
+			model.QuickFilters.Should().BeEmpty("because we've just removed the only quick filter");
 			changed.Should().Be(0, "because removing an inactive quick-filter should never fire the OnFiltersChanged event");
 		}
 	}

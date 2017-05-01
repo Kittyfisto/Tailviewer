@@ -14,6 +14,24 @@ namespace Tailviewer.Test.Settings
 	public sealed class ApplicationSettingsTest
 	{
 		[Test]
+		public void TestClone()
+		{
+			string fname = Path.GetTempFileName();
+			var settings = new ApplicationSettings(fname);
+			var clone = settings.Clone();
+			clone.Should().NotBeNull();
+			clone.Should().NotBeSameAs(settings);
+			clone.AutoUpdate.Should().NotBeNull();
+			clone.AutoUpdate.Should().NotBeSameAs(settings.AutoUpdate);
+			clone.MainWindow.Should().NotBeNull();
+			clone.MainWindow.Should().NotBeSameAs(settings.MainWindow);
+			clone.DataSources.Should().NotBeNull();
+			clone.DataSources.Should().NotBeSameAs(settings.DataSources);
+			clone.QuickFilters.Should().NotBeNull();
+			clone.QuickFilters.Should().NotBeSameAs(settings.QuickFilters);
+		}
+
+		[Test]
 		[Description("Verifies that the GUID of a data source is written to the file and read again")]
 		public void TestDataSourceId()
 		{
@@ -146,11 +164,11 @@ namespace Tailviewer.Test.Settings
 		{
 			const string fileName = "applicationsettingstest.xml";
 			var settings = new ApplicationSettings(fileName);
-			settings.MainWindow.Left = 1;
-			settings.MainWindow.Top = 2;
-			settings.MainWindow.Width = 3;
-			settings.MainWindow.Height = 4;
-			settings.MainWindow.State = WindowState.Maximized;
+			settings.MainWindow.Window.Left = 1;
+			settings.MainWindow.Window.Top = 2;
+			settings.MainWindow.Window.Width = 3;
+			settings.MainWindow.Window.Height = 4;
+			settings.MainWindow.Window.State = WindowState.Maximized;
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1600.log")
 				{
 					Id = Guid.NewGuid(),
@@ -196,11 +214,11 @@ namespace Tailviewer.Test.Settings
 
 			settings = new ApplicationSettings(fileName);
 			settings.Restore();
-			settings.MainWindow.Left.Should().Be(1);
-			settings.MainWindow.Top.Should().Be(2);
-			settings.MainWindow.Width.Should().Be(3);
-			settings.MainWindow.Height.Should().Be(4);
-			settings.MainWindow.State.Should().Be(WindowState.Maximized);
+			settings.MainWindow.Window.Left.Should().Be(1);
+			settings.MainWindow.Window.Top.Should().Be(2);
+			settings.MainWindow.Window.Width.Should().Be(3);
+			settings.MainWindow.Window.Height.Should().Be(4);
+			settings.MainWindow.Window.State.Should().Be(WindowState.Maximized);
 			settings.DataSources.Count.Should().Be(2);
 			settings.DataSources[0].File.Should().Be(@"SharpRemote.Host.1600.log");
 			settings.DataSources[0].FollowTail.Should().BeTrue();

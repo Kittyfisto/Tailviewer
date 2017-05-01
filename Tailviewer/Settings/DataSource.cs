@@ -9,6 +9,7 @@ using Metrolib;
 namespace Tailviewer.Settings
 {
 	public sealed class DataSource
+		: ICloneable
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -218,6 +219,35 @@ namespace Tailviewer.Settings
 			}
 
 			return guids;
+		}
+
+		public DataSource Clone()
+		{
+			var clone = new DataSource
+			{
+				ColorByLevel = ColorByLevel,
+				File = File,
+				FollowTail = FollowTail,
+				HideEmptyLines = HideEmptyLines,
+				HorizontalOffset = HorizontalOffset,
+				Id = Id,
+				IsSingleLine = IsSingleLine,
+				LastViewed = LastViewed,
+				LevelFilter = LevelFilter,
+				Order = Order,
+				ParentId = ParentId,
+				SearchTerm = SearchTerm,
+				ShowLineNumbers = ShowLineNumbers,
+				VisibleLogLine = VisibleLogLine
+			};
+			clone.ActivatedQuickFilters.AddRange(ActivatedQuickFilters);
+			clone.SelectedLogLines.AddRange(SelectedLogLines);
+			return clone;
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

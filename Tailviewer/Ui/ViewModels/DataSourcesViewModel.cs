@@ -5,21 +5,28 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using System.Windows.Media;
+using Metrolib;
+using Microsoft.Win32;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.SidePanel;
+using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class DataSourcesViewModel
-		: INotifyPropertyChanged
+		: ISidePanelViewModel
 	{
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly ApplicationSettings _settings;
+		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
+		private bool _isSelected;
 
 		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
 		{
@@ -29,6 +36,7 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = settings;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
+			_addDataSourceCommand = new DelegateCommand(AddDataSource);
 			_dataSources = dataSources;
 			foreach (IDataSource dataSource in dataSources)
 			{
@@ -50,6 +58,8 @@ namespace Tailviewer.Ui.ViewModels
 				}
 			}
 		}
+
+		public ICommand AddDataSourceCommand => _addDataSourceCommand;
 
 		public IDataSourceViewModel SelectedItem
 		{
@@ -79,10 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ObservableCollection<IDataSourceViewModel> Observable
-		{
-			get { return _observable; }
-		}
+		public ObservableCollection<IDataSourceViewModel> Observable => _observable;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -114,6 +121,27 @@ namespace Tailviewer.Ui.ViewModels
 			return viewModel;
 		}
 
+		private void AddDataSource()
+		{
+			// Create OpenFileDialog 
+			var dlg = new OpenFileDialog
+			{
+				DefaultExt = ".log",
+				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+				Multiselect = true
+			};
+
+			// Display OpenFileDialog by calling ShowDialog method 
+			if (dlg.ShowDialog() == true)
+			{
+				string[] selectedFiles = dlg.FileNames;
+				foreach (string fileName in selectedFiles)
+				{
+					GetOrAdd(fileName);
+				}
+			}
+		}
+		
 		private bool Represents(IDataSourceViewModel dataSourceViewModel, string fullName)
 		{
 			var file = dataSourceViewModel as SingleDataSourceViewModel;
@@ -410,5 +438,22 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
+		public Geometry Icon => Icons.Database;
+
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				if (value == _isSelected)
+					return;
+
+				_isSelected = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string Id => "datasources";
 	}
 }

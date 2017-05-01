@@ -14,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 		{
 			var definition = new LogEventDefinition(@"Found channel ([0-9]*\.?[0-9]MHz)");
 			var values = definition.TryExtractEventFrom(new LogLine(0, 0, "4th April, 2017 Found channel 816MHz", LevelFlags.Info));
-			values.Should().Equal("Found channel 816MHz");
+			values.Should().Equal("816MHz");
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security;
@@ -11,6 +13,7 @@ using Metrolib;
 namespace Tailviewer.Settings
 {
 	public sealed class AutoUpdateSettings
+		: ICloneable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -172,6 +175,27 @@ namespace Tailviewer.Settings
 				proxy.Credentials = credentials;
 			}
 			return proxy;
+		}
+
+		[Pure]
+		public AutoUpdateSettings Clone()
+		{
+			return new AutoUpdateSettings
+			{
+				AutomaticallyInstallUpdates = AutomaticallyInstallUpdates,
+				CheckForUpdates = CheckForUpdates,
+				LastChecked = LastChecked,
+				ProxyServer = ProxyServer,
+				ProxyUsername = ProxyUsername,
+				_password = _password?.ToArray(),
+				_passwordIsEmpty = _passwordIsEmpty,
+				_passwordSalt = _passwordSalt?.ToArray()
+			};
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

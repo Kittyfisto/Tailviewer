@@ -3,17 +3,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using NewDesign.Dashboard;
 
-namespace NewDesign.SidePanel
+namespace Tailviewer.Ui.Controls.SidePanel
 {
 	public sealed class SidePanelControl
 		: Control
 	{
-		public static readonly DependencyProperty IconConverterProperty = DependencyProperty.Register(
-			"IconConverter", typeof(IValueConverter), typeof(SidePanelControl), new PropertyMetadata(default(IValueConverter)));
-
 		public static readonly DependencyProperty SidePanelsProperty = DependencyProperty.Register(
 			"SidePanels", typeof(IEnumerable<ISidePanelViewModel>), typeof(SidePanelControl),
 			new PropertyMetadata(null, OnSidePanelsChanged));
@@ -26,12 +21,6 @@ namespace NewDesign.SidePanel
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(SidePanelControl),
 				new FrameworkPropertyMetadata(typeof(SidePanelControl)));
-		}
-
-		public IValueConverter IconConverter
-		{
-			get { return (IValueConverter) GetValue(IconConverterProperty); }
-			set { SetValue(IconConverterProperty, value); }
 		}
 
 		public ISidePanelViewModel SelectedPanel

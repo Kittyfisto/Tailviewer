@@ -53,8 +53,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.2.2.18, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.18\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.21\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.7.8.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -128,7 +128,11 @@
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\Dashboard\Analysers\Event\EventsAnalyserSettingsTest.cs" />
     <Compile Include="Settings\Dashboard\Analysers\Event\EventSettingsTest.cs" />
+    <Compile Include="Settings\DataSourcesTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
+    <Compile Include="Settings\MainWindowSettingsTest.cs" />
+    <Compile Include="Settings\QuickFiltersTest.cs" />
+    <Compile Include="Settings\QuickFilterTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />

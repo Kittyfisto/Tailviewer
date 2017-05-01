@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.Ui.Controls.SidePanel;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -16,6 +19,7 @@ namespace Tailviewer.Ui.ViewModels
 	///     Represents the list of all quick filters.
 	/// </summary>
 	internal sealed class QuickFiltersViewModel
+		: ISidePanelViewModel
 	{
 		private readonly ICommand _addCommand;
 		private readonly QuickFilters _quickFilters;
@@ -23,6 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
 		private IDataSourceViewModel _currentDataSource;
 		private bool _isChangingCurrentDataSource;
+		private bool _isSelected;
 
 		public QuickFiltersViewModel(ApplicationSettings settings, QuickFilters quickFilters)
 		{
@@ -39,15 +44,9 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand AddCommand
-		{
-			get { return _addCommand; }
-		}
+		public ICommand AddCommand => _addCommand;
 
-		public IEnumerable<QuickFilterViewModel> Observable
-		{
-			get { return _viewModels; }
-		}
+		public IEnumerable<QuickFilterViewModel> QuickFilters => _viewModels;
 
 		public IDataSourceViewModel CurrentDataSource
 		{
@@ -163,6 +162,30 @@ namespace Tailviewer.Ui.ViewModels
 				// to filter the log file again...
 				OnFiltersChanged?.Invoke();
 			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		public Geometry Icon => Icons.Filter;
+
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				if (value == _isSelected)
+					return;
+
+				_isSelected = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string Id => "quickfilter";
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

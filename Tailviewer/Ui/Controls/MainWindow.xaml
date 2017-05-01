@@ -10,6 +10,7 @@
                            xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                            xmlns:about="clr-namespace:Tailviewer.Ui.Controls.About"
+                           xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -34,6 +35,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourcesDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -113,13 +116,6 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <dataSourceTree:DataSourcesControl
-                        Width="240"
-                        x:Name="PART_DataSources"
-                        ItemsSource="{Binding RecentFiles}"
-                        AddDataSourceCommand="{Binding AddDataSourceCommand}"
-                        SelectedItem="{Binding CurrentDataSource, Mode=TwoWay}" />
-
                     <Grid Grid.Column="1"
                           Width="1"
                           Background="{StaticResource SeparatorBrush}" />
@@ -158,19 +154,11 @@
                           Width="1"
                           Background="{StaticResource SeparatorBrush}" />
 
-                    <controls:QuickFilterControl
+                    <sidePanel:SidePanelControl
                         Grid.Column="4"
-                        Width="200"
-                        ItemsSource="{Binding QuickFilters}"
-                        AddCommand="{Binding AddQuickFilterCommand}" />
-
-                    <StackPanel Grid.Column="4"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Height="32">
-
-                    </StackPanel>
+                        MaxWidth="400"
+                        SidePanels="{Binding SidePanels}"
+                        SelectedPanel="{Binding SelectedPanel, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
 

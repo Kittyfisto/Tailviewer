@@ -193,7 +193,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				return false;
 
 			DataSourceDropType dropType = GetDropType(e, dropTarget, viewModel);
-			var model = (MainWindowViewModel) DataContext;
+			var model = (DataSourcesViewModel) DataContext;
 			IDataSourceViewModel group;
 			if (!model.CanBeDropped(source.ViewModel, dropTarget.ViewModel, dropType, out group))
 				return false;
@@ -260,7 +260,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DropInfo dropInfo;
 			if (IsValidDrop(e, out dropInfo))
 			{
-				var vm = DataContext as MainWindowViewModel;
+				var vm = DataContext as DataSourcesViewModel;
 				vm?.OnDropped(dropInfo.Source.ViewModel,
 					dropInfo.Target.ViewModel,
 					dropInfo.Type);
@@ -347,7 +347,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 				IDataSourceViewModel source = SelectedItem;
 				TreeViewItem treeViewItem = SelectedTreeViewItem;
 
-				if (treeViewItem.IsMouseOver && ((MainWindowViewModel) DataContext).CanBeDragged(source))
+				if (treeViewItem.IsMouseOver && ((DataSourcesViewModel) DataContext).CanBeDragged(source))
 				{
 					DragLayer.DoDragDrop(source, treeViewItem, DragDropEffects.Move);
 				}

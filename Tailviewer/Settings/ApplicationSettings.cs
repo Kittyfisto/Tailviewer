@@ -3,11 +3,11 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Metrolib;
 
 namespace Tailviewer.Settings
 {
 	public sealed class ApplicationSettings
+		: ICloneable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -16,8 +16,18 @@ namespace Tailviewer.Settings
 		private readonly DataSources _dataSources;
 		private readonly string _fileFolder;
 		private readonly string _fileName;
-		private readonly WindowSettings _mainWindow;
+		private readonly MainWindowSettings _mainWindow;
 		private readonly QuickFilters _quickFilters;
+
+		private ApplicationSettings(ApplicationSettings other)
+		{
+			_fileName = other._fileName;
+			_fileFolder = other._fileFolder;
+			_autoUpdate = other._autoUpdate.Clone();
+			_mainWindow = other._mainWindow.Clone();
+			_dataSources = other._dataSources.Clone();
+			_quickFilters = other._quickFilters.Clone();
+		}
 
 		public ApplicationSettings(string fileName)
 		{
@@ -25,30 +35,18 @@ namespace Tailviewer.Settings
 			_fileFolder = Path.GetDirectoryName(_fileName);
 
 			_autoUpdate = new AutoUpdateSettings();
-			_mainWindow = new WindowSettings();
+			_mainWindow = new MainWindowSettings();
 			_dataSources = new DataSources();
 			_quickFilters = new QuickFilters();
 		}
+		
+		public AutoUpdateSettings AutoUpdate => _autoUpdate;
 
-		public AutoUpdateSettings AutoUpdate
-		{
-			get { return _autoUpdate; }
-		}
+		public MainWindowSettings MainWindow => _mainWindow;
 
-		public WindowSettings MainWindow
-		{
-			get { return _mainWindow; }
-		}
+		public DataSources DataSources => _dataSources;
 
-		public DataSources DataSources
-		{
-			get { return _dataSources; }
-		}
-
-		public QuickFilters QuickFilters
-		{
-			get { return _quickFilters; }
-		}
+		public QuickFilters QuickFilters => _quickFilters;
 
 		public static ApplicationSettings Create()
 		{
@@ -162,6 +160,16 @@ namespace Tailviewer.Settings
 			{
 				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 			}
+		}
+
+		public ApplicationSettings Clone()
+		{
+			return new ApplicationSettings(this);
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
-using Microsoft.Win32;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.SidePanel;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -28,11 +28,13 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
+		private readonly ApplicationSettings _applicationSettings;
+
 		#region ViewModels
 
 		private readonly ActionCenterViewModel _actionCenter;
 		private readonly AutoUpdateViewModel _autoUpdater;
-		private readonly DataSourcesViewModel _dataSourcesViewModel;
+		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersViewModel _quickFilters;
 		private readonly SettingsViewModel _settings;
 
@@ -40,9 +42,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		#region Commands
 
-		private readonly ICommand _addDataSourceCommand;
 		private readonly ICommand _selectNextDataSourceCommand;
 		private readonly ICommand _selectPreviousDataSourceCommand;
+
+		#endregion
+
+		#region Side Panel
+
+		private readonly ISidePanelViewModel[] _sidePanels;
+		private ISidePanelViewModel _selectedPanel;
 
 		#endregion
 
@@ -62,8 +70,9 @@ namespace Tailviewer.Ui.ViewModels
 			if (updater == null) throw new ArgumentNullException(nameof(updater));
 			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
-			_dataSourcesViewModel = new DataSourcesViewModel(settings, dataSources);
-			_dataSourcesViewModel.PropertyChanged += DataSourcesViewModelOnPropertyChanged;
+			_applicationSettings = settings;
+			_dataSources = new DataSourcesViewModel(settings, dataSources);
+			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
 			_settings = new SettingsViewModel(settings);
@@ -83,30 +92,24 @@ namespace Tailviewer.Ui.ViewModels
 
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
-			_addDataSourceCommand = new DelegateCommand(AddDataSource);
+
+			_sidePanels = new ISidePanelViewModel[]
+			{
+				_dataSources,
+				_quickFilters
+			};
+			SelectedPanel = _sidePanels.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedSidePanel);
 
 			ChangeDataSource(CurrentDataSource);
 		}
 
-		public ActionCenterViewModel ActionCenter
-		{
-			get { return _actionCenter; }
-		}
+		public ActionCenterViewModel ActionCenter => _actionCenter;
 
-		public AutoUpdateViewModel AutoUpdater
-		{
-			get { return _autoUpdater; }
-		}
+		public AutoUpdateViewModel AutoUpdater => _autoUpdater;
 
-		public ICommand SelectPreviousDataSourceCommand
-		{
-			get { return _selectPreviousDataSourceCommand; }
-		}
+		public ICommand SelectPreviousDataSourceCommand => _selectPreviousDataSourceCommand;
 
-		public ICommand SelectNextDataSourceCommand
-		{
-			get { return _selectNextDataSourceCommand; }
-		}
+		public ICommand SelectNextDataSourceCommand => _selectNextDataSourceCommand;
 
 		public string WindowTitle
 		{
@@ -134,10 +137,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public SettingsViewModel Settings
-		{
-			get { return _settings; }
-		}
+		public SettingsViewModel Settings => _settings;
 
 		public LogViewerViewModel CurrentDataSourceLogView
 		{
@@ -161,27 +161,16 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IEnumerable<QuickFilterViewModel> QuickFilters
-		{
-			get { return _quickFilters.Observable; }
-		}
+		public DataSourcesViewModel DataSources => _dataSources;
 
-		public ICommand AddQuickFilterCommand
-		{
-			get { return _quickFilters.AddCommand; }
-		}
-
-		public IEnumerable<IDataSourceViewModel> RecentFiles
-		{
-			get { return _dataSourcesViewModel.Observable; }
-		}
+		public IEnumerable<IDataSourceViewModel> RecentFiles => _dataSources.Observable;
 
 		public IDataSourceViewModel CurrentDataSource
 		{
-			get { return _dataSourcesViewModel.SelectedItem; }
+			get { return _dataSources.SelectedItem; }
 			set
 			{
-				if (value == _dataSourcesViewModel.SelectedItem)
+				if (value == _dataSources.SelectedItem)
 					return;
 
 				ChangeDataSource(value);
@@ -189,40 +178,39 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand AddDataSourceCommand
+		public ISidePanelViewModel SelectedPanel
 		{
-			get { return _addDataSourceCommand; }
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void AddDataSource()
-		{
-			// Create OpenFileDialog 
-			var dlg = new OpenFileDialog
-				{
-					DefaultExt = ".log",
-					Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
-					Multiselect = true
-				};
-
-			// Display OpenFileDialog by calling ShowDialog method 
-			if (dlg.ShowDialog() == true)
+			get { return _selectedPanel; }
+			set
 			{
-				string[] selectedFiles = dlg.FileNames;
-				foreach (string fileName in selectedFiles)
+				if (value == _selectedPanel)
+					return;
+
+				_selectedPanel = value;
+				EmitPropertyChanged();
+
+				if (_selectedPanel != null)
 				{
-					OpenFile(fileName);
+					_applicationSettings.MainWindow.SelectedSidePanel = _selectedPanel.Id;
 				}
+				else
+				{
+					_applicationSettings.MainWindow.SelectedSidePanel = null;
+				}
+				_applicationSettings.Save();
 			}
 		}
 
-		private void DataSourcesViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		public IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void DataSourcesOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
 				case "SelectedItem":
-					ChangeDataSource(_dataSourcesViewModel.SelectedItem);
+					ChangeDataSource(_dataSources.SelectedItem);
 					EmitPropertyChanged("CurrentDataSource");
 					break;
 			}
@@ -230,7 +218,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void ChangeDataSource(IDataSourceViewModel value)
 		{
-			_dataSourcesViewModel.SelectedItem = value;
+			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
 			OpenFile(value);
 		}
@@ -239,11 +227,11 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			if (CurrentDataSource == null)
 			{
-				CurrentDataSource = _dataSourcesViewModel.Observable.FirstOrDefault();
+				CurrentDataSource = _dataSources.Observable.FirstOrDefault();
 			}
 			else
 			{
-				ObservableCollection<IDataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				ObservableCollection<IDataSourceViewModel> dataSources = _dataSources.Observable;
 				int index = dataSources.IndexOf(CurrentDataSource);
 				int nextIndex = (index + 1)%dataSources.Count;
 				CurrentDataSource = dataSources[nextIndex];
@@ -254,11 +242,11 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			if (CurrentDataSource == null)
 			{
-				CurrentDataSource = _dataSourcesViewModel.Observable.LastOrDefault();
+				CurrentDataSource = _dataSources.Observable.LastOrDefault();
 			}
 			else
 			{
-				ObservableCollection<IDataSourceViewModel> dataSources = _dataSourcesViewModel.Observable;
+				ObservableCollection<IDataSourceViewModel> dataSources = _dataSources.Observable;
 				int index = dataSources.IndexOf(CurrentDataSource);
 				int nextIndex = index - 1;
 				if (nextIndex < 0)
@@ -276,7 +264,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
-			_dataSourcesViewModel.Update();
+			_dataSources.Update();
 		}
 
 		public void OpenFiles(string[] files)
@@ -289,7 +277,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public IDataSourceViewModel OpenFile(string file)
 		{
-			IDataSourceViewModel dataSource = _dataSourcesViewModel.GetOrAdd(file);
+			IDataSourceViewModel dataSource = _dataSources.GetOrAdd(file);
 			OpenFile(dataSource);
 			return dataSource;
 		}
@@ -324,7 +312,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		public bool CanBeDragged(IDataSourceViewModel source)
 		{
-			return _dataSourcesViewModel.CanBeDragged(source);
+			return _dataSources.CanBeDragged(source);
 		}
 
 		public bool CanBeDropped(IDataSourceViewModel source,
@@ -332,14 +320,14 @@ namespace Tailviewer.Ui.ViewModels
 		                         DataSourceDropType dropType,
 		                         out IDataSourceViewModel finalDest)
 		{
-			return _dataSourcesViewModel.CanBeDropped(source, dest, dropType, out finalDest);
+			return _dataSources.CanBeDropped(source, dest, dropType, out finalDest);
 		}
 
 		public void OnDropped(IDataSourceViewModel source,
 		                      IDataSourceViewModel dest,
 		                      DataSourceDropType dropType)
 		{
-			_dataSourcesViewModel.OnDropped(source, dest, dropType);
+			_dataSources.OnDropped(source, dest, dropType);
 		}
 	}
 }

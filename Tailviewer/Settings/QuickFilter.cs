@@ -5,6 +5,7 @@ using Metrolib;
 namespace Tailviewer.Settings
 {
 	public sealed class QuickFilter
+		: ICloneable
 	{
 		public bool IgnoreCase;
 		public QuickFilterMatchType MatchType;
@@ -68,6 +69,23 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("value", Value);
 			writer.WriteAttributeBool("ignorecase", IgnoreCase);
 			writer.WriteAttributeBool("isinclude", IsInverted);
+		}
+
+		public QuickFilter Clone()
+		{
+			return new QuickFilter
+			{
+				_id = _id,
+				IgnoreCase = IgnoreCase,
+				IsInverted = IsInverted,
+				MatchType = MatchType,
+				Value = Value
+			};
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

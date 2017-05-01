@@ -31,7 +31,7 @@ namespace Tailviewer
 
 			var fileAppender = new RollingFileAppender
 				{
-					AppendToFile = false,
+					AppendToFile = true,
 					File =
 						Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tailviewer",
 						             "Tailviewer.log"),

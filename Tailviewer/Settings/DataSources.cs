@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
@@ -9,6 +10,7 @@ namespace Tailviewer.Settings
 {
 	public sealed class DataSources
 		: List<DataSource>
+		, ICloneable
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -81,6 +83,19 @@ namespace Tailviewer.Settings
 				dataSource.Save(writer);
 				writer.WriteEndElement();
 			}
+		}
+
+		public DataSources Clone()
+		{
+			var clone = new DataSources();
+			clone.AddRange(this.Select(x => x.Clone()));
+			clone.SelectedItem = SelectedItem;
+			return clone;
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

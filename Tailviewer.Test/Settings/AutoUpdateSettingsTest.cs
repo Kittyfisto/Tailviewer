@@ -137,5 +137,26 @@ namespace Tailviewer.Test.Settings
 				}
 			}
 		}
+
+		[Test]
+		public void TestClone()
+		{
+			var settings = new AutoUpdateSettings
+			{
+				AutomaticallyInstallUpdates = true,
+				CheckForUpdates = true,
+				LastChecked = new DateTime(2017, 5, 1, 17, 30, 0),
+				ProxyUsername = "user",
+				ProxyPassword = "password",
+				ProxyServer = "myproxy"
+			};
+			var clone = settings.Clone();
+			clone.Should().NotBeNull();
+			clone.Should().NotBeSameAs(settings);
+			clone.LastChecked.Should().Be(new DateTime(2017, 5, 1, 17, 30, 0));
+			clone.ProxyUsername.Should().Be("user");
+			clone.ProxyPassword.Should().Be("password");
+			clone.ProxyServer.Should().Be("myproxy");
+		}
 	}
 }
