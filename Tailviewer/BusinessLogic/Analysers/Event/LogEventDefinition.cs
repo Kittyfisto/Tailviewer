@@ -30,12 +30,12 @@ namespace Tailviewer.BusinessLogic.Analysers.Event
 			if (!match.Success)
 				return null;
 
-			var captures = match.Captures;
-			var count = captures.Count;
+			var groups = match.Groups;
+			var count = groups.Count-1;
 			var fields = new object[count];
 			for (int i = 0; i < count; ++i)
 			{
-				fields[i] = captures[i].Value;
+				fields[i] = groups[i+1].Value;
 			}
 
 			return fields;

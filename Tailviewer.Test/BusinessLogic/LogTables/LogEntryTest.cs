@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.Test.BusinessLogic
+namespace Tailviewer.Test.BusinessLogic.LogTables
 {
 	[TestFixture]
 	public sealed class LogEntryTest
@@ -20,6 +20,13 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var row = new LogEntry(new object[]{42});
 			row.ToString().Should().Be("42");
+		}
+
+		[Test]
+		public void TestToString3()
+		{
+			var row = new LogEntry(null, "42");
+			row.ToString().Should().Be("null|42");
 		}
 
 		[Test]
