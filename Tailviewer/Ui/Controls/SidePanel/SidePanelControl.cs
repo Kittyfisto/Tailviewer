@@ -17,10 +17,38 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			"SelectedPanel", typeof(ISidePanelViewModel), typeof(SidePanelControl),
 			new PropertyMetadata(null, OnSelectedPanelChanged));
 
+		private static readonly DependencyPropertyKey DisplayedPanelPropertyKey
+			= DependencyProperty.RegisterReadOnly("DisplayedPanel", typeof(ISidePanelViewModel), typeof(SidePanelControl),
+				new FrameworkPropertyMetadata(default(ISidePanelViewModel),
+					FrameworkPropertyMetadataOptions.None));
+
+		public static readonly DependencyProperty DisplayedPanelProperty
+			= DisplayedPanelPropertyKey.DependencyProperty;
+
+		private static readonly DependencyPropertyKey HasSelectionPropertyKey
+			= DependencyProperty.RegisterReadOnly("HasSelection", typeof(bool), typeof(SidePanelControl),
+				new FrameworkPropertyMetadata(default(bool),
+					FrameworkPropertyMetadataOptions.None));
+
+		public static readonly DependencyProperty HasSelectionProperty
+			= HasSelectionPropertyKey.DependencyProperty;
+
 		static SidePanelControl()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(SidePanelControl),
 				new FrameworkPropertyMetadata(typeof(SidePanelControl)));
+		}
+
+		public ISidePanelViewModel DisplayedPanel
+		{
+			get { return (ISidePanelViewModel) GetValue(DisplayedPanelProperty); }
+			protected set { SetValue(DisplayedPanelPropertyKey, value); }
+		}
+
+		public bool HasSelection
+		{
+			get { return (bool) GetValue(HasSelectionProperty); }
+			protected set { SetValue(HasSelectionPropertyKey, value); }
 		}
 
 		public ISidePanelViewModel SelectedPanel
@@ -73,6 +101,10 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				oldSelection.IsSelected = false;
 			if (newSelection != null)
 				newSelection.IsSelected = true;
+
+			HasSelection = newSelection != null;
+			if (newSelection != null)
+				DisplayedPanel = newSelection;
 		}
 	}
 }

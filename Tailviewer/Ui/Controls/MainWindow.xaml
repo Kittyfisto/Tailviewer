@@ -35,8 +35,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourcesDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/DataSourcesDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilterDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
 

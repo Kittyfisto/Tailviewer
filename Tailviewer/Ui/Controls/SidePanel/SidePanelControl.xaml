@@ -14,9 +14,18 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="48" />
                             </Grid.ColumnDefinitions>
-                            
-                            <ContentPresenter Content="{TemplateBinding SelectedPanel}" />
-                            
+
+                            <Border Background="White">
+                                <ContentPresenter x:Name="PART_Content"
+                                                  Content="{TemplateBinding DisplayedPanel}"
+                                                  HorizontalAlignment="Right"
+                                                  Width="240">
+                                    <ContentPresenter.LayoutTransform>
+                                        <ScaleTransform ScaleX="0" />
+                                    </ContentPresenter.LayoutTransform>
+                                </ContentPresenter>
+                            </Border>
+
                             <ItemsControl ItemsSource="{TemplateBinding SidePanels}"
                                           Grid.Column="1">
                                 <ItemsControl.ItemTemplate>
@@ -39,6 +48,32 @@
                             </ItemsControl>
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasSelection" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Content"
+                                                         Storyboard.TargetProperty="LayoutTransform.ScaleX"
+                                                         From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="PART_Content"
+                                                         Storyboard.TargetProperty="LayoutTransform.ScaleX"
+                                                         From="1"
+                                                         To="0"
+                                                         Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

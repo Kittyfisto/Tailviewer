@@ -5,7 +5,6 @@
     
     <DataTemplate DataType="{x:Type viewModels:DataSourcesViewModel}">
         <dataSourceTree:DataSourcesControl
-            Width="240"
             x:Name="PART_DataSources"
             ItemsSource="{Binding Observable}"
             AddDataSourceCommand="{Binding AddDataSourceCommand}"

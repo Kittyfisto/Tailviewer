@@ -14,8 +14,7 @@
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type viewModels:QuickFiltersViewModel}">
-        <Border Width="200"
-                Background="White">
+        <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
