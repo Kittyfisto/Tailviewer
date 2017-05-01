@@ -42,6 +42,26 @@ namespace Tailviewer
 			AddV031();
 			AddV032();
 			AddV033();
+			AddV040();
+		}
+
+		private static void AddV040()
+		{
+			var features = new string[]
+			{
+				"Introduced new design"
+			};
+			var bugfixes = new string[]
+			{
+				
+			};
+			var misc = new string[]
+			{
+			};
+			var releaseDate = new DateTime(2017, 5, 1);
+			var version = new Version(0, 4, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV033()
