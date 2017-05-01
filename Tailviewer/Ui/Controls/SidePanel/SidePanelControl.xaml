@@ -33,7 +33,7 @@
                                         <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                                    Padding="16"
                                                                    HoveredBackground="{DynamicResource SecondaryLightBrush}"
-                                                                   CheckedBackground="{DynamicResource SecondaryLightBrush}"
+                                                                   CheckedBackground="{DynamicResource SecondaryLighterBrush}"
                                                                    HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}">
                                             <Viewbox>
                                                 <Canvas Width="24" Height="24">
@@ -57,7 +57,11 @@
                                                          Storyboard.TargetProperty="LayoutTransform.ScaleX"
                                                          From="0"
                                                          To="1"
-                                                         Duration="0:0:0.2"/>
+                                                         Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <QuadraticEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -68,7 +72,11 @@
                                                          Storyboard.TargetProperty="LayoutTransform.ScaleX"
                                                          From="1"
                                                          To="0"
-                                                         Duration="0:0:0.2"/>
+                                                         Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <QuadraticEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
