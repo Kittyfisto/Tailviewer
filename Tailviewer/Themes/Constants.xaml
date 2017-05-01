@@ -13,7 +13,7 @@
 
     <Color x:Key="Secondary">#2196f3</Color>
     <Color x:Key="SecondaryLight">#6ec6ff</Color>
-    <Color x:Key="SecondaryLighter">#84D0FF</Color>
+    <Color x:Key="SecondaryLighter">#89D2FF</Color>
     <Color x:Key="SecondaryDark">#0069c0</Color>
     <Color x:Key="SecondaryForeground">#000000</Color>
 
