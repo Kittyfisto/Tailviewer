@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 
@@ -65,7 +66,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void FocusDataSourceSearch()
 		{
-			//PART_DataSources.FocusSearch();
+			DataSourcesControl.Instance?.FocusSearch();
 		}
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
@@ -99,7 +100,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				// Why the fuck is the main window even asked to handle
 				// the drag when the mouse is clearly over the data source tree?!
-				//PART_DataSources.PartDataSourcesOnDrop(sender, e);
+				DataSourcesControl.Instance?.PartDataSourcesOnDrop(sender, e);
 			}
 		}
 
@@ -114,7 +115,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				// Why the fuck is the main window even asked to handle
 				// the drag when the mouse is clearly over the data source tree?!
-				//PART_DataSources.HandleDrag(e);
+				DataSourcesControl.Instance?.HandleDrag(e);
 			}
 			e.Handled = true;
 		}

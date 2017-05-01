@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -48,6 +49,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DependencyProperty.Register("AddDataSourceCommand", typeof (ICommand), typeof (DataSourcesControl),
 			                            new PropertyMetadata(default(ICommand)));
 
+		public static DataSourcesControl Instance;
+
 		private FilterTextBox _partDataSourceSearch;
 		private TreeView _partDataSources;
 
@@ -60,6 +63,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public DataSourcesControl()
 		{
 			FilteredItemsSource = new ObservableCollection<IDataSourceViewModel>();
+			Instance = this;
 		}
 
 		public ICommand AddDataSourceCommand
