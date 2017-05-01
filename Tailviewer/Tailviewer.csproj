@@ -189,6 +189,9 @@
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
+    <Compile Include="Settings\IApplicationSettings.cs" />
+    <Compile Include="Settings\IAutoUpdateSettings.cs" />
+    <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="Settings\QuickFilter.cs" />
     <Compile Include="Settings\QuickFilterActionType.cs" />

@@ -86,7 +86,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			QuickFilter quickFilter = _quickFilters.Add();
 			QuickFilterViewModel viewModel = CreateAndAddViewModel(quickFilter);
-			_settings.Save();
+			_settings.SaveAsync();
 			return viewModel;
 		}
 
@@ -154,7 +154,7 @@ namespace Tailviewer.Ui.ViewModels
 			_quickFilters.Remove(viewModel.Id);
 			viewModel.PropertyChanged -= QuickFilterOnPropertyChanged;
 
-			_settings.Save();
+			_settings.SaveAsync();
 
 			if (viewModel.IsActive)
 			{

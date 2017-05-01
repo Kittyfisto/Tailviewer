@@ -197,7 +197,7 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					_applicationSettings.MainWindow.SelectedSidePanel = null;
 				}
-				_applicationSettings.Save();
+				_applicationSettings.SaveAsync();
 			}
 		}
 

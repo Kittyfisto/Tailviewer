@@ -29,7 +29,7 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.AutoUpdate.CheckForUpdates = value;
 				EmitPropertyChanged();
 
-				_settings.Save();
+				_settings.SaveAsync();
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.AutoUpdate.AutomaticallyInstallUpdates = value;
 				EmitPropertyChanged();
 
-				_settings.Save();
+				_settings.SaveAsync();
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.AutoUpdate.ProxyUsername = value;
 				EmitPropertyChanged();
 
-				_settings.Save();
+				_settings.SaveAsync();
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.AutoUpdate.ProxyPassword = value;
 				EmitPropertyChanged();
 
-				_settings.Save();
+				_settings.SaveAsync();
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.AutoUpdate.ProxyServer = value;
 				EmitPropertyChanged();
 
-				_settings.Save();
+				_settings.SaveAsync();
 			}
 		}
 

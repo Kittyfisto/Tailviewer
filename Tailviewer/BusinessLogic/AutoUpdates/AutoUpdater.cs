@@ -27,7 +27,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 
 		private readonly object _syncRoot;
 		private readonly IActionCenter _actionCenter;
-		private readonly AutoUpdateSettings _settings;
+		private readonly IAutoUpdateSettings _settings;
 		private readonly List<Action<VersionInfo>> _latestVersionChanged;
 
 		private VersionInfo _latestVersion;
@@ -44,7 +44,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		public AutoUpdater(IActionCenter actionCenter, AutoUpdateSettings settings)
+		public AutoUpdater(IActionCenter actionCenter, IAutoUpdateSettings settings)
 		{
 			if (actionCenter == null)
 				throw new ArgumentNullException(nameof(actionCenter));
@@ -122,10 +122,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		public Version AppVersion
-		{
-			get { return CurrentAppVersion; }
-		}
+		public Version AppVersion => CurrentAppVersion;
 
 		public VersionInfo LatestVersion
 		{

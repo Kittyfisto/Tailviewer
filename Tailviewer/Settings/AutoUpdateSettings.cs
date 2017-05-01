@@ -13,17 +13,18 @@ using Metrolib;
 namespace Tailviewer.Settings
 {
 	public sealed class AutoUpdateSettings
-		: ICloneable
+		: IAutoUpdateSettings
+		, ICloneable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private const int PasswordSaltLength = 20;
 
-		public DateTime LastChecked;
-		public bool CheckForUpdates;
-		public bool AutomaticallyInstallUpdates;
-		public string ProxyServer;
-		public string ProxyUsername;
+		public DateTime LastChecked { get; set; }
+		public bool CheckForUpdates { get; set; }
+		public bool AutomaticallyInstallUpdates { get; set; }
+		public string ProxyServer { get; set; }
+		public string ProxyUsername { get; set; }
 
 		public string ProxyPassword
 		{

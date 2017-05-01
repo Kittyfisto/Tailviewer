@@ -110,7 +110,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				IDataSource dataSource = _dataSources.AddDataSource(fileName);
 				viewModel = Add(dataSource);
-				_settings.Save();
+				_settings.SaveAsync();
 
 				if (_observable.Count == 1)
 				{
@@ -218,7 +218,7 @@ namespace Tailviewer.Ui.ViewModels
 
 			_allDataSourceViewModels.Remove(viewModel);
 			_dataSources.Remove(viewModel.DataSource);
-			_settings.Save();
+			_settings.SaveAsync();
 		}
 
 		public bool CanBeDragged(IDataSourceViewModel source)

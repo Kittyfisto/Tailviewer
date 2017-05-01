@@ -21,7 +21,6 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IDispatcher _dispatcher;
 		private readonly ICommand _gotItCommand;
 		private readonly DelegateCommand _installCommand;
-		private readonly AutoUpdateSettings _settings;
 		private readonly IAutoUpdater _updater;
 		private bool _isUpdateAvailable;
 		private VersionInfo _latest;
@@ -31,7 +30,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _installTitle;
 		private Task _installationTask;
 
-		public AutoUpdateViewModel(IAutoUpdater updater, AutoUpdateSettings settings, IDispatcher dispatcher)
+		public AutoUpdateViewModel(IAutoUpdater updater, IAutoUpdateSettings settings, IDispatcher dispatcher)
 		{
 			if (updater == null)
 				throw new ArgumentNullException(nameof(updater));
@@ -41,7 +40,6 @@ namespace Tailviewer.Ui.ViewModels
 				throw new ArgumentNullException(nameof(dispatcher));
 
 			_updater = updater;
-			_settings = settings;
 			_dispatcher = dispatcher;
 			_installCommand = new DelegateCommand(Install, CanInstall);
 			_gotItCommand = new DelegateCommand(GotIt);
@@ -77,10 +75,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand CheckForUpdatesCommand
-		{
-			get { return _checkForUpdatesCommand; }
-		}
+		public ICommand CheckForUpdatesCommand => _checkForUpdatesCommand;
 
 		public bool ShowUpdateAvailable
 		{
@@ -121,15 +116,9 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand InstallCommand
-		{
-			get { return _installCommand; }
-		}
+		public ICommand InstallCommand => _installCommand;
 
-		public ICommand GotItCommand
-		{
-			get { return _gotItCommand; }
-		}
+		public ICommand GotItCommand => _gotItCommand;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

@@ -7,22 +7,53 @@ using Metrolib;
 namespace Tailviewer.Settings
 {
 	public sealed class MainWindowSettings
-		: ICloneable
+		: IMainWindowSettings
+		, ICloneable
 	{
-		public string SelectedSidePanel;
+		public double Height
+		{
+			get { return _window.Height; }
+			set { _window.Height = value; }
+		}
+
+		public double Left
+		{
+			get { return _window.Left; }
+			set { _window.Left = value; }
+		}
+
+		public WindowState State
+		{
+			get { return _window.State; }
+			set { _window.State = value; }
+		}
+
+		public double Top
+		{
+			get { return _window.Top; }
+			set { _window.Top = value; }
+		}
+
+		public double Width
+		{
+			get { return _window.Width; }
+			set { _window.Width = value; }
+		}
+
+		public string SelectedSidePanel { get; set; }
 
 		public MainWindowSettings()
 		{
-			Window = new WindowSettings();
+			_window = new WindowSettings();
 		}
 
 		private MainWindowSettings(MainWindowSettings other)
 		{
-			Window = other.Window.Clone();
+			_window = other._window.Clone();
 			SelectedSidePanel = other.SelectedSidePanel;
 		}
 
-		public WindowSettings Window { get; }
+		private readonly WindowSettings _window;
 
 		object ICloneable.Clone()
 		{
@@ -32,7 +63,7 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeString("selectedsidepanel", SelectedSidePanel);
-			Window.Save(writer);
+			_window.Save(writer);
 		}
 
 		public void Restore(XmlReader reader)
@@ -48,17 +79,17 @@ namespace Tailviewer.Settings
 				}
 			}
 
-			Window.Restore(reader);
+			_window.Restore(reader);
 		}
 
 		public void UpdateFrom(Window window)
 		{
-			Window.UpdateFrom(window);
+			_window.UpdateFrom(window);
 		}
 
 		public void RestoreTo(Window window)
 		{
-			Window.RestoreTo(window);
+			_window.RestoreTo(window);
 		}
 
 		[Pure]

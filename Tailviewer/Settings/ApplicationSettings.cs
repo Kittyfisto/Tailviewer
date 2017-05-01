@@ -1,15 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
 using log4net;
 
 namespace Tailviewer.Settings
 {
 	public sealed class ApplicationSettings
-		: ICloneable
+		: IApplicationSettings
+		, ICloneable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private static Task _saveTask;
 
 		private readonly AutoUpdateSettings _autoUpdate;
 
@@ -18,6 +22,11 @@ namespace Tailviewer.Settings
 		private readonly string _fileName;
 		private readonly MainWindowSettings _mainWindow;
 		private readonly QuickFilters _quickFilters;
+
+		static ApplicationSettings()
+		{
+			_saveTask = Task.FromResult(42);
+		}
 
 		private ApplicationSettings(ApplicationSettings other)
 		{
@@ -39,10 +48,10 @@ namespace Tailviewer.Settings
 			_dataSources = new DataSources();
 			_quickFilters = new QuickFilters();
 		}
-		
-		public AutoUpdateSettings AutoUpdate => _autoUpdate;
 
-		public MainWindowSettings MainWindow => _mainWindow;
+		public IAutoUpdateSettings AutoUpdate => _autoUpdate;
+
+		public IMainWindowSettings MainWindow => _mainWindow;
 
 		public DataSources DataSources => _dataSources;
 
@@ -53,6 +62,12 @@ namespace Tailviewer.Settings
 			string fileName = Path.Combine(Constants.AppDataLocalFolder, "settings");
 			fileName += ".xml";
 			return new ApplicationSettings(fileName);
+		}
+
+		public void SaveAsync()
+		{
+			var config = Clone();
+			_saveTask = _saveTask.ContinueWith(unused => config.Save());
 		}
 
 		public bool Save()

@@ -164,11 +164,11 @@ namespace Tailviewer.Test.Settings
 		{
 			const string fileName = "applicationsettingstest.xml";
 			var settings = new ApplicationSettings(fileName);
-			settings.MainWindow.Window.Left = 1;
-			settings.MainWindow.Window.Top = 2;
-			settings.MainWindow.Window.Width = 3;
-			settings.MainWindow.Window.Height = 4;
-			settings.MainWindow.Window.State = WindowState.Maximized;
+			settings.MainWindow.Left = 1;
+			settings.MainWindow.Top = 2;
+			settings.MainWindow.Width = 3;
+			settings.MainWindow.Height = 4;
+			settings.MainWindow.State = WindowState.Maximized;
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1600.log")
 				{
 					Id = Guid.NewGuid(),
@@ -214,11 +214,11 @@ namespace Tailviewer.Test.Settings
 
 			settings = new ApplicationSettings(fileName);
 			settings.Restore();
-			settings.MainWindow.Window.Left.Should().Be(1);
-			settings.MainWindow.Window.Top.Should().Be(2);
-			settings.MainWindow.Window.Width.Should().Be(3);
-			settings.MainWindow.Window.Height.Should().Be(4);
-			settings.MainWindow.Window.State.Should().Be(WindowState.Maximized);
+			settings.MainWindow.Left.Should().Be(1);
+			settings.MainWindow.Top.Should().Be(2);
+			settings.MainWindow.Width.Should().Be(3);
+			settings.MainWindow.Height.Should().Be(4);
+			settings.MainWindow.State.Should().Be(WindowState.Maximized);
 			settings.DataSources.Count.Should().Be(2);
 			settings.DataSources[0].File.Should().Be(@"SharpRemote.Host.1600.log");
 			settings.DataSources[0].FollowTail.Should().BeTrue();
