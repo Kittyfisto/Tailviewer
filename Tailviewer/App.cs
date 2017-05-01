@@ -32,6 +32,19 @@ namespace Tailviewer
 
 		public static int Start(string[] args)
 		{
+			try
+			{
+				return StartInternal(args);
+			}
+			catch (Exception e)
+			{
+				Log.InfoFormat("Caught unexpected exception: {0}", e);
+				return -1;
+			}
+		}
+
+		private static int StartInternal(string[] args)
+		{
 			InstallExceptionHandlers();
 			Log.InfoFormat("Starting tailviewer...");
 			Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
@@ -86,14 +99,14 @@ namespace Tailviewer
 				TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
 
 				var window = new MainWindow(settings)
-					{
-						DataContext = new MainWindowViewModel(settings,
-						                                      dataSources,
-						                                      quickFilters,
-						                                      actionCenter,
-						                                      updater,
-						                                      uiDispatcher)
-					};
+				{
+					DataContext = new MainWindowViewModel(settings,
+						dataSources,
+						quickFilters,
+						actionCenter,
+						updater,
+						uiDispatcher)
+				};
 
 				settings.MainWindow.RestoreTo(window);
 
