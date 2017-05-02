@@ -37,11 +37,36 @@ namespace Tailviewer
 			AddV032();
 			AddV033();
 			AddV040();
+			AddV041();
+		}
+
+		private static void AddV041()
+		{
+			var features = new string[]
+			{
+				
+			};
+			var bugfixes = new[]
+			{
+				"Fixed open in explorer button for merged data sources"
+			};
+			var misc = new[]
+			{
+				"Added always on top setting",
+				"Data source order is persisted",
+				"Collapse of merged data source is persisted",
+				"# of active filters is shown in side panel",
+				"Added installed programs entry"
+			};
+			var releaseDate = new DateTime(2017, 5, 2);
+			var version = new Version(0, 4, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV040()
 		{
-			var features = new string[]
+			var features = new[]
 			{
 				"Introduced new design"
 			};
@@ -50,8 +75,7 @@ namespace Tailviewer
 				
 			};
 			var misc = new string[]
-			{
-			};
+			{};
 			var releaseDate = new DateTime(2017, 5, 1);
 			var version = new Version(0, 4, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
