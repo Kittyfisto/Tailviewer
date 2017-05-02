@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Net.Cache;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -230,6 +232,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			{
 				using (var client = new WebClient())
 				{
+					client.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
 					client.UseDefaultCredentials = true;
 					client.Proxy = _settings.GetWebProxy();
 
