@@ -13,7 +13,6 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.SidePanel;
-using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
@@ -466,5 +465,7 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public string Id => "datasources";
+
+		public string QuickInfo => null;
 	}
 }

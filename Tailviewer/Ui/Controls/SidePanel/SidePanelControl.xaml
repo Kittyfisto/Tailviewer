@@ -31,17 +31,24 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
                                         <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                                   Padding="16"
                                                                    HoveredBackground="{DynamicResource SecondaryLightBrush}"
                                                                    CheckedBackground="{DynamicResource SecondaryLighterBrush}"
                                                                    HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}">
-                                            <Viewbox>
-                                                <Canvas Width="24" Height="24">
-                                                    <Path
-                                                        Data="{Binding Icon}"
-                                                        Fill="{DynamicResource PrimaryForegroundBrush}" />
-                                                </Canvas>
-                                            </Viewbox>
+                                            <Grid>
+                                                <Viewbox Margin="12">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path
+                                                            Data="{Binding Icon}"
+                                                            Fill="{DynamicResource PrimaryForegroundBrush}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                                <TextBlock Text="{Binding QuickInfo}"
+                                                           FontSize="10"
+                                                           TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           VerticalAlignment="Bottom"
+                                                           Foreground="{DynamicResource PrimaryForegroundBrush}" />
+                                            </Grid>
                                         </controls:FlatToggleButton>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

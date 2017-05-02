@@ -149,5 +149,26 @@ namespace Tailviewer.Test.Ui
 			model.QuickFilters.Should().BeEmpty("because we've just removed the only quick filter");
 			changed.Should().Be(0, "because removing an inactive quick-filter should never fire the OnFiltersChanged event");
 		}
+
+		[Test]
+		public void TestActivate1()
+		{
+			_quickFilters.Add();
+			var model = new QuickFiltersViewModel(_settings, _quickFilters);
+			model.QuickInfo.Should().BeNull();
+
+			var dataSource = new SingleDataSource(_scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			model.QuickFilters.ElementAt(0).IsActive = true;
+			model.QuickInfo.Should().Be("1 active");
+
+			model.AddQuickFilter();
+			model.QuickFilters.ElementAt(1).IsActive = true;
+			model.QuickInfo.Should().Be("2 active");
+
+			model.QuickFilters.ElementAt(0).IsActive = false;
+			model.QuickFilters.ElementAt(1).IsActive = false;
+			model.QuickInfo.Should().BeNull();
+		}
 	}
 }

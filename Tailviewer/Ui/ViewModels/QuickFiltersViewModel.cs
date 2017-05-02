@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -28,6 +29,7 @@ namespace Tailviewer.Ui.ViewModels
 		private IDataSourceViewModel _currentDataSource;
 		private bool _isChangingCurrentDataSource;
 		private bool _isSelected;
+		private string _quickInfo;
 
 		public QuickFiltersViewModel(ApplicationSettings settings, QuickFilters quickFilters)
 		{
@@ -41,6 +43,21 @@ namespace Tailviewer.Ui.ViewModels
 			foreach (QuickFilter filter in quickFilters.Filters)
 			{
 				CreateAndAddViewModel(filter);
+			}
+
+			OnFiltersChanged += OnOnFiltersChanged;
+		}
+
+		private void OnOnFiltersChanged()
+		{
+			int count = _viewModels.Count(x => x.IsActive);
+			if (count > 0)
+			{
+				QuickInfo = string.Format("{0} active", count);
+			}
+			else
+			{
+				QuickInfo = null;
 			}
 		}
 
@@ -182,6 +199,19 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public string Id => "quickfilter";
+
+		public string QuickInfo
+		{
+			get { return _quickInfo; }
+			private set
+			{
+				if (value == _quickInfo)
+					return;
+
+				_quickInfo = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
