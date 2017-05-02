@@ -22,6 +22,7 @@ namespace Tailviewer.Settings
 		public string File;
 		public bool FollowTail;
 		public bool ShowLineNumbers;
+		public bool IsExpanded;
 
 		/// <summary>
 		///     Uniquely identifies this data source amongst all others.
@@ -50,6 +51,7 @@ namespace Tailviewer.Settings
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
 			ShowLineNumbers = true;
+			IsExpanded = true;
 			SelectedLogLines = new HashSet<LogLineIndex>();
 			VisibleLogLine = LogLineIndex.Invalid;
 		}
@@ -84,6 +86,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
 			writer.WriteAttributeBool("hideemptylines", HideEmptyLines);
 			writer.WriteAttributeBool("singleline", IsSingleLine);
+			writer.WriteAttributeBool("expanded", IsExpanded);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttributeGuid("id", Id);
 			writer.WriteAttributeGuid("parentid", ParentId);
@@ -139,6 +142,10 @@ namespace Tailviewer.Settings
 
 					case "singleline":
 						IsSingleLine = reader.ReadContentAsBool();
+						break;
+
+					case "expanded":
+						IsExpanded = reader.ReadContentAsBool();
 						break;
 
 					case "visibleentryindex":
@@ -238,7 +245,8 @@ namespace Tailviewer.Settings
 				ParentId = ParentId,
 				SearchTerm = SearchTerm,
 				ShowLineNumbers = ShowLineNumbers,
-				VisibleLogLine = VisibleLogLine
+				VisibleLogLine = VisibleLogLine,
+				IsExpanded = IsExpanded
 			};
 			clone.ActivatedQuickFilters.AddRange(ActivatedQuickFilters);
 			clone.SelectedLogLines.AddRange(SelectedLogLines);

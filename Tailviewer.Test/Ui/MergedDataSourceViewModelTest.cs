@@ -15,13 +15,33 @@ namespace Tailviewer.Test.Ui
 			_settings = new Tailviewer.Settings.DataSources();
 			_scheduler = new ManualTaskScheduler();
 			_dataSources = new DataSources(_scheduler, _settings);
-			_model = new MergedDataSourceViewModel(_dataSources.AddGroup());
+			_model = new MergedDataSourceViewModel(_settingsDataSource = _dataSources.AddGroup());
 		}
 
 		private MergedDataSourceViewModel _model;
 		private DataSources _dataSources;
 		private Tailviewer.Settings.DataSources _settings;
 		private ManualTaskScheduler _scheduler;
+		private MergedDataSource _settingsDataSource;
+
+		[Test]
+		public void TestConstruction()
+		{
+			_model.IsSelected.Should().BeFalse();
+			_model.IsExpanded.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestExpand()
+		{
+			_model.IsExpanded = false;
+			_model.IsExpanded.Should().BeFalse();
+			_settingsDataSource.IsExpanded.Should().BeFalse();
+
+			_model.IsExpanded = true;
+			_model.IsExpanded.Should().BeTrue();
+			_settingsDataSource.IsExpanded.Should().BeTrue();
+		}
 
 		[Test]
 		public void TestAdd1()

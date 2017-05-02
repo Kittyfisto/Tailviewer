@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestRoundtrip()
+		public void TestSaveRestore()
 		{
 			using (var stream = new MemoryStream())
 			{

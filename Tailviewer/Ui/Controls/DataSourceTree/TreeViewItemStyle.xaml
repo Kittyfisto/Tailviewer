@@ -57,11 +57,6 @@
                             <Setter Property="Visibility" TargetName="PART_Expander" Value="Collapsed" />
                         </Trigger>
 
-                        <!-- When we're not selected -->
-                        <Trigger Property="IsSelected" Value="true">
-                            <Setter Property="controls:Properties.IsInverted" Value="False" />
-                        </Trigger>
-
                         <!-- When we're selected -->
                         <Trigger Property="IsSelected" Value="true">
                             <Setter Property="Background" Value="{StaticResource BackgroundBrushSelected}" />

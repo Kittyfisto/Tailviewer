@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Metrolib.Controls;
 using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class MergedDataSourceViewModel
 		: AbstractDataSourceViewModel
+		, ITreeViewItemViewModel
 	{
 		private readonly MergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private bool _displayNoTimestampCount;
 		private int _noTimestampSum;
+		private bool _isSelected;
 
 		public MergedDataSourceViewModel(MergedDataSource dataSource)
 			: base(dataSource)
@@ -22,20 +25,11 @@ namespace Tailviewer.Ui.ViewModels
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 		}
 
-		public IEnumerable<IDataSourceViewModel> Observable
-		{
-			get { return _observable; }
-		}
+		public IEnumerable<IDataSourceViewModel> Observable => _observable;
 
-		public override ICommand OpenInExplorerCommand
-		{
-			get { return null; }
-		}
+		public override ICommand OpenInExplorerCommand => null;
 
-		public override string DisplayName
-		{
-			get { return "Merged Data Source"; }
-		}
+		public override string DisplayName => "Merged Data Source";
 
 		public int NoTimestampSum
 		{
@@ -65,10 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public int ChildCount
-		{
-			get { return _observable.Count; }
-		}
+		public int ChildCount => _observable.Count;
 
 		public override string ToString()
 		{
@@ -113,6 +104,32 @@ namespace Tailviewer.Ui.ViewModels
 
 			if (_observable != null)
 				NoTimestampSum = _observable.Sum(x => x.NoTimestampCount);
+		}
+
+		public bool IsSelected
+		{
+			get { return _isSelected; }
+			set
+			{
+				if (value == _isSelected)
+					return;
+
+				_isSelected = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsExpanded
+		{
+			get { return _dataSource.IsExpanded; }
+			set
+			{
+				if (value == _dataSource.IsExpanded)
+					return;
+
+				_dataSource.IsExpanded = value;
+				EmitPropertyChanged();
+			}
 		}
 	}
 }

@@ -29,19 +29,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 			UpdateLogFile();
 		}
 
-		public int DataSourceCount
-		{
-			get { return _dataSources.Count; }
-		}
+		public int DataSourceCount => _dataSources.Count;
 
-		public IEnumerable<IDataSource> DataSources
-		{
-			get { return _dataSources; }
-		}
+		public IEnumerable<IDataSource> DataSources => _dataSources;
 
-		public override ILogFile UnfilteredLogFile
+		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
+
+		public bool IsExpanded
 		{
-			get { return _unfilteredLogFile; }
+			get { return Settings.IsExpanded; }
+			set { Settings.IsExpanded = value; }
 		}
 
 		public void Add(IDataSource dataSource)
