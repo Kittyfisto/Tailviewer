@@ -8,6 +8,7 @@ using System.Threading;
 using Installer.Exceptions;
 using Metrolib;
 using log4net;
+using Microsoft.Win32;
 
 namespace Installer
 {
@@ -67,6 +68,7 @@ namespace Installer
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
+				WriteRegistry();
 
 				Log.InfoFormat("Installation succeeded");
 			}
@@ -142,6 +144,27 @@ namespace Installer
 			}
 		}
 
+		private void WriteRegistry()
+		{
+			var uninstallPath = @"Software\Microsoft\Windows\CurrentVersion\Uninstall";
+			var uninstall = Registry.LocalMachine.OpenSubKey(uninstallPath, true);
+			if (uninstall == null)
+			{
+				Log.ErrorFormat("Unable to locate '{0}', this shouldn't really happen...", uninstallPath);
+				return;
+			}
+
+			var iconPath = Path.Combine(_installationPath, "Icons", "Tailviewer.ico");
+
+			var program = uninstall.CreateSubKey(Constants.ApplicationTitle);
+			program.SetValue("DisplayName", Constants.ApplicationTitle, RegistryValueKind.String);
+			program.SetValue("DisplayIcon", iconPath, RegistryValueKind.String);
+			program.SetValue("UninstallString", "TODO", RegistryValueKind.String);
+			program.SetValue("DisplayVersion", Constants.ApplicationVersion, RegistryValueKind.String);
+			program.SetValue("Publisher", Constants.Publisher, RegistryValueKind.String);
+			program.SetValue("EstimatedSize", _installationSize.Kilobytes, RegistryValueKind.DWord);
+		}
+
 		private string DestFilePath(string installationPath, string file)
 		{
 			string fileName = file.Substring(_prefix.Length);
@@ -153,6 +176,7 @@ namespace Installer
 		private string Patch(string fileName)
 		{
 			return fileName.Replace("Fonts.", "Fonts\\")
+				.Replace("Icons.", "Icons\\")
 				.Replace("x64.", "x64\\")
 				.Replace("x86.", "x86\\");
 		}

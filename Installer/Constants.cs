@@ -10,6 +10,7 @@ namespace Installer
 		public static readonly Version ApplicationVersion;
 		public static readonly string MainWindowTitle;
 		public static readonly string InstallationLog;
+		public static readonly string Publisher;
 
 		static Constants()
 		{
@@ -17,6 +18,7 @@ namespace Installer
 			MainWindowTitle = string.Format("Installing Tailviewer, v{0}", ApplicationVersion);
 			InstallationLog = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
 			                               "Tailviewer", "Installation.log");
+			Publisher = "Kittyfisto";
 		}
 	}
 }

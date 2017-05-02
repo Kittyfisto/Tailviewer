@@ -170,6 +170,7 @@
     <Content Include="..\bin\System.Data.SQLite.dll">
       <Link>InstallationFiles\System.Data.SQLite.dll</Link>
     </Content>
+    <EmbeddedResource Include="InstallationFiles\Icons\Tailviewer.ico" />
     <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
       <Link>InstallationFiles\System.Threading.Extensions.dll</Link>
     </EmbeddedResource>
