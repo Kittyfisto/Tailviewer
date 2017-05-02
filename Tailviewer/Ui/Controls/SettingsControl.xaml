@@ -17,7 +17,24 @@
     </UserControl.Resources>
     
     <Grid>
-        <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <controls:FlatGroupBox Header="Window" VerticalAlignment="Top" Margin="8">
+            <controls:FlatGroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock FontSize="22" Text="{Binding}" />
+                </DataTemplate>
+            </controls:FlatGroupBox.HeaderTemplate>
+            <Grid>
+                <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
+            </Grid>
+        </controls:FlatGroupBox>
+        <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8"
+                               Grid.Row="1">
             <controls:FlatGroupBox.HeaderTemplate>
                 <DataTemplate><TextBlock FontSize="22" Text="{Binding}" /></DataTemplate>
             </controls:FlatGroupBox.HeaderTemplate>

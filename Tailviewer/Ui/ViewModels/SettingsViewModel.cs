@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
@@ -88,6 +89,28 @@ namespace Tailviewer.Ui.ViewModels
 
 				_settings.AutoUpdate.ProxyServer = value;
 				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
+
+		public bool AlwaysOnTop
+		{
+			get { return _settings.MainWindow.AlwaysOnTop; }
+			set
+			{
+				if (value == _settings.MainWindow.AlwaysOnTop)
+					return;
+
+				_settings.MainWindow.AlwaysOnTop = value;
+				EmitPropertyChanged();
+
+				var app = Application.Current;
+				var window = app.MainWindow;
+				if (window != null)
+				{
+					_settings.MainWindow.RestoreTo(window);
+				}
 
 				_settings.SaveAsync();
 			}

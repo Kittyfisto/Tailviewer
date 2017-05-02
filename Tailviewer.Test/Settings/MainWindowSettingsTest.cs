@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Windows;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
@@ -12,7 +14,31 @@ namespace Tailviewer.Test.Settings
 	public sealed class MainWindowSettingsTest
 	{
 		[Test]
-		public void TestClone()
+		public void TestConstruction()
+		{
+			var settings = new MainWindowSettings();
+			settings.AlwaysOnTop.Should().BeFalse();
+		}
+
+		[Test]
+		[RequiresThread(ApartmentState.STA)]
+		public void TestRestoreTo1([Values(true, false)] bool alwaysOnTop)
+		{
+			var settings = new MainWindowSettings
+			{
+				Width = 9001,
+				Height = 42,
+				AlwaysOnTop = alwaysOnTop
+			};
+			var window = new Window();
+			settings.RestoreTo(window);
+			window.Width.Should().Be(9001);
+			window.Height.Should().Be(42);
+			window.Topmost.Should().Be(alwaysOnTop);
+		}
+
+		[Test]
+		public void TestClone([Values(true, false)] bool alwaysOnTop)
 		{
 			var settings = new MainWindowSettings();
 			settings.SelectedSidePanel = "Foo";
@@ -20,6 +46,7 @@ namespace Tailviewer.Test.Settings
 			settings.Width = 100;
 			settings.Left = 42;
 			settings.Top = 101;
+			settings.AlwaysOnTop = alwaysOnTop;
 
 			var cloned = settings.Clone();
 			cloned.Should().NotBeNull();
@@ -29,10 +56,11 @@ namespace Tailviewer.Test.Settings
 			cloned.Width.Should().Be(100);
 			cloned.Left.Should().Be(42);
 			cloned.Top.Should().Be(101);
+			cloned.AlwaysOnTop.Should().Be(alwaysOnTop);
 		}
 
 		[Test]
-		public void TestSaveRestore()
+		public void TestSaveRestore([Values(true, false)]bool alwaysOnTop)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -46,6 +74,7 @@ namespace Tailviewer.Test.Settings
 					settings.Width = 100;
 					settings.Left = 42;
 					settings.Top = 101;
+					settings.AlwaysOnTop = alwaysOnTop;
 					settings.Save(writer);
 				}
 				stream.Position = 0;
@@ -62,6 +91,7 @@ namespace Tailviewer.Test.Settings
 					settings.Width.Should().Be(100);
 					settings.Left.Should().Be(42);
 					settings.Top.Should().Be(101);
+					settings.AlwaysOnTop.Should().Be(alwaysOnTop);
 				}
 			}
 		}

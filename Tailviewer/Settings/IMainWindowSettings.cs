@@ -30,8 +30,12 @@ namespace Tailviewer.Settings
 		/// </summary>
 		double Width { get; set; }
 
-		string SelectedSidePanel { get; set; }
+		/// <summary>
+		///     Whether or not the window is always on top of other windows.
+		/// </summary>
+		bool AlwaysOnTop { get; set; }
 
+		string SelectedSidePanel { get; set; }
 
 		void Save(XmlWriter writer);
 		void Restore(XmlReader reader);

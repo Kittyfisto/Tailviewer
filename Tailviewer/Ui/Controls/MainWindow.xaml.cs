@@ -33,6 +33,8 @@ namespace Tailviewer.Ui.Controls
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 
 			InitializeComponent();
+			SizeChanged += OnSizeChanged;
+			LocationChanged += OnLocationChanged;
 			Closing += OnClosing;
 			DragEnter += OnDragEnter;
 			DragOver += OnDragOver;
@@ -40,6 +42,16 @@ namespace Tailviewer.Ui.Controls
 			MouseMove += OnMouseMove;
 
 			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
+		}
+
+		private void OnLocationChanged(object sender, EventArgs eventArgs)
+		{
+			_settings.MainWindow.UpdateFrom(this);
+		}
+
+		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			_settings.MainWindow.UpdateFrom(this);
 		}
 
 		public ICommand FocusDataSourceSearchCommand
