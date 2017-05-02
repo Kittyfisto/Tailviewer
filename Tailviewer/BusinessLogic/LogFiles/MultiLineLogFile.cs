@@ -229,6 +229,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			var firstInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, section.Index);
 			var lastInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, section.LastIndex);
 			var invalidateCount = lastInvalidIndex - firstInvalidIndex + 1;
+			var previousSourceIndex = _currentSourceIndex;
 
 			_fullSourceSection = new LogFileSection(0, (int)firstInvalidIndex);
 			if (_fullSourceSection.Count > 0)
@@ -238,7 +239,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				// to rewind the index. Otherwise nothing needs to be done...
 				var newIndex = _fullSourceSection.LastIndex + 1;
 				if (newIndex < _currentSourceIndex)
+				{
 					_currentSourceIndex = newIndex;
+				}
 			}
 			else
 			{
@@ -253,7 +256,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					_indices.RemoveRange((int)firstInvalidIndex, toRemove);
 					_currentLogEntry = new LogEntryInfo(firstInvalidIndex - 1, 0);
 				}
+				if (previousSourceIndex != _currentSourceIndex)
+				{
+					_indices.RemoveRange((int) _currentSourceIndex, _indices.Count - _currentSourceIndex);
+				}
 			}
+
+			if (_indices.Count != _currentSourceIndex)
+			{
+				Log.ErrorFormat("Inconsistency detected: We have {0} indices for {1} lines", _indices.Count,
+					_currentSourceIndex);
+			}
+
 			Listeners.Invalidate((int)firstInvalidIndex, invalidateCount);
 		}
 
