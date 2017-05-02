@@ -402,6 +402,9 @@
     <Resource Include="..\LICENSE">
       <Link>Licenses\Tailviewer\LICENSE</Link>
     </Resource>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\Fonts\Inconsolata-Bold.ttf" />
