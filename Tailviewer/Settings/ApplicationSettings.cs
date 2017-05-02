@@ -53,7 +53,7 @@ namespace Tailviewer.Settings
 
 		public IMainWindowSettings MainWindow => _mainWindow;
 
-		public DataSources DataSources => _dataSources;
+		public IDataSources DataSources => _dataSources;
 
 		public QuickFilters QuickFilters => _quickFilters;
 

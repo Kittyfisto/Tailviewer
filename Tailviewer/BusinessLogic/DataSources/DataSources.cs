@@ -19,11 +19,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private readonly List<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly Settings.DataSources _settings;
+		private readonly IDataSources _settings;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
 
-		public DataSources(ITaskScheduler taskScheduler, Settings.DataSources settings)
+		public DataSources(ITaskScheduler taskScheduler, IDataSources settings)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
@@ -62,10 +62,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public IDataSource this[int index]
-		{
-			get { return _dataSources[index]; }
-		}
+		public IDataSource this[int index] => _dataSources[index];
 
 		public int Count
 		{

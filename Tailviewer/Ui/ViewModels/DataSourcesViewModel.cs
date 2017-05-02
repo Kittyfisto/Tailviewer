@@ -10,6 +10,7 @@ using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.SidePanel;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -23,12 +24,12 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly DataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
-		private readonly ApplicationSettings _settings;
+		private readonly IApplicationSettings _settings;
 		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
 		private bool _isSelected;
 
-		public DataSourcesViewModel(ApplicationSettings settings, DataSources dataSources)
+		public DataSourcesViewModel(IApplicationSettings settings, DataSources dataSources)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
@@ -340,9 +341,19 @@ namespace Tailviewer.Ui.ViewModels
 					index = 0;
 
 				_observable.Insert(index, source);
+				if (dropType.HasFlag(DataSourceDropType.ArrangeTop))
+				{
+					if (index + 1 < _observable.Count)
+					{
+						var tmp = source.DataSource.Settings;
+						var before = _observable[index + 1].DataSource.Settings;
+						_settings.DataSources.MoveBefore(tmp, before);
+					}
+				}
 			}
 
 			SelectedItem = source;
+			_settings.SaveAsync();
 		}
 
 		private void DropToGroup(IDataSourceViewModel source, IDataSourceViewModel dest)

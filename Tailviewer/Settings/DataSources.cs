@@ -10,26 +10,31 @@ namespace Tailviewer.Settings
 {
 	public sealed class DataSources
 		: List<DataSource>
+		, IDataSources
 		, ICloneable
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public Guid SelectedItem;
+		public Guid SelectedItem { get; set; }
+
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
 
 		public void Restore(XmlReader reader, out bool neededPatching)
 		{
 			neededPatching = false;
 			var dataSources = new List<DataSource>();
-			XmlReader subtree = reader.ReadSubtree();
-			Guid selectedItem = Guid.Empty;
+			var subtree = reader.ReadSubtree();
+			var selectedItem = Guid.Empty;
 
 			while (subtree.Read())
-			{
 				switch (subtree.Name)
 				{
 					case "datasources": // "this"
-						for (int i = 0; i < subtree.AttributeCount; ++i)
+						for (var i = 0; i < subtree.AttributeCount; ++i)
 						{
 							subtree.MoveToAttribute(i);
 							switch (subtree.Name)
@@ -49,27 +54,22 @@ namespace Tailviewer.Settings
 						neededPatching |= sourceNeedsPatching;
 						break;
 				}
-			}
 
 			Clear();
 			Capacity = dataSources.Count;
-			foreach (DataSource source in dataSources)
+			foreach (var source in dataSources)
 			{
 				Add(source);
 
 				if (source.Id == selectedItem)
-				{
 					SelectedItem = selectedItem;
-				}
 			}
 
 			if (SelectedItem != selectedItem || selectedItem == Guid.Empty)
 			{
 				Log.WarnFormat("Selected item '{0}' not found in data-sources, ignoring it...", selectedItem);
 				if (Count > 0)
-				{
 					SelectedItem = this[0].Id;
-				}
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace Tailviewer.Settings
 		{
 			writer.WriteAttributeGuid("selecteditem", SelectedItem);
 
-			foreach (DataSource dataSource in this)
+			foreach (var dataSource in this)
 			{
 				writer.WriteStartElement("datasource");
 				dataSource.Save(writer);
@@ -93,9 +93,26 @@ namespace Tailviewer.Settings
 			return clone;
 		}
 
-		object ICloneable.Clone()
+		/// <summary>
+		///     Moves the element <paramref name="dataSource" /> to appear *anchor*
+		///     <paramref name="anchor" />. Does nothing if this constraint doesn't
+		///     exist of if either are not part of this list.
+		/// </summary>
+		/// <param name="dataSource"></param>
+		/// <param name="anchor"></param>
+		public void MoveBefore(DataSource dataSource, DataSource anchor)
 		{
-			return Clone();
+			int dataSourceIndex = IndexOf(dataSource);
+			int anchorIndex = IndexOf(anchor);
+			if (dataSourceIndex != -1 && anchorIndex != -1)
+			{
+				// The required constraint already is true: dataSource is before 'anchor'
+				if (dataSourceIndex < anchorIndex)
+					return;
+
+				RemoveAt(dataSourceIndex);
+				Insert(anchorIndex, dataSource);
+			}
 		}
 	}
 }

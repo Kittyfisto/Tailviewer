@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -22,12 +23,15 @@ namespace Tailviewer.Test.Ui
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new ApplicationSettings("dawddwa");
+			_settingsMock = new Mock<IApplicationSettings>();
+			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSources());
+			_settings = _settingsMock.Object;
 			_dataSources = new DataSources(_scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
 		}
 
-		private ApplicationSettings _settings;
+		private Mock<IApplicationSettings> _settingsMock;
+		private IApplicationSettings _settings;
 		private DataSources _dataSources;
 		private DataSourcesViewModel _model;
 		private ManualTaskScheduler _scheduler;
@@ -311,6 +315,20 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestDrop7()
+		{
+			IDataSourceViewModel a = _model.GetOrAdd("A");
+			IDataSourceViewModel b = _model.GetOrAdd("B");
+			_settings.DataSources.Count.Should().Be(2);
+			_settings.DataSources[0].File.Should().EndWith("A");
+			_settings.DataSources[1].File.Should().EndWith("B");
+
+			_model.OnDropped(b, a, DataSourceDropType.ArrangeTop);
+			_settings.DataSources[0].File.Should().EndWith("B");
+			_settings.DataSources[1].File.Should().EndWith("A");
+		}
+
+		[Test]
 		[Description("Verifies that dragging a third file onto the group works")]
 		public void TestDropOntoGroup1()
 		{
@@ -395,7 +413,7 @@ namespace Tailviewer.Test.Ui
 		{
 			IDataSourceViewModel a = _model.GetOrAdd("A");
 			IDataSourceViewModel b = _model.GetOrAdd("B");
-
+			
 			new Action(() => _model.OnDropped(b, a, DataSourceDropType.ArrangeTop))
 				.ShouldNotThrow();
 			_model.Observable.Should().Equal(new object[]
@@ -426,8 +444,23 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		[Description("Verifies that arranging a source from a group destroys the group when there's only 1 source left")]
+		[Description("Verifies that arranging a source causes the settings to be saved")]
 		public void TestRearrange3()
+		{
+			IDataSourceViewModel a = _model.GetOrAdd("A");
+			IDataSourceViewModel b = _model.GetOrAdd("B");
+
+			_settingsMock.ResetCalls();
+
+			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom))
+				.ShouldNotThrow();
+
+			_settingsMock.Verify(x => x.SaveAsync(), Times.Once);
+		}
+
+		[Test]
+		[Description("Verifies that arranging a source from a group destroys the group when there's only 1 source left")]
+		public void TestRearrange4()
 		{
 			IDataSourceViewModel a = _model.GetOrAdd("A");
 			IDataSourceViewModel b = _model.GetOrAdd("B");
@@ -454,7 +487,7 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[Description("Verifies that re-arranging groups is possible")]
-		public void TestRearrange4()
+		public void TestRearrange5()
 		{
 			IDataSourceViewModel a = _model.GetOrAdd("A");
 			IDataSourceViewModel b = _model.GetOrAdd("B");
@@ -476,7 +509,7 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[Description("Verifies that dropping and rearranging an item inside a group works")]
-		public void TestRearrange5()
+		public void TestRearrange6()
 		{
 			IDataSourceViewModel a = _model.GetOrAdd("A");
 			IDataSourceViewModel b = _model.GetOrAdd("B");
@@ -501,7 +534,7 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[Description("Verifies that rearranging an item inside a group works")]
-		public void TestRearrange6()
+		public void TestRearrange7()
 		{
 			IDataSourceViewModel a = _model.GetOrAdd("A");
 			IDataSourceViewModel b = _model.GetOrAdd("B");
@@ -562,6 +595,25 @@ namespace Tailviewer.Test.Ui
 			_model.Observable.Should().Equal(new object[] {merged});
 			_dataSources.Should().Equal(new object[] {viewModel2.DataSource, viewModel3.DataSource, merged.DataSource});
 			_settings.DataSources.Should().Equal(new object[] {source2, source3, group});
+		}
+
+		[Test]
+		[Description(
+			"Verifies that removing a data source causes the settings to be stored"
+		)]
+		public void TestRemove3()
+		{
+			var source = new DataSource("foo") { Id = Guid.NewGuid() };
+			_settings.DataSources.Add(source);
+			_dataSources = new DataSources(_scheduler, _settings.DataSources);
+			_model = new DataSourcesViewModel(_settings, _dataSources);
+			IDataSourceViewModel viewModel = _model.Observable[0];
+
+			_settingsMock.ResetCalls();
+
+			viewModel.RemoveCommand.Execute(null);
+
+			_settingsMock.Verify(x => x.SaveAsync(), Times.Once);
 		}
 
 		[Test]

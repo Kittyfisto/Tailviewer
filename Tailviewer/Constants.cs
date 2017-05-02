@@ -17,13 +17,7 @@ namespace Tailviewer
 		public static readonly string ApplicationFolder;
 		public static readonly string AppDataLocalFolder;
 		public static readonly string DownloadFolder;
-		public static string ApplicationLicense
-		{
-			get
-			{
-				return Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
-			}
-		}
+		public static string ApplicationLicense => Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
 
 		static Constants()
 		{

@@ -191,6 +191,7 @@
     <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
     <Compile Include="Settings\IApplicationSettings.cs" />
     <Compile Include="Settings\IAutoUpdateSettings.cs" />
+    <Compile Include="Settings\IDataSources.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="Settings\QuickFilter.cs" />

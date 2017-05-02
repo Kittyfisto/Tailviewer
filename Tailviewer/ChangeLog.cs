@@ -23,15 +23,9 @@ namespace Tailviewer
 			}
 		}
 
-		public static Change MostRecent
-		{
-			get { return AllChanges.Last(); }
-		}
+		public static Change MostRecent => AllChanges.Last();
 
-		public static IReadOnlyList<Change> Changes
-		{
-			get { return AllChanges; }
-		}
+		public static IReadOnlyList<Change> Changes => AllChanges;
 
 		static Changelog()
 		{

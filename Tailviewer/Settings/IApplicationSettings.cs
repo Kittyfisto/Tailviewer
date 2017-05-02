@@ -4,6 +4,7 @@
 	{
 		IAutoUpdateSettings AutoUpdate { get; }
 		IMainWindowSettings MainWindow { get; }
+		IDataSources DataSources { get; }
 		void SaveAsync();
 		bool Save();
 		void Restore();
