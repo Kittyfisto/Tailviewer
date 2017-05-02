@@ -93,7 +93,12 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OpenInExplorer()
 		{
-			string argument = string.Format(@"/select, {0}", _dataSource.FullFileName);
+			OpenInExplorer(_dataSource);
+		}
+
+		public static void OpenInExplorer(IDataSource dataSource)
+		{
+			string argument = string.Format(@"/select, {0}", dataSource.FullFileName);
 			Process.Start("explorer.exe", argument);
 		}
 	}

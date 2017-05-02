@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.DataSources;
 
@@ -17,17 +19,35 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _displayNoTimestampCount;
 		private int _noTimestampSum;
 		private bool _isSelected;
+		private DelegateCommand _openInExplorerCommand;
 
 		public MergedDataSourceViewModel(MergedDataSource dataSource)
 			: base(dataSource)
 		{
 			_dataSource = dataSource;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
+			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
+		}
+
+		private void OpenInExplorer()
+		{
+			var dataSources = _dataSource.DataSources.GroupBy(GetDirectory);
+			foreach (var grouping in dataSources)
+			{
+				SingleDataSourceViewModel.OpenInExplorer(grouping.First());
+			}
+		}
+
+		private string GetDirectory(IDataSource arg)
+		{
+			var fname = arg.FullFileName;
+			var dir = Path.GetDirectoryName(fname);
+			return dir;
 		}
 
 		public IEnumerable<IDataSourceViewModel> Observable => _observable;
 
-		public override ICommand OpenInExplorerCommand => null;
+		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
 		public override string DisplayName => "Merged Data Source";
 
