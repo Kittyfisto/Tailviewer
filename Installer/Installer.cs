@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Installer.Applications.Install;
 using Installer.Exceptions;
 using Metrolib;
 using log4net;
@@ -33,15 +34,9 @@ namespace Installer
 			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
 		}
 
-		public Size InstallationSize
-		{
-			get { return _installationSize; }
-		}
+		public Size InstallationSize => _installationSize;
 
-		public double Progress
-		{
-			get { return _progress; }
-		}
+		public double Progress => _progress;
 
 		public void Dispose()
 		{
@@ -225,7 +220,7 @@ namespace Installer
 		public void Launch()
 		{
 			string app = Path.Combine(_installationPath, "Tailviewer.exe");
-			Process.Start(app);
+			Launcher.RunAsDesktopUser(app);
 		}
 	}
 }

@@ -46,20 +46,11 @@ namespace Installer.Applications.Install
 			IsPreInstallation = true;
 		}
 
-		public DelegateCommand LaunchCommand
-		{
-			get { return _launchCommand; }
-		}
+		public DelegateCommand LaunchCommand => _launchCommand;
 
-		public Version AppVersion
-		{
-			get { return _appVersion; }
-		}
+		public Version AppVersion => _appVersion;
 
-		public Size InstallationSize
-		{
-			get { return _installer.InstallationSize; }
-		}
+		public Size InstallationSize => _installer.InstallationSize;
 
 		public string InstallationPath
 		{
@@ -74,10 +65,7 @@ namespace Installer.Applications.Install
 			}
 		}
 
-		public ICommand BrowseCommand
-		{
-			get { return _browseCommand; }
-		}
+		public ICommand BrowseCommand => _browseCommand;
 
 		public bool AgreeToLicense
 		{
@@ -93,15 +81,9 @@ namespace Installer.Applications.Install
 			}
 		}
 
-		public string AppTitle
-		{
-			get { return Constants.ApplicationTitle; }
-		}
+		public string AppTitle => Constants.ApplicationTitle;
 
-		public ICommand InstallationCommand
-		{
-			get { return _installationCommand; }
-		}
+		public ICommand InstallationCommand => _installationCommand;
 
 		public bool IsPreInstallation
 		{

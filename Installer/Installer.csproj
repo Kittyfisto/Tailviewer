@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Applications\AbstractViewModel.cs" />
     <Compile Include="Applications\App.cs" />
+    <Compile Include="Applications\Install\Launcher.cs" />
     <Compile Include="Applications\SilentInstall\SilentInstallApplication.cs" />
     <Compile Include="Arguments.cs" />
     <Compile Include="Applications\Install\InstallApplication.cs" />
