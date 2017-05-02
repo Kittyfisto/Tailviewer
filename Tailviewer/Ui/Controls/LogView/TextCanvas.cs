@@ -79,6 +79,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			Focusable = true;
 			ClipToBounds = true;
+			FocusVisualStyle = null;
 		}
 
 		public LogFileSection CurrentlyVisibleSection

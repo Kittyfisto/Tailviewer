@@ -13,6 +13,8 @@
     <Style x:Key="DataSourceTreeViewItemStyle" TargetType="{x:Type controls:FlatTreeViewItem}">
         <Setter Property="IsExpanded" Value="True" />
         <Setter Property="Background" Value="Transparent" />
+        <!-- We don't want to draw this ugly dotted border around a focused tree view item -->
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <!-- IsInverted is an inherited, attached dependency property and, as such,
              travels down the entire visual tree. We use this to ensure that our content
              renders properly when we are selected (darker background => the foreground of

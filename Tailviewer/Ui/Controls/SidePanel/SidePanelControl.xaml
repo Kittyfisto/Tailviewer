@@ -27,13 +27,15 @@
                             </Border>
 
                             <ItemsControl ItemsSource="{TemplateBinding SidePanels}"
+                                          FocusVisualStyle="{x:Null}"
                                           Grid.Column="1">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
                                         <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                                    HoveredBackground="{DynamicResource SecondaryLightBrush}"
                                                                    CheckedBackground="{DynamicResource SecondaryLighterBrush}"
-                                                                   HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}">
+                                                                   HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}"
+                                                                   FocusVisualStyle="{x:Null}">
                                             <Grid>
                                                 <Viewbox Margin="12">
                                                     <Canvas Width="24" Height="24">
