@@ -27,6 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
 		private bool _isSelected;
+		private string _quickInfo;
 
 		public DataSourcesViewModel(IApplicationSettings settings, DataSources dataSources)
 		{
@@ -79,10 +80,12 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					_settings.DataSources.SelectedItem = value.DataSource.Id;
 					value.IsVisible = true;
+					QuickInfo = value.DisplayName;
 				}
 				else
 				{
 					_settings.DataSources.SelectedItem = Guid.Empty;
+					QuickInfo = null;
 				}
 
 				EmitPropertyChanged();
@@ -466,6 +469,17 @@ namespace Tailviewer.Ui.ViewModels
 
 		public string Id => "datasources";
 
-		public string QuickInfo => null;
+		public string QuickInfo
+		{
+			get { return _quickInfo; }
+			private set
+			{
+				if (value == _quickInfo)
+					return;
+
+				_quickInfo = value;
+				EmitPropertyChanged();
+			}
+		}
 	}
 }
