@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -37,12 +35,9 @@ namespace Tailviewer.Test.Ui.Controls
 				};
 
 			DispatcherExtensions.ExecuteAllEvents();
-
-			_dispatcher = new ManualDispatcher();
 		}
 
 		private LogViewerControl _control;
-		private ManualDispatcher _dispatcher;
 		private SingleDataSourceViewModel _dataSource;
 		private ManualTaskScheduler _scheduler;
 
@@ -164,7 +159,7 @@ namespace Tailviewer.Test.Ui.Controls
 			oldLog.Setup(x => x.DataSource).Returns(oldDataSource.Object);
 			oldLog.SetupProperty(x => x.VisibleLogLine);
 			oldLog.Object.VisibleLogLine = 42;
-			var oldLogView = new LogViewerViewModel(oldLog.Object, _dispatcher);
+			var oldLogView = new LogViewerViewModel(oldLog.Object);
 			_control.LogView = oldLogView;
 
 
@@ -175,7 +170,7 @@ namespace Tailviewer.Test.Ui.Controls
 			newLog.Setup(x => x.DataSource).Returns(newDataSource.Object);
 			newLog.SetupProperty(x => x.VisibleLogLine);
 			newLog.Object.VisibleLogLine = 1;
-			var newLogView = new LogViewerViewModel(newLog.Object, _dispatcher);
+			var newLogView = new LogViewerViewModel(newLog.Object);
 			_control.LogView = newLogView;
 
 			oldLog.Object.VisibleLogLine.Should()
@@ -198,7 +193,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.VisibleLogLine).Returns(new LogLineIndex(42));
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object);
 
 			_control.LogView = logView;
 			_control.CurrentLogLine.Should().Be(42);
@@ -220,7 +215,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object);
 
 			_control.LogView = logView;
 			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
@@ -243,7 +238,7 @@ namespace Tailviewer.Test.Ui.Controls
 			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
 			dataSourceViewModel.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {new LogLineIndex(42)});
 			dataSourceViewModel.Setup(x => x.SearchTerm).Returns("Foobar");
-			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _dispatcher);
+			var logView = new LogViewerViewModel(dataSourceViewModel.Object);
 
 			_control.PART_SearchBox.Text.Should().Be(string.Empty);
 

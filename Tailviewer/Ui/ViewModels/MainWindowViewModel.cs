@@ -265,6 +265,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
 			_dataSources.Update();
+			CurrentDataSourceLogView?.Update();
 		}
 
 		public void OpenFiles(string[] files)
@@ -288,8 +289,7 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				CurrentDataSource = dataSource;
 				CurrentDataSourceLogView = new LogViewerViewModel(
-					dataSource,
-					_dispatcher);
+					dataSource);
 				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
 			}
 			else

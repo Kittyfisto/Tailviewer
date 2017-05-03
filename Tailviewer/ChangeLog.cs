@@ -48,7 +48,8 @@ namespace Tailviewer
 			};
 			var bugfixes = new[]
 			{
-				"Fixed open in explorer button for merged data sources"
+				"Fixed open in explorer button for merged data sources",
+				"Fixed empty data source appearing as not existing data source"
 			};
 			var misc = new[]
 			{

@@ -19,7 +19,6 @@ namespace Tailviewer.Ui.ViewModels
 		  , ILogFileListener
 	{
 		private readonly IDataSourceViewModel _dataSource;
-		private readonly IDispatcher _dispatcher;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private ILogFile _logFile;
@@ -29,15 +28,12 @@ namespace Tailviewer.Ui.ViewModels
 		private int _totalLogEntryCount;
 		private ILogFileSearch _search;
 
-		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher, TimeSpan maximumWaitTime)
+		public LogViewerViewModel(IDataSourceViewModel dataSource, TimeSpan maximumWaitTime)
 		{
 			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
-			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
-
-			_dispatcher = dispatcher;
 
 			_pendingSections = new List<KeyValuePair<ILogFile, LogFileSection>>();
 
@@ -48,8 +44,8 @@ namespace Tailviewer.Ui.ViewModels
 			UpdateCounts();
 		}
 
-		public LogViewerViewModel(IDataSourceViewModel dataSource, IDispatcher dispatcher)
-			: this(dataSource, dispatcher, TimeSpan.FromMilliseconds(10))
+		public LogViewerViewModel(IDataSourceViewModel dataSource)
+			: this(dataSource, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
@@ -136,10 +132,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IDataSourceViewModel DataSource
-		{
-			get { return _dataSource; }
-		}
+		public IDataSourceViewModel DataSource => _dataSource;
 
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.
@@ -170,7 +163,6 @@ namespace Tailviewer.Ui.ViewModels
 					_pendingSections.Clear();
 
 				_pendingSections.Add(new KeyValuePair<ILogFile, LogFileSection>(_logFile, section));
-				_dispatcher.BeginInvoke(Synchronize, DispatcherPriority.Background);
 			}
 		}
 
@@ -181,7 +173,7 @@ namespace Tailviewer.Ui.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		private void Synchronize()
+		public void Update()
 		{
 			lock (_pendingSections)
 			{
@@ -190,7 +182,6 @@ namespace Tailviewer.Ui.ViewModels
 					ILogFile file = pair.Key;
 					if (file != _logFile)
 						continue; //< This message belongs to an old change and must be ignored
-
 
 					LogEntryCount = 0;
 					TotalLogEntryCount = 0;

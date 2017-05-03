@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using FluentAssertions;
-using Metrolib;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.DataSources;
@@ -28,10 +27,8 @@ namespace Tailviewer.AcceptanceTests.Ui
 		[SetUp]
 		public void SetUp()
 		{
-			_dispatcher = new ManualDispatcher();
 		}
 
-		private ManualDispatcher _dispatcher;
 		private DefaultTaskScheduler _scheduler;
 
 		[Test]
@@ -41,7 +38,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
-				var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+				var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";
 				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
@@ -56,7 +53,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 				// And then dispatch ALL events at ONCE.
 				// We expect the view model to completely ignore the old changes!
-				_dispatcher.InvokeAll();
+				model.Update();
 
 				/*model.LogEntryCount.Should().Be(5);
 				model.LogEntries.Select(x => x.Message)

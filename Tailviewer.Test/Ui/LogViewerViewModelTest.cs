@@ -37,7 +37,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
 			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
@@ -60,7 +60,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
 			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("The data source is empty");
 			model.NoEntriesSubtext.Should().BeNull();
@@ -106,7 +106,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
 			model.NoEntriesSubtext.Should().BeNull();
@@ -129,7 +129,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the activated quick filters");
 			model.NoEntriesSubtext.Should().BeNull();
@@ -151,7 +151,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
-			var model = new LogViewerViewModel(dataSourceModel, _dispatcher, TimeSpan.Zero);
+			var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
 			model.LogEntryCount.Should().Be(0);
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the log file filter");
 			model.NoEntriesSubtext.Should().BeNull();
