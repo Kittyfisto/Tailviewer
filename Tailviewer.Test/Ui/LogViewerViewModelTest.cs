@@ -18,11 +18,7 @@ namespace Tailviewer.Test.Ui
 	{
 		[SetUp]
 		public void SetUp()
-		{
-			_dispatcher = new ManualDispatcher();
-		}
-
-		private ManualDispatcher _dispatcher;
+		{}
 
 		[Test]
 		public void TestDataSourceDoesntExist1()
@@ -67,7 +63,7 @@ namespace Tailviewer.Test.Ui
 
 			logFile.Setup(x => x.Exists).Returns(true);
 			listener.OnLogFileModified(logFile.Object, new LogFileSection(0, 0));
-			_dispatcher.InvokeAll();
+			model.Update();
 
 			model.NoEntriesExplanation.Should().Be("The data source is empty");
 			model.NoEntriesSubtext.Should().BeNull();
