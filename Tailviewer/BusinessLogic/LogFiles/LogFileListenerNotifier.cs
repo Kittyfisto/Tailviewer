@@ -27,10 +27,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_listener.OnLogFileModified(logFile, LogFileSection.Reset);
 		}
 
-		public int LastNumberOfLines
-		{
-			get { return _lastNumberOfLines; }
-		}
+		public int LastNumberOfLines => _lastNumberOfLines;
 
 		private void Reset()
 		{

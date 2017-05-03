@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using Metrolib;
 
@@ -60,35 +59,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			StartTask();
 		}
 
-		public override int MaxCharactersPerLine
-		{
-			get { return _maxCharactersPerLine; }
-		}
+		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
-		public override bool Exists
-		{
-			get { return _exists; }
-		}
+		public override bool Exists => _exists;
 
-		public override DateTime? StartTimestamp
-		{
-			get { return _startTimestamp; }
-		}
+		public override DateTime? StartTimestamp => _startTimestamp;
 
-		public override DateTime LastModified
-		{
-			get { return _lastModified; }
-		}
+		public override DateTime LastModified => _lastModified;
 
-		public override Size FileSize
-		{
-			get { return _fileSize; }
-		}
+		public override Size FileSize => _fileSize;
 
-		public override int Count
-		{
-			get { return (int) _currentSourceIndex; }
-		}
+		public override int Count => (int) _currentSourceIndex;
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{

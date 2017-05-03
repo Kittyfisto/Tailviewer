@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 
@@ -57,15 +56,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_source.RemoveListener(this);
 		}
 
-		public override bool Exists
-		{
-			get { return _source.Exists; }
-		}
+		public override bool Exists => _source.Exists;
 
-		public override DateTime? StartTimestamp
-		{
-			get { return _source.StartTimestamp; }
-		}
+		public override DateTime? StartTimestamp => _source.StartTimestamp;
 
 		public override DateTime LastModified
 		{
@@ -88,10 +81,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override int MaxCharactersPerLine
-		{
-			get { return _maxCharactersPerLine; }
-		}
+		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{

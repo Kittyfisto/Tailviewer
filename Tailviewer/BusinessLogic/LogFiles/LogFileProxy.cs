@@ -118,18 +118,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_isDisposed = true;
 		}
 
-		public bool IsDisposed
-		{
-			get { return _isDisposed; }
-		}
+		public bool IsDisposed => _isDisposed;
 
-		public DateTime? StartTimestamp
-		{
-			get
-			{
-				return _innerLogFile?.StartTimestamp;
-			}
-		}
+		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
 
 		public DateTime LastModified
 		{

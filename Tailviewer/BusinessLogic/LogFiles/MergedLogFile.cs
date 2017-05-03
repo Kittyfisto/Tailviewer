@@ -56,22 +56,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			StartTask();
 		}
 
-		public IEnumerable<ILogFile> Sources
-		{
-			get { return _sources; }
-		}
+		public IEnumerable<ILogFile> Sources => _sources;
 
-		public override bool Exists
-		{
-			get
-			{
-				// This should return false in order to show a detailed error
-				// message as to why a view is empty, however I'm not sure if stating
-				// "All data sources do not exist" is such an improvement over
-				// "The data source is empty".
-				return true;
-			}
-		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		/// This should return false in order to show a detailed error
+		/// message as to why a view is empty, however I'm not sure if stating
+		/// "All data sources do not exist" is such an improvement over
+		/// "The data source is empty".
+		/// </remarks>
+		public override bool Exists => true;
 
 		public override bool EndOfSourceReached
 		{
@@ -81,20 +78,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override DateTime? StartTimestamp
-		{
-			get { return _startTimestamp; }
-		}
+		public override DateTime? StartTimestamp => _startTimestamp;
 
-		public override DateTime LastModified
-		{
-			get { return _lastModified; }
-		}
+		public override DateTime LastModified => _lastModified;
 
-		public override Size FileSize
-		{
-			get { return _fileSize; }
-		}
+		public override Size FileSize => _fileSize;
 
 		public override int Count
 		{
@@ -107,10 +95,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override int MaxCharactersPerLine
-		{
-			get { return _maxCharactersPerLine; }
-		}
+		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{

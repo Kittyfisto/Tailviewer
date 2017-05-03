@@ -29,15 +29,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_listeners = new LogFileListenerCollection(this);
 		}
 
-		protected LogFileListenerCollection Listeners
-		{
-			get { return _listeners; }
-		}
+		protected LogFileListenerCollection Listeners => _listeners;
 
-		public bool IsDisposed
-		{
-			get { return _isDisposed; }
-		}
+		public bool IsDisposed => _isDisposed;
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -71,10 +65,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public abstract bool Exists { get; }
 
-		public virtual bool EndOfSourceReached
-		{
-			get { return _endOfSourceReached; }
-		}
+		public virtual bool EndOfSourceReached => _endOfSourceReached;
 
 		public abstract DateTime? StartTimestamp { get; }
 		public abstract DateTime LastModified { get; }

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Metrolib;
 using log4net;
 
@@ -85,10 +84,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return _fileName;
 		}
 
-		public IEnumerable<LogLine> Entries
-		{
-			get { return _entries; }
-		}
+		public IEnumerable<LogLine> Entries => _entries;
 
 		public override Size FileSize
 		{
@@ -102,30 +98,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override DateTime? StartTimestamp
-		{
-			get { return _startTimestamp; }
-		}
+		public override DateTime? StartTimestamp => _startTimestamp;
 
-		public override DateTime LastModified
-		{
-			get { return _lastModified; }
-		}
+		public override DateTime LastModified => _lastModified;
 
-		public override int Count
-		{
-			get { return _entries.Count; }
-		}
+		public override int Count => _entries.Count;
 
-		public override int MaxCharactersPerLine
-		{
-			get { return _maxCharactersPerLine; }
-		}
+		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
-		public override bool Exists
-		{
-			get { return _exists; }
-		}
+		public override bool Exists => _exists;
 
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
@@ -259,7 +240,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_entries.Clear();
 			Listeners.Reset();
 		}
-		
+
 		private void Add(string line, LevelFlags level, int numberOfLinesRead, DateTime? timestamp)
 		{
 			if (_startTimestamp == null)

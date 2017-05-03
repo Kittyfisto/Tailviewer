@@ -44,15 +44,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			IsInvalidate = false;
 		}
 
-		public bool IsReset
-		{
-			get { return this == Reset; }
-		}
+		public bool IsReset => this == Reset;
 
-		public int LastIndex
-		{
-			get { return Index + Count - 1; }
-		}
+		public int LastIndex => Index + Count - 1;
 
 		public bool Equals(LogFileSection other)
 		{
