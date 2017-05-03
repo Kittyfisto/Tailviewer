@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Net.Cache;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Tailviewer.BusinessLogic.ActionCenter;
