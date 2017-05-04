@@ -29,10 +29,11 @@ namespace Tailviewer.Ui.ViewModels
 		#endregion
 
 		private readonly ApplicationSettings _applicationSettings;
+		private readonly IActionCenter _actionCenter;
 
 		#region ViewModels
 
-		private readonly ActionCenterViewModel _actionCenter;
+		private readonly ActionCenterViewModel _actionCenterViewModel;
 		private readonly AutoUpdateViewModel _autoUpdater;
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersViewModel _quickFilters;
@@ -76,7 +77,8 @@ namespace Tailviewer.Ui.ViewModels
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
 			_settings = new SettingsViewModel(settings);
-			_actionCenter = new ActionCenterViewModel(dispatcher, actionCenter);
+			_actionCenter = actionCenter;
+			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
 			_timer = new DispatcherTimer
 				{
@@ -103,7 +105,7 @@ namespace Tailviewer.Ui.ViewModels
 			ChangeDataSource(CurrentDataSource);
 		}
 
-		public ActionCenterViewModel ActionCenter => _actionCenter;
+		public ActionCenterViewModel ActionCenter => _actionCenterViewModel;
 
 		public AutoUpdateViewModel AutoUpdater => _autoUpdater;
 
@@ -266,6 +268,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_dataSources.Update();
 			CurrentDataSourceLogView?.Update();
+			_actionCenterViewModel.Update();
 		}
 
 		public void OpenFiles(string[] files)
@@ -289,7 +292,8 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				CurrentDataSource = dataSource;
 				CurrentDataSourceLogView = new LogViewerViewModel(
-					dataSource);
+					dataSource,
+					_actionCenter);
 				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
 			}
 			else

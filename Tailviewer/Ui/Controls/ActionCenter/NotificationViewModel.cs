@@ -14,19 +14,10 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 			_notification = notification;
 		}
 
-		public DateTime Timestamp
-		{
-			get { return _notification.Timestamp; }
-		}
+		public DateTime Timestamp => _notification.Timestamp;
 
-		public string Message
-		{
-			get { return _notification.Message; }
-		}
+		public string Message => _notification.Message;
 
-		public Level Level
-		{
-			get { return _notification.Level; }
-		}
+		public Level Level => _notification.Level;
 	}
 }

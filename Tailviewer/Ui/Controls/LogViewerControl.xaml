@@ -46,6 +46,13 @@
                        ToolTip="Open file in explorer" />
             </Button>
 
+            <controls:ExportButton Margin="0,0,0,4"
+                                   Padding="0"
+                                   x:Name="PART_Export"
+                                   Command="{Binding LogView.ExportToFileCommand, ElementName=This}"
+                                   Width="26"
+                                   Height="26" />
+
             <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"

@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Threading;
+using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -18,9 +22,13 @@ namespace Tailviewer.Ui.ViewModels
 		: INotifyPropertyChanged
 		  , ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly IDataSourceViewModel _dataSource;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
+		private readonly IActionCenter _actionCenter;
+
 		private ILogFile _logFile;
 		private int _logEntryCount;
 		private string _noEntriesExplanation;
@@ -28,10 +36,14 @@ namespace Tailviewer.Ui.ViewModels
 		private int _totalLogEntryCount;
 		private ILogFileSearch _search;
 
-		public LogViewerViewModel(IDataSourceViewModel dataSource, TimeSpan maximumWaitTime)
+		public LogViewerViewModel(IDataSourceViewModel dataSource,
+			IActionCenter actionCenter,
+			TimeSpan maximumWaitTime)
 		{
 			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
+			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
 
+			_actionCenter = actionCenter;
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
 
@@ -44,8 +56,9 @@ namespace Tailviewer.Ui.ViewModels
 			UpdateCounts();
 		}
 
-		public LogViewerViewModel(IDataSourceViewModel dataSource)
-			: this(dataSource, TimeSpan.FromMilliseconds(10))
+		public LogViewerViewModel(IDataSourceViewModel dataSource,
+			IActionCenter actionCenter)
+			: this(dataSource, actionCenter, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
@@ -153,6 +166,29 @@ namespace Tailviewer.Ui.ViewModels
 					_dataSource.QuickFilterChain = value;
 				}
 			}
+		}
+
+		public ICommand ExportToFileCommand => new DelegateCommand(ExportToFile);
+
+		private void ExportToFile()
+		{
+			var viewModel = DataSource;
+			var dataSource = viewModel?.DataSource;
+			var logFile = dataSource?.FilteredLogFile;
+			if (logFile == null)
+			{
+				Log.Warn("DataSource is null, cancelling export...");
+				return;
+			}
+
+			var exportDirectory = Constants.ExportDirectory;
+			var exporter = new LogFileToFileExporter(logFile,
+				exportDirectory,
+				dataSource.FullFileName
+			);
+			
+			var action = new ExportAction(exporter, viewModel.DisplayName, exportDirectory);
+			_actionCenter.Add(action);
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)

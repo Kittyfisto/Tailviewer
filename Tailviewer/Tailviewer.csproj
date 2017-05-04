@@ -80,7 +80,9 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterExtensions.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IBug.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IExportAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\UnhandledException.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Change.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
@@ -92,6 +94,9 @@
     <Compile Include="BusinessLogic\Analysers\CounterLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\EventsLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\LogEventDefinition.cs" />
+    <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
     <Compile Include="BusinessLogic\Analysers\QuickInfoLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Dashboard\Dashboard.cs" />
@@ -176,6 +181,7 @@
     <Compile Include="BusinessLogic\StreamReaderEx.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
+    <Compile Include="Percentage.cs" />
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
@@ -220,6 +226,7 @@
       <DependentUpon>ActionCenterControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\ActionCenter\BugViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ExportViewModel.cs" />
     <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
@@ -321,6 +328,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\ActionCenter\BugTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ExportTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

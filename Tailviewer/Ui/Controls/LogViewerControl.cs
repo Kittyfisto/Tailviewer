@@ -183,15 +183,9 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(LogEntryCountProperty, value); }
 		}
 
-		public IEnumerable<LogLineIndex> SelectedIndices
-		{
-			get { return PART_ListView.SelectedIndices; }
-		}
+		public IEnumerable<LogLineIndex> SelectedIndices => PART_ListView.SelectedIndices;
 
-		public LogEntryListView PartListView
-		{
-			get { return PART_ListView; }
-		}
+		public LogEntryListView PartListView => PART_ListView;
 
 		public void Select(LogLineIndex index)
 		{

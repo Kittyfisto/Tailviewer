@@ -16,10 +16,15 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 			_exception = exception;
 		}
 
-		public string Title
-		{
-			get { return "Bug"; }
-		}
+		public string Title => "Unhandled exception";
+
+		/// <summary>
+		/// </summary>
+		/// <remarks>
+		///     It's worse enough that we've encountered an unhandled exception,
+		///     but bothering the user is even worse.
+		/// </remarks>
+		public bool ForceShow => false;
 
 		public string Details
 		{

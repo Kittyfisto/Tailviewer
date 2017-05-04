@@ -23,6 +23,9 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 			_title = _notification.Title;
 		}
 
+		public virtual void Update()
+		{}
+
 		public event Action<INotificationViewModel> OnRemove;
 
 		private void Remove()
@@ -63,7 +66,7 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}

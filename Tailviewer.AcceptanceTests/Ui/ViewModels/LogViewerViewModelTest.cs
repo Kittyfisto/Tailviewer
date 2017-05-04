@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -16,6 +18,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		public void TestFixtureSetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
+			_actionCenter = new Mock<IActionCenter>();
 		}
 
 		[OneTimeTearDown]
@@ -30,6 +33,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		}
 
 		private DefaultTaskScheduler _scheduler;
+		private Mock<IActionCenter> _actionCenter;
 
 		[Test]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
@@ -38,7 +42,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
-				var model = new LogViewerViewModel(dataSourceModel, TimeSpan.Zero);
+				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";
 				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));

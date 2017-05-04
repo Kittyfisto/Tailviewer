@@ -12,17 +12,36 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 		private readonly List<string> _bugfixes;
 		private readonly List<string> _features;
 		private readonly List<string> _misc;
-		private readonly Version _version;
-		private readonly DateTime _releaseDate;
 
-		public Change(DateTime releaseDate, Version version, IEnumerable<string> features, IEnumerable<string> bugfixes, IEnumerable<string> misc)
+		public Change(DateTime releaseDate, Version version, IEnumerable<string> features, IEnumerable<string> bugfixes,
+			IEnumerable<string> misc)
 		{
-			_releaseDate = releaseDate;
-			_version = version;
+			ReleaseDate = releaseDate;
+			Version = version;
 			_features = new List<string>(features);
 			_bugfixes = new List<string>(bugfixes);
 			_misc = new List<string>(misc);
 		}
+
+		public DateTime ReleaseDate { get; }
+
+		public Version Version { get; }
+
+		public IEnumerable<string> Features => _features;
+
+		public IEnumerable<string> Bugfixes => _bugfixes;
+
+		public IEnumerable<string> Misc => _misc;
+
+		public string Title => string.Format("What's new in v{0}?", Version.ToString(2));
+
+		/// <summary>
+		/// </summary>
+		/// <remarks>
+		///     The changelog is just not interesting enough to immediately show to the user.
+		///     Maybe if we keep track of whether or not the user has closed this window...
+		/// </remarks>
+		public bool ForceShow => false;
 
 		public static Change Merge(IEnumerable<Change> changes)
 		{
@@ -43,36 +62,6 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 				}
 			}
 			return new Change(releaseDate, version, features, bugfixes, misc);
-		}
-
-		public DateTime ReleaseDate
-		{
-			get { return _releaseDate; }
-		}
-
-		public Version Version
-		{
-			get { return _version; }
-		}
-
-		public IEnumerable<string> Features
-		{
-			get { return _features; }
-		}
-
-		public IEnumerable<string> Bugfixes
-		{
-			get { return _bugfixes; }
-		}
-
-		public IEnumerable<string> Misc
-		{
-			get { return _misc; }
-		}
-
-		public string Title
-		{
-			get { return string.Format("What's new in v{0}?", Version.ToString(2)); }
 		}
 	}
 }
