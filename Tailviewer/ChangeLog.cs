@@ -38,6 +38,27 @@ namespace Tailviewer
 			AddV033();
 			AddV040();
 			AddV041();
+			AddV042();
+		}
+
+		private static void AddV042()
+		{
+			var features = new[]
+			{
+				"Added export to file"
+			};
+			var bugfixes = new[]
+			{
+				"Fixed horizontal scrollbar repeat buttons",
+			};
+			var misc = new string[]
+			{
+				
+			};
+			var releaseDate = new DateTime(2017, 5, 4);
+			var version = new Version(0, 4, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV041()
