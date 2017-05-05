@@ -230,6 +230,12 @@
     <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -237,6 +243,7 @@
     <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumber.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumberCanvas.cs" />
@@ -347,6 +354,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\MainPanel\AnalyseMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\LogViewMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\SidePanel\DataSourcesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -379,7 +394,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\LogViewerControl.xaml">
+    <Page Include="Ui\Controls\LogView\LogViewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,7 +402,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Ui\Controls\LogViewerControl.cs" />
+    <Compile Include="Ui\Controls\LogView\LogViewerControl.cs" />
     <Compile Include="Ui\Controls\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

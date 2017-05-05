@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.SidePanel;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -48,6 +49,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
+		#region Main Panel
+
+		private readonly AnalyseMainPanelEntry _analyseEntry;
+		private readonly LogViewMainPanelEntry _logViewEntry;
+		private readonly IMainPanelEntry[] _entries;
+		private IMainPanelEntry _selectedEntry;
+
+		#endregion
+
 		#region Side Panel
 
 		private readonly ISidePanelViewModel[] _sidePanels;
@@ -55,9 +65,9 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
-		private LogViewerViewModel _currentDataSourceLogView;
 		private bool _isLogFileOpen;
 		private string _windowTitle;
+		private IMainPanelViewModel _selectedMainPanel;
 
 		public MainWindowViewModel(ApplicationSettings settings,
 		                           DataSources dataSources,
@@ -94,6 +104,16 @@ namespace Tailviewer.Ui.ViewModels
 
 			_selectNextDataSourceCommand = new DelegateCommand(SelectNextDataSource);
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
+
+			_analyseEntry = new AnalyseMainPanelEntry();
+			_logViewEntry = new LogViewMainPanelEntry();
+			_entries = new IMainPanelEntry[]
+			{
+				_analyseEntry,
+				_logViewEntry
+			};
+			SelectedEntry = _entries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
+			                ?? _analyseEntry;
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -140,28 +160,52 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public SettingsViewModel Settings => _settings;
+		
+		#region Main Panel
 
-		public LogViewerViewModel CurrentDataSourceLogView
+		public IMainPanelViewModel SelectedMainPanel
 		{
-			get { return _currentDataSourceLogView; }
+			get { return _selectedMainPanel; }
 			private set
 			{
-				if (_currentDataSourceLogView == value)
+				if (value == _selectedMainPanel)
 					return;
 
-				_currentDataSourceLogView = value;
-				if (value != null)
-				{
-					value.QuickFilterChain = _quickFilters.CreateFilterChain();
-					IsLogFileOpen = true;
-				}
-				else
-				{
-					IsLogFileOpen = false;
-				}
+				_selectedMainPanel = value;
 				EmitPropertyChanged();
 			}
 		}
+
+		public IEnumerable<IMainPanelEntry> Entries => _entries;
+
+		public IMainPanelEntry SelectedEntry
+		{
+			get { return _selectedEntry; }
+			set
+			{
+				if (value == _selectedEntry)
+					return;
+
+				_selectedEntry = value;
+				EmitPropertyChanged();
+
+				if (value == _analyseEntry)
+				{
+					SelectedMainPanel = new AnalyseMainPanelViewModel();
+				}
+				else if (value == _logViewEntry)
+				{
+					SelectedMainPanel = new LogViewMainPanelViewModel(_actionCenter)
+					{
+						CurrentDataSource = CurrentDataSource
+					};
+				}
+
+				_applicationSettings.MainWindow.SelectedMainPanel = _selectedEntry?.Id;
+			}
+		}
+
+		#endregion
 
 		public DataSourcesViewModel DataSources => _dataSources;
 
@@ -191,14 +235,7 @@ namespace Tailviewer.Ui.ViewModels
 				_selectedPanel = value;
 				EmitPropertyChanged();
 
-				if (_selectedPanel != null)
-				{
-					_applicationSettings.MainWindow.SelectedSidePanel = _selectedPanel.Id;
-				}
-				else
-				{
-					_applicationSettings.MainWindow.SelectedSidePanel = null;
-				}
+				_applicationSettings.MainWindow.SelectedSidePanel = _selectedPanel?.Id;
 				_applicationSettings.SaveAsync();
 			}
 		}
@@ -259,15 +296,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OnQuickFiltersChanged()
 		{
-			LogViewerViewModel view = _currentDataSourceLogView;
-			if (view != null)
-				view.QuickFilterChain = _quickFilters.CreateFilterChain();
+			var panel = _selectedMainPanel;
+			if (panel != null)
+				panel.QuickFilterChain = _quickFilters.CreateFilterChain();
 		}
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)
 		{
 			_dataSources.Update();
-			CurrentDataSourceLogView?.Update();
+			_selectedMainPanel?.Update();
 			_actionCenterViewModel.Update();
 		}
 
@@ -291,15 +328,16 @@ namespace Tailviewer.Ui.ViewModels
 			if (dataSource != null)
 			{
 				CurrentDataSource = dataSource;
-				CurrentDataSourceLogView = new LogViewerViewModel(
-					dataSource,
-					_actionCenter);
+				if (SelectedMainPanel != null)
+					SelectedMainPanel.CurrentDataSource = CurrentDataSource;
+
 				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
 			}
 			else
 			{
 				CurrentDataSource = null;
-				CurrentDataSourceLogView = null;
+				if (SelectedMainPanel != null)
+					SelectedMainPanel.CurrentDataSource = null;
 				WindowTitle = Constants.MainWindowTitle;
 			}
 		}

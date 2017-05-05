@@ -73,7 +73,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void FocusLogFileSearch()
 		{
-			PART_LogFileView.FocusStringFilter();
+			//PART_LogFileView.FocusStringFilter();
 		}
 
 		private void FocusDataSourceSearch()

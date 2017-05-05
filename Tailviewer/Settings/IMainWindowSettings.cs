@@ -37,6 +37,8 @@ namespace Tailviewer.Settings
 
 		string SelectedSidePanel { get; set; }
 
+		string SelectedMainPanel { get; set; }
+
 		void Save(XmlWriter writer);
 		void Restore(XmlReader reader);
 		void UpdateFrom(Window window);

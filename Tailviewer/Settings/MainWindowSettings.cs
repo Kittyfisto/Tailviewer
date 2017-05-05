@@ -44,6 +44,8 @@ namespace Tailviewer.Settings
 
 		public string SelectedSidePanel { get; set; }
 
+		public string SelectedMainPanel { get; set; }
+
 		public MainWindowSettings()
 		{
 			_window = new WindowSettings();
@@ -52,6 +54,7 @@ namespace Tailviewer.Settings
 		private MainWindowSettings(MainWindowSettings other)
 		{
 			_window = other._window.Clone();
+			SelectedMainPanel = other.SelectedMainPanel;
 			SelectedSidePanel = other.SelectedSidePanel;
 			AlwaysOnTop = other.AlwaysOnTop;
 		}
@@ -65,6 +68,7 @@ namespace Tailviewer.Settings
 
 		public void Save(XmlWriter writer)
 		{
+			writer.WriteAttributeString("selectedmainpanel", SelectedMainPanel);
 			writer.WriteAttributeString("selectedsidepanel", SelectedSidePanel);
 			writer.WriteAttributeBool("alwaysontop", AlwaysOnTop);
 			_window.Save(writer);
@@ -79,6 +83,10 @@ namespace Tailviewer.Settings
 				{
 					case "alwaysontop":
 						AlwaysOnTop = reader.ReadContentAsBool();
+						break;
+
+					case "selectedmainpanel":
+						SelectedMainPanel = reader.ReadContentAsString();
 						break;
 
 					case "selectedsidepanel":

@@ -41,6 +41,7 @@ namespace Tailviewer.Test.Settings
 		public void TestClone([Values(true, false)] bool alwaysOnTop)
 		{
 			var settings = new MainWindowSettings();
+			settings.SelectedMainPanel = "Bar";
 			settings.SelectedSidePanel = "Foo";
 			settings.Height = 10;
 			settings.Width = 100;
@@ -51,6 +52,7 @@ namespace Tailviewer.Test.Settings
 			var cloned = settings.Clone();
 			cloned.Should().NotBeNull();
 			cloned.Should().NotBeSameAs(settings);
+			cloned.SelectedMainPanel.Should().Be("Bar");
 			cloned.SelectedSidePanel.Should().Be("Foo");
 			cloned.Height.Should().Be(10);
 			cloned.Width.Should().Be(100);
@@ -69,6 +71,7 @@ namespace Tailviewer.Test.Settings
 					writer.WriteStartElement("Test");
 
 					var settings = new MainWindowSettings();
+					settings.SelectedMainPanel = "Bar";
 					settings.SelectedSidePanel = "Foo";
 					settings.Height = 10;
 					settings.Width = 100;
@@ -86,6 +89,7 @@ namespace Tailviewer.Test.Settings
 
 					var settings = new MainWindowSettings();
 					settings.Restore(reader);
+					settings.SelectedMainPanel.Should().Be("Bar");
 					settings.SelectedSidePanel.Should().Be("Foo");
 					settings.Height.Should().Be(10);
 					settings.Width.Should().Be(100);

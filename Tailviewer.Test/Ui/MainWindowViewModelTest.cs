@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -56,6 +57,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.CurrentDataSource.Should().BeNull();
+			_mainWindow.SelectedEntry = _mainWindow.Entries.ElementAt(1);
 
 			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
 			filter.Value = "test";
@@ -65,15 +67,18 @@ namespace Tailviewer.Test.Ui
 			filter.CurrentDataSource.Should()
 			      .BeSameAs(dataSource.DataSource,
 			                "Because now that said data source is visible, the filter should be applied to it");
-			_mainWindow.CurrentDataSourceLogView.Should().NotBeNull();
-			_mainWindow.CurrentDataSourceLogView.QuickFilterChain.Should()
-			           .BeNull("Because no quick filters have been added / nor activated");
+
+			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			panel.CurrentDataSourceLogView.Should().NotBeNull();
+			panel.CurrentDataSourceLogView.QuickFilterChain.Should()
+				.BeNull("Because no quick filters have been added / nor activated");
 		}
 
 		[Test]
 		public void TestChangeDataSource2()
 		{
 			_mainWindow.CurrentDataSource.Should().BeNull();
+			_mainWindow.SelectedEntry = _mainWindow.Entries.ElementAt(1);
 
 			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
 			filter.Value = "test";
@@ -87,8 +92,9 @@ namespace Tailviewer.Test.Ui
 			dataSource2.DataSource.ActivateQuickFilter(filter.Id);
 
 			_mainWindow.CurrentDataSource = dataSource1;
-			_mainWindow.CurrentDataSourceLogView.Should().NotBeNull();
-			_mainWindow.CurrentDataSourceLogView.QuickFilterChain.Should().NotBeNull();
+			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			panel.CurrentDataSourceLogView.Should().NotBeNull();
+			panel.CurrentDataSourceLogView.QuickFilterChain.Should().NotBeNull();
 		}
 
 		[Test]
@@ -96,6 +102,8 @@ namespace Tailviewer.Test.Ui
 			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
 		public void TestGroup1()
 		{
+			_mainWindow.SelectedEntry = _mainWindow.Entries.ElementAt(1);
+
 			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
 			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
 			var changes = new List<string>();
@@ -105,8 +113,10 @@ namespace Tailviewer.Test.Ui
 			IDataSourceViewModel group = _mainWindow.RecentFiles.First();
 			group.Should().NotBeNull();
 			_mainWindow.CurrentDataSource.Should().BeSameAs(group);
-			_mainWindow.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
-			changes.Should().Equal(new[] {"CurrentDataSourceLogView", "WindowTitle", "CurrentDataSource"});
+
+			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
+			panel.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
+			changes.Should().Equal(new[] {"WindowTitle", "CurrentDataSource"});
 		}
 
 		[Test]
