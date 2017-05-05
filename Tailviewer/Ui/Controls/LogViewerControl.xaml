@@ -50,6 +50,7 @@
                                    Padding="0"
                                    x:Name="PART_Export"
                                    Command="{Binding LogView.ExportToFileCommand, ElementName=This}"
+                                   ToolTip="Export to file"
                                    Width="26"
                                    Height="26" />
 

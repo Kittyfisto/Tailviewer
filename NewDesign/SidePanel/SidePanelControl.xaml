@@ -29,7 +29,7 @@
                                             <Viewbox>
                                                 <Canvas Width="24" Height="24">
                                                     <Path
-                                                        Data="{Binding Converter={Binding IconConverter, RelativeSource={RelativeSource AncestorType={x:Type local:SidePanelControl}}}}"
+                                                        Data="{Binding Icon}"
                                                         Fill="{DynamicResource SecondaryForegroundBrush}" />
                                                 </Canvas>
                                             </Viewbox>

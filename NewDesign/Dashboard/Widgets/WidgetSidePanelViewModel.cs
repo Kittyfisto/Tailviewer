@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using Metrolib;
 
 namespace NewDesign.Dashboard.Widgets
 {
@@ -8,6 +10,8 @@ namespace NewDesign.Dashboard.Widgets
 	{
 		private bool _isSelected;
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public Geometry Icon => Icons.Widgets;
 
 		public bool IsSelected
 		{
