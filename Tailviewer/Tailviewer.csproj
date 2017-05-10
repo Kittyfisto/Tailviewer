@@ -233,6 +233,11 @@
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\Widgets\HorizontalWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\Widgets\IWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\Widgets\Widget.cs" />
+    <Compile Include="Ui\Controls\Widgets\WidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\Widgets\IWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelViewModel.cs" />
@@ -420,6 +425,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\SidePanel\SidePanelControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\Widgets\HorizontalLayoutDataTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\Widgets\WidgetStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -52,7 +52,7 @@ namespace Tailviewer.Ui.ViewModels
 		#region Main Panel
 
 		private readonly AnalyseMainPanelEntry _analyseEntry;
-		private readonly LogViewMainPanelEntry _logViewEntry;
+		private readonly LogViewMainPanelEntry _rawEntry;
 		private readonly IMainPanelEntry[] _entries;
 		private IMainPanelEntry _selectedEntry;
 
@@ -106,14 +106,14 @@ namespace Tailviewer.Ui.ViewModels
 			_selectPreviousDataSourceCommand = new DelegateCommand(SelectPreviousDataSource);
 
 			_analyseEntry = new AnalyseMainPanelEntry();
-			_logViewEntry = new LogViewMainPanelEntry();
+			_rawEntry = new LogViewMainPanelEntry();
 			_entries = new IMainPanelEntry[]
 			{
-				_analyseEntry,
-				_logViewEntry
+				//_analyseEntry,
+				_rawEntry
 			};
 			SelectedEntry = _entries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
-			                ?? _analyseEntry;
+			                ?? _rawEntry;
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -193,7 +193,7 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					SelectedMainPanel = new AnalyseMainPanelViewModel();
 				}
-				else if (value == _logViewEntry)
+				else if (value == _rawEntry)
 				{
 					SelectedMainPanel = new LogViewMainPanelViewModel(_actionCenter)
 					{

@@ -6,7 +6,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 	public sealed class LogViewMainPanelEntry
 		: IMainPanelEntry
 	{
-		public string Title => "Log View";
+		public string Title => "Raw";
 
 		public string Id => "log";
 
