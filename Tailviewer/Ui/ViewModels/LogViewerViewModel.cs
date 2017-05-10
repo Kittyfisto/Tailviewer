@@ -270,6 +270,11 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = "Not a single log entry matches the activated quick filters";
 					NoEntriesSubtext = null;
 				}
+				else if (source is MergedLogFile)
+				{
+					NoEntriesExplanation = "None of the data sources' contains identifiable timestamps: Merging them is not possible";
+					NoEntriesSubtext = null;
+				}
 				else
 				{
 					NoEntriesExplanation = null;
