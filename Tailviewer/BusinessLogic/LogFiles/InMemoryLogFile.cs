@@ -33,7 +33,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public DateTime LastModified { get; private set; }
 
-		public Size FileSize => Size.Zero;
+		public Size FileSize { get; set; }
 
 		public bool Exists => true;
 

@@ -61,7 +61,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		public override void Update()
 		{
-			
+			CurrentDataSourceLogView?.Update();
 		}
 	}
 }

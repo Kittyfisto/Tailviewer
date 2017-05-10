@@ -142,6 +142,7 @@
     <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
     <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\TextCanvasTest.cs" />
     <Compile Include="Ui\Controls\TextLineTest.cs" />
     <Compile Include="Ui\Converters\CountConverterTest.cs" />
@@ -183,6 +184,15 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <Content Include="TestData\20Mb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\HH_mm_ss.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\version.xml">

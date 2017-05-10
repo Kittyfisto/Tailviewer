@@ -39,6 +39,27 @@ namespace Tailviewer
 			AddV040();
 			AddV041();
 			AddV042();
+			AddV050();
+		}
+
+		private static void AddV050()
+		{
+			var features = new[]
+			{
+				"Added support for more timestamp formats"
+			};
+			var bugfixes = new string[]
+			{
+				
+			};
+			var misc = new[]
+			{
+				"More colorful design"
+			};
+			var releaseDate = new DateTime(2017, 5, 10);
+			var version = new Version(0, 5, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV042()
