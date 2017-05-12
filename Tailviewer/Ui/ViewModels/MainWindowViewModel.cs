@@ -38,6 +38,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly AutoUpdateViewModel _autoUpdater;
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersViewModel _quickFilters;
+		private readonly BookmarksViewModel _bookmarks;
 		private readonly SettingsViewModel _settings;
 
 		#endregion
@@ -86,6 +87,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
+			_bookmarks = new BookmarksViewModel();
 			_settings = new SettingsViewModel(settings);
 			_actionCenter = actionCenter;
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
@@ -118,7 +120,8 @@ namespace Tailviewer.Ui.ViewModels
 			_sidePanels = new ISidePanelViewModel[]
 			{
 				_dataSources,
-				_quickFilters
+				_quickFilters,
+				_bookmarks
 			};
 			SelectedPanel = _sidePanels.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedSidePanel);
 
@@ -259,6 +262,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
+			_bookmarks.CurrentDataSource = value;
 			OpenFile(value);
 		}
 
@@ -306,6 +310,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSources.Update();
 			_selectedMainPanel?.Update();
 			_actionCenterViewModel.Update();
+			_bookmarks.Update();
 		}
 
 		public void OpenFiles(string[] files)

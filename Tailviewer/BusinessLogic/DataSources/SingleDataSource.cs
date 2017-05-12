@@ -30,9 +30,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			OnUnfilteredLogFileChanged();
 		}
 
-		public override ILogFile UnfilteredLogFile
-		{
-			get { return _unfilteredLogFile; }
-		}
+		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
 	}
 }

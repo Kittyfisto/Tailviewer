@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
+using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -48,6 +49,28 @@ namespace Tailviewer.BusinessLogic.DataSources
 		int ErrorCount { get; }
 		int FatalCount { get; }
 		int NoTimestampCount { get; }
+
+		#endregion
+
+		#region Bookmarks
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="orignalLogLineIndex"></param>
+		/// <returns></returns>
+		Bookmark TryAddBookmark(LogLineIndex orignalLogLineIndex);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		IReadOnlyList<Bookmark> Bookmarks { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="bookmark"></param>
+		void RemoveBookmark(Bookmark bookmark);
 
 		#endregion
 

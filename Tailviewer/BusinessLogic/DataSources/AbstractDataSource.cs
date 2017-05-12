@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Metrolib;
+using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -18,6 +19,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly DataSource _settings;
 		private readonly LogFileProxy _logFile;
 		private readonly LogFileSearchProxy _search;
+		private readonly BookmarkCollection _bookmarks;
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
@@ -39,18 +41,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
+			_bookmarks = new BookmarkCollection(_logFile, maximumWaitTime);
 			CreateSearch();
 		}
 
-		public ILogFile FilteredLogFile
-		{
-			get { return _logFile; }
-		}
+		public ILogFile FilteredLogFile => _logFile;
 
-		public ILogFileSearch Search
-		{
-			get { return _search; }
-		}
+		public ILogFileSearch Search => _search;
 
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.
@@ -105,15 +102,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.LastViewed = value; }
 		}
 
-		public Guid Id
-		{
-			get { return _settings.Id; }
-		}
+		public Guid Id => _settings.Id;
 
-		public Guid ParentId
-		{
-			get { return _settings.ParentId; }
-		}
+		public Guid ParentId => _settings.ParentId;
 
 		public void ActivateQuickFilter(Guid id)
 		{
@@ -133,53 +124,23 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public abstract ILogFile UnfilteredLogFile { get; }
 
-		protected ILogFile FilterSource
-		{
-			get
-			{
-				return _filterSource;
-			}
-		}
+		protected ILogFile FilterSource => _filterSource;
 
-		public int NoLevelCount
-		{
-			get { return _counter.NoLevel.LogEntryCount; }
-		}
+		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
 
-		public int DebugCount
-		{
-			get { return _counter.Debugs.LogEntryCount; }
-		}
+		public int DebugCount => _counter.Debugs.LogEntryCount;
 
-		public int InfoCount
-		{
-			get { return _counter.Infos.LogEntryCount; }
-		}
+		public int InfoCount => _counter.Infos.LogEntryCount;
 
-		public int WarningCount
-		{
-			get { return _counter.Warnings.LogEntryCount; }
-		}
+		public int WarningCount => _counter.Warnings.LogEntryCount;
 
-		public int ErrorCount
-		{
-			get { return _counter.Errors.LogEntryCount; }
-		}
+		public int ErrorCount => _counter.Errors.LogEntryCount;
 
-		public int FatalCount
-		{
-			get { return _counter.Fatals.LogEntryCount; }
-		}
+		public int FatalCount => _counter.Fatals.LogEntryCount;
 
-		public int NoTimestampCount
-		{
-			get { return _counter.NoTimestamp.LogEntryCount; }
-		}
+		public int NoTimestampCount => _counter.NoTimestamp.LogEntryCount;
 
-		public string FullFileName
-		{
-			get { return _settings.File; }
-		}
+		public string FullFileName => _settings.File;
 
 		public bool FollowTail
 		{
@@ -211,20 +172,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.HorizontalOffset = value; }
 		}
 
-		public DataSource Settings
-		{
-			get { return _settings; }
-		}
+		public DataSource Settings => _settings;
 
-		public int TotalCount
-		{
-			get { return _counter.Total.LogLineCount; }
-		}
+		public int TotalCount => _counter.Total.LogLineCount;
 
-		public Size FileSize
-		{
-			get { return UnfilteredLogFile.FileSize; }
-		}
+		public Size FileSize => UnfilteredLogFile.FileSize;
 
 		public bool ColorByLevel
 		{
@@ -258,6 +210,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
+		public void RemoveBookmark(Bookmark bookmark)
+		{
+			_bookmarks.RemoveBookmark(bookmark);
+		}
+
+		public IReadOnlyList<Bookmark> Bookmarks => _bookmarks.Bookmarks;
+
+		public Bookmark TryAddBookmark(LogLineIndex orignalLogLineIndex)
+		{
+			return _bookmarks.TryAddBookmark(orignalLogLineIndex);
+		}
+
 		public void Dispose()
 		{
 			_logFile.Dispose();
@@ -271,10 +235,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_isDisposed = true;
 		}
 
-		public bool IsDisposed
-		{
-			get { return _isDisposed; }
-		}
+		public bool IsDisposed => _isDisposed;
 
 		public override string ToString()
 		{

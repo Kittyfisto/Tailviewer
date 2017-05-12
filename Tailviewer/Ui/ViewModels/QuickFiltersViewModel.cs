@@ -213,6 +213,11 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public void Update()
+		{
+			
+		}
+
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

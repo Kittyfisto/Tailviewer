@@ -24,5 +24,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		///     A short text that shall be displayed beneath the icon, if any.
 		/// </summary>
 		string QuickInfo { get; }
+
+		void Update();
 	}
 }

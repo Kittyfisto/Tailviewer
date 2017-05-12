@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -24,18 +22,40 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_scheduler = new ManualTaskScheduler();
 		}
 
+		[SetUp]
+		public void SetUp()
+		{
+			_logFile2 = new InMemoryLogFile();
+
+			_logFile = new Mock<ILogFile>();
+			_entries = new List<LogLine>();
+			_listeners = new LogFileListenerCollection(_logFile.Object);
+			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
+				.Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
+			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
+				.Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
+			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
+				.Callback(
+					(LogFileSection section, LogLine[] entries) =>
+						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
+			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
+			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
+		}
+
 		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 		}
 
 		private Mock<ILogFile> _logFile;
+		private InMemoryLogFile _logFile2;
 		private LogFileListenerCollection _listeners;
 		private List<LogLine> _entries;
 		private ManualTaskScheduler _scheduler;
 
 		[Test]
-		public void TestCtor()
+		public void TestConstruction1()
 		{
 			using (var source = new SingleDataSource(_scheduler, new DataSource(@"E:\somelogfile.txt") { Id = Guid.NewGuid() }))
 			{
@@ -43,6 +63,20 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				source.LevelFilter.Should().Be(LevelFlags.All);
 				source.SearchTerm.Should().BeNull();
 				source.FollowTail.Should().BeFalse();
+			}
+		}
+
+		[Test]
+		public void TestConstruction2()
+		{
+			var settings = new DataSource(@"E:\somelogfile.txt")
+			{
+				Id = Guid.NewGuid(),
+				SelectedLogLines = new HashSet<LogLineIndex> {1, 2}
+			};
+			using (var source = new SingleDataSource(_scheduler, settings))
+			{
+				source.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex[] {1, 2});
 			}
 		}
 
@@ -138,25 +172,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			}
 		}
 
-		[SetUp]
-		public void SetUp()
-		{
-			_logFile = new Mock<ILogFile>();
-			_entries = new List<LogLine>();
-			_listeners = new LogFileListenerCollection(_logFile.Object);
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-					.Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
-			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
-					.Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-					.Callback(
-						(LogFileSection section, LogLine[] entries) =>
-						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
-			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
-		}
-
 		[Test]
 		public void TestSearch1()
 		{
@@ -200,6 +215,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 				dataSource.IsSingleLine = false;
 				settings.IsSingleLine.Should().BeFalse("because the data source should modify the settings object when changed");
+			}
+		}
+
+		[Test]
+		public void TestAddBookmark1()
+		{
+			var settings = CreateDataSource();
+			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile2, TimeSpan.Zero))
+			{
+				dataSource.TryAddBookmark(new LogLineIndex(0)).Should().BeNull();
 			}
 		}
 

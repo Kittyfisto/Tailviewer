@@ -54,6 +54,7 @@ namespace Tailviewer
 			};
 			var misc = new[]
 			{
+				"Added proper explanation when merged data source is empty",
 				"More colorful design"
 			};
 			var releaseDate = new DateTime(2017, 5, 10);

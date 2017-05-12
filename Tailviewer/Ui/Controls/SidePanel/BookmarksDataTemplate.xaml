@@ -1,0 +1,71 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+
+    <DataTemplate DataType="{x:Type local:BookmarksViewModel}">
+        <Border Background="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Bookmarks"
+                               Foreground="DarkGray"
+                               VerticalAlignment="Center"
+                               FontSize="14"
+                               Margin="8,0,0,0" />
+
+                    <controls:AddButton
+                        Grid.Column="1"
+                        Width="26"
+                        Height="26"
+                        ToolTip="Add new bookmark at the selected line"
+                        VerticalAlignment="Center"
+                        Command="{Binding AddBookmarkCommand}" />
+                </Grid>
+                <controls:FlatScrollViewer
+                    ScrollBarThickness="7"
+                    Margin="0,8,0,0"
+                    Grid.Row="1">
+                    <ItemsControl ItemsSource="{Binding Bookmarks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:BookmarkViewModel}">
+                                <Grid Height="20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox Width="12" Height="12"
+                                             Margin="4"
+                                             VerticalAlignment="Center">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Data="{x:Static metrolib:Icons.BookmarkOutline}" Fill="Black" />
+                                        </Canvas>
+                                    </Viewbox>
+                                    <TextBlock Text="{Binding Name}"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="1" />
+                                    <controls:RemoveButton Command="{Binding RemoveCommand}"
+                                                           Grid.Column="3" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </controls:FlatScrollViewer>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+</ResourceDictionary>
