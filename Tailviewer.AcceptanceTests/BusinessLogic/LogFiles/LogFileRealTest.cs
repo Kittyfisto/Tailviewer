@@ -136,23 +136,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					}).ShouldNotThrow();
 			}
 		}
-
-		[Test]
-		public void TestDetermineDateTime1()
-		{
-			int? index;
-			int? column;
-			int? length;
-			LogFile.DetermineDateTimePart(
-				"2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-				out index,
-				out column,
-				out length);
-			column.Should().Be(0);
-			length.Should().Be(23);
-			// This is not ideal yet because we don't detect that the next 4 characters is the amount of MS, but it's a start...
-		}
-
+		
 		[Test]
 		[Description("Verifies that creating a LogFile for a file that doesn't exist works")]
 		public void TestDoesNotExist()
@@ -324,84 +308,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestParse1()
-		{
-			int? index;
-			int? column;
-			int? length;
-			LogFile.DetermineDateTimePart("2015-10-07 19:50:58,998",
-			                              out index,
-			                              out column,
-			                              out length);
-			column.Should().HaveValue();
-			length.Should().HaveValue();
-
-			DateTime? value = LogFile.ParseTimestamp("2015-10-07 19:50:58,998", index, column, length);
-			value.Should().HaveValue();
-			DateTime dateTime = value.Value;
-			dateTime.Year.Should().Be(2015);
-			dateTime.Month.Should().Be(10);
-			dateTime.Day.Should().Be(7);
-			dateTime.Hour.Should().Be(19);
-			dateTime.Minute.Should().Be(50);
-			dateTime.Second.Should().Be(58);
-			dateTime.Millisecond.Should().Be(998);
-		}
-
-		[Test]
-		public void TestParse2()
-		{
-			int? index;
-			int? column;
-			int? length;
-			LogFile.DetermineDateTimePart("2016 Feb 17 12:38:59.060754850",
-			                              out index,
-			                              out column,
-			                              out length);
-			column.Should().HaveValue();
-			length.Should().HaveValue();
-			length.Should().Be(24);
-
-			DateTime? value = LogFile.ParseTimestamp("2016 Feb 17 12:38:59.060754850", index, column, length);
-			value.Should().HaveValue();
-			DateTime dateTime = value.Value;
-			dateTime.Year.Should().Be(2016);
-			dateTime.Month.Should().Be(2);
-			dateTime.Day.Should().Be(17);
-			dateTime.Hour.Should().Be(12);
-			dateTime.Minute.Should().Be(38);
-			dateTime.Second.Should().Be(59);
-			dateTime.Millisecond.Should().Be(60);
-		}
-
-		[Test]
-		public void TestParse3()
-		{
-			int? index;
-			int? column;
-			int? length;
-			LogFile.DetermineDateTimePart("07/Mar/2004:16:31:48",
-			                              out index,
-			                              out column,
-			                              out length);
-
-			column.Should().HaveValue();
-			length.Should().HaveValue();
-			length.Should().Be(20);
-
-			DateTime? value = LogFile.ParseTimestamp("07/Mar/2004:16:31:48", index, column, length);
-			value.Should().HaveValue();
-			DateTime dateTime = value.Value;
-			dateTime.Year.Should().Be(2004);
-			dateTime.Month.Should().Be(3);
-			dateTime.Day.Should().Be(7);
-			dateTime.Hour.Should().Be(16);
-			dateTime.Minute.Should().Be(31);
-			dateTime.Second.Should().Be(48);
-			dateTime.Millisecond.Should().Be(0);
-		}
-
-		[Test]
 		public void TestRead2Lines()
 		{
 			using (var file = new LogFile(_scheduler, File2Lines))
@@ -565,6 +471,46 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				var line = file.GetLine(0);
 				var today = DateTime.Today;
 				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 21, 04, 33, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat4()
+		{
+			using (var file = new LogFile(_scheduler, @"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
+			{
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				file.Count.Should().Be(1);
+				var line = file.GetLine(0);
+				line.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat5()
+		{
+			using (var file = new LogFile(_scheduler, @"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
+			{
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				file.Count.Should().Be(2);
+				var line = file.GetLine(1);
+				line.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
+			}
+		}
+
+		[Test]
+		public void TestTimestampFormat6()
+		{
+			using (var file = new LogFile(_scheduler, @"TestData\Timestamps\HH_mm_ss;s.txt"))
+			{
+				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+				file.Count.Should().Be(2);
+
+				var today = DateTime.Today;
+				var line = file.GetLine(0);
+				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 51, 57, 135, DateTimeKind.Unspecified));
+				line = file.GetLine(1);
+				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 53, 06, 341, DateTimeKind.Unspecified));
 			}
 		}
 	}

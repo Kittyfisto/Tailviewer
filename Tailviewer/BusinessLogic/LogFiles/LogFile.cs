@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using Metrolib;
 using log4net;
+using Tailviewer.BusinessLogic.LogFiles.Parsers;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -24,9 +25,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private int? _dateTimeFormatIndex;
-		private int? _dateTimeColumn;
-		private int? _dateTimeLength;
+		private TimestampParser _timestampParser;
 		private bool _exists;
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
@@ -60,6 +59,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 					// Various formats...
 					"dd/MMM/yyyy:HH:mm:ss",
+					"ddd MMM dd HH:mm:ss.fff yyyy",
 
 					"HH:mm:ss"
 				};
@@ -77,7 +77,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
-			
+			_timestampParser = new TimestampParser();
+
 			_accessQueue = new LogDataAccessQueue<LogLineIndex, LogLine>();
 			_cache = new LogDataCache();
 
@@ -274,76 +275,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private DateTime? ParseTimestamp(string line)
 		{
-			if (_dateTimeColumn == null || _dateTimeLength == null)
-			{
-				DetermineDateTimePart(line,
-				                      out _dateTimeFormatIndex,
-				                      out _dateTimeColumn,
-				                      out _dateTimeLength);
-			}
-
-			return ParseTimestamp(line, _dateTimeFormatIndex, _dateTimeColumn, _dateTimeLength);
-		}
-
-		public static DateTime? ParseTimestamp(string line, int? dateTimeFormatIndex, int? dateTimeColumn, int? dateTimeLength)
-		{
-			if (dateTimeFormatIndex != null && dateTimeColumn != null && dateTimeLength != null)
-			{
-				int start = dateTimeColumn.Value;
-				int length = dateTimeLength.Value;
-				if (line.Length >= start + length)
-				{
-					string timestampValue = line.Substring(start, length);
-					string format = HardcodedTimestampFormats[dateTimeFormatIndex.Value];
-					DateTime timestamp;
-					if (DateTime.TryParseExact(timestampValue,
-						format,
-						CultureInfo.InvariantCulture,
-						DateTimeStyles.None,
-						out timestamp))
-					{
-						return timestamp;
-					}
-				}
-			}
+			DateTime timestamp;
+			if (_timestampParser.TryParse(line, out timestamp))
+				return timestamp;
 
 			return null;
-		}
-
-		public static void DetermineDateTimePart(string line,
-		                                         out int? formatIndex,
-		                                         out int? currentColumn,
-		                                         out int? currentLength)
-		{
-			IFormatProvider culture = CultureInfo.InvariantCulture;
-
-			formatIndex = null;
-			currentColumn = null;
-			currentLength = null;
-
-			for (int m = 0; m < HardcodedTimestampFormats.Length; ++m)
-			{
-				for (int i = 0; i < line.Length; ++i)
-				{
-					for (int n = i; n <= line.Length; ++n)
-					{
-						string dateTimeString = line.Substring(i, n - i);
-						DateTime dateTime;
-						if (DateTime.TryParseExact(dateTimeString,
-							HardcodedTimestampFormats[m],
-							culture,
-							DateTimeStyles.None,
-							out dateTime))
-						{
-							int length = n - i;
-							currentColumn = i;
-							currentLength = length;
-							formatIndex = m;
-							return;
-						}
-					}
-				}
-			}
 		}
 	}
 }

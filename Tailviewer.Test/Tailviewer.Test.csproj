@@ -125,6 +125,8 @@
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="LocalTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
@@ -188,7 +190,16 @@
     <Content Include="TestData\20Mb.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\HH_mm_ss%3bs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\Timestamps\HH_mm_ss.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt">

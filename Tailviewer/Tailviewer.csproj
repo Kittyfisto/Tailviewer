@@ -99,6 +99,7 @@
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
+    <Compile Include="BusinessLogic\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
     <Compile Include="BusinessLogic\Analysers\QuickInfoLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Dashboard\Dashboard.cs" />
@@ -181,6 +182,9 @@
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
     <Compile Include="BusinessLogic\StreamReaderEx.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\DateTimeParser.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParser.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParser.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="Percentage.cs" />
