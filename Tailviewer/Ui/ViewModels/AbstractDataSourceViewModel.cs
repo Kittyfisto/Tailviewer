@@ -444,6 +444,12 @@ namespace Tailviewer.Ui.ViewModels
 			set { _dataSource.QuickFilterChain = value; }
 		}
 
+		public void RequestBringIntoView(LogLineIndex index)
+		{
+			OnRequestBringIntoView?.Invoke(this, index);
+		}
+
+		public event Action<IDataSourceViewModel, LogLineIndex> OnRequestBringIntoView;
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 

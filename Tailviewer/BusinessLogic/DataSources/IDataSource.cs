@@ -52,28 +52,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		#endregion
 
-		#region Bookmarks
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="orignalLogLineIndex"></param>
-		/// <returns></returns>
-		Bookmark TryAddBookmark(LogLineIndex orignalLogLineIndex);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		IReadOnlyList<Bookmark> Bookmarks { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="bookmark"></param>
-		void RemoveBookmark(Bookmark bookmark);
-
-		#endregion
-
 		void ActivateQuickFilter(Guid id);
 		bool DeactivateQuickFilter(Guid id);
 		bool IsQuickFilterActive(Guid id);

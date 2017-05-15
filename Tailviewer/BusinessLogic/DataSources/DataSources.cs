@@ -7,23 +7,25 @@ using System.Reflection;
 using System.Threading;
 using Tailviewer.Settings;
 using log4net;
+using Tailviewer.BusinessLogic.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
 	internal sealed class DataSources
-		: IEnumerable<IDataSource>
-		  , IDisposable
+		: IDataSources
+		, IDisposable
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly IDataSources _settings;
+		private readonly IDataSourcesSettings _settings;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly BookmarkCollection _bookmarks;
 
-		public DataSources(ITaskScheduler taskScheduler, IDataSources settings)
+		public DataSources(ITaskScheduler taskScheduler, IDataSourcesSettings settings)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
@@ -31,6 +33,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
 			_syncRoot = new object();
 			_settings = settings;
+			_bookmarks = new BookmarkCollection(_maximumWaitTime);
 			_dataSources = new List<IDataSource>();
 			foreach (DataSource dataSource in settings)
 			{
@@ -63,6 +66,35 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		public IDataSource this[int index] => _dataSources[index];
+
+		#region Bookmarks
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dataSource"></param>
+		/// <param name="orignalLogLineIndex"></param>
+		/// <returns></returns>
+		public Bookmark TryAddBookmark(IDataSource dataSource, LogLineIndex orignalLogLineIndex)
+		{
+			return _bookmarks.TryAddBookmark(dataSource, orignalLogLineIndex);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public IReadOnlyList<Bookmark> Bookmarks => _bookmarks.Bookmarks;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="bookmark"></param>
+		public void RemoveBookmark(Bookmark bookmark)
+		{
+			_bookmarks.RemoveBookmark(bookmark);
+		}
+
+		#endregion
 
 		public int Count
 		{
@@ -114,6 +146,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				}
 
 				_dataSources.Add(dataSource);
+				_bookmarks.AddDataSource(dataSource);
 				return dataSource;
 			}
 		}
@@ -174,6 +207,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_settings.Remove(dataSource.Settings);
 				if (_dataSources.Remove(dataSource))
 				{
+					_bookmarks.RemoveDataSource(dataSource);
 					dataSource.Dispose();
 					return true;
 				}

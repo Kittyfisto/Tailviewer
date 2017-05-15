@@ -10,7 +10,7 @@ namespace Tailviewer.Settings
 {
 	public sealed class DataSources
 		: List<DataSource>
-		, IDataSources
+		, IDataSourcesSettings
 		, ICloneable
 	{
 		private static readonly ILog Log =

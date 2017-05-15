@@ -92,6 +92,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public IEnumerable<IDataSourceViewModel> DataSources => _allDataSourceViewModels;
 		public ObservableCollection<IDataSourceViewModel> Observable => _observable;
 
 		public event PropertyChangedEventHandler PropertyChanged;

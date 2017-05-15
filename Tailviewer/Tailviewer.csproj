@@ -96,6 +96,7 @@
     <Compile Include="BusinessLogic\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
+    <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
@@ -208,7 +209,7 @@
     <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
     <Compile Include="Settings\IApplicationSettings.cs" />
     <Compile Include="Settings\IAutoUpdateSettings.cs" />
-    <Compile Include="Settings\IDataSources.cs" />
+    <Compile Include="Settings\IDataSourcesSettings.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="Settings\QuickFilter.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\Widgets\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\IWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\Widget.cs" />

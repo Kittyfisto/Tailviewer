@@ -7,8 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -87,7 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(settings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnQuickFiltersChanged;
-			_bookmarks = new BookmarksViewModel();
+			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 			_settings = new SettingsViewModel(settings);
 			_actionCenter = actionCenter;
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
@@ -126,6 +128,18 @@ namespace Tailviewer.Ui.ViewModels
 			SelectedPanel = _sidePanels.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedSidePanel);
 
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void OnNavigateToBookmark(Bookmark bookmark)
+		{
+			var dataSourceViewModel = _dataSources.DataSources.FirstOrDefault(x => x.DataSource == bookmark.DataSource);
+			if (dataSourceViewModel != null)
+			{
+				CurrentDataSource = dataSourceViewModel;
+
+				dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> {bookmark.Index};
+				dataSourceViewModel.RequestBringIntoView(bookmark.Index);
+			}
 		}
 
 		public ActionCenterViewModel ActionCenter => _actionCenterViewModel;
@@ -246,14 +260,14 @@ namespace Tailviewer.Ui.ViewModels
 		public IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
 
 		public event PropertyChangedEventHandler PropertyChanged;
-
+		
 		private void DataSourcesOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case "SelectedItem":
+				case nameof(DataSourcesViewModel.SelectedItem):
 					ChangeDataSource(_dataSources.SelectedItem);
-					EmitPropertyChanged("CurrentDataSource");
+					EmitPropertyChanged(nameof(CurrentDataSource));
 					break;
 			}
 		}
@@ -262,7 +276,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
-			_bookmarks.CurrentDataSource = value;
+			_bookmarks.CurrentDataSource = value?.DataSource;
 			OpenFile(value);
 		}
 

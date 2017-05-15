@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
 
     <DataTemplate DataType="{x:Type local:BookmarksViewModel}">
         <Border Background="White">
@@ -40,9 +41,9 @@
                     <ItemsControl ItemsSource="{Binding Bookmarks}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type local:BookmarkViewModel}">
-                                <Grid Height="20">
+                                <Grid Height="20"
+                                      Width="240">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
@@ -54,11 +55,14 @@
                                             <Path Data="{x:Static metrolib:Icons.BookmarkOutline}" Fill="Black" />
                                         </Canvas>
                                     </Viewbox>
-                                    <TextBlock Text="{Binding Name}"
+                                    <TextBlock TextTrimming="CharacterEllipsis"
                                                VerticalAlignment="Center"
-                                               Grid.Column="1" />
+                                               Grid.Column="1">
+                                        <local:LinkRun Text="{Binding Name, Mode=OneWay}"
+                                                        NavigateCommand="{Binding NavigateCommand}" />
+                                    </TextBlock>
                                     <controls:RemoveButton Command="{Binding RemoveCommand}"
-                                                           Grid.Column="3" />
+                                                           Grid.Column="2" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

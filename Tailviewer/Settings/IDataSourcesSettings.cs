@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tailviewer.Settings
 {
-	public interface IDataSources
+	public interface IDataSourcesSettings
 		: IList<DataSource>
 	{
 		Guid SelectedItem { get; set; }

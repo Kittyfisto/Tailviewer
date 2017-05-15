@@ -289,7 +289,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			BringIntoView(logLineIndex, match);
 		}
 
-		private void BringIntoView(LogLineIndex logLineIndex, LogLineMatch match = new LogLineMatch())
+		public void BringIntoView(LogLineIndex logLineIndex, LogLineMatch match = new LogLineMatch())
 		{
 			double height = _textCanvas.ActualHeight;
 			double offset = _textCanvas.YOffset;

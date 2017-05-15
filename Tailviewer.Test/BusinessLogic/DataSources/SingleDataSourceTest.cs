@@ -218,16 +218,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			}
 		}
 
-		[Test]
-		public void TestAddBookmark1()
-		{
-			var settings = CreateDataSource();
-			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile2, TimeSpan.Zero))
-			{
-				dataSource.TryAddBookmark(new LogLineIndex(0)).Should().BeNull();
-			}
-		}
-
 		private DataSource CreateDataSource()
 		{
 			return new DataSource("ffff") {Id = Guid.NewGuid()};

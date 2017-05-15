@@ -259,10 +259,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			if (oldValue != null)
 			{
+				oldValue.OnRequestBringIntoView -= DataSourceOnRequestBringIntoView;
 				oldValue.PropertyChanged -= DataSourceOnPropertyChanged;
 			}
 			if (newValue != null)
 			{
+				newValue.OnRequestBringIntoView += DataSourceOnRequestBringIntoView;
 				newValue.PropertyChanged += DataSourceOnPropertyChanged;
 				PART_ListView.FollowTail = newValue.FollowTail;
 				PART_ListView.SelectedSearchResultIndex = newValue.CurrentSearchResultIndex;
@@ -270,6 +272,12 @@ namespace Tailviewer.Ui.Controls
 				ShowLineNumbers = newValue.ShowLineNumbers;
 			}
 			OnLevelsChanged();
+		}
+
+		private void DataSourceOnRequestBringIntoView(IDataSourceViewModel dataSource, LogLineIndex index)
+		{
+			PART_ListView.BringIntoView(index);
+			PART_ListView.PartTextCanvas?.Focus();
 		}
 
 		private void LogViewOnPropertyChanged(object sender, PropertyChangedEventArgs args)

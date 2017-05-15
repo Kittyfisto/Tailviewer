@@ -7,7 +7,7 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.Controls.SidePanel
 {
@@ -17,11 +17,21 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		private readonly DelegateCommand _addBookmarkCommand;
 		private readonly ObservableCollection<BookmarkViewModel> _bookmarks;
 		private readonly Dictionary<Bookmark, BookmarkViewModel> _viewModelByBookmark;
-		private IDataSourceViewModel _currentDataSource;
+		private readonly IDataSources _dataSources;
+		private readonly Action<Bookmark> _navigateToBookmark;
+
+		private IDataSource _currentDataSource;
 		private bool _canAddBookmarks;
 
-		public BookmarksViewModel()
+		public BookmarksViewModel(IDataSources dataSources, Action<Bookmark> navigateToBookmark)
 		{
+			if (dataSources == null)
+				throw new ArgumentNullException(nameof(dataSources));
+			if (navigateToBookmark == null)
+				throw new ArgumentNullException(nameof(navigateToBookmark));
+
+			_dataSources = dataSources;
+			_navigateToBookmark = navigateToBookmark;
 			_addBookmarkCommand = new DelegateCommand(AddBookmark, CanAddBookmark);
 			_viewModelByBookmark = new Dictionary<Bookmark, BookmarkViewModel>();
 			_bookmarks = new ObservableCollection<BookmarkViewModel>();
@@ -44,7 +54,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 		public IEnumerable<BookmarkViewModel> Bookmarks => _bookmarks;
 
-		public IDataSourceViewModel CurrentDataSource
+		public IDataSource CurrentDataSource
 		{
 			get { return _currentDataSource; }
 			set
@@ -53,7 +63,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 					return;
 
 				_currentDataSource = value;
-				Update();
+				EmitPropertyChanged();
 			}
 		}
 
@@ -63,7 +73,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 		public override void Update()
 		{
-			var bookmarks = _currentDataSource?.DataSource?.Bookmarks;
+			var bookmarks = _dataSources.Bookmarks;
 			if (bookmarks != null)
 			{
 				// Add bookmarks we haven't added yet
@@ -72,8 +82,9 @@ namespace Tailviewer.Ui.Controls.SidePanel
 					BookmarkViewModel viewModel;
 					if (!_viewModelByBookmark.TryGetValue(bookmark, out viewModel))
 					{
-						viewModel = new BookmarkViewModel(bookmark);
-						viewModel.OnRemove += OnBookmarkRemoved;
+						viewModel = new BookmarkViewModel(bookmark,
+							OnNavigateToBookmark,
+							OnRemoveBookmark);
 
 						_viewModelByBookmark.Add(bookmark, viewModel);
 						Insert(viewModel);
@@ -98,11 +109,16 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			CanAddBookmarks = Any(_currentDataSource?.SelectedLogLines);
 		}
 
-		private void OnBookmarkRemoved(BookmarkViewModel viewModel)
+		private void OnNavigateToBookmark(BookmarkViewModel viewModel)
+		{
+			_navigateToBookmark(viewModel.Bookmark);
+		}
+
+		private void OnRemoveBookmark(BookmarkViewModel viewModel)
 		{
 			_viewModelByBookmark.Remove(viewModel.Bookmark);
 			_bookmarks.Remove(viewModel);
-			_currentDataSource.DataSource.RemoveBookmark(viewModel.Bookmark);
+			_dataSources.RemoveBookmark(viewModel.Bookmark);
 		}
 
 		private static bool Any(HashSet<LogLineIndex> selectedLogLines)
@@ -129,17 +145,17 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 		private void AddBookmark()
 		{
+			var dataSource = _currentDataSource;
 			var lines = _currentDataSource?.SelectedLogLines;
-			if (lines == null)
+			if (dataSource == null || lines == null)
 				return;
 
 			foreach (var line in lines)
 			{
-				var bookmark = _currentDataSource.DataSource.TryAddBookmark(line);
+				var bookmark = _dataSources.TryAddBookmark(dataSource, line);
 				if (bookmark != null)
 				{
-					var viewModel = new BookmarkViewModel(bookmark);
-					viewModel.OnRemove += OnBookmarkRemoved;
+					var viewModel = new BookmarkViewModel(bookmark, OnNavigateToBookmark, OnRemoveBookmark);
 					_viewModelByBookmark.Add(bookmark, viewModel);
 					Insert(viewModel);
 				}

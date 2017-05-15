@@ -69,7 +69,11 @@ namespace Tailviewer.Ui.ViewModels
 		IDataSourceViewModel Parent { get; set; }
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
+		void RequestBringIntoView(LogLineIndex index);
+
+		event Action<IDataSourceViewModel, LogLineIndex> OnRequestBringIntoView;
 		event Action<IDataSourceViewModel> Remove;
+
 		void Update();
 	}
 }

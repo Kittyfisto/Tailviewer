@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Metrolib;
-using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -19,7 +18,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly DataSource _settings;
 		private readonly LogFileProxy _logFile;
 		private readonly LogFileSearchProxy _search;
-		private readonly BookmarkCollection _bookmarks;
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
@@ -41,7 +39,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
-			_bookmarks = new BookmarkCollection(_logFile, maximumWaitTime);
 			CreateSearch();
 		}
 
@@ -209,19 +206,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				CreateMultiLineLogFile();
 			}
 		}
-
-		public void RemoveBookmark(Bookmark bookmark)
-		{
-			_bookmarks.RemoveBookmark(bookmark);
-		}
-
-		public IReadOnlyList<Bookmark> Bookmarks => _bookmarks.Bookmarks;
-
-		public Bookmark TryAddBookmark(LogLineIndex orignalLogLineIndex)
-		{
-			return _bookmarks.TryAddBookmark(orignalLogLineIndex);
-		}
-
+		
 		public void Dispose()
 		{
 			_logFile.Dispose();
