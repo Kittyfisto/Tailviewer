@@ -156,5 +156,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Clear();
 			logFile.MaxCharactersPerLine.Should().Be(0);
 		}
+
+		[Test]
+		public void TestGetLogLineIndexOfOriginalLineIndex1()
+		{
+			var logFile = new InMemoryLogFile();
+			const string reason = "because the log file is empty";
+			logFile.GetLogLineIndexOfOriginalLineIndex(LogLineIndex.Invalid).Should().Be(LogLineIndex.Invalid, reason);
+			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(LogLineIndex.Invalid, reason);
+			logFile.GetLogLineIndexOfOriginalLineIndex(1).Should().Be(LogLineIndex.Invalid, reason);
+		}
+
+		[Test]
+		public void TestGetLogLineIndexOfOriginalLineIndex2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(LogLineIndex.Invalid);
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(new LogLineIndex(0));
+			logFile.GetLogLineIndexOfOriginalLineIndex(1).Should().Be(LogLineIndex.Invalid);
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(new LogLineIndex(0));
+			logFile.GetLogLineIndexOfOriginalLineIndex(1).Should().Be(new LogLineIndex(1));
+			logFile.Clear();
+			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(LogLineIndex.Invalid);
+			logFile.GetLogLineIndexOfOriginalLineIndex(1).Should().Be(LogLineIndex.Invalid);
+		}
 	}
 }

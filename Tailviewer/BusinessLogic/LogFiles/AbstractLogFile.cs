@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using Metrolib;
 
@@ -73,6 +72,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public abstract int Count { get; }
 
 		public abstract void GetSection(LogFileSection section, LogLine[] dest);
+
+		public virtual LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
+		{
+			return originalLineIndex;
+		}
+
 		public abstract LogLine GetLine(int index);
 
 		protected abstract TimeSpan RunOnce(CancellationToken token);

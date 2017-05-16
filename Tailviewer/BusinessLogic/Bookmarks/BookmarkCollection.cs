@@ -84,7 +84,10 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		{
 			lock (_syncRoot)
 			{
-				var logFile = dataSource.UnfilteredLogFile;
+				var logFile = dataSource?.UnfilteredLogFile;
+				if (logFile == null)
+					return null;
+
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 					return null;
 

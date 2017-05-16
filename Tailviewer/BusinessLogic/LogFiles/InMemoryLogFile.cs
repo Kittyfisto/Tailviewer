@@ -61,6 +61,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
+		{
+			lock (_lines)
+			{
+				if (originalLineIndex >= _lines.Count)
+				{
+					return LogLineIndex.Invalid;
+				}
+
+				return originalLineIndex;
+			}
+		}
+
 		public LogLine GetLine(int index)
 		{
 			lock (_lines)

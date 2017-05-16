@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Bookmarks;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -24,6 +27,8 @@ namespace Tailviewer.Ui.ViewModels
 	internal sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		#region Dispatching
 
 		private readonly IDispatcher _dispatcher;
@@ -137,8 +142,22 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				CurrentDataSource = dataSourceViewModel;
 
-				dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> {bookmark.Index};
-				dataSourceViewModel.RequestBringIntoView(bookmark.Index);
+				var index = bookmark.Index;
+				var logFile = dataSourceViewModel.DataSource.FilteredLogFile;
+				if (logFile != null)
+				{
+					var actualIndex = logFile.GetLogLineIndexOfOriginalLineIndex(index);
+					if (actualIndex == LogLineIndex.Invalid)
+					{
+						Log.WarnFormat("Unable to find index '{0}' of {1}", index, dataSourceViewModel);
+						return;
+					}
+
+					index = actualIndex;
+				}
+
+				dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { index };
+				dataSourceViewModel.RequestBringIntoView(index);
 			}
 		}
 

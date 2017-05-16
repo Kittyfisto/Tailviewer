@@ -5,6 +5,7 @@ using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
@@ -259,6 +260,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).ShouldNotThrow();
 				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
+			}
+		}
+
+		[Test]
+		public void TestGetLogLineIndexOfOriginalLineIndex1()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			{
+				_logFile.Setup(x => x.GetLogLineIndexOfOriginalLineIndex(It.Is<LogLineIndex>(y => y == 9001)))
+					.Returns(42);
+
+				proxy.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(9001))
+					.Should()
+					.Be(new LogLineIndex(42), "because the proxy should forward all requests to the inner log file, if available");
+			}
+		}
+
+		[Test]
+		public void TestGetLogLineIndexOfOriginalLineIndex2()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
+			{
+				proxy.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(9001))
+					.Should()
+					.Be(LogLineIndex.Invalid, "because the proxy should just return an invalid index when no inner log file is present");
 			}
 		}
 	}

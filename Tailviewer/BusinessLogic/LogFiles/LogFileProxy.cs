@@ -227,6 +227,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
+		{
+			var logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				return logFile.GetLogLineIndexOfOriginalLineIndex(originalLineIndex);
+			}
+
+			return LogLineIndex.Invalid;
+		}
+
 		public LogLine GetLine(int index)
 		{
 			ILogFile logFile = _innerLogFile;

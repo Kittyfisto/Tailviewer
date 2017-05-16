@@ -34,6 +34,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		void RemoveListener(ILogFileListener listener);
 
 		void GetSection(LogFileSection section, LogLine[] dest);
+		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
 
 		[Pure]
 		LogLine GetLine(int index);

@@ -125,6 +125,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public override LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalSourceIndex)
+		{
+			lock (_indices)
+			{
+				for (int i = 0; i < _indices.Count; ++i)
+				{
+					if (_indices[i] == originalSourceIndex.Value)
+					{
+						return i;
+					}
+				}
+			}
+
+			return LogLineIndex.Invalid;
+		}
+
 		public override string ToString()
 		{
 			return string.Format("{0} (Filtered)", _source);

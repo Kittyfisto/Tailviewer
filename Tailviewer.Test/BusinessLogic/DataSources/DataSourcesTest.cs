@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 
@@ -186,6 +188,26 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			_dataSources.Remove(source2);
 			_settings.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestTestTryAddBookmark1()
+		{
+			_dataSources.Bookmarks.Should().BeEmpty();
+
+			_dataSources.TryAddBookmark(null, 1).Should().BeNull("because no data source was given");
+			_dataSources.TryAddBookmark(new Mock<IDataSource>().Object, 2).Should().BeNull("because the data source hasn't been added");
+			_dataSources.Bookmarks.Should().BeEmpty("because no boomark should've been added in the process");
+		}
+
+		[Test]
+		public void TestRemoveBookmark1()
+		{
+			_dataSources.Bookmarks.Should().BeEmpty();
+
+			new Action(() => _dataSources.RemoveBookmark(new Bookmark(new Mock<IDataSource>().Object, 1)))
+				.ShouldNotThrow("because removing a bookmark that was never there shouldn't be considered an error");
+			_dataSources.Bookmarks.Should().BeEmpty("because no boomark should've been added in the process");
 		}
 	}
 }
