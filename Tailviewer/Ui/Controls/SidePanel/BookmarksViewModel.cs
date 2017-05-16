@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -107,6 +108,20 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				}
 			}
 			CanAddBookmarks = Any(_currentDataSource?.SelectedLogLines);
+			QuickInfo = FormatBookmarksCount();
+		}
+
+		[Pure]
+		private string FormatBookmarksCount()
+		{
+			var count = _bookmarks.Count;
+			if (count <= 0)
+				return null;
+
+			if (count == 1)
+				return "1 bookmark";
+
+			return string.Format("{0} bookmarks", count);
 		}
 
 		private void OnNavigateToBookmark(BookmarkViewModel viewModel)

@@ -32,6 +32,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		public IEnumerable<LineNumber> LineNumbers => _lineNumbers;
+
 		public void UpdateLineNumbers(ILogFile logFile, LogFileSection visibleSection, double yOffset)
 		{
 			int lineNumberCharacterCount;
