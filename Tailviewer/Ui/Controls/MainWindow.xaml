@@ -53,7 +53,8 @@
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <Border Background="{StaticResource PrimaryBrush}">
+            <Border Background="{StaticResource PrimaryBrush}"
+                    IsHitTestVisible="False">
                 <StackPanel Orientation="Horizontal"
                             Height="20"
                             Margin="4,2,0,0">
@@ -71,6 +72,7 @@
                        Margin="4,0,0,0"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
+                       IsHitTestVisible="False"
                        FontSize="16"
                        Foreground="Black"
                        Text="{Binding WindowTitleSuffix}" />
