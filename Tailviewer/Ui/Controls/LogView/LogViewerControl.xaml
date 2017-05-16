@@ -36,15 +36,13 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Orientation="Horizontal" Margin="8">
-            <Button
-                Margin="0,0,8,8"
-                Width="26"
-                Height="26"
-                VerticalAlignment="Center"
-                Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}">
-                <Image Source="pack://application:,,,/Resources/ic_open_10_black_18dp.png"
-                       ToolTip="Open file in explorer" />
-            </Button>
+            <controls:FolderOpenButton Margin="0,0,0,4"
+                                       Padding="0"
+                                       Width="26"
+                                       Height="26"
+                                       VerticalContentAlignment="Center"
+                                       ToolTip="Open file in explorer"
+                                       Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}" />
 
             <controls:ExportButton Margin="0,0,0,4"
                                    Padding="0"

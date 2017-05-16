@@ -46,7 +46,7 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Added support for more timestamp formats"
+				"Introduced bookmarks"
 			};
 			var bugfixes = new string[]
 			{
@@ -54,8 +54,10 @@ namespace Tailviewer
 			};
 			var misc = new[]
 			{
+				"Added support for more timestamp formats",
 				"Added proper explanation when merged data source is empty",
-				"More colorful design"
+				"More colorful design",
+				"Improved 'Open in explorer' button icon"
 			};
 			var releaseDate = new DateTime(2017, 5, 10);
 			var version = new Version(0, 5, 0);
