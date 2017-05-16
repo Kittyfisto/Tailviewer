@@ -122,6 +122,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, 0);
 			_lineNumberCanvas.SetValue(ColumnProperty, 0);
+			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(5, 0, 0, 0));
 
 			Children.Add(_lineNumberCanvas);
 			Children.Add(_textCanvas);
