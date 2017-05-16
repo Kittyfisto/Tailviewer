@@ -16,6 +16,12 @@ namespace Tailviewer.Ui.ViewModels
 
 		string DisplayName { get; }
 
+		/// <summary>
+		/// A user-readable description of the origin of the data source.
+		/// Could be a simpel filesystem path, a URL, etc...
+		/// </summary>
+		string DataSourceOrigin { get; }
+
 		int TotalCount { get; }
 
 		int OtherCount { get; }

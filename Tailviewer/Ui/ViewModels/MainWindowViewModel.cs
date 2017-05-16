@@ -13,7 +13,6 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -75,6 +74,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private bool _isLogFileOpen;
 		private string _windowTitle;
+		private string _windowTitleSuffix;
 		private IMainPanelViewModel _selectedMainPanel;
 
 		public MainWindowViewModel(ApplicationSettings settings,
@@ -178,6 +178,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_windowTitle = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string WindowTitleSuffix
+		{
+			get { return _windowTitleSuffix; }
+			private set
+			{
+				if (value == _windowTitleSuffix)
+					return;
+
+				_windowTitleSuffix = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -370,6 +383,7 @@ namespace Tailviewer.Ui.ViewModels
 					SelectedMainPanel.CurrentDataSource = CurrentDataSource;
 
 				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
+				WindowTitleSuffix = dataSource.DataSourceOrigin;
 			}
 			else
 			{
@@ -377,6 +391,7 @@ namespace Tailviewer.Ui.ViewModels
 				if (SelectedMainPanel != null)
 					SelectedMainPanel.CurrentDataSource = null;
 				WindowTitle = Constants.MainWindowTitle;
+				WindowTitleSuffix = null;
 			}
 		}
 

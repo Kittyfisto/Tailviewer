@@ -45,30 +45,17 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public override ICommand OpenInExplorerCommand
-		{
-			get { return _openInExplorerCommand; }
-		}
+		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
-		public override string DisplayName
-		{
-			get { return _fileName; }
-		}
+		public override string DisplayName => _fileName;
 
-		public string FileName
-		{
-			get { return _fileName; }
-		}
+		public override string DataSourceOrigin => FullName;
 
-		public string Folder
-		{
-			get { return _folder; }
-		}
+		public string FileName => _fileName;
 
-		public string FullName
-		{
-			get { return _dataSource.FullFileName; }
-		}
+		public string Folder => _folder;
+
+		public string FullName => _dataSource.FullFileName;
 
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

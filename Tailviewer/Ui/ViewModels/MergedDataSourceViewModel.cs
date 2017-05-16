@@ -16,10 +16,10 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private readonly MergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
+		private readonly DelegateCommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
 		private int _noTimestampSum;
 		private bool _isSelected;
-		private DelegateCommand _openInExplorerCommand;
 
 		public MergedDataSourceViewModel(MergedDataSource dataSource)
 			: base(dataSource)
@@ -50,6 +50,8 @@ namespace Tailviewer.Ui.ViewModels
 		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
 		public override string DisplayName => "Merged Data Source";
+
+		public override string DataSourceOrigin => DisplayName;
 
 		public int NoTimestampSum
 		{

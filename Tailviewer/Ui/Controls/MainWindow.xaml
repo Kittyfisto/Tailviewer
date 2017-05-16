@@ -5,9 +5,7 @@
                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                            xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
-                           xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                           xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                            xmlns:about="clr-namespace:Tailviewer.Ui.Controls.About"
                            xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
@@ -68,6 +66,14 @@
                                FontSize="16" />
                 </StackPanel>
             </Border>
+
+            <TextBlock Grid.Column="1"
+                       Margin="4,0,0,0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       FontSize="16"
+                       Foreground="Black"
+                       Text="{Binding WindowTitleSuffix}" />
 
             <metrolib:EmailToggleButton Grid.Column="2"
                                         VerticalContentAlignment="Top"

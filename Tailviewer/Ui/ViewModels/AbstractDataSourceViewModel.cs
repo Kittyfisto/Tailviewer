@@ -56,10 +56,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public Guid Id
-		{
-			get { return _dataSource.Id; }
-		}
+		public Guid Id => _dataSource.Id;
 
 		public bool IsGrouped
 		{
@@ -96,6 +93,7 @@ namespace Tailviewer.Ui.ViewModels
 		public abstract ICommand OpenInExplorerCommand { get; }
 
 		public abstract string DisplayName { get; }
+		public abstract string DataSourceOrigin { get; }
 
 		public int TotalCount
 		{
@@ -259,10 +257,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand RemoveCommand
-		{
-			get { return _removeCommand; }
-		}
+		public ICommand RemoveCommand => _removeCommand;
 
 		public bool FollowTail
 		{
@@ -409,10 +404,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IDataSource DataSource
-		{
-			get { return _dataSource; }
-		}
+		public IDataSource DataSource => _dataSource;
 
 		public LevelFlags LevelsFilter
 		{

@@ -54,6 +54,11 @@ namespace Tailviewer.Test.Ui
 			{
 				get { throw new NotImplementedException(); }
 			}
+
+			public override string DataSourceOrigin
+			{
+				get { throw new NotImplementedException(); }
+			}
 		}
 
 		[Test]
