@@ -108,7 +108,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				for (int i = 0; i < section.Count; ++i)
 				{
 					var index = section.Index + i;
-					dest[i] = GetLine((int) index);
+					dest[i] = GetLineNoLock((int) index);
 				}
 			}
 		}
@@ -117,12 +117,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			lock (_indices)
 			{
-				int sourceIndex = _indices[index];
-				int logEntryIndex;
-				_logEntryIndices.TryGetValue(sourceIndex, out logEntryIndex);
-				var line = _source.GetLine(sourceIndex);
-				return new LogLine(index, logEntryIndex, line.Message, line.Level, line.Timestamp);
+				return GetLineNoLock(index);
 			}
+		}
+
+		private LogLine GetLineNoLock(int lineIndex)
+		{
+			int sourceLineIndex = _indices[lineIndex];
+			int logEntryIndex;
+			_logEntryIndices.TryGetValue(sourceLineIndex, out logEntryIndex);
+			var line = _source.GetLine(sourceLineIndex);
+			return new LogLine(lineIndex, sourceLineIndex, logEntryIndex, line.Message, line.Level, line.Timestamp);
 		}
 
 		public override LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalSourceIndex)

@@ -107,11 +107,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(1);
-				file.GetSection(new LogFileSection(0, 1))
-				    .Should().Equal(new[]
-					    {
-						    new LogLine(0, "Hello world!", LevelFlags.None)
-					    });
+				var section = file.GetSection(new LogFileSection(0, 1));
+				section.Should().HaveCount(1);
+				section[0].LineIndex.Should().Be(0);
+				section[0].OriginalLineIndex.Should().Be(0);
+				section[0].LogEntryIndex.Should().Be(0);
+				section[0].Message.Should().Be("Hello world!");
+				section[0].Level.Should().Be(LevelFlags.None);
 			}
 		}
 
@@ -339,7 +341,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.Info));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -349,7 +351,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				section.Should().NotBeNull();
 				section.Length.Should().Be(1);
 				section[0].LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				section[0].OriginalLineIndex.Should().Be(1, "because the given line is the second line in the source file");
 				section[0].Message.Should().Be("Yikes");
+				section[0].Level.Should().Be(LevelFlags.Info);
+
+				var line = file.GetLine(0);
+				line.LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				line.OriginalLineIndex.Should().Be(1, "because the given line is the second line in the source file");
+				line.Message.Should().Be("Yikes");
+				line.Level.Should().Be(LevelFlags.Info);
 			}
 		}
 

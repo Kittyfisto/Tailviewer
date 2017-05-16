@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class LogLineTest
 	{
 		[Test]
-		public void TestCtor1()
+		public void TestConstruction1()
 		{
 			var line = new LogLine(1, 2, "Foobar", LevelFlags.Info);
 			line.LineIndex.Should().Be(1);
@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestCtor3()
+		public void TestConstruction2()
 		{
 			var line = new LogLine(1, 500, 2, "Foobar", LevelFlags.Error);
 			line.LineIndex.Should().Be(1);
