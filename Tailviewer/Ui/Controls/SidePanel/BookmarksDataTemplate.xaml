@@ -2,8 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <DataTemplate DataType="{x:Type local:BookmarksViewModel}">
         <Border Background="White">
@@ -30,9 +29,22 @@
                         Grid.Column="1"
                         Width="26"
                         Height="26"
-                        ToolTip="Add new bookmark at the selected line"
+                        ToolTipService.ShowOnDisabled="True"
                         VerticalAlignment="Center"
-                        Command="{Binding AddBookmarkCommand}" />
+                        Command="{Binding AddBookmarkCommand}">
+                        <controls:AddButton.Style>
+                            <Style TargetType="{x:Type controls:AddButton}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="ToolTip" Value="Select a line to add a bookmark" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="ToolTip" Value="Add new bookmark at the selected line" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </controls:AddButton.Style>
+                    </controls:AddButton>
                 </Grid>
                 <controls:FlatScrollViewer
                     ScrollBarThickness="7"
