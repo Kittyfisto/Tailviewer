@@ -5,10 +5,19 @@
         <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Color x:Key="Primary">#f50057</Color>
-    <Color x:Key="PrimaryLight">#ff5983</Color>
-    <Color x:Key="PrimaryLighter">#FF668E</Color>
-    <Color x:Key="PrimaryDark">#bb002f</Color>
+    <!--
+    GREEN
+    <Color x:Key="Primary">#27ae60</Color>
+    <Color x:Key="PrimaryLight">#34AD66</Color>
+    <Color x:Key="PrimaryLighter">#3FAA6A</Color>
+    <Color x:Key="PrimaryDark">#1BAD58</Color>
+    <Color x:Key="PrimaryForeground">#FFFFFF</Color>
+    -->
+
+    <Color x:Key="Primary">#2196f3</Color>
+    <Color x:Key="PrimaryLight">#6ec6ff</Color>
+    <Color x:Key="PrimaryLighter">#89D2FF</Color>
+    <Color x:Key="PrimaryDark">#0069c0</Color>
     <Color x:Key="PrimaryForeground">#FFFFFF</Color>
 
     <Color x:Key="Secondary">#2196f3</Color>
