@@ -59,7 +59,8 @@
                 <StackPanel Orientation="Horizontal"
                             Height="20"
                             Margin="4,2,0,0">
-                    <Image Source="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png" />
+                    <Image Source="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="Tailviewer"
                                Foreground="White"
                                VerticalAlignment="Center"
