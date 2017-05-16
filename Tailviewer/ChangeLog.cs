@@ -50,7 +50,7 @@ namespace Tailviewer
 			};
 			var bugfixes = new string[]
 			{
-				
+				"'Last written' is calculated from timestamps in log file if LastWriteTime happens to be unreliable"
 			};
 			var misc = new[]
 			{

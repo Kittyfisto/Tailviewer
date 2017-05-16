@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -42,6 +41,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private string _untrimmedLastLine;
 		private long _lastPosition;
 		private long? _fileSize;
+		private bool _loggedTimestampWarning;
 
 		#endregion
 
@@ -258,6 +258,32 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
 				_entries.Add(logLine);
 				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Length);
+
+
+				if (timestamp != null)
+				{
+					if (timestamp > _lastModified)
+					{
+						// I've had this issue occur on one system and I can't really explain it.
+						// For some reason, new FileInfo(...).LastWriteTime will not give correct
+						// results when we can see that the bloody file is being written to as we speak.
+						// As a work around, we'll just use the timestamp of the log file as lastModifed
+						// if that happens to be newer.
+						//
+						// This might be related to files being consumed from a network share. Anyways,
+						// this quick fix should improve user feedback...
+						if (!_loggedTimestampWarning)
+						{
+							Log.InfoFormat(
+								"FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
+								_lastModified,
+								timestamp
+							);
+							_loggedTimestampWarning = true;
+						}
+						_lastModified = timestamp.Value;
+					}
+				}
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
