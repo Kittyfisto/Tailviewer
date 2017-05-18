@@ -16,6 +16,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			_text = null;
 		}
 
+		public override string ToString()
+		{
+			return ToString(CultureInfo.CurrentUICulture);
+		}
+
 		private FormattedText Text
 		{
 			get
@@ -23,7 +28,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				if (_text == null)
 				{
 					var culture = CultureInfo.CurrentUICulture;
-					_text = new FormattedText(_number.ToString(culture),
+					_text = new FormattedText(ToString(culture),
 					                          culture,
 					                          FlowDirection.LeftToRight,
 					                          TextHelper.Typeface,
@@ -32,6 +37,11 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 				return _text;
 			}
+		}
+
+		private string ToString(CultureInfo culture)
+		{
+			return _number.ToString(culture);
 		}
 
 		public void Render(DrawingContext drawingContext, double yOffset, double lineNumberWidth)
