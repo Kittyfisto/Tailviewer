@@ -1,6 +1,8 @@
 ﻿using System;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles.Parsers;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
@@ -123,6 +125,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			timestamp.Minute.Should().Be(28);
 			timestamp.Second.Should().Be(24);
 			timestamp.Millisecond.Should().Be(662);
+		}
+
+		[Test]
+		[Description("Verifies that exceptions thrown by sub-parsers are caught and handled")]
+		public void TestTryParse7()
+		{
+			var subParser = new Mock<ITimestampParser>();
+			var parser = new TimestampParser(subParser.Object);
+
+			DateTime unused;
+			subParser.Setup(x => x.TryParse(It.IsAny<string>(), out unused)).Throws<NullReferenceException>();
+
+			new Action(() => parser.TryParse("dawwadw", out unused)).ShouldNotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
+			subParser.Verify(x => x.TryParse(It.IsAny<string>(), out unused), Times.AtLeastOnce);
 		}
 	}
 }

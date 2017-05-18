@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 {
@@ -9,19 +11,21 @@ namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 	public sealed class TimestampParser
 		: ITimestampParser
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private const int MaxToleratedExceptions = 10;
+
 		private readonly ITimestampParser[] _subParsers;
 		private int? _dateTimeColumn;
 		private int? _dateTimeFormatIndex;
 		private int? _dateTimeLength;
+		private int _numExceptions;
 
 		public int? DateTimeColumn => _dateTimeColumn;
 
 		public int? DateTimeLength => _dateTimeLength;
 
 		public TimestampParser()
-		{
-			_subParsers = new ITimestampParser[]
-			{
+			: this(
 				// The format I currently use at work - should be supported by default :P
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss,fff"),
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss"),
@@ -38,15 +42,39 @@ namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 				// We do, however, get the seconds (in nano seconds) since the start of the application...
 				new TimeOfDaySecondsSinceStartParser(),
 				new DateTimeParser("HH:mm:ss")
-			};
+			)
+		{}
+
+		public TimestampParser( params ITimestampParser[] parsers)
+		{
+			if (parsers == null)
+				throw new ArgumentNullException(nameof(parsers));
+
+			_subParsers = parsers;
 		}
 
 		public bool TryParse(string content, out DateTime timestamp)
 		{
-			if (_dateTimeColumn == null || _dateTimeLength == null)
-				DetermineDateTimePart(content);
+			if (_numExceptions > MaxToleratedExceptions)
+			{
+				timestamp = DateTime.MinValue;
+				return false;
+			}
 
-			return TryParseTimestamp(content, out timestamp);
+			try
+			{
+				if (_dateTimeColumn == null || _dateTimeLength == null)
+					DetermineDateTimePart(content);
+
+				return TryParseTimestamp(content, out timestamp);
+			}
+			catch (Exception e)
+			{
+				++_numExceptions;
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+				timestamp = DateTime.MinValue;
+				return false;
+			}
 		}
 
 		private bool TryParseTimestamp(string content, out DateTime timestamp)
@@ -75,14 +103,22 @@ namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 			for (var n = i; n <= line.Length; ++n)
 			{
 				var dateTimeString = line.Substring(i, n - i);
-				DateTime unused;
-				if (_subParsers[m].TryParse(dateTimeString, out unused))
+				try
 				{
-					var length = n - i;
-					_dateTimeColumn = i;
-					_dateTimeLength = length;
-					_dateTimeFormatIndex = m;
-					return;
+					DateTime unused;
+					if (_subParsers[m].TryParse(dateTimeString, out unused))
+					{
+						var length = n - i;
+						_dateTimeColumn = i;
+						_dateTimeLength = length;
+						_dateTimeFormatIndex = m;
+						return;
+					}
+				}
+				catch (Exception e)
+				{
+					++_numExceptions;
+					Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				}
 			}
 		}
