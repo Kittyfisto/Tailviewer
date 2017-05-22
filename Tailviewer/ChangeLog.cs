@@ -40,6 +40,27 @@ namespace Tailviewer
 			AddV041();
 			AddV042();
 			AddV050();
+			AddV051();
+		}
+
+		private static void AddV051()
+		{
+			var features = new string[]
+			{
+			};
+			var bugfixes = new []
+			{
+				"Fixed wrong parsing of certain timestamps",
+				"Data sources side panel accepts drag 'n drop from explorer"
+			};
+			var misc = new[]
+			{
+				"Added tooltips to most UI elements"
+			};
+			var releaseDate = new DateTime(2017, 5, 22);
+			var version = new Version(0, 5, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV050()
