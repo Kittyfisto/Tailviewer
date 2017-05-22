@@ -140,5 +140,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			new Action(() => parser.TryParse("dawwadw", out unused)).ShouldNotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
 			subParser.Verify(x => x.TryParse(It.IsAny<string>(), out unused), Times.AtLeastOnce);
 		}
+
+		[Test]
+		public void TestTryParse8()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			parser
+				.TryParse(
+					"2017-03-24 11-45-22.182783; 0; 0;  0; 109;  0; 125;   1;PB_CONTINUE; ; ; 109; 2;   2.30; 0; S.N. 100564: 0.3 sec for:",
+					out timestamp)
+				.Should()
+				.BeTrue();
+			timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 22, 182));
+		}
 	}
 }

@@ -9,7 +9,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 	public sealed class TimeOfDaySecondsSinceStartParserTest
 	{
 		[Test]
-		public void TestTryParseFirst1()
+		public void TestTryParse1()
 		{
 			var parser = new TimeOfDaySecondsSinceStartParser();
 			DateTime timestamp;
@@ -21,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 		}
 
 		[Test]
-		public void TestTryParseFirst2()
+		public void TestTryParse2()
 		{
 			var parser = new TimeOfDaySecondsSinceStartParser();
 			DateTime timestamp;
@@ -39,6 +39,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			timestamp.Minute.Should().Be(51);
 			timestamp.Second.Should().Be(57);
 			timestamp.Millisecond.Should().Be(135);
+		}
+
+		[Test]
+		public void TestTryParse3()
+		{
+			var parser = new TimeOfDaySecondsSinceStartParser();
+			DateTime timestamp;
+
+			const string content = "2017-03-24 11-45-22.182783; 0; 0;  0; 109;  0; 125;   1;PB_CONTINUE; ; ; 109; 2;   2.30; 0; S.N. 100564: 0.3 sec for:";
+			new Action(() => parser
+					.TryParse(
+						content,
+						out timestamp)).ShouldNotThrow();
+
+			parser.TryParse(content, out timestamp).Should().BeFalse();
 		}
 	}
 }

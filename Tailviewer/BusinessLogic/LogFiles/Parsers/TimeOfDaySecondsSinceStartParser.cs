@@ -58,6 +58,9 @@ namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 			if (secondsIndex == -1)
 				return false;
 
+			if (secondsIndex + 1 >= content.Length)
+				return false;
+
 			var hoursValue = content.Substring(startIndex, minutesIndex-startIndex);
 			var minutesValue = content.Substring(minutesIndex + 1, secondsIndex - minutesIndex - 1);
 			var secondsValue = content.Substring(secondsIndex + 1, length - secondsIndex - 1);
