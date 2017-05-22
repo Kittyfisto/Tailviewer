@@ -154,5 +154,33 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 22, 182));
 		}
+
+		[Test]
+		public void TestTryParse9()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			parser
+				.TryParse(
+					"Foobar 2017-05-22 18-36-51",
+					out timestamp)
+				.Should()
+				.BeTrue();
+			timestamp.Should().Be(new DateTime(2017, 5, 22, 18, 36, 51, 0));
+		}
+
+		[Test]
+		public void TestTryParse10()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			parser
+				.TryParse(
+					"Foobar 2017-05-22 18-36-51.541",
+					out timestamp)
+				.Should()
+				.BeTrue();
+			timestamp.Should().Be(new DateTime(2017, 5, 22, 18, 36, 51, 541));
+		}
 	}
 }

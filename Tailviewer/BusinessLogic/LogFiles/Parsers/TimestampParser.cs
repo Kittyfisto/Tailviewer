@@ -34,6 +34,9 @@ namespace Tailviewer.BusinessLogic.LogFiles.Parsers
 				new DateTimeParser("yyyy MMM dd HH:mm:ss.fff"),
 				new DateTimeParser("yyyy MMM dd HH:mm:ss"),
 
+				new DateTimeParser("yyyy-MM-dd HH-mm-ss.fff"),
+				new DateTimeParser("yyyy-MM-dd HH-mm-ss"),
+
 				// Various formats...
 				new DateTimeParser("dd/MMM/yyyy:HH:mm:ss"),
 				new DateTimeParser("ddd MMM dd HH:mm:ss.fff yyyy"),
