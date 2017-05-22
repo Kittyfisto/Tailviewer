@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
@@ -20,7 +19,7 @@ namespace Tailviewer.Ui.ViewModels
 	///     Represents the list of all quick filters.
 	/// </summary>
 	internal sealed class QuickFiltersViewModel
-		: ISidePanelViewModel
+		: AbstractSidePanelViewModel
 	{
 		private readonly ICommand _addCommand;
 		private readonly QuickFilters _quickFilters;
@@ -28,8 +27,6 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
 		private IDataSourceViewModel _currentDataSource;
 		private bool _isChangingCurrentDataSource;
-		private bool _isSelected;
-		private string _quickInfo;
 
 		public QuickFiltersViewModel(ApplicationSettings settings, QuickFilters quickFilters)
 		{
@@ -46,19 +43,32 @@ namespace Tailviewer.Ui.ViewModels
 			}
 
 			OnFiltersChanged += OnOnFiltersChanged;
+
+			UpdateTooltip();
+			PropertyChanged += OnPropertyChanged;
+		}
+
+		private void UpdateTooltip()
+		{
+			Tooltip = IsSelected
+				? "Hide the list of quick filters"
+				: "Show the list of quick filters";
+		}
+
+		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case nameof(IsSelected):
+					UpdateTooltip();
+					break;
+			}
 		}
 
 		private void OnOnFiltersChanged()
 		{
 			int count = _viewModels.Count(x => x.IsActive);
-			if (count > 0)
-			{
-				QuickInfo = string.Format("{0} active", count);
-			}
-			else
-			{
-				QuickInfo = null;
-			}
+			QuickInfo = count > 0 ? string.Format("{0} active", count) : null;
 		}
 
 		public ICommand AddCommand => _addCommand;
@@ -181,46 +191,13 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public override Geometry Icon => Icons.Filter;
 
-		public Geometry Icon => Icons.Filter;
+		public override string Id => "quickfilter";
 
-		public bool IsSelected
-		{
-			get { return _isSelected; }
-			set
-			{
-				if (value == _isSelected)
-					return;
-
-				_isSelected = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public string Id => "quickfilter";
-
-		public string QuickInfo
-		{
-			get { return _quickInfo; }
-			private set
-			{
-				if (value == _quickInfo)
-					return;
-
-				_quickInfo = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public void Update()
+		public override void Update()
 		{
 			
-		}
-
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows.Input;
@@ -36,7 +37,28 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			_addBookmarkCommand = new DelegateCommand(AddBookmark, CanAddBookmark);
 			_viewModelByBookmark = new Dictionary<Bookmark, BookmarkViewModel>();
 			_bookmarks = new ObservableCollection<BookmarkViewModel>();
+
+			UpdateTooltip();
+			PropertyChanged += OnPropertyChanged;
 		}
+
+		private void UpdateTooltip()
+		{
+			Tooltip = IsSelected
+				? "Hide the list of bookmarks"
+				: "Show the list of bookmarks";
+		}
+
+		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case nameof(IsSelected):
+					UpdateTooltip();
+					break;
+			}
+		}
+
 
 		public ICommand AddBookmarkCommand => _addBookmarkCommand;
 

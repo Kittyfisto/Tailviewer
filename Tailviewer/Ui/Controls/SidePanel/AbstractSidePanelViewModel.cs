@@ -9,6 +9,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 	{
 		private bool _isSelected;
 		private string _quickInfo;
+		private string _tooltip;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -38,6 +39,19 @@ namespace Tailviewer.Ui.Controls.SidePanel
 					return;
 
 				_quickInfo = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string Tooltip
+		{
+			get { return _tooltip; }
+			protected set
+			{
+				if (value == _tooltip)
+					return;
+
+				_tooltip = value;
 				EmitPropertyChanged();
 			}
 		}

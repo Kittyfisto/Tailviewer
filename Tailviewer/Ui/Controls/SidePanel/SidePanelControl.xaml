@@ -36,6 +36,7 @@
                                                                    HoveredBackground="{DynamicResource SecondaryLightBrush}"
                                                                    CheckedBackground="{DynamicResource SecondaryLighterBrush}"
                                                                    HoveredAndCheckedForeground="{DynamicResource SecondaryLighterBrush}"
+                                                                   ToolTip="{Binding Tooltip}"
                                                                    FocusVisualStyle="{x:Null}">
                                             <Grid>
                                                 <Viewbox Margin="12">

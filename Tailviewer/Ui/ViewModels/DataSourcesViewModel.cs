@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
@@ -18,7 +17,7 @@ using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 namespace Tailviewer.Ui.ViewModels
 {
 	internal sealed class DataSourcesViewModel
-		: ISidePanelViewModel
+		: AbstractSidePanelViewModel
 	{
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly DataSources _dataSources;
@@ -26,8 +25,6 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IApplicationSettings _settings;
 		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
-		private bool _isSelected;
-		private string _quickInfo;
 
 		public DataSourcesViewModel(IApplicationSettings settings, DataSources dataSources)
 		{
@@ -57,6 +54,26 @@ namespace Tailviewer.Ui.ViewModels
 					IDataSourceViewModel viewModel = CreateViewModel(dataSource);
 					group.AddChild(viewModel);
 				}
+			}
+
+			UpdateTooltip();
+			PropertyChanged += OnPropertyChanged;
+		}
+
+		private void UpdateTooltip()
+		{
+			Tooltip = IsSelected
+				? "Hide the list of data sources"
+				: "Show the list of data sources";
+		}
+
+		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case nameof(IsSelected):
+					UpdateTooltip();
+					break;
 			}
 		}
 
@@ -95,9 +112,7 @@ namespace Tailviewer.Ui.ViewModels
 		public IEnumerable<IDataSourceViewModel> DataSources => _allDataSourceViewModels;
 		public ObservableCollection<IDataSourceViewModel> Observable => _observable;
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public void Update()
+		public override void Update()
 		{
 			foreach (IDataSourceViewModel dataSource in _allDataSourceViewModels)
 			{
@@ -447,40 +462,9 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			viewModel.AddChild(source);
 		}
+		
+		public override Geometry Icon => Icons.Database;
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		public Geometry Icon => Icons.Database;
-
-		public bool IsSelected
-		{
-			get { return _isSelected; }
-			set
-			{
-				if (value == _isSelected)
-					return;
-
-				_isSelected = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public string Id => "datasources";
-
-		public string QuickInfo
-		{
-			get { return _quickInfo; }
-			private set
-			{
-				if (value == _quickInfo)
-					return;
-
-				_quickInfo = value;
-				EmitPropertyChanged();
-			}
-		}
+		public override string Id => "datasources";
 	}
 }

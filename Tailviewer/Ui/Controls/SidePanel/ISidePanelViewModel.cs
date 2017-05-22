@@ -25,6 +25,11 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		/// </summary>
 		string QuickInfo { get; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		string Tooltip { get; }
+
 		void Update();
 	}
 }
