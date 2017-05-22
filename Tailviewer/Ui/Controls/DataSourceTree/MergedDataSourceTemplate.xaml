@@ -59,6 +59,7 @@
                                    VerticalAlignment="Stretch"
                                    HorizontalAlignment="Right"
                                    Command="{Binding RemoveCommand}"
+                                   ToolTip="Remove this merged data source"
                                    Grid.Column="1"
                                    HorizontalContentAlignment="Right" />
 

@@ -68,6 +68,7 @@
             <controls:RemoveButton VerticalAlignment="Stretch"
                                    HorizontalAlignment="Right"
                                    Command="{Binding RemoveCommand}"
+                                   ToolTip="Close this file"
                                    Grid.Column="1" />
         </Grid>
     </DataTemplate>
