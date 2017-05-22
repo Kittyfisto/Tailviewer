@@ -299,14 +299,8 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			{
 				DragLayer.AdornDropTarget(dropInfo);
 				e.Effects = DragDropEffects.Move;
+				e.Handled = true;
 			}
-			else
-			{
-				DragLayer.RemoveDropAdorner();
-				DragLayer.RemoveArrangeAdorner();
-				e.Effects = DragDropEffects.None;
-			}
-			e.Handled = true;
 		}
 
 		private TreeItem GetDataSourceFromPosition(Point position)
