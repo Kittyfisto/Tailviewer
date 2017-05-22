@@ -22,6 +22,7 @@ namespace Tailviewer.Settings
 		private readonly string _fileName;
 		private readonly MainWindowSettings _mainWindow;
 		private readonly QuickFilters _quickFilters;
+		private readonly ExportSettings _export;
 
 		static ApplicationSettings()
 		{
@@ -36,6 +37,7 @@ namespace Tailviewer.Settings
 			_mainWindow = other._mainWindow.Clone();
 			_dataSources = other._dataSources.Clone();
 			_quickFilters = other._quickFilters.Clone();
+			_export = other._export.Clone();
 		}
 
 		public ApplicationSettings(string fileName)
@@ -47,6 +49,7 @@ namespace Tailviewer.Settings
 			_mainWindow = new MainWindowSettings();
 			_dataSources = new DataSources();
 			_quickFilters = new QuickFilters();
+			_export = new ExportSettings();
 		}
 
 		public IAutoUpdateSettings AutoUpdate => _autoUpdate;
@@ -56,6 +59,8 @@ namespace Tailviewer.Settings
 		public IDataSourcesSettings DataSources => _dataSources;
 
 		public QuickFilters QuickFilters => _quickFilters;
+
+		public ExportSettings Export => _export;
 
 		public static ApplicationSettings Create()
 		{
@@ -101,6 +106,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("autoupdate");
 						_autoUpdate.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("export");
+						_export.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -166,6 +175,10 @@ namespace Tailviewer.Settings
 
 							case "autoupdate":
 								_autoUpdate.Restore(reader);
+								break;
+
+							case "export":
+								_export.Restore(reader);
 								break;
 						}
 					}

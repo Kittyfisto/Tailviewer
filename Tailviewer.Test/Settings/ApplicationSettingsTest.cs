@@ -29,6 +29,8 @@ namespace Tailviewer.Test.Settings
 			clone.DataSources.Should().NotBeSameAs(settings.DataSources);
 			clone.QuickFilters.Should().NotBeNull();
 			clone.QuickFilters.Should().NotBeSameAs(settings.QuickFilters);
+			clone.Export.Should().NotBeNull();
+			clone.Export.Should().NotBeSameAs(settings.Export);
 		}
 
 		[Test]
@@ -210,6 +212,7 @@ namespace Tailviewer.Test.Settings
 			Guid filterId1 = settings.QuickFilters[0].Id;
 			Guid filterId2 = settings.QuickFilters[1].Id;
 			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
+			settings.Export.ExportFolder = @"C:\hello\world";
 			settings.Save().Should().BeTrue();
 
 			settings = new ApplicationSettings(fileName);
@@ -250,6 +253,9 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[1].IgnoreCase.Should().BeFalse();
 			settings.QuickFilters[1].MatchType.Should().Be(QuickFilterMatchType.WildcardFilter);
 			settings.QuickFilters[1].IsInverted.Should().BeFalse();
+
+			settings.Export.Should().NotBeNull();
+			settings.Export.ExportFolder.Should().Be(@"C:\hello\world");
 		}
 	}
 }
