@@ -4,15 +4,16 @@ using System.Xml;
 namespace Tailviewer.Settings
 {
 	public sealed class ExportSettings
-		: ICloneable
+		: IExportSettings
+		, ICloneable
 	{
-		public string ExportFolder;
+		private string _exportFolder;
 
 		public ExportSettings Clone()
 		{
 			return new ExportSettings
 			{
-				ExportFolder = ExportFolder
+				_exportFolder = _exportFolder
 			};
 		}
 
@@ -23,7 +24,7 @@ namespace Tailviewer.Settings
 
 		public void Save(XmlWriter writer)
 		{
-			writer.WriteAttributeString("exportfolder", ExportFolder);
+			writer.WriteAttributeString("exportfolder", _exportFolder);
 		}
 
 		public void Restore(XmlReader reader)
@@ -34,10 +35,16 @@ namespace Tailviewer.Settings
 				switch (reader.Name)
 				{
 					case "exportfolder":
-						ExportFolder = reader.ReadContentAsString();
+						_exportFolder = reader.ReadContentAsString();
 						break;
 				}
 			}
+		}
+
+		public string ExportFolder
+		{
+			get { return _exportFolder; }
+			set { _exportFolder = value; }
 		}
 	}
 }

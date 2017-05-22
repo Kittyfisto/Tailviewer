@@ -244,7 +244,7 @@ namespace Tailviewer.Ui.ViewModels
 				}
 				else if (value == _rawEntry)
 				{
-					SelectedMainPanel = new LogViewMainPanelViewModel(_actionCenter)
+					SelectedMainPanel = new LogViewMainPanelViewModel(_actionCenter, _applicationSettings)
 					{
 						CurrentDataSource = CurrentDataSource
 					};

@@ -15,6 +15,7 @@ using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -28,6 +29,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly List<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly IActionCenter _actionCenter;
+		private readonly IApplicationSettings _applicationSettings;
 
 		private ILogFile _logFile;
 		private int _logEntryCount;
@@ -38,12 +40,15 @@ namespace Tailviewer.Ui.ViewModels
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource,
 			IActionCenter actionCenter,
+			IApplicationSettings applicationSettings,
 			TimeSpan maximumWaitTime)
 		{
 			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
 			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
+			if (applicationSettings == null) throw new ArgumentNullException(nameof(applicationSettings));
 
 			_actionCenter = actionCenter;
+			_applicationSettings = applicationSettings;
 			_maximumWaitTime = maximumWaitTime;
 			_dataSource = dataSource;
 
@@ -57,8 +62,9 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public LogViewerViewModel(IDataSourceViewModel dataSource,
-			IActionCenter actionCenter)
-			: this(dataSource, actionCenter, TimeSpan.FromMilliseconds(10))
+			IActionCenter actionCenter,
+			IApplicationSettings applicationSettings)
+			: this(dataSource, actionCenter, applicationSettings, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
@@ -181,13 +187,15 @@ namespace Tailviewer.Ui.ViewModels
 				return;
 			}
 
-			var exportDirectory = Constants.ExportDirectory;
+			var exportDirectory = _applicationSettings.Export.ExportFolder;
 			var exporter = new LogFileToFileExporter(logFile,
 				exportDirectory,
 				dataSource.FullFileName
 			);
-			
-			var action = new ExportAction(exporter, viewModel.DisplayName, exportDirectory);
+
+			var action = new ExportAction(exporter,
+				viewModel.DisplayName,
+				exportDirectory);
 			_actionCenter.Add(action);
 		}
 

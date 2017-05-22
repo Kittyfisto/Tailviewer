@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\LogEventDefinitionTest.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\EventsLogAnalyserTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
     <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ExportViewModelTest.cs" />
     <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumberCanvasTest.cs" />

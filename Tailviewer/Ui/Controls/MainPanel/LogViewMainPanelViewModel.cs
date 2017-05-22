@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Tailviewer.BusinessLogic.ActionCenter;
+using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.MainPanel
@@ -8,12 +9,14 @@ namespace Tailviewer.Ui.Controls.MainPanel
 	public sealed class LogViewMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
-		public LogViewMainPanelViewModel(IActionCenter actionCenter)
+		public LogViewMainPanelViewModel(IActionCenter actionCenter,
+			IApplicationSettings applicationSettings)
 		{
 			if (actionCenter == null)
 				throw new ArgumentNullException(nameof(actionCenter));
 
 			_actionCenter = actionCenter;
+			_applicationSettings = applicationSettings;
 			PropertyChanged += OnPropertyChanged;
 		}
 
@@ -34,7 +37,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 				CurrentDataSource = dataSource;
 				CurrentDataSourceLogView = new LogViewerViewModel(
 					dataSource,
-					_actionCenter);
+					_actionCenter,
+					_applicationSettings);
 			}
 			else
 			{
@@ -45,6 +49,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private LogViewerViewModel _currentDataSourceLogView;
 		private readonly IActionCenter _actionCenter;
+		private readonly IApplicationSettings _applicationSettings;
 
 		public LogViewerViewModel CurrentDataSourceLogView
 		{

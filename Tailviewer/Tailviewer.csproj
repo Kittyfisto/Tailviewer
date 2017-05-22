@@ -82,6 +82,7 @@
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterExtensions.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Build.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportException.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IBug.cs" />
     <Compile Include="BusinessLogic\ActionCenter\IExportAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\UnhandledException.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\ILogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\ITimestampParser.cs" />
@@ -212,6 +214,7 @@
     <Compile Include="Settings\IApplicationSettings.cs" />
     <Compile Include="Settings\IAutoUpdateSettings.cs" />
     <Compile Include="Settings\IDataSourcesSettings.cs" />
+    <Compile Include="Settings\IExportSettings.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="Settings\QuickFilter.cs" />

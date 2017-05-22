@@ -55,6 +55,7 @@ namespace Tailviewer
 			};
 			var misc = new[]
 			{
+				"Export folder is configurable",
 				"Added tooltips to most UI elements"
 			};
 			var releaseDate = new DateTime(2017, 5, 22);

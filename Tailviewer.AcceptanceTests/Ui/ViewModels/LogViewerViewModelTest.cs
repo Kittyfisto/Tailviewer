@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -19,6 +20,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		{
 			_scheduler = new DefaultTaskScheduler();
 			_actionCenter = new Mock<IActionCenter>();
+			_settings = new ApplicationSettings(Path.GetTempFileName());
 		}
 
 		[OneTimeTearDown]
@@ -34,6 +36,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 
 		private DefaultTaskScheduler _scheduler;
 		private Mock<IActionCenter> _actionCenter;
+		private ApplicationSettings _settings;
 
 		[Test]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
@@ -42,7 +45,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
-				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, TimeSpan.Zero);
+				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";
 				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));

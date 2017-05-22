@@ -5,6 +5,7 @@
 		IAutoUpdateSettings AutoUpdate { get; }
 		IMainWindowSettings MainWindow { get; }
 		IDataSourcesSettings DataSources { get; }
+		IExportSettings Export { get; }
 		void SaveAsync();
 		bool Save();
 		void Restore();

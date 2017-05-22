@@ -94,6 +94,21 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public string ExportFolder
+		{
+			get { return _settings.Export.ExportFolder; }
+			set
+			{
+				if (value == ExportFolder)
+					return;
+
+				_settings.Export.ExportFolder = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
+
 		public bool AlwaysOnTop
 		{
 			get { return _settings.MainWindow.AlwaysOnTop; }

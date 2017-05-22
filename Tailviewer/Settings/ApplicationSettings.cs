@@ -60,7 +60,7 @@ namespace Tailviewer.Settings
 
 		public QuickFilters QuickFilters => _quickFilters;
 
-		public ExportSettings Export => _export;
+		public IExportSettings Export => _export;
 
 		public static ApplicationSettings Create()
 		{

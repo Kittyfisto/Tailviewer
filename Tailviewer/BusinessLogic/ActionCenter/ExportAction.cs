@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -12,23 +13,25 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly LogFileToFileExporter _exporter;
+		private readonly ILogFileToFileExporter _exporter;
 		private readonly string _dataSourceName;
-		private readonly string _destination;
+		private readonly string _exportDirectory;
 		private Percentage _progress;
 		private Exception _exception;
 		private Task _task;
 
 		public Exception Exception => _exception;
 
-		public ExportAction(LogFileToFileExporter exporter, string dataSourceName, string destination)
+		public ExportAction(ILogFileToFileExporter exporter,
+			string dataSourceName,
+			string exportDirectory)
 		{
 			if (exporter == null)
 				throw new ArgumentNullException(nameof(exporter));
 
 			_exporter = exporter;
 			_dataSourceName = dataSourceName;
-			_destination = destination;
+			_exportDirectory = exportDirectory;
 			_task = Task.Factory.StartNew(() => _exporter.Export(this))
 				.ContinueWith(OnExported);
 		}
@@ -38,10 +41,24 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 			_task = null;
 			if (task.IsFaulted)
 			{
-				_exception = task.Exception?.InnerException;
+				_exception = TranslateException(task.Exception?.InnerException);
 				Log.ErrorFormat("Error while exporting: {0}", _exception);
 			}
 			_progress = Percentage.HundredPercent;
+		}
+
+		private Exception TranslateException(Exception exception)
+		{
+			var dir = exception as DirectoryNotFoundException;
+			if (dir != null)
+			{
+				var message = string.Format(
+					"Unable to find or create directory '{0}'. Maybe its drive isn't connected or the medium is read only...",
+					_exportDirectory);
+				return new ExportException(message, exception);
+			}
+
+			return exception;
 		}
 
 		public string Title => "Exporting";
@@ -62,7 +79,7 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 
 		public string FullExportFilename => _exporter.FullExportFilename;
 
-		public string Destination => _destination;
+		public string Destination => _exportDirectory;
 
 		void IProgress<Percentage>.Report(Percentage value)
 		{

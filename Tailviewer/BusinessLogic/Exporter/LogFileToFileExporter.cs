@@ -6,7 +6,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Exporter
 {
 	public sealed class LogFileToFileExporter
-		: ILogFileExporter
+		: ILogFileToFileExporter
 	{
 		private readonly string _exportDirectory;
 		private readonly ILogFile _logFile;
