@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="BugTemplate.xaml" />
                 <ResourceDictionary Source="ChangeTemplate.xaml" />
                 <ResourceDictionary Source="ExportTemplate.xaml" />
+                <ResourceDictionary Source="BuildTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
             <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />

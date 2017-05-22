@@ -91,6 +91,7 @@ namespace Tailviewer
 				}
 
 				var quickFilters = new QuickFilters(settings.QuickFilters);
+				actionCenter.Add(Build.Current);
 				actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
 				var application = new App();
 				Dispatcher dispatcher = Dispatcher.CurrentDispatcher;

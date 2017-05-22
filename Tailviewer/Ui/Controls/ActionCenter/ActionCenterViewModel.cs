@@ -134,7 +134,15 @@ namespace Tailviewer.Ui.Controls.ActionCenter
 						if (export != null)
 							Add(new ExportViewModel(export));
 						else
-							Log.WarnFormat("Unknown notification: {0}", notification);
+						{
+							var build = notification as Build;
+							if (build != null)
+							{
+								Add(new BuildViewModel(build));
+							}
+							else
+								Log.WarnFormat("Unknown notification: {0}", notification);
+						}
 					}
 				}
 			}
