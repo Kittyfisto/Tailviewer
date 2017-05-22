@@ -282,22 +282,33 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (_logFile == null)
 				return;
 
-			var data = new LogLine[_currentlyVisibleSection.Count];
-			_logFile.GetSection(_currentlyVisibleSection, data);
-			for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+			try
 			{
-				var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
+				var data = new LogLine[_currentlyVisibleSection.Count];
+				_logFile.GetSection(_currentlyVisibleSection, data);
+				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+				{
+					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
 					{
 						IsFocused = IsFocused,
 						SearchResults = _searchResults
 					};
-				_visibleTextLines.Add(line);
+					_visibleTextLines.Add(line);
+				}
+
+				Action fn = VisibleLinesChanged;
+				fn?.Invoke();
+
+				InvalidateVisual();
 			}
-
-			Action fn = VisibleLinesChanged;
-			fn?.Invoke();
-
-			InvalidateVisual();
+			catch (ArgumentOutOfRangeException e)
+			{
+				Log.DebugFormat("Caught exception while trying to update text: {0}", e);
+			}
+			catch (IndexOutOfRangeException e)
+			{
+				Log.DebugFormat("Caught exception while trying to update text: {0}", e);
+			}
 		}
 
 		public event Action VisibleLinesChanged;

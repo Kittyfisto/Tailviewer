@@ -55,5 +55,22 @@ namespace Tailviewer.Test.Ui.Controls
 			var section = _control.CalculateVisibleSection();
 			section.Should().Be(new LogFileSection(0, 1), "because the control should clamp the visible section until something better becomes available");
 		}
+
+		[Test]
+		public void TestUpdateVisibleLine1()
+		{
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Count).Returns(42);
+			_control.LogFile = logFile.Object;
+
+			logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
+				.Throws<IndexOutOfRangeException>();
+
+			new Action(() => _control.UpdateVisibleLines()).ShouldNotThrow();
+
+			logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
+				.Throws<ArgumentOutOfRangeException>();
+			new Action(() => _control.UpdateVisibleLines()).ShouldNotThrow();
+		}
 	}
 }
