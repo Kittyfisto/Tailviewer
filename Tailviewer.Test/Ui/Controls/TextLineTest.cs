@@ -259,5 +259,18 @@ namespace Tailviewer.Test.Ui.Controls
 			segments.Count().Should().Be(1);
 			segments.ElementAt(0).Text.Should().Be("foobar", "because if, for some reason, highlighting doesn't work, then the original, non-highlithed, line should be displayed");
 		}
+
+		[Test]
+		[Description("Verifies that TextLine can deal with a completely empty logline")]
+		public void TestGetSegments1()
+		{
+			var textLine = new TextLine(new LogLine(), _hovered, _selected, true);
+			new Action(() =>
+			{
+				var unused = textLine.Segments;
+			}).ShouldNotThrow();
+			var segments = textLine.Segments;
+			segments.Should().HaveCount(1);
+		}
 	}
 }

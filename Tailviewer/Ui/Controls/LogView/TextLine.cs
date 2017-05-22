@@ -53,10 +53,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public LogLine LogLine
-		{
-			get { return _logLine; }
-		}
+		public LogLine LogLine => _logLine;
 
 		public bool ColorByLevel
 		{
@@ -71,10 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public bool IsHovered
-		{
-			get { return _hoveredIndices.Contains(_logLine.LineIndex); }
-		}
+		public bool IsHovered => _hoveredIndices.Contains(_logLine.LineIndex);
 
 		public Brush ForegroundBrush
 		{
@@ -159,11 +153,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				return TextHelper.NormalBackgroundBrush.GetBrushFor(_logLine.LogEntryIndex);
 			}
 		}
-		
-		public bool IsSelected
-		{
-			get { return _selectedIndices.Contains(_logLine.LineIndex); }
-		}
+
+		public bool IsSelected => _selectedIndices.Contains(_logLine.LineIndex);
 
 		public IEnumerable<TextSegment> Segments
 		{
@@ -190,7 +181,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				_segments.Clear();
 
-				string message = _logLine.Message;
+				string message = _logLine.Message ?? string.Empty;
 				Brush highlightedBrush = TextHelper.HighlightedForegroundBrush;
 				var searchResults = _searchResults;
 				if (searchResults != null)
