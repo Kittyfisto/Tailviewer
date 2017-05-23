@@ -53,11 +53,19 @@ namespace Tailviewer.BusinessLogic
 		{
 			var index = -1;
 			for (var i = 0; i < _contentBuffer.Length; ++i)
-				if (_contentBuffer[i] == '\n')
+			{
+				var c = _contentBuffer[i];
+				if (c < 32)
+				{
+					int n = 0;
+				}
+
+				if (c == '\n')
 				{
 					index = i;
 					break;
 				}
+			}
 
 			if (index == -1 && _reader.EndOfStream)
 				index = _contentBuffer.Length - 1;

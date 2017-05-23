@@ -25,10 +25,6 @@
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
         <KeyBinding Modifiers="Control" Key="E"
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
-        <KeyBinding Modifiers="Control" Key="Tab"
-                    Command="{Binding SelectNextDataSourceCommand}" />
-        <KeyBinding Modifiers="Control+Shift" Key="Tab"
-                    Command="{Binding SelectPreviousDataSourceCommand}" />
     </Window.InputBindings>
 
     <Window.Resources>
@@ -193,8 +189,8 @@
                     <sidePanel:SidePanelControl
                         Grid.Column="2"
                         MaxWidth="400"
-                        SidePanels="{Binding SidePanels}"
-                        SelectedPanel="{Binding SelectedPanel, Mode=TwoWay}"/>
+                        SidePanels="{Binding SelectedMainPanel.SidePanels}"
+                        SelectedPanel="{Binding SelectedMainPanel.SelectedSidePanel, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
 

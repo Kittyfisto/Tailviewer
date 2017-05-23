@@ -1,48 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel
 {
 	public abstract class AbstractMainPanelViewModel
 		: IMainPanelViewModel
 	{
-		private IDataSourceViewModel _currentDataSource;
-		private IEnumerable<ILogEntryFilter> _quickFilterChain;
+		private readonly IApplicationSettings _applicationSettings;
+		private ISidePanelViewModel _selectedSidePanel;
+
+		protected AbstractMainPanelViewModel(IApplicationSettings applicationSettings)
+		{
+			if (applicationSettings == null)
+				throw new ArgumentNullException(nameof(applicationSettings));
+
+			_applicationSettings = applicationSettings;
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public IDataSourceViewModel CurrentDataSource
+		public abstract IEnumerable<ISidePanelViewModel> SidePanels { get; }
+
+		public ISidePanelViewModel SelectedSidePanel
 		{
-			get { return _currentDataSource; }
+			get { return _selectedSidePanel; }
 			set
 			{
-				if (value == _currentDataSource)
+				if (value == _selectedSidePanel)
 					return;
 
-				_currentDataSource = value;
+				_selectedSidePanel = value;
 				EmitPropertyChanged();
 
-				if (_currentDataSource != null)
-					_currentDataSource.QuickFilterChain = _quickFilterChain;
-			}
-		}
-
-		public IEnumerable<ILogEntryFilter> QuickFilterChain
-		{
-			get { return _quickFilterChain; }
-			set
-			{
-				if (value == _quickFilterChain)
-					return;
-
-				_quickFilterChain = value;
-				EmitPropertyChanged();
-
-				if (_currentDataSource != null)
-					_currentDataSource.QuickFilterChain = value;
+				_applicationSettings.MainWindow.SelectedSidePanel = value?.Id;
+				_applicationSettings.SaveAsync();
 			}
 		}
 

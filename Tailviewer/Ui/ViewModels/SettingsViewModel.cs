@@ -9,9 +9,9 @@ namespace Tailviewer.Ui.ViewModels
 	public sealed class SettingsViewModel
 		: INotifyPropertyChanged
 	{
-		private readonly ApplicationSettings _settings;
+		private readonly IApplicationSettings _settings;
 
-		public SettingsViewModel(ApplicationSettings settings)
+		public SettingsViewModel(IApplicationSettings settings)
 		{
 			if (settings == null)
 				throw new ArgumentNullException(nameof(settings));

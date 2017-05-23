@@ -84,7 +84,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 					if (panel.IsSelected)
 						SelectedPanel = panel;
 					else
-						SelectedPanel = SidePanels.FirstOrDefault(x => x.IsSelected);
+						SelectedPanel = SidePanels?.FirstOrDefault(x => x.IsSelected);
 					break;
 			}
 		}

@@ -103,6 +103,7 @@
     <Compile Include="BusinessLogic\Exporter\ILogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
+    <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
     <Compile Include="BusinessLogic\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
     <Compile Include="BusinessLogic\Analysers\QuickInfoLogAnalyser.cs" />

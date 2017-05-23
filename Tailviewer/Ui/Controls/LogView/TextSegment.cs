@@ -14,14 +14,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			                         TextHelper.Typeface,
 			                         TextHelper.FontSize,
 			                         foregroundBrush);
+			FormattedText.LineHeight = TextHelper.LineHeight;
 			Width = TextHelper.EstimateWidthUpperLimit(value);
 			IsRegular = isRegular;
 		}
 
-		public string Text
-		{
-			get { return FormattedText.Text; }
-		}
+		public string Text => FormattedText.Text;
 
 		public override string ToString()
 		{

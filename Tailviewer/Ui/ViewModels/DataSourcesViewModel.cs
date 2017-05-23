@@ -12,7 +12,6 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.SidePanel;
-using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -20,13 +19,13 @@ namespace Tailviewer.Ui.ViewModels
 		: AbstractSidePanelViewModel
 	{
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
-		private readonly DataSources _dataSources;
+		private readonly IDataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly IApplicationSettings _settings;
 		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
 
-		public DataSourcesViewModel(IApplicationSettings settings, DataSources dataSources)
+		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));

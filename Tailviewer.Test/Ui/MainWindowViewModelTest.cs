@@ -56,14 +56,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeDataSource1()
 		{
-			_mainWindow.CurrentDataSource.Should().BeNull();
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
 			_mainWindow.SelectedEntry = _mainWindow.Entries.FirstOrDefault(x => x.Id == "raw");
 
-			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
+			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
 
 			IDataSourceViewModel dataSource = _mainWindow.OpenFile("Foobar");
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource);
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(dataSource);
 			filter.CurrentDataSource.Should()
 			      .BeSameAs(dataSource.DataSource,
 			                "Because now that said data source is visible, the filter should be applied to it");
@@ -77,21 +77,21 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeDataSource2()
 		{
-			_mainWindow.CurrentDataSource.Should().BeNull();
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
 			_mainWindow.SelectedEntry = _mainWindow.Entries.FirstOrDefault(x => x.Id == "raw");
 
-			QuickFilterViewModel filter = _mainWindow.AddQuickFilter();
+			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
 
 			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
 			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
-			_mainWindow.CurrentDataSource.Should().NotBeNull();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2);
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().NotBeNull();
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(dataSource2);
 
 			dataSource1.DataSource.ActivateQuickFilter(filter.Id);
 			dataSource2.DataSource.ActivateQuickFilter(filter.Id);
 
-			_mainWindow.CurrentDataSource = dataSource1;
+			_mainWindow.LogViewPanel.CurrentDataSource = dataSource1;
 			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
 			panel.CurrentDataSourceLogView.Should().NotBeNull();
 			panel.CurrentDataSourceLogView.QuickFilterChain.Should().NotBeNull();
@@ -106,55 +106,22 @@ namespace Tailviewer.Test.Ui
 
 			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
 			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
-			var changes = new List<string>();
-			_mainWindow.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+			var mainWindowChanges = new List<string>();
+			var logViewChanges = new List<string>();
+			_mainWindow.PropertyChanged += (unused, args) => mainWindowChanges.Add(args.PropertyName);
+			_mainWindow.LogViewPanel.PropertyChanged += (sender, args) => logViewChanges.Add(args.PropertyName);
 			_mainWindow.OnDropped(dataSource1, dataSource2, DataSourceDropType.Group);
-			_mainWindow.RecentFiles.Count().Should().Be(1);
-			IDataSourceViewModel group = _mainWindow.RecentFiles.First();
+			_mainWindow.LogViewPanel.RecentFiles.Count().Should().Be(1);
+			IDataSourceViewModel group = _mainWindow.LogViewPanel.RecentFiles.First();
 			group.Should().NotBeNull();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(group);
+			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(group);
 
 			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
 			panel.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
-			changes.Should().Equal(new[] {"WindowTitle", "WindowTitleSuffix", "CurrentDataSource"});
+			mainWindowChanges.Should().Equal("WindowTitle", "WindowTitleSuffix");
+			logViewChanges.Should().Equal("CurrentDataSourceLogView", "CurrentDataSourceLogView", "CurrentDataSource");
 		}
-
-		[Test]
-		public void TestNextDataSource()
-		{
-			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
-			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
-			_mainWindow.CurrentDataSource = null;
-			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should()
-			           .BeSameAs(dataSource1,
-			                     "Because when no data source is selected, the first should be when navigating forward");
-			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource2, "Because obvious");
-			new Action(() => _mainWindow.SelectNextDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should()
-			           .BeSameAs(dataSource1,
-			                     "Because selecting the next data source when the last data source is, should simply roundtrip to the first datasource again");
-		}
-
-		[Test]
-		public void TestPreviousDataSource()
-		{
-			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
-			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
-			_mainWindow.CurrentDataSource = null;
-			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should()
-			           .BeSameAs(dataSource2,
-			                     "Because when no data source is selected, the last should be when navigating backwards");
-			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should().BeSameAs(dataSource1);
-			new Action(() => _mainWindow.SelectPreviousDataSourceCommand.Execute(null)).ShouldNotThrow();
-			_mainWindow.CurrentDataSource.Should()
-			           .BeSameAs(dataSource2,
-			                     "Because selecting the previous data source when the first data source is, should simply roundtrip to the last data source again");
-		}
-
+		
 		[Test]
 		public void TestUpdateAvailable1()
 		{

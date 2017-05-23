@@ -8,10 +8,9 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
-using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
-using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -22,13 +21,13 @@ namespace Tailviewer.Ui.ViewModels
 		: AbstractSidePanelViewModel
 	{
 		private readonly ICommand _addCommand;
-		private readonly QuickFilters _quickFilters;
-		private readonly ApplicationSettings _settings;
+		private readonly IQuickFilters _quickFilters;
+		private readonly IApplicationSettings _settings;
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
 		private IDataSourceViewModel _currentDataSource;
 		private bool _isChangingCurrentDataSource;
 
-		public QuickFiltersViewModel(ApplicationSettings settings, QuickFilters quickFilters)
+		public QuickFiltersViewModel(IApplicationSettings settings, IQuickFilters quickFilters)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));

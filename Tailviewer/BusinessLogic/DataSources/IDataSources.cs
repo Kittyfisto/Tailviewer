@@ -28,5 +28,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		void RemoveBookmark(Bookmark bookmark);
 
 		#endregion
+
+		#region Datasources
+
+		SingleDataSource AddDataSource(string fileName);
+		MergedDataSource AddGroup();
+		bool Remove(IDataSource viewModelDataSource);
+
+		#endregion
 	}
 }

@@ -490,6 +490,50 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			return 0;
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (e.IsDown)
+			{
+				switch (e.Key)
+				{
+					case Key.Down:
+						break;
+					case Key.Up:
+						break;
+				}
+			}
+		}
+
+		private void SelectNextDataSource()
+		{
+			if (SelectedItem == null)
+			{
+				SelectedItem = ItemsSource.FirstOrDefault();
+			}
+			else
+			{
+				int index = ItemsSource.IndexOf(SelectedItem);
+				int nextIndex = (index + 1) % ItemsSource.Count();
+				SelectedItem = ItemsSource.ElementAt(nextIndex);
+			}
+		}
+
+		private void SelectPreviousDataSource()
+		{
+			if (SelectedItem == null)
+			{
+				SelectedItem = ItemsSource.LastOrDefault();
+			}
+			else
+			{
+				int index = ItemsSource.IndexOf(SelectedItem);
+				int nextIndex = index - 1;
+				if (nextIndex < 0)
+					nextIndex = ItemsSource.Count() - 1;
+				SelectedItem = ItemsSource.ElementAt(nextIndex);
+			}
+		}
+
 		[Pure]
 		private bool PassesFilter(IDataSourceViewModel model)
 		{

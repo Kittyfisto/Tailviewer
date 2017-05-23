@@ -3,7 +3,7 @@ using Metrolib;
 
 namespace Tailviewer.Ui.Controls.MainPanel
 {
-	public sealed class LogViewMainPanelEntry
+	internal sealed class LogViewMainPanelEntry
 		: IMainPanelEntry
 	{
 		public string Title => "Raw";
