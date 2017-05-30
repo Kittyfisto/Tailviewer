@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
 
-namespace Tailviewer.BusinessLogic.Analysers.Event
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {
 	/// <summary>
 	///     This log analyser is responsible for projecting a source log file
@@ -79,6 +79,8 @@ namespace Tailviewer.BusinessLogic.Analysers.Event
 		///     The events produced by this analyser.
 		/// </summary>
 		public ILogTable Events => _events;
+
+		public override ILogAnalysisResult Result => null;
 
 		private void DoWork()
 		{

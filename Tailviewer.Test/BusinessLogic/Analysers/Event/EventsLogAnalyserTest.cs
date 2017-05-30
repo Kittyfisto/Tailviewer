@@ -3,7 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 using Tailviewer.Settings.Dashboard.Analysers.Event;

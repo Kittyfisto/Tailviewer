@@ -36,6 +36,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/DataSourcesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilterDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/BookmarksDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/AnalysesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

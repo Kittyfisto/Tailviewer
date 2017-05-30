@@ -7,7 +7,7 @@ using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Analysers
+namespace Tailviewer.BusinessLogic.Analysis.Analysers
 {
 	public abstract class LogAnalyser
 		: ILogAnalyser
@@ -98,6 +98,7 @@ namespace Tailviewer.BusinessLogic.Analysers
 		}
 
 		public TimeSpan AnalysisTime => _elapsed;
+		public abstract ILogAnalysisResult Result { get; }
 
 		public void Dispose()
 		{

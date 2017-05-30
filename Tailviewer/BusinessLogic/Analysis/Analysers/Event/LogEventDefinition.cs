@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
 
-namespace Tailviewer.BusinessLogic.Analysers.Event
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {
 	/// <summary>
 	/// 

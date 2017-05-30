@@ -1,8 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     
     <DataTemplate DataType="{x:Type local:AnalyseMainPanelViewModel}">
+
+        <Grid>
+            <Grid Visibility="{Binding IsAnalysisSelected, Converter={StaticResource BoolTrueToCollapsedConverter}}">
+                
+            </Grid>
+        </Grid>
         
     </DataTemplate>
     

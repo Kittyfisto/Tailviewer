@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using Metrolib;
-using Tailviewer.BusinessLogic.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
 namespace Tailviewer.Settings.Dashboard.Analysers.Event
 {

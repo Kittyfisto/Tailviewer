@@ -1,25 +1,52 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
-using Tailviewer.Ui.Controls.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel
 {
 	public sealed class AnalyseMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
-		private readonly ObservableCollection<WidgetLayoutViewModel> _layouts;
+		private readonly ISidePanelViewModel[] _sidePanels;
+		private AnalysisViewModel _analysis;
+		private bool _isAnalysisSelected;
 
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings)
 			: base(applicationSettings)
 		{
-			_layouts = new ObservableCollection<WidgetLayoutViewModel>();
+			_sidePanels = new ISidePanelViewModel[]
+			{
+				new AnalysesSidePanel()
+			};
 		}
 
-		public IEnumerable<WidgetLayoutViewModel> Layouts => _layouts;
+		public AnalysisViewModel Analysis
+		{
+			get { return _analysis; }
+			private set
+			{
+				if (value == _analysis)
+					return;
 
-		public override IEnumerable<ISidePanelViewModel> SidePanels => null;
+				_analysis = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public override IEnumerable<ISidePanelViewModel> SidePanels => _sidePanels;
+
+		public bool IsAnalysisSelected
+		{
+			get { return _isAnalysisSelected; }
+			set
+			{
+				if (value == _isAnalysisSelected)
+					return;
+
+				_isAnalysisSelected = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public override void Update()
 		{

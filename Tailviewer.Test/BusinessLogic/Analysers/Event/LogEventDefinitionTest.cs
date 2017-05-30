@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Analysers.Event

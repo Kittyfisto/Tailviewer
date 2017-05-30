@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,12 +9,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tailviewer</RootNamespace>
     <AssemblyName>Tailviewer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,8 +62,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Security" />
-    <Reference Include="System.Threading.Extensions, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.0.7\lib\net45\System.Threading.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Extensions, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.0.8\lib\net45\System.Threading.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -90,14 +91,21 @@
     <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\CountResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalysisConfiguration.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
-    <Compile Include="BusinessLogic\Analysers\CounterLogAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysers\Event\EventsLogAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysers\Event\LogEventDefinition.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\CountLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysis.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileToFileExporter.cs" />
@@ -106,17 +114,16 @@
     <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
     <Compile Include="BusinessLogic\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
-    <Compile Include="BusinessLogic\Analysers\QuickInfoLogAnalyser.cs" />
-    <Compile Include="BusinessLogic\Dashboard\Dashboard.cs" />
-    <Compile Include="BusinessLogic\Analysers\ILogAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysers\LogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalysis.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyser.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilter.cs" />
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\Filters\NoFilter.cs" />
     <Compile Include="BusinessLogic\ILogDataAccessor.cs" />
     <Compile Include="BusinessLogic\LogDataCache.cs" />
-    <Compile Include="BusinessLogic\LogEntryIndex.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFile.cs" />
     <Compile Include="BusinessLogic\LogLineMatch.cs" />
@@ -128,8 +135,6 @@
     <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilter.cs" />
-    <Compile Include="BusinessLogic\LogLineIndex.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogLine.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFile.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
@@ -208,7 +213,6 @@
     <Compile Include="Settings\Dashboard\Analysers\AnalyserSettings.cs" />
     <Compile Include="Settings\Dashboard\Widgets\WidgetSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />
-    <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
     <Compile Include="Settings\ExportSettings.cs" />
@@ -248,11 +252,14 @@
     </Compile>
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\AnalysisPageViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\AnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
+    <Compile Include="Ui\Controls\SidePanel\AnalysesSidePanel.cs" />
     <Compile Include="Ui\Controls\Widgets\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\IWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\Widget.cs" />
@@ -311,12 +318,9 @@
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFile.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFile.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFileListener.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileExtensions.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerCollection.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
@@ -412,6 +416,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\ImageLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\AnalysesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -519,7 +527,12 @@
   <ItemGroup>
     <Resource Include="Licenses\MaterialDesignIcons\License.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.105.1\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.105.1\build\net45\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.LogTables;
 
-namespace Tailviewer.BusinessLogic.Analysers
+namespace Tailviewer.BusinessLogic.Analysis.Analysers
 {
 	/// <summary>
 	///     The interface for an analyser, responsible for looking at a <see cref="ILogFile" /> or <see cref="ILogTable" />
 	///     and producing a result. The result should be updated when the log file or table changes.
 	/// </summary>
+	/// <remarks>
+	/// The constructor of a <see cref="ILogAnalyser"/> is expected to take two parameters of types
+	/// <see cref="ILogFile"/> and
+	/// <see cref="ILogAnalyserConfiguration"/> in that order.
+	/// </remarks>
 	public interface ILogAnalyser
 		: ILogFileListener
 		, ILogTableListener
@@ -23,5 +28,10 @@ namespace Tailviewer.BusinessLogic.Analysers
 		///     The total amount of time spent on this specific analyser.
 		/// </summary>
 		TimeSpan AnalysisTime { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		ILogAnalysisResult Result { get; }
 	}
 }

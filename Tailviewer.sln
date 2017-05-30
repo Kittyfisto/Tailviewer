@@ -21,6 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Inst
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0A1431F6-8548-44D4-B82B-049B94A7F57D} = {0A1431F6-8548-44D4-B82B-049B94A7F57D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteLogger", "SQLiteLogger\SQLiteLogger.csproj", "{DDEF8453-1C7F-4E48-B953-A4D34804DBD3}"
 EndProject
@@ -37,6 +40,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlPlayground", "ControlPlayground\ControlPlayground.csproj", "{1EC55724-9284-4110-BCA3-87B779B2B093}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewDesign", "NewDesign\NewDesign.csproj", "{7C8AC96A-F577-4C33-BD93-DF7C23359969}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Scripthost", "Tailviewer.Scripthost\Tailviewer.Scripthost.csproj", "{8FE68946-2BAA-44AE-8984-E5B71DE7E147}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +91,14 @@ Global
 		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C8AC96A-F577-4C33-BD93-DF7C23359969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE68946-2BAA-44AE-8984-E5B71DE7E147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE68946-2BAA-44AE-8984-E5B71DE7E147}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE68946-2BAA-44AE-8984-E5B71DE7E147}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE68946-2BAA-44AE-8984-E5B71DE7E147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C18B216-9FF4-4DCF-88C0-4B1448892F43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C18B216-9FF4-4DCF-88C0-4B1448892F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C18B216-9FF4-4DCF-88C0-4B1448892F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C18B216-9FF4-4DCF-88C0-4B1448892F43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,5 +112,6 @@ Global
 		{FB8C063F-C298-4D1C-98E0-7150B955B41C} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 		{1EC55724-9284-4110-BCA3-87B779B2B093} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 		{7C8AC96A-F577-4C33-BD93-DF7C23359969} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
+		{8FE68946-2BAA-44AE-8984-E5B71DE7E147} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 	EndGlobalSection
 EndGlobal
