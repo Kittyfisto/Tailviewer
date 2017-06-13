@@ -42,6 +42,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_dataSources = new DataSourcesViewModel(applicationSettings, dataSources);
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersViewModel(applicationSettings, quickFilters);
+			_quickFilters.OnFiltersChanged += OnFiltersChanged;
+
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 
 			_sidePanels = new ISidePanelViewModel[]
@@ -55,6 +57,13 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			PropertyChanged += OnPropertyChanged;
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void OnFiltersChanged()
+		{
+			var source = CurrentDataSource;
+			if (source != null)
+				source.QuickFilterChain = _quickFilters.CreateFilterChain();
 		}
 
 		public bool CanBeDragged(IDataSourceViewModel source)

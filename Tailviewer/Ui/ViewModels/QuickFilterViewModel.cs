@@ -43,10 +43,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand RemoveCommand
-		{
-			get { return _removeCommand; }
-		}
+		public ICommand RemoveCommand => _removeCommand;
 
 		public IDataSource CurrentDataSource
 		{
@@ -69,10 +66,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public bool CanBeActivated
-		{
-			get { return _currentDataSource != null; }
-		}
+		public bool CanBeActivated => _currentDataSource != null;
 
 		public bool IsActive
 		{
@@ -161,10 +155,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public Guid Id
-		{
-			get { return _quickFilter.Id; }
-		}
+		public Guid Id => _quickFilter.Id;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
