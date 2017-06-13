@@ -89,7 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 			_rawEntry = new LogViewMainPanelEntry();
 			_entries = new IMainPanelEntry[]
 			{
-				_analyseEntry,
+				//_analyseEntry,
 				_rawEntry
 			};
 			SelectedEntry = _entries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
