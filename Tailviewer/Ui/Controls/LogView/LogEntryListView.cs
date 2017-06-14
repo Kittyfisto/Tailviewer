@@ -396,7 +396,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					ScrollToBottomIfRequired();
 
 					_textCanvas.UpdateVisibleLines();
-					_textCanvas.UpdateMouseOver();
+					_textCanvas.OnMouseMove();
 				}
 				catch (Exception e)
 				{

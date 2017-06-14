@@ -399,14 +399,14 @@ namespace Tailviewer.Ui.Controls.LogView
 			return new LogFileSection(actualCurrentLine, count);
 		}
 
-		public void UpdateMouseOver()
+		public void OnMouseMove()
 		{
 			Point relativePos = Mouse.GetPosition(this);
 			if (InputHitTest(relativePos) == this)
-				UpdateMouseOver(relativePos);
+				OnMouseMove(relativePos);
 		}
 
-		private void UpdateMouseOver(Point relativePos)
+		public void OnMouseMove(Point relativePos)
 		{
 			double y = relativePos.Y - _yOffset;
 			var visibleLineIndex = (int) Math.Floor(y/TextHelper.LineHeight);
@@ -597,7 +597,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			base.OnMouseMove(e);
 			Point relativePos = e.GetPosition(this);
-			UpdateMouseOver(relativePos);
+			OnMouseMove(relativePos);
 		}
 
 		public event Action MouseWheelDown;
@@ -608,7 +608,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			Action fn = MouseWheelDown;
 			fn?.Invoke();
 
-			UpdateMouseOver();
+			OnMouseMove();
 		}
 
 		private void OnMouseWheelUp()
@@ -616,7 +616,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			Action fn = MouseWheelUp;
 			fn?.Invoke();
 
-			UpdateMouseOver();
+			OnMouseMove();
 		}
 
 		protected override void OnMouseLeave(MouseEventArgs e)

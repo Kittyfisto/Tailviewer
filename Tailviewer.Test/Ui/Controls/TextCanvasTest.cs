@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
 
@@ -71,6 +74,28 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
 				.Throws<ArgumentOutOfRangeException>();
 			new Action(() => _control.UpdateVisibleLines()).ShouldNotThrow();
+		}
+
+		[Test]
+		public void TestSelectOneLine()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			_control.SelectedIndices.Should().BeEmpty();
+
+			_control.OnMouseMove(new Point(20, 8));
+			_control.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
+			{
+				RoutedEvent = UIElement.MouseLeftButtonDownEvent
+			});
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
 		}
 	}
 }
