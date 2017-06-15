@@ -53,5 +53,14 @@ namespace Tailviewer.Test.BusinessLogic
 			++idx;
 			idx.Should().Be(new LogLineIndex(1));
 		}
+
+		[Test]
+		public void TestRange()
+		{
+			LogLineIndex.Range(new LogLineIndex(1), new LogLineIndex(1)).Should().Equal(new LogLineIndex(1));
+			LogLineIndex.Range(new LogLineIndex(1), new LogLineIndex(2)).Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+			LogLineIndex.Range(new LogLineIndex(2), new LogLineIndex(1)).Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+			LogLineIndex.Range(new LogLineIndex(3), new LogLineIndex(1)).Should().Equal(new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3));
+		}
 	}
 }

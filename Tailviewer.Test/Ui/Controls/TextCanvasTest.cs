@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -127,6 +127,99 @@ namespace Tailviewer.Test.Ui.Controls
 			_mouse.LeftClickAt(_control, new Point(20, 24));
 
 			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
+		}
+
+		[Test]
+		[Description("Verifies that a previous line is unselected when a different line is clicked")]
+		public void TestSelectMultipleLines2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			_control.SelectedIndices.Should().BeEmpty();
+
+			_mouse.LeftClickAt(_control, new Point(20, 8));
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+
+			_mouse.LeftClickAt(_control, new Point(20, 24));
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1));
+		}
+
+		[Test]
+		[Description("Verifies that multiple lines can be selected with shift+down")]
+		public void TestSelectMultipleLinesWithKeyboard1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("How's it going?", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			// This time we'll do the first selection programatically (which happens when
+			// switching between data sources, for example)
+			_control.SelectedIndices = new List<LogLineIndex> {new LogLineIndex(0)};
+			_keyboard.Press(Key.LeftShift);
+			_keyboard.Click(_control, Key.Down);
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
+
+			 _keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
+
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+		}
+
+		[Test]
+		[Description("Verifies that multiple lines can be selected with shift+up")]
+		public void TestSelectMultipleLinesWithKeyboard2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("How's", LevelFlags.None);
+			logFile.AddEntry("it", LevelFlags.None);
+			logFile.AddEntry("going?", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			// This time we'll do the first selection programatically (which happens when
+			// switching between data sources, for example)
+			_control.SelectedIndices = new List<LogLineIndex> { new LogLineIndex(2) };
+			_keyboard.Press(Key.LeftShift);
+			_keyboard.Click(_control, Key.Up);
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(2), new LogLineIndex(3));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(2), new LogLineIndex(3), new LogLineIndex(4));
 		}
 	}
 }

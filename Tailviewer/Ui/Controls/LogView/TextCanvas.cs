@@ -37,6 +37,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private int _currentLine;
 		private LogFileSection _currentlyVisibleSection;
+		private LogLineIndex _firstSelection;
 		private LogLineIndex _lastSelection;
 		private ILogFile _logFile;
 		private double _xOffset;
@@ -62,6 +63,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_timer.Interval = TimeSpan.FromMilliseconds(1000.0/60);
 
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnCopyToClipboard), Key.C, ModifierKeys.Control));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnSelectUp), Key.Up, ModifierKeys.Shift));
+			InputBindings.Add(new KeyBinding(new DelegateCommand(OnSelectDown), Key.Down, ModifierKeys.Shift));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveDown), Key.Down, ModifierKeys.None));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMoveUp), Key.Up, ModifierKeys.None));
 			InputBindings.Add(new KeyBinding(new DelegateCommand(OnMovePageDown), Key.PageDown, ModifierKeys.None));
@@ -130,7 +133,23 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				_selectedIndices.Clear();
 				if (value != null)
+				{
 					_selectedIndices.AddRange(value);
+					if (_selectedIndices.Any())
+					{
+						_firstSelection = _selectedIndices.Min();
+						_lastSelection = _selectedIndices.Max();
+					}
+					else
+					{
+						_firstSelection = _lastSelection = LogLineIndex.Invalid;
+					}
+				}
+				else
+				{
+					_firstSelection = _lastSelection = LogLineIndex.Invalid;
+				}
+
 				UpdateVisibleLines();
 			}
 		}
@@ -511,7 +530,53 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMoveDown()
+		private void OnSelectUp()
+		{
+			var logFile = _logFile;
+			var first = _firstSelection;
+			var last = _lastSelection;
+			if (logFile == null)
+				return;
+			if (first.IsInvalid)
+				return;
+			if (last.IsInvalid)
+				return;
+
+			var next = last - 1;
+			if (next >= _logFile.Count)
+				return;
+
+			var indices = LogLineIndex.Range(first, next);
+			SetSelected(indices, SelectMode.Replace);
+			_firstSelection = first;
+			_lastSelection = next;
+			InvalidateVisual();
+		}
+
+		private void OnSelectDown()
+		{
+			var logFile = _logFile;
+			var first = _firstSelection;
+			var last = _lastSelection;
+			if (logFile == null)
+				return;
+			if (first.IsInvalid)
+				return;
+			if (last.IsInvalid)
+				return;
+
+			var next = last + 1;
+			if (next >= _logFile.Count)
+				return;
+
+			var indices = LogLineIndex.Range(first, next);
+			SetSelected(indices, SelectMode.Replace);
+			_firstSelection = first;
+			_lastSelection = next;
+			InvalidateVisual();
+		}
+
+		private void OnMoveDown()
 		{
 			try
 			{
@@ -527,7 +592,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMoveStart()
+		private void OnMoveStart()
 		{
 			try
 			{
@@ -540,7 +605,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMoveEnd()
+		private void OnMoveEnd()
 		{
 			try
 			{

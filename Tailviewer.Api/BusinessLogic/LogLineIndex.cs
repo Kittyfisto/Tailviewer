@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Tailviewer.BusinessLogic
 {
@@ -133,6 +135,24 @@ namespace Tailviewer.BusinessLogic
 		public static LogLineIndex Max(LogLineIndex left, LogLineIndex right)
 		{
 			return Math.Max(left._value, right._value);
+		}
+
+		public static IEnumerable<LogLineIndex> Range(LogLineIndex from, LogLineIndex to)
+		{
+			if (from > to)
+			{
+				var tmp = to;
+				to = from;
+				from = tmp;
+			}
+
+			var count = to - from + 1;
+			var values = new List<LogLineIndex>(count);
+			for (int i = 0; i < count; ++i)
+			{
+				values.Add(from + i);
+			}
+			return values;
 		}
 	}
 }

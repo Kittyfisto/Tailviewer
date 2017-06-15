@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
-using System.Windows.Documents;
+using System.Windows.Input;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
+using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls
 {
@@ -20,10 +21,13 @@ namespace Tailviewer.Test.Ui.Controls
 		private Mock<ILogFile> _logFile;
 		private List<LogLine> _lines;
 		private List<ILogFileListener> _listeners;
+		private TestKeyboard _keyboard;
 
 		[SetUp]
 		public void SetUp()
 		{
+			_keyboard = new TestKeyboard();
+
 			_control = new LogEntryListView
 				{
 					Width = 1024,
@@ -364,7 +368,8 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.SelectedIndices.Should().BeEmpty();
 			_control.FollowTail.Should().BeFalse();
 
-			_control.PartTextCanvas.OnMoveEnd();
+			_keyboard.Press(Key.LeftCtrl);
+			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] {new LogLineIndex(199)});
 			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
 			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
@@ -380,12 +385,13 @@ namespace Tailviewer.Test.Ui.Controls
 			}
 			_control.LogFile = _logFile.Object;
 
-			_control.PartTextCanvas.OnMoveEnd();
+			_keyboard.Press(Key.LeftCtrl);
+			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(199) });
 			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
 			_control.FollowTail.Should().BeTrue();
 
-			_control.PartTextCanvas.OnMoveStart();
+			_keyboard.Click(_control.PartTextCanvas, Key.Home);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(0) });
 			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 50));
 			_control.FollowTail.Should().BeFalse();
