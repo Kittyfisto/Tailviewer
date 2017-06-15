@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Harmony;
 
 namespace WpfUnit
@@ -19,6 +22,7 @@ namespace WpfUnit
 	public sealed class TestKeyboard
 	{
 		private static readonly HashSet<Key> PressedKeys;
+		private readonly HwndSource _dummyInputSource;
 
 		static TestKeyboard()
 		{
@@ -33,6 +37,7 @@ namespace WpfUnit
 		/// </summary>
 		public TestKeyboard()
 		{
+			_dummyInputSource = new HwndSource(0, 0, 0, 0, 0, "", IntPtr.Zero);
 			Reset();
 		}
 
@@ -53,6 +58,29 @@ namespace WpfUnit
 		{
 			PressedKeys.Remove(key);
 		}
+
+		public void Click(UIElement element, Key key)
+		{
+			Press(key);
+			element.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,
+				_dummyInputSource,
+				Environment.TickCount,
+				key)
+			{
+				RoutedEvent = UIElement.KeyDownEvent
+			});
+
+			Release(key);
+			element.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,
+				_dummyInputSource,
+				Environment.TickCount,
+				key)
+			{
+				RoutedEvent = UIElement.KeyUpEvent
+			});
+		}
+
+		#region Keyboard
 
 		[HarmonyPatch(typeof(Keyboard))]
 		[HarmonyPatch("IsKeyDown")]
@@ -83,5 +111,48 @@ namespace WpfUnit
 				__result = false;
 			}
 		}
+
+		#endregion
+
+		#region KeyboardDevice
+
+		[HarmonyPatch(typeof(KeyboardDevice))]
+		[HarmonyPatch("IsKeyDown")]
+		private class PatchKeyboardDeviceIsKeyDown
+		{
+			private static void Postfix(Key key, ref bool __result)
+			{
+				__result = PressedKeys.Contains(key);
+			}
+		}
+
+		[HarmonyPatch(typeof(KeyboardDevice))]
+		[HarmonyPatch("IsKeyUp")]
+		private class PatchKeyboardDeviceIsKeyUp
+		{
+			private static void Postfix(Key key, ref bool __result)
+			{
+				__result = !PressedKeys.Contains(key);
+			}
+		}
+
+		[HarmonyPatch(typeof(KeyboardDevice))]
+		[HarmonyPatch("get_Modifiers")]
+		private class PatchKeyboardDeviceModifiers
+		{
+			private static void Postfix(ref ModifierKeys __result)
+			{
+				var modifiers = ModifierKeys.None;
+				if (PressedKeys.Contains(Key.LeftShift) || PressedKeys.Contains(Key.RightShift))
+					modifiers |= ModifierKeys.Shift;
+				if (PressedKeys.Contains(Key.LeftCtrl) || PressedKeys.Contains(Key.RightCtrl))
+					modifiers |= ModifierKeys.Control;
+				if (PressedKeys.Contains(Key.LeftAlt) || PressedKeys.Contains(Key.RightAlt))
+					modifiers |= ModifierKeys.Alt;
+				__result = modifiers;
+			}
+		}
+
+		#endregion
 	}
 }
