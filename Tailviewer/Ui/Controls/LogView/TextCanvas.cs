@@ -406,7 +406,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				OnMouseMove(relativePos);
 		}
 
-		public void OnMouseMove(Point relativePos)
+		private void OnMouseMove(Point relativePos)
 		{
 			double y = relativePos.Y - _yOffset;
 			var visibleLineIndex = (int) Math.Floor(y/TextHelper.LineHeight);
@@ -596,7 +596,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			Point relativePos = e.GetPosition(this);
+			Point relativePos = Mouse.GetPosition(this);
 			OnMouseMove(relativePos);
 		}
 

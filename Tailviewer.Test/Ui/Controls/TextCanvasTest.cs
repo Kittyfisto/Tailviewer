@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
+using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls
 {
@@ -17,11 +18,17 @@ namespace Tailviewer.Test.Ui.Controls
 	[Apartment(ApartmentState.STA)]
 	public sealed class TextCanvasTest
 	{
+		private TestMouse _mouse;
+		private TestKeyboard _keyboard;
+
 		private TextCanvas _control;
 
 		[SetUp]
 		public void SetUp()
 		{
+			_mouse = new TestMouse();
+			_keyboard = new TestKeyboard();
+
 			_control = new TextCanvas(new ScrollBar(), new ScrollBar())
 			{
 				Width = 800,
@@ -77,7 +84,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		public void TestSelectOneLine()
+		public void TestSelectOneLine1()
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello", LevelFlags.None);
@@ -89,13 +96,37 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.SelectedIndices.Should().BeEmpty();
 
-			_control.OnMouseMove(new Point(20, 8));
+			_mouse.MoveRelativeTo(_control, new Point(20, 8));
 			_control.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, MouseButton.Left)
 			{
 				RoutedEvent = UIElement.MouseLeftButtonDownEvent
 			});
 
 			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+		}
+
+		[Test]
+		[Description("Verifies that multiple lines can be selected by shift+mouse clicking")]
+		public void TestSelectMultipleLines1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			_control.SelectedIndices.Should().BeEmpty();
+
+			_mouse.LeftClickAt(_control, new Point(20, 8));
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+
+			_keyboard.Press(Key.LeftShift);
+			_mouse.LeftClickAt(_control, new Point(20, 24));
+
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
 		}
 	}
 }
