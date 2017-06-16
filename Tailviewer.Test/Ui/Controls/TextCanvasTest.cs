@@ -223,7 +223,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that multiple lines can be selected with shift+down")]
+		[Description("Verifies that keyboard shortcuts work when the user has started the selection with a mouse click")]
 		public void TestSelectMultipleLinesWithKeyboard3()
 		{
 			var logFile = new InMemoryLogFile();
@@ -235,24 +235,71 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.UpdateVisibleSection();
 			_control.UpdateVisibleLines();
 
-			// This time we'll do the first selection programatically (which happens when
-			// switching between data sources, for example)
-			_mouse.LeftClickAt(_control, new Point(10, 8));
-			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+			_mouse.LeftClickAt(_control, new Point(10, 24));
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1));
 
 			_keyboard.Press(Key.LeftShift);
 			_keyboard.Click(_control, Key.Down);
-			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
-
-			_keyboard.Click(_control, Key.Down);
-			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
-
-			_keyboard.Click(_control, Key.Up);
-			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
-
-			_keyboard.Click(_control, Key.Up);
-			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
 		}
 
+		[Test]
+		[Description("Verifies that shortcuts work when the user tried to select more lines than are present")]
+		public void TestSelectMultipleLinesWithKeyboard4()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("How's it going?", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			_mouse.LeftClickAt(_control, new Point(10, 40));
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(2));
+
+			_keyboard.Press(Key.LeftShift);
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+			
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+
+			// We're now moving "beyond" the first item
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2));
+		}
+
+		[Test]
+		[Description("Verifies that the control requests that the newly selected line is brought into view when using keyboard shortcuts")]
+		public void TestSelectMultipleLinesWithKeyboard5()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("How's it going?", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			_mouse.LeftClickAt(_control, new Point(10, 20));
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(1));
+
+			var indices = new List<LogLineIndex>();
+			_control.RequestBringIntoView += (index, match) => indices.Add(index);
+
+			_keyboard.Press(Key.LeftShift);
+			_keyboard.Click(_control, Key.Up);
+			indices.Should().Equal(new object[] {new LogLineIndex(0)}, "because the newly selected log line should've been brought into view");
+
+			indices.Clear();
+			_keyboard.Click(_control, Key.Down);
+			indices.Should().Equal(new object[] {new LogLineIndex(1)}, "because the newly selected log line should've been brought into view");
+		}
 	}
 }

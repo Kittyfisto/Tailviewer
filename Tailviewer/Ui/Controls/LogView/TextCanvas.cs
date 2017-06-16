@@ -340,7 +340,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public bool SetSelected(LogLineIndex index, SelectMode selectMode)
 		{
 			bool changed = Set(_selectedIndices, index, selectMode);
-			_lastSelection = index;
+			_firstSelection = _lastSelection = index;
 
 			if (changed)
 			{
@@ -543,13 +543,17 @@ namespace Tailviewer.Ui.Controls.LogView
 				return;
 
 			var next = last - 1;
-			if (next >= _logFile.Count)
+			if (next < 0)
 				return;
 
 			var indices = LogLineIndex.Range(first, next);
 			SetSelected(indices, SelectMode.Replace);
 			_firstSelection = first;
 			_lastSelection = next;
+
+			var fn = RequestBringIntoView;
+			fn?.Invoke(next, new LogLineMatch());
+
 			InvalidateVisual();
 		}
 
@@ -573,6 +577,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			SetSelected(indices, SelectMode.Replace);
 			_firstSelection = first;
 			_lastSelection = next;
+
+			var fn = RequestBringIntoView;
+			fn?.Invoke(next, new LogLineMatch());
+
 			InvalidateVisual();
 		}
 
