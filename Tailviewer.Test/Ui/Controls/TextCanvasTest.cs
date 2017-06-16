@@ -221,5 +221,38 @@ namespace Tailviewer.Test.Ui.Controls
 			_keyboard.Click(_control, Key.Down);
 			_control.SelectedIndices.Should().Equal(new LogLineIndex(2), new LogLineIndex(3), new LogLineIndex(4));
 		}
+
+		[Test]
+		[Description("Verifies that multiple lines can be selected with shift+down")]
+		public void TestSelectMultipleLinesWithKeyboard3()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("How's it going?", LevelFlags.None);
+
+			_control.LogFile = logFile;
+			_control.UpdateVisibleSection();
+			_control.UpdateVisibleLines();
+
+			// This time we'll do the first selection programatically (which happens when
+			// switching between data sources, for example)
+			_mouse.LeftClickAt(_control, new Point(10, 8));
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+
+			_keyboard.Press(Key.LeftShift);
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
+
+			_keyboard.Click(_control, Key.Down);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1));
+
+			_keyboard.Click(_control, Key.Up);
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(0));
+		}
+
 	}
 }
