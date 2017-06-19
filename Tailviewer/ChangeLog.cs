@@ -41,6 +41,24 @@ namespace Tailviewer
 			AddV042();
 			AddV050();
 			AddV051();
+			AddV052();
+		}
+
+		private static void AddV052()
+		{
+			var features = new string[]
+			{
+			};
+			var bugfixes = new string[]
+			{};
+			var misc = new[]
+			{
+				"More keyboard shortcuts"
+			};
+			var releaseDate = new DateTime(2017, 6, 19);
+			var version = new Version(0, 5, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV051()
