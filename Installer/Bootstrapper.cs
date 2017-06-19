@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using Installer.Applications;
+using log4net;
 
 namespace Installer
 {
@@ -78,8 +79,16 @@ namespace Installer
 		{
 			object exception = args.ExceptionObject;
 
+			LogException(exception);
+
 			MessageBox.Show(string.Format("Oops, something went wrong:\r\n{0}", exception),
 			                Constants.MainWindowTitle);
+		}
+
+		private static void LogException(object exception)
+		{
+			ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+			log.ErrorFormat("Caught unexpected exception: {0}", exception);
 		}
 	}
 }

@@ -115,7 +115,7 @@
                 <StackPanel>
                     <TextBlock>
                         <Run Text="Installation " />
-                        <Run Text="{Binding InstallationResult}" />
+                        <Run Text="{Binding InstallationResult, Mode=OneWay}" />
                     </TextBlock>
                 </StackPanel>
 
