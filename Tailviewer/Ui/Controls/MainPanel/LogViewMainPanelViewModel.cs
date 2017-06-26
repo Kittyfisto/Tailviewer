@@ -208,6 +208,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		public override void Update()
 		{
 			CurrentDataSourceLogView?.Update();
+			CurrentDataSource?.Update();
 			_bookmarks.Update();
 		}
 

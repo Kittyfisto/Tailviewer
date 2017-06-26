@@ -65,6 +65,21 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		}
 
 		[Test]
+		[Description("Verifies that updates are forwarded to the currently selected data source")]
+		public void TestUpdate3()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			new Action(() => model.Update()).ShouldNotThrow("because we haven't set a data source, yet");
+
+			var dataSource = new Mock<IDataSourceViewModel>();
+			dataSource.Setup(x => x.DataSource).Returns(CreateDataSource().Object);
+			model.CurrentDataSource = dataSource.Object;
+			model.Update();
+
+			dataSource.Verify(x => x.Update(), Times.Once, "because Update() should forward the update to the current data source, if there is any");
+		}
+
+		[Test]
 		[Description("Verifies that changing an active filter is automatically applied to the currently selected data source")]
 		public void TestChangeFilter1()
 		{
@@ -102,6 +117,10 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 				.Returns((Guid id) => activeFilters.Remove(id));
 			dataSource.Setup(x => x.IsQuickFilterActive(It.IsAny<Guid>()))
 				.Returns((Guid id) => activeFilters.Contains(id));
+
+			var logFile = new InMemoryLogFile();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile);
 			return dataSource;
 		}
 	}
