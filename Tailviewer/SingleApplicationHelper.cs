@@ -19,7 +19,7 @@ namespace Tailviewer
 		/// Tries to acquire an exclude mutex.
 		/// </summary>
 		/// <returns>The acquired mutex or null if another process holds the mutex</returns>
-		public static Mutex AcquireMutex()
+		public static IDisposable AcquireMutex()
 		{
 			bool acquiredLock;
 			var mutex = new Mutex(true, "Kittyfisto.Tailviewer", out acquiredLock);
@@ -109,7 +109,7 @@ namespace Tailviewer
 				var arguments = ArgumentParser.TryParse(args);
 				if (arguments.FilesToOpen.Length > 0)
 				{
-					ForwardFilesTo(primaryProcess, arguments.FilesToOpen);
+					
 				}
 			}
 			catch (Exception e)

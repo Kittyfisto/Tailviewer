@@ -24,7 +24,7 @@ namespace Tailviewer
 			//
 			// Once a decision has been made, either all other application instances are forcefully closed
 			// or this process terminates peacefully.
-			Mutex mutex = null;
+			IDisposable mutex = null;
 			try
 			{
 				mutex = SingleApplicationHelper.AcquireMutex();
