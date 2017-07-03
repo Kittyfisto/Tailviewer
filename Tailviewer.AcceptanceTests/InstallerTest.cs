@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,12 +8,9 @@ namespace Tailviewer.AcceptanceTests
 {
 	[TestFixture]
 	public sealed class InstallerTest
+		: SystemtestBase
 	{
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			_installerPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Tailviewer-setup.exe");
-		}
+		private string _installationPath;
 
 		[SetUp]
 		public void Setup()
@@ -22,23 +18,7 @@ namespace Tailviewer.AcceptanceTests
 			var dir = TestContext.CurrentContext.TestDirectory;
 			var testName = TestContext.CurrentContext.Test.Name;
 			_installationPath = Path.Combine(dir, testName);
-
-			if (Directory.Exists(_installationPath))
-			{
-				var di = new DirectoryInfo(_installationPath);
-				foreach (var file in di.GetFiles())
-					file.Delete();
-				foreach (var subDir in di.GetDirectories())
-					subDir.Delete(true);
-			}
-			else
-			{
-				Directory.CreateDirectory(_installationPath);
-			}
 		}
-
-		private string _installationPath;
-		private string _installerPath;
 
 		[Test]
 		[Description("Verifies that the graphical installer can start and doesn't exit on its own - also verifies that the log doesn't contain any errors")]
@@ -78,7 +58,7 @@ namespace Tailviewer.AcceptanceTests
 
 		private void StartInstaller()
 		{
-			var startInfo = new ProcessStartInfo(_installerPath);
+			var startInfo = new ProcessStartInfo(InstallerPath);
 			var process = Process.Start(startInfo);
 			try
 			{
@@ -92,22 +72,6 @@ namespace Tailviewer.AcceptanceTests
 			finally
 			{
 				process.Kill();
-			}
-		}
-
-		private void InstallInto(string installationPath)
-		{
-			Console.WriteLine("Installing into '{0}'...", installationPath);
-
-			var arguments = new StringBuilder();
-			arguments.Append("silentinstall "); 
-			arguments.AppendFormat("\"{0}\"", installationPath);
-			var startInfo = new ProcessStartInfo(_installerPath, arguments.ToString());
-			var process = Process.Start(startInfo);
-			process.WaitForExit();
-			if (process.ExitCode != 0)
-			{
-				Assert.Fail("Installation failed with exit code {0}", process.ExitCode);
 			}
 		}
 

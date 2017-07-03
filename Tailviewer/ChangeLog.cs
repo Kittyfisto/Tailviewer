@@ -50,13 +50,13 @@ namespace Tailviewer
 			var features = new string[]
 			{
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
 				"Fixed line counts not updating properly"
 			};
 			var misc = new string[]
 			{};
-			var releaseDate = new DateTime(2017, 7, 2);
+			var releaseDate = new DateTime(2017, 7, 3);
 			var version = new Version(0, 5, 3);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);

@@ -65,20 +65,23 @@ namespace Tailviewer
 			using (var dataSources = new DataSources(taskScheduler, settings.DataSources))
 			using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 			{
-				if (args.Length > 0)
+				var arguments = ArgumentParser.TryParse(args);
+				if (arguments.FilesToOpen.Length > 0)
 				{
-					var filePath = args[0];
-					if (File.Exists(filePath))
+					foreach (var filePath in arguments.FilesToOpen)
 					{
-						// Not only do we want to add this file to the list of data sources,
-						// but we also want to select it so the user can view it immediately, regardless
-						// of what was selected previously.
-						var dataSource = dataSources.AddDataSource(filePath);
-						settings.DataSources.SelectedItem = dataSource.Id;
-					}
-					else
-					{
-						Log.ErrorFormat("File '{0}' does not exist, won't open it!", filePath);
+						if (File.Exists(filePath))
+						{
+							// Not only do we want to add this file to the list of data sources,
+							// but we also want to select it so the user can view it immediately, regardless
+							// of what was selected previously.
+							var dataSource = dataSources.AddDataSource(filePath);
+							settings.DataSources.SelectedItem = dataSource.Id;
+						}
+						else
+						{
+							Log.ErrorFormat("File '{0}' does not exist, won't open it!", filePath);
+						}
 					}
 				}
 
