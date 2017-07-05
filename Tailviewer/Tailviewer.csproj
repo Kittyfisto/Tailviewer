@@ -27,6 +27,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,6 +37,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\ic_find_in_page_black_48dp.ico</ApplicationIcon>
@@ -198,6 +200,17 @@
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParser.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
+    <Compile Include="MMQ\IMemoryMappedQueue.cs" />
+    <Compile Include="MMQ\IMemoryMappedQueueAccessor.cs" />
+    <Compile Include="MMQ\IMemoryMappedQueueConsumer.cs" />
+    <Compile Include="MMQ\IMemoryMappedQueueFactory.cs" />
+    <Compile Include="MMQ\IMemoryMappedQueueProducer.cs" />
+    <Compile Include="MMQ\MemoryMappedQueue.cs" />
+    <Compile Include="MMQ\V1\MemoryMappedQueue.cs" />
+    <Compile Include="MMQ\V1\MemoryMappedQueueAccessor.cs" />
+    <Compile Include="MMQ\V1\MemoryMappedQueueConsumer.cs" />
+    <Compile Include="MMQ\V1\MemoryMappedQueueFactory.cs" />
+    <Compile Include="MMQ\V1\MemoryMappedQueueProducer.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="Resource.cs" />
@@ -535,6 +548,7 @@
       <Name>Tailviewer.Api</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.105.2\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

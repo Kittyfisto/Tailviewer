@@ -7,18 +7,18 @@
 			var arguments = new Arguments();
 			if (args?.Length > 0)
 			{
-				arguments.FilesToOpen = new[] {args[0]};
+				arguments.FileToOpen = args[0];
 			}
 			else
 			{
-				arguments.FilesToOpen = new string[0];
+				arguments.FileToOpen = null;
 			}
 			return arguments;
 		}
 
 		public sealed class Arguments
 		{
-			public string[] FilesToOpen;
+			public string FileToOpen;
 		}
 	}
 }

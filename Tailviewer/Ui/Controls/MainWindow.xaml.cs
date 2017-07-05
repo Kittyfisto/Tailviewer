@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -13,7 +15,10 @@ namespace Tailviewer.Ui.Controls
 	///     Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow
+		: SingleApplicationHelper.IMessageListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public static readonly DependencyProperty FocusLogFileSearchCommandProperty =
 			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
@@ -130,6 +135,11 @@ namespace Tailviewer.Ui.Controls
 				DataSourcesControl.Instance?.HandleDrag(e);
 			}
 			e.Handled = true;
+		}
+
+		public void OnOpenDataSource(string dataSourceUri)
+		{
+			Log.InfoFormat("Test");
 		}
 	}
 }

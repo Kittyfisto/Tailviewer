@@ -30,11 +30,11 @@ namespace Tailviewer
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
 		}
 
-		public static int Start(string[] args)
+		public static int Start(SingleApplicationHelper.IMutex mutex, string[] args)
 		{
 			try
 			{
-				return StartInternal(args);
+				return StartInternal(mutex, args);
 			}
 			catch (Exception e)
 			{
@@ -43,7 +43,7 @@ namespace Tailviewer
 			}
 		}
 
-		private static int StartInternal(string[] args)
+		private static int StartInternal(SingleApplicationHelper.IMutex mutex, string[] args)
 		{
 			InstallExceptionHandlers();
 			Log.InfoFormat("Starting tailviewer...");
@@ -66,22 +66,19 @@ namespace Tailviewer
 			using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 			{
 				var arguments = ArgumentParser.TryParse(args);
-				if (arguments.FilesToOpen.Length > 0)
+				if (arguments.FileToOpen != null)
 				{
-					foreach (var filePath in arguments.FilesToOpen)
+					if (File.Exists(arguments.FileToOpen))
 					{
-						if (File.Exists(filePath))
-						{
-							// Not only do we want to add this file to the list of data sources,
-							// but we also want to select it so the user can view it immediately, regardless
-							// of what was selected previously.
-							var dataSource = dataSources.AddDataSource(filePath);
-							settings.DataSources.SelectedItem = dataSource.Id;
-						}
-						else
-						{
-							Log.ErrorFormat("File '{0}' does not exist, won't open it!", filePath);
-						}
+						// Not only do we want to add this file to the list of data sources,
+						// but we also want to select it so the user can view it immediately, regardless
+						// of what was selected previously.
+						var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
+						settings.DataSources.SelectedItem = dataSource.Id;
+					}
+					else
+					{
+						Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
 					}
 				}
 
@@ -115,6 +112,8 @@ namespace Tailviewer
 				settings.MainWindow.RestoreTo(window);
 
 				window.Show();
+				mutex.SetListener(window);
+
 				return application.Run();
 			}
 		}

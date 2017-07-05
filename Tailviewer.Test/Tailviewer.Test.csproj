@@ -133,6 +133,7 @@
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="LocalTest.cs" />
+    <Compile Include="MMQ\MemoryMappedQueueTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\Dashboard\Analysers\Event\EventsAnalyserSettingsTest.cs" />

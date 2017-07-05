@@ -24,7 +24,7 @@ namespace Tailviewer
 			//
 			// Once a decision has been made, either all other application instances are forcefully closed
 			// or this process terminates peacefully.
-			IDisposable mutex = null;
+			SingleApplicationHelper.IMutex mutex = null;
 			try
 			{
 				mutex = SingleApplicationHelper.AcquireMutex();
@@ -57,7 +57,7 @@ namespace Tailviewer
 						//
 						// But before we do that, we have to send the files
 						// we were supposed to open to the other process.
-						SingleApplicationHelper.ForwardFilesTo(primaryProcess, args);
+						SingleApplicationHelper.OpenFile(primaryProcess, args);
 						SingleApplicationHelper.BringToFront(primaryProcess);
 
 						Console.WriteLine("INFO: Signing off...");
@@ -67,7 +67,7 @@ namespace Tailviewer
 				}
 
 				SetupLoggers();
-				return App.Start(args);
+				return App.Start(mutex, args);
 			}
 			finally
 			{
