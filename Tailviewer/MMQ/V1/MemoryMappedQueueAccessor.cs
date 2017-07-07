@@ -144,7 +144,7 @@ namespace Tailviewer.MMQ.V1
 				{
 					_accessor.ReadArray(DataOffset + readPointer, data, 0, remaining);
 					_accessor.ReadArray(DataOffset, data, remaining, length - remaining);
-					readPointer = length - remaining;
+					readPointer = DataOffset + length - remaining;
 				}
 				else
 				{

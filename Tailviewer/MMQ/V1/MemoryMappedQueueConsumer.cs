@@ -9,7 +9,7 @@ namespace Tailviewer.MMQ.V1
 		: MemoryMappedQueueAccessor
 		, IMemoryMappedQueueConsumer
 	{
-		private static readonly TimeSpan Timeout;
+		private static readonly TimeSpan DefaultTimeout;
 
 		private readonly MemoryMappedViewAccessor _accessor;
 		private readonly string _queueName;
@@ -17,7 +17,7 @@ namespace Tailviewer.MMQ.V1
 
 		static MemoryMappedQueueConsumer()
 		{
-			Timeout = TimeSpan.FromSeconds(10);
+			DefaultTimeout = TimeSpan.FromSeconds(10);
 		}
 
 		public MemoryMappedQueueConsumer(string queueName, MemoryMappedFile file, MemoryMappedViewAccessor accessor)
@@ -29,11 +29,21 @@ namespace Tailviewer.MMQ.V1
 
 		public byte[] Dequeue()
 		{
+			return Dequeue(DefaultTimeout);
+		}
+
+		public byte[] Dequeue(TimeSpan timeout)
+		{
 			byte[] message;
-			if (!TryDequeue(out message, Timeout))
+			if (!TryDequeue(out message, timeout))
 				throw new TimeoutException();
 
 			return message;
+		}
+
+		public bool TryDequeue(out byte[] message)
+		{
+			return TryDequeue(out message, DefaultTimeout);
 		}
 
 		public bool TryDequeue(out byte[] message, TimeSpan timeout)
