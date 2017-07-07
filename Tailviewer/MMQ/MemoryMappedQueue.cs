@@ -44,7 +44,7 @@ namespace Tailviewer.MMQ
 					accessor.Write(0, ref header);
 				}
 
-				return new V1.MemoryMappedQueue(file);
+				return new V1.MemoryMappedQueue(name, file);
 			}
 			catch (Exception)
 			{

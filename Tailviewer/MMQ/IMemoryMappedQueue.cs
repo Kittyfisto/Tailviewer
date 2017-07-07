@@ -12,6 +12,7 @@ namespace Tailviewer.MMQ
 	public interface IMemoryMappedQueue
 		: IDisposable
 	{
-		
+		IMemoryMappedQueueProducer CreateProducer();
+		IMemoryMappedQueueConsumer CreateConsumer();
 	}
 }

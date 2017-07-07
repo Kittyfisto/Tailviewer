@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using Metrolib;
 using log4net;
 using log4net.Appender;
@@ -57,8 +56,8 @@ namespace Tailviewer
 						//
 						// But before we do that, we have to send the files
 						// we were supposed to open to the other process.
-						SingleApplicationHelper.OpenFile(primaryProcess, args);
-						SingleApplicationHelper.BringToFront(primaryProcess);
+						SingleApplicationHelper.OpenFile(args);
+						SingleApplicationHelper.BringToFront();
 
 						Console.WriteLine("INFO: Signing off...");
 

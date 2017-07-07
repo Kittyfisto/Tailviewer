@@ -19,7 +19,7 @@ namespace Tailviewer.AcceptanceTests
 
 		private void ProcessOnOutputDataReceived(object sender, DataReceivedEventArgs args)
 		{
-			Console.WriteLine(args.Data);
+			Console.WriteLine("{0}: {1}", _id, args.Data);
 		}
 
 		public static ProcessEx Start(string id, string fileName)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -10,6 +12,38 @@ namespace Tailviewer.Test.MMQ
 	public sealed class MemoryMappedQueueTest
 	{
 		[Test]
+		public void TestCreateQueue1()
+		{
+			using (var queue = MemoryMappedQueue.Create("Foobar"))
+			{
+				queue.Should().NotBeNull();
+
+				new Action(() => MemoryMappedFile.CreateNew("Foobar", 123))
+					.ShouldThrow<IOException>("because Create() is supposed to create an underlying memor mapped file");
+			}
+		}
+
+		[Test]
+		public void TestCreateProducer1()
+		{
+			using (var queue = MemoryMappedQueue.Create("Foo"))
+			using (var producer = queue.CreateProducer())
+			{
+				producer.Should().NotBeNull();
+			}
+		}
+
+		[Test]
+		public void TestCreateConsumer1()
+		{
+			using (var queue = MemoryMappedQueue.Create("Foo"))
+			using (var consumer = queue.CreateConsumer())
+			{
+				consumer.Should().NotBeNull();
+			}
+		}
+
+		[Test]
 		[Description("Verifies that simple messages can be exchanged")]
 		public void TestEnqueueDequeue1([Values(new byte[] {1},
 												new byte[] {42, 99},
@@ -18,7 +52,7 @@ namespace Tailviewer.Test.MMQ
 		{
 			using (var queue = MemoryMappedQueue.Create("Test1"))
 			using (var producer = MemoryMappedQueue.CreateProducer("Test1"))
-			using (var consumer = MemoryMappedQueue.CreateConsumer("Test1"))
+			using (var consumer = queue.CreateConsumer())
 			{
 				producer.Enqueue(message);
 				var actualMessage = consumer.Dequeue();
@@ -33,7 +67,7 @@ namespace Tailviewer.Test.MMQ
 		public void TestEnqueueDequeueMany()
 		{
 			using (var queue = MemoryMappedQueue.Create("Test1"))
-			using (var producer = MemoryMappedQueue.CreateProducer("Test1"))
+			using (var producer = queue.CreateProducer())
 			using (var consumer = MemoryMappedQueue.CreateConsumer("Test1"))
 			{
 				const int messageLength = 512;
@@ -55,7 +89,7 @@ namespace Tailviewer.Test.MMQ
 		public void TestDequeue1()
 		{
 			using (var queue = MemoryMappedQueue.Create("Test1"))
-			using (var consumer = MemoryMappedQueue.CreateConsumer("Test1"))
+			using (var consumer = queue.CreateConsumer())
 			{
 				new Action(() => consumer.Dequeue(TimeSpan.Zero)).ShouldThrow<TimeoutException>();
 				byte[] unused;

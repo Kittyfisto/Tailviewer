@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -137,9 +138,26 @@ namespace Tailviewer.Ui.Controls
 			e.Handled = true;
 		}
 
+		public void OnShowMainwindow()
+		{
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				Log.InfoFormat("Ensuring main window is visible because another process asked us to...");
+				//if (!IsFocused)
+				//	Focus();
+				Activate();
+				BringIntoView();
+			}));
+		}
+
 		public void OnOpenDataSource(string dataSourceUri)
 		{
-			Log.InfoFormat("Test");
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				Log.InfoFormat("Opening data source because another process asked us to...");
+				var viewModel = DataContext as MainWindowViewModel;
+				viewModel?.OpenFile(dataSourceUri);
+			}));
 		}
 	}
 }
