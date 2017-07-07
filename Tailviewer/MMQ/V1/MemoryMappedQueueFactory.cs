@@ -25,7 +25,7 @@ namespace Tailviewer.MMQ.V1
 			try
 			{
 				accessor = _file.CreateViewAccessor(_start, _length);
-				return new MemoryMappedQueueProducer(_queueName, accessor);
+				return new MemoryMappedQueueProducer(_queueName, _file, accessor);
 			}
 			catch (Exception)
 			{
@@ -40,7 +40,7 @@ namespace Tailviewer.MMQ.V1
 			try
 			{
 				accessor = _file.CreateViewAccessor(_start, _length);
-				return new MemoryMappedQueueConsumer(_queueName, accessor);
+				return new MemoryMappedQueueConsumer(_queueName, _file, accessor);
 			}
 			catch (Exception)
 			{

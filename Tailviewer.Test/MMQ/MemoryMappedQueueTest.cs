@@ -8,7 +8,6 @@ namespace Tailviewer.Test.MMQ
 	public sealed class MemoryMappedQueueTest
 	{
 		[Test]
-		[Ignore("Not yet working")]
 		public void TestEnqueueDequeue1([Values(new byte[] {1},
 												new byte[] {42, 99},
 												new byte[] {200, 91, 12})] byte[] message)

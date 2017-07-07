@@ -63,9 +63,18 @@ namespace Tailviewer.MMQ
 		/// <returns></returns>
 		public static IMemoryMappedQueueProducer CreateProducer(string name)
 		{
-			var file = MemoryMappedFile.OpenExisting(name);
-			var factory = CreateFactory(name, file);
-			return factory.CreateProducer();
+			MemoryMappedFile file = null;
+			try
+			{
+				file = MemoryMappedFile.OpenExisting(name);
+				var factory = CreateFactory(name, file);
+				return factory.CreateProducer();
+			}
+			catch (Exception)
+			{
+				file?.Dispose();
+				throw;
+			}
 		}
 
 		/// <summary>
@@ -75,9 +84,18 @@ namespace Tailviewer.MMQ
 		/// <returns></returns>
 		public static IMemoryMappedQueueConsumer CreateConsumer(string name)
 		{
-			var file = MemoryMappedFile.OpenExisting(name);
-			var factory = CreateFactory(name, file);
-			return factory.CreateConsumer();
+			MemoryMappedFile file = null;
+			try
+			{
+				file = MemoryMappedFile.OpenExisting(name);
+				var factory = CreateFactory(name, file);
+				return factory.CreateConsumer();
+			}
+			catch(Exception)
+			{
+				file?.Dispose();
+				throw;
+			}
 		}
 
 		private static IMemoryMappedQueueFactory CreateFactory(string name, MemoryMappedFile file)

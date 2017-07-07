@@ -10,6 +10,7 @@ namespace Tailviewer.MMQ.V1
 		, IMemoryMappedQueueProducer
 	{
 		private readonly MemoryMappedViewAccessor _accessor;
+		private readonly MemoryMappedFile _file;
 		private readonly string _queueName;
 
 		private static readonly TimeSpan Timeout;
@@ -19,9 +20,10 @@ namespace Tailviewer.MMQ.V1
 			Timeout = TimeSpan.FromSeconds(10);
 		}
 
-		public MemoryMappedQueueProducer(string queueName, MemoryMappedViewAccessor accessor)
+		public MemoryMappedQueueProducer(string queueName, MemoryMappedFile file, MemoryMappedViewAccessor accessor)
 		{
 			_queueName = queueName;
+			_file = file;
 			_accessor = accessor;
 		}
 
@@ -71,6 +73,7 @@ namespace Tailviewer.MMQ.V1
 		public override void Dispose()
 		{
 			_accessor.Dispose();
+			_file.Dispose();
 		}
 	}
 }
