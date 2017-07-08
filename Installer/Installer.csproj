@@ -127,6 +127,9 @@
     <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\METADATA.pb">
       <Link>InstallationFiles\Fonts\METADATA.pb</Link>
     </EmbeddedResource>
+	<EmbeddedResource Include="..\Tailviewer\Resources\Tailviewer.ico">
+      <Link>InstallationFiles\Icons\Tailviewer.ico</Link>
+    </EmbeddedResource>
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
@@ -176,7 +179,6 @@
     <Content Include="..\bin\System.Data.SQLite.dll">
       <Link>InstallationFiles\System.Data.SQLite.dll</Link>
     </Content>
-    <EmbeddedResource Include="InstallationFiles\Icons\Tailviewer.ico" />
     <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
       <Link>InstallationFiles\System.Threading.Extensions.dll</Link>
     </EmbeddedResource>
@@ -201,6 +203,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
