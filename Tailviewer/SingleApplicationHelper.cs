@@ -197,6 +197,7 @@ namespace Tailviewer
 
 			public void Dispose()
 			{
+				_consumer.Dispose();
 				_queue.Dispose();
 				_isDisposed = true;
 			}
@@ -238,7 +239,7 @@ namespace Tailviewer
 							break;
 
 						case MessageType.OpenFile:
-							var file = Encoding.UTF8.GetString(reader.ReadBytes(message.Length - 4));
+							var file = Encoding.UTF8.GetString(reader.ReadBytes((int) (message.Length - stream.Position)));
 							_listener?.OnOpenDataSource(file);
 							break;
 
@@ -248,7 +249,7 @@ namespace Tailviewer
 					}
 				}
 			}
-			
+
 			/// <summary>
 			///     Ensures that the primary tailviewer application displays the given data source.
 			/// </summary>

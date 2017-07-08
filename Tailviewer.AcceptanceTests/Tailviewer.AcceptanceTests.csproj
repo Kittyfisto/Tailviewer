@@ -98,6 +98,7 @@
     <Compile Include="InstallerTest.cs" />
     <Compile Include="ProcessEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingleApplicationHelperTest.cs" />
     <Compile Include="SystemtestBase.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModelTest.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModelTest.cs" />
