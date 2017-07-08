@@ -113,7 +113,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			TreeViewItem treeViewItem = GetTreeViewItem(selectedViewModel);
 			if (treeViewItem != null)
 			{
-				treeViewItem.IsSelected = true;
+				SelectItem(treeViewItem);
 			}
 			else
 			{
@@ -122,10 +122,16 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 						TreeViewItem item = GetTreeViewItem(selectedViewModel);
 						if (item != null)
 						{
-							item.IsSelected = true;
+							SelectItem(item);
 						}
 					}));
 			}
+		}
+
+		private void SelectItem(TreeViewItem treeViewItem)
+		{
+			treeViewItem.IsSelected = true;
+			treeViewItem.BringIntoView();
 		}
 
 		private static void OnStringFilterChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
