@@ -42,6 +42,23 @@ namespace Tailviewer
 			AddV050();
 			AddV051();
 			AddV052();
+			AddV053();
+		}
+
+		private static void AddV053()
+		{
+			var features = new[]
+			{
+				"Only one instance may run at a time"
+			};
+			var bugfixes = new string[]
+			{};
+			var misc = new string[]
+			{};
+			var releaseDate = new DateTime(2017, 7, 10);
+			var version = new Version(0, 5, 3);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV052()

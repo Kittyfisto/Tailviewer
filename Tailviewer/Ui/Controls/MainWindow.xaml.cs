@@ -143,8 +143,6 @@ namespace Tailviewer.Ui.Controls
 			Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Log.InfoFormat("Ensuring main window is visible because another process asked us to...");
-				//if (!IsFocused)
-				//	Focus();
 				Activate();
 				BringIntoView();
 			}));

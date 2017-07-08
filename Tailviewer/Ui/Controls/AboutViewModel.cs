@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Metrolib.Controls;
 using log4net;
+using MMQ;
 
 namespace Tailviewer.Ui.Controls
 {
@@ -21,6 +23,8 @@ namespace Tailviewer.Ui.Controls
 				{
 					Dependency.CreateFrom<ILog>("https://logging.apache.org/log4net/", "Licenses/Log4Net/LICENSE-2.0.txt"),
 					Dependency.CreateFrom<FlatListView>("https://github.com/Kittyfisto/Metrolib", "Licenses/Metrolib/License.txt"),
+					Dependency.CreateFrom<IMemoryMappedQueue>("https://github.com/Kittyfisto/MMQ", "Licenses/MMQ/LICENSE"),
+					Dependency.CreateFrom<ITask>("https://github.com/Kittyfisto/System.Threading.Extensions", "Licenses/System.Threading.Extensions/LICENSE"),
 					new Dependency("Inconsolata", new Version(1, 16), "https://fonts.google.com/specimen/Inconsolata",
 					               "Licenses/Inconsolata/OFL.txt"),
 					new Dependency("Google Material Design Icons", new Version(3, 0, 1, 0),

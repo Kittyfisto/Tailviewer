@@ -57,6 +57,10 @@
       <HintPath>..\packages\Metrolib.0.2.2.31\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MMQ, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MMQ.1.0.3\lib\net45\MMQ.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
@@ -200,17 +204,6 @@
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParser.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
-    <Compile Include="MMQ\IMemoryMappedQueue.cs" />
-    <Compile Include="MMQ\IMemoryMappedQueueAccessor.cs" />
-    <Compile Include="MMQ\IMemoryMappedQueueConsumer.cs" />
-    <Compile Include="MMQ\IMemoryMappedQueueFactory.cs" />
-    <Compile Include="MMQ\IMemoryMappedQueueProducer.cs" />
-    <Compile Include="MMQ\MemoryMappedQueue.cs" />
-    <Compile Include="MMQ\V1\MemoryMappedQueue.cs" />
-    <Compile Include="MMQ\V1\MemoryMappedQueueAccessor.cs" />
-    <Compile Include="MMQ\V1\MemoryMappedQueueConsumer.cs" />
-    <Compile Include="MMQ\V1\MemoryMappedQueueFactory.cs" />
-    <Compile Include="MMQ\V1\MemoryMappedQueueProducer.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="Resource.cs" />
@@ -498,6 +491,8 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
+    <Resource Include="Licenses\MMQ\LICENSE" />
+    <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\Fonts\Inconsolata-Bold.ttf" />

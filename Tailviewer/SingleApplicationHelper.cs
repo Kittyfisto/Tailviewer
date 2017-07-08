@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Tailviewer.MMQ;
+using MMQ;
 
 namespace Tailviewer
 {

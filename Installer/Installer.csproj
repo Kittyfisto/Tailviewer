@@ -169,6 +169,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\bin\MMQ.dll">
+      <Link>InstallationFiles\MMQ.dll</Link>
+    </EmbeddedResource>
     <Content Include="..\bin\System.Data.SQLite.dll">
       <Link>InstallationFiles\System.Data.SQLite.dll</Link>
     </Content>
