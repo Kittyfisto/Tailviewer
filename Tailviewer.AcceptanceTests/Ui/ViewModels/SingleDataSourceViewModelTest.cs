@@ -33,8 +33,14 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				model.Update();
-				model.TotalCount.Should().Be(16114);
+				model.Property(x =>
+				{
+					x.Update();
+					return x.TotalCount;
+				}).ShouldEventually().Be(16114);
+
+				//model.Update();
+				//model.TotalCount.Should().Be(16114);
 
 				model.SearchTerm = "RPC #12";
 				var search = dataSource.Search;
