@@ -36,6 +36,7 @@ namespace Tailviewer.BusinessLogic.LogTables.Parsers
 				case "DATE":
 					break;
 			}
+			_format = format;
 		}
 
 		public override object Parse(string line, int startIndex, out int numCharactersConsumed)

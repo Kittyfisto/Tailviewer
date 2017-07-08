@@ -28,15 +28,15 @@ namespace Tailviewer.Settings.Dashboard
 			{
 				switch (subtree.Name)
 				{
-					case "dashboard": // "this"
-						for (int i = 0; i < subtree.AttributeCount; ++i)
-						{
-							subtree.MoveToAttribute(i);
-							switch (subtree.Name)
-							{
-							}
-						}
-						break;
+					//case "dashboard": // "this"
+					//	for (int i = 0; i < subtree.AttributeCount; ++i)
+					//	{
+					//		subtree.MoveToAttribute(i);
+					//		switch (subtree.Name)
+					//		{
+					//		}
+					//	}
+					//	break;
 
 					case "layout":
 						var layout = new LayoutSettings();

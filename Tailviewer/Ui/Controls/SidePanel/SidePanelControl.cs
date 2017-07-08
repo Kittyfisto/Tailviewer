@@ -42,13 +42,13 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		public ISidePanelViewModel DisplayedPanel
 		{
 			get { return (ISidePanelViewModel) GetValue(DisplayedPanelProperty); }
-			protected set { SetValue(DisplayedPanelPropertyKey, value); }
+			private set { SetValue(DisplayedPanelPropertyKey, value); }
 		}
 
 		public bool HasSelection
 		{
 			get { return (bool) GetValue(HasSelectionProperty); }
-			protected set { SetValue(HasSelectionPropertyKey, value); }
+			private set { SetValue(HasSelectionPropertyKey, value); }
 		}
 
 		public ISidePanelViewModel SelectedPanel

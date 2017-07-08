@@ -55,11 +55,6 @@ namespace Tailviewer.BusinessLogic
 			for (var i = 0; i < _contentBuffer.Length; ++i)
 			{
 				var c = _contentBuffer[i];
-				if (c < 32)
-				{
-					int n = 0;
-				}
-
 				if (c == '\n')
 				{
 					index = i;

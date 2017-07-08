@@ -16,15 +16,15 @@ namespace Tailviewer.Settings.Dashboard
 			{
 				switch (subtree.Name)
 				{
-					case "layout": // "this"
-						for (int i = 0; i < subtree.AttributeCount; ++i)
-						{
-							subtree.MoveToAttribute(i);
-							switch (subtree.Name)
-							{
-							}
-						}
-						break;
+					//case "layout": // "this"
+					//	for (int i = 0; i < subtree.AttributeCount; ++i)
+					//	{
+					//		subtree.MoveToAttribute(i);
+					//		switch (subtree.Name)
+					//		{
+					//		}
+					//	}
+					//	break;
 
 					case "widget":
 						var widget = new WidgetSettings();
