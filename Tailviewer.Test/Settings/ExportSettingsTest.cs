@@ -25,7 +25,7 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestStoreRestore([Values("", @"C:\foo", "dwawdwadaw")] string folder)
+		public void TestStoreRestore([Values("A", @"C:\foo", "dwawdwadaw")] string folder)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -50,6 +50,33 @@ namespace Tailviewer.Test.Settings
 					var settings = new ExportSettings();
 					settings.Restore(reader);
 					settings.ExportFolder.Should().Be(folder);
+				}
+			}
+		}
+
+		[Test]
+		[Description("Verifies that upon restoration, the default export folder is used if none could be restored")]
+		public void TestRestore1()
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = XmlWriter.Create(stream))
+				{
+					writer.WriteStartElement("Test");
+					writer.WriteEndElement();
+				}
+
+				stream.Position = 0;
+				Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+
+				using (var reader = XmlReader.Create(stream))
+				{
+					reader.MoveToContent();
+
+					var settings = new ExportSettings();
+					settings.Restore(reader);
+					settings.ExportFolder.Should().Be(Constants.ExportDirectory,
+						"because a sensible default value should be used if the settings are completely empty");
 				}
 			}
 		}

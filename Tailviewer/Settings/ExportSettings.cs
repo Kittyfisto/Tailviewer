@@ -36,8 +36,14 @@ namespace Tailviewer.Settings
 				{
 					case "exportfolder":
 						_exportFolder = reader.ReadContentAsString();
+						
 						break;
 				}
+			}
+
+			if (string.IsNullOrEmpty(_exportFolder))
+			{
+				_exportFolder = Constants.ExportDirectory;
 			}
 		}
 
