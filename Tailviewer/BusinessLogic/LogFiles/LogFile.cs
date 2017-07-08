@@ -15,8 +15,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private static readonly string[] HardcodedTimestampFormats;
-
 		#region Data
 
 		private readonly LogDataCache _cache;
@@ -44,26 +42,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private bool _loggedTimestampWarning;
 
 		#endregion
-
-		static LogFile()
-		{
-			HardcodedTimestampFormats = new[]
-				{
-					// The format I currently use at work - should be supported by default :P
-					"yyyy-MM-dd HH:mm:ss,fff",
-					"yyyy-MM-dd HH:mm:ss",
-
-					// Another one used by a colleague, well its actually nanoseconds but I can't find that format string
-					"yyyy MMM dd HH:mm:ss.fff",
-					"yyyy MMM dd HH:mm:ss",
-
-					// Various formats...
-					"dd/MMM/yyyy:HH:mm:ss",
-					"ddd MMM dd HH:mm:ss.fff yyyy",
-
-					"HH:mm:ss"
-				};
-		}
 
 		public LogFile(ITaskScheduler scheduler, string fileName)
 			: base(scheduler)
