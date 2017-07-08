@@ -36,6 +36,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		void GetSection(LogFileSection section, LogLine[] dest);
 		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
 
+		/// <summary>
+		/// Copies the original indices of the given log file section into the given array.
+		/// The array <paramref name="indices"/> must be at least as big as <see cref="LogFileSection.Count"/>.
+		/// </summary>
+		/// <param name="section"></param>
+		/// <param name="indices"></param>
+		void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices);
+
 		[Pure]
 		LogLine GetLine(int index);
 	}

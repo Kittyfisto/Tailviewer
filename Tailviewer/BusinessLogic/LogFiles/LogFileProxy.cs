@@ -238,6 +238,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return LogLineIndex.Invalid;
 		}
 
+		public void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices)
+		{
+			throw new NotImplementedException();
+		}
+
 		public LogLine GetLine(int index)
 		{
 			ILogFile logFile = _innerLogFile;

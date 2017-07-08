@@ -78,6 +78,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return originalLineIndex;
 		}
 
+		public abstract void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices);
+
 		public abstract LogLine GetLine(int index);
 
 		protected abstract TimeSpan RunOnce(CancellationToken token);

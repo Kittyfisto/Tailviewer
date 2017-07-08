@@ -74,6 +74,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices)
+		{
+			throw new NotImplementedException();
+		}
+
 		public LogLine GetLine(int index)
 		{
 			lock (_lines)

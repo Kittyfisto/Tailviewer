@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -110,6 +109,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				// TODO: This seems rubbish - maybe I should change the interface to SourceLineIndex altogether?
 				dest[i] = GetLine((int) (section.Index + i));
 			}
+		}
+
+		public override void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices)
+		{
+			throw new NotImplementedException();
 		}
 
 		public override LogLine GetLine(int index)
