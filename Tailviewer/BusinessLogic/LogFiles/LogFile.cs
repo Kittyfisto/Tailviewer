@@ -240,7 +240,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				if (timestamp != null)
 				{
-					if (timestamp > _lastModified)
+					var difference = timestamp - _lastModified;
+					if (difference >= TimeSpan.FromSeconds(10))
 					{
 						// I've had this issue occur on one system and I can't really explain it.
 						// For some reason, new FileInfo(...).LastWriteTime will not give correct
