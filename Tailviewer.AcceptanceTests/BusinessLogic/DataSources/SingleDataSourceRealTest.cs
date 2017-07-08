@@ -44,8 +44,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			_dataSource.UnfilteredLogFile.Count.Should().Be(165342);
-			_dataSource.FilteredLogFile.Count.Should().Be(165342);
+			_dataSource.Property(x => x.UnfilteredLogFile.Count).ShouldEventually().Be(165342);
+			_dataSource.Property(x => x.FilteredLogFile.Count).ShouldEventually().Be(165342);
 		}
 
 		[Test]
