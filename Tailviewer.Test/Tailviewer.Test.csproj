@@ -56,8 +56,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.2.2.31, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.31\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.32\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.7.63.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -77,8 +77,8 @@
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.105.2\lib\net451\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Threading.Extensions, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.0.8\lib\net45\System.Threading.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Extensions, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.0.11\lib\net45\System.Threading.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
