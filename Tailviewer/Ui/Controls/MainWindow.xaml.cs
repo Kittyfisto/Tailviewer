@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Ui.Controls.DataSourceTree;
