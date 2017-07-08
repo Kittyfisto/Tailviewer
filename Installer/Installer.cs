@@ -6,9 +6,11 @@ using System.Reflection;
 using System.Threading;
 using Installer.Applications.Install;
 using Installer.Exceptions;
-using Metrolib;
+using IWshRuntimeLibrary;
 using log4net;
+using Metrolib;
 using Microsoft.Win32;
+using File = System.IO.File;
 
 namespace Installer
 {
@@ -18,24 +20,24 @@ namespace Installer
 
 		private readonly Assembly _assembly;
 		private readonly List<string> _files;
-		private readonly Size _installationSize;
 		private readonly string _prefix;
-		private Size _installedSize;
-		private double _progress;
 		private string _installationPath;
+		private Size _installedSize;
 
 		public Installer()
 		{
 			_assembly = Assembly.GetExecutingAssembly();
 			_prefix = "Installer.InstallationFiles.";
-			string[] allFiles = _assembly.GetManifestResourceNames();
+			var allFiles = _assembly.GetManifestResourceNames();
 			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
-			_installationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			InstallationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
 		}
 
-		public Size InstallationSize => _installationSize;
+		public Size InstallationSize { get; }
 
-		public double Progress => _progress;
+		public double Progress { get; private set; }
+
+		private string IconPath => Path.Combine(_installationPath, "Icons", "Tailviewer.ico");
 
 		public void Dispose()
 		{
@@ -43,7 +45,7 @@ namespace Installer
 
 		private Size Filesize(string fileName)
 		{
-			using (Stream stream = _assembly.GetManifestResourceStream(fileName))
+			using (var stream = _assembly.GetManifestResourceStream(fileName))
 			{
 				if (stream == null)
 					return Size.Zero;
@@ -54,7 +56,7 @@ namespace Installer
 
 		public void Run(string installationPath)
 		{
-			DateTime start = DateTime.Now;
+			var start = DateTime.Now;
 			_installationPath = installationPath;
 
 			try
@@ -63,6 +65,7 @@ namespace Installer
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
 				WriteRegistry();
+				CreateStartMenuEntry();
 
 				Log.InfoFormat("Installation succeeded");
 			}
@@ -73,36 +76,33 @@ namespace Installer
 			}
 			finally
 			{
-				DateTime end = DateTime.Now;
-				TimeSpan elapsed = end - start;
-				TimeSpan remaining = TimeSpan.FromMilliseconds(500) - elapsed;
+				var end = DateTime.Now;
+				var elapsed = end - start;
+				var remaining = TimeSpan.FromMilliseconds(500) - elapsed;
 				if (remaining > TimeSpan.Zero)
-				{
 					Thread.Sleep(remaining);
-				}
 			}
 		}
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			foreach (string file in _files)
+			foreach (var file in _files)
 			{
-				string fullFilePath = DestFilePath(installationPath, file);
+				var fullFilePath = DestFilePath(installationPath, file);
 				DeleteFile(fullFilePath);
 			}
 		}
 
 		private void DeleteFile(string filePath)
 		{
-			string name = Path.GetFileName(filePath);
-			string dir = Path.GetDirectoryName(filePath);
+			var name = Path.GetFileName(filePath);
+			var dir = Path.GetDirectoryName(filePath);
 
 			Log.InfoFormat("Removing {0}", filePath);
 
-			int tries = 0;
+			var tries = 0;
 			Exception lastException = null;
-			while(++tries < 10)
-			{
+			while (++tries < 10)
 				try
 				{
 					File.Delete(filePath);
@@ -118,7 +118,6 @@ namespace Installer
 					Thread.Sleep(TimeSpan.FromMilliseconds(100));
 					lastException = e;
 				}
-			}
 
 			if (lastException != null)
 				throw new DeleteFileException(name, dir, lastException);
@@ -131,9 +130,9 @@ namespace Installer
 
 		private void InstallNewFiles(string installationPath)
 		{
-			foreach (string file in _files)
+			foreach (var file in _files)
 			{
-				string destFilePath = DestFilePath(installationPath, file);
+				var destFilePath = DestFilePath(installationPath, file);
 				CopyFile(destFilePath, file);
 			}
 		}
@@ -148,22 +147,36 @@ namespace Installer
 				return;
 			}
 
-			var iconPath = Path.Combine(_installationPath, "Icons", "Tailviewer.ico");
-
 			var program = uninstall.CreateSubKey(Constants.ApplicationTitle);
 			program.SetValue("DisplayName", Constants.ApplicationTitle, RegistryValueKind.String);
-			program.SetValue("DisplayIcon", iconPath, RegistryValueKind.String);
+			program.SetValue("DisplayIcon", IconPath, RegistryValueKind.String);
 			program.SetValue("UninstallString", "TODO", RegistryValueKind.String);
 			program.SetValue("DisplayVersion", Constants.ApplicationVersion, RegistryValueKind.String);
 			program.SetValue("Publisher", Constants.Publisher, RegistryValueKind.String);
-			program.SetValue("EstimatedSize", _installationSize.Kilobytes, RegistryValueKind.DWord);
+			program.SetValue("EstimatedSize", InstallationSize.Kilobytes, RegistryValueKind.DWord);
+		}
+
+		private void CreateStartMenuEntry()
+		{
+			var startMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
+			var shortcutFolder = Path.Combine(startMenuPath, Constants.ApplicationTitle);
+			if (!Directory.Exists(shortcutFolder))
+				Directory.CreateDirectory(shortcutFolder);
+			var shell = new WshShell();
+			var tailviewerLink = Path.Combine(shortcutFolder, "Tailviewer.lnk");
+			var shortcut = (IWshShortcut) shell.CreateShortcut(tailviewerLink);
+			shortcut.TargetPath = Path.Combine(_installationPath, "Tailviewer.exe");
+			shortcut.IconLocation = IconPath;
+			shortcut.Arguments = "";
+			shortcut.Description = "Open & Free log file viewer";
+			shortcut.Save();
 		}
 
 		private string DestFilePath(string installationPath, string file)
 		{
-			string fileName = file.Substring(_prefix.Length);
+			var fileName = file.Substring(_prefix.Length);
 			var patchedFileName = Patch(fileName);
-			string destFilePath = Path.Combine(installationPath, patchedFileName);
+			var destFilePath = Path.Combine(installationPath, patchedFileName);
 			return destFilePath;
 		}
 
@@ -177,8 +190,8 @@ namespace Installer
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
 		{
-			string directory = Path.GetDirectoryName(destFilePath);
-			string fileName = Path.GetFileName(destFilePath);
+			var directory = Path.GetDirectoryName(destFilePath);
+			var fileName = Path.GetFileName(destFilePath);
 
 			try
 			{
@@ -187,7 +200,7 @@ namespace Installer
 				Log.InfoFormat("Writing file '{0}'", destFilePath);
 
 				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-				using (Stream source = _assembly.GetManifestResourceStream(sourceFilePath))
+				using (var source = _assembly.GetManifestResourceStream(sourceFilePath))
 				{
 					const int size = 4096;
 					var buffer = new byte[size];
@@ -197,7 +210,7 @@ namespace Installer
 					{
 						dest.Write(buffer, 0, read);
 						_installedSize += Size.FromBytes(read);
-						_progress = _installedSize/_installationSize;
+						Progress = _installedSize / InstallationSize;
 					}
 				}
 			}
@@ -218,7 +231,7 @@ namespace Installer
 
 		public void Launch()
 		{
-			string app = Path.Combine(_installationPath, "Tailviewer.exe");
+			var app = Path.Combine(_installationPath, "Tailviewer.exe");
 			Launcher.RunAsDesktopUser(app);
 		}
 	}

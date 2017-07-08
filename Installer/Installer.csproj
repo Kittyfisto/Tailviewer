@@ -37,7 +37,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>..\Tailviewer\Resources\ic_find_in_page_black_48dp.ico</ApplicationIcon>
+    <ApplicationIcon>..\Tailviewer\Resources\Tailviewer.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -51,6 +51,7 @@
       <HintPath>..\packages\Metrolib.0.2.2.32\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -151,11 +152,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\Tailviewer\Resources\ic_find_in_page_black_48dp.ico">
-      <Link>Resources\ic_find_in_page_black_48dp.ico</Link>
+    <Resource Include="..\Tailviewer\Resources\Tailviewer.ico">
+      <Link>Resources\Tailviewer.ico</Link>
     </Resource>
-    <Resource Include="..\Tailviewer\Resources\ic_find_in_page_black_48dp.png">
-      <Link>Resources\ic_find_in_page_black_48dp.png</Link>
+    <Resource Include="..\Tailviewer\Resources\Tailviewer.png">
+      <Link>Resources\Tailviewer.png</Link>
     </Resource>
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,17 @@
     <Content Include="..\bin\x86\SQLite.Interop.dll">
       <Link>InstallationFiles\x86\SQLite.Interop.dll</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

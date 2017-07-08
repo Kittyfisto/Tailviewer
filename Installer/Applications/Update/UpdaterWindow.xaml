@@ -11,7 +11,7 @@
         Height="115"
         Width="300"
         ResizeMode="NoResize"
-        Icon="pack://application:,,,/Resources/ic_find_in_page_black_48dp.png">
+        Icon="pack://application:,,,/Resources/Tailviewer.png">
 
     <Window.Resources>
         <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
