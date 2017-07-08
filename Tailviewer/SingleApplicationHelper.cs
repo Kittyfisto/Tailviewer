@@ -219,6 +219,10 @@ namespace Tailviewer
 						if (_consumer.TryDequeue(out message))
 							Dispatch(message);
 					}
+					catch (ObjectDisposedException)
+					{
+						break;
+					}
 					catch (Exception e)
 					{
 						Console.WriteLine(e);
