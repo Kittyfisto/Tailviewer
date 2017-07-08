@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -181,6 +182,39 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Clear();
 			logFile.GetLogLineIndexOfOriginalLineIndex(0).Should().Be(LogLineIndex.Invalid);
 			logFile.GetLogLineIndexOfOriginalLineIndex(1).Should().Be(LogLineIndex.Invalid);
+		}
+
+		[Test]
+		public void TestGetOriginalIndexFromLogLineIndex1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(LogLineIndex.Invalid);
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(new LogLineIndex(0));
+			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(LogLineIndex.Invalid);
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(new LogLineIndex(0));
+			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(new LogLineIndex(1));
+			logFile.Clear();
+			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(LogLineIndex.Invalid);
+			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(LogLineIndex.Invalid);
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection1()
+		{
+			var indices = new LogLineIndex[4];
+
+			var logFile = new InMemoryLogFile();
+			logFile.GetOriginalIndicesFromLogFileSection(new LogFileSection(0, 4), indices);
+			indices.Should().Equal(Enumerable.Range(0, 4).Select(i => LogLineIndex.Invalid));
+
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.AddEntry("", LevelFlags.All);
+			logFile.AddEntry("", LevelFlags.All);
+
+			logFile.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), indices);
+			indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), LogLineIndex.Invalid, LogLineIndex.Invalid);
 		}
 	}
 }

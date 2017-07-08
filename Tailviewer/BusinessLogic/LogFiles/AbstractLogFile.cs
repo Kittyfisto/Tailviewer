@@ -78,7 +78,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return originalLineIndex;
 		}
 
-		public abstract void GetOriginalIndices(LogFileSection section, LogLineIndex[] indices);
+		public abstract LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index);
+
+		public abstract void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices);
 
 		public abstract LogLine GetLine(int index);
 
