@@ -84,7 +84,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestEmptyLogFile()
+		public void TestEmptyLogFile1()
 		{
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
 			{
@@ -92,6 +92,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(0);
+				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
+				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
@@ -533,6 +535,85 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_logFile.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => Equals(y, file))), Times.Once,
 				"because the filtered log file should unregister itself as a listener from its source when being disposed of");
+		}
+
+		[Test]
+		public void TestGetLogLineIndexOfOriginalLineIndex1()
+		{
+			var filter = new LevelFilter(LevelFlags.Info);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
+				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
+				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
+				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(1)).Should().Be(new LogLineIndex(0));
+				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(2)).Should().Be(LogLineIndex.Invalid);
+				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(3)).Should().Be(new LogLineIndex(1));
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndexFromLogLineIndex1()
+		{
+			var filter = new LevelFilter(LevelFlags.Info);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
+				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
+				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(0)).Should().Be(new LogLineIndex(1));
+				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(1)).Should().Be(new LogLineIndex(3));
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection1()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				new Action(() => file.GetOriginalIndicesFromLogFileSection(new LogFileSection(), null))
+					.ShouldThrow<ArgumentNullException>("because no array was given");
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection2()
+		{
+			var filter = new EmptyLogLineFilter();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				new Action(() => file.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), new LogLineIndex[2]))
+					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection3()
+		{
+			var filter = new LevelFilter(LevelFlags.Info);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
+				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
+				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				_taskScheduler.RunOnce();
+
+				var indices = new LogLineIndex[2];
+				file.GetOriginalIndicesFromLogFileSection(new LogFileSection(0, 2), indices);
+				indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
+			}
 		}
 	}
 }

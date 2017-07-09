@@ -287,5 +287,79 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					.Be(LogLineIndex.Invalid, "because the proxy should just return an invalid index when no inner log file is present");
 			}
 		}
+
+		[Test]
+		public void TestGetOriginalIndexFromLogLineIndex1()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
+			{
+				proxy.GetOriginalIndexFromLogLineIndex(new LogLineIndex(1))
+					.Should().Be(LogLineIndex.Invalid);
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndexFromLogLineIndex2()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			{
+				_logFile.Setup(x => x.GetOriginalIndexFromLogLineIndex(It.Is<LogLineIndex>(y => y == new LogLineIndex(42))))
+					.Returns(new LogLineIndex(9001));
+
+				proxy.GetOriginalIndexFromLogLineIndex(new LogLineIndex(42))
+					.Should().Be(new LogLineIndex(9001));
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection1()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
+			{
+				new Action(() => proxy.GetOriginalIndicesFromLogFileSection(new LogFileSection(), null))
+					.ShouldThrow<ArgumentNullException>();
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection2()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
+			{
+				new Action(() => proxy.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 4), new LogLineIndex[3]))
+					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection3()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
+			{
+				var indices = new LogLineIndex[3];
+				proxy.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), indices);
+				indices.Should().Equal(LogLineIndex.Invalid, LogLineIndex.Invalid, LogLineIndex.Invalid);
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFromLogFileSection4()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			{
+				_logFile.Setup(x => x.GetOriginalIndicesFromLogFileSection(It.Is<LogFileSection>(
+						y => y == new LogFileSection(1, 3)), It.IsAny<LogLineIndex[]>()))
+					.Callback((LogFileSection section, LogLineIndex[] ind) =>
+					{
+						ind[0] = new LogLineIndex(0);
+						ind[1] = new LogLineIndex(1);
+						ind[2] = new LogLineIndex(2);
+					});
+
+				var indices = new LogLineIndex[3];
+				proxy.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), indices);
+				indices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
+			}
+		}
 	}
 }

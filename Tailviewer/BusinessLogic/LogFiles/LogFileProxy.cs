@@ -240,12 +240,32 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
 		{
-			throw new NotImplementedException();
+			var logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				return logFile.GetOriginalIndexFromLogLineIndex(index);
+			}
+
+			return LogLineIndex.Invalid;
 		}
 
 		public void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
 		{
-			throw new NotImplementedException();
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (section.Count > indices.Length)
+				throw new ArgumentOutOfRangeException(nameof(indices));
+
+			var logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetOriginalIndicesFromLogFileSection(section, indices);
+			}
+			else
+			{
+				for(int i = 0; i < section.Count; ++i)
+					indices[i] = LogLineIndex.Invalid;
+			}
 		}
 
 		public LogLine GetLine(int index)

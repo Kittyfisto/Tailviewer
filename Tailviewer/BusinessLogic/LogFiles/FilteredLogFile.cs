@@ -115,12 +115,37 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public override LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
 		{
-			throw new NotImplementedException();
+			lock (_indices)
+			{
+				if (index < 0)
+					return LogLineIndex.Invalid;
+				if (index >= _indices.Count)
+					return LogLineIndex.Invalid;
+
+				return _indices[(int)index];
+			}
 		}
 
 		public override void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
 		{
-			throw new NotImplementedException();
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (section.Count > indices.Length)
+				throw new ArgumentOutOfRangeException(nameof(indices));
+
+			lock (_indices)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					if (index < 0)
+						indices[i] = LogLineIndex.Invalid;
+					else if (index >= _indices.Count)
+						indices[i] = LogLineIndex.Invalid;
+					else
+						indices[i] = _indices[(int) index];
+				}
+			}
 		}
 
 		public override LogLine GetLine(int index)
