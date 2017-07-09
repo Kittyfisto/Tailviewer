@@ -41,6 +41,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public int Count => _lines.Count;
 
+		public int OriginalCount => Count;
+
 		public int MaxCharactersPerLine { get; private set; }
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

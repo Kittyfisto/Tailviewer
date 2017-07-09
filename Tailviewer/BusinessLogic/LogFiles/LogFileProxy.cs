@@ -183,6 +183,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public int OriginalCount
+		{
+			get
+			{
+				ILogFile logFile = _innerLogFile;
+				if (logFile != null)
+					return logFile.OriginalCount;
+
+				return 0;
+			}
+		}
+
 		public int MaxCharactersPerLine
 		{
 			get

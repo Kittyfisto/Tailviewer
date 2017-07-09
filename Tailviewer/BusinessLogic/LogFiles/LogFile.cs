@@ -88,6 +88,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public override int Count => _entries.Count;
 
+		public override int OriginalCount => Count;
+
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		public override bool Exists => _exists;

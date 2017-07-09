@@ -60,6 +60,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		protected virtual void DisposeAdditional()
 		{}
 
+		public abstract int OriginalCount { get; }
 		public abstract int MaxCharactersPerLine { get; }
 
 		public abstract bool Exists { get; }

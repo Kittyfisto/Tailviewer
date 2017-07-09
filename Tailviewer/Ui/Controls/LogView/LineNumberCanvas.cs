@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -39,7 +40,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			int lineNumberCharacterCount;
 			if (logFile != null)
 			{
-				lineNumberCharacterCount = (int)Math.Ceiling(Math.Log10(logFile.Count));
+				lineNumberCharacterCount = (int)Math.Ceiling(Math.Log10(logFile.OriginalCount));
 			}
 			else
 			{
@@ -53,10 +54,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			_yOffset = yOffset;
 
 			_lineNumbers.Clear();
-			for (int i = 0; i < visibleSection.Count; ++i)
+			if (logFile != null)
 			{
-				_lineNumbers.Add(new LineNumber(visibleSection.Index + i));
+				var indices = new LogLineIndex[visibleSection.Count];
+				logFile.GetOriginalIndicesFromLogFileSection(visibleSection, indices);
+				foreach (var index in indices)
+				{
+					_lineNumbers.Add(new LineNumber(index));
+				}
 			}
+
 			InvalidateVisual();
 		}
 	}

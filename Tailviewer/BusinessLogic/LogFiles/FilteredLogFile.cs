@@ -56,6 +56,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_source.RemoveListener(this);
 		}
 
+		public override int OriginalCount => _source.Count;
+
 		public override bool Exists => _source.Exists;
 
 		public override DateTime? StartTimestamp => _source.StartTimestamp;

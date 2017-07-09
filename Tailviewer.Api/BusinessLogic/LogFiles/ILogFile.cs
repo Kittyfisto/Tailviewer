@@ -24,6 +24,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		bool EndOfSourceReached { get; }
 
 		int Count { get; }
+		int OriginalCount { get; }
 
 		/// <summary>
 		///     The maximum amount of characters of a single <see cref="LogLine" />.

@@ -82,6 +82,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_source.RemoveListener(this);
 		}
 
+		public override int OriginalCount => _source.OriginalCount;
+
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			_source.GetSection(section, dest);

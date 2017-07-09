@@ -94,6 +94,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		public override int OriginalCount => Count;
+
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
