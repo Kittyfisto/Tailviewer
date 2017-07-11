@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Metrolib;
 
@@ -58,15 +59,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index);
+		LogLineIndex GetOriginalIndexFrom(LogLineIndex index);
 
 		/// <summary>
 		///     Copies the original indices of the given log file section into the given array.
-		///     The array <paramref name="indices" /> must be at least as big as <see cref="LogFileSection.Count" />.
+		///     The array <paramref name="originalIndices" /> must be at least as big as <see cref="LogFileSection.Count" />.
 		/// </summary>
 		/// <param name="section"></param>
+		/// <param name="originalIndices"></param>
+		void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices);
+
+		/// <summary>
+		///     Copies the original indices of the given log list of indices
+		/// </summary>
 		/// <param name="indices"></param>
-		void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices);
+		/// <param name="originalIndices"></param>
+		void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices);
 
 		#endregion
 	}

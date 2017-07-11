@@ -594,5 +594,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new LogLine(4, 4, "E", LevelFlags.Fatal)
 			});
 		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom5()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom6()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom7()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
+				.ShouldThrow<ArgumentOutOfRangeException>();
+		}
 	}
 }

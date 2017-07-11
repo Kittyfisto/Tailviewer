@@ -118,10 +118,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { _currentLine = value; }
 		}
 
-		public List<TextLine> VisibleTextLines
-		{
-			get { return _visibleTextLines; }
-		}
+		public List<TextLine> VisibleTextLines => _visibleTextLines;
 
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{

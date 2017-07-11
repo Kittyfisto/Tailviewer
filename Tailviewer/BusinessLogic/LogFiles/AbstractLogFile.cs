@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -79,9 +80,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return originalLineIndex;
 		}
 
-		public abstract LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index);
+		public abstract LogLineIndex GetOriginalIndexFrom(LogLineIndex index);
 
-		public abstract void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices);
+		public abstract void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices);
+
+		public abstract void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices);
 
 		public abstract LogLine GetLine(int index);
 

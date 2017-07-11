@@ -46,7 +46,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(4);
 			logFile.Setup(x => x.OriginalCount).Returns(1000);
-			logFile.Setup(x => x.GetOriginalIndicesFromLogFileSection(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
+			logFile.Setup(x => x.GetOriginalIndicesFrom(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
 					It.IsAny<LogLineIndex[]>()))
 				.Callback((LogFileSection section, LogLineIndex[] indices) =>
 				{

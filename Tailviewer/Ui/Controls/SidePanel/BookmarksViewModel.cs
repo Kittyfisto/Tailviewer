@@ -187,7 +187,10 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			if (dataSource == null || lines == null)
 				return;
 
-			foreach (var line in lines)
+			var originalIndices = new LogLineIndex[lines.Count];
+			dataSource.FilteredLogFile.GetOriginalIndicesFrom(lines.ToList(), originalIndices);
+
+			foreach (var line in originalIndices)
 			{
 				var bookmark = _dataSources.TryAddBookmark(dataSource, line);
 				if (bookmark != null)

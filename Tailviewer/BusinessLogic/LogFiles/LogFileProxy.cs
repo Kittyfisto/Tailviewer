@@ -250,33 +250,56 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return LogLineIndex.Invalid;
 		}
 
-		public LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
+		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			var logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				return logFile.GetOriginalIndexFromLogLineIndex(index);
+				return logFile.GetOriginalIndexFrom(index);
 			}
 
 			return LogLineIndex.Invalid;
 		}
 
-		public void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
+		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (section.Count > indices.Length)
-				throw new ArgumentOutOfRangeException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (section.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
 
 			var logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetOriginalIndicesFromLogFileSection(section, indices);
+				logFile.GetOriginalIndicesFrom(section, originalIndices);
 			}
 			else
 			{
 				for(int i = 0; i < section.Count; ++i)
-					indices[i] = LogLineIndex.Invalid;
+					originalIndices[i] = LogLineIndex.Invalid;
+			}
+		}
+
+		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
+		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (indices.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException();
+
+			var logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetOriginalIndicesFrom(indices, originalIndices);
+			}
+			else
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					originalIndices[i] = LogLineIndex.Invalid;
+				}
 			}
 		}
 

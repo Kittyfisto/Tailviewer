@@ -114,12 +114,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
+		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
+		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			throw new NotImplementedException();
 		}

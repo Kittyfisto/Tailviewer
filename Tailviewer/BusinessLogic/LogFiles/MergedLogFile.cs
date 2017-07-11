@@ -113,23 +113,39 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
+		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
 			return index;
 		}
 
-		public override void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
+		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
+		{
+			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (section.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
+
+			for (int i = 0; i < section.Count; ++i)
+			{
+				originalIndices[i] = section.Index + i;
+			}
+		}
+
+		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
 			if (indices == null)
 				throw new ArgumentNullException(nameof(indices));
-			if (section.Count > indices.Length)
-				throw new ArgumentOutOfRangeException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (indices.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
 
-			for (int i = 0; i < section.Count; ++i)
+			for (int i = 0; i < indices.Count; ++i)
 			{
-				indices[i] = section.Index + i;
+				originalIndices[i] = indices[i];
 			}
 		}
 

@@ -93,7 +93,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
-				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
+				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
@@ -558,7 +558,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndexFromLogLineIndex1()
+		public void TestGetOriginalIndexFrom1()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
@@ -570,35 +570,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
-				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(0)).Should().Be(new LogLineIndex(1));
-				file.GetOriginalIndexFromLogLineIndex(new LogLineIndex(1)).Should().Be(new LogLineIndex(3));
+				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(new LogLineIndex(1));
+				file.GetOriginalIndexFrom(new LogLineIndex(1)).Should().Be(new LogLineIndex(3));
 			}
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFromLogFileSection1()
+		public void TestGetOriginalIndicesFrom1()
 		{
 			var filter = new EmptyLogLineFilter();
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
 			{
-				new Action(() => file.GetOriginalIndicesFromLogFileSection(new LogFileSection(), null))
+				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(), null))
 					.ShouldThrow<ArgumentNullException>("because no array was given");
 			}
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFromLogFileSection2()
+		public void TestGetOriginalIndicesFrom2()
 		{
 			var filter = new EmptyLogLineFilter();
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
 			{
-				new Action(() => file.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), new LogLineIndex[2]))
+				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(1, 3), new LogLineIndex[2]))
 					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
 			}
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFromLogFileSection3()
+		public void TestGetOriginalIndicesFrom3()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
@@ -610,10 +610,59 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
-				var indices = new LogLineIndex[2];
-				file.GetOriginalIndicesFromLogFileSection(new LogFileSection(0, 2), indices);
-				indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
+				var originalIndices = new LogLineIndex[2];
+				file.GetOriginalIndicesFrom(new LogFileSection(0, 2), originalIndices);
+				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
 			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom4()
+		{
+			var filter = new LevelFilter(LevelFlags.Info);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
+				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
+				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
+				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				_entries.Add(new LogLine(4, 4, "This is a test", LevelFlags.Error));
+				_entries.Add(new LogLine(5, 5, "This is a test", LevelFlags.Info));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
+				_taskScheduler.RunOnce();
+
+				var indices = new[]
+				{
+					new LogLineIndex(0), new LogLineIndex(2)
+				};
+				var originalIndices = new LogLineIndex[2];
+				file.GetOriginalIndicesFrom(indices, originalIndices);
+				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(5));
+			}
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom5()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom6()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom7()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
+				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
 	}
 }

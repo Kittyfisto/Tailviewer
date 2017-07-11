@@ -185,36 +185,85 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndexFromLogLineIndex1()
+		public void TestGetOriginalIndexFrom1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(LogLineIndex.Invalid);
+			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
 			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(LogLineIndex.Invalid);
+			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
+			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
 			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(new LogLineIndex(1));
+			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
+			logFile.GetOriginalIndexFrom(1).Should().Be(new LogLineIndex(1));
 			logFile.Clear();
-			logFile.GetOriginalIndexFromLogLineIndex(0).Should().Be(LogLineIndex.Invalid);
-			logFile.GetOriginalIndexFromLogLineIndex(1).Should().Be(LogLineIndex.Invalid);
+			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
+			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFromLogFileSection1()
+		public void TestGetOriginalIndicesFrom1()
 		{
 			var indices = new LogLineIndex[4];
 
 			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndicesFromLogFileSection(new LogFileSection(0, 4), indices);
+			logFile.GetOriginalIndicesFrom(new LogFileSection(0, 4), indices);
 			indices.Should().Equal(Enumerable.Range(0, 4).Select(i => LogLineIndex.Invalid));
 
 			logFile.AddEntry("", LevelFlags.All);
 			logFile.AddEntry("", LevelFlags.All);
 			logFile.AddEntry("", LevelFlags.All);
 
-			logFile.GetOriginalIndicesFromLogFileSection(new LogFileSection(1, 3), indices);
+			logFile.GetOriginalIndicesFrom(new LogFileSection(1, 3), indices);
 			indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), LogLineIndex.Invalid, LogLineIndex.Invalid);
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom2()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(), null))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom3()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(1, 4), new LogLineIndex[3]))
+				.ShouldThrow<ArgumentOutOfRangeException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom4()
+		{
+			var logFile = new InMemoryLogFile();
+			var originalIndices = new LogLineIndex[3];
+			logFile.GetOriginalIndicesFrom(new LogLineIndex[] {1, 2, 3}, originalIndices);
+			originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3));
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom5()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom6()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom7()
+		{
+			var logFile = new InMemoryLogFile();
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
+				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
 	}
 }

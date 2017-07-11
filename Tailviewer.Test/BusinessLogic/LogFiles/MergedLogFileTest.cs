@@ -284,5 +284,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			listeners[0].Item2.Should().Be(waitTime);
 			listeners[0].Item3.Should().BeGreaterThan(0);
 		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom5()
+		{
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
+			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom6()
+		{
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesFrom7()
+		{
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
+			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
+				.ShouldThrow<ArgumentOutOfRangeException>();
+		}
 	}
 }

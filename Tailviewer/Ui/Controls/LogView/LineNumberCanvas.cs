@@ -57,7 +57,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (logFile != null)
 			{
 				var indices = new LogLineIndex[visibleSection.Count];
-				logFile.GetOriginalIndicesFromLogFileSection(visibleSection, indices);
+				logFile.GetOriginalIndicesFrom(visibleSection, indices);
 				foreach (var index in indices)
 				{
 					_lineNumbers.Add(new LineNumber(index));

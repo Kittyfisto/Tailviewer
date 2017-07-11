@@ -76,7 +76,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
+		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			lock (_lines)
 			{
@@ -89,12 +89,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
+		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (indices.Length < section.Count)
-				throw new ArgumentOutOfRangeException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (originalIndices.Length < section.Count)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
 
 			lock (_lines)
 			{
@@ -102,10 +102,25 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					var index = section.Index + i;
 					if (index >= _lines.Count)
-						indices[i] = LogLineIndex.Invalid;
+						originalIndices[i] = LogLineIndex.Invalid;
 					else
-						indices[i] = index;
+						originalIndices[i] = index;
 				}
+			}
+		}
+
+		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
+		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (indices.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException();
+
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				originalIndices[i] = indices[i];
 			}
 		}
 
@@ -190,6 +205,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 			_listeners.OnRead(_lines.Count);
+		}
+
+		public void AddEntries(int count)
+		{
+			for (int i = 0; i < count; ++i)
+			{
+				AddEntry(string.Empty, LevelFlags.None);
+			}
 		}
 	}
 }

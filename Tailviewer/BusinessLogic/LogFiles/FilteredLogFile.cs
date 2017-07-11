@@ -115,7 +115,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override LogLineIndex GetOriginalIndexFromLogLineIndex(LogLineIndex index)
+		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			lock (_indices)
 			{
@@ -128,12 +128,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public override void GetOriginalIndicesFromLogFileSection(LogFileSection section, LogLineIndex[] indices)
+		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (section.Count > indices.Length)
-				throw new ArgumentOutOfRangeException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (section.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
 
 			lock (_indices)
 			{
@@ -141,11 +141,35 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				{
 					var index = section.Index + i;
 					if (index < 0)
-						indices[i] = LogLineIndex.Invalid;
+						originalIndices[i] = LogLineIndex.Invalid;
 					else if (index >= _indices.Count)
-						indices[i] = LogLineIndex.Invalid;
+						originalIndices[i] = LogLineIndex.Invalid;
 					else
-						indices[i] = _indices[(int) index];
+						originalIndices[i] = _indices[(int) index];
+				}
+			}
+		}
+
+		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
+		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (originalIndices == null)
+				throw new ArgumentNullException(nameof(originalIndices));
+			if (indices.Count > originalIndices.Length)
+				throw new ArgumentOutOfRangeException(nameof(originalIndices));
+
+			lock (_indices)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index < 0)
+						originalIndices[i] = LogLineIndex.Invalid;
+					else if (index >= _indices.Count)
+						originalIndices[i] = LogLineIndex.Invalid;
+					else
+						originalIndices[i] = _indices[(int)index];
 				}
 			}
 		}
