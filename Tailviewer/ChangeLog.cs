@@ -55,7 +55,7 @@ namespace Tailviewer
 			{};
 			var misc = new string[]
 			{};
-			var releaseDate = new DateTime(2017, 7, 10);
+			var releaseDate = new DateTime(2017, 7, 16);
 			var version = new Version(0, 5, 3);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
