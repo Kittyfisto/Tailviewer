@@ -42,21 +42,24 @@ namespace Tailviewer
 			AddV050();
 			AddV051();
 			AddV052();
-			AddV053();
+			AddV060();
 		}
 
-		private static void AddV053()
+		private static void AddV060()
 		{
 			var features = new[]
 			{
-				"Only one instance may run at a time"
+				"Only one instance may run at a time",
+				"Filtered log files show actual line numbers"
 			};
 			var bugfixes = new string[]
-			{};
+			{
+				"Placing bookmarks on a filtered data source works as expected"
+			};
 			var misc = new string[]
 			{};
 			var releaseDate = new DateTime(2017, 7, 16);
-			var version = new Version(0, 5, 3);
+			var version = new Version(0, 6, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
