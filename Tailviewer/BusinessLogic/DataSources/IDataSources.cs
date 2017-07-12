@@ -3,7 +3,7 @@ using Tailviewer.BusinessLogic.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	internal interface IDataSources
+	public interface IDataSources
 		: IEnumerable<IDataSource>
 	{
 		#region Bookmarks

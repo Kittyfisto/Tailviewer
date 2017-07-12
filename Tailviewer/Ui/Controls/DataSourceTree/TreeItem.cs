@@ -3,7 +3,7 @@ using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
-	internal sealed class TreeItem
+	public sealed class TreeItem
 	{
 		public TreeViewItem TreeViewItem;
 		public IDataSourceViewModel ViewModel;

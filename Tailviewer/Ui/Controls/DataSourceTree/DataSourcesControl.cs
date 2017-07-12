@@ -18,7 +18,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	[TemplatePart(Name = PART_DataSources, Type = typeof (TreeView))]
 	[TemplatePart(Name = PART_DataSourceSearch, Type = typeof (FilterTextBox))]
-	internal class DataSourcesControl : Control
+	public class DataSourcesControl : Control
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace Tailviewer.Ui.Converters
 {
-	internal sealed class TimeSpanConverter
+	public sealed class TimeSpanConverter
 		: IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal interface IQuickFilters
+	public interface IQuickFilters
 	{
 		IEnumerable<QuickFilter> Filters { get; }
 

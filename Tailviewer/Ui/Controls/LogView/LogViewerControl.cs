@@ -87,6 +87,8 @@ namespace Tailviewer.Ui.Controls
 			PART_ListView.HorizontalScrollBar.ValueChanged += HorizontalScrollBarOnValueChanged;
 		}
 
+		public SearchTextBox SearchBox => PART_SearchBox;
+
 		public LogViewerViewModel LogView
 		{
 			get { return (LogViewerViewModel) GetValue(LogViewProperty); }

@@ -29,7 +29,7 @@ namespace Tailviewer.Ui.Controls
 
 		private readonly ApplicationSettings _settings;
 
-		internal MainWindow(ApplicationSettings settings)
+		public MainWindow(ApplicationSettings settings)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 

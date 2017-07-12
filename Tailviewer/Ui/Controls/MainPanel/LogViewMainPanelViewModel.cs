@@ -16,7 +16,7 @@ using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.MainPanel
 {
-	internal sealed class LogViewMainPanelViewModel
+	public sealed class LogViewMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

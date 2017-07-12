@@ -4,7 +4,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal sealed class QuickFilter
+	public sealed class QuickFilter
 	{
 		private readonly Settings.QuickFilter _settings;
 

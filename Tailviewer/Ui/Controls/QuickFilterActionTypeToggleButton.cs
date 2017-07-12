@@ -4,7 +4,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls
 {
-	internal class QuickFilterActionTypeToggleButton : Control
+	public class QuickFilterActionTypeToggleButton : Control
 	{
 		public static readonly DependencyProperty FilterActionTypeProperty =
 			DependencyProperty.Register("FilterActionType", typeof (QuickFilterActionType),

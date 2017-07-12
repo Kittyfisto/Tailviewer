@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal sealed class QuickFilters : IQuickFilters
+	public sealed class QuickFilters : IQuickFilters
 	{
 		private readonly List<QuickFilter> _quickFilters;
 		private readonly Settings.QuickFilters _settings;

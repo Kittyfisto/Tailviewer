@@ -9,7 +9,7 @@ namespace Tailviewer.BusinessLogic
 	///     removing newline characters from the string, allowing
 	///     to differentiate between EoF with / and without newline.
 	/// </summary>
-	internal sealed class StreamReaderEx
+	public sealed class StreamReaderEx
 		: IDisposable
 	{
 		private readonly StringBuilder _contentBuffer;

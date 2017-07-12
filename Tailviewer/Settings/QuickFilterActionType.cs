@@ -1,6 +1,6 @@
 ﻿namespace Tailviewer.Settings
 {
-	internal enum QuickFilterActionType
+	public enum QuickFilterActionType
 	{
 		Include = 0,
 		Exclude = 1,

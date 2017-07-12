@@ -1,6 +1,6 @@
 ﻿namespace Tailviewer.Ui.Controls.DataSourceTree
 {
-	internal sealed class DropInfo
+	public sealed class DropInfo
 	{
 		public TreeItem Source;
 		public TreeItem Target;

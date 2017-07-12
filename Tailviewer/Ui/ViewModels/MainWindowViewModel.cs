@@ -16,7 +16,7 @@ using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal sealed class MainWindowViewModel
+	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
 		#region Dispatching

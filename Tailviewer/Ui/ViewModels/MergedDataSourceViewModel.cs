@@ -10,7 +10,7 @@ using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal sealed class MergedDataSourceViewModel
+	public sealed class MergedDataSourceViewModel
 		: AbstractDataSourceViewModel
 		, ITreeViewItemViewModel
 	{

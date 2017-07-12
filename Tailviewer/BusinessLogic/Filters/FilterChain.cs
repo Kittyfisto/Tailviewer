@@ -9,7 +9,7 @@ namespace Tailviewer.BusinessLogic.Filters
 	///     Combines multiple <see cref="ILogEntryFilter" />s into one.
 	///     A <see cref="LogLine" /> passes if it passes *all* individual filters.
 	/// </summary>
-	internal sealed class FilterChain
+	public sealed class FilterChain
 		: ILogEntryFilter
 	{
 		private readonly ILogEntryFilter[] _filters;

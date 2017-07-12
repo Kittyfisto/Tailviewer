@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
-	internal sealed class DataSourceArrangeAdorner
+	public sealed class DataSourceArrangeAdorner
 		: Adorner
 	{
 		private readonly Pen _pen;

@@ -246,11 +246,11 @@ namespace Tailviewer.Test.Ui.Controls
 			dataSourceViewModel.Setup(x => x.SearchTerm).Returns("Foobar");
 			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object);
 
-			_control.PART_SearchBox.Text.Should().Be(string.Empty);
+			_control.SearchBox.Text.Should().Be(string.Empty);
 
 			_control.LogView = logView;
 			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
-			_control.PART_SearchBox.Text.Should().Be("Foobar");
+			_control.SearchBox.Text.Should().Be("Foobar");
 		}
 
 		[Test]

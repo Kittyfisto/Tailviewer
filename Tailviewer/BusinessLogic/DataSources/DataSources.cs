@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	internal sealed class DataSources
+	public sealed class DataSources
 		: IDataSources
 		, IDisposable
 	{

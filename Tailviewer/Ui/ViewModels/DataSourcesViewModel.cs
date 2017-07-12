@@ -15,7 +15,7 @@ using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal sealed class DataSourcesViewModel
+	public sealed class DataSourcesViewModel
 		: AbstractSidePanelViewModel
 	{
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;

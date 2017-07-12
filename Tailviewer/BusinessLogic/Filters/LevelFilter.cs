@@ -6,7 +6,7 @@ namespace Tailviewer.BusinessLogic.Filters
 	/// <summary>
 	///     A filter that can be used to exclude entries of certain levels.
 	/// </summary>
-	internal sealed class LevelFilter
+	public sealed class LevelFilter
 		: ILogEntryFilter
 	{
 		public readonly LevelFlags Level;

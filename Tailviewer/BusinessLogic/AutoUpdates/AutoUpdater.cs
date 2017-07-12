@@ -14,7 +14,7 @@ using log4net;
 
 namespace Tailviewer.BusinessLogic.AutoUpdates
 {
-	internal sealed class AutoUpdater
+	public sealed class AutoUpdater
 		: IAutoUpdater
 		, IDisposable
 	{
@@ -149,7 +149,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 		{
 		}
 
-		internal static Uri BuildVersionCheckUri()
+		public static Uri BuildVersionCheckUri()
 		{
 			string address = string.Format("{0}/{1}", Server, VersionFile);
 			var uri = new Uri(address);
@@ -269,7 +269,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		internal static void Parse(byte[] data, out VersionInfo latestVersions)
+		public static void Parse(byte[] data, out VersionInfo latestVersions)
 		{
 			latestVersions = new VersionInfo(null, null, null, null);
 

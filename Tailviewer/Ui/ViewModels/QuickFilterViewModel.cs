@@ -10,7 +10,7 @@ using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	internal sealed class QuickFilterViewModel
+	public sealed class QuickFilterViewModel
 		: INotifyPropertyChanged
 	{
 		private readonly QuickFilter _quickFilter;

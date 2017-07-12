@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace Tailviewer.Ui.Controls.SidePanel
 {
-	internal abstract class AbstractSidePanelViewModel
+	public abstract class AbstractSidePanelViewModel
 		: ISidePanelViewModel
 	{
 		private bool _isSelected;

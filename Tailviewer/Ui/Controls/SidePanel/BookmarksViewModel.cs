@@ -13,7 +13,7 @@ using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.Controls.SidePanel
 {
-	internal sealed class BookmarksViewModel
+	public sealed class BookmarksViewModel
 		: AbstractSidePanelViewModel
 	{
 		private readonly DelegateCommand _addBookmarkCommand;

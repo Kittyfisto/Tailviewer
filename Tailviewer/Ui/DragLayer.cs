@@ -7,7 +7,7 @@ using Tailviewer.Ui.Controls.DataSourceTree;
 
 namespace Tailviewer.Ui
 {
-	internal static class DragLayer
+	public static class DragLayer
 	{
 		private static DataSourceDragAdorner _dragAdorner;
 		private static Point _dragStartPosition;

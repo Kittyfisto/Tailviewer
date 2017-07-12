@@ -45,7 +45,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ColorByLevel", typeof (bool), typeof (LogEntryListView),
 			                            new PropertyMetadata(false, OnColorByLevelChanged));
 
-		internal static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
+		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
 		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
@@ -157,17 +157,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FollowTailProperty, value); }
 		}
 
-		internal int PendingModificationsCount
+		public int PendingModificationsCount
 		{
 			get { return _pendingModificationsCount; }
 		}
 
-		internal ScrollBar VerticalScrollBar
+		public ScrollBar VerticalScrollBar
 		{
 			get { return _verticalScrollBar; }
 		}
 
-		internal ScrollBar HorizontalScrollBar
+		public ScrollBar HorizontalScrollBar
 		{
 			get { return _horizontalScrollBar; }
 		}
@@ -337,7 +337,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			UpdateScrollViewerRegions();
 		}
 
-		internal void TextCanvasOnMouseWheelUp()
+		public void TextCanvasOnMouseWheelUp()
 		{
 			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
 			double toScroll = Math.Min(delta, TextHelper.LineHeight);
@@ -349,7 +349,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void TextCanvasOnMouseWheelDown()
+		public void TextCanvasOnMouseWheelDown()
 		{
 			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
 			double toScroll = Math.Min(delta, TextHelper.LineHeight);
@@ -383,7 +383,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.Value = _verticalScrollBar.Maximum;
 		}
 
-		internal void OnTimer(object sender, EventArgs args)
+		public void OnTimer(object sender, EventArgs args)
 		{
 			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
 			{

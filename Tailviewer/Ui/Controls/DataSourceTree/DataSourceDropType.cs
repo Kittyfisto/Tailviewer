@@ -3,7 +3,7 @@
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {
 	[Flags]
-	internal enum DataSourceDropType
+	public enum DataSourceDropType
 	{
 		None = 0,
 		ArrangeTop = 0x1,

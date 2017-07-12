@@ -278,7 +278,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			OnSizeChanged();
 		}
 
-		internal void OnSizeChanged()
+		public void OnSizeChanged()
 		{
 			DetermineVerticalOffset();
 			_currentlyVisibleSection = CalculateVisibleSection();
@@ -466,7 +466,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMovePageUp()
+		public void OnMovePageUp()
 		{
 			try
 			{
@@ -488,7 +488,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMovePageDown()
+		public void OnMovePageDown()
 		{
 			try
 			{
@@ -511,7 +511,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		internal void OnMoveUp()
+		public void OnMoveUp()
 		{
 			try
 			{

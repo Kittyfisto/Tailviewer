@@ -7,7 +7,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Bookmarks
 {
-	internal sealed class BookmarkCollection
+	public sealed class BookmarkCollection
 		: ILogFileListener
 		, IDisposable
 	{

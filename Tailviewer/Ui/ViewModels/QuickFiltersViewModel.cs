@@ -17,7 +17,7 @@ namespace Tailviewer.Ui.ViewModels
 	/// <summary>
 	///     Represents the list of all quick filters.
 	/// </summary>
-	internal sealed class QuickFiltersViewModel
+	public sealed class QuickFiltersViewModel
 		: AbstractSidePanelViewModel
 	{
 		private readonly ICommand _addCommand;

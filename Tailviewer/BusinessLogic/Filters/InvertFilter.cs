@@ -4,7 +4,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal sealed class InvertFilter : ILogEntryFilter
+	public sealed class InvertFilter : ILogEntryFilter
 	{
 		private readonly ILogEntryFilter _filter;
 

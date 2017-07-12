@@ -7,7 +7,7 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	internal sealed class MergedDataSource
+	public sealed class MergedDataSource
 		: AbstractDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;

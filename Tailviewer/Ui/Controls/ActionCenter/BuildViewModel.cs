@@ -2,7 +2,7 @@
 
 namespace Tailviewer.Ui.Controls.ActionCenter
 {
-	internal sealed class BuildViewModel
+	public sealed class BuildViewModel
 		: AbstractNotificationViewModel
 	{
 		public BuildViewModel(Build build)

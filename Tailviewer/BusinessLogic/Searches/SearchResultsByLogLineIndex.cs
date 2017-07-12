@@ -6,7 +6,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Searches
 {
-	internal sealed class SearchResultsByLogLineIndex
+	public sealed class SearchResultsByLogLineIndex
 		: ISearchResultsByLogLineIndex
 	{
 		private readonly Dictionary<LogLineIndex, List<LogLineMatch>> _matches;

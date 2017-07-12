@@ -4,7 +4,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	internal sealed class RegexFilter
+	public sealed class RegexFilter
 		: ILogEntryFilter
 	{
 		private readonly Regex _regex;
