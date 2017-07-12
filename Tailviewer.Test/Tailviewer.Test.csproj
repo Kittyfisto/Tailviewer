@@ -33,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\Harmony\Harmony.1.0.9.1\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfUnit.0.1.0.9-alpha\lib\net45\0Harmony.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.1.1\lib\net45\Castle.Core.dll</HintPath>
@@ -86,6 +87,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WpfUnit, Version=0.1.0.9, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfUnit.0.1.0.9-alpha\lib\net45\WpfUnit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
@@ -233,10 +238,6 @@
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
       <Name>Tailviewer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfUnit\WpfUnit.csproj">
-      <Project>{b87e7bad-a134-4ab4-bab4-00dcb3d9b690}</Project>
-      <Name>WpfUnit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
