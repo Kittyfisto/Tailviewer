@@ -83,7 +83,8 @@ namespace Tailviewer.Ui.ViewModels
 
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, dispatcher);
 
-			WindowTitle = Constants.MainWindowTitle;
+			var dataSource = _logViewPanel.CurrentDataSource;
+			OnDataSourceChanged(dataSource);
 
 			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
@@ -104,17 +105,22 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				case nameof(LogViewMainPanelViewModel.CurrentDataSource):
 					var dataSource = _logViewPanel.CurrentDataSource;
-					if (dataSource != null)
-					{
-						WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
-						WindowTitleSuffix = dataSource.DataSourceOrigin;
-					}
-					else
-					{
-						WindowTitle = Constants.MainWindowTitle;
-						WindowTitleSuffix = null;
-					}
+					OnDataSourceChanged(dataSource);
 					break;
+			}
+		}
+
+		private void OnDataSourceChanged(IDataSourceViewModel dataSource)
+		{
+			if (dataSource != null)
+			{
+				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
+				WindowTitleSuffix = dataSource.DataSourceOrigin;
+			}
+			else
+			{
+				WindowTitle = Constants.MainWindowTitle;
+				WindowTitleSuffix = null;
 			}
 		}
 

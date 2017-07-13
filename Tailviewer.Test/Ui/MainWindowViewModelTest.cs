@@ -54,6 +54,24 @@ namespace Tailviewer.Test.Ui
 		private ActionCenter _actionCenter;
 
 		[Test]
+		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]
+		public void TestCtor()
+		{
+			var dataSource = _dataSources.AddDataSource(@"F:\logs\foo.log");
+			_settings.DataSources.SelectedItem = dataSource.Id;
+
+			_mainWindow = new MainWindowViewModel(_settings,
+				_dataSources,
+				_quickFilters,
+				_actionCenter,
+				_updater.Object,
+				_dispatcher);
+
+			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
+			_mainWindow.WindowTitleSuffix.Should().Be(@"F:\logs\foo.log");
+		}
+
+		[Test]
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
