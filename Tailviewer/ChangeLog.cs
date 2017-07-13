@@ -63,7 +63,7 @@ namespace Tailviewer
 			{
 				"Tailviewer's log file can be opened from the context menu"
 			};
-			var releaseDate = new DateTime(2017, 7, 16);
+			var releaseDate = new DateTime(2017, 7, 13);
 			var version = new Version(0, 6, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
