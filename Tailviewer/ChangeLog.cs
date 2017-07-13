@@ -52,12 +52,15 @@ namespace Tailviewer
 				"Only one instance may run at a time",
 				"Filtered log files show actual line numbers"
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
-				"Placing bookmarks on a filtered data source works as expected"
+				"Placing bookmarks on a filtered data source works as expected",
+				"The full path of the currently opened data source is visible after app start again"
 			};
-			var misc = new string[]
-			{};
+			var misc = new[]
+			{
+				"Tailviewer's log file can be opened from the context menu"
+			};
 			var releaseDate = new DateTime(2017, 7, 16);
 			var version = new Version(0, 6, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using Metrolib;
 using log4net;
 using log4net.Appender;
@@ -98,9 +97,7 @@ namespace Tailviewer
 			var fileAppender = new RollingFileAppender
 				{
 					AppendToFile = false,
-					File =
-						Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Tailviewer",
-						             "Tailviewer.log"),
+					File = Constants.ApplicationLogFile,
 					Layout = patternLayout,
 					MaxSizeRollBackups = 20,
 					MaximumFileSize = "1GB",

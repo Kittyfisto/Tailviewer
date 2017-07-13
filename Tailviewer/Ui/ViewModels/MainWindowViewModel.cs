@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -26,6 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		#endregion
 
 		private readonly IApplicationSettings _applicationSettings;
+		private readonly DelegateCommand _showLogCommand;
 
 		#region ViewModels
 
@@ -86,6 +88,8 @@ namespace Tailviewer.Ui.ViewModels
 			var dataSource = _logViewPanel.CurrentDataSource;
 			OnDataSourceChanged(dataSource);
 
+			_showLogCommand = new DelegateCommand(ShowLog);
+
 			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
 			_entries = new IMainPanelEntry[]
@@ -97,7 +101,13 @@ namespace Tailviewer.Ui.ViewModels
 			                ?? _rawEntry;
 		}
 
+		private void ShowLog()
+		{
+			_logViewPanel.OpenFile(Constants.ApplicationLogFile);
+		}
+
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
+		public ICommand ShowLogCommand => _showLogCommand;
 
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{

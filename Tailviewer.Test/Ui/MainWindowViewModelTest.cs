@@ -72,6 +72,20 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/75")]
+		public void TestShowLog()
+		{
+			_dataSources.Should().BeEmpty();
+			_mainWindow.ShowLogCommand.Should().NotBeNull();
+			_mainWindow.ShowLogCommand.CanExecute(null).Should().BeTrue();
+			_mainWindow.ShowLogCommand.Execute(null);
+
+			_dataSources.Should().HaveCount(1);
+			var dataSource = _dataSources.First();
+			dataSource.FullFileName.Should().Be(Constants.ApplicationLogFile);
+		}
+
+		[Test]
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();

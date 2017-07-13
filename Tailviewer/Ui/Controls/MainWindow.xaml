@@ -110,6 +110,8 @@
                                               VerticalOffset="-10">
                         <metrolib:FlatMenuItem Header="Check for Updates..."
                                                Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
+                        <metrolib:FlatMenuItem Header="Show log..."
+                                               Command="{Binding ShowLogCommand}" />
                         <metrolib:FlatMenuItem Header="Settings..."
                                                Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
                         <metrolib:FlatMenuItem Header="About Tailviewer..."
