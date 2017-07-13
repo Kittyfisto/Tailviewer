@@ -22,10 +22,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private TimestampParser _timestampParser;
 		private bool _exists;
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
+
+		#endregion
+
+		#region Timestamp parsing
+
+		private readonly TimestampParser _timestampParser;
+		private int _numTimestampSuccess;
+		private int _numSuccessiveTimestampFailures;
+
 
 		#endregion
 
@@ -297,10 +305,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private DateTime? ParseTimestamp(string line)
 		{
+			// If we stumble upon a file that doesn't contain a single timestamp in the first hundred log lines,
+			// then we will just call it a day and never try again...
+			// This obviously opens the possibility for not being able to detect valid timestamps in a file, however
+			// this is outweighed by being able to read a file without memory FAST. The current algorithm to detect
+			// the position and format is so slow that I can read about 1k lines of random data which is pretty bad...
+			if (_numTimestampSuccess == 0 &&
+			    _numSuccessiveTimestampFailures >= 100)
+			{
+				return null;
+			}
+
 			DateTime timestamp;
 			if (_timestampParser.TryParse(line, out timestamp))
+			{
+				++_numTimestampSuccess;
+				_numSuccessiveTimestampFailures = 0;
 				return timestamp;
+			}
 
+			++_numSuccessiveTimestampFailures;
 			return null;
 		}
 	}
