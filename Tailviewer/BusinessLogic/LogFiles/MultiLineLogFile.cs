@@ -38,6 +38,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private DateTime? _startTimestamp;
+		private LevelFlags _currentLogEntryLevel;
 		//private readonly List<LogFileSection> _allModifications;
 
 		public MultiLineLogFile(ITaskScheduler taskScheduler, ILogFile source, TimeSpan maximumWaitTime)
@@ -201,10 +202,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					for (var i = 0; i < remaining; ++i)
 					{
 						var line = _buffer[i];
-						if (line.Level != LevelFlags.None || _currentLogEntry.EntryIndex.IsInvalid)
+						if (_currentLogEntry.EntryIndex.IsInvalid ||
+						    line.Level != LevelFlags.None ||
+						    _currentLogEntryLevel == LevelFlags.None)
+						{
 							_currentLogEntry = _currentLogEntry.NextEntry(line.LineIndex);
+							_currentLogEntryLevel = line.Level;
+						}
 						else if (_currentLogEntry.FirstLineIndex < lastCount && resetIndex == null)
+						{
 							resetIndex = _currentLogEntry.FirstLineIndex;
+						}
 						_indices.Add(_currentLogEntry);
 					}
 				}

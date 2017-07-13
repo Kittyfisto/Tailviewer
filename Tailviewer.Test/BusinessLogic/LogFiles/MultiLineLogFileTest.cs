@@ -567,9 +567,34 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				.Should().Equal(new object[]
 				{
 					new LogLine(0, 0, "Foo", LevelFlags.None),
-					new LogLine(1, 0, "Bar", LevelFlags.None),
-					new LogLine(2, 1, "INFO: Sup", LevelFlags.Info)
+					new LogLine(1, 1, "Bar", LevelFlags.None),
+					new LogLine(2, 2, "INFO: Sup", LevelFlags.Info)
 				});
+		}
+
+		[Test]
+		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/74")]
+		public void TestManyEntries6()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
+
+			_lines.Add(new LogLine(0, 0, "A", LevelFlags.None));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+
+			_lines.Add(new LogLine(1, 1, "B", LevelFlags.None));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			_taskScheduler.RunOnce();
+
+			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(2, 1));
+			_taskScheduler.RunOnce();
+
+			_changes.Should().Equal(LogFileSection.Reset,
+				new LogFileSection(0, 1),
+				new LogFileSection(1, 1),
+				new LogFileSection(2, 1));
 		}
 
 		[Test]
