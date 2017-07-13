@@ -49,7 +49,7 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Only one instance may run at a time",
+				"Tailviewer can only be started once (2nd time focuses the original window)",
 				"Filtered log files show actual line numbers"
 			};
 			var bugfixes = new[]
