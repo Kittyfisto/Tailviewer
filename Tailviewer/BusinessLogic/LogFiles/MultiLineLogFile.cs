@@ -211,7 +211,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						}
 						else if (_currentLogEntry.FirstLineIndex < lastCount && resetIndex == null)
 						{
-							resetIndex = _currentLogEntry.FirstLineIndex;
+							var index = _currentLogEntry.FirstLineIndex;
+							resetIndex = index;
+
+							_currentLogEntryLevel = _source.GetLine((int) index).Level;
 						}
 						_indices.Add(_currentLogEntry);
 					}

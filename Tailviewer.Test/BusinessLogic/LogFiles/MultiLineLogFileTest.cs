@@ -598,6 +598,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Ignore("Open issue, I need to fix this soon")]
+		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/74")]
+		public void TestManyEntries7()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
+
+			_lines.Add(new LogLine(0, 0, "A", LevelFlags.None));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			_taskScheduler.RunOnce();
+
+			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Info));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			_taskScheduler.RunOnce();
+
+			_lines[1] = new LogLine(1, 1, "B", LevelFlags.None);
+			_lines.Add(new LogLine(2, 2, "C", LevelFlags.None));
+			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 1));
+			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
+			_taskScheduler.RunOnce();
+
+			logFile.GetSection(new LogFileSection(0, 3))
+				.Should().Equal(
+					new LogLine(0, 0, "A", LevelFlags.None),
+					new LogLine(1, 1, "B", LevelFlags.None),
+					new LogLine(2, 2, "C", LevelFlags.None));
+		}
+
+		[Test]
 		[Description("Verifies that GetSection can return many entries")]
 		public void TestGetSection()
 		{
