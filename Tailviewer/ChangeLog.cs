@@ -55,7 +55,9 @@ namespace Tailviewer
 			var bugfixes = new[]
 			{
 				"Placing bookmarks on a filtered data source works as expected",
-				"The full path of the currently opened data source is visible after app start again"
+				"The full path of the currently opened data source is visible after app start again",
+				"Fixed flickering when displaying a log file without (discernible) timestamps",
+				"Drastically improved performance of reading log files without (discernible) timestamps"
 			};
 			var misc = new[]
 			{
