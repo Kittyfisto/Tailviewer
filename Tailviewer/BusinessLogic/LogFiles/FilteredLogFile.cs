@@ -67,7 +67,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			get { throw new NotImplementedException(); }
 		}
 
-		public override Size FileSize
+		public override Size Size
 		{
 			get { throw new NotImplementedException(); }
 		}

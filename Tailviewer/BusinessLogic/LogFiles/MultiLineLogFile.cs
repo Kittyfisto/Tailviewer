@@ -68,7 +68,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public override DateTime LastModified => _lastModified;
 
-		public override Size FileSize => _fileSize;
+		public override Size Size => _fileSize;
 
 		public override int Count => (int) _currentSourceIndex;
 
@@ -92,40 +92,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				for (var i = 0; i < section.Count; ++i)
 					dest[i] = PatchNoLock(dest[i]);
-			}
-		}
-
-		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			return index;
-		}
-
-		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (originalIndices.Length < section.Count)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			for (int i = 0; i < section.Count; ++i)
-			{
-				var index = section.Index + i;
-				originalIndices[i] = index;
-			}
-		}
-
-		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException();
-
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				originalIndices[i] = indices[i];
 			}
 		}
 
@@ -234,7 +200,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			_exists = _source.Exists;
 			_startTimestamp = _source.StartTimestamp;
 			_lastModified = _source.LastModified;
-			_fileSize = _source.FileSize;
+			_fileSize = _source.Size;
 
 			if (_indices.Count != _currentSourceIndex)
 			{

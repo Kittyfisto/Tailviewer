@@ -5,18 +5,44 @@ using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
+	/// <summary>
+	///     The interface to represent a continuous stream of <see cref="LogLine" />s from
+	///     some data source. Such a data source may be a file on disk, a SQL database or whatever.
+	/// </summary>
+	/// <remarks>
+	///     This interface is meant to provide access to the wrapped data source in a coherent way and to notify
+	///     the application of changes to the data source, if necessary.
+	/// </remarks>
 	public interface ILogFile
 		: IDisposable
 	{
+		/// <summary>
+		///     The first identified timestamp of the data source, if any, null otherwise.
+		/// </summary>
 		DateTime? StartTimestamp { get; }
 
+		/// <summary>
+		///     The timestamp (in local time) the data source has last been modified.
+		///     A modification is meant to be the addition and/or removal of at least one log line.
+		/// </summary>
 		DateTime LastModified { get; }
 
-		Size FileSize { get; }
+		/// <summary>
+		///     The approximate size of the data source.
+		///     Is only needed to be displayed to the user.
+		/// </summary>
+		Size Size { get; }
 
 		/// <summary>
 		///     Whether or not the datasource exists (is reachable).
+		///     Is continuously queried and when set to false, then no log lines are being displayed
+		///     anymore; Instead a message is shown to the user that the data source no longer exists.
 		/// </summary>
+		/// <remarks>
+		///     Examples of when this should be set to false:
+		///     - The data source represents a table from a SQL server and the connection was interrupted
+		///     - The data source represents a file on disk and that has just been deleted
+		/// </remarks>
 		bool Exists { get; }
 
 		/// <summary>
@@ -24,7 +50,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		bool EndOfSourceReached { get; }
 
+		/// <summary>
+		///     The total number of <see cref="LogLine" />s that are offered by this log file at this moment.
+		///     If the log file is not modified, then it is expected that <see cref="GetSection" /> may be called
+		///     with as many lines as returned by this property.
+		/// </summary>
 		int Count { get; }
+
+		/// <summary>
+		///     The total number of <see cref="LogLine" />s of the underlying data source, which
+		///     is expected to be <see cref="Count" /> most of the time, unless the implementation
+		///     filters an underlying data source.
+		/// </summary>
 		int OriginalCount { get; }
 
 		/// <summary>
@@ -32,19 +69,51 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		int MaxCharactersPerLine { get; }
 
+		/// <summary>
+		///     Adds a new listener to this log file.
+		///     The listener will be synchronized to the current state of this log file and then be notified
+		///     of any further changes.
+		/// </summary>
+		/// <param name="listener"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="maximumLineCount"></param>
 		void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
+
+		/// <summary>
+		///     Removes the given listener from this log file.
+		///     The listener will no longer be notified of changes to this log file.
+		/// </summary>
+		/// <param name="listener"></param>
 		void RemoveListener(ILogFileListener listener);
 
+		#region Data Retrieval
+
+		/// <summary>
+		///     Retrieves a list of log lines from this log file.
+		/// </summary>
+		/// <remarks>
+		///     This method is currently expected to block until all lines have been retrieved.
+		/// </remarks>
+		/// <param name="section"></param>
+		/// <param name="dest"></param>
 		void GetSection(LogFileSection section, LogLine[] dest);
 
-
+		/// <summary>
+		///     Retrieves the given log line.
+		/// </summary>
+		/// <remarks>
+		///     This method is currently expected to block until the given line has been retrieved.
+		/// </remarks>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		[Pure]
 		LogLine GetLine(int index);
+
+		#endregion
 
 		#region Indices
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="originalLineIndex"></param>
 		/// <returns></returns>

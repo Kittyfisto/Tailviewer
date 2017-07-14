@@ -32,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.FileSize.Should().Be(Size.Zero);
+			logFile.Size.Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
 			logFile.StartTimestamp.Should().BeNull();
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.Clear();
-			logFile.FileSize.Should().Be(Size.Zero);
+			logFile.Size.Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
 			logFile.StartTimestamp.Should().BeNull();

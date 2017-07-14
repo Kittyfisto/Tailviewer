@@ -81,7 +81,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public override DateTime LastModified => _lastModified;
 
-		public override Size FileSize => _fileSize;
+		public override Size Size => _fileSize;
 
 		public override int Count
 		{
@@ -110,42 +110,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				// TODO: This seems rubbish - maybe I should change the interface to SourceLineIndex altogether?
 				dest[i] = GetLine((int) (section.Index + i));
-			}
-		}
-
-		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
-			return index;
-		}
-
-		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (section.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			for (int i = 0; i < section.Count; ++i)
-			{
-				originalIndices[i] = section.Index + i;
-			}
-		}
-
-		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				originalIndices[i] = indices[i];
 			}
 		}
 
@@ -238,7 +202,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 
-			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.FileSize);
+			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.Size);
 			_lastModified = _sources.Aggregate(DateTime.MinValue,
 											   (a, file) =>
 											   {

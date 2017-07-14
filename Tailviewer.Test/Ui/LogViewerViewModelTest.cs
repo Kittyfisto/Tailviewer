@@ -102,7 +102,7 @@ namespace Tailviewer.Test.Ui
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
-			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
@@ -124,7 +124,7 @@ namespace Tailviewer.Test.Ui
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
-			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
@@ -147,7 +147,7 @@ namespace Tailviewer.Test.Ui
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Exists).Returns(true);
 			logFile.Setup(x => x.Count).Returns(1);
-			logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(1));
+			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);

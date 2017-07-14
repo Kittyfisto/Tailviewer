@@ -59,7 +59,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			model.CurrentDataSource = dataSourceViewModel.Object;
 
 			logFile.AddEntry("", LevelFlags.All);
-			logFile.FileSize = Size.OneByte;
+			logFile.Size = Size.OneByte;
 			model.Update();
 			model.CurrentDataSourceLogView.NoEntriesExplanation.Should().Be("Not a single log entry matches the level selection");
 		}

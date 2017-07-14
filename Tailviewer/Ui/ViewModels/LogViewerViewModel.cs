@@ -258,7 +258,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = string.Format("Can't find \"{0}\"", Path.GetFileName(dataSource.FullFileName));
 					NoEntriesSubtext = string.Format("It was last seen at {0}", Path.GetDirectoryName(dataSource.FullFileName));
 				}
-				else if (source.FileSize == Size.Zero)
+				else if (source.Size == Size.Zero)
 				{
 					NoEntriesExplanation = "The data source is empty";
 					NoEntriesSubtext = null;

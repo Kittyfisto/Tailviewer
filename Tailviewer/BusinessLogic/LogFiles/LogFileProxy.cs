@@ -135,13 +135,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
-		public Size FileSize
+		public Size Size
 		{
 			get
 			{
 				ILogFile logFile = _innerLogFile;
 				if (logFile != null)
-					return logFile.FileSize;
+					return logFile.Size;
 
 				return Size.Zero;
 			}

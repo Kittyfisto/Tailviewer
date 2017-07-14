@@ -194,23 +194,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Description("Verifies that the FileSize is changed once a modification is applied")]
+		[Description("Verifies that the Size is changed once a modification is applied")]
 		public void TestOneModification6()
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.FileSize.Should().Be(Size.Zero, "because the source doesn't exist (yet)");
+			logFile.Size.Should().Be(Size.Zero, "because the source doesn't exist (yet)");
 
 			var size = Size.FromGigabytes(42);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.FileSize).Returns(size);
-			logFile.FileSize.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
+			_source.Setup(x => x.Size).Returns(size);
+			logFile.Size.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.FileSize.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
+			logFile.Size.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.FileSize.Should().Be(size, "because the change should have been applied by now");
+			logFile.Size.Should().Be(size, "because the change should have been applied by now");
 		}
 
 		[Test]

@@ -45,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.InnerLogFile.Should().BeNull();
 				proxy.MaxCharactersPerLine.Should().Be(0);
 				proxy.Exists.Should().BeFalse();
-				proxy.FileSize.Should().Be(Size.Zero);
+				proxy.Size.Should().Be(Size.Zero);
 				proxy.StartTimestamp.Should().NotHaveValue();
 				proxy.Count.Should().Be(0);
 
@@ -115,10 +115,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.FileSize).Returns(Size.FromBytes(12));
-				proxy.FileSize.Should().Be(Size.FromBytes(12));
-				_logFile.Setup(x => x.FileSize).Returns(Size.OneMegabyte);
-				proxy.FileSize.Should().Be(Size.OneMegabyte);
+				_logFile.Setup(x => x.Size).Returns(Size.FromBytes(12));
+				proxy.Size.Should().Be(Size.FromBytes(12));
+				_logFile.Setup(x => x.Size).Returns(Size.OneMegabyte);
+				proxy.Size.Should().Be(Size.OneMegabyte);
 			}
 		}
 

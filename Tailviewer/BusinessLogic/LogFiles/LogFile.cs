@@ -78,7 +78,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public IEnumerable<LogLine> Entries => _entries;
 
-		public override Size FileSize
+		public override Size Size
 		{
 			get
 			{
@@ -120,21 +120,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 				_entries.CopyTo((int) section.Index, dest, 0, section.Count);
 			}
-		}
-
-		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			throw new NotImplementedException();
 		}
 
 		public override LogLine GetLine(int index)

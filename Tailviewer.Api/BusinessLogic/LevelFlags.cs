@@ -1,17 +1,53 @@
 ﻿using System;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic
 {
+	/// <summary>
+	///     This enum describes the possible log levels a <see cref="LogLine" /> may be associated with.
+	/// </summary>
 	[Flags]
 	public enum LevelFlags : byte
 	{
+		/// <summary>
+		///     The log line describes a fatal problem.
+		///     Log lines with this level are shown to the user in deep red (to indicate its seriousness).
+		/// </summary>
 		Fatal = 0x01,
+
+		/// <summary>
+		///     The log line describes an error.
+		///     Log lines with this level are shown to the user in red (to indicate its seriousness).
+		/// </summary>
 		Error = 0x02,
+
+		/// <summary>
+		///     The log line describes a warning.
+		///     Log lines with this level are shown to the user in yellow red (to indicate its seriousness).
+		/// </summary>
 		Warning = 0x04,
+
+		/// <summary>
+		///     The log line describes an informational message.
+		///     Log lines with this level are shown to the user with a white background.
+		/// </summary>
 		Info = 0x08,
+
+		/// <summary>
+		///     The log line describes a debug/diagnostic message.
+		///     Log lines with this level are shown to the user with a white background.
+		/// </summary>
 		Debug = 0x10,
 
+		/// <summary>
+		/// 
+		/// </summary>
 		All = Fatal | Error | Warning | Info | Debug,
+
+		/// <summary>
+		///     The log line is not associated with any of the above log levels or it simply
+		///     could not be determined.
+		/// </summary>
 		None = 0
 	}
 }
