@@ -86,7 +86,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		/// <inheritdoc />
-		public abstract int OriginalCount { get; }
+		public virtual int OriginalCount => Count;
 
 		/// <inheritdoc />
 		public abstract int MaxCharactersPerLine { get; }
