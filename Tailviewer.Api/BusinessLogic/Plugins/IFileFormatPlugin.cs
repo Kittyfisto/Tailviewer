@@ -5,7 +5,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Plugins
 {
 	/// <summary>
-	/// 
+	///     This interface may be implemented to add support for custom log file formats which are not simple
+	///     text based files.
 	/// </summary>
 	public interface IFileFormatPlugin
 		: IPlugin
