@@ -185,7 +185,8 @@ namespace Installer
 			return fileName.Replace("Fonts.", "Fonts\\")
 				.Replace("Icons.", "Icons\\")
 				.Replace("x64.", "x64\\")
-				.Replace("x86.", "x86\\");
+				.Replace("x86.", "x86\\")
+				.Replace("Plugins.", "Plugins\\");
 		}
 
 		private void CopyFile(string destFilePath, string sourceFilePath)

@@ -173,6 +173,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="InstallationFiles\Plugins\Readme.txt" />
     <EmbeddedResource Include="..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
     </EmbeddedResource>
