@@ -7,6 +7,7 @@
     <owners>Simon Mießler</owners>
     <licenseUrl>https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Kittyfisto/Tailviewer/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Kittyfisto/Tailviewer/master/Tailviewer/Resources/Tailviewer.ico</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>API to create plugins for Tailviewer, the free log file viewer</description>
     <releaseNotes>Alpha release</releaseNotes>
