@@ -173,25 +173,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="InstallationFiles\Plugins\Readme.txt" />
+    <EmbeddedResource Include="InstallationFiles\Plugins\Readme.txt" />
     <EmbeddedResource Include="..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
     </EmbeddedResource>
-    <Content Include="..\bin\System.Data.SQLite.dll">
-      <Link>InstallationFiles\System.Data.SQLite.dll</Link>
-    </Content>
     <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
       <Link>InstallationFiles\System.Threading.Extensions.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.Api.dll">
       <Link>InstallationFiles\Tailviewer.Api.dll</Link>
     </EmbeddedResource>
-    <Content Include="..\bin\x64\SQLite.Interop.dll">
-      <Link>InstallationFiles\x64\SQLite.Interop.dll</Link>
-    </Content>
-    <Content Include="..\bin\x86\SQLite.Interop.dll">
-      <Link>InstallationFiles\x86\SQLite.Interop.dll</Link>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
