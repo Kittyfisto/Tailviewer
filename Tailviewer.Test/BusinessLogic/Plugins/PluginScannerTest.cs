@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Plugins;
@@ -12,9 +8,10 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 {
 	[TestFixture]
 	public sealed class PluginScannerTest
+		: AbstractPluginTest
 	{
 		[Test]
-		public void TestPlugin()
+		public void TestReflectPlugin1()
 		{
 			var plugin = "test.tvp";
 			if (File.Exists(plugin))
@@ -32,28 +29,33 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 			description.Plugins.Should().BeEmpty("Because we didn't add any plugin implementations");
 		}
 
-		private void CreatePlugin(string assemblyFileName, string author, string website, string description)
+		[Test]
+		public void TestReflectPlugin2()
 		{
-			var pluginName = Path.GetFileNameWithoutExtension(assemblyFileName);
-			var assemblyName = new AssemblyName(pluginName);
-			var attributes = new List<CustomAttributeBuilder>();
-			if (author != null)
-				attributes.Add(CreateAttribute<PluginAuthorAttribute>(author));
-			if (website != null)
-				attributes.Add(CreateAttribute<PluginWebsiteAttribute>(website));
-			if (website != null)
-				attributes.Add(CreateAttribute<PluginDescriptionAttribute>(description));
-			var assembly = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save, attributes);
-			var module = assembly.DefineDynamicModule(pluginName);
-			assembly.Save(assemblyFileName);
+			var scanner = new PluginScanner();
+			new Action(() => scanner.ReflectPlugin(null)).ShouldThrow<ArgumentNullException>();
 		}
 
-		private static CustomAttributeBuilder CreateAttribute<T>(params object[] parameters) where T : Attribute
+		[Test]
+		public void TestReflectPlugin3()
 		{
-			var type = typeof(T);
-			var ctors = type.GetConstructors();
-			var builder = new CustomAttributeBuilder(ctors.First(), parameters);
-			return builder;
+			var scanner = new PluginScanner();
+			new Action(() => scanner.ReflectPlugin("DAAWDADAWWF")).ShouldThrow<FileNotFoundException>();
+		}
+
+		[Test]
+		public void TestReflectPlugin4()
+		{
+			var scanner = new PluginScanner();
+			new Action(() => scanner.ReflectPlugin(@"C:\adwwdwawad\asxas")).ShouldThrow<FileNotFoundException>();
+		}
+
+		[Test]
+		public void TestReflectPlugin5()
+		{
+			var scanner = new PluginScanner();
+			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).ShouldThrow<ArgumentException>(
+				"because we used illegal characters in that path");
 		}
 	}
 }

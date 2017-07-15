@@ -10,18 +10,20 @@ namespace Tailviewer.BusinessLogic.Plugins
 	public sealed class PluginWebsiteAttribute
 		: Attribute
 	{
+		private readonly Uri _website;
+
 		/// <summary>
 		///     Initializes this attribute.
 		/// </summary>
 		/// <param name="website"></param>
 		public PluginWebsiteAttribute(string website)
 		{
-			Website = new Uri(website, UriKind.RelativeOrAbsolute);
+			Uri.TryCreate(website, UriKind.RelativeOrAbsolute, out _website);
 		}
 
 		/// <summary>
 		///     The website a user should go to to find more information about this plugin.
 		/// </summary>
-		public Uri Website { get; set; }
+		public Uri Website => _website;
 	}
 }

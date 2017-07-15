@@ -17,9 +17,16 @@ namespace Tailviewer.BusinessLogic.Plugins
 			if (description == null)
 				throw new ArgumentNullException(nameof(description));
 
-			var assembly = Assembly.Load(description.FilePath);
+			var assembly = Assembly.LoadFrom(description.FilePath);
 			var typeName = description.Plugins[typeof(T)];
 			var implementation = assembly.GetType(typeName);
+			if (implementation == null)
+			{
+				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
+					description.FilePath,
+					typeName));
+			}
+
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
 		}
