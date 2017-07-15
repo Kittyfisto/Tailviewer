@@ -128,6 +128,7 @@
     <Compile Include="BusinessLogic\LogTables\SQLiteColumnHeaderTest.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTableTest.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTableSchemaTest.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginScannerTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />

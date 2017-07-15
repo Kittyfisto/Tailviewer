@@ -185,6 +185,12 @@
     <Compile Include="BusinessLogic\LogTables\SQLiteLogTable.cs" />
     <Compile Include="BusinessLogic\LogTables\SQLiteSchema.cs" />
     <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
+    <Compile Include="BusinessLogic\Plugins\IPluginDescription.cs" />
+    <Compile Include="BusinessLogic\Plugins\IPluginLoader.cs" />
+    <Compile Include="BusinessLogic\Plugins\IPluginScanner.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginDescription.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginLoader.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginScanner.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
