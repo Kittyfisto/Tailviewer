@@ -1,12 +1,54 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
+using log4net;
+using Metrolib;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {
 	public sealed class PluginLoader
 		: IPluginLoader
+		, IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		public PluginLoader()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+		}
+
+		private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			// We will allow the user to load assemblies that are not an exact match to the installed assemblies:
+			// This list consists of the Api assembly and all of its dependencies:
+			var assemblies = new Dictionary<string, Assembly>
+			{
+				{"log4net,", typeof(ILog).Assembly},
+				{"Metrolib,", typeof(AbstractBootstrapper).Assembly},
+				{"System.Threading.Extensions,", typeof(ITaskScheduler).Assembly},
+				{"Tailviewer.Api,", typeof(ILogFile).Assembly}
+			};
+
+			// TODO: This feature most certainly needs proper tests. Go write them!
+
+			foreach (var assembly in assemblies)
+			{
+				if (args.Name.StartsWith(assembly.Key))
+				{
+					Log.InfoFormat("Assembly '{0}' requests to load '{1}', resolving to '{2}'",
+						args.RequestingAssembly,
+						args.Name,
+						assembly.Value
+					);
+					return assembly.Value;
+				}
+			}
+
+			return null;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -44,6 +86,11 @@ namespace Tailviewer.BusinessLogic.Plugins
 				}
 			}
 			return ret;
+		}
+
+		public void Dispose()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
 		}
 	}
 }

@@ -30,10 +30,12 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				}
 			};
 
-			var loader = new PluginLoader();
-			var plugin = loader.Load<IFileFormatPlugin>(description);
-			plugin.Should().NotBeNull();
-			plugin.GetType().FullName.Should().Be("Foo1.MyAwesomePlugin");
+			using (var loader = new PluginLoader())
+			{
+				var plugin = loader.Load<IFileFormatPlugin>(description);
+				plugin.Should().NotBeNull();
+				plugin.GetType().FullName.Should().Be("Foo1.MyAwesomePlugin");
+			}
 		}
 	}
 }

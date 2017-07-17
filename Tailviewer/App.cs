@@ -68,63 +68,65 @@ namespace Tailviewer
 				var scanner = new PluginScanner();
 				var plugins = scanner.ReflectPlugins(Constants.PluginPath);
 
-				var loader = new PluginLoader();
-				var fileFormatPlugins = loader.LoadAllOfType<IFileFormatPlugin>(plugins);
-
-				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
-				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
-				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
+				using (var loader = new PluginLoader())
 				{
-					var arguments = ArgumentParser.TryParse(args);
-					if (arguments.FileToOpen != null)
+					var fileFormatPlugins = loader.LoadAllOfType<IFileFormatPlugin>(plugins);
+
+					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
+					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
+					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					{
-						if (File.Exists(arguments.FileToOpen))
+						var arguments = ArgumentParser.TryParse(args);
+						if (arguments.FileToOpen != null)
 						{
-							// Not only do we want to add this file to the list of data sources,
-							// but we also want to select it so the user can view it immediately, regardless
-							// of what was selected previously.
-							var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
-							settings.DataSources.SelectedItem = dataSource.Id;
+							if (File.Exists(arguments.FileToOpen))
+							{
+								// Not only do we want to add this file to the list of data sources,
+								// but we also want to select it so the user can view it immediately, regardless
+								// of what was selected previously.
+								var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
+								settings.DataSources.SelectedItem = dataSource.Id;
+							}
+							else
+							{
+								Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
+							}
 						}
-						else
+
+						if (settings.AutoUpdate.CheckForUpdates)
 						{
-							Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
+							// Our initial check for updates is not due to a user action
+							// and therefore we don't need to show a notification when the
+							// application is up-to-date.
+							updater.CheckForUpdates(addNotificationWhenUpToDate: false);
 						}
+
+						var quickFilters = new QuickFilters(settings.QuickFilters);
+						actionCenter.Add(Build.Current);
+						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
+						var application = new App();
+						Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+						var uiDispatcher = new UiDispatcher(dispatcher);
+						dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
+						TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
+
+						var window = new MainWindow(settings)
+						{
+							DataContext = new MainWindowViewModel(settings,
+								dataSources,
+								quickFilters,
+								actionCenter,
+								updater,
+								uiDispatcher)
+						};
+
+						settings.MainWindow.RestoreTo(window);
+
+						window.Show();
+						mutex.SetListener(window);
+
+						return application.Run();
 					}
-
-					if (settings.AutoUpdate.CheckForUpdates)
-					{
-						// Our initial check for updates is not due to a user action
-						// and therefore we don't need to show a notification when the
-						// application is up-to-date.
-						updater.CheckForUpdates(addNotificationWhenUpToDate: false);
-					}
-
-					var quickFilters = new QuickFilters(settings.QuickFilters);
-					actionCenter.Add(Build.Current);
-					actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
-					var application = new App();
-					Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-					var uiDispatcher = new UiDispatcher(dispatcher);
-					dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
-					TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
-
-					var window = new MainWindow(settings)
-					{
-						DataContext = new MainWindowViewModel(settings,
-							dataSources,
-							quickFilters,
-							actionCenter,
-							updater,
-							uiDispatcher)
-					};
-
-					settings.MainWindow.RestoreTo(window);
-
-					window.Show();
-					mutex.SetListener(window);
-
-					return application.Run();
 				}
 			}
 		}
