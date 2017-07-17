@@ -40,7 +40,7 @@ namespace Tailviewer
 			}
 			catch (Exception e)
 			{
-				Log.InfoFormat("Caught unexpected exception: {0}", e);
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
 				return -1;
 			}
 		}
