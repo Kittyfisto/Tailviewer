@@ -80,5 +80,13 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).ShouldThrow<ArgumentException>(
 				"because we used illegal characters in that path");
 		}
+
+		[Test]
+		public void TestReflectPlugins()
+		{
+			var scanner = new PluginScanner();
+			new Action(() => scanner.ReflectPlugins(@"C:\adwwdwawad\asxas")).ShouldNotThrow();
+			scanner.ReflectPlugins(@"C:\adwwdwawad\asxas").Should().BeEmpty();
+		}
 	}
 }

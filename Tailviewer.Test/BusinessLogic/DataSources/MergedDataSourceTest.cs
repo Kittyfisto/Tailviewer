@@ -15,6 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
 		}
 
 		[SetUp]
@@ -30,13 +31,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		private MergedDataSource _merged;
 		private DataSource _settings;
 		private ManualTaskScheduler _scheduler;
+		private PluginLogFileFactory _logFileFactory;
 
 		[Test]
 		[Description("Verifies that adding a data source to a group sets the parent id of the settings object")]
 		public void TestAdd1()
 		{
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource = new SingleDataSource(_scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
 			        .Be(_settings.Id, "Because the parent-child relationship should've been declared via ParentId");
@@ -47,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd2()
 		{
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource = new SingleDataSource(_scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			_merged.UnfilteredLogFile.Should().NotBeNull();
 			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
@@ -59,7 +61,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd3()
 		{
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource = new SingleDataSource(_scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 
 			_merged.Add(dataSource);
@@ -76,7 +78,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource1 = new SingleDataSource(_scheduler, settings1);
+			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
 			_merged.Add(dataSource1);
 			ILogFile logFile2 = _merged.UnfilteredLogFile;
 
@@ -121,7 +123,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove1()
 		{
 			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource = new SingleDataSource(_scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Settings.ParentId.Should().Be(Guid.Empty);
@@ -132,11 +134,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove2()
 		{
 			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
-			var dataSource1 = new SingleDataSource(_scheduler, settings1);
+			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
 			_merged.Add(dataSource1);
 
 			var settings2 = new DataSource("bar") {Id = Guid.NewGuid()};
-			var dataSource2 = new SingleDataSource(_scheduler, settings2);
+			var dataSource2 = new SingleDataSource(_logFileFactory, _scheduler, settings2);
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);

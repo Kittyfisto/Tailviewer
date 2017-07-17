@@ -7,10 +7,11 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.AcceptanceTests.Ui
+namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 {
 	[TestFixture]
 	public sealed class LogViewerViewModelTest
@@ -19,6 +20,7 @@ namespace Tailviewer.AcceptanceTests.Ui
 		public void TestFixtureSetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_settings = new ApplicationSettings(Path.GetTempFileName());
 		}
@@ -37,12 +39,13 @@ namespace Tailviewer.AcceptanceTests.Ui
 		private DefaultTaskScheduler _scheduler;
 		private Mock<IActionCenter> _actionCenter;
 		private ApplicationSettings _settings;
+		private ILogFileFactory _logFileFactory;
 
 		[Test]
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(_scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);

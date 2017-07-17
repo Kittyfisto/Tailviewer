@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
@@ -26,7 +27,8 @@ namespace Tailviewer.Test.Ui
 			_settings = new ApplicationSettings("adwad");
 			_dispatcher = new ManualDispatcher();
 			_scheduler = new ManualTaskScheduler();
-			_dataSources = new DataSources(_scheduler, _settings.DataSources);
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
@@ -52,6 +54,7 @@ namespace Tailviewer.Test.Ui
 		private Mock<IAutoUpdater> _updater;
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
+		private ILogFileFactory _logFileFactory;
 
 		[Test]
 		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]

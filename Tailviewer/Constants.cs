@@ -19,6 +19,7 @@ namespace Tailviewer
 		public static readonly string ApplicationLogFile;
 		public static readonly string ExportDirectory;
 		public static readonly string DownloadFolder;
+		public static readonly string PluginPath;
 		public static string ApplicationLicense => Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
 
 		static Constants()
@@ -34,6 +35,7 @@ namespace Tailviewer
 			GithubPage = new Uri("https://github.com/Kittyfisto/Tailviewer");
 			ReportBugPage = new Uri("https://github.com/Kittyfisto/Tailviewer/issues/new");
 			ApplicationFolder = assembly.GetFolder();
+			PluginPath = Path.Combine(ApplicationFolder, "Plugins");
 			AppDataLocalFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationTitle);
 			ApplicationLogFile = Path.Combine(AppDataLocalFolder, "Tailviewer.log");
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");

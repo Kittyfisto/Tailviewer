@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
@@ -18,11 +18,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
 			_settings = new DataSource(LogFileRealTest.File20Mb)
 			{
 				Id = Guid.NewGuid()
 			};
-			_dataSource = new SingleDataSource(_scheduler, _settings, TimeSpan.FromMilliseconds(100));
+			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
 
 		[TearDown]
@@ -35,6 +36,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		private DataSource _settings;
 		private SingleDataSource _dataSource;
 		private DefaultTaskScheduler _scheduler;
+		private ILogFileFactory _logFileFactory;
 
 		[Test]
 		public void TestCtor()

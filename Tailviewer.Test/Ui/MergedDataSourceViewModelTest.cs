@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.Ui
@@ -14,7 +15,8 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new Tailviewer.Settings.DataSources();
 			_scheduler = new ManualTaskScheduler();
-			_dataSources = new DataSources(_scheduler, _settings);
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings);
 			_model = new MergedDataSourceViewModel(_settingsDataSource = _dataSources.AddGroup());
 		}
 
@@ -23,6 +25,7 @@ namespace Tailviewer.Test.Ui
 		private Tailviewer.Settings.DataSources _settings;
 		private ManualTaskScheduler _scheduler;
 		private MergedDataSource _settingsDataSource;
+		private ILogFileFactory _logFileFactory;
 
 		[Test]
 		public void TestConstruction()

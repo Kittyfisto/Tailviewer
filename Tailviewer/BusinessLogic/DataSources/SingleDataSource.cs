@@ -10,15 +10,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogFile _unfilteredLogFile;
 
-		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings)
-			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(10))
+		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
+			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(10))
 		{
 		}
 
-		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
+		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			var logFile = new LogFile(taskScheduler, settings.File);
+			if (logFileFactory == null)
+				throw new ArgumentNullException(nameof(logFileFactory));
+
+			var logFile = logFileFactory.Open(settings.File);
 			_unfilteredLogFile = logFile;
 			OnUnfilteredLogFileChanged();
 		}
@@ -26,6 +29,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
+			if (unfilteredLogFile == null)
+				throw new ArgumentNullException(nameof(unfilteredLogFile));
+
 			_unfilteredLogFile = unfilteredLogFile;
 			OnUnfilteredLogFileChanged();
 		}

@@ -8,6 +8,7 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
@@ -18,17 +19,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly ILogFileFactory _logFileFactory;
+		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly IDataSourcesSettings _settings;
 		private readonly object _syncRoot;
-		private readonly ITaskScheduler _taskScheduler;
 		private readonly BookmarkCollection _bookmarks;
 
-		public DataSources(ITaskScheduler taskScheduler, IDataSourcesSettings settings)
+		public DataSources(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, IDataSourcesSettings settings)
 		{
+			if (logFileFactory == null) throw new ArgumentNullException(nameof(logFileFactory));
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
+			_logFileFactory = logFileFactory;
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
 			_syncRoot = new object();
@@ -138,7 +142,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				AbstractDataSource dataSource;
 				if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new SingleDataSource(_taskScheduler, settings, _maximumWaitTime);
+					dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
 				else
 				{

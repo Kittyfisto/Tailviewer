@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -16,14 +17,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly IReadOnlyList<IFileFormatPlugin> _plugins;
 		private readonly ITaskScheduler _taskScheduler;
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler)
+		public PluginLogFileFactory(ITaskScheduler taskScheduler, params IFileFormatPlugin[] plugins)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
+			if (plugins == null)
+				throw new ArgumentNullException(nameof(plugins));
 
-			_plugins = new List<IFileFormatPlugin>();
+			_plugins = new List<IFileFormatPlugin>(plugins);
 			_taskScheduler = taskScheduler;
 		}
+
+		public PluginLogFileFactory(ITaskScheduler taskScheduler, IEnumerable<IFileFormatPlugin> plugins)
+			: this(taskScheduler, plugins?.ToArray())
+		{}
 
 		public ILogFile Open(string fileName)
 		{

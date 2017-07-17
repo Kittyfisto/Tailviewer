@@ -31,14 +31,21 @@ namespace Tailviewer.BusinessLogic.Plugins
 		public IReadOnlyList<IPluginDescription> ReflectPlugins(string path)
 		{
 			var plugins = new List<IPluginDescription>();
-			var assemblies = Directory.EnumerateFiles(path, "*.tvp", SearchOption.AllDirectories);
-			foreach (var plugin in assemblies)
+			try
 			{
-				IPluginDescription description;
-				if (TryLoad(plugin, out description))
-					plugins.Add(description);
-				// TODO: Maybe we should create a description for plugins we couldn't load, so we display
-				//       those in the list of plugins as well?
+				var assemblies = Directory.EnumerateFiles(path, "*.tvp", SearchOption.AllDirectories);
+				foreach (var plugin in assemblies)
+				{
+					IPluginDescription description;
+					if (TryLoad(plugin, out description))
+						plugins.Add(description);
+					// TODO: Maybe we should create a description for plugins we couldn't load, so we display
+					//       those in the list of plugins as well?
+				}
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
 			}
 			return plugins;
 		}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Tailviewer.BusinessLogic.Plugins
@@ -29,6 +30,20 @@ namespace Tailviewer.BusinessLogic.Plugins
 
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
+		}
+
+		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> plugins)
+			where T : class, IPlugin
+		{
+			var ret = new List<T>();
+			foreach (var plugin in plugins)
+			{
+				if (plugin.Plugins.ContainsKey(typeof(T)))
+				{
+					ret.Add(Load<T>(plugin));
+				}
+			}
+			return ret;
 		}
 	}
 }
