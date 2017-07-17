@@ -132,6 +132,7 @@
     <Compile Include="BusinessLogic\Filters\NoFilter.cs" />
     <Compile Include="BusinessLogic\ILogDataAccessor.cs" />
     <Compile Include="BusinessLogic\LogDataCache.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFile.cs" />

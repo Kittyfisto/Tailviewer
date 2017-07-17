@@ -112,6 +112,8 @@
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />

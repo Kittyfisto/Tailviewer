@@ -40,7 +40,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				var logFile = OpenWith(fileName, plugin);
 				if (logFile != null)
 				{
-					return logFile;
+					var pluginName = plugin.GetType().Assembly.FullName;
+					return new NoThrowLogFile(logFile, pluginName);
 				}
 			}
 
