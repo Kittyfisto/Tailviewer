@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using log4net;
 
@@ -23,17 +24,28 @@ namespace Tailviewer.BusinessLogic.Plugins
 				throw new ArgumentNullException(nameof(description));
 
 			var assembly = Assembly.LoadFrom(description.FilePath);
-			var typeName = description.Plugins[typeof(T)];
-			var implementation = assembly.GetType(typeName);
+			var assemblyQualifiedName = description.Plugins[typeof(T)];
+			var fullTypeName = GetFullTypeName(assemblyQualifiedName);
+			var implementation = assembly.GetType(fullTypeName);
 			if (implementation == null)
 			{
 				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
 					description.FilePath,
-					typeName));
+					assemblyQualifiedName));
 			}
 
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
+		}
+
+		[Pure]
+		private static string GetFullTypeName(string assemblyQualifiedName)
+		{
+			var index = assemblyQualifiedName.IndexOf(',');
+			if (index == -1)
+				return assemblyQualifiedName;
+
+			return assemblyQualifiedName.Substring(0, index);
 		}
 
 		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions)
