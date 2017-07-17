@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using log4net;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {
@@ -8,6 +9,8 @@ namespace Tailviewer.BusinessLogic.Plugins
 		: IPluginLoader
 		, IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -33,15 +36,26 @@ namespace Tailviewer.BusinessLogic.Plugins
 			return plugin;
 		}
 
-		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> plugins)
+		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions)
 			where T : class, IPlugin
 		{
 			var ret = new List<T>();
-			foreach (var plugin in plugins)
+			foreach (var pluginDescription in pluginDescriptions)
 			{
-				if (plugin.Plugins.ContainsKey(typeof(T)))
+				if (pluginDescription.Plugins.ContainsKey(typeof(T)))
 				{
-					ret.Add(Load<T>(plugin));
+					try
+					{
+						var plugin = Load<T>(pluginDescription);
+						ret.Add(plugin);
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
+							typeof(T),
+							pluginDescription,
+							e);
+					}
 				}
 			}
 			return ret;

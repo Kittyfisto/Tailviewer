@@ -37,5 +37,25 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				plugin.GetType().FullName.Should().Be("Foo1.MyAwesomePlugin");
 			}
 		}
+
+		[Test]
+		[Description("Verifies that LoadAllOfType simply skips plugins that cannot be loaded")]
+		public void TestLoadAllOfType1()
+		{
+			using (var loader = new PluginLoader())
+			{
+				var description = new PluginDescription
+				{
+					FilePath = "some nonexistant assembly",
+					Plugins = new Dictionary<Type, string>
+					{
+						{typeof(IFileFormatPlugin), "Foo1.MyAwesomePlugin"}
+					}
+				};
+
+				new Action(() => loader.LoadAllOfType<IFileFormatPlugin>(new[] {description})).ShouldNotThrow();
+				loader.LoadAllOfType<IFileFormatPlugin>(new[] {description}).Should().BeEmpty();
+			}
+		}
 	}
 }
