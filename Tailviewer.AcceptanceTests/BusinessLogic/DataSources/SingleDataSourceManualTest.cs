@@ -17,7 +17,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		private string _fname;
 		private FileStream _stream;
 		private StreamWriter _writer;
-		private TestLogFile _logFile;
+		private TextLogFile _logFile;
 		private DataSource _settings;
 
 		[SetUp]
@@ -30,7 +30,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
-			_logFile = new TestLogFile(_scheduler, _fname);
+			_logFile = new TextLogFile(_scheduler, _fname);
 
 			_settings = new DataSource(_fname)
 			{

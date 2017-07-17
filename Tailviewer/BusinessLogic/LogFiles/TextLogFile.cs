@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.LogFiles.Parsers;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
-	public sealed class TestLogFile
+	public sealed class TextLogFile
 		: AbstractLogFile
 	{
 		private static readonly ILog Log =
@@ -51,7 +51,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		#endregion
 
-		public TestLogFile(ITaskScheduler scheduler, string fileName)
+		public TextLogFile(ITaskScheduler scheduler, string fileName)
 			: base(scheduler)
 		{
 			if (fileName == null) throw new ArgumentNullException(nameof(fileName));

@@ -29,8 +29,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Ignore("Test isn't finished yet")]
 		public void Test()
 		{
-			using (var source1 = new TestLogFile(_scheduler, LogFileRealTest.File2Entries))
-			using (var source2 = new TestLogFile(_scheduler, LogFileRealTest.File2Lines))
+			using (var source1 = new TextLogFile(_scheduler, LogFileRealTest.File2Entries))
+			using (var source2 = new TextLogFile(_scheduler, LogFileRealTest.File2Lines))
 			{
 				var sources = new List<ILogFile> {source1, source2};
 				using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(10), sources))
