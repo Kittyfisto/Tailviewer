@@ -335,7 +335,7 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileExtensions.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFile.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TestLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />

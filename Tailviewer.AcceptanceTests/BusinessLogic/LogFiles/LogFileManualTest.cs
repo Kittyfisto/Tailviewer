@@ -17,7 +17,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		private string _fname;
 		private FileStream _stream;
 		private StreamWriter _writer;
-		private LogFile _file;
+		private TestLogFile _file;
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _changes;
 
@@ -32,7 +32,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
 
-			_file = new LogFile(_scheduler, _fname);
+			_file = new TestLogFile(_scheduler, _fname);
 
 			_listener = new Mock<ILogFileListener>();
 			_changes = new List<LogFileSection>();

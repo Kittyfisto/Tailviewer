@@ -33,7 +33,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestFilter1()
 		{
-			using (var file = new LogFile(_scheduler, File20Mb))
+			using (var file = new TestLogFile(_scheduler, File20Mb))
 			{
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
@@ -73,7 +73,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestFilter2()
 		{
-			using (var file = new LogFile(_scheduler, File20Mb))
+			using (var file = new TestLogFile(_scheduler, File20Mb))
 			{
 				file.Property(x => x.Count).ShouldEventually().Be(165342, TimeSpan.FromSeconds(5));
 
@@ -112,7 +112,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("INFO - Test");
 			}
 
-			using (var file = new LogFile(_scheduler, fname))
+			using (var file = new TestLogFile(_scheduler, fname))
 			{
 				file.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5));
 

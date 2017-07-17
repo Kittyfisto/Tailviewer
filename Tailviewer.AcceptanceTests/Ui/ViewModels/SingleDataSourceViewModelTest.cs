@@ -26,7 +26,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestSearch1()
 		{
 			var settings = new DataSource(LogFileRealTest.File2Mb) { Id = Guid.NewGuid() };
-			using (var logFile = new LogFile(_taskScheduler, LogFileRealTest.File2Mb))
+			using (var logFile = new TestLogFile(_taskScheduler, LogFileRealTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(dataSource);

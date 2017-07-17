@@ -44,7 +44,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
-			return new LogFile(_taskScheduler, fileName);
+			return new TestLogFile(_taskScheduler, fileName);
 		}
 
 		private IFileFormatPlugin FindSupportingPlugin(string fileName)
