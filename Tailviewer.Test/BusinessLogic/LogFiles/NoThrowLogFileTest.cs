@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -154,7 +153,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetLine()
+		public void TestGetLine1()
 		{
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Throws<SystemException>();
 			var index = 9001;

@@ -6,11 +6,11 @@ namespace Tailviewer.Test
 	public sealed class EnhancementAttribute
 		: Attribute
 	{
-		public EnhancementAttribute(string defectUri)
+		public EnhancementAttribute(string ticketUri)
 		{
-			DefectUri = defectUri;
+			TicketUri = ticketUri;
 		}
 
-		public string DefectUri { get; set; }
+		public string TicketUri { get; set; }
 	}
 }
