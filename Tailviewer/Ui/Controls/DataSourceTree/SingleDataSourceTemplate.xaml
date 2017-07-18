@@ -15,16 +15,25 @@
     <converters:CountConverter x:Key="CountConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
     <converters:CountConverter x:Key="NewLogLineCountConverter" HasPlural="False" Suffix="new" />
+    <converters2:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="24" />
-                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="12" x:Name="PART_ScrollbarSpacer" />
             </Grid.ColumnDefinitions>
 
-            <Grid Margin="8,4,16,4">
+            <!-- This spacer ensures that all content is indented if there is a parent.
+                 We want children to reserve this space so that the blue rectangle that is displayed
+                 when an item is selected, covers the entire width of the tree view.
+            -->
+            <Grid Visibility="{Binding IsGrouped, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                  Width="20" />
+
+            <Grid Margin="0,4,16,4" Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
@@ -69,7 +78,7 @@
                                    HorizontalAlignment="Right"
                                    Command="{Binding RemoveCommand}"
                                    ToolTip="Close this file"
-                                   Grid.Column="1" />
+                                   Grid.Column="2" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

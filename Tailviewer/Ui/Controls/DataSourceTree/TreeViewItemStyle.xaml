@@ -26,35 +26,36 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FlatTreeViewItem}">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
                         <Border Grid.ColumnSpan="2" Background="{TemplateBinding Background}" />
-                        <controls:ExpanderToggleButton x:Name="PART_Expander"
-                                                       IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                       Foreground="Black"
-                                                       Margin="4"
-                                                       Padding="0"
-                                                       Width="24"
-                                                       Height="24"
-                                                       />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <controls:ExpanderToggleButton x:Name="PART_Expander"
+                                                           IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                                           Foreground="Black"
+                                                           Margin="2"
+                                                           Padding="0"
+                                                           Width="20"
+                                                           Height="20"
+                            />
 
-                        <ContentPresenter x:Name="PART_Header" ContentSource="Header" Grid.Column="1" />
+                            <ContentPresenter x:Name="PART_Header" ContentSource="Header" Grid.Column="1" />
+                        </Grid>
 
                         <ItemsPresenter x:Name="ItemsHost"
-                                        Grid.Row="1"
-                                        Grid.Column="1" />
+                                        Grid.Row="1" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasItems" Value="false">
-                            <Setter Property="Visibility" TargetName="PART_Expander" Value="Collapsed" />
+                            <Setter Property="Visibility" TargetName="PART_Expander" Value="Hidden" />
                         </Trigger>
 
                         <!-- When we're selected -->
