@@ -114,6 +114,7 @@
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysis.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
+    <Compile Include="BusinessLogic\DataSources\ISingleDataSource.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />

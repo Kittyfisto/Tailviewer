@@ -459,7 +459,7 @@ namespace Tailviewer.Ui.ViewModels
 			FileSize = _dataSource.FileSize;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
-			SearchResultCount = _dataSource.Search.Count;
+			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
 
 			if (NewLogLineCount != newBefore)
 			{

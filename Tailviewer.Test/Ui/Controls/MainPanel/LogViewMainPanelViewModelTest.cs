@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -65,18 +66,28 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		}
 
 		[Test]
-		[Description("Verifies that updates are forwarded to the currently selected data source")]
+		[Description("Verifies that update retrieves certain changed values from ALL data sources, even if they aren't the selected one")]
 		public void TestUpdate3()
 		{
+			var dataSource1 = new Mock<ISingleDataSource>();
+			dataSource1.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource1.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			var dataSource2 = new Mock<ISingleDataSource>();
+			dataSource2.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+
+			_dataSources.Setup(x => x.GetEnumerator()).Returns(new List<IDataSource> {dataSource1.Object, dataSource2.Object}.GetEnumerator());
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
-			new Action(() => model.Update()).ShouldNotThrow("because we haven't set a data source, yet");
+			model.RecentFiles.Should().HaveCount(2);
 
-			var dataSource = new Mock<IDataSourceViewModel>();
-			dataSource.Setup(x => x.DataSource).Returns(CreateDataSource().Object);
-			model.CurrentDataSource = dataSource.Object;
+			dataSource1.Setup(x => x.NoTimestampCount).Returns(42);
+			dataSource2.Setup(x => x.NoTimestampCount).Returns(9001);
+
 			model.Update();
-
-			dataSource.Verify(x => x.Update(), Times.Once, "because Update() should forward the update to the current data source, if there is any");
+			var viewModel1 = model.RecentFiles.First();
+			viewModel1.NoTimestampCount.Should().Be(42);
+			var viewModel2 = model.RecentFiles.Last();
+			viewModel2.NoTimestampCount.Should().Be(9001);
 		}
 
 		[Test]

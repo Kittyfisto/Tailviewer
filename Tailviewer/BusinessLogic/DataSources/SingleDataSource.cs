@@ -7,6 +7,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 {
 	public sealed class SingleDataSource
 		: AbstractDataSource
+		, ISingleDataSource
 	{
 		private readonly ILogFile _unfilteredLogFile;
 

@@ -182,7 +182,7 @@ namespace Tailviewer.Ui.ViewModels
 				throw new ArgumentNullException(nameof(dataSource));
 
 			IDataSourceViewModel viewModel;
-			var single = dataSource as SingleDataSource;
+			var single = dataSource as ISingleDataSource;
 			if (single != null)
 			{
 				viewModel = new SingleDataSourceViewModel(single);
