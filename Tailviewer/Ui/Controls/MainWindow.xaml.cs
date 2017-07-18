@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using log4net;
 using Metrolib;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -78,7 +80,15 @@ namespace Tailviewer.Ui.Controls
 
 		private void FocusLogFileSearch()
 		{
-			//PART_LogFileView.FocusStringFilter();
+			var grid = VisualTreeHelper.GetChild(PART_Content, 0) as Grid;
+			if (grid != null)
+			{
+				var logViewerControl = VisualTreeHelper.GetChild(grid, 1) as LogViewerControl;
+				if (logViewerControl != null)
+				{
+					logViewerControl.PART_SearchBox.Focus();
+				}
+			}
 		}
 
 		private void FocusDataSourceSearch()

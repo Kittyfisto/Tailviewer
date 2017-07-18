@@ -182,7 +182,8 @@
                             </ListView.ItemTemplate>
                         </metrolib:FlatListView>
                         <ContentPresenter Grid.Column="1"
-                                          Content="{Binding SelectedMainPanel}" />
+                                          Content="{Binding SelectedMainPanel}"
+                                          x:Name="PART_Content"/>
                     </Grid>
 
                     <Grid Grid.Column="1"
