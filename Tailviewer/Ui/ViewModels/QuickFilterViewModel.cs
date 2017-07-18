@@ -138,6 +138,7 @@ namespace Tailviewer.Ui.ViewModels
 				_quickFilter.Value = value;
 				UpdateValidity();
 				EmitPropertyChanged();
+				IsActive = true;
 			}
 		}
 

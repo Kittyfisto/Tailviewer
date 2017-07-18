@@ -111,5 +111,14 @@ namespace Tailviewer.Test.Ui
 			_model.IsActive = false;
 			_dataSourceSettings.ActivatedQuickFilters.Should().BeEmpty();
 		}
+
+		[Test]
+		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/82")]
+		public void TestChangeFilterText1()
+		{
+			_model.IsActive.Should().BeFalse();
+			_model.Value = "id = 42";
+			_model.IsActive.Should().BeTrue("because a filter should activate itself when the text is being modified");
+		}
 	}
 }
