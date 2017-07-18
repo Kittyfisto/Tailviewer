@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.LogView
 {

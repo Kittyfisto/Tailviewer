@@ -10,6 +10,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
@@ -33,7 +34,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			_dataSources.Setup(x => x.GetEnumerator()).Returns(new List<IDataSource>().GetEnumerator());
 
 			_quickFilters = new Mock<IQuickFilters>();
-			_quickFilters.Setup(x => x.Add()).Returns(new QuickFilter(new Tailviewer.Settings.QuickFilter()));
+			_quickFilters.Setup(x => x.Add()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
 
 			_settings = new Mock<IApplicationSettings>();
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);

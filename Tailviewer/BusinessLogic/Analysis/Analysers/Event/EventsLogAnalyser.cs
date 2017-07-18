@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core.LogTables;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event

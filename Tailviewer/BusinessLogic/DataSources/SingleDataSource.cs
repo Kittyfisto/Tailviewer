@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources

@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic

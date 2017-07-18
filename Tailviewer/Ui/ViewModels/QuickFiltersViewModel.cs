@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;

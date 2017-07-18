@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
 {

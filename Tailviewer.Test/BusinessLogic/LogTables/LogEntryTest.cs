@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.Test.BusinessLogic.LogTables
 {

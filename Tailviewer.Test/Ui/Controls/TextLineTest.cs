@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core;
 using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Test.Ui.Controls

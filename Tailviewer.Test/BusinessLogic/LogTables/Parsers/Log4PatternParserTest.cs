@@ -4,8 +4,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
-using Tailviewer.BusinessLogic.LogTables.Parsers;
+using Tailviewer.Core.LogTables;
+using Tailviewer.Core.LogTables.Parsers;
 
 namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 {

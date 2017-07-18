@@ -6,6 +6,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Bookmarks
 {

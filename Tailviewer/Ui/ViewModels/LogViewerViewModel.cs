@@ -15,6 +15,8 @@ using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.Filters;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels

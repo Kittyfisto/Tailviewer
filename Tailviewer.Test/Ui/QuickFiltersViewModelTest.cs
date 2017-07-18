@@ -6,6 +6,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;

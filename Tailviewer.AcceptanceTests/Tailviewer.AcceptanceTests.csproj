@@ -93,7 +93,6 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteLogTableAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="InstallerTest.cs" />
     <Compile Include="ProcessEx.cs" />
@@ -111,6 +110,10 @@
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
       <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
       <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
+      <Name>Tailviewer.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Test\Tailviewer.Test.csproj">
       <Project>{284845FB-EFF7-434E-9006-E789AB95F2F2}</Project>

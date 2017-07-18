@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.BusinessLogic
+﻿using Tailviewer.Core;
+
+namespace Tailviewer.BusinessLogic
 {
 	/// <summary>
 	///     A <see cref="ILogDataAccessoror{TIndex,TData}" /> implementation that doesn't allow any access

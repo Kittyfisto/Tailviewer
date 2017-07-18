@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers
 {

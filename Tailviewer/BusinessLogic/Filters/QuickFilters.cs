@@ -7,17 +7,17 @@ namespace Tailviewer.BusinessLogic.Filters
 	public sealed class QuickFilters : IQuickFilters
 	{
 		private readonly List<QuickFilter> _quickFilters;
-		private readonly Settings.QuickFilters _settings;
+		private readonly Core.Settings.QuickFilters _settings;
 		private readonly object _syncRoot;
 
-		public QuickFilters(Settings.QuickFilters settings)
+		public QuickFilters(Core.Settings.QuickFilters settings)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 
 			_syncRoot = new object();
 			_settings = settings;
 			_quickFilters = new List<QuickFilter>();
-			foreach (Settings.QuickFilter setting in settings)
+			foreach (Core.Settings.QuickFilter setting in settings)
 			{
 				_quickFilters.Add(new QuickFilter(setting));
 			}
@@ -42,7 +42,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		{
 			lock (_syncRoot)
 			{
-				var settings = new Settings.QuickFilter();
+				var settings = new Core.Settings.QuickFilter();
 				var filter = new QuickFilter(settings);
 				_quickFilters.Add(filter);
 				_settings.Add(settings);

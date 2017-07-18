@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Test.Ui

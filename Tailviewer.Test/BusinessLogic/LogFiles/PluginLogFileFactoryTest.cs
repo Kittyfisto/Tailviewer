@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {

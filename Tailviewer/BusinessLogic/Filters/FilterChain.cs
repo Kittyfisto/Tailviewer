@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
+using Tailviewer.Core.Filters;
 
 namespace Tailviewer.BusinessLogic.Filters
 {

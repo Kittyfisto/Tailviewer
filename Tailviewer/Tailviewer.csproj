@@ -120,79 +120,25 @@
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
-    <Compile Include="BusinessLogic\ITimestampParser.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
-    <Compile Include="BusinessLogic\LogFiles\InMemoryLogFile.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalysis.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyser.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilter.cs" />
-    <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
-    <Compile Include="BusinessLogic\Filters\NoFilter.cs" />
-    <Compile Include="BusinessLogic\ILogDataAccessor.cs" />
-    <Compile Include="BusinessLogic\LogDataCache.cs" />
-    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFile.cs" />
-    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileProxy.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFile.cs" />
-    <Compile Include="BusinessLogic\LogLineMatch.cs" />
     <Compile Include="BusinessLogic\Filters\InvertFilter.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
     <Compile Include="BusinessLogic\Filters\FilterChain.cs" />
     <Compile Include="BusinessLogic\Filters\Filter.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
-    <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilter.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MergedLogFile.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilters.cs" />
     <Compile Include="BusinessLogic\Filters\RegexFilter.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilter.cs" />
     <Compile Include="BusinessLogic\Filters\WildcardFilter.cs" />
-    <Compile Include="BusinessLogic\LogTables\IColumnHeader.cs" />
-    <Compile Include="BusinessLogic\LogTables\ILogTableListener.cs" />
-    <Compile Include="BusinessLogic\LogTables\ILogTableSchema.cs" />
-    <Compile Include="BusinessLogic\LogTables\InMemoryLogTable.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableListenerNotifier.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableListenerCollection.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableModification.cs" />
-    <Compile Include="BusinessLogic\LogDataAccessQueue.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableSchema.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableSection.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\ColumnHeader.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\ColumnParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\ColumnType.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\CsvParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\DateParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\IColumnParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\ILogTable.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\ILogFileParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LevelParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LineParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogFileTable.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogEntry.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\MessageParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\NewlineParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\ThreadParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\TimestampParser.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteAccessor.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteColumnHeader.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteDataType.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteLogTable.cs" />
-    <Compile Include="BusinessLogic\LogTables\SQLiteSchema.cs" />
     <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
-    <Compile Include="BusinessLogic\Plugins\IPluginDescription.cs" />
-    <Compile Include="BusinessLogic\Plugins\IPluginLoader.cs" />
-    <Compile Include="BusinessLogic\Plugins\IPluginScanner.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginDescription.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginLoader.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginScanner.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
@@ -207,14 +153,9 @@
     <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
-    <Compile Include="BusinessLogic\StreamReaderEx.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\DateTimeParser.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParser.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParser.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="Percentage.cs" />
-    <Compile Include="QueueExtensions.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\BookmarkSettings.cs" />
@@ -238,12 +179,7 @@
     <Compile Include="Settings\IExportSettings.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
-    <Compile Include="Settings\QuickFilter.cs" />
-    <Compile Include="Settings\QuickFilterActionType.cs" />
-    <Compile Include="Settings\QuickFilters.cs" />
-    <Compile Include="Settings\QuickFilterMatchType.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
-    <Compile Include="StringExtensions.cs" />
     <Compile Include="Ui\Controls\About\AboutControl.xaml.cs">
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
@@ -334,10 +270,7 @@
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
-    <Compile Include="BusinessLogic\LogFiles\FilteredLogFile.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileExtensions.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
-    <Compile Include="BusinessLogic\LogFiles\TextLogFile.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
@@ -548,6 +481,10 @@
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
       <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
       <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62c60d20-180e-4a59-9ef3-30161e1e31cb}</Project>
+      <Name>Tailviewer.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

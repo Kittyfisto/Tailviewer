@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core;
+using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.Test.BusinessLogic
 {

@@ -5,7 +5,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogTables;
 using Tailviewer.Settings.Dashboard.Analysers.Event;
 
 namespace Tailviewer.Test.BusinessLogic.Analysers.Event

@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
 {
