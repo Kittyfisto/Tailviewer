@@ -120,5 +120,15 @@ namespace Tailviewer.Test.Ui
 			_model.Value = "id = 42";
 			_model.IsActive.Should().BeTrue("because a filter should activate itself when the text is being modified");
 		}
+
+		[Test]
+		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/82")]
+		public void TestChangeFilterText2()
+		{
+			_model.IsActive.Should().BeFalse();
+			_model.CurrentDataSource = null;
+			_model.Value = "id = 42";
+			_model.IsActive.Should().BeFalse("because a filter that doesn't control a data source cannot be activated");
+		}
 	}
 }
