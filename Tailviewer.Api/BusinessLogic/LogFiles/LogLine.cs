@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
+using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -8,6 +10,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	public struct LogLine : IEquatable<LogLine>
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		/// <summary>
 		/// </summary>
 		public readonly LevelFlags Level;
@@ -27,6 +31,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		public readonly int LogEntryIndex;
 
+		/// <summary>
+		///     The message belonging to this log line.
+		/// </summary>
+		/// <remarks>
+		///     Will never contain more than one line.
+		/// </remarks>
 		public readonly string Message;
 
 		/// <summary>
@@ -34,53 +44,163 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		public readonly DateTime? Timestamp;
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, string message, LevelFlags level)
 			: this(lineIndex, lineIndex, message, level)
 		{
 		}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, string message, LevelFlags level, DateTime? timestamp)
 			: this(lineIndex, lineIndex, message, level, timestamp)
 		{
 		}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level)
 			: this(lineIndex, logEntryIndex, message, level, null)
 		{
 		}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="originalLineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level)
 			: this(lineIndex, originalLineIndex, logEntryIndex, message, level, null)
 		{
 		}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 			: this(lineIndex, lineIndex, logEntryIndex, message, level, timestamp)
 		{}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
 		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 			: this((int)lineIndex, (int)logEntryIndex, message, level, timestamp)
 		{}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="line"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int logEntryIndex, LogLine line)
 			: this(lineIndex, logEntryIndex, line.Message, line.Level, line.Timestamp)
 		{}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="line"></param>
 		[DebuggerStepThrough]
 		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLine line)
 			: this((int)lineIndex, (int)logEntryIndex, line.Message, line.Level, line.Timestamp)
 		{}
 
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="originalLineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
 		{
+			if (message != null)
+			{
+				int idx = message.IndexOf("\n", StringComparison.InvariantCultureIgnoreCase);
+				if (idx != -1)
+				{
+					message = message.Substring(0, idx);
+					Log.WarnFormat("A LogLine may only serve a single line message. If you want to present a multi-line log entry, then please create multiple lines with the same LogEntryIndex");
+				}
+			}
+
 			LineIndex = lineIndex;
 			OriginalLineIndex = originalLineIndex;
 			Message = message;
@@ -89,6 +209,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Timestamp = timestamp;
 		}
 
+		/// <summary>
+		///     Compares this log line against the given one.
+		/// </summary>
+		/// <param name="other">The other log line to compare against this one</param>
+		/// <returns>True when this and the given log line have the same values in all publicly visible properties</returns>
 		public bool Equals(LogLine other)
 		{
 			if (Level != other.Level)
@@ -109,17 +234,24 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return true;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.Format("#{0} (#{1}): {2}", LineIndex, LogEntryIndex, Message);
 		}
 
+		/// <summary>
+		///     Compares this log line against the given one.
+		/// </summary>
+		/// <param name="obj">The other log line to compare against this one</param>
+		/// <returns>True when this and the given log line have the same values in all publicly visible properties</returns>
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			return obj is LogLine && Equals((LogLine) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			unchecked
@@ -133,11 +265,23 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		/// <summary>
+		///     Compares the two given log lines for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogLine left, LogLine right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two given log lines for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogLine left, LogLine right)
 		{
 			return !left.Equals(right);
