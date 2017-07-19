@@ -43,6 +43,28 @@ namespace Tailviewer
 			AddV051();
 			AddV052();
 			AddV060();
+			AddV061();
+		}
+
+		private static void AddV061()
+		{
+			var features = new[]
+			{
+				"Tailviewer can now be enhanced by plugins"
+			};
+			var bugfixes = new string[]
+			{
+				
+			};
+			var misc = new[]
+			{
+				"Improved data sources tree look",
+				"Changing a filter value automatically enables it"
+			};
+			var releaseDate = new DateTime(2017, 7, 19);
+			var version = new Version(0, 6, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV060()
