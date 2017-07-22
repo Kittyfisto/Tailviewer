@@ -2,36 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
-using Tailviewer.Core.Filters;
 
-namespace Tailviewer.BusinessLogic.Filters
+namespace Tailviewer.Core.Filters
 {
 	/// <summary>
-	///     Combines multiple <see cref="ILogEntryFilter" />s into one.
-	///     A <see cref="LogLine" /> passes if it passes *all* individual filters.
+	///     A simple filter expression which performs a logical AND between all <see cref="ILogEntryFilter"/>s.
 	/// </summary>
-	public sealed class FilterChain
+	public sealed class FilterExpression
 		: ILogEntryFilter
 	{
-		private readonly ILogEntryFilter[] _filters;
+		private readonly ILogEntryFilter[] _andFilters;
 
-		public FilterChain(IEnumerable<ILogEntryFilter> filters)
+		public FilterExpression(IEnumerable<ILogEntryFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException(nameof(filters));
 
-			_filters = filters.ToArray();
-			if (_filters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
+			_andFilters = filters.ToArray();
+			if (_andFilters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
-			var passes = new bool[_filters.Length];
+			var passes = new bool[_andFilters.Length];
 			foreach (LogLine logLine in logEntry)
 			{
-				for (int i = 0; i < _filters.Length; ++i)
+				for (int i = 0; i < _andFilters.Length; ++i)
 				{
-					ILogEntryFilter filter = _filters[i];
+					ILogEntryFilter filter = _andFilters[i];
 					if (!passes[i])
 					{
 						passes[i] = filter.PassesFilter(logLine);
@@ -56,11 +53,11 @@ namespace Tailviewer.BusinessLogic.Filters
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable ForCanBeConvertedToForeach
-			for (int i = 0; i < _filters.Length; ++i)
+			for (int i = 0; i < _andFilters.Length; ++i)
 // ReSharper restore ForCanBeConvertedToForeach
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
-				if (!_filters[i].PassesFilter(logLine))
+				if (!_andFilters[i].PassesFilter(logLine))
 					return false;
 			}
 
@@ -76,7 +73,7 @@ namespace Tailviewer.BusinessLogic.Filters
 
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
-			foreach (var filter in _filters)
+			foreach (var filter in _andFilters)
 			{
 				filter.Match(line, matches);
 			}

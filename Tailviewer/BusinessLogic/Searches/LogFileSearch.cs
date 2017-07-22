@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
 using Tailviewer.Core;
+using Tailviewer.Core.Filters;
 
 namespace Tailviewer.BusinessLogic.Searches
 {

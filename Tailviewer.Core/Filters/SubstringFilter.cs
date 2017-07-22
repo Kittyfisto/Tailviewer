@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
-using Tailviewer.Core.Filters;
 
-namespace Tailviewer.BusinessLogic.Filters
+namespace Tailviewer.Core.Filters
 {
 	/// <summary>
 	///     A filter that looks for a substring in a (possibly) bigger string.

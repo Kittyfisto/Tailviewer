@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.Core.Filters;
+using Tailviewer.BusinessLogic;
 
-namespace Tailviewer.BusinessLogic.Filters
+namespace Tailviewer.Core.Filters
 {
+	/// <summary>
+	///     This class serves as a collection of named constructors to create various <see cref="ILogEntryFilter"/>s.
+	/// </summary>
 	public static class Filter
 	{
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{
-			List<ILogEntryFilter> tmp = filters.ToList();
+			var tmp = filters.ToList();
 			if (tmp.Count == 0)
 				return null;
 
 			if (tmp.Count == 1)
 				return tmp[0];
-			return new FilterChain(tmp);
+			return new FilterExpression(tmp);
 		}
 
 		public static ILogEntryFilter Create(string substringFilter)
@@ -24,14 +27,14 @@ namespace Tailviewer.BusinessLogic.Filters
 		}
 
 		public static ILogEntryFilter Create(string substringFilter,
-		                                     LevelFlags levelFilter)
+			LevelFlags levelFilter)
 		{
 			return Create(CreateFilters(substringFilter, true, levelFilter));
 		}
 
 		public static List<ILogEntryFilter> CreateFilters(string substringFilter,
-		                                                  bool ignoreCase,
-		                                                  LevelFlags levelFilter)
+			bool ignoreCase,
+			LevelFlags levelFilter)
 		{
 			var filters = new List<ILogEntryFilter>();
 			if (!string.IsNullOrEmpty(substringFilter))
@@ -42,7 +45,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		}
 
 		public static ILogEntryFilter Create(LevelFlags levelFilter,
-		                                     IEnumerable<ILogEntryFilter> additionalFilters = null)
+			IEnumerable<ILogEntryFilter> additionalFilters = null)
 		{
 			var filters = new List<ILogEntryFilter> {new LevelFilter(levelFilter)};
 			if (additionalFilters != null)
@@ -51,11 +54,11 @@ namespace Tailviewer.BusinessLogic.Filters
 		}
 
 		public static ILogEntryFilter Create(string substringFilter,
-		                                     bool ignoreCase,
-		                                     LevelFlags levelFilter,
-		                                     IEnumerable<ILogEntryFilter> additionalFilters = null)
+			bool ignoreCase,
+			LevelFlags levelFilter,
+			IEnumerable<ILogEntryFilter> additionalFilters = null)
 		{
-			List<ILogEntryFilter> filters = CreateFilters(substringFilter, ignoreCase, levelFilter);
+			var filters = CreateFilters(substringFilter, ignoreCase, levelFilter);
 			if (additionalFilters != null)
 				filters.AddRange(additionalFilters);
 			return Create(filters);

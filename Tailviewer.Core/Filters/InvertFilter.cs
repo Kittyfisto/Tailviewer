@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
-using Tailviewer.Core.Filters;
 
-namespace Tailviewer.BusinessLogic.Filters
+namespace Tailviewer.Core.Filters
 {
 	public sealed class InvertFilter : ILogEntryFilter
 	{

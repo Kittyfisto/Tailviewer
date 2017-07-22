@@ -6,6 +6,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
+using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
 {
