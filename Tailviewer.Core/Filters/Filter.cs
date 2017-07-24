@@ -17,7 +17,7 @@ namespace Tailviewer.Core.Filters
 
 			if (tmp.Count == 1)
 				return tmp[0];
-			return new FilterExpression(tmp);
+			return new AndFilter(tmp);
 		}
 
 		public static ILogEntryFilter Create(string substringFilter)

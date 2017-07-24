@@ -8,12 +8,12 @@ namespace Tailviewer.Core.Filters
 	/// <summary>
 	///     A simple filter expression which performs a logical AND between all <see cref="ILogEntryFilter"/>s.
 	/// </summary>
-	public sealed class FilterExpression
+	public sealed class AndFilter
 		: ILogEntryFilter
 	{
 		private readonly ILogEntryFilter[] _andFilters;
 
-		public FilterExpression(IEnumerable<ILogEntryFilter> filters)
+		public AndFilter(IEnumerable<ILogEntryFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException(nameof(filters));
 

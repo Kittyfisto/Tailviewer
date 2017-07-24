@@ -54,12 +54,13 @@
   <ItemGroup>
     <Compile Include="Filters\EmptyLogLineFilter.cs" />
     <Compile Include="Filters\Filter.cs" />
-    <Compile Include="Filters\FilterExpression.cs" />
+    <Compile Include="Filters\AndFilter.cs" />
     <Compile Include="Filters\ILogEntryFilter.cs" />
     <Compile Include="Filters\ILogLineFilter.cs" />
     <Compile Include="Filters\InvertFilter.cs" />
     <Compile Include="Filters\LevelFilter.cs" />
     <Compile Include="Filters\NoFilter.cs" />
+    <Compile Include="Filters\OrFilter.cs" />
     <Compile Include="Filters\RegexFilter.cs" />
     <Compile Include="Filters\SubstringFilter.cs" />
     <Compile Include="Filters\WildcardFilter.cs" />
