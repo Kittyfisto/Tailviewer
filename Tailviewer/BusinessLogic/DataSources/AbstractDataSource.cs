@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Metrolib;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Filters;
@@ -56,7 +55,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _quickFilterChain; }
 			set
 			{
-				if (value == _quickFilterChain)
+				if (ReferenceEquals(value, _quickFilterChain))
 					return;
 
 				_quickFilterChain = value;
@@ -90,10 +89,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime LastModified
-		{
-			get { return UnfilteredLogFile.LastModified; }
-		}
+		public DateTime LastModified => UnfilteredLogFile.LastModified;
 
 		public DateTime LastViewed
 		{

@@ -2,7 +2,6 @@
 using System.Diagnostics.Contracts;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;
-using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
@@ -41,10 +40,7 @@ namespace Tailviewer.BusinessLogic.Filters
 			set { _settings.MatchType = value; }
 		}
 
-		public Guid Id
-		{
-			get { return _settings.Id; }
-		}
+		public Guid Id => _settings.Id;
 
 		[Pure]
 		public ILogEntryFilter CreateFilter()

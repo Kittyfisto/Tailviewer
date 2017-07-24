@@ -20,7 +20,9 @@ namespace Tailviewer.Core.Settings
 					case "quickfilter":
 						var quickfilter = new QuickFilter();
 						if (quickfilter.Restore(subtree))
+						{
 							quickfilters.Add(quickfilter);
+						}
 						break;
 				}
 			}

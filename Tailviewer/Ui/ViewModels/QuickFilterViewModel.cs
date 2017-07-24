@@ -4,10 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;
-using Tailviewer.Settings;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Ui.ViewModels

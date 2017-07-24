@@ -20,10 +20,7 @@ namespace Tailviewer.Core.Settings
 			IsInverted = false;
 		}
 
-		public Guid Id
-		{
-			get { return _id; }
-		}
+		public Guid Id => _id;
 
 		public bool Restore(XmlReader reader)
 		{

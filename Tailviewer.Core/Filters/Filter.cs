@@ -45,11 +45,12 @@ namespace Tailviewer.Core.Filters
 		}
 
 		public static ILogEntryFilter Create(LevelFlags levelFilter,
-			IEnumerable<ILogEntryFilter> additionalFilters = null)
+			IEnumerable<ILogEntryFilter> andFilters = null,
+			IEnumerable<ILogEntryFilter> orFilters = null)
 		{
 			var filters = new List<ILogEntryFilter> {new LevelFilter(levelFilter)};
-			if (additionalFilters != null)
-				filters.AddRange(additionalFilters);
+			if (andFilters != null)
+				filters.AddRange(andFilters);
 			return Create(filters);
 		}
 
