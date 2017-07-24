@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using FluentAssertions;
+using Metrolib;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -10,6 +12,14 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class LogLineTest
 	{
 		[Test]
+		public void TestSize()
+		{
+			var size = Size.FromBytes(Marshal.SizeOf<LogLine>());
+			Console.WriteLine("sizeof(LogLine): {0}", size);
+			size.Should().Be(Size.FromBytes(41));
+		}
+
+		[Test]
 		public void TestConstruction1()
 		{
 			var line = new LogLine(1, 2, "Foobar", LevelFlags.Info);
@@ -19,6 +29,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Message.Should().Be("Foobar");
 			line.Level.Should().Be(LevelFlags.Info);
 			line.Timestamp.Should().NotHaveValue();
+			line.MatchedFilters.Should().Be(0);
 		}
 
 		[Test]
@@ -30,6 +41,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.LogEntryIndex.Should().Be(2);
 			line.Message.Should().Be("Foobar");
 			line.Level.Should().Be(LevelFlags.Error);
+			line.MatchedFilters.Should().Be(0);
 		}
 
 		[Test]
@@ -42,6 +54,20 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Message.Should().BeNull();
 			line.Level.Should().Be(LevelFlags.All);
 			line.Timestamp.Should().BeNull();
+			line.MatchedFilters.Should().Be(0);
+		}
+
+		[Test]
+		public void TestConstruction4()
+		{
+			var line = new LogLine(0, 0, 0, null, LevelFlags.All, null, 42);
+			line.LineIndex.Should().Be(0);
+			line.OriginalLineIndex.Should().Be(0);
+			line.LogEntryIndex.Should().Be(0);
+			line.Message.Should().BeNull();
+			line.Level.Should().Be(LevelFlags.All);
+			line.Timestamp.Should().BeNull();
+			line.MatchedFilters.Should().Be(42);
 		}
 
 		[Test]

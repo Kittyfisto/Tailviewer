@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -105,6 +107,7 @@
     <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\AndFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\FilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\OrFilterTest.cs" />

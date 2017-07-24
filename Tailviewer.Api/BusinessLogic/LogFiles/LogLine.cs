@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using log4net;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -8,6 +9,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	///     Represents a single line (terminated by \n or \r\n) of the data source (log file).
 	/// </summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct LogLine : IEquatable<LogLine>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -43,6 +45,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     The timestamp associated with this log-entry.
 		/// </summary>
 		public readonly DateTime? Timestamp;
+
+		/// <summary>
+		///     A bitmask which describes the filters that caused this log line to be visible.
+		/// </summary>
+		/// <remarks>
+		///     As a result, only up to 32 filters may be used at one time.
+		/// </remarks>
+		public readonly int MatchedFilters;
 
 		/// <summary>
 		///     Initializes this log line.
@@ -190,6 +200,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="timestamp"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp)
+			: this(lineIndex, originalLineIndex, logEntryIndex, message, level, timestamp, 0)
+		{}
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="originalLineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
+		/// <param name="matchedFilters"></param>
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
 		{
 			if (message != null)
 			{
@@ -207,6 +237,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Level = level;
 			LogEntryIndex = logEntryIndex;
 			Timestamp = timestamp;
+			MatchedFilters = matchedFilters;
 		}
 
 		/// <summary>
