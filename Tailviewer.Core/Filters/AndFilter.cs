@@ -11,24 +11,24 @@ namespace Tailviewer.Core.Filters
 	public sealed class AndFilter
 		: ILogEntryFilter
 	{
-		private readonly ILogEntryFilter[] _andFilters;
+		private readonly ILogEntryFilter[] _filters;
 
 		public AndFilter(IEnumerable<ILogEntryFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException(nameof(filters));
 
-			_andFilters = filters.ToArray();
-			if (_andFilters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
+			_filters = filters.ToArray();
+			if (_filters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
 		}
 
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
-			var passes = new bool[_andFilters.Length];
+			var passes = new bool[_filters.Length];
 			foreach (LogLine logLine in logEntry)
 			{
-				for (int i = 0; i < _andFilters.Length; ++i)
+				for (int i = 0; i < _filters.Length; ++i)
 				{
-					ILogEntryFilter filter = _andFilters[i];
+					ILogEntryFilter filter = _filters[i];
 					if (!passes[i])
 					{
 						passes[i] = filter.PassesFilter(logLine);
@@ -53,11 +53,11 @@ namespace Tailviewer.Core.Filters
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable ForCanBeConvertedToForeach
-			for (int i = 0; i < _andFilters.Length; ++i)
+			for (int i = 0; i < _filters.Length; ++i)
 // ReSharper restore ForCanBeConvertedToForeach
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
-				if (!_andFilters[i].PassesFilter(logLine))
+				if (!_filters[i].PassesFilter(logLine))
 					return false;
 			}
 
@@ -73,7 +73,7 @@ namespace Tailviewer.Core.Filters
 
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
-			foreach (var filter in _andFilters)
+			foreach (var filter in _filters)
 			{
 				filter.Match(line, matches);
 			}

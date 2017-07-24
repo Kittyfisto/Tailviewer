@@ -71,5 +71,10 @@ namespace Tailviewer.Core.Filters
 				startIndex += length;
 			} while (startIndex < message.Length - 1);
 		}
+
+		public override string ToString()
+		{
+			return string.Format("message.Contains({0}, {1})", StringFilter, Comparison);
+		}
 	}
 }

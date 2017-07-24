@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -49,6 +51,24 @@ namespace Tailviewer.Core.Filters
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			
+		}
+
+		public override string ToString()
+		{
+			var flags =
+				new[] {LevelFlags.Debug, LevelFlags.Info, LevelFlags.Warning, LevelFlags.Error, LevelFlags.Fatal }
+				.Where(m => Level.HasFlag(m))
+				.ToList();
+
+			if (flags.Count == 0)
+			{
+				return string.Format("level == {0}", LevelFlags.None);
+			}
+			if (flags.Count == 1)
+			{
+				return string.Format("level == {0}", flags[0]);
+			}
+			return string.Format("(level == {0})", string.Join(" || ", flags));
 		}
 	}
 }

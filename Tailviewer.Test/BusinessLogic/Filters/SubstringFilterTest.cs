@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
@@ -31,6 +30,16 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 			matches.Count.Should().Be(1);
 			matches[0].Index.Should().Be(4);
 			matches[0].Count.Should().Be(1);
+		}
+
+		[Test]
+		public void TestToString()
+		{
+			var filter = new SubstringFilter("a", true);
+			filter.ToString().Should().Be("message.Contains(a, InvariantCultureIgnoreCase)");
+
+			filter = new SubstringFilter("a", false);
+			filter.ToString().Should().Be("message.Contains(a, InvariantCulture)");
 		}
 	}
 }
