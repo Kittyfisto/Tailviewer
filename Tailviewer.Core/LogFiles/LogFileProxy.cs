@@ -316,6 +316,8 @@ namespace Tailviewer.Core.LogFiles
 			throw new IndexOutOfRangeException();
 		}
 
+		public double Progress => _innerLogFile?.Progress ?? 1;
+
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(logFile, section));

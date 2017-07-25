@@ -398,5 +398,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
 				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
+
+		[Test]
+		public void TestProgress1()
+		{
+			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);
+			logFile.Progress.Should().Be(1);
+		}
+
+		[Test]
+		public void TestProgress2()
+		{
+			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);
+			_logFile.Setup(x => x.Progress).Returns(0.5);
+			logFile.InnerLogFile = _logFile.Object;
+			logFile.Progress.Should().Be(0.5);
+		}
 	}
 }

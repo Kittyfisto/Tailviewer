@@ -130,6 +130,8 @@ namespace Tailviewer.Core.LogFiles
 			return actualLine;
 		}
 
+		public override double Progress => 1;
+
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			PendingModification modification;

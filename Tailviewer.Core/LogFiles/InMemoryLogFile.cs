@@ -134,6 +134,8 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		public double Progress => 1;
+
 		public void Clear()
 		{
 			lock (_syncRoot)

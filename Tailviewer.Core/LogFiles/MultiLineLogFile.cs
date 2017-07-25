@@ -110,6 +110,8 @@ namespace Tailviewer.Core.LogFiles
 			return line;
 		}
 
+		public override double Progress => 1;
+
 		private LogLine PatchNoLock(LogLine line)
 		{
 			var info = _indices[line.LineIndex];

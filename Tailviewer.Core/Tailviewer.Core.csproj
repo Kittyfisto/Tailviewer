@@ -110,6 +110,7 @@
     <Compile Include="LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="MathEx.cs" />
     <Compile Include="Plugins\IPluginDescription.cs" />
     <Compile Include="Plugins\IPluginLoader.cs" />
     <Compile Include="Plugins\IPluginScanner.cs" />

@@ -13,6 +13,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     This interface is meant to provide access to the wrapped data source in a coherent way and to notify
 	///     the application of changes to the data source, if necessary.
 	/// </remarks>
+	/// <remarks>
+	///     TODO: Create separate (simplier) interface for log file sources (to be used by plugins) so they don't have to implement that many methods...
+	/// </remarks>
 	public interface ILogFile
 		: IDisposable
 	{
@@ -108,6 +111,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		[Pure]
 		LogLine GetLine(int index);
+
+		/// <summary>
+		///     The relative progress (in between 0 and 1) between the number of lines currently exposed by this log file versus
+		///     the number
+		///     of lines in the underlying data source.
+		/// </summary>
+		/// <remarks>
+		///     In case it is unfeasable to determine the number of lines before scanning through the entire source, 1 should be returned.
+		/// </remarks>
+		double Progress { get; }
 
 		#endregion
 

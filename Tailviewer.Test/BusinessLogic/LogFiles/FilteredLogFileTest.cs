@@ -5,7 +5,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
@@ -58,6 +57,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue("because the source is finished and the filtered log file has processed all changes from the source");
+			}
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			_logFile.Setup(x => x.Count).Returns(2);
+			_logFile.Setup(x => x.Progress).Returns(1);
+			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
+			_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+				Filter.Create(null, true, LevelFlags.Debug)))
+			{
+				file.Progress.Should().Be(0, "because the filtered log file hasn't consumed anything of its source (yet)");
+
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+
+				_taskScheduler.RunOnce();
+				file.Progress.Should().Be(1, "because the filtered log file has consumed the entire source");
 			}
 		}
 

@@ -184,6 +184,19 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		public override double Progress
+		{
+			get
+			{
+				var sourceCount = _source.Count;
+				var currentIndex = _currentSourceIndex;
+
+				var relativeProgress = (double) currentIndex / sourceCount;
+				var progress = MathEx.Saturate(relativeProgress) * _source.Progress;
+				return progress;
+			}
+		}
+
 		private LogLine GetLineNoLock(int lineIndex)
 		{
 			int sourceLineIndex = _indices[lineIndex];
