@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.ViewModels
@@ -34,6 +33,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _searchTerm;
 		private int _currentSearchResultIndex;
 		private int _searchResultCount;
+		private double _progress;
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -327,6 +327,19 @@ namespace Tailviewer.Ui.ViewModels
 
 		#region Searches
 
+		public double Progress
+		{
+			get { return _progress; }
+			set
+			{
+				if (value == _progress)
+					return;
+
+				_progress = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public string SearchTerm
 		{
 			get { return _searchTerm; }
@@ -461,6 +474,7 @@ namespace Tailviewer.Ui.ViewModels
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
+			Progress = _dataSource.FilteredLogFile?.Progress ?? 1;
 
 			if (NewLogLineCount != newBefore)
 			{

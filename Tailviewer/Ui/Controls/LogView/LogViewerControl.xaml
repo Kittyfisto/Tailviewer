@@ -4,6 +4,7 @@
              xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
+             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -30,6 +31,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -158,13 +160,18 @@
                 Watermark="Search log file (Ctrl+F)" />
         </WrapPanel>
 
-        <Grid Grid.Row="1"
+        <metrolib:FlatProgressBar Grid.Row="1"
+                                  Minimum="0"
+                                  Maximum="1"
+                                  Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This}"/>
+
+        <Grid Grid.Row="2"
               Height="1"
               Background="{StaticResource SeparatorBrush}" />
 
         <logView:LogEntryListView
             x:Name="PART_ListView"
-            Grid.Row="2"
+            Grid.Row="3"
             LogFile="{Binding LogFile, ElementName=This}"
             Search="{Binding Search, ElementName=This}"
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
@@ -172,7 +179,7 @@
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
             SnapsToDevicePixels="True" />
 
-        <StackPanel Grid.Row="2" VerticalAlignment="Center">
+        <StackPanel Grid.Row="3" VerticalAlignment="Center">
             <TextBlock
                 HorizontalAlignment="Center"
                 FontSize="20"
@@ -183,7 +190,7 @@
                 Text="{Binding DetailedErrorMessage, ElementName=This}" />
         </StackPanel>
 
-        <Border Grid.Row="3"
+        <Border Grid.Row="4"
                 Background="#D8D8D8">
             <StackPanel Orientation="Horizontal">
                 <TextBlock

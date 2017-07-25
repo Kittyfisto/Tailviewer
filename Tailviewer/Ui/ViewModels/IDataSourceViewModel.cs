@@ -5,7 +5,6 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.ViewModels
@@ -59,6 +58,8 @@ namespace Tailviewer.Ui.ViewModels
 		bool HideEmptyLines { get; set; }
 
 		bool IsSingleLine { get; set; }
+
+		double Progress { get; }
 
 		#region Search
 
