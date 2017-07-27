@@ -4,12 +4,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     Basically a handle to a specific portion of the logfile.
-	///     Call <see cref="LogFile.GetSection" /> to actually obtain the data for that portion.
+	///     Call <see cref="ILogFile.GetSection" /> to actually obtain the data for that portion.
 	/// </summary>
 	public struct LogFileSection
 		: IEquatable<LogFileSection>
 	{
 		public static readonly LogFileSection Reset;
+
 		public readonly int Count;
 		public readonly LogLineIndex Index;
 		public readonly bool IsInvalidate;
@@ -48,6 +49,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public int LastIndex => Index + Count - 1;
 
+		/// <summary>
+		/// Tests if this and the given section represent the same section: [Index, Index+Count)
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		public bool Equals(LogFileSection other)
 		{
 			return Index == other.Index && Count == other.Count;
@@ -58,6 +64,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return index >= Index + Count;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			if (Index == LogLineIndex.Invalid && Count == 0)
@@ -78,12 +85,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return new LogFileSection(minIndex, count);
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			return obj is LogFileSection && Equals((LogFileSection) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			unchecked

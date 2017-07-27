@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic
+namespace Tailviewer
 {
 	/// <summary>
 	///     Represents an index to a specific log entry in a log.
@@ -8,59 +8,93 @@ namespace Tailviewer.BusinessLogic
 	/// </summary>
 	public struct LogEntryIndex
 		: IEquatable<LogEntryIndex>
-		  , IComparable<LogEntryIndex>
+			, IComparable<LogEntryIndex>
 	{
+		/// <summary>
+		///     The value of an invalid index.
+		/// </summary>
 		public static readonly LogEntryIndex Invalid;
-		private readonly int _value;
 
 		static LogEntryIndex()
 		{
 			Invalid = new LogEntryIndex(-1);
 		}
 
+		/// <summary>
+		///     Initializes this index with the given value.
+		/// </summary>
+		/// <param name="value"></param>
 		public LogEntryIndex(int value)
 		{
 			if (value < -1)
 				throw new ArgumentOutOfRangeException(nameof(value));
 
-			_value = value;
+			Value = value;
 		}
 
-		public int Value
-		{
-			get { return _value; }
-		}
+		/// <summary>
+		///     The numeric value of the index.
+		/// </summary>
+		public int Value { get; }
 
-		public bool IsInvalid
-		{
-			get { return this == Invalid; }
-		}
+		/// <summary>
+		///     Tests if this index is <see cref="Invalid" />.
+		/// </summary>
+		public bool IsInvalid => this == Invalid;
 
+		/// <summary>
+		///     Numerically compares this index to the given one.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		public int CompareTo(LogEntryIndex other)
 		{
-			return _value.CompareTo(other._value);
+			return Value.CompareTo(other.Value);
 		}
 
+		/// <summary>
+		///     Tests if this and the given index are equal in value.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		public bool Equals(LogEntryIndex other)
 		{
-			return _value == other._value;
+			return Value == other.Value;
 		}
 
+		/// <summary>
+		///     Returns the numerical value of the given index.
+		/// </summary>
+		/// <param name="value"></param>
 		public static explicit operator int(LogEntryIndex value)
 		{
-			return value._value;
+			return value.Value;
 		}
 
+		/// <summary>
+		///     Creates an index from the given value.
+		/// </summary>
+		/// <param name="value"></param>
 		public static implicit operator LogEntryIndex(int value)
 		{
 			return new LogEntryIndex(value);
 		}
 
+		/// <summary>
+		///     Increments this index.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static LogEntryIndex operator ++(LogEntryIndex value)
 		{
-			return new LogEntryIndex(value._value + 1);
+			return new LogEntryIndex(value.Value + 1);
 		}
 
+		/// <summary>
+		///     Tests if this index is equal to the given object.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns>true if the given object is a <see cref="LogEntryIndex" /> and is equal in value to this one, false otherwise</returns>
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
@@ -69,50 +103,51 @@ namespace Tailviewer.BusinessLogic
 
 		public override int GetHashCode()
 		{
-			return _value;
+			return Value;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			if (this == Invalid)
 				return "Invalid";
 
-			return string.Format("#{0}", _value);
+			return string.Format("#{0}", Value);
 		}
 
 		public static bool operator <(LogEntryIndex left, LogEntryIndex right)
 		{
-			return left._value < right._value;
+			return left.Value < right.Value;
 		}
 
 		public static bool operator >(LogEntryIndex left, LogEntryIndex right)
 		{
-			return left._value > right._value;
+			return left.Value > right.Value;
 		}
 
 		public static bool operator <=(LogEntryIndex left, LogEntryIndex right)
 		{
-			return left._value <= right._value;
+			return left.Value <= right.Value;
 		}
 
 		public static bool operator >=(LogEntryIndex left, LogEntryIndex right)
 		{
-			return left._value >= right._value;
+			return left.Value >= right.Value;
 		}
 
 		public static LogEntryIndex operator +(LogEntryIndex left, int right)
 		{
-			return new LogEntryIndex(left._value + right);
+			return new LogEntryIndex(left.Value + right);
 		}
 
 		public static LogEntryIndex operator +(int left, LogEntryIndex right)
 		{
-			return new LogEntryIndex(left + right._value);
+			return new LogEntryIndex(left + right.Value);
 		}
 
 		public static int operator -(LogEntryIndex left, LogEntryIndex right)
 		{
-			return left._value - right._value;
+			return left.Value - right.Value;
 		}
 
 		public static bool operator ==(LogEntryIndex left, LogEntryIndex right)
@@ -125,14 +160,26 @@ namespace Tailviewer.BusinessLogic
 			return !left.Equals(right);
 		}
 
+		/// <summary>
+		///     Returns the minimum value of the two given indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="rigth"></param>
+		/// <returns></returns>
 		public static LogEntryIndex Min(LogEntryIndex left, LogEntryIndex rigth)
 		{
-			return Math.Min(left._value, rigth._value);
+			return Math.Min(left.Value, rigth.Value);
 		}
 
+		/// <summary>
+		///     Returns the maximum value of the two given indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static LogEntryIndex Max(LogEntryIndex left, LogEntryIndex right)
 		{
-			return Math.Max(left._value, right._value);
+			return Math.Max(left.Value, right.Value);
 		}
 	}
 }
