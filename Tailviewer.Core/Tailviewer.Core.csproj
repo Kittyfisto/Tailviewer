@@ -82,6 +82,7 @@
     <Compile Include="LogFiles\Parsers\TimeOfDaySecondsSinceStartParser.cs" />
     <Compile Include="LogFiles\Parsers\TimestampParser.cs" />
     <Compile Include="LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="LogFiles\ProxyLogFile.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />
     <Compile Include="LogLineMatch.cs" />
     <Compile Include="LogTables\ColumnType.cs" />
