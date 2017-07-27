@@ -17,7 +17,7 @@
       <dependency id="log4net" version="2.0.8" />
       <dependency id="Metrolib" version="0.2.2.34" />
       <dependency id="System.Threading.Extensions" version="1.0.14" />
-      <dependency id="Tailviewer.Api" version="0.6.0.282-beta" />
+      <dependency id="Tailviewer.Api" version="0.6.0.307-beta" />
     </dependencies>
   </metadata>
   <files>
