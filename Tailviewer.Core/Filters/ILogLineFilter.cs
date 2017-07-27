@@ -10,6 +10,11 @@ namespace Tailviewer.Core.Filters
 	/// </summary>
 	public interface ILogLineFilter
 	{
+		/// <summary>
+		/// Tests if the given log line passes this filter.
+		/// </summary>
+		/// <param name="logLine"></param>
+		/// <returns>true if the log line passes (and shall be displayed), false otherwise</returns>
 		[Pure]
 		bool PassesFilter(LogLine logLine);
 

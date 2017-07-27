@@ -53,27 +53,34 @@ namespace Tailviewer.Core.LogFiles
 			StartTask();
 		}
 
+		/// <inheritdoc />
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);
 		}
 
+		/// <inheritdoc />
 		public override int OriginalCount => _source.Count;
 
+		/// <inheritdoc />
 		public override bool Exists => _source.Exists;
 
+		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _source.StartTimestamp;
 
+		/// <inheritdoc />
 		public override DateTime LastModified
 		{
 			get { throw new NotImplementedException(); }
 		}
 
+		/// <inheritdoc />
 		public override Size Size
 		{
 			get { throw new NotImplementedException(); }
 		}
 
+		/// <inheritdoc />
 		public override int Count
 		{
 			get
@@ -85,14 +92,17 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
 			ResetEndOfSourceReached();
 		}
 
+		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
@@ -117,6 +127,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			lock (_indices)
@@ -130,6 +141,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
 			if (originalIndices == null)
@@ -152,6 +164,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			if (indices == null)
@@ -176,6 +189,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
 			lock (_indices)
@@ -184,6 +198,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override double Progress
 		{
 			get
@@ -206,6 +221,7 @@ namespace Tailviewer.Core.LogFiles
 			return new LogLine(lineIndex, sourceLineIndex, logEntryIndex, line.Message, line.Level, line.Timestamp);
 		}
 
+		/// <inheritdoc />
 		public override LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalSourceIndex)
 		{
 			lock (_indices)
@@ -222,11 +238,13 @@ namespace Tailviewer.Core.LogFiles
 			return LogLineIndex.Invalid;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.Format("{0} (Filtered)", _source);
 		}
 
+		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			LogFileSection section;

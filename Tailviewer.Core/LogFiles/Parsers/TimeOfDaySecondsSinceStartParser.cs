@@ -6,6 +6,7 @@ namespace Tailviewer.Core.LogFiles.Parsers
 	public sealed class TimeOfDaySecondsSinceStartParser
 		: ITimestampParser
 	{
+		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
 		{
 			timestamp = DateTime.MinValue;

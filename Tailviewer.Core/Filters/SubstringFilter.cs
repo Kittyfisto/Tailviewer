@@ -23,6 +23,7 @@ namespace Tailviewer.Core.Filters
 			Comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
@@ -36,6 +37,7 @@ namespace Tailviewer.Core.Filters
 			return false;
 		}
 
+		/// <inheritdoc />
 		[Pure]
 		public bool PassesFilter(LogLine logLine)
 		{
@@ -46,6 +48,7 @@ namespace Tailviewer.Core.Filters
 			return true;
 		}
 
+		/// <inheritdoc />
 		public List<LogLineMatch> Match(LogLine line)
 		{
 			var ret = new List<LogLineMatch>();
@@ -53,6 +56,7 @@ namespace Tailviewer.Core.Filters
 			return ret;
 		}
 
+		/// <inheritdoc />
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			var message = line.Message;
@@ -72,6 +76,7 @@ namespace Tailviewer.Core.Filters
 			} while (startIndex < message.Length - 1);
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.Format("message.Contains({0}, {1})", StringFilter, Comparison);

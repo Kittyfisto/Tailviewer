@@ -62,31 +62,41 @@ namespace Tailviewer.Core.LogFiles
 			StartTask();
 		}
 
+		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
+		/// <inheritdoc />
 		public override bool Exists => _exists;
 
+		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
 
+		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
+		/// <inheritdoc />
 		public override Size Size => _fileSize;
 
+		/// <inheritdoc />
 		public override int Count => (int) _currentSourceIndex;
 
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(section);
 			ResetEndOfSourceReached();
 		}
 
+		/// <inheritdoc />
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);
 		}
 
+		/// <inheritdoc />
 		public override int OriginalCount => _source.OriginalCount;
 
+		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			_source.GetSection(section, dest);
@@ -97,6 +107,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
 			var actualLine = _source.GetLine(index);
@@ -110,6 +121,7 @@ namespace Tailviewer.Core.LogFiles
 			return line;
 		}
 
+		/// <inheritdoc />
 		public override double Progress => 1;
 
 		private LogLine PatchNoLock(LogLine line)
@@ -139,6 +151,7 @@ namespace Tailviewer.Core.LogFiles
 				timestamp);
 		}
 
+		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			var lastCount = _fullSourceSection.Count;

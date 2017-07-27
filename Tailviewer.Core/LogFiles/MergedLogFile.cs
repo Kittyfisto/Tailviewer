@@ -71,6 +71,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </remarks>
 		public override bool Exists => true;
 
+		/// <inheritdoc />
 		public override bool EndOfSourceReached
 		{
 			get
@@ -79,12 +80,16 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
 
+		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
+		/// <inheritdoc />
 		public override Size Size => _fileSize;
 
+		/// <inheritdoc />
 		public override int Count
 		{
 			get
@@ -96,16 +101,20 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override int OriginalCount => Count;
 
+		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
 			ResetEndOfSourceReached();
 		}
 
+		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			for (int i = 0; i < section.Count; ++i)
@@ -115,6 +124,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
 			Index idx;
@@ -130,8 +140,10 @@ namespace Tailviewer.Core.LogFiles
 			return actualLine;
 		}
 
+		/// <inheritdoc />
 		public override double Progress => 1;
 
+		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			PendingModification modification;

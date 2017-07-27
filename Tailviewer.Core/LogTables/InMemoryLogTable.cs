@@ -24,14 +24,19 @@ namespace Tailviewer.Core.LogTables
 			_syncRoot = new object();
 		}
 
+		/// <inheritdoc />
 		public int Count => _entries.Count;
 
+		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
 
+		/// <inheritdoc />
 		public bool Exists => true;
 
+		/// <inheritdoc />
 		public ILogTableSchema Schema { get; }
 
+		/// <inheritdoc />
 		public ITask<LogEntry> this[LogEntryIndex index]
 		{
 			get
@@ -43,20 +48,24 @@ namespace Tailviewer.Core.LogTables
 			}
 		}
 
+		/// <inheritdoc />
 		public void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
+		/// <inheritdoc />
 		public bool RemoveListener(ILogTableListener listener)
 		{
 			return _listeners.RemoveListener(listener);
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 		}
 
+		/// <inheritdoc />
 		public void AddEntry(LogEntry entry)
 		{
 			lock (_syncRoot)
@@ -67,6 +76,7 @@ namespace Tailviewer.Core.LogTables
 			}
 		}
 
+		/// <inheritdoc />
 		public void RemoveFrom(LogEntryIndex index)
 		{
 			lock (_syncRoot)

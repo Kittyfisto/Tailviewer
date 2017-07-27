@@ -10,6 +10,7 @@ namespace Tailviewer.Core.Filters
 	public sealed class EmptyLogLineFilter
 		: ILogLineFilter
 	{
+		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
 			var message = logLine.Message;
@@ -17,6 +18,7 @@ namespace Tailviewer.Core.Filters
 			return !string.IsNullOrWhiteSpace(message);
 		}
 
+		/// <inheritdoc />
 		public List<LogLineMatch> Match(LogLine line)
 		{
 			return new List<LogLineMatch>();

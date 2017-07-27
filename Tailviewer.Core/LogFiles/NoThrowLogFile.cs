@@ -43,6 +43,7 @@ namespace Tailviewer.Core.LogFiles
 			_pluginName = pluginName;
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			try
@@ -55,6 +56,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public DateTime? StartTimestamp
 		{
 			get
@@ -71,6 +73,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public DateTime LastModified
 		{
 			get
@@ -87,6 +90,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public Size Size
 		{
 			get
@@ -103,6 +107,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public bool Exists
 		{
 			get
@@ -119,6 +124,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public bool EndOfSourceReached
 		{
 			get
@@ -135,6 +141,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int Count
 		{
 			get
@@ -151,6 +158,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int OriginalCount
 		{
 			get
@@ -167,6 +175,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int MaxCharactersPerLine
 		{
 			get
@@ -183,6 +192,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			try
@@ -195,6 +205,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void RemoveListener(ILogFileListener listener)
 		{
 			try
@@ -207,6 +218,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			try
@@ -219,6 +231,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			try
@@ -232,6 +245,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public double Progress
 		{
 			get
@@ -248,6 +262,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			try
@@ -261,6 +276,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			try
@@ -274,6 +290,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
 			try
@@ -286,6 +303,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			try

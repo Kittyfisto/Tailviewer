@@ -27,36 +27,48 @@ namespace Tailviewer.Core.LogFiles
 			_listeners = new LogFileListenerCollection(this);
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 		}
 
+		/// <inheritdoc />
 		public DateTime? StartTimestamp { get; private set; }
 
+		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
 
+		/// <inheritdoc />
 		public Size Size { get; set; }
 
+		/// <inheritdoc />
 		public bool Exists => true;
 
+		/// <inheritdoc />
 		public bool EndOfSourceReached => true;
 
+		/// <inheritdoc />
 		public int Count => _lines.Count;
 
+		/// <inheritdoc />
 		public int OriginalCount => Count;
 
+		/// <inheritdoc />
 		public int MaxCharactersPerLine { get; private set; }
 
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
+		/// <inheritdoc />
 		public void RemoveListener(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
 		}
 
+		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			lock (_lines)
@@ -65,6 +77,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			lock (_lines)
@@ -78,6 +91,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			lock (_lines)
@@ -91,6 +105,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
 			if (originalIndices == null)
@@ -111,6 +126,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			if (indices == null)
@@ -126,6 +142,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			lock (_lines)
@@ -134,6 +151,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public double Progress => 1;
 
 		public void Clear()

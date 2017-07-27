@@ -4,10 +4,17 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
+	/// <summary>
+	///     A filter which wraps another filter and simply inverts its result.
+	/// </summary>
 	public sealed class InvertFilter : ILogEntryFilter
 	{
 		private readonly ILogEntryFilter _filter;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="filter"></param>
 		public InvertFilter(ILogEntryFilter filter)
 		{
 			if (filter == null)
@@ -16,16 +23,19 @@ namespace Tailviewer.Core.Filters
 			_filter = filter;
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			return !_filter.PassesFilter(logEntry);
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
 			return !_filter.PassesFilter(logLine);
 		}
 
+		/// <inheritdoc />
 		public List<LogLineMatch> Match(LogLine line)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding
@@ -34,6 +44,7 @@ namespace Tailviewer.Core.Filters
 			return new List<LogLineMatch>();
 		}
 
+		/// <inheritdoc />
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding

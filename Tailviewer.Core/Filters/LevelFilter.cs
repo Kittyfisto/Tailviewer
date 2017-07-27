@@ -19,6 +19,7 @@ namespace Tailviewer.Core.Filters
 			Level = level;
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
@@ -32,6 +33,7 @@ namespace Tailviewer.Core.Filters
 			return false;
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
 			if ((logLine.Level & Level) != 0)
@@ -43,16 +45,19 @@ namespace Tailviewer.Core.Filters
 			return true;
 		}
 
+		/// <inheritdoc />
 		public List<LogLineMatch> Match(LogLine line)
 		{
 			return new List<LogLineMatch>();
 		}
 
+		/// <inheritdoc />
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			var flags =

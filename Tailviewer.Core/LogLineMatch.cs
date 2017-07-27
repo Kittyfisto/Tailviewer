@@ -20,17 +20,20 @@ namespace Tailviewer.Core
 			Count = regexMatch.Length;
 		}
 
+		/// <inheritdoc />
 		public bool Equals(LogLineMatch other)
 		{
 			return Index == other.Index && Count == other.Count;
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			return obj is LogLineMatch && Equals((LogLineMatch) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			unchecked
@@ -49,6 +52,7 @@ namespace Tailviewer.Core
 			return !left.Equals(right);
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.Format("Match at {0}, #{1}", Index, Count);

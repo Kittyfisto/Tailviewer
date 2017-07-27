@@ -34,6 +34,7 @@ namespace Tailviewer.Core.LogTables
 			Fields = fields;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			var fields = Fields;
@@ -52,6 +53,7 @@ namespace Tailviewer.Core.LogTables
 			return string.Empty;
 		}
 
+		/// <inheritdoc />
 		public bool Equals(LogEntry other)
 		{
 			if (ReferenceEquals(Fields, other.Fields))
@@ -74,12 +76,14 @@ namespace Tailviewer.Core.LogTables
 			return true;
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			return obj is LogEntry && Equals((LogEntry) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			return 0;

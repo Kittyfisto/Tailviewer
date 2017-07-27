@@ -33,6 +33,7 @@ namespace Tailviewer.Core.LogFiles
 			: this(taskScheduler, plugins?.ToArray())
 		{}
 
+		/// <inheritdoc />
 		public ILogFile Open(string fileName)
 		{
 			var plugin = FindSupportingPlugin(fileName);

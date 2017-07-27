@@ -56,6 +56,7 @@ namespace Tailviewer.Core.LogFiles.Parsers
 			_subParsers = parsers;
 		}
 
+		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
 		{
 			if (_numExceptions > MaxToleratedExceptions)

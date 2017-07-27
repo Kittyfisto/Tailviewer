@@ -112,6 +112,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			ILogFile logFile = _innerLogFile;
@@ -120,10 +121,13 @@ namespace Tailviewer.Core.LogFiles
 			_isDisposed = true;
 		}
 
+		/// <inheritdoc />
 		public bool IsDisposed => _isDisposed;
 
+		/// <inheritdoc />
 		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
 
+		/// <inheritdoc />
 		public DateTime LastModified
 		{
 			get
@@ -137,6 +141,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public Size Size
 		{
 			get
@@ -149,6 +154,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public bool Exists
 		{
 			get
@@ -161,6 +167,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public bool EndOfSourceReached
 		{
 			get
@@ -173,6 +180,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int Count
 		{
 			get
@@ -185,6 +193,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int OriginalCount
 		{
 			get
@@ -197,6 +206,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public int MaxCharactersPerLine
 		{
 			get
@@ -209,11 +219,13 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			var logFile = _innerLogFile;
@@ -223,11 +235,13 @@ namespace Tailviewer.Core.LogFiles
 			return "<Empty>";
 		}
 
+		/// <inheritdoc />
 		public void RemoveListener(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
 		}
 
+		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			ILogFile logFile = _innerLogFile;
@@ -241,6 +255,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			var logFile = _innerLogFile;
@@ -252,6 +267,7 @@ namespace Tailviewer.Core.LogFiles
 			return LogLineIndex.Invalid;
 		}
 
+		/// <inheritdoc />
 		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
 			var logFile = _innerLogFile;
@@ -263,6 +279,7 @@ namespace Tailviewer.Core.LogFiles
 			return LogLineIndex.Invalid;
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
 		{
 			if (originalIndices == null)
@@ -282,6 +299,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
 		{
 			if (indices == null)
@@ -305,6 +323,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			ILogFile logFile = _innerLogFile;
@@ -316,8 +335,10 @@ namespace Tailviewer.Core.LogFiles
 			throw new IndexOutOfRangeException();
 		}
 
+		/// <inheritdoc />
 		public double Progress => _innerLogFile?.Progress ?? 1;
 
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(logFile, section));

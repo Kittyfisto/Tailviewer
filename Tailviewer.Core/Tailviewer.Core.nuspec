@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Tailviewer.Core</id>
+    <version>$version$-beta</version>
+    <authors>Simon Mießler</authors>
+    <owners>Simon Mießler</owners>
+    <licenseUrl>https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Kittyfisto/Tailviewer/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Kittyfisto/Tailviewer/master/Tailviewer/Resources/Tailviewer.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Core library provided and used by Tailviewer. Can be re-used for plugin development.</description>
+    <releaseNotes>Alpha release</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>.NET Tailviewer API SDK logfile</tags>
+    <dependencies>
+      <dependency id="log4net" version="2.0.8" />
+      <dependency id="Metrolib" version="0.2.2.34" />
+      <dependency id="System.Threading.Extensions" version="1.0.14" />
+      <dependency id="Tailviewer.Api" version="0.6.0.282-beta" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\bin\Tailviewer.Core.XML" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.pdb" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.dll" target="lib\net45\" />
+  </files>
+</package>

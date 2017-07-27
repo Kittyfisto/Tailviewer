@@ -13,6 +13,7 @@ namespace Tailviewer.Core.LogFiles.Parsers
 			_format = format;
 		}
 
+		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
 		{
 			return DateTime.TryParseExact(content,

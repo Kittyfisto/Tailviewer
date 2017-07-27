@@ -21,6 +21,7 @@ namespace Tailviewer.Core.Filters
 			if (_filters.Any(x => x == null)) throw new ArgumentNullException(nameof(filters));
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			var passes = new bool[_filters.Length];
@@ -49,6 +50,7 @@ namespace Tailviewer.Core.Filters
 			return true;
 		}
 
+		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
@@ -64,6 +66,7 @@ namespace Tailviewer.Core.Filters
 			return true;
 		}
 
+		/// <inheritdoc />
 		public List<LogLineMatch> Match(LogLine line)
 		{
 			var ret = new List<LogLineMatch>();
@@ -71,6 +74,7 @@ namespace Tailviewer.Core.Filters
 			return ret;
 		}
 
+		/// <inheritdoc />
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			foreach (var filter in _filters)

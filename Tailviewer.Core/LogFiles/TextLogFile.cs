@@ -73,13 +73,16 @@ namespace Tailviewer.Core.LogFiles
 			StartTask();
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return _fileName;
 		}
 
+		/// <inheritdoc />
 		public IEnumerable<LogLine> Entries => _entries;
 
+		/// <inheritdoc />
 		public override Size Size
 		{
 			get
@@ -92,18 +95,25 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
 
+		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
+		/// <inheritdoc />
 		public override int Count => _entries.Count;
 
+		/// <inheritdoc />
 		public override int OriginalCount => Count;
 
+		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
+		/// <inheritdoc />
 		public override bool Exists => _exists;
 
+		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
@@ -124,6 +134,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
 			lock (_syncRoot)
@@ -132,6 +143,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		public override double Progress
 		{
 			get
@@ -149,6 +161,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			try
