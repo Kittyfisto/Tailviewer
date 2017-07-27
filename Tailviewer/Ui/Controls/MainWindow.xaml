@@ -25,6 +25,8 @@
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
         <KeyBinding Modifiers="Control" Key="E"
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
+        <KeyBinding Gesture="Ctrl+Shift+N"
+                    Command="{Binding NewQuickFilterCommand, ElementName=This}"/>
     </Window.InputBindings>
 
     <Window.Resources>

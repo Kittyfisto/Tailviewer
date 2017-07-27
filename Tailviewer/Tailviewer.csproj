@@ -146,6 +146,7 @@
     <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
     <Compile Include="Changelog.cs" />
+    <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Resource.cs" />

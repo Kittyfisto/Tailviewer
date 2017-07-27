@@ -38,7 +38,7 @@
                         Grid.Column="1"
                         Width="26"
                         Height="26"
-                        ToolTip="Add new quick filter"
+                        ToolTip="Add new quick filter (Ctrl+Shift+N)"
                         VerticalAlignment="Center"
                         Command="{Binding AddCommand}" />
 

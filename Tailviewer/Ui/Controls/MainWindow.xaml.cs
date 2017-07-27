@@ -1,13 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using log4net;
 using Metrolib;
+using Metrolib.Controls;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 
@@ -29,6 +33,9 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof (ICommand), typeof (MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
+		public static readonly DependencyProperty NewQuickFilterCommandProperty = DependencyProperty.Register(
+			"NewQuickFilterCommand", typeof(ICommand), typeof(MainWindow), new PropertyMetadata(default(ICommand)));
+
 		private readonly ApplicationSettings _settings;
 
 		public MainWindow(ApplicationSettings settings)
@@ -38,6 +45,7 @@ namespace Tailviewer.Ui.Controls
 			_settings = settings;
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
+			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
 
 			InitializeComponent();
 			SizeChanged += OnSizeChanged;
@@ -73,6 +81,12 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
 		}
 
+		public ICommand NewQuickFilterCommand
+		{
+			get { return (ICommand)GetValue(NewQuickFilterCommandProperty); }
+			set { SetValue(NewQuickFilterCommandProperty, value); }
+		}
+
 		private void OnMouseMove(object sender, MouseEventArgs e)
 		{
 			DragLayer.OnMouseMove(e);
@@ -91,6 +105,28 @@ namespace Tailviewer.Ui.Controls
 		private void FocusDataSourceSearch()
 		{
 			DataSourcesControl.Instance?.FocusSearch();
+		}
+
+		private void NewQuickFilter()
+		{
+			var viewModel = DataContext as MainWindowViewModel;
+			var logViewModel = viewModel?.SelectedMainPanel as LogViewMainPanelViewModel;
+			if (logViewModel != null)
+			{
+				var model = logViewModel.AddQuickFilter();
+
+				// Whelp, this is ugly: I just want to ensure that upon creating a new filter, the text-box is focused
+				// so the user can start typing. I guess it would be prettier if we were to create a custom control
+				// that takes care of it, but I'm feeling lazy...
+				// (The operation is dispatched because the control is created later on and we chose a low priority to
+				// ensure that this method is invoked *after* the control has been created).
+				Dispatcher.BeginInvoke(new Action(() =>
+				{
+					var boxes = this.FindVisualChildren<FilterTextBox>().ToList();
+					var textBox = boxes.LastOrDefault(x => x.DataContext == model);
+					textBox?.Focus();
+				}), DispatcherPriority.Background);
+			}
 		}
 
 		private void OnClosing(object sender, CancelEventArgs cancelEventArgs)
