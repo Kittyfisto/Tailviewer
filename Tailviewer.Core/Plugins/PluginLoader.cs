@@ -7,6 +7,9 @@ using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Core.Plugins
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public sealed class PluginLoader
 		: IPluginLoader
 		, IDisposable
@@ -49,6 +52,7 @@ namespace Tailviewer.Core.Plugins
 			return assemblyQualifiedName.Substring(0, index);
 		}
 
+		/// <inheritdoc />
 		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions)
 			where T : class, IPlugin
 		{
@@ -74,6 +78,7 @@ namespace Tailviewer.Core.Plugins
 			return ret;
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{}
 	}

@@ -8,6 +8,7 @@ using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Core.Plugins
 {
@@ -41,7 +42,8 @@ namespace Tailviewer.Core.Plugins
 				{"log4net,", typeof(ILog).Assembly},
 				{"Metrolib,", typeof(AbstractBootstrapper).Assembly},
 				{"System.Threading.Extensions,", typeof(ITaskScheduler).Assembly},
-				{"Tailviewer.Api,", typeof(ILogFile).Assembly}
+				{"Tailviewer.Api,", typeof(ILogFile).Assembly},
+				{"Tailviewer.Core,", typeof(TextLogFile).Assembly}
 			};
 
 			// TODO: This feature most certainly needs proper tests. Go write them!
