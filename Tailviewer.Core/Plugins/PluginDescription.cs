@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace Tailviewer.Core.Plugins
@@ -10,6 +11,21 @@ namespace Tailviewer.Core.Plugins
 	public sealed class PluginDescription
 		: IPluginDescription
 	{
+		private static readonly ReadOnlyDictionary<Type, string> NoPlugins;
+
+		static PluginDescription()
+		{
+			NoPlugins = new ReadOnlyDictionary<Type, string>(new Dictionary<Type, string>());
+		}
+
+		/// <summary>
+		///     Initializes this plugin descriptions.
+		/// </summary>
+		public PluginDescription()
+		{
+			Plugins = NoPlugins;
+		}
+
 		/// <inheritdoc />
 		public string FilePath { get; set; }
 
@@ -32,6 +48,9 @@ namespace Tailviewer.Core.Plugins
 
 		/// <inheritdoc />
 		public Uri Website { get; set; }
+
+		/// <inheritdoc />
+		public string Error { get; set; }
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<Type, string> Plugins { get; set; }

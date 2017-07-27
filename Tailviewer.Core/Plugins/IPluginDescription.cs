@@ -43,6 +43,14 @@ namespace Tailviewer.Core.Plugins
 		Uri Website { get; }
 
 		/// <summary>
+		///     A human readable error that explains why a plugin couldn't be loaded.
+		/// </summary>
+		/// <remarks>
+		///     When null, then the plugin could be loaded.
+		/// </remarks>
+		string Error { get; }
+
+		/// <summary>
 		///     A map from the plugin interface to its actual implementation.
 		/// </summary>
 		IReadOnlyDictionary<Type, string> Plugins { get; }

@@ -80,10 +80,8 @@ namespace Tailviewer.Core.Plugins
 				foreach (var plugin in assemblies)
 				{
 					IPluginDescription description;
-					if (TryLoad(plugin, out description))
-						plugins.Add(description);
-					// TODO: Maybe we should create a description for plugins we couldn't load, so we display
-					//       those in the list of plugins as well?
+					TryLoad(plugin, out description);
+					plugins.Add(description);
 				}
 			}
 			catch (DirectoryNotFoundException e)
@@ -146,21 +144,36 @@ namespace Tailviewer.Core.Plugins
 			}
 			catch (FileLoadException e)
 			{
-				Log.ErrorFormat("Unable to load plugin '{0}': {1}", filePath, e);
-				description = null;
+				var error = string.Format("Unable to load plugin '{0}': {1}", filePath, e);
+				Log.Error(error);
+				description = new PluginDescription
+				{
+					FilePath = filePath,
+					Error = error
+				};
 				return false;
 			}
 			catch (BadImageFormatException e)
 			{
-				Log.ErrorFormat("Unable to load plugin '{0}' (plugins must be compiled against AnyCPU): {1}", filePath, e);
-				description = null;
+				var error = string.Format("Unable to load plugin '{0}' (plugins must be compiled against AnyCPU): {1}", filePath, e);
+				Log.Error(error);
+				description = new PluginDescription
+				{
+					FilePath = filePath,
+					Error = error
+				};
 				return false;
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception while trying to load plugin '{0}': {1}",
+				var error = string.Format("Caught unexpected exception while trying to load plugin '{0}': {1}",
 					filePath, e);
-				description = null;
+				Log.Error(error);
+				description = new PluginDescription
+				{
+					FilePath = filePath,
+					Error = error
+				};
 				return false;
 			}
 		}

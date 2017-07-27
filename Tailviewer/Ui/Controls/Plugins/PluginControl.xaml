@@ -13,26 +13,69 @@
     <UserControl.Resources>
         <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     </UserControl.Resources>
-    
-    <Grid >
+
+    <Grid Margin="8">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Name" Margin="4" />
+            <TextBlock Text="Author" Margin="4" Grid.Column="1" />
+            <TextBlock Text="Website" Margin="4" Grid.Column="2" />
+            <TextBlock Text="Description" Margin="4" Grid.Column="3" />
+        </Grid>
+
         <ItemsControl ItemsSource="{Binding Plugins}"
-                      Grid.IsSharedSizeScope="True">
+                      Grid.Row="1"
+                      BorderBrush="Black"
+                      BorderThickness="0,1,0,0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:PluginViewModel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Name" />
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Author" />
-                            <ColumnDefinition SharedSizeGroup="Description" />
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Website" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{Binding Name}" />
-                        <TextBlock Text="{Binding Author}" Grid.Column="1" />
-                        <TextBlock Text="{Binding Description}" Grid.Column="2" />
-                        <TextBlock Grid.Column="3">
-                            <textBlocks:HyperlinkRun NavigateUri="{Binding Website}" />
-                        </TextBlock>
+                        <Border BorderBrush="Black"
+                                BorderThickness="1,0,1,1"
+                                Padding="4">
+                            <TextBlock Text="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Grid.Column="1"
+                                BorderBrush="Black"
+                                BorderThickness="0,0,1,1"
+                                Padding="4">
+                            <TextBlock Text="{Binding Author}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Grid.Column="2"
+                                BorderBrush="Black"
+                                BorderThickness="0,0,1,1"
+                                Padding="4">
+                            <TextBlock>
+                                <textBlocks:HyperlinkRun NavigateUri="{Binding Website}" />
+                            </TextBlock>
+                        </Border>
+                        <Border Grid.Column="3"
+                                BorderBrush="Black"
+                                BorderThickness="0,0,1,1"
+                                Padding="4">
+                            <TextBlock Text="{Binding DescriptionOrError}" TextWrapping="Wrap" />
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
