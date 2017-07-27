@@ -38,6 +38,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			_settings = new Mock<IApplicationSettings>();
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);
+			_settings.Setup(x => x.MainWindow).Returns(new Mock<IMainWindowSettings>().Object);
 		}
 
 		[Test]
@@ -116,6 +117,17 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			dataSourceViewModel.Object.QuickFilterChain.Should()
 				.NotBeNull("because a filter chain should've been created for the 'Foobar' filter");
+		}
+
+		[Test]
+		public void TestShowQuickFilters()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var quickFilterSidePanel = model.SidePanels.OfType<QuickFiltersViewModel>().First();
+			model.SelectedSidePanel.Should().NotBe(quickFilterSidePanel);
+
+			model.ShowQuickFilters();
+			model.SelectedSidePanel.Should().Be(quickFilterSidePanel);
 		}
 
 		private Mock<IDataSource> CreateDataSource()

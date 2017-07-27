@@ -114,6 +114,7 @@ namespace Tailviewer.Ui.Controls
 			if (logViewModel != null)
 			{
 				var model = logViewModel.AddQuickFilter();
+				logViewModel.ShowQuickFilters();
 
 				// Whelp, this is ugly: I just want to ensure that upon creating a new filter, the text-box is focused
 				// so the user can start typing. I guess it would be prettier if we were to create a custom control

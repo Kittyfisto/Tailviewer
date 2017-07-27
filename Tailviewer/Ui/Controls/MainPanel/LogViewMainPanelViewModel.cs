@@ -216,5 +216,10 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		{
 			return _quickFilters.AddQuickFilter();
 		}
+
+		public void ShowQuickFilters()
+		{
+			SelectedSidePanel = _quickFilters;
+		}
 	}
 }
