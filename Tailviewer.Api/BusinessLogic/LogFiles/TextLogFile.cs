@@ -5,11 +5,9 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles.Parsers;
+using Tailviewer.BusinessLogic.Parsers;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	public sealed class TextLogFile
 		: AbstractLogFile
@@ -18,10 +16,7 @@ namespace Tailviewer.Core.LogFiles
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		#region Data
-
-		private readonly LogDataCache _cache;
-		private readonly LogDataAccessQueue<LogLineIndex, LogLine> _accessQueue;
-
+		
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private bool _exists;
@@ -66,10 +61,7 @@ namespace Tailviewer.Core.LogFiles
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
 			_timestampParser = new TimestampParser();
-
-			_accessQueue = new LogDataAccessQueue<LogLineIndex, LogLine>();
-			_cache = new LogDataCache();
-
+			
 			StartTask();
 		}
 

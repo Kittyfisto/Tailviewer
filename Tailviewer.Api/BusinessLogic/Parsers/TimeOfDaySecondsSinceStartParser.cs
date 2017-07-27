@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Tailviewer.Core.LogFiles.Parsers
+namespace Tailviewer.BusinessLogic.Parsers
 {
 	public sealed class TimeOfDaySecondsSinceStartParser
 		: ITimestampParser

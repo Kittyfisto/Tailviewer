@@ -57,14 +57,23 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogLine.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ProxyLogFile.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFile.cs" />
     <Compile Include="BusinessLogic\LogLineIndex.cs" />
+    <Compile Include="BusinessLogic\Parsers\DateTimeParser.cs" />
+    <Compile Include="BusinessLogic\Parsers\ITimestampParser.cs" />
+    <Compile Include="BusinessLogic\Parsers\TimeOfDaySecondsSinceStartParser.cs" />
+    <Compile Include="BusinessLogic\Parsers\TimestampParser.cs" />
     <Compile Include="BusinessLogic\Plugins\IPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginAuthorAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginDescriptionAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginWebsiteAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin.cs" />
     <Compile Include="LogEntryIndex.cs" />
+    <Compile Include="MathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamReaderEx.cs" />
+    <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

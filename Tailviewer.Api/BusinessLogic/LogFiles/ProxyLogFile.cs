@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     An abstract <see cref="ILogFile" /> implementation which allows a subclass to modify

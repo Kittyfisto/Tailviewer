@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.Core
+namespace Tailviewer
 {
 	public static class MathEx
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.LogFiles.Parsers;
+using Tailviewer.BusinessLogic.Parsers;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 {

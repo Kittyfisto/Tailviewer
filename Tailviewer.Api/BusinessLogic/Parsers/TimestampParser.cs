@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using log4net;
 
-namespace Tailviewer.Core.LogFiles.Parsers
+namespace Tailviewer.BusinessLogic.Parsers
 {
 	/// <summary>
 	///     Responsible for finding the first matching timestamp format in a stream of messages.
