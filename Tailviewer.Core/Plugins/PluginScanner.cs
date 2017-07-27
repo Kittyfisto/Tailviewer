@@ -93,6 +93,7 @@ namespace Tailviewer.Core.Plugins
 			return plugins;
 		}
 
+		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
 			var assembly = Assembly.LoadFrom(pluginPath);
@@ -130,6 +131,7 @@ namespace Tailviewer.Core.Plugins
 			};
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;

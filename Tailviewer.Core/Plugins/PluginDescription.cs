@@ -9,10 +9,19 @@ namespace Tailviewer.Core.Plugins
 	public sealed class PluginDescription
 		: IPluginDescription
 	{
+		/// <inheritdoc />
 		public string FilePath { get; set; }
+
+		/// <inheritdoc />
 		public string Author { get; set; }
+
+		/// <inheritdoc />
 		public string Description { get; set; }
+
+		/// <inheritdoc />
 		public Uri Website { get; set; }
+
+		/// <inheritdoc />
 		public IReadOnlyDictionary<Type, string> Plugins { get; set; }
 	}
 }

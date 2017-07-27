@@ -1,10 +1,22 @@
+using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Core.Plugins
 {
+	/// <summary>
+	///     The interface for an object responsible for loading plugins.
+	/// </summary>
 	public interface IPluginLoader
 	{
+		/// <summary>
+		///     Actually loads and instantiates an implementation of the given <typeparamref name="T" /> plugin-interface
+		///     that is part of the given plugin <paramref name="description"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="description"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException">When the given plugin doesn't offer an implementation of the given interface</exception>
 		T Load<T>(IPluginDescription description) where T : class, IPlugin;
 
 		/// <summary>
