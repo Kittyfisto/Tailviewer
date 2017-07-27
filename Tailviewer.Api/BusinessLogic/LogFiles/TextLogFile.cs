@@ -156,6 +156,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
+			bool read = false;
+
 			try
 			{
 				if (!File.Exists(_fileName))
@@ -210,6 +212,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 							{
 								_untrimmedLastLine = currentLine;
 								++_numberOfLinesRead;
+								read = true; 
 							}
 
 							var timestamp = ParseTimestamp(trimmedLine);
@@ -239,6 +242,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				Log.Debug(e);
 			}
+
+			if (read)
+				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
 		}

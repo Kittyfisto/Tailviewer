@@ -221,16 +221,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
 		{
-			if (message != null)
-			{
-				int idx = message.IndexOf("\n", StringComparison.InvariantCultureIgnoreCase);
-				if (idx != -1)
-				{
-					message = message.Substring(0, idx);
-					Log.WarnFormat("A LogLine may only serve a single line message. If you want to present a multi-line log entry, then please create multiple lines with the same LogEntryIndex");
-				}
-			}
-
 			LineIndex = lineIndex;
 			OriginalLineIndex = originalLineIndex;
 			Message = message;

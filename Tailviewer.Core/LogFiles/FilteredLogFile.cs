@@ -247,6 +247,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
+			bool performedWork = false;
+
 			LogFileSection section;
 			while (_pendingModifications.TryDequeue(out section) && !token.IsCancellationRequested)
 			{
@@ -271,6 +273,8 @@ namespace Tailviewer.Core.LogFiles
 				{
 					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 				}
+
+				performedWork = true;
 			}
 
 			if (!_fullSourceSection.IsEndOfSection(_currentSourceIndex))
@@ -309,6 +313,9 @@ namespace Tailviewer.Core.LogFiles
 				if (_source.EndOfSourceReached)
 					SetEndOfSourceReached();
 			}
+
+			if (performedWork)
+				return TimeSpan.Zero;
 
 			return _maximumWaitTime;
 		}

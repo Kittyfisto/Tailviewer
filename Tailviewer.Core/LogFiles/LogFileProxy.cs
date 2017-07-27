@@ -53,6 +53,8 @@ namespace Tailviewer.Core.LogFiles
 
 		private TimeSpan RunOnce()
 		{
+			bool performedWork = false;
+
 			KeyValuePair<ILogFile, LogFileSection> pair;
 			while (_pendingSections.TryDequeue(out pair))
 			{
@@ -82,12 +84,18 @@ namespace Tailviewer.Core.LogFiles
 						_listeners.OnRead((int)(section.Index + section.Count));
 					}
 				}
+
+				performedWork = true;
 			}
 
 			// This line is extremely important because listeners are allowed to limit how often they are notified.
 			// This means that even when there is NO modification to the source, we still need to notify the collection
 			// so it can check if enough time has ellapsed to finally notify listener.
 			_listeners.OnRead(_listeners.CurrentLineIndex);
+
+			if (performedWork)
+				return TimeSpan.Zero;
+
 			return TimeSpan.FromMilliseconds(10);
 		}
 
