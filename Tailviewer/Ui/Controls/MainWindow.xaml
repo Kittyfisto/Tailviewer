@@ -11,6 +11,7 @@
                            xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                            xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib"
                            xmlns:mainPanel="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
+                           xmlns:plugins="clr-namespace:Tailviewer.Ui.Controls.Plugins"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -114,6 +115,8 @@
                                                Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
                         <metrolib:FlatMenuItem Header="Show log..."
                                                Command="{Binding ShowLogCommand}" />
+                        <metrolib:FlatMenuItem Header="Plugins..."
+                                               Command="{Binding ShowCommand, Source={x:Reference PART_Plugins}}" />
                         <metrolib:FlatMenuItem Header="Settings..."
                                                Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
                         <metrolib:FlatMenuItem Header="About Tailviewer..."
@@ -210,6 +213,12 @@
                                   Header="About"
                                   Foreground="#333333">
                 <about:AboutControl />
+            </metrolib:PageOverlay>
+
+            <metrolib:PageOverlay x:Name="PART_Plugins"
+                                  Header="Plugins"
+                                  Foreground="#333333">
+                <plugins:PluginControl DataContext="{Binding Plugins}" />
             </metrolib:PageOverlay>
 
         </Grid>

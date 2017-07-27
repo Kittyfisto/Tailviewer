@@ -8,8 +8,8 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Plugins;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
@@ -38,7 +38,8 @@ namespace Tailviewer.Test.Ui
 			                                      _quickFilters,
 			                                      _actionCenter,
 			                                      _updater.Object,
-			                                      _dispatcher);
+			                                      _dispatcher,
+			                                      Enumerable.Empty<IPluginDescription>());
 		}
 
 		[TearDown]
@@ -69,7 +70,8 @@ namespace Tailviewer.Test.Ui
 				_quickFilters,
 				_actionCenter,
 				_updater.Object,
-				_dispatcher);
+				_dispatcher,
+				Enumerable.Empty<IPluginDescription>());
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
 			_mainWindow.WindowTitleSuffix.Should().Be(@"F:\logs\foo.log");

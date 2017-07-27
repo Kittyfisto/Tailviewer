@@ -201,6 +201,11 @@
     <Compile Include="Ui\Controls\MainPanel\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\Plugins\PluginControl.xaml.cs">
+      <DependentUpon>PluginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\Plugins\PluginsViewModel.cs" />
+    <Compile Include="Ui\Controls\Plugins\PluginViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
@@ -333,6 +338,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\LogViewMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\Plugins\PluginControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

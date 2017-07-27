@@ -119,7 +119,8 @@ namespace Tailviewer
 								quickFilters,
 								actionCenter,
 								updater,
-								uiDispatcher)
+								uiDispatcher,
+								plugins)
 						};
 
 						settings.MainWindow.RestoreTo(window);

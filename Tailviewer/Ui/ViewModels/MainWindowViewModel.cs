@@ -8,10 +8,12 @@ using System.Windows.Threading;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.Core.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
+using Tailviewer.Ui.Controls.Plugins;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -34,9 +36,10 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ActionCenterViewModel _actionCenterViewModel;
 		private readonly AutoUpdateViewModel _autoUpdater;
 		private readonly SettingsViewModel _settings;
+		private readonly PluginsViewModel _plugins;
 
 		#endregion
-		
+
 		#region Main Panel
 
 		private readonly AnalyseMainPanelEntry _analyseEntry;
@@ -57,7 +60,8 @@ namespace Tailviewer.Ui.ViewModels
 		                           QuickFilters quickFilters,
 		                           IActionCenter actionCenter,
 		                           IAutoUpdater updater,
-		                           IDispatcher dispatcher)
+		                           IDispatcher dispatcher,
+		                           IEnumerable<IPluginDescription> plugins)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
@@ -67,6 +71,7 @@ namespace Tailviewer.Ui.ViewModels
 			_applicationSettings = settings;
 
 			_settings = new SettingsViewModel(settings);
+			_plugins = new PluginsViewModel(plugins);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
 			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings);
@@ -163,9 +168,11 @@ namespace Tailviewer.Ui.ViewModels
 				EmitPropertyChanged();
 			}
 		}
-		
+
 		public SettingsViewModel Settings => _settings;
-		
+
+		public PluginsViewModel Plugins => _plugins;
+
 		#region Main Panel
 
 		public IMainPanelViewModel SelectedMainPanel

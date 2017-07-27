@@ -14,6 +14,11 @@ namespace Tailviewer.Core.Plugins
 		string FilePath { get; }
 
 		/// <summary>
+		///     The (human-readable) name of the plugin.
+		/// </summary>
+		string Name { get; }
+
+		/// <summary>
 		///     The author of the plugin, if available.
 		/// </summary>
 		/// <remarks>
