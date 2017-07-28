@@ -45,6 +45,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private readonly string _fileName;
 		private readonly string _fullFilename;
 		private DateTime _lastModified;
+		private DateTime _created;
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
@@ -118,6 +119,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
+		public override DateTime Created => _created;
+
 		/// <inheritdoc />
 		public override int Count => _entries.Count;
 
@@ -190,6 +193,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 					OnReset(null, out _numberOfLinesRead, out _lastPosition);
 					_exists = false;
 					_fileSize = null;
+					_created = DateTime.MinValue;
 					SetEndOfSourceReached();
 				}
 				else
@@ -203,6 +207,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						_exists = true;
 						var info = new FileInfo(_fileName);
 						_lastModified = info.LastWriteTime;
+						_created = info.CreationTime;
 						_fileSize = info.Length;
 						if (stream.Length >= _lastPosition)
 						{

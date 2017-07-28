@@ -87,6 +87,9 @@ namespace Tailviewer.Core.LogFiles
 		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
+		public override DateTime Created => DateTime.MinValue;
+
+		/// <inheritdoc />
 		public override Size Size => _fileSize;
 
 		/// <inheritdoc />

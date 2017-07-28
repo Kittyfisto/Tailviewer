@@ -46,7 +46,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(LogFileRealTest.File20Mb) { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(TextLogFileAcceptanceTest.File20Mb) { Id = Guid.NewGuid() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);

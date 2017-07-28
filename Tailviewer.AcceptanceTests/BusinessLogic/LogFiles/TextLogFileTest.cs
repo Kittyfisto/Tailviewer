@@ -7,12 +7,11 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogFileManualTest
+	public sealed class TextLogFileTest
 	{
 		private ManualTaskScheduler _scheduler;
 		private string _fname;
@@ -48,6 +47,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_writer?.Dispose();
 			_stream?.Dispose();
+		}
+
+		[Test]
+		public void TestCtor()
+		{
+			_writer.Write("Foo");
+			_writer.Flush();
+
+			var info = new FileInfo(_fname);
+			_scheduler.RunOnce();
+
+			_file.LastModified.Should().Be(info.LastWriteTime);
+			_file.Created.Should().Be(info.CreationTime);
 		}
 
 		[Test]

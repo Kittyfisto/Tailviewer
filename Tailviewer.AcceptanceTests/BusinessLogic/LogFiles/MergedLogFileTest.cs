@@ -32,7 +32,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
-			using (var source = new TextLogFile(_scheduler, LogFileRealTest.File20Mb))
+			using (var source = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File20Mb))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source))
 			{
 				source.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
@@ -57,8 +57,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void Test2SmallSources()
 		{
-			using (var source1 = new TextLogFile(_scheduler, LogFileRealTest.File2Entries))
-			using (var source2 = new TextLogFile(_scheduler, LogFileRealTest.File2Lines))
+			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Entries))
+			using (var source2 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Lines))
 			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
 			using (var multi2 = new MultiLineLogFile(_scheduler, source2, TimeSpan.Zero))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi1, multi2))
@@ -92,8 +92,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestLive1And2()
 		{
-			using (var source1 = new TextLogFile(_scheduler, LogFileRealTest.FileTestLive1))
-			using (var source2 = new TextLogFile(_scheduler, LogFileRealTest.FileTestLive2))
+			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive1))
+			using (var source2 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive2))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2))
 			{
 				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),

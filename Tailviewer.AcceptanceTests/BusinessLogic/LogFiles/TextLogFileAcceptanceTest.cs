@@ -16,7 +16,7 @@ using Tailviewer.Core.LogFiles;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogFileRealTest
+	public sealed class TextLogFileAcceptanceTest
 	{
 		public const string File2Mb = @"TestData\2Mb.txt";
 		public const string File20Mb = @"TestData\20Mb.txt";

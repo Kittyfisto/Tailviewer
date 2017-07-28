@@ -41,6 +41,8 @@ namespace Tailviewer.Core.LogFiles
 		private int _maxCharactersPerLine;
 		private DateTime? _startTimestamp;
 		private LevelFlags _currentLogEntryLevel;
+
+		private DateTime _created;
 		//private readonly List<LogFileSection> _allModifications;
 
 		public MultiLineLogFile(ITaskScheduler taskScheduler, ILogFile source, TimeSpan maximumWaitTime)
@@ -73,6 +75,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
+
+		/// <inheritdoc />
+		public override DateTime Created => _created;
 
 		/// <inheritdoc />
 		public override Size Size => _fileSize;
@@ -219,6 +224,7 @@ namespace Tailviewer.Core.LogFiles
 			_exists = _source.Exists;
 			_startTimestamp = _source.StartTimestamp;
 			_lastModified = _source.LastModified;
+			_created = _source.Created;
 			_fileSize = _source.Size;
 
 			if (_indices.Count != _currentSourceIndex)

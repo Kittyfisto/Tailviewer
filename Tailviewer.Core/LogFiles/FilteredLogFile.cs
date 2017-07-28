@@ -75,6 +75,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public override DateTime Created
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <inheritdoc />
 		public override Size Size
 		{
 			get { throw new NotImplementedException(); }

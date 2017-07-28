@@ -136,18 +136,10 @@ namespace Tailviewer.Core.LogFiles
 		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
 
 		/// <inheritdoc />
-		public DateTime LastModified
-		{
-			get
-			{
-				ILogFile logFile = _innerLogFile;
-				if (logFile != null)
-					return logFile.LastModified;
+		public DateTime LastModified => _innerLogFile?.LastModified ?? DateTime.MinValue;
 
-				// Maybe this property should be nullable as well?
-				return DateTime.MinValue;
-			}
-		}
+		/// <inheritdoc />
+		public DateTime Created => _innerLogFile?.Created ?? DateTime.MinValue;
 
 		/// <inheritdoc />
 		public Size Size

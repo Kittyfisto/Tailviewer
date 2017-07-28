@@ -31,6 +31,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		DateTime LastModified { get; }
 
 		/// <summary>
+		///     The timestamp (in local time) the data source has been created.
+		/// </summary>
+		/// <remarks>
+		///     Is set to <see cref="DateTime.MinValue" /> when the data source doesn't exist.
+		/// </remarks>
+		DateTime Created { get; }
+
+		/// <summary>
 		///     The approximate size of the data source.
 		///     Is only needed to be displayed to the user.
 		/// </summary>

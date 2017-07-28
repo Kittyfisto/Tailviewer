@@ -104,6 +104,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public abstract DateTime LastModified { get; }
 
 		/// <inheritdoc />
+		public abstract DateTime Created { get; }
+
+		/// <inheritdoc />
 		public abstract Size Size { get; }
 
 		/// <inheritdoc />

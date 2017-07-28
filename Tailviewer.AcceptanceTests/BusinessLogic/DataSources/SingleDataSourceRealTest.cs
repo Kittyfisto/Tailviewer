@@ -21,7 +21,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			_scheduler = new DefaultTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
-			_settings = new DataSource(LogFileRealTest.File20Mb)
+			_settings = new DataSource(TextLogFileAcceptanceTest.File20Mb)
 			{
 				Id = Guid.NewGuid()
 			};

@@ -39,6 +39,9 @@ namespace Tailviewer.Core.LogFiles
 		public DateTime LastModified { get; private set; }
 
 		/// <inheritdoc />
+		public DateTime Created => DateTime.MinValue;
+
+		/// <inheritdoc />
 		public Size Size { get; set; }
 
 		/// <inheritdoc />
