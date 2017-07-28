@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -9,6 +10,11 @@ using Tailviewer.BusinessLogic.Parsers;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
+	/// <summary>
+	///     The bead-and-butter <see cref="ILogFile" /> implementation for Tailviewer.
+	///     Responsible for scanning and reading the content of a file on disk, forwarding
+	///     them to its <see cref="ILogFileListener"/>s.
+	/// </summary>
 	public sealed class TextLogFile
 		: AbstractLogFile
 	{
@@ -16,21 +22,21 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		#region Data
-		
+
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private bool _exists;
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
+		private readonly ILogLineTranslator _translator;
 
 		#endregion
 
 		#region Timestamp parsing
 
-		private readonly TimestampParser _timestampParser;
+		private readonly ITimestampParser _timestampParser;
 		private int _numTimestampSuccess;
 		private int _numSuccessiveTimestampFailures;
-
 
 		#endregion
 
@@ -48,7 +54,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		#endregion
 
-		public TextLogFile(ITaskScheduler scheduler, string fileName)
+		/// <summary>
+		/// Initializes this text log file.
+		/// </summary>
+		/// <param name="scheduler"></param>
+		/// <param name="fileName"></param>
+		/// <param name="timestampParser">An optional timestamp parser that is used to find timestamps in log messages. If none is specified, then <see cref="TimestampParser"/> is used</param>
+		/// <param name="translator">An optional translator that is used to translate each log line in memory. If none is specified, then log lines are displayed as they are in the file on disk</param>
+		public TextLogFile(ITaskScheduler scheduler,
+		                   string fileName,
+		                   ITimestampParser timestampParser = null,
+		                   ILogLineTranslator translator = null)
 			: base(scheduler)
 		{
 			if (fileName == null) throw new ArgumentNullException(nameof(fileName));
@@ -58,10 +74,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (!Path.IsPathRooted(_fullFilename))
 				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
+			_translator = translator;
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
-			_timestampParser = new TimestampParser();
-			
+
+			if (timestampParser != null)
+			{
+				_timestampParser = new NoThrowTimestampParser(timestampParser);
+			}
+			else
+			{
+				_timestampParser = new TimestampParser();
+			}
+
 			StartTask();
 		}
 
@@ -274,9 +299,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				int lineIndex = _entries.Count;
 				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
-				_entries.Add(logLine);
-				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Length);
-
+				var translated = Translate(logLine);
+				_entries.Add(translated);
+				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, translated.Message?.Length ?? 0);
 
 				if (timestamp != null)
 				{
@@ -306,6 +331,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
+		}
+
+		[Pure]
+		private LogLine Translate(LogLine logLine)
+		{
+			if (_translator == null)
+				return logLine;
+
+			return _translator.Translate(logLine);
 		}
 
 		private void RemoveLast()
