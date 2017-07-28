@@ -63,6 +63,22 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestTranslator1()
+		{
+			var translator = new Mock<ILogLineTranslator>();
+			_file = new TextLogFile(_scheduler, _fname, translator: translator.Object);
+			_file.AddListener(_listener.Object, TimeSpan.Zero, 10);
+
+
+			_writer.Write("Foo");
+			_writer.Flush();
+			_scheduler.RunOnce();
+
+			translator.Verify(x => x.Translate(It.Is<ILogFile>(y => y == _file), It.IsAny<LogLine>()),
+				Times.Once);
+		}
+
+		[Test]
 		public void TestReadOneLine1()
 		{
 			_writer.Write("Foo");

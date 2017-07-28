@@ -14,9 +14,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Translates the given line into whatever form the subclass deems useful.
 		/// </summary>
+		/// <param name="logFile">The log file which requests the given line to be translated</param>
 		/// <param name="line"></param>
 		/// <returns>The new line that shall be exposed by this log file</returns>
 		[Pure]
-		LogLine Translate(LogLine line);
+		LogLine Translate(ILogFile logFile, LogLine line);
 	}
 }

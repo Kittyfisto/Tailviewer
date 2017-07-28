@@ -58,6 +58,7 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSection.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogLine.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFile.cs" />
     <Compile Include="BusinessLogic\LogLineIndex.cs" />
     <Compile Include="BusinessLogic\Parsers\DateTimeParser.cs" />

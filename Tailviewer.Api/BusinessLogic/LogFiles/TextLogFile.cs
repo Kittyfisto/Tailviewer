@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private bool _exists;
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
-		private readonly ILogLineTranslator _translator;
+		private readonly NoThrowLogLineTranslator _translator;
 
 		#endregion
 
@@ -75,7 +75,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (!Path.IsPathRooted(_fullFilename))
 				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
-			_translator = translator;
+			if (translator != null)
+				_translator = new NoThrowLogLineTranslator(translator);
+
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
 
@@ -344,7 +346,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (_translator == null)
 				return logLine;
 
-			return _translator.Translate(logLine);
+			return _translator.Translate(this, logLine);
 		}
 
 		private void RemoveLast()
