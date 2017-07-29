@@ -1,15 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tailviewer.Core")]
-[assembly: AssemblyDescription("Core library for Tailviewer, the free log file viewer")]
+[assembly: AssemblyTitle("Tailviewer.Packer.Test")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tailviewer.Core")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2017")]
+[assembly: AssemblyProduct("Tailviewer.Packer.Test")]
+[assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("62c60d20-180e-4a59-9ef3-30161e1e31cb")]
+[assembly: Guid("32b4c733-2e01-4633-a163-d947e0743946")]
 
 // Version information for an assembly consists of the following four values:
 //

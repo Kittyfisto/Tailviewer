@@ -20,8 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,8 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -44,6 +42,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Extensions, Version=1.0.14.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Extensions.1.0.14\lib\net45\System.Threading.Extensions.dll</HintPath>
       <Private>True</Private>
@@ -109,11 +110,19 @@
     <Compile Include="LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="Plugins\AssemblyDescription.cs" />
+    <Compile Include="Plugins\AssemblyReference.cs" />
+    <Compile Include="Plugins\IAssemblyDescription.cs" />
+    <Compile Include="Plugins\IAssemblyReference.cs" />
     <Compile Include="Plugins\IPluginDescription.cs" />
     <Compile Include="Plugins\IPluginLoader.cs" />
+    <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="Plugins\IPluginScanner.cs" />
+    <Compile Include="Plugins\PluginPackageIndex.cs" />
     <Compile Include="Plugins\PluginDescription.cs" />
     <Compile Include="Plugins\PluginLoader.cs" />
+    <Compile Include="Plugins\PluginPackage.cs" />
+    <Compile Include="Plugins\PluginPacker.cs" />
     <Compile Include="Plugins\PluginScanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueExtensions.cs" />

@@ -23,5 +23,8 @@
     <file src="..\bin\Tailviewer.Api.XML" target="lib\net45\" />
     <file src="..\bin\Tailviewer.Api.pdb" target="lib\net45\" />
     <file src="..\bin\Tailviewer.Api.dll" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.XML" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.pdb" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.dll" target="lib\net45\" />
   </files>
 </package>
