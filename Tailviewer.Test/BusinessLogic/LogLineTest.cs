@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using FluentAssertions;
-using Metrolib;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -11,14 +9,6 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class LogLineTest
 	{
-		[Test]
-		public void TestSize()
-		{
-			var size = Size.FromBytes(Marshal.SizeOf<LogLine>());
-			Console.WriteLine("sizeof(LogLine): {0}", size);
-			size.Should().Be(Size.FromBytes(37));
-		}
-
 		[Test]
 		public void TestConstruction1()
 		{
