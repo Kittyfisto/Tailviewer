@@ -43,6 +43,6 @@ namespace Tailviewer.Core.Plugins
 		/// <summary>
 		/// 
 		/// </summary>
-		IReadOnlyList<Type> ImplementedPluginInterfaces { get; }
+		IReadOnlyList<string> ImplementedPluginInterfaces { get; }
 	}
 }

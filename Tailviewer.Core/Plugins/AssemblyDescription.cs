@@ -45,21 +45,31 @@ namespace Tailviewer.Core.Plugins
 
 		/// <inheritdoc />
 		[DataMember]
-		public List<Type> ImplementedPluginInterfaces { get; set; }
+		public List<string> ImplementedPluginInterfaces { get; set; }
 
 		IReadOnlyList<IAssemblyReference> IAssemblyDescription.Dependencies => Dependencies;
 
-		IReadOnlyList<Type> IAssemblyDescription.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
+		IReadOnlyList<string> IAssemblyDescription.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
+
+		public static AssemblyDescription FromRawData(byte[] rawAssembly)
+		{
+			var assembly = Assembly.Load(rawAssembly);
+			return FromAssembly(assembly);
+		}
 
 		public static AssemblyDescription FromFile(string assemblyFile)
 		{
 			var assembly = Assembly.LoadFrom(assemblyFile);
+			return FromAssembly(assembly);
+		}
 
+		private static AssemblyDescription FromAssembly(Assembly assembly)
+		{
 			var description = new AssemblyDescription
 			{
-				Fname = assemblyFile,
+				//Fname = ,
 				Dependencies = new List<AssemblyReference>(),
-				ImplementedPluginInterfaces = new List<Type>()
+				ImplementedPluginInterfaces = new List<string>()
 			};
 
 			var assemblyVersion = assembly.GetCustomAttribute<AssemblyVersionAttribute>();

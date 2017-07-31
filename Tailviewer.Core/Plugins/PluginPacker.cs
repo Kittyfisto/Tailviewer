@@ -74,13 +74,33 @@ namespace Tailviewer.Core.Plugins
 		}
 
 		/// <summary>
+		///     Adds a .NET assembly to the plugin package.
+		/// </summary>
+		/// <param name="entryName"></param>
+		/// <param name="assembly"></param>
+		public void AddAssembly(string entryName, Stream assembly)
+		{
+			var rawAssembly = new byte[assembly.Length - assembly.Position];
+			int offset = 0;
+			int toRead;
+			while((toRead = Math.Min(4096, rawAssembly.Length - offset)) > 0)
+			{
+				offset += assembly.Read(rawAssembly, offset, toRead);
+			}
+			
+			var assemblyDescription = AssemblyDescription.FromRawData(rawAssembly);
+			Add(entryName, rawAssembly);
+			_index.Assemblies.Add(assemblyDescription);
+		}
+
+		/// <summary>
 		///     Adds a new file to the  plugin package.
 		/// </summary>
 		/// <param name="entryName"></param>
 		/// <param name="content"></param>
 		public void Add(string entryName, Stream content)
 		{
-			var entry = _archive.CreateEntry(entryName, CompressionLevel.Optimal);
+			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
 			using (var stream = entry.Open())
 			using (var writer = new BinaryWriter(stream))
 			{
@@ -91,9 +111,39 @@ namespace Tailviewer.Core.Plugins
 			}
 		}
 
+		/// <summary>
+		///     Adds a new file to the  plugin package.
+		/// </summary>
+		/// <param name="entryName"></param>
+		/// <param name="content"></param>
+		public void Add(string entryName, byte[] content)
+		{
+			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
+			using (var stream = entry.Open())
+			{
+				stream.Write(content, 0, content.Length);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fname"></param>
+		/// <returns></returns>
 		public static PluginPacker Create(string fname)
 		{
 			return new PluginPacker(ZipFile.Open(fname, ZipArchiveMode.Create, Encoding.UTF8));
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <param name="leaveOpen"></param>
+		/// <returns></returns>
+		public static PluginPacker Create(Stream stream, bool leaveOpen = false)
+		{
+			return new PluginPacker(new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen, Encoding.UTF8));
 		}
 	}
 }

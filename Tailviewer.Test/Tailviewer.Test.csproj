@@ -136,6 +136,7 @@
     <Compile Include="BusinessLogic\Plugins\AbstractPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginPackerTest.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginLoaderTest.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginAssemblyScannerTest.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginScannerTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />

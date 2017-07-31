@@ -13,7 +13,6 @@ using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Plugins;
@@ -66,70 +65,67 @@ namespace Tailviewer
 
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
-			using (var scanner = new PluginScanner())
+			using (var scanner = new PluginAssemblyScanner())
 			{
 				var plugins = scanner.ReflectPlugins(Constants.PluginPath);
 
-				using (var loader = new PluginLoader())
+				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>(plugins);
+
+				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
+				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
+				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 				{
-					var fileFormatPlugins = loader.LoadAllOfType<IFileFormatPlugin>(plugins);
-
-					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
-					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
-					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
+					var arguments = ArgumentParser.TryParse(args);
+					if (arguments.FileToOpen != null)
 					{
-						var arguments = ArgumentParser.TryParse(args);
-						if (arguments.FileToOpen != null)
+						if (File.Exists(arguments.FileToOpen))
 						{
-							if (File.Exists(arguments.FileToOpen))
-							{
-								// Not only do we want to add this file to the list of data sources,
-								// but we also want to select it so the user can view it immediately, regardless
-								// of what was selected previously.
-								var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
-								settings.DataSources.SelectedItem = dataSource.Id;
-							}
-							else
-							{
-								Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
-							}
+							// Not only do we want to add this file to the list of data sources,
+							// but we also want to select it so the user can view it immediately, regardless
+							// of what was selected previously.
+							var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
+							settings.DataSources.SelectedItem = dataSource.Id;
 						}
-
-						if (settings.AutoUpdate.CheckForUpdates)
+						else
 						{
-							// Our initial check for updates is not due to a user action
-							// and therefore we don't need to show a notification when the
-							// application is up-to-date.
-							updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+							Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
 						}
-
-						var quickFilters = new QuickFilters(settings.QuickFilters);
-						actionCenter.Add(Build.Current);
-						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
-						var application = new App();
-						Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-						var uiDispatcher = new UiDispatcher(dispatcher);
-						dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
-						TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
-
-						var window = new MainWindow(settings)
-						{
-							DataContext = new MainWindowViewModel(settings,
-								dataSources,
-								quickFilters,
-								actionCenter,
-								updater,
-								uiDispatcher,
-								plugins)
-						};
-
-						settings.MainWindow.RestoreTo(window);
-
-						window.Show();
-						mutex.SetListener(window);
-
-						return application.Run();
 					}
+
+					if (settings.AutoUpdate.CheckForUpdates)
+					{
+						// Our initial check for updates is not due to a user action
+						// and therefore we don't need to show a notification when the
+						// application is up-to-date.
+						updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+					}
+
+					var quickFilters = new QuickFilters(settings.QuickFilters);
+					actionCenter.Add(Build.Current);
+					actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
+					var application = new App();
+					Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+					var uiDispatcher = new UiDispatcher(dispatcher);
+					dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
+					TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
+
+					var window = new MainWindow(settings)
+					{
+						DataContext = new MainWindowViewModel(settings,
+							dataSources,
+							quickFilters,
+							actionCenter,
+							updater,
+							uiDispatcher,
+							plugins)
+					};
+
+					settings.MainWindow.RestoreTo(window);
+
+					window.Show();
+					mutex.SetListener(window);
+
+					return application.Run();
 				}
 			}
 		}

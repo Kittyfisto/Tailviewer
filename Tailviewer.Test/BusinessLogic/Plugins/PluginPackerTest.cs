@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.Plugins
@@ -30,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				packer.AddAssembly("foo", AssemblyFname);
 			}
 
-			using (var reader = PluginPackage.OpenRead(_fname))
+			using (var reader = PluginArchive.OpenRead(_fname))
 			{
 				var index = reader.Index;
 				index.Should().NotBeNull();
