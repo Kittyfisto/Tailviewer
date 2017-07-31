@@ -9,15 +9,15 @@ namespace Tailviewer.Core.Plugins
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class PluginScanner
-		: IPluginScanner
+	public sealed class PluginLoader
+		: IPluginLoader
 	{
 		private readonly Dictionary<IPluginDescription, PluginArchive> _plugins;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public PluginScanner()
+		public PluginLoader()
 		{
 			_plugins = new Dictionary<IPluginDescription, PluginArchive>();
 		}

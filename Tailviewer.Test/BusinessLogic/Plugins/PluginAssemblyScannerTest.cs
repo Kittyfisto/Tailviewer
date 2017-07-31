@@ -20,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				File.Delete(plugin);
 
 			CreatePlugin(plugin, "John Snow", "https://got.com", "You know nothing, John Snow!");
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			var description = scanner.ReflectPlugin(plugin);
 			description.Should().NotBeNull();
 			description.FilePath.Should().Be(plugin);
@@ -42,7 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 			builder.ImplementInterface<IFileFormatPlugin>("sql.LogFilePlugin");
 			builder.Save();
 
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			var description = scanner.ReflectPlugin(plugin);
 			description.Author.Should().Be("SMI");
 			description.Website.Should().Be(new Uri("none of your business", UriKind.RelativeOrAbsolute));
@@ -56,28 +56,28 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestReflectPlugin3()
 		{
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			new Action(() => scanner.ReflectPlugin(null)).ShouldThrow<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin4()
 		{
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			new Action(() => scanner.ReflectPlugin("DAAWDADAWWF")).ShouldThrow<FileNotFoundException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin5()
 		{
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			new Action(() => scanner.ReflectPlugin(@"C:\adwwdwawad\asxas")).ShouldThrow<FileNotFoundException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin6()
 		{
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).ShouldThrow<ArgumentException>(
 				"because we used illegal characters in that path");
 		}
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestReflectPlugins()
 		{
-			var scanner = new PluginAssemblyScanner();
+			var scanner = new PluginAssemblyLoader();
 			new Action(() => scanner.ReflectPlugins(@"C:\adwwdwawad\asxas")).ShouldNotThrow();
 			scanner.ReflectPlugins(@"C:\adwwdwawad\asxas").Should().BeEmpty();
 		}
@@ -109,7 +109,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				}
 			};
 
-			using (var scanner = new PluginAssemblyScanner())
+			using (var scanner = new PluginAssemblyLoader())
 			{
 				var plugin = scanner.Load<IFileFormatPlugin>(description);
 				plugin.Should().NotBeNull();
@@ -136,7 +136,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				}
 			};
 
-			using (var scanner = new PluginAssemblyScanner())
+			using (var scanner = new PluginAssemblyLoader())
 			{
 				var plugin = scanner.Load<IFileFormatPlugin>(description);
 				plugin.Should().NotBeNull();
@@ -148,7 +148,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Description("Verifies that both PluginScanner and PluginLoader play nice together")]
 		public void TestScanAndLoad()
 		{
-			using (var scanner = new PluginAssemblyScanner())
+			using (var scanner = new PluginAssemblyLoader())
 			{
 				var assemblyFileName = "Foo3.tvp";
 				if (File.Exists(assemblyFileName))
@@ -169,7 +169,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Description("Verifies that LoadAllOfType simply skips plugins that cannot be loaded")]
 		public void TestLoadAllOfType1()
 		{
-			using (var scanner = new PluginAssemblyScanner())
+			using (var scanner = new PluginAssemblyLoader())
 			{
 				var description = new PluginDescription
 				{

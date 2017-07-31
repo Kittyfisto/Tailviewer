@@ -16,20 +16,20 @@ namespace Tailviewer.Core.Plugins
 	///     Responsible for finding and loading plugins in a directory tree.
 	///     Is only used in development mode (Tailviewer.exe -d)
 	/// </summary>
-	public sealed class PluginAssemblyScanner
-		: IPluginScanner
+	public sealed class PluginAssemblyLoader
+		: IPluginLoader
 			, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private static readonly IReadOnlyList<Type> PluginInterfaces;
 
-		static PluginAssemblyScanner()
+		static PluginAssemblyLoader()
 		{
 			PluginInterfaces = new[] {typeof(IFileFormatPlugin)};
 		}
 
-		public PluginAssemblyScanner()
+		public PluginAssemblyLoader()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
 		}

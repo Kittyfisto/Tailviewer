@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -16,6 +17,7 @@ namespace Tailviewer.Core.Plugins
 	{
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
+		private readonly Dictionary<ZipArchiveEntry, Assembly> _assemblyCache;
 
 		private PluginArchive(ZipArchive archive)
 		{
@@ -26,6 +28,7 @@ namespace Tailviewer.Core.Plugins
 
 			_archive = archive;
 			_index = new PluginPackageIndex();
+			_assemblyCache = new Dictionary<ZipArchiveEntry, Assembly>();
 
 			var index = _archive.GetEntry("index.xml");
 			using (var stream = index.Open())
@@ -49,18 +52,27 @@ namespace Tailviewer.Core.Plugins
 		public Assembly LoadAssembly(string entryName)
 		{
 			var entry = _archive.GetEntry(entryName);
-			var rawAssembly = new byte[entry.Length];
-			using (var stream = entry.Open())
+
+			Assembly assembly;
+			if (!_assemblyCache.TryGetValue(entry, out assembly))
 			{
-				int read = 0;
-				int offset = 0;
-				int size = Math.Max(4096, rawAssembly.Length - offset);
-				while ((read = stream.Read(rawAssembly, offset, size)) > 0)
+				var rawAssembly = new byte[entry.Length];
+				using (var stream = entry.Open())
 				{
-					offset += read;
+					int read = 0;
+					int offset = 0;
+					int size;
+					do
+					{
+						offset += read;
+						size = Math.Min(4096, rawAssembly.Length - offset);
+					} while ((read = stream.Read(rawAssembly, offset, size)) > 0);
 				}
+				assembly = Assembly.Load(rawAssembly);
+				_assemblyCache.Add(entry, assembly);
 			}
-			return Assembly.Load(rawAssembly);
+
+			return assembly;
 		}
 
 		/// <inheritdoc />

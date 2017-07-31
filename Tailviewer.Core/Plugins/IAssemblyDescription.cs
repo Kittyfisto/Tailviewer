@@ -12,7 +12,7 @@ namespace Tailviewer.Core.Plugins
 		/// <summary>
 		///     The file name of the assembly in the package.
 		/// </summary>
-		string Fname { get; }
+		string EntryName { get; }
 
 		/// <summary>
 		///     The name of the assembly (i.e. excluding path and extension).

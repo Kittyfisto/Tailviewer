@@ -21,12 +21,13 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		}
 
 		[Test]
-		[Ignore("Not yet working")]
 		public void TestAddAssembly1()
 		{
+			var assembly = typeof(PluginPackerTest).Assembly;
+
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				packer.AddAssembly("foo", AssemblyFname);
+				packer.AddAssembly("foo", AssemblyFileName);
 			}
 
 			using (var reader = PluginArchive.OpenRead(_fname))
@@ -35,27 +36,26 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				index.Should().NotBeNull();
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
+				index.Assemblies[0].EntryName.Should().Be("foo");
 				index.Assemblies[0].AssemblyName.Should().Be("Tailviewer.Test");
+				index.Assemblies[0].AssemblyVersion.Should().Be(assembly.GetName().Version);
+				index.Assemblies[0].AssemblyFileVersion.Should().Be(Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
+				index.Assemblies[0].AssemblyInformationalVersion.Should().BeNull();
+
+				var actualAssembly = reader.LoadAssembly("foo");
+				actualAssembly.Should().NotBeNull();
+				actualAssembly.FullName.Should().Be(assembly.FullName);
 			}
 		}
 
-		public static string AssemblyDirectory
+		public static string AssemblyFileName
 		{
 			get
 			{
 				string codeBase = Assembly.GetExecutingAssembly().CodeBase;
 				UriBuilder uri = new UriBuilder(codeBase);
 				string path = Uri.UnescapeDataString(uri.Path);
-				return Path.GetDirectoryName(path);
-			}
-		}
-
-		public static string AssemblyFname
-		{
-			get
-			{
-				var name = Path.Combine(AssemblyDirectory, "Tailviewer.Test.dll");
-				return name;
+				return path;
 			}
 		}
 	}

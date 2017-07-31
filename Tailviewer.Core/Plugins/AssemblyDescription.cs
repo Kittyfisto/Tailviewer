@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -15,25 +14,41 @@ namespace Tailviewer.Core.Plugins
 	{
 		/// <inheritdoc />
 		[DataMember]
-		public string Fname { get; set; }
+		public string EntryName { get; set; }
 
 		/// <inheritdoc />
-		public string AssemblyName
+		[DataMember]
+		public string AssemblyName { get; set; }
+
+		/// <inheritdoc />
+		public Version AssemblyVersion
 		{
 			get
 			{
-				var name = Path.GetFileNameWithoutExtension(Fname);
-				return name;
+				Version version;
+				Version.TryParse(SerializableAssemblyVersion, out version);
+				return version;
 			}
+			set { SerializableAssemblyVersion = value != null ? value.ToString() : null; }
 		}
 
-		/// <inheritdoc />
 		[DataMember]
-		public Version AssemblyVersion { get; set; }
+		public string SerializableAssemblyVersion { get; set; }
 
 		/// <inheritdoc />
+		public Version AssemblyFileVersion
+		{
+			get
+			{
+				Version version;
+				Version.TryParse(SerializableAssemblyFileVersion, out version);
+				return version;
+			}
+			set { SerializableAssemblyFileVersion = value != null ? value.ToString() : null; }
+		}
+
 		[DataMember]
-		public Version AssemblyFileVersion { get; set; }
+		public string SerializableAssemblyFileVersion { get; set; }
 
 		/// <inheritdoc />
 		[DataMember]
@@ -67,17 +82,15 @@ namespace Tailviewer.Core.Plugins
 		{
 			var description = new AssemblyDescription
 			{
-				//Fname = ,
+				AssemblyName = assembly.GetName().Name,
 				Dependencies = new List<AssemblyReference>(),
 				ImplementedPluginInterfaces = new List<string>()
 			};
 
-			var assemblyVersion = assembly.GetCustomAttribute<AssemblyVersionAttribute>();
 			var assemblyFileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
 			var assemblyInformationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 
-			if (assemblyVersion != null)
-				description.AssemblyVersion = TryParse(assemblyVersion.Version);
+			description.AssemblyVersion = assembly.GetName().Version;
 			if (assemblyFileVersion != null)
 				description.AssemblyFileVersion = TryParse(assemblyFileVersion.Version);
 			if (assemblyInformationalVersion != null)

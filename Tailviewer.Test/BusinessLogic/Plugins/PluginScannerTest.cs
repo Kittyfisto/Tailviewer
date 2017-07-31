@@ -28,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				}
 
 				plugin.Position = 0;
-				var scanner = new PluginScanner();
+				var scanner = new PluginLoader();
 				var description = scanner.ReflectPlugin(plugin);
 				description.Should().NotBeNull();
 				description.Author.Should().Be("micky mouse");

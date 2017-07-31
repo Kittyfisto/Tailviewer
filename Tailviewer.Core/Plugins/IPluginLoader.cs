@@ -7,7 +7,7 @@ namespace Tailviewer.Core.Plugins
 	/// <summary>
 	/// 
 	/// </summary>
-	public interface IPluginScanner
+	public interface IPluginLoader
 	{
 		/// <summary>
 		///     Finds all plugins in the given directory path (recursive).

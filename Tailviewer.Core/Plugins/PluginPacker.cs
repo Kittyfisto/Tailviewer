@@ -66,6 +66,7 @@ namespace Tailviewer.Core.Plugins
 		public void AddAssembly(string entryName, string fname)
 		{
 			var assemblyDescription = AssemblyDescription.FromFile(fname);
+			assemblyDescription.EntryName = entryName;
 			using (var stream = File.OpenRead(fname))
 			{
 				Add(entryName, stream);
