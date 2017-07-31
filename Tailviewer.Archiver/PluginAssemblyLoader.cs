@@ -23,15 +23,43 @@ namespace Tailviewer.Core.Plugins
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private static readonly IReadOnlyList<Type> PluginInterfaces;
+		private readonly List<IPluginDescription> _plugins;
 
 		static PluginAssemblyLoader()
 		{
 			PluginInterfaces = new[] {typeof(IFileFormatPlugin)};
 		}
 
-		public PluginAssemblyLoader()
+		/// <summary>
+		///     Loads all plugins in the given directory path (recursive).
+		///     Plugins are .NET assemblies compiled against AnyCPU that implement at least
+		///     one of the available <see cref="IPlugin" /> interfaces.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public PluginAssemblyLoader(string path = null)
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+
+			_plugins = new List<IPluginDescription>();
+			try
+			{
+				if (path != null)
+				{
+					Log.InfoFormat("Looking for plugins in '{0}'...", path);
+					var assemblies = Directory.EnumerateFiles(path, "*.tvp", SearchOption.AllDirectories);
+					foreach (var plugin in assemblies)
+					{
+						IPluginDescription description;
+						TryLoad(plugin, out description);
+						_plugins.Add(description);
+					}
+				}
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
+			}
 		}
 
 		/// <inheritdoc />
@@ -39,6 +67,9 @@ namespace Tailviewer.Core.Plugins
 		{
 			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
 		}
+
+		/// <inheritdoc />
+		public IEnumerable<IPluginDescription> Plugins => _plugins;
 
 		/// <summary>
 		/// </summary>
@@ -51,13 +82,12 @@ namespace Tailviewer.Core.Plugins
 				throw new ArgumentNullException(nameof(description));
 
 			var assembly = Assembly.LoadFrom(description.FilePath);
-			var assemblyQualifiedName = description.Plugins[typeof(T)];
-			var fullTypeName = GetFullTypeName(assemblyQualifiedName);
+			var fullTypeName = description.Plugins[typeof(T)];
 			var implementation = assembly.GetType(fullTypeName);
 			if (implementation == null)
 				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
 					description.FilePath,
-					assemblyQualifiedName));
+					fullTypeName));
 
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
@@ -86,36 +116,26 @@ namespace Tailviewer.Core.Plugins
 		}
 
 		/// <summary>
-		///     Loads all plugins in the given directory path (recursive).
-		///     Plugins are .NET assemblies compiled against AnyCPU that implement at least
-		///     one of the available <see cref="IPlugin" /> interfaces.
+		/// 
 		/// </summary>
-		/// <param name="path"></param>
+		/// <param name="pluginPath"></param>
 		/// <returns></returns>
-		public IReadOnlyList<IPluginDescription> ReflectPlugins(string path)
-		{
-			var plugins = new List<IPluginDescription>();
-			try
-			{
-				var assemblies = Directory.EnumerateFiles(path, "*.tvp", SearchOption.AllDirectories);
-				foreach (var plugin in assemblies)
-				{
-					IPluginDescription description;
-					TryLoad(plugin, out description);
-					plugins.Add(description);
-				}
-			}
-			catch (DirectoryNotFoundException e)
-			{
-				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
-			}
-			return plugins;
-		}
-
-		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
+			Log.InfoFormat("Loading plugin '{0}'...", pluginPath);
+
 			var assembly = Assembly.LoadFrom(pluginPath);
+			return ReflectPlugin(assembly, pluginPath);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="assembly"></param>
+		/// <param name="pluginPath"></param>
+		/// <returns></returns>
+		public IPluginDescription ReflectPlugin(Assembly assembly, string pluginPath = null)
+		{
 			var authorAttribute = assembly.GetCustomAttribute<PluginAuthorAttribute>();
 			var websiteAttribute = assembly.GetCustomAttribute<PluginWebsiteAttribute>();
 			var descriptionAttribute = assembly.GetCustomAttribute<PluginDescriptionAttribute>();
@@ -241,7 +261,7 @@ namespace Tailviewer.Core.Plugins
 			foreach (var type in assembly.ExportedTypes)
 			foreach (var @interface in PluginInterfaces)
 				if (type.GetInterface(@interface.FullName) != null)
-					plugins.Add(@interface, type.AssemblyQualifiedName);
+					plugins.Add(@interface, type.FullName);
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;

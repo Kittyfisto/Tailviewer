@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Tailviewer.Packer")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Create/list Tailviewer plugin archives")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer.Packer")]

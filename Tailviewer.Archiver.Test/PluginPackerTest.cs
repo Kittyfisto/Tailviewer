@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
 				index.Assemblies[0].EntryName.Should().Be("foo");
-				index.Assemblies[0].AssemblyName.Should().Be("Tailviewer.Test");
+				index.Assemblies[0].AssemblyName.Should().Be("Tailviewer.Archiver.Test");
 				index.Assemblies[0].AssemblyVersion.Should().Be(assembly.GetName().Version);
 				index.Assemblies[0].AssemblyFileVersion.Should().Be(Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
 				index.Assemblies[0].AssemblyInformationalVersion.Should().BeNull();

@@ -9,7 +9,7 @@ using Tailviewer.Core.Plugins;
 namespace Tailviewer.Test.BusinessLogic.Plugins
 {
 	[TestFixture]
-	public sealed class PluginAssemblyScannerTest
+	public sealed class PluginAssemblyLoaderTest
 		: AbstractPluginTest
 	{
 		[Test]
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 			description.Description.Should().Be("go away");
 			description.Plugins.Should().HaveCount(1);
 			description.Plugins.Should().Contain(
-				new KeyValuePair<Type, string>(typeof(IFileFormatPlugin), "sql.LogFilePlugin, sql, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null")
+				new KeyValuePair<Type, string>(typeof(IFileFormatPlugin), "sql.LogFilePlugin")
 			);
 		}
 
@@ -85,9 +85,8 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestReflectPlugins()
 		{
-			var scanner = new PluginAssemblyLoader();
-			new Action(() => scanner.ReflectPlugins(@"C:\adwwdwawad\asxas")).ShouldNotThrow();
-			scanner.ReflectPlugins(@"C:\adwwdwawad\asxas").Should().BeEmpty();
+			var scanner = new PluginAssemblyLoader(@"C:\adwwdwawad\asxas");
+			scanner.Plugins.Should().BeEmpty();
 		}
 
 		[Test]
@@ -132,7 +131,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 				FilePath = assemblyFileName,
 				Plugins = new Dictionary<Type, string>
 				{
-					{typeof(IFileFormatPlugin), "Foo2.MyAwesomePlugin, Foo2, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"}
+					{typeof(IFileFormatPlugin), "Foo2.MyAwesomePlugin"}
 				}
 			};
 

@@ -26,9 +26,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "Tailviewer.Core\Tailviewer.Core.csproj", "{62C60D20-180E-4A59-9EF3-30161E1E31CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Packer", "Tailviewer.Packer\Tailviewer.Packer.csproj", "{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver", "Tailviewer.Archiver\Tailviewer.Archiver.csproj", "{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Packer.Test", "Tailviewer.Packer.Test\Tailviewer.Packer.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Test", "Tailviewer.Archiver.Test\Tailviewer.Archiver.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

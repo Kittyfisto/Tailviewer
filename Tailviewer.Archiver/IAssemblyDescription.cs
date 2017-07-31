@@ -39,10 +39,5 @@ namespace Tailviewer.Core.Plugins
 		///     The referenced assemblies this assembly dependens on.
 		/// </summary>
 		IReadOnlyList<IAssemblyReference> Dependencies { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		IReadOnlyList<string> ImplementedPluginInterfaces { get; }
 	}
 }

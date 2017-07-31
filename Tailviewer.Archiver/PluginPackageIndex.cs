@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Tailviewer.Core.Plugins
@@ -18,6 +17,14 @@ namespace Tailviewer.Core.Plugins
 		/// </summary>
 		[DataMember]
 		public List<AssemblyDescription> Assemblies { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		[DataMember]
+		public List<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; set; }
+
+		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
 
 		/// <summary>
 		/// </summary>

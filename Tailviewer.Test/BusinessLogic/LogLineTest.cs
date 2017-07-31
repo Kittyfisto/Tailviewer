@@ -16,7 +16,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var size = Size.FromBytes(Marshal.SizeOf<LogLine>());
 			Console.WriteLine("sizeof(LogLine): {0}", size);
-			size.Should().Be(Size.FromBytes(41));
+			size.Should().Be(Size.FromBytes(37));
 		}
 
 		[Test]

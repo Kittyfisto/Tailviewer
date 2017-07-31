@@ -64,8 +64,6 @@ namespace Tailviewer.Core.Plugins
 
 		IReadOnlyList<IAssemblyReference> IAssemblyDescription.Dependencies => Dependencies;
 
-		IReadOnlyList<string> IAssemblyDescription.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
-
 		public static AssemblyDescription FromRawData(byte[] rawAssembly)
 		{
 			var assembly = Assembly.Load(rawAssembly);
@@ -78,7 +76,7 @@ namespace Tailviewer.Core.Plugins
 			return FromAssembly(assembly);
 		}
 
-		private static AssemblyDescription FromAssembly(Assembly assembly)
+		public static AssemblyDescription FromAssembly(Assembly assembly)
 		{
 			var description = new AssemblyDescription
 			{

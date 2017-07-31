@@ -133,12 +133,6 @@
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParserTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\AbstractPluginTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginArchiveTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginPackerTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginLoaderTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginAssemblyScannerTest.cs" />
-    <Compile Include="BusinessLogic\Plugins\PluginScannerTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
@@ -247,6 +241,10 @@
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
       <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
       <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
+      <Project>{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}</Project>
+      <Name>Tailviewer.Archiver</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
       <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>

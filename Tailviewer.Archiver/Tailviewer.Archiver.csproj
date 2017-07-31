@@ -7,8 +7,8 @@
     <ProjectGuid>{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tailviewer.Packer</RootNamespace>
-    <AssemblyName>packer</AssemblyName>
+    <RootNamespace>Tailviewer.Archiver</RootNamespace>
+    <AssemblyName>archive</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,24 +33,58 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Metrolib, Version=0.2.2.34, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.34\lib\net45\Metrolib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Threading.Extensions, Version=1.0.14.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.0.14\lib\net45\System.Threading.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyDescription.cs" />
+    <Compile Include="AssemblyReference.cs" />
+    <Compile Include="IAssemblyDescription.cs" />
+    <Compile Include="IAssemblyReference.cs" />
+    <Compile Include="IPluginDescription.cs" />
+    <Compile Include="IPluginLoader.cs" />
+    <Compile Include="IPluginPackageIndex.cs" />
+    <Compile Include="ListOptions.cs" />
+    <Compile Include="PackOptions.cs" />
+    <Compile Include="PluginArchive.cs" />
+    <Compile Include="PluginArchiveLoader.cs" />
+    <Compile Include="PluginAssemblyLoader.cs" />
+    <Compile Include="PluginDescription.cs" />
+    <Compile Include="PluginInterfaceImplementation.cs" />
+    <Compile Include="PluginPackageIndex.cs" />
+    <Compile Include="PluginPacker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -18,6 +18,10 @@ namespace Tailviewer.Core.Plugins
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private readonly Dictionary<ZipArchiveEntry, Assembly> _assemblyCache;
+		private Assembly _pluginAssembly;
+
+		public const string PluginAssemblyEntryName = "Plugin";
+		public const string IndexEntryName = "Index";
 
 		private PluginArchive(ZipArchive archive)
 		{
@@ -30,7 +34,7 @@ namespace Tailviewer.Core.Plugins
 			_index = new PluginPackageIndex();
 			_assemblyCache = new Dictionary<ZipArchiveEntry, Assembly>();
 
-			var index = _archive.GetEntry("index.xml");
+			var index = _archive.GetEntry(IndexEntryName);
 			using (var stream = index.Open())
 			using (var reader = new StreamReader(stream))
 			{
@@ -73,6 +77,15 @@ namespace Tailviewer.Core.Plugins
 			}
 
 			return assembly;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public Assembly LoadPlugin()
+		{
+			return LoadAssembly(PluginAssemblyEntryName);
 		}
 
 		/// <inheritdoc />
