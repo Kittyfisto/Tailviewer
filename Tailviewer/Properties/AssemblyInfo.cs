@@ -6,7 +6,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Tailviewer")]
+[assembly: AssemblyTitle("Application to view log files - live and offline")]
 [assembly: AssemblyDescription("Application to view log files - live and offline")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]

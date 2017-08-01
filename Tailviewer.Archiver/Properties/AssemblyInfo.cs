@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tailviewer.Archiver")]
-[assembly: AssemblyDescription("Create/list Tailviewer plugin archives")]
+[assembly: AssemblyTitle("Create/list Tailviewer plugins")]
+[assembly: AssemblyDescription("Create/list Tailviewer plugins")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tailviewer.Archiver")]
+[assembly: AssemblyProduct("Tailviewer")]
 [assembly: AssemblyCopyright("Copyright © Simon Mießler 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
