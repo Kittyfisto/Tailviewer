@@ -73,17 +73,6 @@ namespace Tailviewer
 			}
 		}
 
-		/// <summary>
-		/// Tests if there is another Tailviewer instance already running.
-		/// If there is, tests if it reacts to input.
-		/// If it does, then this process is exited immediately.
-		/// If it does not, then the other process is killed and this process 
-		/// </summary>
-		private static void EnsureOneApplication()
-		{
-			throw new NotImplementedException();
-		}
-
 		private static void SetupLoggers()
 		{
 			var hierarchy = (Hierarchy) LogManager.GetRepository();

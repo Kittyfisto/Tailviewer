@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Describes the content of a plugin package to tailviewer.

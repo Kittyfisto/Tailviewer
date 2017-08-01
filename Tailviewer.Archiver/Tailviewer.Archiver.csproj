@@ -57,22 +57,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyDescription.cs" />
-    <Compile Include="AssemblyReference.cs" />
-    <Compile Include="IAssemblyDescription.cs" />
-    <Compile Include="IAssemblyReference.cs" />
-    <Compile Include="IPluginDescription.cs" />
-    <Compile Include="IPluginLoader.cs" />
-    <Compile Include="IPluginPackageIndex.cs" />
+    <Compile Include="Plugins\AssemblyDescription.cs" />
+    <Compile Include="Plugins\AssemblyReference.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Plugins\IAssemblyDescription.cs" />
+    <Compile Include="Plugins\IAssemblyReference.cs" />
+    <Compile Include="Plugins\IPluginDescription.cs" />
+    <Compile Include="Plugins\IPluginLoader.cs" />
+    <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="ListOptions.cs" />
-    <Compile Include="PackOptions.cs" />
-    <Compile Include="PluginArchive.cs" />
-    <Compile Include="PluginArchiveLoader.cs" />
-    <Compile Include="PluginAssemblyLoader.cs" />
-    <Compile Include="PluginDescription.cs" />
-    <Compile Include="PluginInterfaceImplementation.cs" />
-    <Compile Include="PluginPackageIndex.cs" />
-    <Compile Include="PluginPacker.cs" />
+    <Compile Include="Plugins\PackOptions.cs" />
+    <Compile Include="Plugins\PluginArchive.cs" />
+    <Compile Include="Plugins\PluginArchiveLoader.cs" />
+    <Compile Include="Plugins\PluginAssemblyLoader.cs" />
+    <Compile Include="Plugins\PluginDescription.cs" />
+    <Compile Include="Plugins\PluginInterfaceImplementation.cs" />
+    <Compile Include="Plugins\PluginPackageIndex.cs" />
+    <Compile Include="Plugins\PluginPacker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +86,23 @@
       <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
       <Name>Tailviewer.Api</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\bin\CommandLine.dll">
+      <Link>Resources\CommandLine.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\log4net.dll">
+      <Link>Resources\log4net.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\Metrolib.dll">
+      <Link>Resources\Metrolib.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
+      <Link>Resources\System.Threading.Extensions.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\Tailviewer.Api.dll">
+      <Link>Resources\Tailviewer.Api.dll</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

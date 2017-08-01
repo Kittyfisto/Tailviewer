@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Describes an assembly which is part of

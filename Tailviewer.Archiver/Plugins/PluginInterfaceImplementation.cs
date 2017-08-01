@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	[DataContract]
 	public struct PluginInterfaceImplementation

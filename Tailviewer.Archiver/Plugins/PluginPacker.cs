@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Responsible for creating a plugin package which can then be dropped into Tailviewer's plugin folder.

@@ -1,5 +1,5 @@
 ﻿using System;
-using Tailviewer.Core.Plugins;
+using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Ui.Controls.Plugins
 {

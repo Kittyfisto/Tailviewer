@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Describes an assembly referenced by another assembly in a plugin package.

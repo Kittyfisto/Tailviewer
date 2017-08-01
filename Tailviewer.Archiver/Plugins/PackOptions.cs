@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CommandLine;
 
-namespace Tailviewer.Archiver
+namespace Tailviewer.Archiver.Plugins
 {
 	[Verb("pack", HelpText = "Create a new tailviewer plugin archive")]
 	public sealed class PackOptions

@@ -6,7 +6,7 @@ using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     This class is responsible for loading plugin archives which have been created with <see cref="PluginPacker" />

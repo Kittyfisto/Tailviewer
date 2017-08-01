@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Describes a .NET assembly contained in a plugin package.

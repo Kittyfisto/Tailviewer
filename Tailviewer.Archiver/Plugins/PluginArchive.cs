@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Responsible for loading a plugin from a tailviewer plugin package.

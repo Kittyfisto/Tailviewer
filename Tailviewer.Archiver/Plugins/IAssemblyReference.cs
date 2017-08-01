@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.Core.Plugins
+﻿namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	/// 

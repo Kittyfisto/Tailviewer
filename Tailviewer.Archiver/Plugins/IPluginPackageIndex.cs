@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Core.Plugins
+namespace Tailviewer.Archiver.Plugins
 {
 	/// <summary>
 	///     Describes the content of a plugin package to tailviewer.

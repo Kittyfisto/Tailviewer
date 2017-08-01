@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using CommandLine;
-using Tailviewer.Core.Plugins;
+using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Archiver
 {
@@ -13,7 +13,7 @@ namespace Tailviewer.Archiver
 	/// </remarks>
 	static class Program
 	{
-		static int Main(string[] args)
+		public static int Run(string[] args)
 		{
 			var result = Parser.Default.ParseArguments<PackOptions, ListOptions>(args);
 			try

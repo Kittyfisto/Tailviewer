@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Plugins;
+using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.Plugins
 {
