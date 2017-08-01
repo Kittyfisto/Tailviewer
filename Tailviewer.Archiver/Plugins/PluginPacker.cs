@@ -21,6 +21,7 @@ namespace Tailviewer.Archiver.Plugins
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private bool _disposed;
+		private string _currentDirectory;
 
 		private PluginPacker(ZipArchive archive)
 		{
@@ -67,10 +68,18 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="pluginFilePath"></param>
 		public void AddPluginAssembly(string pluginFilePath)
 		{
-			var assembly = AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginFilePath);
-			var assemblyLoader = new PluginAssemblyLoader();
-			var description = assemblyLoader.ReflectPlugin(assembly);
-			UpdateIndex(description);
+			try
+			{
+				_currentDirectory = Path.GetDirectoryName(pluginFilePath) ?? Directory.GetCurrentDirectory();
+				var assembly = AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginFilePath);
+				var assemblyLoader = new PluginAssemblyLoader();
+				var description = assemblyLoader.ReflectPlugin(assembly);
+				UpdateIndex(description);
+			}
+			finally
+			{
+				_currentDirectory = null;
+			}
 		}
 		
 		/// <summary>
@@ -80,9 +89,31 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="fileName"></param>
 		public void AddFile(string entryName, string fileName)
 		{
-			using (var stream = File.OpenRead(fileName))
+			try
 			{
-				AddFile(entryName, stream);
+				_currentDirectory = Path.GetDirectoryName(fileName) ?? Directory.GetCurrentDirectory();
+				using (var stream = File.OpenRead(fileName))
+				{
+					AddFile(entryName, stream);
+				}
+			}
+			finally
+			{
+				_currentDirectory = null;
+			}
+		}
+
+		/// <summary>
+		///     Adds a new file to the  plugin package.
+		/// </summary>
+		/// <param name="entryName"></param>
+		/// <param name="content"></param>
+		public void AddFile(string entryName, byte[] content)
+		{
+			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
+			using (var stream = entry.Open())
+			{
+				stream.Write(content, 0, content.Length);
 			}
 		}
 
@@ -118,6 +149,19 @@ namespace Tailviewer.Archiver.Plugins
 		///     Adds a .NET assembly to the plugin archive.
 		/// </summary>
 		/// <param name="entryName">The relative name of the resulting file in the archive</param>
+		/// <param name="assemblyFileName"></param>
+		private Assembly AddAssembly(string entryName, string assemblyFileName)
+		{
+			using (var content = File.OpenRead(assemblyFileName))
+			{
+				return AddAssembly(entryName, content);
+			}
+		}
+
+		/// <summary>
+		///     Adds a .NET assembly to the plugin archive.
+		/// </summary>
+		/// <param name="entryName">The relative name of the resulting file in the archive</param>
 		/// <param name="content"></param>
 		private Assembly AddAssembly(string entryName, Stream content)
 		{
@@ -127,22 +171,43 @@ namespace Tailviewer.Archiver.Plugins
 			assemblyDescription.EntryName = entryName;
 			AddFile(entryName, rawAssembly);
 			_index.Assemblies.Add(assemblyDescription);
+
+			foreach (var dependency in assemblyDescription.Dependencies)
+			{
+				var assemblyName = new AssemblyName(dependency.FullName);
+				if (ShouldAddDependency(assemblyName))
+				{
+					var fileName = Path.Combine(_currentDirectory, string.Format("{0}.exe", assemblyName.Name));
+					if (!File.Exists(fileName))
+						fileName = Path.Combine(_currentDirectory, string.Format("{0}.dll", assemblyName.Name));
+
+					AddAssembly(assemblyName.Name, fileName);
+				}
+			}
+
 			return assembly;
 		}
 
-		/// <summary>
-		///     Adds a .NET assembly to the plugin archive.
-		/// </summary>
-		/// <param name="entryName">The relative name of the resulting file in the archive</param>
-		/// <param name="assemblyFileName"></param>
-		private Assembly AddAssembly(string entryName, string assemblyFileName)
+		private bool ShouldAddDependency(AssemblyName dependency)
 		{
-			var assembly = Assembly.LoadFrom(assemblyFileName);
-			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
-			assemblyDescription.EntryName = entryName;
-			AddFile(entryName, assemblyFileName);
-			_index.Assemblies.Add(assemblyDescription);
-			return assembly;
+			switch (dependency.Name)
+			{
+				case "CommandLine":
+				case "log4net":
+				case "Metrolib":
+				case "System.Threading.Extensions":
+				case "Tailviewer.Api":
+					return false;
+
+				default:
+					var assembly = Assembly.Load(dependency);
+					var attribute = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false)[0] as AssemblyProductAttribute;
+					var isFrameworkAssembly = attribute != null && attribute.Product == "Microsoft® .NET Framework";
+					if (isFrameworkAssembly)
+						return false;
+
+					return true;
+			}
 		}
 
 		private void AddFileRaw(string entryName, Stream content)
@@ -155,20 +220,6 @@ namespace Tailviewer.Archiver.Plugins
 				int read;
 				while ((read = content.Read(buffer, 0, buffer.Length)) > 0)
 					writer.Write(buffer, 0, read);
-			}
-		}
-
-		/// <summary>
-		///     Adds a new file to the  plugin package.
-		/// </summary>
-		/// <param name="entryName"></param>
-		/// <param name="content"></param>
-		public void AddFile(string entryName, byte[] content)
-		{
-			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
-			using (var stream = entry.Open())
-			{
-				stream.Write(content, 0, content.Length);
 			}
 		}
 

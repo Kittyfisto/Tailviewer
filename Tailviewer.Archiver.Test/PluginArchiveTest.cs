@@ -17,16 +17,16 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					packer.AddFile("foo", AssemblyFileName);
+					packer.AddPluginAssembly(AssemblyFileName);
 				}
 
 				stream.Position = 0;
 
 				using (var reader = PluginArchive.OpenRead(stream))
 				{
-					var assembly = reader.LoadAssembly("foo");
+					var assembly = reader.LoadAssembly("Plugin");
 					assembly.Should().NotBeNull();
-					reader.LoadAssembly("foo").Should().BeSameAs(assembly, "because LoadAssembly should return the very same assembly every time");
+					reader.LoadAssembly("Plugin").Should().BeSameAs(assembly, "because LoadAssembly should return the very same assembly every time");
 				}
 			}
 		}

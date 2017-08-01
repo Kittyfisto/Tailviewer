@@ -57,6 +57,8 @@ namespace Tailviewer.Archiver.Plugins
 		public Assembly LoadAssembly(string entryName)
 		{
 			var entry = _archive.GetEntry(entryName);
+			if (entry == null)
+				throw new FileNotFoundException(string.Format("Unable to find '{0}' in the plugin", entryName), entryName);
 
 			Assembly assembly;
 			if (!_assemblyCache.TryGetValue(entry, out assembly))
