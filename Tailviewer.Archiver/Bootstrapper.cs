@@ -50,8 +50,8 @@ namespace Tailviewer.Archiver
 		{
 			var name = args.Name;
 
-			var assemblyName = new AssemblyName(name);
-			var fileName = assemblyName.Name;
+			var requiredAssemblyName = new AssemblyName(name);
+			var fileName = requiredAssemblyName.Name;
 
 			var resource = string.Format("{0}.{1}.{2}.dll", _containingAssembly, _subFolder, fileName);
 			var curAsm = Assembly.GetExecutingAssembly();
@@ -62,8 +62,25 @@ namespace Tailviewer.Archiver
 					return null;
 
 				byte[] data = ReadFully(stream);
-				return Assembly.Load(data);
+				var assembly =  Assembly.Load(data);
+				var actualAssemblyName = assembly.GetName();
+				if (!IsEqual(actualAssemblyName, requiredAssemblyName))
+				{
+					return null;
+				}
+
+				return assembly;
 			}
+		}
+
+		private static bool IsEqual(AssemblyName actualAssemblyName, AssemblyName assemblyName)
+		{
+			if (!Equals(actualAssemblyName.FullName, assemblyName.FullName))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private static byte[] ReadFully(Stream input)

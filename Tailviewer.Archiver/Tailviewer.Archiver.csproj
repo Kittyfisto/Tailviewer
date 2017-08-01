@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\Packer.cs" />
     <Compile Include="PEHeader\CHARACTERISTICS.cs" />
     <Compile Include="PEHeader\COMIMAGE_FLAGS.cs" />
     <Compile Include="PEHeader\IMAGE_COR20_HEADER.cs" />

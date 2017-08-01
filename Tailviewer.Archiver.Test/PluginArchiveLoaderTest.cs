@@ -17,15 +17,11 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					using (var assembly = new MemoryStream())
-					{
-						var builder = new PluginBuilder("Plugin", "Simon", "none of your business", "get of my lawn");
-						builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
-						builder.Save(assembly);
-						assembly.Position = 0;
+					var builder = new PluginBuilder("Plugin", "Simon", "none of your business", "get of my lawn");
+					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.Save();
 
-						packer.AddPluginAssembly(assembly);
-					}
+					packer.AddPluginAssembly(builder.FileName);
 				}
 
 				stream.Position = 0;

@@ -110,19 +110,7 @@ namespace Tailviewer.Archiver.Test
 				_assembly.Save(_fileName);
 			}
 
-			public void Save(Stream stream)
-			{
-				_assembly.Save(_fileName);
-				using (var assembly = File.OpenRead(_fileName))
-				{
-					var buffer = new byte[4096];
-					int read;
-					while ((read = assembly.Read(buffer, 0, buffer.Length)) > 0)
-					{
-						stream.Write(buffer, 0, read);
-					}
-				}
-			}
+			public string FileName => _fileName;
 
 			private static CustomAttributeBuilder CreateAttribute<T>(params object[] parameters) where T : Attribute
 			{

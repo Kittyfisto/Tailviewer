@@ -67,25 +67,12 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="pluginFilePath"></param>
 		public void AddPluginAssembly(string pluginFilePath)
 		{
-			using (var stream = File.OpenRead(pluginFilePath))
-			{
-				AddPluginAssembly(stream);
-			}
-		}
-
-		/// <summary>
-		///     Adds a Tailviewer plugin (which is a .NET assembly with some required content) to the plugin archive.
-		///     There can be only one plugin assembly per archive.
-		/// </summary>
-		/// <param name="pluginContent"></param>
-		public void AddPluginAssembly(Stream pluginContent)
-		{
-			var assembly = AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginContent);
+			var assembly = AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginFilePath);
 			var assemblyLoader = new PluginAssemblyLoader();
 			var description = assemblyLoader.ReflectPlugin(assembly);
 			UpdateIndex(description);
 		}
-
+		
 		/// <summary>
 		///     Adds a new file to the  plugin package.
 		/// </summary>
@@ -139,6 +126,21 @@ namespace Tailviewer.Archiver.Plugins
 			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
 			assemblyDescription.EntryName = entryName;
 			AddFile(entryName, rawAssembly);
+			_index.Assemblies.Add(assemblyDescription);
+			return assembly;
+		}
+
+		/// <summary>
+		///     Adds a .NET assembly to the plugin archive.
+		/// </summary>
+		/// <param name="entryName">The relative name of the resulting file in the archive</param>
+		/// <param name="assemblyFileName"></param>
+		private Assembly AddAssembly(string entryName, string assemblyFileName)
+		{
+			var assembly = Assembly.LoadFrom(assemblyFileName);
+			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
+			assemblyDescription.EntryName = entryName;
+			AddFile(entryName, assemblyFileName);
 			_index.Assemblies.Add(assemblyDescription);
 			return assembly;
 		}
