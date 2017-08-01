@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 
-namespace Tailviewer.Test.BusinessLogic.Plugins
+namespace Tailviewer.Archiver.Test
 {
 	[TestFixture]
 	public sealed class PluginArchiveTest
@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					packer.AddAssembly("foo", AssemblyFileName);
+					packer.AddFile("foo", AssemblyFileName);
 				}
 
 				stream.Position = 0;

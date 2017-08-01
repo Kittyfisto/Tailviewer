@@ -7,9 +7,14 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PackOptions
 	{
 		[Value(0, MetaName = "input file",
-			HelpText = "Plugin file which should be packed",
+			HelpText = "Visual Studio Solution (*.sln), C# Project (*.csproj) or .NET Assembly (*.dll) from which the plugin should be created",
 			Required = true)]
-		public string PluginFileName { get; set; }
+		public string InputFileName { get; set; }
+
+		[Option('c', "configuration",
+			Default = "Release",
+			HelpText = "The Visual Studio configuration (such as Release or Debug) which should be used when determining the output files to be packed. By default, Release is used.")]
+		public string Configuration { get; set; }
 
 		[Option('o', "output",
 			HelpText = "Filename of the resulting plugin archive.")]

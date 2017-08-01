@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Test.BusinessLogic.Plugins
+namespace Tailviewer.Archiver.Test
 {
 	public abstract class AbstractPluginTest
 	{

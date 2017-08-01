@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Test.BusinessLogic.Plugins
+namespace Tailviewer.Archiver.Test
 {
 	[TestFixture]
 	public sealed class PluginAssemblyLoaderTest

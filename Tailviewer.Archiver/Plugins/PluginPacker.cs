@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
+using Tailviewer.Archiver.PEHeader;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -66,10 +67,10 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="pluginFilePath"></param>
 		public void AddPluginAssembly(string pluginFilePath)
 		{
-			var assemblyLoader = new PluginAssemblyLoader();
-			var description = assemblyLoader.ReflectPlugin(pluginFilePath);
-			UpdateIndex(description);
-			AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginFilePath);
+			using (var stream = File.OpenRead(pluginFilePath))
+			{
+				AddPluginAssembly(stream);
+			}
 		}
 
 		/// <summary>
@@ -86,43 +87,63 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <summary>
-		///     Adds a .NET assembly to the plugin archive.
+		///     Adds a new file to the  plugin package.
 		/// </summary>
-		/// <param name="entryName">The relative name of the resulting file in the archive</param>
-		/// <param name="assemblyFilePath">The file path under which the assembly can be found on the filesystem</param>
-		public AssemblyDescription AddAssembly(string entryName, string assemblyFilePath)
+		/// <param name="entryName"></param>
+		/// <param name="fileName"></param>
+		public void AddFile(string entryName, string fileName)
 		{
-			var assemblyDescription = AssemblyDescription.FromFile(assemblyFilePath);
-			assemblyDescription.EntryName = entryName;
-			using (var stream = File.OpenRead(assemblyFilePath))
+			using (var stream = File.OpenRead(fileName))
 			{
 				AddFile(entryName, stream);
 			}
-			_index.Assemblies.Add(assemblyDescription);
-			return assemblyDescription;
 		}
 
 		/// <summary>
-		///     Adds a .NET assembly to the plugin package.
-		/// </summary>
-		/// <param name="entryName"></param>
-		/// <param name="assemblyContent"></param>
-		public Assembly AddAssembly(string entryName, Stream assemblyContent)
-		{
-			byte[] rawAssembly;
-			var assembly = LoadAssemblyFrom(assemblyContent, out rawAssembly);
-			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
-			AddFile(entryName, rawAssembly);
-			_index.Assemblies.Add(assemblyDescription);
-			return assembly;
-		}
-		
-		/// <summary>
-		///     Adds a new file to the  plugin package.
+		///     Adds a new file to the plugin package.
 		/// </summary>
 		/// <param name="entryName"></param>
 		/// <param name="content"></param>
 		public void AddFile(string entryName, Stream content)
+		{
+			PeHeaderReader reader;
+			PeHeaderReader.TryReadFrom(content, out reader, leaveOpen: true);
+			content.Position = 0;
+			if (reader != null)
+			{
+				if (reader.IsClrAssembly)
+				{
+					AddAssembly(entryName, content);
+				}
+				else
+				{
+					// TODO: Mark this as a pe file in the index
+					AddFileRaw(entryName, content);
+				}
+			}
+			else
+			{
+				AddFileRaw(entryName, content);
+			}
+		}
+
+		/// <summary>
+		///     Adds a .NET assembly to the plugin archive.
+		/// </summary>
+		/// <param name="entryName">The relative name of the resulting file in the archive</param>
+		/// <param name="content"></param>
+		private Assembly AddAssembly(string entryName, Stream content)
+		{
+			byte[] rawAssembly;
+			var assembly = LoadAssemblyFrom(content, out rawAssembly);
+			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
+			assemblyDescription.EntryName = entryName;
+			AddFile(entryName, rawAssembly);
+			_index.Assemblies.Add(assemblyDescription);
+			return assembly;
+		}
+
+		private void AddFileRaw(string entryName, Stream content)
 		{
 			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
 			using (var stream = entry.Open())

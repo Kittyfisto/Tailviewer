@@ -47,7 +47,7 @@ namespace Tailviewer.Archiver.Plugins
 				if (path != null)
 				{
 					Log.InfoFormat("Looking for plugins in '{0}'...", path);
-					var assemblies = Directory.EnumerateFiles(path, "*.tvp", SearchOption.AllDirectories);
+					var assemblies = Directory.EnumerateFiles(path, "*.dll", SearchOption.AllDirectories);
 					foreach (var plugin in assemblies)
 					{
 						IPluginDescription description;

@@ -39,34 +39,37 @@ namespace Tailviewer.Archiver
 
 		private static object Pack(PackOptions opts)
 		{
-			var archiveFilename = opts.ArchiveFileName ?? Path.GetFileNameWithoutExtension(opts.PluginFileName);
-			var extension = ".tva";
-			if (!archiveFilename.EndsWith(extension, StringComparison.InvariantCultureIgnoreCase))
-				archiveFilename += extension;
+			var archiveFilename = opts.ArchiveFileName ?? Path.GetFileNameWithoutExtension(opts.InputFileName);
+			if (!archiveFilename.EndsWith(PluginArchive.PluginExtension, StringComparison.InvariantCultureIgnoreCase))
+				archiveFilename = string.Format("{0}.{1}", archiveFilename, PluginArchive.PluginExtension);
 
 			Console.WriteLine("Creating plugin archive {0}...", archiveFilename);
 
 			using (var packer = PluginPacker.Create(archiveFilename))
 			{
-				Console.Write("Adding plugin assembly {0}... ", opts.PluginFileName);
-				packer.AddPluginAssembly(opts.PluginFileName);
-				Console.WriteLine("OK");
+				var extension = Path.GetExtension(opts.InputFileName)?.ToLowerInvariant();
+				switch (extension)
+				{
+					case ".sln":
+					case ".csproj":
+						Console.WriteLine("ERROR: Not implemented yet");
+						return -1;
+
+					case ".dll":
+						Console.Write("Adding plugin assembly {0}... ", opts.InputFileName);
+						packer.AddPluginAssembly(opts.InputFileName);
+						Console.WriteLine("OK");
+						break;
+
+					default:
+						Console.WriteLine("ERROR: Input file must be either a Visual Studio Solution, C# Project or .NET Assembly");
+						return -1;
+				}
 
 				foreach (var filename in opts.Files)
 				{
 					Console.Write("Adding file {0}... ", filename);
-					var entryName = Path.GetFileName(filename);
-					if (filename.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
-					{
-						packer.AddAssembly(entryName, filename);
-					}
-					else
-					{
-						using (var stream = File.OpenRead(entryName))
-						{
-							packer.AddFile(entryName, stream);
-						}
-					}
+					AddFile(packer, filename);
 					Console.WriteLine("OK");
 				}
 			}
@@ -74,6 +77,15 @@ namespace Tailviewer.Archiver
 			Console.WriteLine("Finished!");
 
 			return null;
+		}
+
+		private static void AddFile(PluginPacker packer, string filename)
+		{
+			var entryName = Path.GetFileName(filename);
+			using (var stream = File.OpenRead(entryName))
+			{
+				packer.AddFile(entryName, stream);
+			}
 		}
 
 		private static object List(ListOptions opts)

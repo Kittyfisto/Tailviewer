@@ -57,6 +57,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PEHeader\CHARACTERISTICS.cs" />
+    <Compile Include="PEHeader\COMIMAGE_FLAGS.cs" />
+    <Compile Include="PEHeader\IMAGE_COR20_HEADER.cs" />
+    <Compile Include="PEHeader\MACHINE.cs" />
+    <Compile Include="PEHeader\PeHeaderReader.cs" />
+    <Compile Include="PEHeader\DataSectionFlags.cs" />
+    <Compile Include="PEHeader\IMAGE_DATA_DIRECTORY.cs" />
+    <Compile Include="PEHeader\IMAGE_DOS_HEADER.cs" />
+    <Compile Include="PEHeader\IMAGE_FILE_HEADER.cs" />
+    <Compile Include="PEHeader\IMAGE_OPTIONAL_HEADER32.cs" />
+    <Compile Include="PEHeader\IMAGE_OPTIONAL_HEADER64.cs" />
+    <Compile Include="PEHeader\IMAGE_SECTION_HEADER.cs" />
+    <Compile Include="PEHeader\SUBSYSTEM.cs" />
     <Compile Include="Plugins\AssemblyDescription.cs" />
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />
@@ -104,9 +117,19 @@
       <Link>Resources\Tailviewer.Api.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CSProj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PEHeader\Readme.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy ..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll ..\bin\</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

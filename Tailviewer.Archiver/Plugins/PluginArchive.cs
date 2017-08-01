@@ -22,6 +22,7 @@ namespace Tailviewer.Archiver.Plugins
 
 		public const string PluginAssemblyEntryName = "Plugin";
 		public const string IndexEntryName = "Index";
+		public const string PluginExtension = "tvp";
 
 		private PluginArchive(ZipArchive archive)
 		{

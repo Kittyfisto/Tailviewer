@@ -30,7 +30,7 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				if (path != null)
 				{
-					var files = Directory.EnumerateFiles(path, "*.tvpp");
+					var files = Directory.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension));
 					foreach (var pluginPath in files)
 						ReflectPlugin(pluginPath);
 				}
