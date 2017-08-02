@@ -24,9 +24,9 @@ namespace Tailviewer.Archiver.Test
 
 				using (var reader = PluginArchive.OpenRead(stream))
 				{
-					var assembly = reader.LoadAssembly("Plugin");
+					var assembly = reader.LoadAssembly("Plugin.dll");
 					assembly.Should().NotBeNull();
-					reader.LoadAssembly("Plugin").Should().BeSameAs(assembly, "because LoadAssembly should return the very same assembly every time");
+					reader.LoadAssembly("Plugin.dll").Should().BeSameAs(assembly, "because LoadAssembly should return the very same assembly every time");
 				}
 			}
 		}

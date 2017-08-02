@@ -42,7 +42,7 @@ namespace Tailviewer.Archiver.Test
 				index.Should().NotBeNull();
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
-				index.Assemblies[0].EntryName.Should().Be("Plugin");
+				index.Assemblies[0].EntryName.Should().Be("Plugin.dll");
 				index.Assemblies[0].AssemblyName.Should().Be("archive");
 				index.Assemblies[0].AssemblyVersion.Should().Be(assembly.GetName().Version);
 				index.Assemblies[0].AssemblyFileVersion.Should().Be(Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
@@ -50,7 +50,7 @@ namespace Tailviewer.Archiver.Test
 				index.NativeImages.Should().NotBeNull();
 				index.NativeImages.Should().HaveCount(0);
 
-				var actualAssembly = reader.LoadAssembly("Plugin");
+				var actualAssembly = reader.LoadAssembly("Plugin.dll");
 				actualAssembly.Should().NotBeNull();
 				actualAssembly.FullName.Should().Be(assembly.FullName);
 			}

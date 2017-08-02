@@ -180,7 +180,7 @@ namespace Tailviewer.Archiver.Plugins
 			var version = ParseVersion(targetFramework);
 			// This attribute has been added with .NET 4.0. Tailviewer should obviously
 			// support adding assemblies which target older .NET frameworks where this attribute
-			// is obviously missing.
+			// is obviously missing and therefore we will tolerate assemblies without it.
 			if (version != null)
 				if (version > new Version(4, 5, 2))
 					throw new NotSupportedException("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
@@ -198,8 +198,8 @@ namespace Tailviewer.Archiver.Plugins
 					var fileName = Path.Combine(_currentDirectory, string.Format("{0}.exe", assemblyName.Name));
 					if (!File.Exists(fileName))
 						fileName = Path.Combine(_currentDirectory, string.Format("{0}.dll", assemblyName.Name));
-
-					AddAssembly(assemblyName.Name, fileName);
+					var dependencyEntryName = Path.GetFileName(fileName);
+					AddAssembly(dependencyEntryName, fileName);
 				}
 			}
 
