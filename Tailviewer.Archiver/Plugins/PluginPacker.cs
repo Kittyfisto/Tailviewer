@@ -31,7 +31,8 @@ namespace Tailviewer.Archiver.Plugins
 			_archive = archive;
 			_index = new PluginPackageIndex
 			{
-				Assemblies = new List<AssemblyDescription>()
+				Assemblies = new List<AssemblyDescription>(),
+				NativeImages = new List<NativeImageDescription>()
 			};
 		}
 
@@ -135,8 +136,8 @@ namespace Tailviewer.Archiver.Plugins
 				}
 				else
 				{
-					// TODO: Mark this as a pe file in the index
-					AddFileRaw(entryName, content);
+					AddNativeImage(entryName, content, header);
+					
 				}
 			}
 			else
@@ -186,6 +187,21 @@ namespace Tailviewer.Archiver.Plugins
 			}
 
 			return assembly;
+		}
+
+		private void AddNativeImage(string entryName, Stream content, PeHeader header)
+		{
+			if (!header.Is32BitHeader)
+				throw new ArgumentException("ERROR: Only x86 native images are supported!");
+
+			var description = new NativeImageDescription
+			{
+				EntryName = entryName,
+				ImageName = Path.GetFileNameWithoutExtension(entryName)
+			};
+			_index.NativeImages.Add(description);
+
+			AddFileRaw(entryName, content);
 		}
 
 		private bool ShouldAddDependency(AssemblyName dependency)

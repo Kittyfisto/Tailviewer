@@ -11,13 +11,17 @@ namespace Tailviewer.Archiver.Test
 	public class PluginPackerTest
 	{
 		private string _fname;
+		private string _testData;
 
 		[SetUp]
 		public void Setup()
 		{
 			_fname = Path.GetTempFileName();
+			Console.WriteLine("Plugin: {0}", _fname);
 			if (File.Exists(_fname))
 				File.Delete(_fname);
+
+			_testData = Path.Combine(AssemblyDirectory, "..", "Tailviewer.Archiver.Test", "TestData");
 		}
 
 		[Test]
@@ -48,6 +52,32 @@ namespace Tailviewer.Archiver.Test
 				var actualAssembly = reader.LoadAssembly("Plugin");
 				actualAssembly.Should().NotBeNull();
 				actualAssembly.FullName.Should().Be(assembly.FullName);
+			}
+		}
+
+		[Test]
+		public void TestAddNativeImage1()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var fname = Path.Combine(AssemblyDirectory, "archive.exe");
+				packer.AddPluginAssembly(fname);
+
+				fname = Path.Combine(_testData, "SharpRemote.PostmortemDebugger.dll");
+				packer.AddFile("SharpRemote.PostmortemDebugger.dll", fname);
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			{
+				var index = reader.Index;
+				index.Should().NotBeNull();
+				index.Assemblies.Should().NotBeNull();
+				index.Assemblies.Should().HaveCount(1);
+
+				index.NativeImages.Should().NotBeNull();
+				index.NativeImages.Count.Should().Be(1);
+				index.NativeImages[0].EntryName.Should().Be("SharpRemote.PostmortemDebugger.dll");
+				index.NativeImages[0].ImageName.Should().Be("SharpRemote.PostmortemDebugger");
 			}
 		}
 
