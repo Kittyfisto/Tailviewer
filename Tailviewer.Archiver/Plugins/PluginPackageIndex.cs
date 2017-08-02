@@ -19,12 +19,18 @@ namespace Tailviewer.Archiver.Plugins
 		public List<AssemblyDescription> Assemblies { get; set; }
 
 		/// <summary>
-		/// 
+		///     The list of native images contained in the plugin package.
+		/// </summary>
+		[DataMember]
+		public List<NativeImageDescription> NativeImages { get; set; }
+
+		/// <summary>
 		/// </summary>
 		[DataMember]
 		public List<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; set; }
 
-		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
+		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces =>
+			ImplementedPluginInterfaces;
 
 		/// <summary>
 		/// </summary>
@@ -42,5 +48,7 @@ namespace Tailviewer.Archiver.Plugins
 		public string PluginWebsite { get; set; }
 
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
+
+		IReadOnlyList<INativeImageDescription> IPluginPackageIndex.NativeImages => NativeImages;
 	}
 }

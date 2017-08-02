@@ -24,7 +24,6 @@ namespace Tailviewer.Archiver.Applications
 
 		public int Run()
 		{
-
 			var archiveFilename = _options.ArchiveFileName ?? Path.GetFileNameWithoutExtension(_options.InputFileName);
 			if (!archiveFilename.EndsWith(PluginArchive.PluginExtension, StringComparison.InvariantCultureIgnoreCase))
 				archiveFilename = string.Format("{0}.{1}", archiveFilename, PluginArchive.PluginExtension);

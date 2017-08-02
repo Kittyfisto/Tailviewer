@@ -66,10 +66,12 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Plugins\IAssemblyDescription.cs" />
     <Compile Include="Plugins\IAssemblyReference.cs" />
+    <Compile Include="Plugins\INativeImageDescription.cs" />
     <Compile Include="Plugins\IPluginDescription.cs" />
     <Compile Include="Plugins\IPluginLoader.cs" />
     <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="ListOptions.cs" />
+    <Compile Include="Plugins\NativeImageDescription.cs" />
     <Compile Include="Plugins\PackOptions.cs" />
     <Compile Include="Plugins\PluginArchive.cs" />
     <Compile Include="Plugins\PluginArchiveLoader.cs" />
@@ -111,9 +113,15 @@
   <ItemGroup>
     <Folder Include="CSProj\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\bin\PE.dll">
+      <Link>Resources\PE.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy ..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll ..\bin\</PreBuildEvent>
+    <PreBuildEvent>copy ..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll ..\bin\
+copy ..\packages\PE.0.1.9\lib\net45\PE.dll ..\bin\</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

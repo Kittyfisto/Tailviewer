@@ -42,6 +42,8 @@ namespace Tailviewer.Archiver.Test
 				index.Assemblies[0].AssemblyVersion.Should().Be(assembly.GetName().Version);
 				index.Assemblies[0].AssemblyFileVersion.Should().Be(Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
 				index.Assemblies[0].AssemblyInformationalVersion.Should().BeNull();
+				index.NativeImages.Should().NotBeNull();
+				index.NativeImages.Should().HaveCount(0);
 
 				var actualAssembly = reader.LoadAssembly("Plugin");
 				actualAssembly.Should().NotBeNull();

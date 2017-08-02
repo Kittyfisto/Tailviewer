@@ -31,6 +31,11 @@ namespace Tailviewer.Archiver.Plugins
 		IReadOnlyList<IAssemblyDescription> Assemblies { get; }
 
 		/// <summary>
+		///     The list of native images contained in the plugin package.
+		/// </summary>
+		IReadOnlyList<INativeImageDescription> NativeImages { get; }
+
+		/// <summary>
 		///     The list of plugin-interface implementations, contained in the plugin assembly.
 		/// </summary>
 		IEnumerable<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; }
