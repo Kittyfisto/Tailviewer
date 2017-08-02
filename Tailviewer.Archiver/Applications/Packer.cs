@@ -28,8 +28,10 @@ namespace Tailviewer.Archiver.Applications
 			var archiveFilename = _options.ArchiveFileName ?? Path.GetFileNameWithoutExtension(_options.InputFileName);
 			if (!archiveFilename.EndsWith(PluginArchive.PluginExtension, StringComparison.InvariantCultureIgnoreCase))
 				archiveFilename = string.Format("{0}.{1}", archiveFilename, PluginArchive.PluginExtension);
+			if (!Path.IsPathRooted(archiveFilename))
+				archiveFilename = Path.Combine(Directory.GetCurrentDirectory(), archiveFilename);
 
-			Console.WriteLine("Creating plugin archive {0}...", archiveFilename);
+			Console.WriteLine("Creating Tailviewer plugin...");
 
 			using (var pluginStream = new MemoryStream())
 			{
@@ -44,7 +46,7 @@ namespace Tailviewer.Archiver.Applications
 							return -1;
 
 						case ".dll":
-							Console.Write("Adding plugin assembly {0}... ", _options.InputFileName);
+							Console.Write("Adding {0}... ", _options.InputFileName);
 							packer.AddPluginAssembly(_options.InputFileName);
 							Console.WriteLine("OK");
 							break;
@@ -56,20 +58,21 @@ namespace Tailviewer.Archiver.Applications
 
 					foreach (var filename in _options.Files)
 					{
-						Console.Write("Adding file {0}... ", filename);
+						Console.Write("Adding {0}... ", filename);
 						AddFile(packer, filename);
 						Console.WriteLine("OK");
 					}
 				}
 
 				pluginStream.Position = 0;
+				Console.Write("Saving plugin => {0}... ", archiveFilename);
 				using (var fileStream = File.Create(archiveFilename))
 				{
 					pluginStream.CopyTo(fileStream);
 				}
+				Console.WriteLine("OK");
 			}
 
-			Console.WriteLine("Finished!");
 			return 0;
 		}
 
