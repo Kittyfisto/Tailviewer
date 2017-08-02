@@ -20,11 +20,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\bin\Tailviewer.Api.XML" target="lib\net45\" />
     <file src="..\bin\Tailviewer.Api.pdb" target="lib\net45\" />
-    <file src="..\bin\Tailviewer.Api.dll" target="lib\net45\" />
     <file src="..\bin\archive.exe" target="build\" />
-    <file src="..\bin\Metrolib.dll" target="build\" />
-    <file src="..\bin\System.Threading.Extensions.dll" target="build\" />
   </files>
 </package>
