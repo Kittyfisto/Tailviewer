@@ -57,7 +57,7 @@ namespace Tailviewer.Archiver.Plugins
 				Version.TryParse(SerializablePluginVersion, out version);
 				return version;
 			}
-			set => SerializablePluginVersion = value != null ? value.ToString() : null;
+			set { SerializablePluginVersion = value != null ? value.ToString() : null; }
 		}
 
 		[DataMember]
