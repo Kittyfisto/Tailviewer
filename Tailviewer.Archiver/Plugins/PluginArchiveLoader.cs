@@ -13,18 +13,18 @@ namespace Tailviewer.Archiver.Plugins
 	///     (or the cli equivalent, packer.exe).
 	/// </summary>
 	public sealed class PluginArchiveLoader
-		: IPluginLoader
-			, IDisposable
+		: AbstractPluginLoader
+		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly Dictionary<IPluginDescription, PluginArchive> _plugins;
+		private readonly Dictionary<IPluginDescription, PluginArchive> _archivesByPlugin;
 
 		/// <summary>
 		/// </summary>
 		public PluginArchiveLoader(string path = null)
 		{
-			_plugins = new Dictionary<IPluginDescription, PluginArchive>();
+			_archivesByPlugin = new Dictionary<IPluginDescription, PluginArchive>();
 
 			try
 			{
@@ -44,19 +44,16 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public void Dispose()
 		{
-			foreach (var archive in _plugins.Values)
+			foreach (var archive in _archivesByPlugin.Values)
 				archive.Dispose();
-			_plugins.Clear();
+			_archivesByPlugin.Clear();
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<IPluginDescription> Plugins => _plugins.Keys;
-
-		/// <inheritdoc />
-		public T Load<T>(IPluginDescription description) where T : class, IPlugin
+		public override T Load<T>(IPluginDescription description)
 		{
 			PluginArchive archive;
-			if (!_plugins.TryGetValue(description, out archive))
+			if (!_archivesByPlugin.TryGetValue(description, out archive))
 				throw new ArgumentException();
 
 			string interfaceImplementation;
@@ -70,17 +67,12 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions) where T : class, IPlugin
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
 			var archive = PluginArchive.OpenRead(pluginPath);
 			var description = CreateDescription(archive.Index);
-			_plugins.Add(description, archive);
+			_archivesByPlugin.Add(description, archive);
+			Add(description);
 			return description;
 		}
 
@@ -89,7 +81,8 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			var archive = PluginArchive.OpenRead(stream, leaveOpen);
 			var description = CreateDescription(archive.Index);
-			_plugins.Add(description, archive);
+			_archivesByPlugin.Add(description, archive);
+			Add(description);
 			return description;
 		}
 

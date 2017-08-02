@@ -65,7 +65,7 @@ namespace Tailviewer
 
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
-			using (var scanner = new PluginAssemblyLoader(Constants.PluginPath))
+			using (var scanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
 				var plugins = scanner.Plugins;
 

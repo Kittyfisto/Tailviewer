@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,13 +16,12 @@ namespace Tailviewer.Archiver.Plugins
 	///     Is only used in development mode (Tailviewer.exe -d)
 	/// </summary>
 	public sealed class PluginAssemblyLoader
-		: IPluginLoader
-			, IDisposable
+		: AbstractPluginLoader
+		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private static readonly IReadOnlyList<Type> PluginInterfaces;
-		private readonly List<IPluginDescription> _plugins;
 
 		static PluginAssemblyLoader()
 		{
@@ -41,7 +39,6 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
 
-			_plugins = new List<IPluginDescription>();
 			try
 			{
 				if (path != null)
@@ -52,7 +49,7 @@ namespace Tailviewer.Archiver.Plugins
 					{
 						IPluginDescription description;
 						TryLoad(plugin, out description);
-						_plugins.Add(description);
+						Add(description);
 					}
 				}
 			}
@@ -69,14 +66,7 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<IPluginDescription> Plugins => _plugins;
-
-		/// <summary>
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="description"></param>
-		/// <returns></returns>
-		public T Load<T>(IPluginDescription description) where T : class, IPlugin
+		public override T Load<T>(IPluginDescription description)
 		{
 			if (description == null)
 				throw new ArgumentNullException(nameof(description));
@@ -91,28 +81,6 @@ namespace Tailviewer.Archiver.Plugins
 
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
-		}
-
-		/// <inheritdoc />
-		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions)
-			where T : class, IPlugin
-		{
-			var ret = new List<T>();
-			foreach (var pluginDescription in pluginDescriptions)
-				if (pluginDescription.Plugins.ContainsKey(typeof(T)))
-					try
-					{
-						var plugin = Load<T>(pluginDescription);
-						ret.Add(plugin);
-					}
-					catch (Exception e)
-					{
-						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-							typeof(T),
-							pluginDescription,
-							e);
-					}
-			return ret;
 		}
 
 		/// <summary>
@@ -197,16 +165,6 @@ namespace Tailviewer.Archiver.Plugins
 				}
 
 			return null;
-		}
-
-		[Pure]
-		private static string GetFullTypeName(string assemblyQualifiedName)
-		{
-			var index = assemblyQualifiedName.IndexOf(',');
-			if (index == -1)
-				return assemblyQualifiedName;
-
-			return assemblyQualifiedName.Substring(0, index);
 		}
 
 		private bool TryLoad(string filePath, out IPluginDescription description)
