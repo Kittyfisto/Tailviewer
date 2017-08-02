@@ -97,7 +97,7 @@ namespace Tailviewer.Archiver.Plugins
 		private static IPluginDescription CreateDescription(IPluginPackageIndex archiveIndex)
 		{
 			Uri website;
-			Uri.TryCreate(archiveIndex.PluginWebsite, UriKind.Absolute, out website);
+			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out website);
 
 			var plugins = new Dictionary<Type, string>();
 			foreach (var pair in archiveIndex.ImplementedPluginInterfaces)
@@ -111,8 +111,8 @@ namespace Tailviewer.Archiver.Plugins
 
 			var desc = new PluginDescription
 			{
-				Author = archiveIndex.PluginAuthor,
-				Description = archiveIndex.PluginDescription,
+				Author = archiveIndex.Author,
+				Description = archiveIndex.Description,
 				Website = website,
 				Plugins = plugins
 			};

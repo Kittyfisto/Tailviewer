@@ -47,6 +47,9 @@ namespace Tailviewer.Archiver.Plugins
 		public string Description { get; set; }
 
 		/// <inheritdoc />
+		public Version Version { get; set; }
+
+		/// <inheritdoc />
 		public Uri Website { get; set; }
 
 		/// <inheritdoc />

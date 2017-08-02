@@ -35,6 +35,11 @@ namespace Tailviewer.Archiver.Plugins
 		string Description { get; }
 
 		/// <summary>
+		///     The version of the plugin, as visible to the user.
+		/// </summary>
+		Version Version { get; }
+
+		/// <summary>
 		///     The website of the plugin, if available.
 		/// </summary>
 		/// <remarks>

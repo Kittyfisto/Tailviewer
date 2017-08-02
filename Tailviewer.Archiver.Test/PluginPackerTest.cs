@@ -4,6 +4,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -109,6 +110,27 @@ namespace Tailviewer.Archiver.Test
 				new Action(() => packer.AddFile("Foo.dll", fname))
 					.ShouldThrow<NotSupportedException>()
 					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+			}
+		}
+
+		[Test]
+		public void TestAddAssembly5()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var builder = new AbstractPluginTest.PluginBuilder("Plugin");
+				builder.Version = new Version(1, 4, 12034);
+				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+				builder.Save();
+
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			{
+				var index = reader.Index;
+				index.Version.Should().NotBeNull();
+				index.Version.Should().Be(new Version(1, 4, 12034));
 			}
 		}
 

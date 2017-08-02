@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -13,17 +14,21 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		/// 
 		/// </summary>
-		string PluginAuthor { get; }
+		string Author { get; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		string PluginDescription { get; }
+		string Description { get; }
 
 		/// <summary>
 		/// 
 		/// </summary>
-		string PluginWebsite { get; }
+		string Website { get; }
+
+		/// <summary>
+		/// </summary>
+		Version Version { get; }
 
 		/// <summary>
 		///     The list of assemblies contained in the plugin package.

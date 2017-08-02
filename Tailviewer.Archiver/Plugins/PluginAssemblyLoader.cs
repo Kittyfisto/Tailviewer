@@ -139,6 +139,7 @@ namespace Tailviewer.Archiver.Plugins
 			var authorAttribute = assembly.GetCustomAttribute<PluginAuthorAttribute>();
 			var websiteAttribute = assembly.GetCustomAttribute<PluginWebsiteAttribute>();
 			var descriptionAttribute = assembly.GetCustomAttribute<PluginDescriptionAttribute>();
+			var versionAttribute = assembly.GetCustomAttribute<PluginVersionAttribute>();
 
 			if (authorAttribute == null)
 				Log.WarnFormat("Plugin '{0}' is missing the PluginAuthor attribute, please consider adding it",
@@ -163,6 +164,7 @@ namespace Tailviewer.Archiver.Plugins
 				Author = authorAttribute?.Author,
 				Website = websiteAttribute?.Website,
 				Description = descriptionAttribute?.Description,
+				Version = versionAttribute?.Version,
 				FilePath = pluginPath,
 				Plugins = plugins
 			};

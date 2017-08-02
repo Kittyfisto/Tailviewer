@@ -70,6 +70,7 @@
     <Compile Include="BusinessLogic\Plugins\IPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginAuthorAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginDescriptionAttribute.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginVersionAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginWebsiteAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin.cs" />
     <Compile Include="LogEntryIndex.cs" />

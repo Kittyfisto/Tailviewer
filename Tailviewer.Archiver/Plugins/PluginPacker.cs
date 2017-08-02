@@ -284,9 +284,10 @@ namespace Tailviewer.Archiver.Plugins
 
 		private void UpdateIndex(IPluginDescription description)
 		{
-			_index.PluginDescription = description.Description;
-			_index.PluginAuthor = description.Author;
-			_index.PluginWebsite = description.Website != null ? description.Website.ToString() : null;
+			_index.Description = description.Description;
+			_index.Author = description.Author;
+			_index.Website = description.Website != null ? description.Website.ToString() : null;
+			_index.Version = description.Version;
 			_index.ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>();
 			foreach (var pair in description.Plugins)
 			{

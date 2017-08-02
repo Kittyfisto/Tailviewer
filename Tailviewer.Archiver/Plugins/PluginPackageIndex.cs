@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Tailviewer.Archiver.Plugins
@@ -35,17 +36,32 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		/// </summary>
 		[DataMember]
-		public string PluginAuthor { get; set; }
+		public string Author { get; set; }
 
 		/// <summary>
 		/// </summary>
 		[DataMember]
-		public string PluginDescription { get; set; }
+		public string Description { get; set; }
 
 		/// <summary>
 		/// </summary>
 		[DataMember]
-		public string PluginWebsite { get; set; }
+		public string Website { get; set; }
+
+		/// <inheritdoc />
+		public Version Version
+		{
+			get
+			{
+				Version version;
+				Version.TryParse(SerializablePluginVersion, out version);
+				return version;
+			}
+			set => SerializablePluginVersion = value != null ? value.ToString() : null;
+		}
+
+		[DataMember]
+		public string SerializablePluginVersion { get; set; }
 
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
 

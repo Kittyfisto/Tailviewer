@@ -112,6 +112,37 @@ namespace Tailviewer.Archiver.Test
 
 			public string FileName => _fileName;
 
+			public Version Version
+			{
+				set
+				{
+					if (value.Revision == -1)
+					{
+						if (value.Build == -1)
+						{
+							var ctor = typeof(PluginVersionAttribute).GetConstructor(new[]{typeof(int), typeof(int)});
+							var builder = new CustomAttributeBuilder(ctor,
+								new object[] {value.Major, value.Minor});
+							_assembly.SetCustomAttribute(builder);
+						}
+						else
+						{
+							var ctor = typeof(PluginVersionAttribute).GetConstructor(new[] { typeof(int), typeof(int), typeof(int) });
+							var builder = new CustomAttributeBuilder(ctor, new object[] { value.Major, value.Minor, value.Build });
+							_assembly.SetCustomAttribute(builder);
+						}
+					}
+					else
+					{
+						var ctor = typeof(PluginVersionAttribute).GetConstructor(new[]
+							{typeof(int), typeof(int), typeof(int), typeof(int)});
+						var builder = new CustomAttributeBuilder(ctor,
+							new object[] {value.Major, value.Minor, value.Build, value.Revision});
+						_assembly.SetCustomAttribute(builder);
+					}
+				}
+			}
+
 			private static CustomAttributeBuilder CreateAttribute<T>(params object[] parameters) where T : Attribute
 			{
 				var type = typeof(T);
