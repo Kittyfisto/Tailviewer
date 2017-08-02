@@ -99,6 +99,16 @@ namespace Tailviewer.Archiver.Test
 				new Action(() => packer.AddFile("Foo.dll", fname))
 					.ShouldThrow<NotSupportedException>()
 					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+
+				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.1.dll");
+				new Action(() => packer.AddFile("Foo.dll", fname))
+					.ShouldThrow<NotSupportedException>()
+					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+
+				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.2.dll");
+				new Action(() => packer.AddFile("Foo.dll", fname))
+					.ShouldThrow<NotSupportedException>()
+					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
 			}
 		}
 

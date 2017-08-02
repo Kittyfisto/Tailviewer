@@ -178,7 +178,7 @@ namespace Tailviewer.Archiver.Plugins
 			var assembly = LoadAssemblyFrom(content, out rawAssembly);
 			var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
 			var version = ParseVersion(targetFramework);
-			// The attribute has been added with .NET 4.0. Tailviewer should obviously
+			// This attribute has been added with .NET 4.0. Tailviewer should obviously
 			// support adding assemblies which target older .NET frameworks where this attribute
 			// is obviously missing.
 			if (version != null)

@@ -72,6 +72,8 @@
     <Content Include="TestData\Managed\AnyCPU\ClassLibrary1.dll" />
     <Content Include="TestData\Managed\x64\ClassLibrary1.dll" />
     <Content Include="TestData\Managed\x86\ClassLibrary1.dll" />
+    <Content Include="TestData\Managed\x86\Targets.NET.4.6.1.dll" />
+    <Content Include="TestData\Managed\x86\Targets.NET.4.6.2.dll" />
     <Content Include="TestData\Managed\x86\Targets.NET.4.6.dll" />
     <Content Include="TestData\Native\x64\NativeImage.dll" />
     <Content Include="TestData\Native\x86\NativeImage.dll" />
