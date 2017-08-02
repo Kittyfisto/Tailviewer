@@ -56,6 +56,53 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Description("Verifies that adding x64 assemblies is not supported (yet)")]
+		public void TestAddAssembly2()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var fname = Path.Combine(_testData, "Managed", "x64", "ClassLibrary1.dll");
+				new Action(() => packer.AddFile("ClassLibrary1.dll", fname))
+					.ShouldThrow<NotSupportedException>()
+					.WithMessage("ERROR: Assemblies must be compiled for x86 or AnyCPU");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that adding x86 assemblies is allowed")]
+		public void TestAddAssembly3()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var fname = Path.Combine(_testData, "Managed", "x86", "ClassLibrary1.dll");
+				packer.AddFile("ClassLibrary1.dll", fname);
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			{
+				var index = reader.Index;
+				index.Should().NotBeNull();
+				index.Assemblies.Should().NotBeNull();
+				index.Assemblies.Should().HaveCount(1);
+				index.Assemblies[0].EntryName.Should().Be("ClassLibrary1.dll");
+				index.Assemblies[0].AssemblyName.Should().Be("ClassLibrary1");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that plugins may not target newer frameworks than 4.5.2")]
+		public void TestAddAssembly4()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.dll");
+				new Action(() => packer.AddFile("Foo.dll", fname))
+					.ShouldThrow<NotSupportedException>()
+					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+			}
+		}
+
+		[Test]
 		public void TestAddNativeImage1()
 		{
 			using (var packer = PluginPacker.Create(_fname))
@@ -63,8 +110,8 @@ namespace Tailviewer.Archiver.Test
 				var fname = Path.Combine(AssemblyDirectory, "archive.exe");
 				packer.AddPluginAssembly(fname);
 
-				fname = Path.Combine(_testData, "SharpRemote.PostmortemDebugger.dll");
-				packer.AddFile("SharpRemote.PostmortemDebugger.dll", fname);
+				fname = Path.Combine(_testData, "Native", "x86", "NativeImage.dll");
+				packer.AddFile("NativeImage.dll", fname);
 			}
 
 			using (var reader = PluginArchive.OpenRead(_fname))
@@ -76,8 +123,8 @@ namespace Tailviewer.Archiver.Test
 
 				index.NativeImages.Should().NotBeNull();
 				index.NativeImages.Count.Should().Be(1);
-				index.NativeImages[0].EntryName.Should().Be("SharpRemote.PostmortemDebugger.dll");
-				index.NativeImages[0].ImageName.Should().Be("SharpRemote.PostmortemDebugger");
+				index.NativeImages[0].EntryName.Should().Be("NativeImage.dll");
+				index.NativeImages[0].ImageName.Should().Be("NativeImage");
 			}
 		}
 
@@ -87,8 +134,8 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var fname = Path.Combine(_testData, "x64", "SharpRemote.PostmortemDebugger.dll");
-				new Action(() => packer.AddFile("SharpRemote.PostmortemDebugger.dll", fname))
+				var fname = Path.Combine(_testData, "Native", "x64", "NativeImage.dll");
+				new Action(() => packer.AddFile("NativeImage.dll", fname))
 					.ShouldThrow<NotSupportedException>()
 					.WithMessage("ERROR: Native images must be compiled for x86");
 			}

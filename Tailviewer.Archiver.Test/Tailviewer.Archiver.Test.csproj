@@ -69,8 +69,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\SharpRemote.PostmortemDebugger.dll" />
-    <Content Include="TestData\x64\SharpRemote.PostmortemDebugger.dll" />
+    <Content Include="TestData\Managed\AnyCPU\ClassLibrary1.dll" />
+    <Content Include="TestData\Managed\x64\ClassLibrary1.dll" />
+    <Content Include="TestData\Managed\x86\ClassLibrary1.dll" />
+    <Content Include="TestData\Managed\x86\Targets.NET.4.6.dll" />
+    <Content Include="TestData\Native\x64\NativeImage.dll" />
+    <Content Include="TestData\Native\x86\NativeImage.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

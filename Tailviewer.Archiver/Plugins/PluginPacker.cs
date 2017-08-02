@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Xml.Serialization;
 using PE;
@@ -132,7 +133,7 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				if (header.IsClrAssembly)
 				{
-					AddAssembly(entryName, content);
+					AddAssembly(entryName, content, header);
 				}
 				else
 				{
@@ -155,7 +156,10 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			using (var content = File.OpenRead(assemblyFileName))
 			{
-				return AddAssembly(entryName, content);
+				PeHeader header;
+				PortableExecutable.TryReadHeader(content, out header, leaveOpen: true);
+				content.Position = 0;
+				return AddAssembly(entryName, content, header);
 			}
 		}
 
@@ -164,10 +168,23 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		/// <param name="entryName">The relative name of the resulting file in the archive</param>
 		/// <param name="content"></param>
-		private Assembly AddAssembly(string entryName, Stream content)
+		/// <param name="header"></param>
+		private Assembly AddAssembly(string entryName, Stream content, PeHeader header)
 		{
+			if (!header.Is32BitHeader)
+				throw new NotSupportedException("ERROR: Assemblies must be compiled for x86 or AnyCPU");
+
 			byte[] rawAssembly;
 			var assembly = LoadAssemblyFrom(content, out rawAssembly);
+			var targetFramework = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
+			var version = ParseVersion(targetFramework);
+			// The attribute has been added with .NET 4.0. Tailviewer should obviously
+			// support adding assemblies which target older .NET frameworks where this attribute
+			// is obviously missing.
+			if (version != null)
+				if (version > new Version(4, 5, 2))
+					throw new NotSupportedException("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+
 			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
 			assemblyDescription.EntryName = entryName;
 			AddFile(entryName, rawAssembly);
@@ -187,6 +204,31 @@ namespace Tailviewer.Archiver.Plugins
 			}
 
 			return assembly;
+		}
+
+		/// <summary>
+		/// Parses the .NET version from the given attribute name.
+		/// </summary>
+		/// <param name="targetFramework"></param>
+		/// <returns></returns>
+		private Version ParseVersion(TargetFrameworkAttribute targetFramework)
+		{
+			var name = targetFramework?.FrameworkName;
+			if (name == null)
+				return null;
+
+			const string pattern = "Version=v";
+			int idx = name.IndexOf(pattern);
+			if (idx == -1)
+				return null;
+
+			idx += pattern.Length;
+			var versionString = name.Substring(idx);
+			Version version;
+			if (!Version.TryParse(versionString, out version))
+				return null;
+
+			return version;
 		}
 
 		private void AddNativeImage(string entryName, Stream content, PeHeader header)
