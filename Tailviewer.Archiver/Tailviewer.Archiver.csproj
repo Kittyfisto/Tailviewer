@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Applications\Packer.cs" />
+    <Compile Include="Applications\Pack.cs" />
     <Compile Include="Plugins\AssemblyDescription.cs" />
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />

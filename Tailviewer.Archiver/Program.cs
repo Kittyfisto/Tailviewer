@@ -20,7 +20,7 @@ namespace Tailviewer.Archiver
 			try
 			{
 				result.MapResult(
-					(PackOptions options) => new Packer(options).Run(),
+					(PackOptions options) => new Pack(options).Run(),
 					(ListOptions options) => List(options),
 					_ => MakeError());
 

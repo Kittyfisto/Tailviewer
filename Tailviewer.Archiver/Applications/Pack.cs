@@ -5,12 +5,12 @@ using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Archiver.Applications
 {
-	sealed class Packer
+	sealed class Pack
 		: IDisposable
 	{
 		private readonly PackOptions _options;
 
-		public Packer(PackOptions options)
+		public Pack(PackOptions options)
 		{
 			if (options == null)
 				throw new ArgumentNullException(nameof(options));
@@ -58,7 +58,10 @@ namespace Tailviewer.Archiver.Applications
 					foreach (var filename in _options.Files)
 					{
 						Console.Write("Adding {0}... ", filename);
-						AddFile(packer, filename);
+						var fullFilename = Path.IsPathRooted(filename)
+							? filename
+							: Path.Combine(Directory.GetCurrentDirectory(), filename);
+						AddFile(packer, fullFilename);
 						Console.WriteLine("OK");
 					}
 				}
@@ -95,7 +98,7 @@ namespace Tailviewer.Archiver.Applications
 		private static void AddFile(PluginPacker packer, string filename)
 		{
 			var entryName = Path.GetFileName(filename);
-			using (var stream = File.OpenRead(entryName))
+			using (var stream = File.OpenRead(filename))
 			{
 				packer.AddFile(entryName, stream);
 			}
