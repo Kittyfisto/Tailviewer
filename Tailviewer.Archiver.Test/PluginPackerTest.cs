@@ -81,6 +81,19 @@ namespace Tailviewer.Archiver.Test
 			}
 		}
 
+		[Test]
+		[Description("Verifies that adding a 64-bit native image is not supported (yet)")]
+		public void TestAddNativeImage2()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				var fname = Path.Combine(_testData, "x64", "SharpRemote.PostmortemDebugger.dll");
+				new Action(() => packer.AddFile("SharpRemote.PostmortemDebugger.dll", fname))
+					.ShouldThrow<NotSupportedException>()
+					.WithMessage("ERROR: Native images must be compiled for x86");
+			}
+		}
+
 		public static string AssemblyDirectory
 		{
 			get

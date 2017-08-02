@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\SharpRemote.PostmortemDebugger.dll" />
+    <Content Include="TestData\x64\SharpRemote.PostmortemDebugger.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

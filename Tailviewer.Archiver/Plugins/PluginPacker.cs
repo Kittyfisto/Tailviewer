@@ -192,7 +192,7 @@ namespace Tailviewer.Archiver.Plugins
 		private void AddNativeImage(string entryName, Stream content, PeHeader header)
 		{
 			if (!header.Is32BitHeader)
-				throw new ArgumentException("ERROR: Only x86 native images are supported!");
+				throw new NotSupportedException("ERROR: Native images must be compiled for x86");
 
 			var description = new NativeImageDescription
 			{
