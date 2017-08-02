@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
-using Tailviewer.Archiver.PEHeader;
+using PE;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -124,12 +124,12 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="content"></param>
 		public void AddFile(string entryName, Stream content)
 		{
-			PeHeaderReader reader;
-			PeHeaderReader.TryReadFrom(content, out reader, leaveOpen: true);
+			PeHeader header;
+			PortableExecutable.TryReadHeader(content, out header, leaveOpen: true);
 			content.Position = 0;
-			if (reader != null)
+			if (header != null)
 			{
-				if (reader.IsClrAssembly)
+				if (header.IsClrAssembly)
 				{
 					AddAssembly(entryName, content);
 				}
@@ -197,6 +197,7 @@ namespace Tailviewer.Archiver.Plugins
 				case "Metrolib":
 				case "System.Threading.Extensions":
 				case "Tailviewer.Api":
+				case "PE":
 					return false;
 
 				default:

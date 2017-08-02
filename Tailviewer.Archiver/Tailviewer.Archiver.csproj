@@ -45,6 +45,9 @@
       <HintPath>..\packages\Metrolib.0.2.2.34\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PE">
+      <HintPath>..\packages\PE.0.1.9\lib\net45\PE.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -58,19 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Applications\Packer.cs" />
-    <Compile Include="PEHeader\CHARACTERISTICS.cs" />
-    <Compile Include="PEHeader\COMIMAGE_FLAGS.cs" />
-    <Compile Include="PEHeader\IMAGE_COR20_HEADER.cs" />
-    <Compile Include="PEHeader\MACHINE.cs" />
-    <Compile Include="PEHeader\PeHeaderReader.cs" />
-    <Compile Include="PEHeader\DataSectionFlags.cs" />
-    <Compile Include="PEHeader\IMAGE_DATA_DIRECTORY.cs" />
-    <Compile Include="PEHeader\IMAGE_DOS_HEADER.cs" />
-    <Compile Include="PEHeader\IMAGE_FILE_HEADER.cs" />
-    <Compile Include="PEHeader\IMAGE_OPTIONAL_HEADER32.cs" />
-    <Compile Include="PEHeader\IMAGE_OPTIONAL_HEADER64.cs" />
-    <Compile Include="PEHeader\IMAGE_SECTION_HEADER.cs" />
-    <Compile Include="PEHeader\SUBSYSTEM.cs" />
     <Compile Include="Plugins\AssemblyDescription.cs" />
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />
@@ -120,9 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSProj\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="PEHeader\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
