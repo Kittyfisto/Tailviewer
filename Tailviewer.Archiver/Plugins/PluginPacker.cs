@@ -32,6 +32,7 @@ namespace Tailviewer.Archiver.Plugins
 			_archive = archive;
 			_index = new PluginPackageIndex
 			{
+				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
 				Assemblies = new List<AssemblyDescription>(),
 				NativeImages = new List<NativeImageDescription>()
 			};
@@ -75,7 +76,7 @@ namespace Tailviewer.Archiver.Plugins
 				_currentDirectory = Path.GetDirectoryName(pluginFilePath) ?? Directory.GetCurrentDirectory();
 				var assembly = AddAssembly(PluginArchive.PluginAssemblyEntryName, pluginFilePath);
 				var assemblyLoader = new PluginAssemblyLoader();
-				var description = assemblyLoader.ReflectPlugin(assembly);
+				var description = assemblyLoader.ReflectPlugin(assembly, pluginFilePath);
 				UpdateIndex(description);
 			}
 			finally
@@ -172,7 +173,7 @@ namespace Tailviewer.Archiver.Plugins
 		private Assembly AddAssembly(string entryName, Stream content, PeHeader header)
 		{
 			if (!header.Is32BitHeader)
-				throw new NotSupportedException("ERROR: Assemblies must be compiled for x86 or AnyCPU");
+				throw new PackException("Assemblies must be compiled for x86 or AnyCPU");
 
 			byte[] rawAssembly;
 			var assembly = LoadAssemblyFrom(content, out rawAssembly);
@@ -183,7 +184,7 @@ namespace Tailviewer.Archiver.Plugins
 			// is obviously missing and therefore we will tolerate assemblies without it.
 			if (version != null)
 				if (version > new Version(4, 5, 2))
-					throw new NotSupportedException("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+					throw new PackException("Assemblies may only target frameworks of up to .NET 4.5.2");
 
 			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
 			assemblyDescription.EntryName = entryName;
@@ -234,7 +235,7 @@ namespace Tailviewer.Archiver.Plugins
 		private void AddNativeImage(string entryName, Stream content, PeHeader header)
 		{
 			if (!header.Is32BitHeader)
-				throw new NotSupportedException("ERROR: Native images must be compiled for x86");
+				throw new PackException("Native images must be compiled for x86");
 
 			var description = new NativeImageDescription
 			{

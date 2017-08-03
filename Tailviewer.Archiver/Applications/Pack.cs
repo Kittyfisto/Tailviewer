@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using log4net;
+using log4net.Core;
+using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Archiver.Applications
@@ -8,7 +11,10 @@ namespace Tailviewer.Archiver.Applications
 	sealed class Pack
 		: IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly PackOptions _options;
+		private readonly ConsoleLogger _consoleAppender;
 
 		public Pack(PackOptions options)
 		{
@@ -20,17 +26,26 @@ namespace Tailviewer.Archiver.Applications
 			// We want to allow any archive executable to pack plugins and therefore we may need to resolve
 			// a very different Tailviewer.Api assembly than we were built against.
 			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomainOnAssemblyResolve;
+
+			// Depending on the options, some messages should be visible to the user (i.e. written to the console).
+			var hierarchy = (Hierarchy)LogManager.GetRepository();
+			_consoleAppender = new ConsoleLogger();
+			hierarchy.Root.AddAppender(_consoleAppender);
+			hierarchy.Root.Level = Level.Info;
+			hierarchy.Configured = true;
 		}
 
 		public int Run()
 		{
+			try
+			{
 			var archiveFilename = _options.ArchiveFileName ?? Path.GetFileNameWithoutExtension(_options.InputFileName);
 			if (!archiveFilename.EndsWith(PluginArchive.PluginExtension, StringComparison.InvariantCultureIgnoreCase))
 				archiveFilename = string.Format("{0}.{1}", archiveFilename, PluginArchive.PluginExtension);
 			if (!Path.IsPathRooted(archiveFilename))
 				archiveFilename = Path.Combine(Directory.GetCurrentDirectory(), archiveFilename);
 
-			Console.WriteLine("Creating Tailviewer plugin...");
+			Log.Info("Creating Tailviewer plugin...");
 
 			using (var pluginStream = new MemoryStream())
 			{
@@ -41,13 +56,13 @@ namespace Tailviewer.Archiver.Applications
 					{
 						case ".sln":
 						case ".csproj":
-							Console.WriteLine("ERROR: Not implemented yet");
+							Log.Error("Not implemented yet");
 							return -1;
 
 						case ".dll":
-							Console.Write("Adding {0}... ", _options.InputFileName);
+							Log.InfoFormat("Adding {0}... ", _options.InputFileName);
 							packer.AddPluginAssembly(_options.InputFileName);
-							Console.WriteLine("OK");
+							Log.Info("OK");
 							break;
 
 						default:
@@ -57,25 +72,31 @@ namespace Tailviewer.Archiver.Applications
 
 					foreach (var filename in _options.Files)
 					{
-						Console.Write("Adding {0}... ", filename);
+						Log.InfoFormat("Adding {0}... ", filename);
 						var fullFilename = Path.IsPathRooted(filename)
 							? filename
 							: Path.Combine(Directory.GetCurrentDirectory(), filename);
 						AddFile(packer, fullFilename);
-						Console.WriteLine("OK");
+						Log.Info("OK");
 					}
 				}
 
 				pluginStream.Position = 0;
-				Console.Write("Saving plugin => {0}... ", archiveFilename);
+				Log.InfoFormat("Saving plugin => {0}... ", archiveFilename);
 				using (var fileStream = File.Create(archiveFilename))
 				{
 					pluginStream.CopyTo(fileStream);
 				}
-				Console.WriteLine("OK");
-			}
+				Log.Info("OK");
+				}
 
-			return 0;
+				return 0;
+			}
+			catch (PackException e)
+			{
+				Log.Error(e.Message);
+				return -1;
+			}
 		}
 
 		private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)
@@ -106,6 +127,8 @@ namespace Tailviewer.Archiver.Applications
 
 		public void Dispose()
 		{
+			var hierarchy = (Hierarchy)LogManager.GetRepository();
+			hierarchy.Root.RemoveAppender(_consoleAppender);
 			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
 		}
 	}

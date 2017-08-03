@@ -121,6 +121,19 @@ namespace Tailviewer.Archiver.Plugins
 				Log.WarnFormat("Plugin '{0}' is missing the PluginDescription attribute, please consider adding it",
 					pluginPath);
 
+			Version pluginVersion;
+			if (versionAttribute == null)
+			{
+				pluginVersion = new Version(0, 0, 0);
+				Log.WarnFormat("Plugin '{0}' is missing the PluginVersion attribute, please consider adding it. Defaulting to {1}",
+					pluginPath,
+					pluginVersion);
+			}
+			else
+			{
+				pluginVersion = versionAttribute.Version;
+			}
+
 			var plugins = FindPluginImplementations(assembly);
 			if (plugins.Count == 0)
 				Log.WarnFormat("Plugin '{0}' doesn't implement any of the available plugin interfaces: {1}",
@@ -132,7 +145,7 @@ namespace Tailviewer.Archiver.Plugins
 				Author = authorAttribute?.Author,
 				Website = websiteAttribute?.Website,
 				Description = descriptionAttribute?.Description,
-				Version = versionAttribute?.Version,
+				Version = pluginVersion,
 				FilePath = pluginPath,
 				Plugins = plugins
 			};

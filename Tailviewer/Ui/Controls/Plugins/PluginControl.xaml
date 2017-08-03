@@ -12,6 +12,7 @@
 
     <UserControl.Resources>
         <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+        <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
     </UserControl.Resources>
 
     <Grid Margin="8">
@@ -21,8 +22,9 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Visibility="{Binding HasPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="100" />
@@ -30,12 +32,14 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Name" Margin="4" />
-            <TextBlock Text="Author" Margin="4" Grid.Column="1" />
-            <TextBlock Text="Website" Margin="4" Grid.Column="2" />
-            <TextBlock Text="Description" Margin="4" Grid.Column="3" />
+            <TextBlock Text="Version" Margin="4" Grid.Column="1" />
+            <TextBlock Text="Author" Margin="4" Grid.Column="2" />
+            <TextBlock Text="Website" Margin="4" Grid.Column="3" />
+            <TextBlock Text="Description" Margin="4" Grid.Column="4" />
         </Grid>
 
-        <ItemsControl ItemsSource="{Binding Plugins}"
+        <ItemsControl Visibility="{Binding HasPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                      ItemsSource="{Binding Plugins}"
                       Grid.Row="1"
                       BorderBrush="Black"
                       BorderThickness="0,1,0,0">
@@ -43,6 +47,7 @@
                 <DataTemplate DataType="{x:Type local:PluginViewModel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="100" />
@@ -59,10 +64,17 @@
                                 BorderBrush="Black"
                                 BorderThickness="0,0,1,1"
                                 Padding="4">
-                            <TextBlock Text="{Binding Author}"
+                            <TextBlock Text="{Binding Version}"
                                        TextTrimming="CharacterEllipsis" />
                         </Border>
                         <Border Grid.Column="2"
+                                BorderBrush="Black"
+                                BorderThickness="0,0,1,1"
+                                Padding="4">
+                            <TextBlock Text="{Binding Author}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Border>
+                        <Border Grid.Column="3"
                                 BorderBrush="Black"
                                 BorderThickness="0,0,1,1"
                                 Padding="4">
@@ -70,7 +82,7 @@
                                 <textBlocks:HyperlinkRun NavigateUri="{Binding Website}" />
                             </TextBlock>
                         </Border>
-                        <Border Grid.Column="3"
+                        <Border Grid.Column="4"
                                 BorderBrush="Black"
                                 BorderThickness="0,0,1,1"
                                 Padding="4">

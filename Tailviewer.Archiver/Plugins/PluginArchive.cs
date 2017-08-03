@@ -22,8 +22,30 @@ namespace Tailviewer.Archiver.Plugins
 
 		public const string PluginAssemblyEntryName = "Plugin.dll";
 		public const string IndexEntryName = "Index.xml";
+
+		/// <summary>
+		///     The file-extension of the plugin, excluding the dot.
+		/// </summary>
 		public const string PluginExtension = "tvp";
 
+		/// <summary>
+		///     The current version of a plugin archive, if created with this software.
+		/// </summary>
+		/// <remarks>
+		///     This number will be increased while plugins are developed and the
+		///     <see cref="MinimumSupportedPluginArchiveVersion" /> will probably increase
+		///     with it until version 1.0 of Tailviewer is released.
+		/// </remarks>
+		/// <remarks>
+		///     Plugins with a newer version will not be supported.
+		/// </remarks>
+		public const int CurrentPluginArchiveVersion = 1;
+
+		/// <summary>
+		///     The currently minimum plugin-archive-version supported by this software.
+		/// </summary>
+		public const int MinimumSupportedPluginArchiveVersion = CurrentPluginArchiveVersion;
+		
 		private PluginArchive(ZipArchive archive)
 		{
 			if (archive == null)

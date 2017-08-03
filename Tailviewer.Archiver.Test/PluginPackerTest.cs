@@ -64,8 +64,8 @@ namespace Tailviewer.Archiver.Test
 			{
 				var fname = Path.Combine(_testData, "Managed", "x64", "ClassLibrary1.dll");
 				new Action(() => packer.AddFile("ClassLibrary1.dll", fname))
-					.ShouldThrow<NotSupportedException>()
-					.WithMessage("ERROR: Assemblies must be compiled for x86 or AnyCPU");
+					.ShouldThrow<PackException>()
+					.WithMessage("Assemblies must be compiled for x86 or AnyCPU");
 			}
 		}
 
@@ -83,6 +83,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				var index = reader.Index;
 				index.Should().NotBeNull();
+				index.PluginArchiveVersion.Should().Be(PluginArchive.CurrentPluginArchiveVersion);
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
 				index.Assemblies[0].EntryName.Should().Be("ClassLibrary1.dll");
@@ -98,18 +99,18 @@ namespace Tailviewer.Archiver.Test
 			{
 				var fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.ShouldThrow<NotSupportedException>()
-					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+					.ShouldThrow<PackException>()
+					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
 
 				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.1.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.ShouldThrow<NotSupportedException>()
-					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+					.ShouldThrow<PackException>()
+					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
 
 				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.2.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.ShouldThrow<NotSupportedException>()
-					.WithMessage("ERROR: Assemblies may only target frameworks of up to .NET 4.5.2");
+					.ShouldThrow<PackException>()
+					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
 			}
 		}
 
@@ -168,8 +169,8 @@ namespace Tailviewer.Archiver.Test
 			{
 				var fname = Path.Combine(_testData, "Native", "x64", "NativeImage.dll");
 				new Action(() => packer.AddFile("NativeImage.dll", fname))
-					.ShouldThrow<NotSupportedException>()
-					.WithMessage("ERROR: Native images must be compiled for x86");
+					.ShouldThrow<PackException>()
+					.WithMessage("Native images must be compiled for x86");
 			}
 		}
 

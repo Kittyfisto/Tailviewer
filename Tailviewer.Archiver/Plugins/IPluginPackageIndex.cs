@@ -12,6 +12,13 @@ namespace Tailviewer.Archiver.Plugins
 	public interface IPluginPackageIndex
 	{
 		/// <summary>
+		///     The version of the plugin archive.
+		///     Used to find out of a plugin has been created with an older
+		///     software and thus shouldn't be supported anymore (or is too new...).
+		/// </summary>
+		int PluginArchiveVersion { get; }
+
+		/// <summary>
 		/// 
 		/// </summary>
 		string Author { get; }

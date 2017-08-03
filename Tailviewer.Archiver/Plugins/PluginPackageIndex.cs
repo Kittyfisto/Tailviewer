@@ -30,21 +30,18 @@ namespace Tailviewer.Archiver.Plugins
 		[DataMember]
 		public List<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; set; }
 
-		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces =>
-			ImplementedPluginInterfaces;
+		/// <inheritdoc />
+		public int PluginArchiveVersion { get; set; }
 
-		/// <summary>
-		/// </summary>
+		/// <inheritdoc />
 		[DataMember]
 		public string Author { get; set; }
 
-		/// <summary>
-		/// </summary>
+		/// <inheritdoc />
 		[DataMember]
 		public string Description { get; set; }
 
-		/// <summary>
-		/// </summary>
+		/// <inheritdoc />
 		[DataMember]
 		public string Website { get; set; }
 
@@ -61,6 +58,8 @@ namespace Tailviewer.Archiver.Plugins
 
 		[DataMember]
 		public string Version { get; set; }
+
+		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
 
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
 
