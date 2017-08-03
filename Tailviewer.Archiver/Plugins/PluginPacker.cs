@@ -287,7 +287,7 @@ namespace Tailviewer.Archiver.Plugins
 			_index.Description = description.Description;
 			_index.Author = description.Author;
 			_index.Website = description.Website != null ? description.Website.ToString() : null;
-			_index.Version = description.Version;
+			_index.Version = description.Version?.ToString();
 			_index.ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>();
 			foreach (var pair in description.Plugins)
 			{

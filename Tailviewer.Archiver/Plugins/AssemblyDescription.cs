@@ -21,34 +21,32 @@ namespace Tailviewer.Archiver.Plugins
 		public string AssemblyName { get; set; }
 
 		/// <inheritdoc />
-		public Version AssemblyVersion
+		Version IAssemblyDescription.AssemblyVersion
 		{
 			get
 			{
 				Version version;
-				Version.TryParse(SerializableAssemblyVersion, out version);
+				Version.TryParse(AssemblyVersion, out version);
 				return version;
 			}
-			set { SerializableAssemblyVersion = value != null ? value.ToString() : null; }
 		}
 
 		[DataMember]
-		public string SerializableAssemblyVersion { get; set; }
+		public string AssemblyVersion { get; set; }
 
 		/// <inheritdoc />
-		public Version AssemblyFileVersion
+		Version IAssemblyDescription.AssemblyFileVersion
 		{
 			get
 			{
 				Version version;
-				Version.TryParse(SerializableAssemblyFileVersion, out version);
+				Version.TryParse(AssemblyFileVersion, out version);
 				return version;
 			}
-			set { SerializableAssemblyFileVersion = value != null ? value.ToString() : null; }
 		}
 
 		[DataMember]
-		public string SerializableAssemblyFileVersion { get; set; }
+		public string AssemblyFileVersion { get; set; }
 
 		/// <inheritdoc />
 		[DataMember]
@@ -57,10 +55,6 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		[DataMember]
 		public List<AssemblyReference> Dependencies { get; set; }
-
-		/// <inheritdoc />
-		[DataMember]
-		public List<string> ImplementedPluginInterfaces { get; set; }
 
 		IReadOnlyList<IAssemblyReference> IAssemblyDescription.Dependencies => Dependencies;
 
@@ -82,15 +76,14 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				AssemblyName = assembly.GetName().Name,
 				Dependencies = new List<AssemblyReference>(),
-				ImplementedPluginInterfaces = new List<string>()
 			};
 
 			var assemblyFileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
 			var assemblyInformationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 
-			description.AssemblyVersion = assembly.GetName().Version;
+			description.AssemblyVersion = assembly.GetName().Version?.ToString();
 			if (assemblyFileVersion != null)
-				description.AssemblyFileVersion = TryParse(assemblyFileVersion.Version);
+				description.AssemblyFileVersion = TryParse(assemblyFileVersion.Version)?.ToString();
 			if (assemblyInformationalVersion != null)
 				description.AssemblyInformationalVersion = assemblyInformationalVersion.InformationalVersion;
 
@@ -100,8 +93,6 @@ namespace Tailviewer.Archiver.Plugins
 				{
 					FullName = referencedAssembly.FullName
 				});
-
-			var pluginImplementations = assembly.GetTypes();
 
 			return description;
 		}

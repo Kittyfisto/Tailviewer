@@ -49,19 +49,18 @@ namespace Tailviewer.Archiver.Plugins
 		public string Website { get; set; }
 
 		/// <inheritdoc />
-		public Version Version
+		Version IPluginPackageIndex.Version
 		{
 			get
 			{
 				Version version;
-				Version.TryParse(SerializablePluginVersion, out version);
+				System.Version.TryParse(Version, out version);
 				return version;
 			}
-			set { SerializablePluginVersion = value != null ? value.ToString() : null; }
 		}
 
 		[DataMember]
-		public string SerializablePluginVersion { get; set; }
+		public string Version { get; set; }
 
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
 
