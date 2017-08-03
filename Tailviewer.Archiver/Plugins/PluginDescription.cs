@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -30,15 +29,7 @@ namespace Tailviewer.Archiver.Plugins
 		public string FilePath { get; set; }
 
 		/// <inheritdoc />
-		public string Name
-		{
-			get
-			{
-				var path = FilePath;
-				var name = Path.GetFileNameWithoutExtension(path);
-				return name;
-			}
-		}
+		public string Name { get; set; }
 
 		/// <inheritdoc />
 		public string Author { get; set; }

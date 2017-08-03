@@ -47,8 +47,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(OutputDir)
-archive pack SamplePlugin.dll
 mkdir Plugins\
-copy SamplePlugin.tvp Plugins\</PostBuildEvent>
+cd Plugins\
+
+..\archive pack ..\SamplePlugin.dll
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

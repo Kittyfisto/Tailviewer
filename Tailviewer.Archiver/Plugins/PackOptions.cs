@@ -13,12 +13,8 @@ namespace Tailviewer.Archiver.Plugins
 
 		[Option('c', "configuration",
 			Default = "Release",
-			HelpText = "The Visual Studio configuration (such as Release or Debug) which should be used when determining the output files to be packed. By default, Release is used.")]
+			HelpText = "The Visual Studio configuration (such as Release or Debug) which should be used when determining the output files to be packed. By default, Release is used. Only needs to be specified when a visual studio solution or c# project is used as input.")]
 		public string Configuration { get; set; }
-
-		[Option('o', "output",
-			HelpText = "Filename of the resulting plugin archive.")]
-		public string ArchiveFileName { get; set; }
 
 		[Option('f', "files",
 			SetName = "bylines",

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,6 +12,35 @@ namespace Tailviewer.Archiver.Test
 	public sealed class PluginArchiveLoaderTest
 		: AbstractPluginTest
 	{
+		[Test]
+		public void TestReflect1()
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var packer = PluginPacker.Create(stream, true))
+				{
+					var builder = new PluginBuilder("My very own plugin", "Simon", "http://google.com", "get of my lawn");
+					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.Save();
+
+					packer.AddPluginAssembly(builder.FileName);
+				}
+
+				stream.Position = 0;
+
+				using (var loader = new PluginArchiveLoader())
+				{
+					var description = loader.ReflectPlugin(stream, true);
+					description.Should().NotBeNull();
+					description.Name.Should().Be("My very own plugin");
+					description.Version.Should().Be(new Version(0, 0, 0));
+					description.Author.Should().Be("Simon");
+					description.Website.Should().Be(new Uri("http://google.com"));
+					description.Description.Should().Be("get of my lawn");
+				}
+			}
+		}
+
 		[Test]
 		public void TestLoad1()
 		{

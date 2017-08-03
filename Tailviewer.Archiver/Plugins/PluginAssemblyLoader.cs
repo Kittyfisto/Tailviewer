@@ -142,6 +142,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			return new PluginDescription
 			{
+				Name = assembly.GetName().Name,
 				Author = authorAttribute?.Author,
 				Website = websiteAttribute?.Website,
 				Description = descriptionAttribute?.Description,

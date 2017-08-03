@@ -34,9 +34,12 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
 				Assemblies = new List<AssemblyDescription>(),
-				NativeImages = new List<NativeImageDescription>()
+				NativeImages = new List<NativeImageDescription>(),
+				Version = new Version(0, 0, 0).ToString()
 			};
 		}
+
+		public string Version => _index.Version;
 
 		/// <inheritdoc />
 		public void Dispose()
@@ -226,7 +229,7 @@ namespace Tailviewer.Archiver.Plugins
 			idx += pattern.Length;
 			var versionString = name.Substring(idx);
 			Version version;
-			if (!Version.TryParse(versionString, out version))
+			if (!System.Version.TryParse(versionString, out version))
 				return null;
 
 			return version;
@@ -289,6 +292,7 @@ namespace Tailviewer.Archiver.Plugins
 			_index.Author = description.Author;
 			_index.Website = description.Website != null ? description.Website.ToString() : null;
 			_index.Version = description.Version?.ToString();
+			_index.Name = description.Name;
 			_index.ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>();
 			foreach (var pair in description.Plugins)
 			{

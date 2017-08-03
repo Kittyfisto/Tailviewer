@@ -19,7 +19,13 @@ namespace Tailviewer.Archiver.Plugins
 		int PluginArchiveVersion { get; }
 
 		/// <summary>
-		/// 
+		///     The name of the plugin, as visible to the user.
+		/// </summary>
+		string Name { get; }
+
+		/// <summary>
+		///     The author of the plugin.
+		///     Will be displayed to the user.
 		/// </summary>
 		string Author { get; }
 

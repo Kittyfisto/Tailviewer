@@ -39,55 +39,57 @@ namespace Tailviewer.Archiver.Applications
 		{
 			try
 			{
-			var archiveFilename = _options.ArchiveFileName ?? Path.GetFileNameWithoutExtension(_options.InputFileName);
-			if (!archiveFilename.EndsWith(PluginArchive.PluginExtension, StringComparison.InvariantCultureIgnoreCase))
-				archiveFilename = string.Format("{0}.{1}", archiveFilename, PluginArchive.PluginExtension);
-			if (!Path.IsPathRooted(archiveFilename))
-				archiveFilename = Path.Combine(Directory.GetCurrentDirectory(), archiveFilename);
+				Log.Info("Creating Tailviewer plugin...");
 
-			Log.Info("Creating Tailviewer plugin...");
-
-			using (var pluginStream = new MemoryStream())
-			{
-				using (var packer = PluginPacker.Create(pluginStream, leaveOpen: true))
+				using (var pluginStream = new MemoryStream())
 				{
-					var extension = Path.GetExtension(_options.InputFileName)?.ToLowerInvariant();
-					switch (extension)
+					string pluginVersion;
+					using (var packer = PluginPacker.Create(pluginStream, leaveOpen: true))
 					{
-						case ".sln":
-						case ".csproj":
-							Log.Error("Not implemented yet");
-							return -1;
+						var extension = Path.GetExtension(_options.InputFileName)?.ToLowerInvariant();
+						switch (extension)
+						{
+							case ".sln":
+							case ".csproj":
+								Log.Error("Not implemented yet");
+								return -1;
 
-						case ".dll":
-							Log.InfoFormat("Adding {0}... ", _options.InputFileName);
-							packer.AddPluginAssembly(_options.InputFileName);
+							case ".dll":
+								Log.InfoFormat("Adding {0}... ", _options.InputFileName);
+								packer.AddPluginAssembly(_options.InputFileName);
+								Log.Info("OK");
+								break;
+
+							default:
+								Console.WriteLine("ERROR: Input file must be either a Visual Studio Solution, C# Project or .NET Assembly");
+								return -1;
+						}
+
+						foreach (var filename in _options.Files)
+						{
+							Log.InfoFormat("Adding {0}... ", filename);
+							var fullFilename = Path.IsPathRooted(filename)
+								? filename
+								: Path.Combine(Directory.GetCurrentDirectory(), filename);
+							AddFile(packer, fullFilename);
 							Log.Info("OK");
-							break;
+						}
 
-						default:
-							Console.WriteLine("ERROR: Input file must be either a Visual Studio Solution, C# Project or .NET Assembly");
-							return -1;
+						pluginVersion = packer.Version;
 					}
 
-					foreach (var filename in _options.Files)
+					var archiveFilename = Path.Combine(Directory.GetCurrentDirectory(), string.Format("{0}.{1}.{2}",
+						Path.GetFileNameWithoutExtension(_options.InputFileName),
+						pluginVersion,
+						PluginArchive.PluginExtension));
+
+					pluginStream.Position = 0;
+					Log.InfoFormat("Saving plugin => {0}... ", archiveFilename);
+					using (var fileStream = File.Create(archiveFilename))
 					{
-						Log.InfoFormat("Adding {0}... ", filename);
-						var fullFilename = Path.IsPathRooted(filename)
-							? filename
-							: Path.Combine(Directory.GetCurrentDirectory(), filename);
-						AddFile(packer, fullFilename);
-						Log.Info("OK");
+						pluginStream.CopyTo(fileStream);
 					}
-				}
-
-				pluginStream.Position = 0;
-				Log.InfoFormat("Saving plugin => {0}... ", archiveFilename);
-				using (var fileStream = File.Create(archiveFilename))
-				{
-					pluginStream.CopyTo(fileStream);
-				}
-				Log.Info("OK");
+					Log.Info("OK");
 				}
 
 				return 0;

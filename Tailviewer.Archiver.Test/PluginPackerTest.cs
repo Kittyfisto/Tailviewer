@@ -40,6 +40,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				var index = reader.Index;
 				index.Should().NotBeNull();
+				index.Name.Should().Be("archive");
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
 				index.Assemblies[0].EntryName.Should().Be("Plugin.dll");
