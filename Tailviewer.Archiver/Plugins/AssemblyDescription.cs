@@ -78,10 +78,11 @@ namespace Tailviewer.Archiver.Plugins
 				Dependencies = new List<AssemblyReference>(),
 			};
 
+			var assemblyVersion = assembly.GetCustomAttribute<AssemblyVersionAttribute>();
 			var assemblyFileVersion = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
 			var assemblyInformationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 
-			description.AssemblyVersion = assembly.GetName().Version?.ToString();
+			description.AssemblyVersion = assemblyVersion?.Version ?? assembly.GetName().Version?.ToString();
 			if (assemblyFileVersion != null)
 				description.AssemblyFileVersion = TryParse(assemblyFileVersion.Version)?.ToString();
 			if (assemblyInformationalVersion != null)

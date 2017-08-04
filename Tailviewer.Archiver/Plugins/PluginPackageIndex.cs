@@ -35,6 +35,10 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <inheritdoc />
 		[DataMember]
+		public string Id { get; set; }
+
+		/// <inheritdoc />
+		[DataMember]
 		public string Name { get; set; }
 
 		/// <inheritdoc />

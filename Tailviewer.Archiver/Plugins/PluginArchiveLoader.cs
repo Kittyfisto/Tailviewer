@@ -104,6 +104,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			var desc = new PluginDescription
 			{
+				Id = archiveIndex.Id,
 				Name = archiveIndex.Name,
 				Version = archiveIndex.Version,
 				Author = archiveIndex.Author,

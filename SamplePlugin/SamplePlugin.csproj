@@ -44,6 +44,12 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(OutputDir)

@@ -28,32 +28,33 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestAddAssembly1()
 		{
-			var assembly = typeof(IPluginLoader).Assembly;
-
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var fname = Path.Combine(AssemblyDirectory, "archive.exe");
-				packer.AddPluginAssembly(fname);
+				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				builder.AssemblyVersion = "4.0.3.1";
+				builder.AssemblyFileVersion = "1.2.3.42";
+				builder.AssemblyInformationalVersion = "4.0.0.0-beta";
+				builder.Save();
+				packer.AddPluginAssembly(builder.FileName);
 			}
 
 			using (var reader = PluginArchive.OpenRead(_fname))
 			{
 				var index = reader.Index;
 				index.Should().NotBeNull();
-				index.Name.Should().Be("archive");
+				index.Name.Should().Be("Plugin");
 				index.Assemblies.Should().NotBeNull();
 				index.Assemblies.Should().HaveCount(1);
 				index.Assemblies[0].EntryName.Should().Be("Plugin.dll");
-				index.Assemblies[0].AssemblyName.Should().Be("archive");
-				index.Assemblies[0].AssemblyVersion.Should().Be(assembly.GetName().Version);
-				index.Assemblies[0].AssemblyFileVersion.Should().Be(Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version));
-				index.Assemblies[0].AssemblyInformationalVersion.Should().BeNull();
+				index.Assemblies[0].AssemblyName.Should().Be("Plugin");
+				index.Assemblies[0].AssemblyVersion.Should().Be(new Version(4, 0, 3, 1));
+				index.Assemblies[0].AssemblyFileVersion.Should().Be(new Version(1, 2, 3, 42));
+				index.Assemblies[0].AssemblyInformationalVersion.Should().Be("4.0.0.0-beta");
 				index.NativeImages.Should().NotBeNull();
 				index.NativeImages.Should().HaveCount(0);
 
 				var actualAssembly = reader.LoadAssembly("Plugin.dll");
 				actualAssembly.Should().NotBeNull();
-				actualAssembly.FullName.Should().Be(assembly.FullName);
 			}
 		}
 
@@ -120,8 +121,8 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("Plugin");
-				builder.Version = new Version(1, 4, 12034);
+				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				builder.PluginVersion = new Version(1, 4, 12034);
 				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 				builder.Save();
 
@@ -132,6 +133,8 @@ namespace Tailviewer.Archiver.Test
 			{
 				var index = reader.Index;
 				index.Version.Should().NotBeNull();
+				index.Id.Should().Be("abcdefg");
+				index.Name.Should().Be("Plugin");
 				index.Version.Should().Be(new Version(1, 4, 12034));
 			}
 		}
@@ -141,10 +144,11 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var fname = Path.Combine(AssemblyDirectory, "archive.exe");
-				packer.AddPluginAssembly(fname);
+				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				builder.Save();
+				packer.AddPluginAssembly(builder.FileName);
 
-				fname = Path.Combine(_testData, "Native", "x86", "NativeImage.dll");
+				var fname = Path.Combine(_testData, "Native", "x86", "NativeImage.dll");
 				packer.AddFile("NativeImage.dll", fname);
 			}
 

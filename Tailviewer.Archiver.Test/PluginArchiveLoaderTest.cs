@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
@@ -12,6 +13,39 @@ namespace Tailviewer.Archiver.Test
 	public sealed class PluginArchiveLoaderTest
 		: AbstractPluginTest
 	{
+		private string _pluginFolder;
+
+		[SetUp]
+		public void Setup()
+		{
+			_pluginFolder = Path.Combine(Path.GetDirectoryName(AssemblyFileName), "Plugins", "PluginArchiveLoaderTest");
+			if (!Directory.Exists(_pluginFolder))
+				Directory.CreateDirectory(_pluginFolder);
+			else
+				DeleteContents(_pluginFolder);
+		}
+
+		private static void DeleteContents(string pluginFolder)
+		{
+			var directory = new DirectoryInfo(pluginFolder);
+
+			foreach (FileInfo file in directory.GetFiles())
+			{
+				file.Delete();
+			}
+		}
+
+		public static string AssemblyFileName
+		{
+			get
+			{
+				string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+				UriBuilder uri = new UriBuilder(codeBase);
+				string path = Uri.UnescapeDataString(uri.Path);
+				return path;
+			}
+		}
+
 		[Test]
 		public void TestReflect1()
 		{
@@ -19,7 +53,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					var builder = new PluginBuilder("My very own plugin", "Simon", "http://google.com", "get of my lawn");
+					var builder = new PluginBuilder("UniquePluginId", "My very own plugin", "Simon", "http://google.com", "get of my lawn");
 					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
@@ -32,6 +66,7 @@ namespace Tailviewer.Archiver.Test
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					description.Should().NotBeNull();
+					description.Id.Should().Be("UniquePluginId");
 					description.Name.Should().Be("My very own plugin");
 					description.Version.Should().Be(new Version(0, 0, 0));
 					description.Author.Should().Be("Simon");
@@ -64,6 +99,23 @@ namespace Tailviewer.Archiver.Test
 					plugin.Should().NotBeNull();
 				}
 			}
+		}
+
+		[Test]
+		[Description("Verifies that if the same plugin is available in two versions, then the highest possible version will be available only")]
+		public void TestLoadDifferentVersions()
+		{
+			
+		}
+
+		private string CreatePlugin(string id, Version version)
+		{
+			var builder = new PluginBuilder(id, "dawawdwdaaw") {PluginVersion = version};
+			builder.Save();
+			var fname = builder.FileName;
+			var dest = Path.Combine(_pluginFolder, Path.GetFileName(fname));
+			File.Move(fname, dest);
+			return dest;
 		}
 
 		[Test]

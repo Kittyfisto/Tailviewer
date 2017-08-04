@@ -104,10 +104,17 @@ namespace Tailviewer.Archiver.Plugins
 		/// <returns></returns>
 		public IPluginDescription ReflectPlugin(Assembly assembly, string pluginPath = null)
 		{
+			var idAttribute = assembly.GetCustomAttribute<PluginIdAttribute>();
 			var authorAttribute = assembly.GetCustomAttribute<PluginAuthorAttribute>();
 			var websiteAttribute = assembly.GetCustomAttribute<PluginWebsiteAttribute>();
 			var descriptionAttribute = assembly.GetCustomAttribute<PluginDescriptionAttribute>();
 			var versionAttribute = assembly.GetCustomAttribute<PluginVersionAttribute>();
+
+			if (idAttribute == null)
+				throw new PackException(string.Format("Plugin '{0}' is missing the reqired PluginId attribute, please add it", pluginPath));
+
+			if (string.IsNullOrWhiteSpace(idAttribute.Id))
+				throw new PackException(string.Format("The id of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));
 
 			if (authorAttribute == null)
 				Log.WarnFormat("Plugin '{0}' is missing the PluginAuthor attribute, please consider adding it",
@@ -142,6 +149,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			return new PluginDescription
 			{
+				Id = idAttribute.Id,
 				Name = assembly.GetName().Name,
 				Author = authorAttribute?.Author,
 				Website = websiteAttribute?.Website,

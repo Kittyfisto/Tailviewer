@@ -14,6 +14,11 @@ namespace Tailviewer.Archiver.Plugins
 		string FilePath { get; }
 
 		/// <summary>
+		///     A unique id for this plugin.
+		/// </summary>
+		string Id { get; }
+
+		/// <summary>
 		///     The (human-readable) name of the plugin.
 		/// </summary>
 		string Name { get; }

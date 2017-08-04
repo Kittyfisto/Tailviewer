@@ -4,6 +4,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -17,7 +18,10 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					packer.AddPluginAssembly(AssemblyFileName);
+					var builder = new AbstractPluginTest.PluginBuilder("Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
+					builder.ImplementInterface<IFileFormatPlugin>("Foo1.MyAwesomePlugin");
+					builder.Save();
+					packer.AddPluginAssembly(builder.FileName);
 				}
 
 				stream.Position = 0;

@@ -15,7 +15,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestReflectPlugin1()
 		{
-			var plugin = "test.tvp";
+			var plugin = "test.dll";
 			if (File.Exists(plugin))
 				File.Delete(plugin);
 
@@ -34,11 +34,11 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestReflectPlugin2()
 		{
-			var plugin = "sql.tvp";
+			var plugin = "sql.dll";
 			if (File.Exists(plugin))
 				File.Delete(plugin);
 
-			var builder = new PluginBuilder("sql", "SMI", "none of your business", "go away");
+			var builder = new PluginBuilder("sql", "sql", "SMI", "none of your business", "go away");
 			builder.ImplementInterface<IFileFormatPlugin>("sql.LogFilePlugin");
 			builder.Save();
 
@@ -92,11 +92,11 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestLoad1()
 		{
-			var assemblyFileName = "Foo1.tvp";
+			var assemblyFileName = "Foo1.dll";
 			if (File.Exists(assemblyFileName))
 				File.Delete(assemblyFileName);
 
-			var builder = new PluginBuilder("Foo1", "Simon", "None of your business", "Get of my lawn");
+			var builder = new PluginBuilder("Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
 			builder.ImplementInterface<IFileFormatPlugin>("Foo1.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
@@ -119,11 +119,11 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestLoad2()
 		{
-			var assemblyFileName = "Foo2.tvp";
+			var assemblyFileName = "Foo2.dll";
 			if (File.Exists(assemblyFileName))
 				File.Delete(assemblyFileName);
 
-			var builder = new PluginBuilder("Foo2", "Simon", "None of your business", "Get of my lawn");
+			var builder = new PluginBuilder("Foo2", "Foo2", "Simon", "None of your business", "Get of my lawn");
 			builder.ImplementInterface<IFileFormatPlugin>("Foo2.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
@@ -149,11 +149,11 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var scanner = new PluginAssemblyLoader())
 			{
-				var assemblyFileName = "Foo3.tvp";
+				var assemblyFileName = "Foo3.dll";
 				if (File.Exists(assemblyFileName))
 					File.Delete(assemblyFileName);
 
-				var builder = new PluginBuilder("Foo3", "Simon", "None of your business", "Get of my lawn");
+				var builder = new PluginBuilder("Foo3", "Foo3", "Simon", "None of your business", "Get of my lawn");
 				builder.ImplementInterface<IFileFormatPlugin>("Foo3.MyAwesomePlugin");
 				builder.Save();
 

@@ -17,15 +17,19 @@ namespace Tailviewer.Archiver.Test
 			private readonly string _pluginName;
 			private readonly string _fileName;
 
-			public PluginBuilder(string pluginName,
+			public PluginBuilder(
+				string pluginId,
+				string pluginName,
 				string author = null,
 				string website = null,
 				string description = null)
 			{
 				_pluginName = pluginName;
-				_fileName = string.Format("{0}.tvp", pluginName);
+				_fileName = string.Format("{0}.dll", pluginName);
 				var assemblyName = new AssemblyName(pluginName);
 				var attributes = new List<CustomAttributeBuilder>();
+				if (pluginId != null)
+					attributes.Add(CreateAttribute<PluginIdAttribute>(pluginId));
 				if (author != null)
 					attributes.Add(CreateAttribute<PluginAuthorAttribute>(author));
 				if (website != null)
@@ -112,7 +116,37 @@ namespace Tailviewer.Archiver.Test
 
 			public string FileName => _fileName;
 
-			public Version Version
+			public string AssemblyFileVersion
+			{
+				set
+				{
+					var ctor = typeof(AssemblyFileVersionAttribute).GetConstructor(new[] {typeof(string)});
+					var builder = new CustomAttributeBuilder(ctor, new object[] {value});
+					_assembly.SetCustomAttribute(builder);
+				}
+			}
+
+			public string AssemblyVersion
+			{
+				set
+				{
+					var ctor = typeof(AssemblyVersionAttribute).GetConstructor(new[] { typeof(string) });
+					var builder = new CustomAttributeBuilder(ctor, new object[] { value });
+					_assembly.SetCustomAttribute(builder);
+				}
+			}
+
+			public string AssemblyInformationalVersion
+			{
+				set
+				{
+					var ctor = typeof(AssemblyInformationalVersionAttribute).GetConstructor(new[] { typeof(string) });
+					var builder = new CustomAttributeBuilder(ctor, new object[] { value });
+					_assembly.SetCustomAttribute(builder);
+				}
+			}
+
+			public Version PluginVersion
 			{
 				set
 				{
@@ -158,7 +192,7 @@ namespace Tailviewer.Archiver.Test
 			string description = null)
 		{
 			var pluginName = Path.GetFileNameWithoutExtension(assemblyFileName);
-			var builder = new PluginBuilder(pluginName, author, website, description);
+			var builder = new PluginBuilder(pluginName, pluginName, author, website, description);
 			builder.Save();
 		}
 	}

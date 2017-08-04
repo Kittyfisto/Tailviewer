@@ -29,6 +29,9 @@ namespace Tailviewer.Archiver.Plugins
 		public string FilePath { get; set; }
 
 		/// <inheritdoc />
+		public string Id { get; set; }
+
+		/// <inheritdoc />
 		public string Name { get; set; }
 
 		/// <inheritdoc />
