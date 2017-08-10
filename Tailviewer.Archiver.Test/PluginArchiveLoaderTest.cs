@@ -68,7 +68,7 @@ namespace Tailviewer.Archiver.Test
 					description.Should().NotBeNull();
 					description.Id.Should().Be("UniquePluginId");
 					description.Name.Should().Be("My very own plugin");
-					description.Version.Should().Be(new Version(0, 0, 0));
+					description.Version.Should().Be(new Version(0, 0, 0), "because the plugin version should default to 0.0.0 when none has been specified");
 					description.Author.Should().Be("Simon");
 					description.Website.Should().Be(new Uri("http://google.com"));
 					description.Description.Should().Be("get of my lawn");
@@ -105,16 +105,36 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that if the same plugin is available in two versions, then the highest possible version will be available only")]
 		public void TestLoadDifferentVersions()
 		{
-			
+			var plugin1 = CreatePlugin("Foobar", new Version(1, 0));
+			var plugin2 = CreatePlugin("Foobar", new Version(1, 1));
+
+			using (var loader = new PluginArchiveLoader())
+			{
+				loader.ReflectPlugin(plugin1);
+				loader.ReflectPlugin(plugin2);
+
+				loader.Plugins.Should().HaveCount(1);
+				loader.Plugins.First().Version.Should().Be(new Version(1, 1));
+
+				var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
+				plugins.Should().HaveCount(1);
+			}
 		}
 
 		private string CreatePlugin(string id, Version version)
 		{
-			var builder = new PluginBuilder(id, "dawawdwdaaw") {PluginVersion = version};
-			builder.Save();
-			var fname = builder.FileName;
-			var dest = Path.Combine(_pluginFolder, Path.GetFileName(fname));
-			File.Move(fname, dest);
+			var fileName = string.Format("{0}.{1}.dll", id, version);
+			using (var packer = PluginPacker.Create(fileName))
+			{
+				var builder = new PluginBuilder(id, "dawawdwdaaw") { PluginVersion = version };
+				builder.ImplementInterface<IFileFormatPlugin>("dwwwddwawa");
+				builder.Save();
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			var dest = Path.Combine(_pluginFolder, Path.GetFileName(fileName));
+			File.Move(fileName, dest);
+
 			return dest;
 		}
 
@@ -137,7 +157,7 @@ namespace Tailviewer.Archiver.Test
 				using (var loader = new PluginArchiveLoader())
 				{
 					var description = loader.ReflectPlugin(stream, true);
-					var plugins = loader.LoadAllOfType<IFileFormatPlugin>(new[] {description})?.ToList();
+					var plugins = loader.LoadAllOfType<IFileFormatPlugin>()?.ToList();
 					plugins.Should().NotBeNull();
 					plugins.Should().HaveCount(1);
 					plugins[0].Should().NotBeNull();

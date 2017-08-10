@@ -37,10 +37,10 @@ namespace Tailviewer.Archiver.Plugins
 		public abstract T Load<T>(IPluginDescription description) where T : class, IPlugin;
 
 		/// <inheritdoc />
-		public IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions) where T : class, IPlugin
+		public IEnumerable<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
 			var ret = new List<T>();
-			foreach (var pluginDescription in pluginDescriptions)
+			foreach (var pluginDescription in Plugins)
 			{
 				if (pluginDescription.Plugins.ContainsKey(typeof(T)))
 					try

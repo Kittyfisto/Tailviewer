@@ -67,9 +67,7 @@ namespace Tailviewer
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var scanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
-				var plugins = scanner.Plugins;
-
-				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>(plugins);
+				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>();
 
 				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
@@ -117,7 +115,7 @@ namespace Tailviewer
 							actionCenter,
 							updater,
 							uiDispatcher,
-							plugins)
+							scanner.Plugins)
 					};
 
 					settings.MainWindow.RestoreTo(window);

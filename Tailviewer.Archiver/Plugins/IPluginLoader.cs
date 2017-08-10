@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
@@ -29,8 +28,7 @@ namespace Tailviewer.Archiver.Plugins
 		///     All plugins that cannot be loaded are ignored (an error is logged, but the caller is not notified).
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="pluginDescriptions"></param>
 		/// <returns></returns>
-		IEnumerable<T> LoadAllOfType<T>(IEnumerable<IPluginDescription> pluginDescriptions) where T : class, IPlugin;
+		IEnumerable<T> LoadAllOfType<T>() where T : class, IPlugin;
 	}
 }

@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Applications\Pack.cs" />
     <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PackException.cs" />
     <Compile Include="Plugins\AbstractPluginLoader.cs" />
     <Compile Include="Plugins\AssemblyDescription.cs" />

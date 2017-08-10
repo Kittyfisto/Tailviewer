@@ -179,8 +179,8 @@ namespace Tailviewer.Archiver.Test
 					}
 				};
 
-				new Action(() => scanner.LoadAllOfType<IFileFormatPlugin>(new[] { description })).ShouldNotThrow();
-				scanner.LoadAllOfType<IFileFormatPlugin>(new[] { description }).Should().BeEmpty();
+				new Action(() => scanner.LoadAllOfType<IFileFormatPlugin>()).ShouldNotThrow();
+				scanner.LoadAllOfType<IFileFormatPlugin>().Should().BeEmpty();
 			}
 		}
 	}

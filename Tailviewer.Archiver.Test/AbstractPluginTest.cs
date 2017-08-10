@@ -114,6 +114,11 @@ namespace Tailviewer.Archiver.Test
 				_assembly.Save(_fileName);
 			}
 
+			public void Save(string fileName)
+			{
+				_assembly.Save(fileName);
+			}
+
 			public string FileName => _fileName;
 
 			public string AssemblyFileVersion
