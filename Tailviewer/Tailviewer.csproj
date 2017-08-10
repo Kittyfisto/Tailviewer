@@ -53,8 +53,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.2.2.34, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.34\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.35, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.35\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -173,18 +173,16 @@
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
-    <Compile Include="Ui\Controls\About\AboutControl.xaml.cs">
-      <DependentUpon>AboutControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
-    <Compile Include="Ui\Controls\About\ChangelogControl.xaml.cs">
+    <Compile Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml.cs">
       <DependentUpon>ChangelogControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Ui\Controls\About\ChangelogViewModel.cs" />
-    <Compile Include="Ui\Controls\About\LicenseControl.xaml.cs">
+    <Compile Include="Ui\Controls\MainPanel\About\ChangelogViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\Dependency.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\LicenseControl.xaml.cs">
       <DependentUpon>LicenseControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Ui\Controls\About\TailviewerControl.xaml.cs">
+    <Compile Include="Ui\Controls\MainPanel\About\TailviewerControl.xaml.cs">
       <DependentUpon>TailviewerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml.cs">
@@ -196,16 +194,18 @@
     <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
       <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
-    <Compile Include="Ui\Controls\Plugins\PluginControl.xaml.cs">
-      <DependentUpon>PluginControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Ui\Controls\Plugins\PluginsViewModel.cs" />
-    <Compile Include="Ui\Controls\Plugins\PluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
@@ -238,7 +238,7 @@
     <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
     <Compile Include="Ui\Controls\LogView\LogEntryListView.cs" />
-    <Compile Include="Ui\Controls\SettingsControl.xaml.cs">
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControl.xaml.cs">
       <DependentUpon>SettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
@@ -261,7 +261,6 @@
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
-    <Compile Include="Ui\ViewModels\SettingsViewModel.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
@@ -285,19 +284,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\About\AboutControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\About\AboutMainPanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\About\ChangelogControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\About\LicenseControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\About\LicenseControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\About\TailviewerControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\About\TailviewerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -341,7 +340,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\Plugins\PluginControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -406,7 +409,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SettingsControl.xaml">
+    <Page Include="Ui\Controls\MainPanel\Settings\SettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

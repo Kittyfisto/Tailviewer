@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mainPanel="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
                     xmlns:controls="clr-namespace:Tailviewer.Ui.Controls"
-                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView">
 
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
@@ -28,7 +29,7 @@
                            RadiusY="10" />
             </Grid>
 
-            <controls:LogViewerControl
+            <logView:LogViewerControl
                 Visibility="{Binding CurrentDataSourceLogView, Converter={StaticResource NullToCollapsedConverter}}"
                 x:Name="PART_LogFileView"
                 LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"

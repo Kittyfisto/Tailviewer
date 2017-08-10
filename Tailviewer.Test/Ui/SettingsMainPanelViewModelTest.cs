@@ -2,21 +2,21 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
-using Tailviewer.Ui.ViewModels;
+using Tailviewer.Ui.Controls.MainPanel.Settings;
 
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
-	public sealed class SettingsViewModelTest
+	public sealed class SettingsMainPanelViewModelTest
 	{
 		private ApplicationSettings _settings;
-		private SettingsViewModel _model;
+		private SettingsMainPanelViewModel _model;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_settings = new ApplicationSettings("foo");
-			_model = new SettingsViewModel(_settings);
+			_model = new SettingsMainPanelViewModel(_settings);
 		}
 
 		[Test]

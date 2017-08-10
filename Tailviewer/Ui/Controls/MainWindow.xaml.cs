@@ -97,7 +97,7 @@ namespace Tailviewer.Ui.Controls
 			var grid = VisualTreeHelper.GetChild(PART_Content, 0) as Grid;
 			if (grid != null)
 			{
-				var logViewerControl = VisualTreeHelper.GetChild(grid, 1) as LogViewerControl;
+				var logViewerControl = VisualTreeHelper.GetChild(grid, 1) as LogView.LogViewerControl;
 				logViewerControl?.PART_SearchBox.Focus();
 			}
 		}

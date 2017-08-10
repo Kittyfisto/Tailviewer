@@ -1,7 +1,7 @@
 ﻿using System;
 using Tailviewer.Archiver.Plugins;
 
-namespace Tailviewer.Ui.Controls.Plugins
+namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 {
 	public sealed class PluginViewModel
 	{

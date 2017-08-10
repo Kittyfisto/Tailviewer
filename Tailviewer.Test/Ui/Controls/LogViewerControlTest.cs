@@ -12,6 +12,7 @@ using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
+using LogViewerControl = Tailviewer.Ui.Controls.LogView.LogViewerControl;
 
 namespace Tailviewer.Test.Ui.Controls
 {

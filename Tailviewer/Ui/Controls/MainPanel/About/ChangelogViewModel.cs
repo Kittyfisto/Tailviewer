@@ -4,7 +4,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.Ui.Controls.ActionCenter;
 
-namespace Tailviewer.Ui.Controls.About
+namespace Tailviewer.Ui.Controls.MainPanel.About
 {
 	public sealed class ChangelogViewModel
 	{

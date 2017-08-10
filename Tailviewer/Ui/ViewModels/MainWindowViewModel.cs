@@ -13,7 +13,9 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
-using Tailviewer.Ui.Controls.Plugins;
+using Tailviewer.Ui.Controls.MainPanel.About;
+using Tailviewer.Ui.Controls.MainPanel.Plugins;
+using Tailviewer.Ui.Controls.MainPanel.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
@@ -35,8 +37,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private readonly ActionCenterViewModel _actionCenterViewModel;
 		private readonly AutoUpdateViewModel _autoUpdater;
-		private readonly SettingsViewModel _settings;
-		private readonly PluginsViewModel _plugins;
+		private readonly SettingsMainPanelViewModel _settings;
 
 		#endregion
 
@@ -44,16 +45,23 @@ namespace Tailviewer.Ui.ViewModels
 
 		private readonly AnalyseMainPanelEntry _analyseEntry;
 		private readonly LogViewMainPanelEntry _rawEntry;
-		private readonly IMainPanelEntry[] _entries;
+		private readonly IMainPanelEntry _pluginsEntry;
+		private readonly IMainPanelEntry _settingsEntry;
+		private readonly IMainPanelEntry _aboutEntry;
 		private readonly AnalyseMainPanelViewModel _analysePanel;
 		private readonly LogViewMainPanelViewModel _logViewPanel;
-		private IMainPanelEntry _selectedEntry;
+		private readonly IMainPanelEntry[] _topEntries;
+		private IMainPanelEntry _selectedTopEntry;
+		private readonly IMainPanelEntry[] _bottomEntries;
+		private IMainPanelEntry _selectedBottomEntry;
+		private IMainPanelViewModel _selectedMainPanel;
 
 		#endregion
-		
+
 		private string _windowTitle;
 		private string _windowTitleSuffix;
-		private IMainPanelViewModel _selectedMainPanel;
+		private readonly IEnumerable<IPluginDescription> _plugins;
+
 
 		public MainWindowViewModel(IApplicationSettings settings,
 		                           DataSources dataSources,
@@ -70,8 +78,8 @@ namespace Tailviewer.Ui.ViewModels
 
 			_applicationSettings = settings;
 
-			_settings = new SettingsViewModel(settings);
-			_plugins = new PluginsViewModel(plugins);
+			_plugins = plugins;
+			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
 			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings);
@@ -97,12 +105,23 @@ namespace Tailviewer.Ui.ViewModels
 
 			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
-			_entries = new IMainPanelEntry[]
+			_topEntries = new IMainPanelEntry[]
 			{
 				//_analyseEntry,
 				_rawEntry
 			};
-			SelectedEntry = _entries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
+
+			_settingsEntry = new SettingsMainPanelEntry();
+			_pluginsEntry = new PluginsMainPanelEntry();
+			_aboutEntry = new AboutMainPanelEntry();
+			_bottomEntries = new[]
+			{
+				_settingsEntry,
+				_pluginsEntry,
+				_aboutEntry
+			};
+
+			SelectedTopEntry = _topEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
 			                ?? _rawEntry;
 		}
 
@@ -169,10 +188,6 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public SettingsViewModel Settings => _settings;
-
-		public PluginsViewModel Plugins => _plugins;
-
 		#region Main Panel
 
 		public IMainPanelViewModel SelectedMainPanel
@@ -188,17 +203,18 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public IEnumerable<IMainPanelEntry> Entries => _entries;
+		public IEnumerable<IMainPanelEntry> TopEntries => _topEntries;
+		public IEnumerable<IMainPanelEntry> BottomEntries => _bottomEntries;
 
-		public IMainPanelEntry SelectedEntry
+		public IMainPanelEntry SelectedTopEntry
 		{
-			get { return _selectedEntry; }
+			get { return _selectedTopEntry; }
 			set
 			{
-				if (value == _selectedEntry)
+				if (value == _selectedTopEntry)
 					return;
 
-				_selectedEntry = value;
+				_selectedTopEntry = value;
 				EmitPropertyChanged();
 
 				if (value == _analyseEntry)
@@ -210,12 +226,48 @@ namespace Tailviewer.Ui.ViewModels
 					SelectedMainPanel = _logViewPanel;
 				}
 
-				_applicationSettings.MainWindow.SelectedMainPanel = _selectedEntry?.Id;
+				if (value != null)
+				{
+					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
+					SelectedBottomEntry = null;
+				}
+			}
+		}
+
+		public IMainPanelEntry SelectedBottomEntry
+		{
+			get { return _selectedBottomEntry; }
+			set
+			{
+				if (value == _selectedBottomEntry)
+					return;
+
+				_selectedBottomEntry = value;
+				EmitPropertyChanged();
+
+				if (value == _settingsEntry)
+				{
+					SelectedMainPanel = _settings;
+				}
+				else if (value == _pluginsEntry)
+				{
+					SelectedMainPanel = new PluginsMainPanelViewModel(_applicationSettings, _plugins);
+				}
+				else if (value == _aboutEntry)
+				{
+					SelectedMainPanel = new AboutMainPanelViewModel(_applicationSettings);
+				}
+
+				if (value != null)
+				{
+					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
+					SelectedTopEntry = null;
+				}
 			}
 		}
 
 		#endregion
-		
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void TimerOnTick(object sender, EventArgs eventArgs)

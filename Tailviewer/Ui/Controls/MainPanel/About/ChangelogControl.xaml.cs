@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.Ui.Controls.About
+﻿namespace Tailviewer.Ui.Controls.MainPanel.About
 {
 	public partial class ChangelogControl
 	{

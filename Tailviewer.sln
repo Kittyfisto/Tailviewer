@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer", "Tailviewer\Tailviewer.csproj", "{799F74C7-6DE8-455D-936D-E11D7525AB36}"
 EndProject
@@ -17,6 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{0A1431F6-8548-44D4-B82B-049B94A7F57D}"
 	ProjectSection(ProjectDependencies) = postProject
+		{0C18B216-9FF4-4DCF-88C0-4B1448892F43} = {0C18B216-9FF4-4DCF-88C0-4B1448892F43}
+		{62C60D20-180E-4A59-9EF3-30161E1E31CB} = {62C60D20-180E-4A59-9EF3-30161E1E31CB}
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
 		{799F74C7-6DE8-455D-936D-E11D7525AB36} = {799F74C7-6DE8-455D-936D-E11D7525AB36}
 	EndProjectSection
 EndProject

@@ -1,22 +1,19 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.SidePanel;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.Controls.MainPanel.Settings
 {
-	public sealed class SettingsViewModel
-		: INotifyPropertyChanged
+	public sealed class SettingsMainPanelViewModel
+		: AbstractMainPanelViewModel
 	{
 		private readonly IApplicationSettings _settings;
 
-		public SettingsViewModel(IApplicationSettings settings)
+		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings) : base(applicationSettings)
 		{
-			if (settings == null)
-				throw new ArgumentNullException(nameof(settings));
-
-			_settings = settings;
+			_settings = applicationSettings;
 		}
 
 		public bool CheckForUpdates
@@ -130,12 +127,9 @@ namespace Tailviewer.Ui.ViewModels
 				_settings.SaveAsync();
 			}
 		}
+		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
+		public override void Update()
+		{}
 	}
 }

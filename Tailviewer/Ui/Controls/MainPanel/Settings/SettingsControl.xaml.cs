@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.Controls
+namespace Tailviewer.Ui.Controls.MainPanel.Settings
 {
 	/// <summary>
 	///     Interaction logic for SettingsControl.xaml
@@ -18,14 +17,14 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
 		{
-			var old = args.OldValue as SettingsViewModel;
+			var old = args.OldValue as SettingsMainPanelViewModel;
 			if (old != null)
 			{
 				old.PropertyChanged -= DataContextOnPropertyChanged;
 				PART_ProxyPassword.Password = null;
 			}
 
-			var @new = args.NewValue as SettingsViewModel;
+			var @new = args.NewValue as SettingsMainPanelViewModel;
 			if (@new != null)
 			{
 				@new.PropertyChanged += DataContextOnPropertyChanged;
@@ -38,14 +37,14 @@ namespace Tailviewer.Ui.Controls
 			switch (args.PropertyName)
 			{
 				case "ProxyPassword":
-					PART_ProxyPassword.Password = ((SettingsViewModel) DataContext).ProxyPassword;
+					PART_ProxyPassword.Password = ((SettingsMainPanelViewModel) DataContext).ProxyPassword;
 					break;
 			}
 		}
 
 		private void OnPasswordChanged(object sender, RoutedEventArgs e)
 		{
-			((SettingsViewModel) DataContext).ProxyPassword = PART_ProxyPassword.Password;
+			((SettingsMainPanelViewModel) DataContext).ProxyPassword = PART_ProxyPassword.Password;
 		}
 	}
 }

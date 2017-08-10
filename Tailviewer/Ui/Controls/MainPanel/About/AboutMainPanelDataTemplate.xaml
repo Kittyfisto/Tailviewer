@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tab="clr-namespace:Metrolib.Controls.Tab;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:mainPanel="clr-namespace:Tailviewer.Ui.Controls.MainPanel.About">
+
+    <DataTemplate DataType="{x:Type mainPanel:AboutMainPanelViewModel}">
+        <tab:FlatTabControl Padding="0" Foreground="#333333"
+                            HorizontalContentAlignment="Center">
+            <controls:FlatTabItem Header="Tailviewer"
+                                  HorizontalContentAlignment="Stretch">
+                <mainPanel:TailviewerControl />
+            </controls:FlatTabItem>
+
+            <controls:FlatTabItem Header="Licenses"
+                                  HorizontalContentAlignment="Stretch">
+                <mainPanel:LicenseControl />
+            </controls:FlatTabItem>
+
+            <controls:FlatTabItem Header="Changelog"
+                                  HorizontalContentAlignment="Stretch">
+                <mainPanel:ChangelogControl />
+            </controls:FlatTabItem>
+        </tab:FlatTabControl>
+    </DataTemplate>
+
+</ResourceDictionary>

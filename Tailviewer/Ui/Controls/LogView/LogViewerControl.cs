@@ -5,10 +5,9 @@ using Metrolib.Controls;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.Controls
+namespace Tailviewer.Ui.Controls.LogView
 {
 	public partial class LogViewerControl
 	{

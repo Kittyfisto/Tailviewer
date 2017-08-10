@@ -7,11 +7,9 @@
                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
-                           xmlns:about="clr-namespace:Tailviewer.Ui.Controls.About"
                            xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                            xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib"
                            xmlns:mainPanel="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
-                           xmlns:plugins="clr-namespace:Tailviewer.Ui.Controls.Plugins"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
                            Title="{Binding WindowTitle}"
@@ -36,6 +34,9 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/AnalyseMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/LogViewMainPanelDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Plugins/PluginsMainPanelDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/About/AboutMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/DataSourcesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilterDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/BookmarksDataTemplate.xaml" />
@@ -115,12 +116,6 @@
                                                Command="{Binding AutoUpdater.CheckForUpdatesCommand}" />
                         <metrolib:FlatMenuItem Header="Show log..."
                                                Command="{Binding ShowLogCommand}" />
-                        <metrolib:FlatMenuItem Header="Plugins..."
-                                               Command="{Binding ShowCommand, Source={x:Reference PART_Plugins}}" />
-                        <metrolib:FlatMenuItem Header="Settings..."
-                                               Command="{Binding ShowCommand, Source={x:Reference PART_Settings}}" />
-                        <metrolib:FlatMenuItem Header="About Tailviewer..."
-                                               Command="{Binding ShowCommand, Source={x:Reference PART_About}}" />
                     </metrolib:FlatContextMenu>
                 </metrolib:MoreButton.ContextMenu>
             </metrolib:MoreButton>
@@ -151,41 +146,85 @@
                             <ColumnDefinition Width="100" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <metrolib:FlatListView ItemsSource="{Binding Entries}"
-                                               SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
-                                               Background="{StaticResource PrimaryBrush}"
-                                               BorderThickness="0">
-                            <ListView.Resources>
-                                <SolidColorBrush x:Key="BackgroundBrushHovered" Color="{StaticResource PrimaryLight}" />
-                                <SolidColorBrush x:Key="BackgroundBrushSelected" Color="{StaticResource PrimaryLight}" />
-                                <SolidColorBrush x:Key="BackgroundBrushSelectedAndHovered" Color="{StaticResource PrimaryLighter}" />
-                                <Style TargetType="{x:Type list:FlatListViewItem}">
-                                    <Setter Property="BorderThickness" Value="0,0,0,0" />
-                                </Style>
-                            </ListView.Resources>
-                            <ListView.ItemTemplate>
-                                <DataTemplate DataType="{x:Type mainPanel:IMainPanelEntry}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <Viewbox Width="24" Height="24">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{StaticResource PrimaryForegroundBrush}"
-                                                      Data="{Binding Icon}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                        <metrolib:FlatTextBlock Grid.Column="1"
-                                                                Margin="8,0,0,0"
-                                                                Text="{Binding Title}"
-                                                                VerticalAlignment="Center"
-                                                                TextTrimming="CharacterEllipsis"
-                                                                Foreground="{StaticResource PrimaryForegroundBrush}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </metrolib:FlatListView>
+                        <Grid Background="{StaticResource PrimaryBrush}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <metrolib:FlatListView ItemsSource="{Binding TopEntries}"
+                                                   SelectedItem="{Binding SelectedTopEntry, Mode=TwoWay}"
+                                                   BorderThickness="0">
+                                <ListView.Resources>
+                                    <SolidColorBrush x:Key="BackgroundBrushHovered" Color="{StaticResource PrimaryLight}" />
+                                    <SolidColorBrush x:Key="BackgroundBrushSelected" Color="{StaticResource PrimaryLight}" />
+                                    <SolidColorBrush x:Key="BackgroundBrushSelectedAndHovered" Color="{StaticResource PrimaryLighter}" />
+                                    <Style TargetType="{x:Type list:FlatListViewItem}">
+                                        <Setter Property="BorderThickness" Value="0,0,0,0" />
+                                    </Style>
+                                </ListView.Resources>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type mainPanel:IMainPanelEntry}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Viewbox Width="24" Height="24">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{StaticResource PrimaryForegroundBrush}"
+                                                          Data="{Binding Icon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <metrolib:FlatTextBlock Grid.Column="1"
+                                                                    Margin="8,0,0,0"
+                                                                    Text="{Binding Title}"
+                                                                    VerticalAlignment="Center"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    Foreground="{StaticResource PrimaryForegroundBrush}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </metrolib:FlatListView>
+                            
+                            <metrolib:FlatListView ItemsSource="{Binding BottomEntries}"
+                                                   SelectedItem="{Binding SelectedBottomEntry, Mode=TwoWay}"
+                                                   Background="{StaticResource PrimaryBrush}"
+                                                   Grid.Row="2"
+                                                   BorderThickness="0">
+                                <ListView.Resources>
+                                    <SolidColorBrush x:Key="BackgroundBrushHovered" Color="{StaticResource PrimaryLight}" />
+                                    <SolidColorBrush x:Key="BackgroundBrushSelected" Color="{StaticResource PrimaryLight}" />
+                                    <SolidColorBrush x:Key="BackgroundBrushSelectedAndHovered" Color="{StaticResource PrimaryLighter}" />
+                                    <Style TargetType="{x:Type list:FlatListViewItem}">
+                                        <Setter Property="BorderThickness" Value="0,0,0,0" />
+                                    </Style>
+                                </ListView.Resources>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type mainPanel:IMainPanelEntry}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Viewbox Width="24" Height="24">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{StaticResource PrimaryForegroundBrush}"
+                                                          Data="{Binding Icon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <metrolib:FlatTextBlock Grid.Column="1"
+                                                                    Margin="8,0,0,0"
+                                                                    Text="{Binding Title}"
+                                                                    VerticalAlignment="Center"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    Foreground="{StaticResource PrimaryForegroundBrush}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </metrolib:FlatListView>
+                        </Grid>
+                        
                         <ContentPresenter Grid.Column="1"
                                           Content="{Binding SelectedMainPanel}"
                                           x:Name="PART_Content"/>
@@ -202,24 +241,6 @@
                         SelectedPanel="{Binding SelectedMainPanel.SelectedSidePanel, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
-
-            <metrolib:PageOverlay x:Name="PART_Settings"
-                                  Header="Settings"
-                                  Foreground="#333333">
-                <controls:SettingsControl DataContext="{Binding Settings}" />
-            </metrolib:PageOverlay>
-
-            <metrolib:PageOverlay x:Name="PART_About"
-                                  Header="About"
-                                  Foreground="#333333">
-                <about:AboutControl />
-            </metrolib:PageOverlay>
-
-            <metrolib:PageOverlay x:Name="PART_Plugins"
-                                  Header="Plugins"
-                                  Foreground="#333333">
-                <plugins:PluginControl DataContext="{Binding Plugins}" />
-            </metrolib:PageOverlay>
 
         </Grid>
 

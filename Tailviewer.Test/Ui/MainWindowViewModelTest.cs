@@ -95,7 +95,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDataSource1()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
-			_mainWindow.SelectedEntry = _mainWindow.Entries.FirstOrDefault(x => x.Id == "raw");
+			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
@@ -116,7 +116,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDataSource2()
 		{
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeNull();
-			_mainWindow.SelectedEntry = _mainWindow.Entries.FirstOrDefault(x => x.Id == "raw");
+			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
@@ -140,7 +140,7 @@ namespace Tailviewer.Test.Ui
 			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
 		public void TestGroup1()
 		{
-			_mainWindow.SelectedEntry = _mainWindow.Entries.FirstOrDefault(x => x.Id == "raw");
+			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
 			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
 			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
