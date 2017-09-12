@@ -1,91 +1,21 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Plugins"
-                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="PluginDataTemplate.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
-    
+
     <DataTemplate DataType="{x:Type local:PluginsMainPanelViewModel}">
 
         <Grid Margin="8">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <Grid Visibility="{Binding HasPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Text="Name" Margin="4" />
-                <TextBlock Text="Version" Margin="4" Grid.Column="1" />
-                <TextBlock Text="Author" Margin="4" Grid.Column="2" />
-                <TextBlock Text="Website" Margin="4" Grid.Column="3" />
-                <TextBlock Text="Description" Margin="4" Grid.Column="4" />
-            </Grid>
-
-            <ItemsControl Visibility="{Binding HasPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                          ItemsSource="{Binding Plugins}"
-                          Grid.Row="1"
-                          BorderBrush="Black"
-                          BorderThickness="0,1,0,0">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:PluginViewModel}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <Border BorderBrush="Black"
-                                    BorderThickness="1,0,1,1"
-                                    Padding="4">
-                                <TextBlock Text="{Binding Name}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </Border>
-                            <Border Grid.Column="1"
-                                    BorderBrush="Black"
-                                    BorderThickness="0,0,1,1"
-                                    Padding="4">
-                                <TextBlock Text="{Binding Version}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </Border>
-                            <Border Grid.Column="2"
-                                    BorderBrush="Black"
-                                    BorderThickness="0,0,1,1"
-                                    Padding="4">
-                                <TextBlock Text="{Binding Author}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </Border>
-                            <Border Grid.Column="3"
-                                    BorderBrush="Black"
-                                    BorderThickness="0,0,1,1"
-                                    Padding="4">
-                                <TextBlock>
-                                    <textBlocks:HyperlinkRun NavigateUri="{Binding Website}" />
-                                </TextBlock>
-                            </Border>
-                            <Border Grid.Column="4"
-                                    BorderBrush="Black"
-                                    BorderThickness="0,0,1,1"
-                                    Padding="4">
-                                <TextBlock Text="{Binding DescriptionOrError}" TextWrapping="Wrap" />
-                            </Border>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Plugins}"
+                          ItemTemplate="{StaticResource PluginDataTemplate}" />
             <TextBlock Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
                        Text="No plugins installed!"
                        FontSize="24"
