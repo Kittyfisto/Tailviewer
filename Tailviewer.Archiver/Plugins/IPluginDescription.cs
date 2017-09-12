@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -51,6 +52,11 @@ namespace Tailviewer.Archiver.Plugins
 		///     This value is simply retrieved from the plugin and not verified in any way.
 		/// </remarks>
 		Uri Website { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		ImageSource Icon { get; }
 
 		/// <summary>
 		///     A human readable error that explains why a plugin couldn't be loaded.

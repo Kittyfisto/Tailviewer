@@ -4,6 +4,8 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using log4net;
 using Tailviewer.BusinessLogic.Plugins;
 
@@ -134,7 +136,7 @@ namespace Tailviewer.Archiver.Plugins
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
 			var archive = PluginArchive.OpenRead(pluginPath);
-			var description = CreateDescription(archive.Index);
+			var description = CreateDescription(archive);
 			_archivesByPlugin.Add(description, archive);
 			return description;
 		}
@@ -143,14 +145,16 @@ namespace Tailviewer.Archiver.Plugins
 		public IPluginDescription ReflectPlugin(Stream stream, bool leaveOpen = false)
 		{
 			var archive = PluginArchive.OpenRead(stream, leaveOpen);
-			var description = CreateDescription(archive.Index);
+			var description = CreateDescription(archive);
 			_archivesByPlugin.Add(description, archive);
 			return description;
 		}
 
 		[Pure]
-		private static IPluginDescription CreateDescription(IPluginPackageIndex archiveIndex)
+		private static IPluginDescription CreateDescription(PluginArchive archive)
 		{
+			var archiveIndex = archive.Index;
+
 			Uri website;
 			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out website);
 
@@ -169,6 +173,7 @@ namespace Tailviewer.Archiver.Plugins
 				Id = archiveIndex.Id,
 				Name = archiveIndex.Name,
 				Version = archiveIndex.Version,
+				Icon = LoadIcon(archive.ReadIcon()),
 				Author = archiveIndex.Author,
 				Description = archiveIndex.Description,
 				Website = website,
@@ -176,6 +181,18 @@ namespace Tailviewer.Archiver.Plugins
 			};
 
 			return desc;
+		}
+
+		private static ImageSource LoadIcon(Stream icon)
+		{
+			if (icon == null)
+				return null;
+
+			var image = new BitmapImage();
+			image.BeginInit();
+			image.StreamSource = icon;
+			image.EndInit();
+			return image;
 		}
 	}
 }

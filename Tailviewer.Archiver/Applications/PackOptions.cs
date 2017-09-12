@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CommandLine;
 
-namespace Tailviewer.Archiver.Plugins
+namespace Tailviewer.Archiver.Applications
 {
 	[Verb("pack", HelpText = "Create a new tailviewer plugin archive")]
 	public sealed class PackOptions
@@ -20,5 +20,9 @@ namespace Tailviewer.Archiver.Plugins
 			SetName = "bylines",
 			HelpText = "Additional files to be added to the archive.")]
 		public IEnumerable<string> Files { get; set; }
+
+		[Option('i', "icon",
+			HelpText = "Additonal ")]
+		public string IconFileName { get; set; }
 	}
 }

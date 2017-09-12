@@ -37,6 +37,10 @@
       <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ImageProcessor, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageProcessor.2.5.4\lib\net45\ImageProcessor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -48,8 +52,10 @@
     <Reference Include="PE">
       <HintPath>..\packages\PE.0.1.9\lib\net45\PE.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
@@ -57,7 +63,9 @@
       <HintPath>..\packages\System.Threading.Extensions.1.0.14\lib\net45\System.Threading.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Applications\Pack.cs" />
@@ -76,7 +84,7 @@
     <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="ListOptions.cs" />
     <Compile Include="Plugins\NativeImageDescription.cs" />
-    <Compile Include="Plugins\PackOptions.cs" />
+    <Compile Include="Applications\PackOptions.cs" />
     <Compile Include="Plugins\PluginArchive.cs" />
     <Compile Include="Plugins\PluginArchiveLoader.cs" />
     <Compile Include="Plugins\PluginAssemblyLoader.cs" />
@@ -121,6 +129,11 @@
     <EmbeddedResource Include="..\bin\PE.dll">
       <Link>Resources\PE.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\bin\ImageProcessor.dll">
+      <Link>Resources\ImageProcessor.dll</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

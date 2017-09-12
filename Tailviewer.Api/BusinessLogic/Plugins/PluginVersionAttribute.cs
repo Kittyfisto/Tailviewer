@@ -3,7 +3,8 @@
 namespace Tailviewer.BusinessLogic.Plugins
 {
 	/// <summary>
-	///     Describes the version of a tailviewer plugin.
+	///     This attribute should be placed alongside other attributes in your
+	///     AssemblyInfo.cs file. Describes the version of a tailviewer plugin.
 	///     Will be displayed to the user.
 	/// </summary>
 	/// <remarks>

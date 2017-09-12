@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Xml.Serialization;
+using ImageProcessor;
 using PE;
 
 namespace Tailviewer.Archiver.Plugins
@@ -19,6 +21,11 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PluginPacker
 		: IDisposable
 	{
+		/// <summary>
+		///     The maximum size of an icon's edge (height and/or width) in pixels.
+		/// </summary>
+		private const int MaximumIconSize = 48;
+
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private bool _disposed;
@@ -148,6 +155,33 @@ namespace Tailviewer.Archiver.Plugins
 			else
 			{
 				AddFileRaw(entryName, content);
+			}
+		}
+
+		/// <summary>
+		///     Sets the icon for the plugin archive to the given one.
+		///     By default, a plugin doesn't have an icon.
+		/// </summary>
+		/// <remarks>
+		///     A plugin archive can only have one icon.
+		/// </remarks>
+		/// <param name="icon"></param>
+		public void SetIcon(Stream icon)
+		{
+			using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
+			{
+				var image = imageFactory.Load(icon);
+				if (image.Image.Width > MaximumIconSize ||
+				    image.Image.Height > MaximumIconSize)
+					image = image.Constrain(new Size(MaximumIconSize, MaximumIconSize));
+
+				using (var storedIcon = new MemoryStream())
+				{
+					image.Save(storedIcon);
+					storedIcon.Position = 0;
+
+					AddFile(PluginArchive.IconEntryName, storedIcon);
+				}
 			}
 		}
 

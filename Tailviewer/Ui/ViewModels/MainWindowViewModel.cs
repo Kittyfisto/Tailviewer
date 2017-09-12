@@ -121,8 +121,21 @@ namespace Tailviewer.Ui.ViewModels
 				_aboutEntry
 			};
 
-			SelectedTopEntry = _topEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel)
-			                ?? _rawEntry;
+			var selectedTopEntry = _topEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel);
+			var selectedBottomEntry = _bottomEntries.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow.SelectedMainPanel);
+
+			if (selectedTopEntry != null)
+			{
+				SelectedTopEntry = selectedTopEntry;
+			}
+			else if (selectedBottomEntry != null)
+			{
+				SelectedBottomEntry = selectedBottomEntry;
+			}
+			else
+			{
+				SelectedTopEntry = _rawEntry;
+			}
 		}
 
 		private void ShowLog()
@@ -224,6 +237,7 @@ namespace Tailviewer.Ui.ViewModels
 				else if (value == _rawEntry)
 				{
 					SelectedMainPanel = _logViewPanel;
+					OnDataSourceChanged(_logViewPanel.CurrentDataSource);
 				}
 
 				if (value != null)
@@ -248,14 +262,20 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == _settingsEntry)
 				{
 					SelectedMainPanel = _settings;
+					WindowTitle = Constants.MainWindowTitle;
+					WindowTitleSuffix = "Settings";
 				}
 				else if (value == _pluginsEntry)
 				{
 					SelectedMainPanel = new PluginsMainPanelViewModel(_applicationSettings, _plugins);
+					WindowTitle = Constants.MainWindowTitle;
+					WindowTitleSuffix = "Plugins";
 				}
 				else if (value == _aboutEntry)
 				{
 					SelectedMainPanel = new AboutMainPanelViewModel(_applicationSettings);
+					WindowTitle = Constants.MainWindowTitle;
+					WindowTitleSuffix = "About";
 				}
 
 				if (value != null)

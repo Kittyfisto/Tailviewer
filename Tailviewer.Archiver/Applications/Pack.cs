@@ -75,6 +75,14 @@ namespace Tailviewer.Archiver.Applications
 							Log.Info("OK");
 						}
 
+						if (!string.IsNullOrEmpty(_options.IconFileName))
+						{
+							using (var stream = File.OpenRead(_options.IconFileName))
+							{
+								packer.SetIcon(stream);
+							}
+						}
+
 						pluginVersion = packer.Version;
 					}
 

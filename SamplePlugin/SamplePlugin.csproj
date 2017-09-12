@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,13 +51,16 @@
       <Name>Tailviewer.Api</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(OutputDir)
 mkdir Plugins\
 cd Plugins\
 
-..\archive pack ..\SamplePlugin.dll
+..\archive pack ..\SamplePlugin.dll -i ..\..\SamplePlugin\Icon.png
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using FluentAssertions;
+using ImageProcessor;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
@@ -176,6 +177,29 @@ namespace Tailviewer.Archiver.Test
 				new Action(() => packer.AddFile("NativeImage.dll", fname))
 					.ShouldThrow<PackException>()
 					.WithMessage("Native images must be compiled for x86");
+			}
+		}
+
+		[Test]
+		public void TestAddIcon1()
+		{
+			using (var packer = PluginPacker.Create(_fname))
+			{
+				using (var icon = File.OpenRead(Path.Combine(_testData, "cropped-uiforetwicon2.png")))
+				{
+					packer.SetIcon(icon);
+				}
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			using (var imageFactory = new ImageFactory())
+			{
+				var stream = reader.ReadIcon();
+				stream.Should().NotBeNull();
+				var image = imageFactory.Load(stream).Image;
+				image.Should().NotBeNull();
+				image.Width.Should().Be(16);
+				image.Height.Should().Be(16);
 			}
 		}
 

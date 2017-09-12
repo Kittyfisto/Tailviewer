@@ -22,6 +22,7 @@ namespace Tailviewer.Archiver.Plugins
 
 		public const string PluginAssemblyEntryName = "Plugin.dll";
 		public const string IndexEntryName = "Index.xml";
+		public const string IconEntryName = "Icon";
 
 		/// <summary>
 		///     The file-extension of the plugin, excluding the dot.
@@ -70,6 +71,15 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		public IPluginPackageIndex Index => _index;
+
+		/// <summary>
+		///     Returns a stream to read the icon of this archive from.
+		/// </summary>
+		/// <returns>A stream pointing towards the icon of this plugin or null the plugin doesn't have an icon</returns>
+		public Stream ReadIcon()
+		{
+			return _archive.GetEntry(IconEntryName)?.Open();
+		}
 
 		/// <summary>
 		/// 

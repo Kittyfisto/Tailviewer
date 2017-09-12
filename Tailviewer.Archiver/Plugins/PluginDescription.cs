@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -45,6 +46,9 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <inheritdoc />
 		public Uri Website { get; set; }
+
+		/// <inheritdoc />
+		public ImageSource Icon { get; set; }
 
 		/// <inheritdoc />
 		public string Error { get; set; }
