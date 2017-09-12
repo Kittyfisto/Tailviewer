@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using FluentAssertions;
-using ImageProcessor;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
@@ -192,14 +192,15 @@ namespace Tailviewer.Archiver.Test
 			}
 
 			using (var reader = PluginArchive.OpenRead(_fname))
-			using (var imageFactory = new ImageFactory())
 			{
 				var stream = reader.ReadIcon();
 				stream.Should().NotBeNull();
-				var image = imageFactory.Load(stream).Image;
-				image.Should().NotBeNull();
-				image.Width.Should().Be(16);
-				image.Height.Should().Be(16);
+
+				using (var image = new Bitmap(stream))
+				{
+					image.Width.Should().Be(16);
+					image.Height.Should().Be(16);
+				}
 			}
 		}
 

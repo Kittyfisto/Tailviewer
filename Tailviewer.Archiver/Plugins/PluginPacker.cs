@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Xml.Serialization;
-using ImageProcessor;
 using PE;
 
 namespace Tailviewer.Archiver.Plugins
@@ -168,20 +168,10 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="icon"></param>
 		public void SetIcon(Stream icon)
 		{
-			using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
+			using (var image = new Bitmap(icon))
 			{
-				var image = imageFactory.Load(icon);
-				if (image.Image.Width > MaximumIconSize ||
-				    image.Image.Height > MaximumIconSize)
-					image = image.Constrain(new Size(MaximumIconSize, MaximumIconSize));
-
-				using (var storedIcon = new MemoryStream())
-				{
-					image.Save(storedIcon);
-					storedIcon.Position = 0;
-
-					AddFile(PluginArchive.IconEntryName, storedIcon);
-				}
+				// TODO: Include rescaling the icon if we don't like its size...
+				AddFile(PluginArchive.IconEntryName, icon);
 			}
 		}
 
