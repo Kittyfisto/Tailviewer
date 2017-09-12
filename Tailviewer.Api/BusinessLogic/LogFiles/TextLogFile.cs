@@ -25,7 +25,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private bool _exists;
+		private ErrorFlags _error;
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
@@ -121,6 +121,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
+		/// <inheritdoc />
 		public override DateTime Created => _created;
 
 		/// <inheritdoc />
@@ -133,7 +134,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override bool Exists => _exists;
+		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
@@ -192,25 +193,27 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			{
 				if (!File.Exists(_fileName))
 				{
-					OnReset(null, out _numberOfLinesRead, out _lastPosition);
-					_exists = false;
-					_fileSize = null;
-					_created = DateTime.MinValue;
-					SetEndOfSourceReached();
+					SetDoesNotExist();
 				}
 				else
 				{
+					var info = new FileInfo(_fileName);
+					_lastModified = info.LastWriteTime;
+					_created = info.CreationTime;
+					_fileSize = info.Length;
+
 					using (var stream = new FileStream(_fileName,
-													   FileMode.Open,
-													   FileAccess.Read,
-													   FileShare.ReadWrite))
+						FileMode.Open,
+						FileAccess.Read,
+						FileShare.ReadWrite))
 					using (var reader = new StreamReaderEx(stream))
 					{
-						_exists = true;
-						var info = new FileInfo(_fileName);
-						_lastModified = info.LastWriteTime;
-						_created = info.CreationTime;
-						_fileSize = info.Length;
+						// We change the error flag explicitly AFTER opening
+						// the stream because that operation might throw if we're
+						// not allowed to access the file (in which case a different
+						// error must be set).
+
+						_error = ErrorFlags.None;
 						if (stream.Length >= _lastPosition)
 						{
 							stream.Position = _lastPosition;
@@ -244,7 +247,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 							{
 								_untrimmedLastLine = currentLine;
 								++_numberOfLinesRead;
-								read = true; 
+								read = true;
 							}
 
 							var timestamp = ParseTimestamp(trimmedLine);
@@ -260,14 +263,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 			catch (FileNotFoundException e)
 			{
+				SetError(ErrorFlags.SourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (DirectoryNotFoundException e)
 			{
+				SetError(ErrorFlags.SourceDoesNotExist);
 				Log.Debug(e);
 			}
 			catch (OperationCanceledException e)
 			{
+				Log.Debug(e);
+			}
+			catch (UnauthorizedAccessException e)
+			{
+				SetError(ErrorFlags.SourceCannotBeAccessed);
+				Log.Debug(e);
+			}
+			catch (IOException e)
+			{
+				SetError(ErrorFlags.SourceCannotBeAccessed);
 				Log.Debug(e);
 			}
 			catch (Exception e)
@@ -279,6 +294,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
+		}
+
+		private void SetDoesNotExist()
+		{
+			OnReset(null, out _numberOfLinesRead, out _lastPosition);
+			_fileSize = null;
+			_created = DateTime.MinValue;
+			SetError(ErrorFlags.SourceDoesNotExist);
+		}
+
+		private void SetError(ErrorFlags error)
+		{
+			_error = error;
+			SetEndOfSourceReached();
 		}
 
 		private void OnReset(FileStream stream,

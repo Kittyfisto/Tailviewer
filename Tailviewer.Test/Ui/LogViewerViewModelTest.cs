@@ -7,7 +7,6 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core.Filters;
@@ -34,7 +33,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(false);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
@@ -54,7 +53,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(false);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
 			var filteredLogFile = new Mock<ILogFile>();
 			ILogFileListener listener = null;
 			filteredLogFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
@@ -70,7 +69,7 @@ namespace Tailviewer.Test.Ui
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
 			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
 
-			logFile.Setup(x => x.Exists).Returns(true);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			listener.OnLogFileModified(logFile.Object, new LogFileSection(0, 0));
 			model.Update();
 
@@ -79,11 +78,30 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestDataSourceCannotBeAccessed1()
+		{
+			var dataSource = new Mock<IDataSource>();
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceCannotBeAccessed);
+			var filteredLogFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
+			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
+			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
+
+			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("Unable to access \"somefile.log\"");
+			model.NoEntriesSubtext.Should().Be("The file may be opened exclusively by another process or you are not authorized to view it");
+		}
+
+		[Test]
 		public void TestDataSourceEmpty()
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(true);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
@@ -101,7 +119,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(true);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -123,7 +141,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(true);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -146,7 +164,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Exists).Returns(true);
+			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.Size).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();

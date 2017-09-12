@@ -69,7 +69,7 @@ namespace Tailviewer.Core.LogFiles
 		/// "All data sources do not exist" is such an improvement over
 		/// "The data source is empty".
 		/// </remarks>
-		public override bool Exists => true;
+		public override ErrorFlags Error => ErrorFlags.None;
 
 		/// <inheritdoc />
 		public override bool EndOfSourceReached

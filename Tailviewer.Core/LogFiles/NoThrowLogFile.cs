@@ -125,18 +125,18 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool Exists
+		public ErrorFlags Error
 		{
 			get
 			{
 				try
 				{
-					return _logFile.Exists;
+					return _logFile.Error;
 				}
 				catch (Exception e)
 				{
 					BlameExceptionOnPlugin(e);
-					return false;
+					return ErrorFlags.None;
 				}
 			}
 		}

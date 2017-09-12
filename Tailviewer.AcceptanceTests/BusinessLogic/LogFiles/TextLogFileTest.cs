@@ -79,6 +79,40 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestDoesNotExist()
+		{
+			_file = new TextLogFile(_scheduler, _fname);
+			_scheduler.RunOnce();
+			_file.Error.Should().Be(ErrorFlags.None);
+			_file.Created.Should().NotBe(DateTime.MinValue);
+
+			_writer?.Dispose();
+			_stream?.Dispose();
+			File.Delete(_fname);
+			_scheduler.RunOnce();
+
+			_file.Error.Should().Be(ErrorFlags.SourceDoesNotExist);
+			_file.Created.Should().Be(DateTime.MinValue);
+		}
+
+		[Test]
+		public void TestExclusiveAccess()
+		{
+			_writer?.Dispose();
+			_stream?.Dispose();
+
+			using (var stream = new FileStream(_fname, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+			{
+				_file = new TextLogFile(_scheduler, _fname);
+				_scheduler.RunOnce();
+
+				_file.Error.Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				_file.Created.Should().NotBe(DateTime.MinValue);
+				_file.Created.Should().Be(new FileInfo(_fname).CreationTime);
+			}
+		}
+
+		[Test]
 		public void TestReadOneLine1()
 		{
 			_writer.Write("Foo");

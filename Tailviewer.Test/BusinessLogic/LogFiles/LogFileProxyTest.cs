@@ -45,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				proxy.InnerLogFile.Should().BeNull();
 				proxy.MaxCharactersPerLine.Should().Be(0);
-				proxy.Exists.Should().BeFalse();
+				proxy.Error.Should().Be(ErrorFlags.SourceDoesNotExist);
 				proxy.Size.Should().Be(Size.Zero);
 				proxy.StartTimestamp.Should().NotHaveValue();
 				proxy.Count.Should().Be(0);
@@ -104,10 +104,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.Exists).Returns(true);
-				proxy.Exists.Should().BeTrue();
-				_logFile.Setup(x => x.Exists).Returns(false);
-				proxy.Exists.Should().BeFalse();
+				_logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+				proxy.Error.Should().Be(ErrorFlags.None);
+				_logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceCannotBeAccessed);
+				proxy.Error.Should().Be(ErrorFlags.SourceCannotBeAccessed);
 			}
 		}
 

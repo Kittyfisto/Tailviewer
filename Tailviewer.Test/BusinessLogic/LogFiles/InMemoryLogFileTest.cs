@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
 			logFile.StartTimestamp.Should().BeNull();
-			logFile.Exists.Should().BeTrue();
+			logFile.Error.Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
 		}
@@ -132,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
 			logFile.StartTimestamp.Should().BeNull();
-			logFile.Exists.Should().BeTrue();
+			logFile.Error.Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
 		}

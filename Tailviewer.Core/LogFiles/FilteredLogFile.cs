@@ -63,7 +63,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int OriginalCount => _source.Count;
 
 		/// <inheritdoc />
-		public override bool Exists => _source.Exists;
+		public override ErrorFlags Error => _source.Error;
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _source.StartTimestamp;

@@ -92,7 +92,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public abstract int MaxCharactersPerLine { get; }
 
 		/// <inheritdoc />
-		public abstract bool Exists { get; }
+		public abstract ErrorFlags Error { get; }
 
 		/// <inheritdoc />
 		public virtual bool EndOfSourceReached => _endOfSourceReached;

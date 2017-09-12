@@ -155,15 +155,15 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool Exists
+		public ErrorFlags Error
 		{
 			get
 			{
 				ILogFile logFile = _innerLogFile;
 				if (logFile != null)
-					return logFile.Exists;
+					return logFile.Error;
 
-				return false;
+				return ErrorFlags.SourceDoesNotExist;
 			}
 		}
 

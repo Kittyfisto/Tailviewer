@@ -33,7 +33,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ILogFile _source;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
-		private bool _exists;
+		private ErrorFlags _error;
 		private Size _fileSize;
 
 		private LogFileSection _fullSourceSection;
@@ -68,7 +68,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override bool Exists => _exists;
+		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
@@ -221,7 +221,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
-			_exists = _source.Exists;
+			_error = _source.Error;
 			_startTimestamp = _source.StartTimestamp;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;

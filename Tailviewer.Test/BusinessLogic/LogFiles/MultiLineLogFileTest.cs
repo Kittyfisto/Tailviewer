@@ -139,19 +139,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the Exists flag is changed once a modification is applied")]
 		public void TestOneModification3()
 		{
+			_source.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.Exists.Should().BeFalse("because the source doesn't exist (yet)");
+			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
 
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.Exists).Returns(true);
-			logFile.Exists.Should().BeFalse("because the change shouldn't have been applied yet");
+			_source.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.Exists.Should().BeFalse("because the change shouldn't have been applied yet");
+			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.Exists.Should().BeTrue("because the change should have been applied by now");
+			logFile.Error.Should().Be(ErrorFlags.None, "because the change should have been applied by now");
 		}
 
 		[Test]

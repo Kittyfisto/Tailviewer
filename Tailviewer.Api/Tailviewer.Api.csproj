@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFile.cs" />
+    <Compile Include="BusinessLogic\ErrorFlags.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileListener.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogLineTranslator.cs" />

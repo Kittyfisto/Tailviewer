@@ -45,16 +45,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		Size Size { get; }
 
 		/// <summary>
-		///     Whether or not the datasource exists (is reachable).
-		///     Is continuously queried and when set to false, then no log lines are being displayed
-		///     anymore; Instead a message is shown to the user that the data source no longer exists.
+		///     The error, if any, which describes why this log file is empty.
 		/// </summary>
-		/// <remarks>
-		///     Examples of when this should be set to false:
-		///     - The data source represents a table from a SQL server and the connection was interrupted
-		///     - The data source represents a file on disk and that has just been deleted
-		/// </remarks>
-		bool Exists { get; }
+		ErrorFlags Error { get; }
 
 		/// <summary>
 		///     Whether or not this log file has reached the end of its data source.

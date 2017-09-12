@@ -45,7 +45,7 @@ namespace Tailviewer.Core.LogFiles
 		public Size Size { get; set; }
 
 		/// <inheritdoc />
-		public bool Exists => true;
+		public ErrorFlags Error => ErrorFlags.None;
 
 		/// <inheritdoc />
 		public bool EndOfSourceReached => true;

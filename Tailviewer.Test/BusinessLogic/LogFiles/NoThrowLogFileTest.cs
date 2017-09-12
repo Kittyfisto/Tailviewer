@@ -68,12 +68,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestExists()
 		{
-			_logFile.Setup(x => x.Exists).Throws<SystemException>();
+			_logFile.Setup(x => x.Error).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.Exists;
+				var unused = _proxy.Error;
 			}).ShouldNotThrow();
-			_logFile.Verify(x => x.Exists, Times.Once);
+			_logFile.Verify(x => x.Error, Times.Once);
 		}
 
 		[Test]
