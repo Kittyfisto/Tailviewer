@@ -12,8 +12,9 @@
 
     <DataTemplate DataType="{x:Type local:PluginsMainPanelViewModel}">
 
-        <Grid Margin="8">
-
+        <Grid Margin="8"
+              Width="473"
+              HorizontalAlignment="Left">
             <ItemsControl ItemsSource="{Binding Plugins}"
                           ItemTemplate="{StaticResource PluginDataTemplate}" />
             <TextBlock Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
