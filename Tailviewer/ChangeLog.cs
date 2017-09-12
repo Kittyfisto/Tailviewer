@@ -44,6 +44,31 @@ namespace Tailviewer
 			AddV052();
 			AddV060();
 			AddV061();
+			AddV062();
+		}
+
+		private static void AddV062()
+		{
+			var features = new[]
+			{
+				"Tailviewer plugins can be packed into one file",
+				"Multiple versions of the same plugin coexist (latest supported will be loaded)"
+			};
+			var bugfixes = new[]
+			{
+				"Fixed error message when a log file cannot be accessed"
+			};
+			var misc = new[]
+			{
+				"Introduced progress bar to show status of log file reading/filtering",
+				"Moved settings, plugins and info to the bottom left",
+				"Installed plugins page is prettier",
+				
+			};
+			var releaseDate = new DateTime(2017, 9, 13);
+			var version = new Version(0, 6, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV061()

@@ -14,6 +14,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		public PluginViewModel(IPluginDescription description)
 		{
 			_description = description;
+
+			// TODO: Deleting requires a bit more care because we store plugins
+			//       in Program Files which is (for good reason) protected.
+			//       Uninstalling a plugin should probably force the UAC dialog
+			//       and thus be performed in a separate process. However in order
+			//       for this to succeed, we must make sure that we don't hold anymore
+			//       handles to the plugin...
 			//_deleteCommand = new DelegateCommand();
 		}
 
