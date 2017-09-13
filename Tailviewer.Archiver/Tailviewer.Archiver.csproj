@@ -72,6 +72,7 @@
     <Compile Include="Plugins\AssemblyDescription.cs" />
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Plugins\CorruptPluginException.cs" />
     <Compile Include="Plugins\EmptyPluginArchive.cs" />
     <Compile Include="Plugins\IAssemblyDescription.cs" />
     <Compile Include="Plugins\IAssemblyReference.cs" />

@@ -60,7 +60,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			var index = _archive.GetEntry(IndexEntryName);
 			if (index == null)
-				throw new Exception(string.Format("Plugin is missing {0}", IndexEntryName));
+				throw new CorruptPluginException(string.Format("Plugin is missing {0}", IndexEntryName));
 
 			using (var stream = index.Open())
 			using (var reader = new StreamReader(stream))
