@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
 
 		public IEnumerable<PluginViewModel> Plugins => _plugins;
+		public string PluginPath => Constants.PluginPath;
 		public bool HasPlugins => _plugins.Count > 0;
 
 		public override void Update()

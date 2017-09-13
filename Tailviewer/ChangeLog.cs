@@ -62,8 +62,7 @@ namespace Tailviewer
 			{
 				"Introduced progress bar to show status of log file reading/filtering",
 				"Moved settings, plugins and info to the bottom left",
-				"Installed plugins page is prettier",
-				
+				"Installed plugins page is prettier"
 			};
 			var releaseDate = new DateTime(2017, 9, 13);
 			var version = new Version(0, 6, 2);
@@ -160,7 +159,7 @@ namespace Tailviewer
 			{
 				"Introduced bookmarks"
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
 				"'Last written' is calculated from timestamps in log file if LastWriteTime happens to be unreliable"
 			};
