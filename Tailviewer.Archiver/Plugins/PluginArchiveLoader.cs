@@ -21,13 +21,13 @@ namespace Tailviewer.Archiver.Plugins
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly Dictionary<IPluginDescription, PluginArchive> _archivesByPlugin;
+		private readonly Dictionary<IPluginDescription, IPluginArchive> _archivesByPlugin;
 
 		/// <summary>
 		/// </summary>
 		public PluginArchiveLoader(string path = null)
 		{
-			_archivesByPlugin = new Dictionary<IPluginDescription, PluginArchive>();
+			_archivesByPlugin = new Dictionary<IPluginDescription, IPluginArchive>();
 
 			try
 			{
@@ -55,7 +55,7 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		[Pure]
-		private static IPluginDescription FindUsablePlugin(IGrouping<string, KeyValuePair<IPluginDescription, PluginArchive>> grouping)
+		private static IPluginDescription FindUsablePlugin(IGrouping<string, KeyValuePair<IPluginDescription, IPluginArchive>> grouping)
 		{
 			var highestUsable = grouping.Where(x => IsUsable(x.Value.Index)).MaxBy(x => x.Key.Version);
 			return highestUsable.Key;
@@ -93,7 +93,7 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public T Load<T>(IPluginDescription description) where T : class, IPlugin
 		{
-			PluginArchive archive;
+			IPluginArchive archive;
 			if (!_archivesByPlugin.TryGetValue(description, out archive))
 				throw new ArgumentException();
 
@@ -135,10 +135,49 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
-			var archive = PluginArchive.OpenRead(pluginPath);
-			var description = CreateDescription(archive);
-			_archivesByPlugin.Add(description, archive);
-			return description;
+			try
+			{
+				var archive = PluginArchive.OpenRead(pluginPath);
+				var description = CreateDescription(archive);
+				_archivesByPlugin.Add(description, archive);
+				return description;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to load '{0}': {1}", pluginPath, e);
+
+				string id;
+				Version version;
+				ExtractIdAndVersion(pluginPath, out id, out version);
+				var description = new PluginDescription
+				{
+					Id = id,
+					Version = version,
+					Error = string.Format("The plugin couldn't be loaded: {0}", e.Message),
+					Plugins = new Dictionary<Type, string>(),
+					FilePath = pluginPath
+				};
+				_archivesByPlugin.Add(description, new EmptyPluginArchive());
+				return description;
+			}
+		}
+
+		private static void ExtractIdAndVersion(string pluginPath, out string id, out Version version)
+		{
+			var fileName = Path.GetFileNameWithoutExtension(pluginPath);
+			int idx = fileName.IndexOf(".");
+			if (idx != -1)
+			{
+				id = fileName.Substring(0, idx);
+				var tmp = fileName.Substring(idx + 1);
+				if (!Version.TryParse(tmp, out version))
+					version = new Version(0, 0, 0, 0);
+			}
+			else
+			{
+				id = "Unknown";
+				version = new Version(0, 0, 0, 0);
+			}
 		}
 
 		/// <inheritdoc />

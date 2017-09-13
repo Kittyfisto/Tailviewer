@@ -27,8 +27,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		public string Name => _description.Name;
 		public Version Version => _description.Version;
 		public string Author => _description.Author ?? "N/A";
-		public string Description => _description.Description;
-		public string DescriptionOrError => _description.Error != null ? "The plugin failed to be loaded" : _description.Description;
+		public string Description => _description.Description ?? _description.Error;
 		public Uri Website => _description.Website;
 		public ImageSource Icon => _description.Icon;
 		public ICommand DeleteCommand => _deleteCommand;

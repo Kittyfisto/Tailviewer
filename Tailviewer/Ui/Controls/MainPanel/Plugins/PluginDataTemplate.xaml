@@ -4,9 +4,10 @@
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
 
     <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
+    <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
     
     <DataTemplate x:Key="PluginDataTemplate" DataType="{x:Type local:PluginViewModel}">
-        <Grid>
+        <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -22,6 +23,14 @@
                        MaxWidth="48"
                        MaxHeight="48"
                        Stretch="UniformToFill"/>
+                <TextBlock Text="No icon!"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Visibility="{Binding Icon, Converter={StaticResource NullToVisibleConverter}}">
+                    <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="-45" />
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
             </Grid>
 
             <!-- -->

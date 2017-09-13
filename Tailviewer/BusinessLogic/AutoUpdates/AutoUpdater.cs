@@ -96,26 +96,31 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			try
 			{
 				VersionInfo latestVersion = task.Result;
-				LatestVersion = latestVersion;
-
-				Version latest = latestVersion.Stable;
-				Version current = AppVersion;
-				if (current != null && latest != null && latest > current)
+				if (latestVersion != null)
 				{
-					var message = string.Format("A newer version ({0}) is available to be downloaded", latest);
-					Log.InfoFormat(message);
-					_actionCenter.Add(Notification.CreateInfo("Check for updates", message));
-				}
-				else
-				{
-					const string message = "Running the latest version";
-					Log.InfoFormat(message);
+					LatestVersion = latestVersion;
 
-					if (addNotificationWhenUpToDate)
+					Version latest = latestVersion.Stable;
+					Version current = AppVersion;
+					if (current != null && latest != null && latest > current)
 					{
+						var message = string.Format("A newer version ({0}) is available to be downloaded", latest);
+						Log.InfoFormat(message);
 						_actionCenter.Add(Notification.CreateInfo("Check for updates", message));
 					}
+					else
+					{
+						const string message = "Running the latest version";
+						Log.InfoFormat(message);
+
+						if (addNotificationWhenUpToDate)
+						{
+							_actionCenter.Add(Notification.CreateInfo("Check for updates", message));
+						}
+					}
 				}
+				// There's no need to log that the task didn't return any result:
+				// we already logged this problem in the task...
 			}
 			catch (Exception e)
 			{

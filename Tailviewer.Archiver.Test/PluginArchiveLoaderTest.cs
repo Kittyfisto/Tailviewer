@@ -77,6 +77,27 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Description("Verifies that ReflectPlugin() doesn't throw when a plugin couldn't be loaded and instead returns a descriptor with as much information as can be obtained")]
+		public void TestReflect2()
+		{
+			using (var loader = new PluginArchiveLoader())
+			{
+				var description = loader.ReflectPlugin("C:\\BrokenPlugin.1.0.2.4.tvp");
+				description.Should().NotBeNull();
+				description.Author.Should().BeNull("because the author cannot be known");
+				description.Description.Should().BeNull("because we couldn't extract a description from the plugin");
+				description.FilePath.Should().Be("C:\\BrokenPlugin.1.0.2.4.tvp");
+				description.Id.Should().Be("BrokenPlugin", "because the id should've been extracted from the path");
+				description.Error.Should().NotBeNull("because the plugin couldn't be loaded");
+				description.Plugins.Should().NotBeNull();
+				description.Plugins.Should().BeEmpty();
+				description.Version.Should().Be(new Version(1, 0, 2, 4), "because the version should've been extracted from the path");
+				description.Icon.Should().BeNull();
+				description.Website.Should().BeNull();
+			}
+		}
+
+		[Test]
 		public void TestLoad1()
 		{
 			using (var stream = new MemoryStream())

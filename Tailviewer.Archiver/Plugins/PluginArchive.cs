@@ -13,7 +13,7 @@ namespace Tailviewer.Archiver.Plugins
 	///     Responsible for loading a plugin from a tailviewer plugin package.
 	/// </summary>
 	public sealed class PluginArchive
-		: IDisposable
+		: IPluginArchive
 	{
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
@@ -59,6 +59,9 @@ namespace Tailviewer.Archiver.Plugins
 			_assemblyCache = new Dictionary<ZipArchiveEntry, Assembly>();
 
 			var index = _archive.GetEntry(IndexEntryName);
+			if (index == null)
+				throw new Exception(string.Format("Plugin is missing {0}", IndexEntryName));
+
 			using (var stream = index.Open())
 			using (var reader = new StreamReader(stream))
 			{
