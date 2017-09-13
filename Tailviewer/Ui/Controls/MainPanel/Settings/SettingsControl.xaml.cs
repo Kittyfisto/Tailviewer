@@ -15,6 +15,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			DataContextChanged += OnDataContextChanged;
 		}
 
+		public FrameworkElement ProxyPasswordBox => PART_ProxyPassword;
+
 		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
 		{
 			var old = args.OldValue as SettingsMainPanelViewModel;
@@ -44,7 +46,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 
 		private void OnPasswordChanged(object sender, RoutedEventArgs e)
 		{
-			((SettingsMainPanelViewModel) DataContext).ProxyPassword = PART_ProxyPassword.Password;
+			var viewModel = DataContext as SettingsMainPanelViewModel;
+			if (viewModel != null)
+			{
+				viewModel.ProxyPassword = PART_ProxyPassword.Password;
+			}
 		}
 	}
 }

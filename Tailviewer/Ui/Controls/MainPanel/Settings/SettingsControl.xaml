@@ -80,7 +80,8 @@
                                                        Text="{Binding ProxyUsername}" Margin="0,0,4,0"
                                                        IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
                             <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
-                                                      x:Name="PART_ProxyPassword" PasswordChanged="OnPasswordChanged"
+                                                      x:Name="PART_ProxyPassword"
+                                                      PasswordChanged="OnPasswordChanged"
                                                       Margin="0,0,4,0"
                                                       IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
                             <controls:WatermarkTextBox Watermark="Proxy server" Width="150"

@@ -165,6 +165,7 @@
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumberCanvasTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModelTest.cs" />
     <Compile Include="Ui\Controls\TextCanvasTest.cs" />
     <Compile Include="Ui\Controls\TextLineTest.cs" />
