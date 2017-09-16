@@ -75,6 +75,8 @@
     <Compile Include="BusinessLogic\Plugins\PluginVersionAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginWebsiteAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin.cs" />
+    <Compile Include="Drive.cs" />
+    <Compile Include="FileEx.cs" />
     <Compile Include="LogEntryIndex.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
