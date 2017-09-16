@@ -134,19 +134,53 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			}
 		}
 
+		public string WindowTitle
+		{
+			get { return _windowTitle; }
+			set
+			{
+				if (value == _windowTitle)
+					return;
+
+				_windowTitle = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string WindowTitleSuffix
+		{
+			get { return _windowTitleSuffix; }
+			set
+			{
+				if (value == _windowTitleSuffix)
+					return;
+
+				_windowTitleSuffix = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public IDataSourceViewModel CurrentDataSource
 		{
 			get { return _dataSources.SelectedItem; }
 			set
 			{
-				if (value == _dataSources.SelectedItem)
-					return;
-
+				var before = _dataSources.SelectedItem;
 				_dataSources.SelectedItem = value;
-				EmitPropertyChanged();
 
-				//if (_currentDataSource != null)
-				//	_currentDataSource.QuickFilterChain = _quickFilterChain;
+				if (before != value)
+					EmitPropertyChanged();
+
+				if (value != null)
+				{
+					WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, value.DisplayName);
+					WindowTitleSuffix = value.DataSourceOrigin;
+				}
+				else
+				{
+					WindowTitle = Constants.MainWindowTitle;
+					WindowTitleSuffix = null;
+				}
 			}
 		}
 
@@ -187,6 +221,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private LogViewerViewModel _currentDataSourceLogView;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
+		private string _windowTitle;
+		private string _windowTitleSuffix;
 
 		public LogViewerViewModel CurrentDataSourceLogView
 		{

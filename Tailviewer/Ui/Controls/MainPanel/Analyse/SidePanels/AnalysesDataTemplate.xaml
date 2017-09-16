@@ -1,0 +1,45 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:sidePanels="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/ActiveAnalysisDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisTemplateDataTemplate.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
+    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+
+    <DataTemplate DataType="{x:Type sidePanels:AnalysesSidePanel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="8,0,0,8">
+                <TextBlock Text="Active analyses"
+                           Foreground="DarkGray"
+                           FontSize="14"
+                           VerticalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding Active}"
+                              ItemTemplate="{StaticResource ActiveAnalysisDataTemplate}"/>
+                <TextBlock Text="You haven't started any analysis yet"
+                    Visibility="{Binding HasActiveAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        Margin="8,0,0,0">
+                <TextBlock Text="Stored analyses"
+                           Foreground="DarkGray"
+                           FontSize="14"
+                           VerticalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding Available}"
+                              ItemTemplate="{StaticResource AnalysisTemplateDataTemplate}"/>
+                <TextBlock Text="You haven't created any analysis yet"
+                           Visibility="{Binding HasAvailableAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    
+</ResourceDictionary>

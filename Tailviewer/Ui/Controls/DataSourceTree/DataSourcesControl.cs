@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using Metrolib.Controls;
 using Tailviewer.Ui.ViewModels;
 using log4net;
+using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {

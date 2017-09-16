@@ -4,10 +4,10 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 

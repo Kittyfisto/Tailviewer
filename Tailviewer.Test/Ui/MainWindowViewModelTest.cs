@@ -157,7 +157,7 @@ namespace Tailviewer.Test.Ui
 			var panel = (LogViewMainPanelViewModel)_mainWindow.SelectedMainPanel;
 			panel.CurrentDataSourceLogView.DataSource.Should().BeSameAs(group);
 			mainWindowChanges.Should().Equal("WindowTitle", "WindowTitleSuffix");
-			logViewChanges.Should().Equal("CurrentDataSourceLogView", "CurrentDataSourceLogView", "CurrentDataSource");
+			logViewChanges.Should().Contain("CurrentDataSourceLogView", "CurrentDataSourceLogView", "CurrentDataSource");
 		}
 		
 		[Test]

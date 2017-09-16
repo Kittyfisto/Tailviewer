@@ -14,6 +14,7 @@ using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.MainPanel.About;
+using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Plugins;
 using Tailviewer.Ui.Controls.MainPanel.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -83,6 +84,8 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
 			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings);
+			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
+
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
 				dataSources,
 				quickFilters,
@@ -97,17 +100,13 @@ namespace Tailviewer.Ui.ViewModels
 			_timer.Start();
 
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, dispatcher);
-
-			var dataSource = _logViewPanel.CurrentDataSource;
-			OnDataSourceChanged(dataSource);
-
 			_showLogCommand = new DelegateCommand(ShowLog);
 
 			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
 			_topEntries = new IMainPanelEntry[]
 			{
-				//_analyseEntry,
+				_analyseEntry,
 				_rawEntry
 			};
 
@@ -138,6 +137,22 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		private void AnalysePanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		{
+			switch (args.PropertyName)
+			{
+				case nameof(AnalyseMainPanelViewModel.WindowTitle):
+					if (SelectedMainPanel == _analysePanel)
+						WindowTitle = _analysePanel.WindowTitle;
+					break;
+
+				case nameof(AnalyseMainPanelViewModel.WindowTitleSuffix):
+					if (SelectedMainPanel == _analysePanel)
+						WindowTitleSuffix = _analysePanel.WindowTitleSuffix;
+					break;
+			}
+		}
+
 		private void ShowLog()
 		{
 			_logViewPanel.OpenFile(Constants.ApplicationLogFile);
@@ -150,24 +165,15 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			switch (args.PropertyName)
 			{
-				case nameof(LogViewMainPanelViewModel.CurrentDataSource):
-					var dataSource = _logViewPanel.CurrentDataSource;
-					OnDataSourceChanged(dataSource);
+				case nameof(LogViewMainPanelViewModel.WindowTitle):
+					if (SelectedMainPanel == _logViewPanel)
+						WindowTitle = _logViewPanel.WindowTitle;
 					break;
-			}
-		}
 
-		private void OnDataSourceChanged(IDataSourceViewModel dataSource)
-		{
-			if (dataSource != null)
-			{
-				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, dataSource.DisplayName);
-				WindowTitleSuffix = dataSource.DataSourceOrigin;
-			}
-			else
-			{
-				WindowTitle = Constants.MainWindowTitle;
-				WindowTitleSuffix = null;
+				case nameof(LogViewMainPanelViewModel.WindowTitleSuffix):
+					if (SelectedMainPanel == _logViewPanel)
+						WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
+					break;
 			}
 		}
 
@@ -233,11 +239,14 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == _analyseEntry)
 				{
 					SelectedMainPanel = _analysePanel;
+					WindowTitle = _analysePanel.WindowTitle;
+					WindowTitleSuffix = _analysePanel.WindowTitleSuffix;
 				}
 				else if (value == _rawEntry)
 				{
 					SelectedMainPanel = _logViewPanel;
-					OnDataSourceChanged(_logViewPanel.CurrentDataSource);
+					WindowTitle = _logViewPanel.WindowTitle;
+					WindowTitleSuffix = _logViewPanel.WindowTitleSuffix;
 				}
 
 				if (value != null)

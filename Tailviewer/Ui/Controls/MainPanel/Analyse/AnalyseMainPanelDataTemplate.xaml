@@ -1,0 +1,40 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:analyse="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse">
+
+    <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+
+    <DataTemplate DataType="{x:Type analyse:AnalyseMainPanelViewModel}">
+
+        <Grid>
+            <Grid Visibility="{Binding IsAnalysisSelected, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="No analyses created!"
+                           FontSize="24"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center" />
+                <controls:FlatButton Grid.Row="1"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Command="{Binding CreateAnalysisCommand}">
+                    <TextBlock Text="Create a new analysis to get started"
+                               TextWrapping="Wrap"
+                               FontSize="14" />
+                </controls:FlatButton>
+
+            </Grid>
+
+        </Grid>
+
+    </DataTemplate>
+
+</ResourceDictionary>

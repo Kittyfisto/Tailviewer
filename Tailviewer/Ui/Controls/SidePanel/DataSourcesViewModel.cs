@@ -11,9 +11,9 @@ using Microsoft.Win32;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.Controls.SidePanel
 {
 	public sealed class DataSourcesViewModel
 		: AbstractSidePanelViewModel

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tailviewer.Ui.Controls.Widgets;
 
-namespace Tailviewer.Ui.Controls.MainPanel
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
 	public sealed class AnalysisPageViewModel
 		: INotifyPropertyChanged

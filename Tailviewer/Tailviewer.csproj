@@ -197,9 +197,10 @@
     <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelEntry.cs" />
-    <Compile Include="Ui\Controls\MainPanel\AnalysisPageViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
@@ -207,10 +208,11 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
-    <Compile Include="Ui\Controls\SidePanel\AnalysesSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysesSidePanel.cs" />
     <Compile Include="Ui\Controls\Widgets\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\IWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\Widgets\Widget.cs" />
@@ -218,7 +220,7 @@
     <Compile Include="Ui\Controls\Widgets\IWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\AnalyseMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -266,7 +268,7 @@
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
-    <Compile Include="Ui\ViewModels\DataSourcesViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\DataSourcesViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
@@ -332,7 +334,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\AnalyseMainPanelDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -349,6 +355,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\ActiveAnalysisDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisTemplateDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -376,7 +390,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\AnalysesDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
