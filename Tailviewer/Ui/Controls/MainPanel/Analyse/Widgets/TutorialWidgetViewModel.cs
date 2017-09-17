@@ -4,6 +4,7 @@
 		: AbstractWidgetViewModel
 	{
 		public TutorialWidgetViewModel()
+			: base(canBeEdited: false)
 		{
 			Title = "Tutorial";
 		}

@@ -212,10 +212,10 @@
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysesSidePanel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\HorizontalWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Widget.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\IWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelViewModel.cs" />
@@ -449,7 +449,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\HorizontalLayoutDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalLayoutDataTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

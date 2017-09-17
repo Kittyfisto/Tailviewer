@@ -1,6 +1,7 @@
 using System.ComponentModel;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
 	/// <summary>
 	///     Responsible for controlling *how* a list of widgets is displayed.

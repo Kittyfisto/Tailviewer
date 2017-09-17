@@ -2,8 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
 	public sealed class HorizontalWidgetLayoutViewModel
 		: IWidgetLayoutViewModel

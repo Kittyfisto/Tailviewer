@@ -15,8 +15,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		private bool _isEditing;
 		private string _title;
 
-		protected AbstractWidgetViewModel()
+		/// <summary>
+		/// </summary>
+		protected AbstractWidgetViewModel(bool canBeEdited = true)
 		{
+			CanBeEdited = canBeEdited;
 			DeleteCommand = new DelegateCommand(Delete);
 		}
 
@@ -32,6 +35,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 				EmitPropertyChanged();
 			}
 		}
+
+		public bool CanBeEdited { get; }
 
 		public string Title
 		{

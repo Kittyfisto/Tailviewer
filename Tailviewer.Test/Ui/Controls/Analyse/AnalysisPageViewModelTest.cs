@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Test.Ui.Controls.Analyse

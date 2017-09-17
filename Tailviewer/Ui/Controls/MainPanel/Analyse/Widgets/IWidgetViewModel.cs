@@ -14,6 +14,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		bool IsEditing { get; set; }
 
 		/// <summary>
+		///     When set to true, then the user may change <see cref="IsEditing" /> to true
+		///     and then change the widget's configuration. When set to false, then the widget
+		///     cannot be edited (presumably because there is nothing to edit).
+		/// </summary>
+		bool CanBeEdited { get; }
+
+		/// <summary>
 		///     The user supplied title of this widget.
 		/// </summary>
 		/// <remarks>

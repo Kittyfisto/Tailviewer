@@ -5,6 +5,7 @@
                     xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <Style x:Key="WidgetStyle" TargetType="ContentPresenter">
         <Setter Property="ContentTemplate">
@@ -33,6 +34,7 @@
                                            TextTrimming="CharacterEllipsis"
                                            VerticalAlignment="Center"/>
                                 <controls:EditToggleButton IsChecked="{Binding IsEditing}"
+                                                           Visibility="{Binding CanBeEdited, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                                            x:Name="EditWidgetButton"
                                                            Grid.Column="2"
                                                            Opacity="0"
@@ -41,6 +43,7 @@
                                 <controls:DeleteButton Command="{Binding DeleteCommand}"
                                                        x:Name="DeleteWidgetButton"
                                                        Grid.Column="3"
+                                                       Opacity="0"
                                                        Width="30" />
                             </Grid>
                             <Rectangle Fill="#333333"
@@ -57,6 +60,7 @@
                                 <Condition SourceName="EditWidgetButton" Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="EditWidgetButton" Property="Opacity" Value="1" />
+                            
                             <!--<MultiTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard FillBehavior="HoldEnd">
@@ -77,8 +81,12 @@
                                 </BeginStoryboard>
                             </MultiTrigger.ExitActions>-->
                         </MultiTrigger>
+                        <Trigger SourceName="Widget" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="DeleteWidgetButton" Property="Opacity" Value="1" />
+                        </Trigger>
                         <Trigger SourceName="Widget" Property="IsMouseOver" Value="False">
                             <Setter TargetName="EditWidgetButton" Property="Opacity" Value="0" />
+                            <Setter TargetName="DeleteWidgetButton" Property="Opacity" Value="0" />
                         </Trigger>
                         <Trigger SourceName="EditWidgetButton" Property="IsChecked" Value="True">
                             <Setter TargetName="EditWidgetButton" Property="Opacity" Value="1" />
