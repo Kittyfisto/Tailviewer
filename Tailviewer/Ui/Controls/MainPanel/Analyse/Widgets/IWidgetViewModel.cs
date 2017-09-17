@@ -1,9 +1,18 @@
 using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
+	/// <summary>
+	///     The interface for the view model of a widget.
+	/// </summary>
+	/// <remarks>
+	///     Most of the widget's configuration should only be accessible when <see cref="IsEditing" />
+	///     is set to true: Any <see cref="DataTemplate" /> displaying this view model is expected
+	///     to change its look to allow the user to change the widget's configuration.
+	/// </remarks>
 	public interface IWidgetViewModel
 		: INotifyPropertyChanged
 	{

@@ -16,13 +16,14 @@
                             BorderThickness="1"
                             BorderBrush="#333333"
                             Margin="0,0,6,6">
-                        <Grid Background="Transparent">
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="1" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Grid x:Name="Toolbar" VerticalAlignment="Top">
+                            <Grid x:Name="Toolbar" VerticalAlignment="Top"
+                                  Background="Transparent">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
@@ -56,7 +57,7 @@
                     <DataTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition SourceName="Widget" Property="IsMouseOver" Value="True" />
+                                <Condition SourceName="Toolbar" Property="IsMouseOver" Value="True" />
                                 <Condition SourceName="EditWidgetButton" Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="EditWidgetButton" Property="Opacity" Value="1" />
@@ -81,10 +82,10 @@
                                 </BeginStoryboard>
                             </MultiTrigger.ExitActions>-->
                         </MultiTrigger>
-                        <Trigger SourceName="Widget" Property="IsMouseOver" Value="True">
+                        <Trigger SourceName="Toolbar" Property="IsMouseOver" Value="True">
                             <Setter TargetName="DeleteWidgetButton" Property="Opacity" Value="1" />
                         </Trigger>
-                        <Trigger SourceName="Widget" Property="IsMouseOver" Value="False">
+                        <Trigger SourceName="Toolbar" Property="IsMouseOver" Value="False">
                             <Setter TargetName="EditWidgetButton" Property="Opacity" Value="0" />
                             <Setter TargetName="DeleteWidgetButton" Property="Opacity" Value="0" />
                         </Trigger>

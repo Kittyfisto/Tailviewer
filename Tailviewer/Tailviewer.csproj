@@ -197,6 +197,7 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\AbstractWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\TutorialWidgetViewModel.cs" />
