@@ -143,6 +143,7 @@
     <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
     <Compile Include="Changelog.cs" />
     <Compile Include="DependencyObjectExtensions.cs" />
+    <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Resource.cs" />
@@ -196,8 +197,10 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\AbstractWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\TutorialWidgetViewModel.cs" />

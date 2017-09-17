@@ -3,18 +3,21 @@
                     xmlns:layouts="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/WidgetStyle.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/WidgetStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type layouts:HorizontalWidgetLayoutViewModel}">
-        <ItemsControl ItemsSource="{Binding Widgets}"
-                      ItemContainerStyle="{StaticResource WidgetStyle}">
+        <layouts:HorizontalWidgetLayoutControl ItemsSource="{Binding Widgets}"
+                                               ItemContainerStyle="{StaticResource WidgetStyle}"
+                                               AllowDrop="True"
+                                               Background="Transparent">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        </layouts:HorizontalWidgetLayoutControl>
     </DataTemplate>
 
 </ResourceDictionary>

@@ -4,6 +4,12 @@ using System.Windows.Media;
 
 namespace Tailviewer
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <remarks>
+	/// TODO: Move this class to the Metrolib project
+	/// </remarks>
 	public static class DependencyObjectExtensions
 	{
 		public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject parent)

@@ -26,10 +26,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			_adornerLayer.Add(this);
 		}
 
-		protected override int VisualChildrenCount
-		{
-			get { return 1; }
-		}
+		protected override int VisualChildrenCount => 1;
 
 		protected override Size MeasureOverride(Size constraint)
 		{

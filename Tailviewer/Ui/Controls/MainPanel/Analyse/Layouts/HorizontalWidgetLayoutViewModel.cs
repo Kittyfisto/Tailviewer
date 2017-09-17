@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -25,6 +26,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 		{
 			_widgets.Remove(widget);
 		}
+
+		public void RaiseRequestAdd(IWidgetViewModel widget)
+		{
+			RequestAdd?.Invoke(widget);
+		}
+
+		public event Action<IWidgetViewModel> RequestAdd;
 
 		public ICollection<IWidgetViewModel> Widgets => _widgets;
 

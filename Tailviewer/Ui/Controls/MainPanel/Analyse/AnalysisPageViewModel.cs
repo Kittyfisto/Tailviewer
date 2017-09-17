@@ -70,13 +70,31 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				if (value == _layout)
 					return;
 
+				if (_layout != null)
+				{
+					_layout.RequestAdd -= LayoutOnRequestAdd;
+				}
+
 				_layout = value;
+
+				if (_layout != null)
+				{
+					_layout.RequestAdd += LayoutOnRequestAdd;
+				}
+
 				EmitPropertyChanged();
 
 				if (_layout != null)
 					foreach (var widget in _widgets)
 						_layout.Add(widget);
 			}
+		}
+
+		private void LayoutOnRequestAdd(IWidgetViewModel widgetViewModel)
+		{
+			// For now, we don't need to do anything else but
+			// grant the request...
+			Add(widgetViewModel);
 		}
 
 		public void Add(IWidgetViewModel widget)

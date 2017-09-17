@@ -37,6 +37,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		public string Description { get; }
 		public Geometry Icon { get; }
 
+		public override string ToString()
+		{
+			return string.Format("WidgetFactory: {0}", Name);
+		}
+
 		public IWidgetViewModel Create()
 		{
 			return _factory();
