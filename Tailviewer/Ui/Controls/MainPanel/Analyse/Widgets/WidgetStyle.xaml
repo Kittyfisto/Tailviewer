@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.Widgets">
+                    xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
 
@@ -10,30 +10,46 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type widgets:IWidgetViewModel}">
-                    <Grid widgets:Widget.IsEditing="{Binding IsEditing}"
-                          x:Name="Widget"
-                          Background="Transparent"
-                          Margin="0,0,6,6">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="20" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid x:Name="Toolbar" VerticalAlignment="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <controls:EditToggleButton IsChecked="{Binding IsEditing}"
-                                                       x:Name="EditWidgetButton"
-                                                       Grid.Column="2"
-                                                       Opacity="0"
-                                                       Width="20"
-                                                       Height="20" />
+                    <Border widgets:Widget.IsEditing="{Binding IsEditing}"
+                            x:Name="Widget"
+                            BorderThickness="1"
+                            BorderBrush="#333333"
+                            Margin="0,0,6,6">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="1" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="Toolbar" VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Title}"
+                                           Margin="4,2,4,2"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center"/>
+                                <controls:EditToggleButton IsChecked="{Binding IsEditing}"
+                                                           x:Name="EditWidgetButton"
+                                                           Grid.Column="2"
+                                                           Opacity="0"
+                                                           Width="30" />
+                                
+                                <controls:DeleteButton Command="{Binding DeleteCommand}"
+                                                       x:Name="DeleteWidgetButton"
+                                                       Grid.Column="3"
+                                                       Width="30" />
+                            </Grid>
+                            <Rectangle Fill="#333333"
+                                       Grid.Row="1" />
+                            <ContentPresenter Content="{Binding}"
+                                              Margin="4"
+                                              Grid.Row="2"/>
                         </Grid>
-                        <ContentPresenter Content="{Binding}"
-                                          Grid.Row="1"/>
-                    </Grid>
+                    </Border>
                     <DataTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

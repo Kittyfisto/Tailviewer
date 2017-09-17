@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Tailviewer.Ui.Controls.Widgets
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
 	public static class Widget
 	{

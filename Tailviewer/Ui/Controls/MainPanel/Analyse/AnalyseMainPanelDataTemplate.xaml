@@ -1,17 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:analyse="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageHeaderDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageContentDataTemplate.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type analyse:AnalyseMainPanelViewModel}">
 
         <Grid>
-            <Grid Visibility="{Binding IsAnalysisSelected, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+            <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToVisibleConverter}}"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -33,6 +39,12 @@
 
             </Grid>
 
+            <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToCollapsedConverter}}">
+                <TabControl ItemsSource="{Binding Analysis.Pages}"
+                            ItemTemplate="{StaticResource AnalysisPageHeaderDataTemplate}"
+                            ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}"/>
+            </Grid>
+            
         </Grid>
 
     </DataTemplate>

@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public AnalysisViewModel()
 		{
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
+			AddPage();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_name = "Unsaved analysis";
 		}
@@ -45,7 +46,24 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddPage()
 		{
-			_pages.Add(new AnalysisPageViewModel());
+			var page = new AnalysisPageViewModel();
+			page.OnDelete += PageOnOnDelete;
+			_pages.Add(page);
+			UpdateCanBeDeleted();
+		}
+
+		private void UpdateCanBeDeleted()
+		{
+			for (int i = 0; i < _pages.Count; ++i)
+			{
+				_pages[i].CanBeDeleted = _pages.Count > 1;
+			}
+		}
+
+		private void PageOnOnDelete(AnalysisPageViewModel analysisPageViewModel)
+		{
+			_pages.Remove(analysisPageViewModel);
+			UpdateCanBeDeleted();
 		}
 
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
