@@ -43,6 +43,13 @@
                 <TabControl ItemsSource="{Binding Analysis.Pages}"
                             ItemTemplate="{StaticResource AnalysisPageHeaderDataTemplate}"
                             ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}"/>
+                <controls:AddButton Command="{Binding Analysis.AddPageCommand}"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Right"
+                                    ToolTip="Add empty page"
+                                    Padding="0,4,0,0"
+                                    Width="28"
+                                    Height="28" />
             </Grid>
             
         </Grid>

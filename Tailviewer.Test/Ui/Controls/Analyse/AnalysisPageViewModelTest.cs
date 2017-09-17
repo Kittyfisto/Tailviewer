@@ -39,5 +39,19 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.PageLayout = PageLayout.WrapHorizontal;
 			((HorizontalWidgetLayoutViewModel)model.Layout).Widgets.Should().Contain(widget.Object);
 		}
+
+		[Test]
+		[Description("Verifies that if a layout requests that a widget be added, the page does so")]
+		public void TestRequestAddWidget()
+		{
+			var model = new AnalysisPageViewModel();
+			var layout = (HorizontalWidgetLayoutViewModel) model.Layout;
+
+			var widget = new Mock<IWidgetViewModel>().Object;
+			layout.Widgets.Should().NotContain(widget);
+
+			layout.RaiseRequestAdd(widget);
+			layout.Widgets.Should().Contain(widget);
+		}
 	}
 }

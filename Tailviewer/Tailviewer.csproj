@@ -145,6 +145,7 @@
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
+    <Compile Include="PageLayoutConverter.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
