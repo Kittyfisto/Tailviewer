@@ -49,6 +49,26 @@
                 <!-- Depending on the type of view model, a different control is displayed.
                  Currently, there is HorizontalLayoutDataTemplate -->
                 <ContentPresenter Content="{Binding Layout}" />
+
+                <!-- Message to tell the user that there are no widgets -->
+                <Grid Visibility="{Binding HasWidgets, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="No widgets added!"
+                               FontSize="24"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Grid.Row="1"
+                               Text="Open the widgets side panel and add some to fill this page with life."
+                               TextWrapping="Wrap"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center" />
+                </Grid>
             </Grid>
         </Grid>
     </DataTemplate>

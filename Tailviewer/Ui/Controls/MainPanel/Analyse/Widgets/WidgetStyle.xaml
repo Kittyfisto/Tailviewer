@@ -30,10 +30,11 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Title}"
-                                           Margin="4,2,4,2"
-                                           TextTrimming="CharacterEllipsis"
-                                           VerticalAlignment="Center"/>
+                                <controls:EditableTextBlock Text="{Binding Title}"
+                                                            Watermark="Enter title"
+                                                            Margin="4,2,4,2"
+                                                            Padding="2"
+                                                            VerticalAlignment="Center" />
                                 <controls:EditToggleButton IsChecked="{Binding IsEditing}"
                                                            Visibility="{Binding CanBeEdited, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                                            x:Name="EditWidgetButton"

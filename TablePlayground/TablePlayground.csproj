@@ -40,7 +40,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Metrolib, Version=0.2.2.34, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.34\lib\net45\Metrolib.dll</HintPath>
+      <HintPath>..\packages\Metrolib.0.2.2.39\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

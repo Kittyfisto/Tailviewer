@@ -53,8 +53,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.2.2.35, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.2.2.35\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.2.2.39, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.2.2.39\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -204,7 +204,8 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\AbstractWidgetViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\TutorialWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\LineCount\LineCountWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
@@ -353,7 +354,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\TutorialWidgetDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\LineCount\LineCountWidgetDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

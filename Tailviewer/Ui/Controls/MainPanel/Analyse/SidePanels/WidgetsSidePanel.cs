@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
@@ -16,9 +17,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 			_widgets = new List<WidgetFactoryViewModel>
 			{
 				new WidgetFactoryViewModel(
-					() => new TutorialWidgetViewModel(),
+					() => new HelpWidgetViewModel(),
 					"Tutorial",
-					"Describes the first steps after having created an analysis")
+					"Describes the first steps after having created an analysis"),
+				new WidgetFactoryViewModel(
+					() => new LineCountWidgetViewModel(),
+					"Line Count",
+					"Counts the number of lines matching a filter expression"
+					)
 			};
 		}
 

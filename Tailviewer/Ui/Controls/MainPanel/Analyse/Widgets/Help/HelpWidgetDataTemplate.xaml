@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets">
+                    xmlns:help="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help">
     
-    <DataTemplate DataType="{x:Type local:TutorialWidgetViewModel}">
+    <DataTemplate DataType="{x:Type help:HelpWidgetViewModel}">
         <TextBlock TextWrapping="Wrap">
             <Run Text="Congratulations, you've just created a new analysis" /><LineBreak />
             <Run Text="In order to get started, you want to:" /><LineBreak />

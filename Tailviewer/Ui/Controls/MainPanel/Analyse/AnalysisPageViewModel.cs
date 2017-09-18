@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
@@ -24,6 +25,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private IWidgetLayoutViewModel _layout;
 		private string _name;
 		private PageLayout _pageLayout;
+		private bool _hasWidgets;
 
 		public AnalysisPageViewModel()
 		{
@@ -32,7 +34,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets = new List<IWidgetViewModel>();
 
 			PageLayout = PageLayout.WrapHorizontal;
-			Add(new TutorialWidgetViewModel());
 		}
 
 		/// <summary>
@@ -62,6 +63,19 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
+		public bool HasWidgets
+		{
+			get { return _hasWidgets; }
+			private set
+			{
+				if (value == _hasWidgets)
+					return;
+
+				_hasWidgets = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public IWidgetLayoutViewModel Layout
 		{
 			get { return _layout; }
@@ -87,6 +101,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				if (_layout != null)
 					foreach (var widget in _widgets)
 						_layout.Add(widget);
+
+				HasWidgets = _widgets.Any();
 			}
 		}
 
@@ -102,6 +118,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Add(widget);
 			_layout?.Add(widget);
 			widget.OnDelete += WidgetOnDelete;
+			HasWidgets = _widgets.Any();
 		}
 
 		private void WidgetOnDelete(IWidgetViewModel widget)
@@ -114,6 +131,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
 			widget.OnDelete -= WidgetOnDelete;
+			HasWidgets = _widgets.Any();
 		}
 
 		public string Name
