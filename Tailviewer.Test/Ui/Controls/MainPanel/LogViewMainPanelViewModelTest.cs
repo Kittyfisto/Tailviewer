@@ -123,7 +123,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		public void TestShowQuickFilters()
 		{
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
-			var quickFilterSidePanel = model.SidePanels.OfType<QuickFiltersViewModel>().First();
+			var quickFilterSidePanel = model.SidePanels.OfType<QuickFiltersSidePanelViewModel>().First();
 			model.SelectedSidePanel.Should().NotBe(quickFilterSidePanel);
 
 			model.ShowQuickFilters();

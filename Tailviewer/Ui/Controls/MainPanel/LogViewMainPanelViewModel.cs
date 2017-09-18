@@ -25,7 +25,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private readonly BookmarksViewModel _bookmarks;
 
 		private readonly DataSourcesViewModel _dataSources;
-		private readonly QuickFiltersViewModel _quickFilters;
+		private readonly QuickFiltersSidePanelViewModel _quickFilters;
 
 		public LogViewMainPanelViewModel(IActionCenter actionCenter,
 			IDataSources dataSources,
@@ -41,7 +41,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			_dataSources = new DataSourcesViewModel(applicationSettings, dataSources);
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
-			_quickFilters = new QuickFiltersViewModel(applicationSettings, quickFilters);
+			_quickFilters = new QuickFiltersSidePanelViewModel(applicationSettings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);

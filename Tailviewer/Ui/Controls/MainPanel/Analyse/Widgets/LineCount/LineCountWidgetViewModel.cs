@@ -1,14 +1,18 @@
-﻿namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
+﻿using Tailviewer.Ui.ViewModels;
+
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 {
 	public sealed class LineCountWidgetViewModel
 		: AbstractWidgetViewModel
 	{
 		private int _count;
 		private string _caption;
+		private QuickFiltersSidePanelViewModel _quickFilters;
 
 		public LineCountWidgetViewModel()
 		{
 			Title = "Line Count";
+			
 		}
 
 		public int Count
@@ -35,6 +39,11 @@
 				_caption = value;
 				EmitPropertyChanged();
 			}
+		}
+
+		public QuickFiltersSidePanelViewModel QuickFilters
+		{
+			get { return _quickFilters; }
 		}
 	}
 }

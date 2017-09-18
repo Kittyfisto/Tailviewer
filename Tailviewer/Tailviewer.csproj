@@ -265,6 +265,7 @@
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\QuickFiltersSidePanelViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />

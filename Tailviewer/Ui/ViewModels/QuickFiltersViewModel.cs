@@ -2,80 +2,45 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
-using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.SidePanel;
-using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	/// <summary>
-	///     Represents the list of all quick filters.
+	///     The view model for a quick filter editor: New filters can be added,
+	///     existing filters modified and removed.
+	///     Is used in the "quick filters" side panel as well as in various
+	///     widget editors.
 	/// </summary>
 	public sealed class QuickFiltersViewModel
-		: AbstractSidePanelViewModel
+		: INotifyPropertyChanged
 	{
-		private readonly ICommand _addCommand;
 		private readonly IQuickFilters _quickFilters;
-		private readonly IApplicationSettings _settings;
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
-		private IDataSourceViewModel _currentDataSource;
+		private IDataSource _currentDataSource;
 		private bool _isChangingCurrentDataSource;
 
-		public QuickFiltersViewModel(IApplicationSettings settings, IQuickFilters quickFilters)
+		public QuickFiltersViewModel(IQuickFilters quickFilters)
 		{
-			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 
-			_settings = settings;
 			_quickFilters = quickFilters;
-			_addCommand = new DelegateCommand(() => AddQuickFilter());
+			AddCommand = new DelegateCommand(() => AddQuickFilter());
 			_viewModels = new ObservableCollection<QuickFilterViewModel>();
-			foreach (QuickFilter filter in quickFilters.Filters)
-			{
+			foreach (var filter in quickFilters.Filters)
 				CreateAndAddViewModel(filter);
-			}
-
-			OnFiltersChanged += OnOnFiltersChanged;
-
-			UpdateTooltip();
-			PropertyChanged += OnPropertyChanged;
 		}
 
-		private void UpdateTooltip()
-		{
-			Tooltip = IsSelected
-				? "Hide the list of quick filters"
-				: "Show the list of quick filters";
-		}
-
-		private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
-		{
-			switch (args.PropertyName)
-			{
-				case nameof(IsSelected):
-					UpdateTooltip();
-					break;
-			}
-		}
-
-		private void OnOnFiltersChanged()
-		{
-			int count = _viewModels.Count(x => x.IsActive);
-			QuickInfo = count > 0 ? string.Format("{0} active", count) : null;
-		}
-
-		public ICommand AddCommand => _addCommand;
+		public ICommand AddCommand { get; }
 
 		public IEnumerable<QuickFilterViewModel> QuickFilters => _viewModels;
 
-		public IDataSourceViewModel CurrentDataSource
+		public IDataSource CurrentDataSource
 		{
 			get { return _currentDataSource; }
 			set
@@ -88,11 +53,8 @@ namespace Tailviewer.Ui.ViewModels
 					_isChangingCurrentDataSource = true;
 
 					_currentDataSource = value;
-					IDataSource source = value?.DataSource;
-					foreach (QuickFilterViewModel viewModel in _viewModels)
-					{
-						viewModel.CurrentDataSource = source;
-					}
+					foreach (var viewModel in _viewModels)
+						viewModel.CurrentDataSource = value;
 
 					OnFiltersChanged?.Invoke();
 				}
@@ -103,6 +65,18 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		/// <summary>
+		///     This event is fired whenever a new filter has been added.
+		/// </summary>
+		public event Action OnFilterAdded;
+
+		/// <summary>
+		///     This event is fired whenever a filter has been removed.
+		/// </summary>
+		public event Action OnFilterRemoved;
+
 		/// <summary>
 		///     This event is fired when a filter has been changed so the filtered contents MIGHT change.
 		///     This includes: activate/deactive, changing the filter value, etc...
@@ -111,18 +85,18 @@ namespace Tailviewer.Ui.ViewModels
 
 		public QuickFilterViewModel AddQuickFilter()
 		{
-			QuickFilter quickFilter = _quickFilters.Add();
-			QuickFilterViewModel viewModel = CreateAndAddViewModel(quickFilter);
-			_settings.SaveAsync();
+			var quickFilter = _quickFilters.Add();
+			var viewModel = CreateAndAddViewModel(quickFilter);
+			OnFilterAdded?.Invoke();
 			return viewModel;
 		}
 
 		private QuickFilterViewModel CreateAndAddViewModel(QuickFilter quickFilter)
 		{
 			var viewModel = new QuickFilterViewModel(quickFilter, OnRemoveQuickFilter)
-				{
-					CurrentDataSource = _currentDataSource?.DataSource
-				};
+			{
+				CurrentDataSource = _currentDataSource
+			};
 			viewModel.PropertyChanged += QuickFilterOnPropertyChanged;
 			_viewModels.Add(viewModel);
 			return viewModel;
@@ -131,9 +105,9 @@ namespace Tailviewer.Ui.ViewModels
 		public IEnumerable<ILogEntryFilter> CreateFilterChain()
 		{
 			var filters = new List<ILogEntryFilter>(_viewModels.Count);
-// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (QuickFilterViewModel quickFilter in _viewModels)
-// ReSharper restore LoopCanBeConvertedToQuery
+			// ReSharper disable LoopCanBeConvertedToQuery
+			foreach (var quickFilter in _viewModels)
+				// ReSharper restore LoopCanBeConvertedToQuery
 			{
 				ILogEntryFilter filter = null;
 				try
@@ -168,9 +142,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "DropType":
 				case "MatchType":
 					if (!_isChangingCurrentDataSource)
-					{
 						OnFiltersChanged?.Invoke();
-					}
 					break;
 			}
 		}
@@ -181,23 +153,15 @@ namespace Tailviewer.Ui.ViewModels
 			_quickFilters.Remove(viewModel.Id);
 			viewModel.PropertyChanged -= QuickFilterOnPropertyChanged;
 
-			_settings.SaveAsync();
+			OnFilterRemoved?.Invoke();
 
 			if (viewModel.IsActive)
-			{
-				// If we've just deleted an active filter then we most definately need
-				// to filter the log file again...
 				OnFiltersChanged?.Invoke();
-			}
 		}
 
-		public override Geometry Icon => Icons.Filter;
-
-		public override string Id => "quickfilter";
-
-		public override void Update()
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

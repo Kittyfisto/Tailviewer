@@ -10,11 +10,17 @@ using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
 namespace Tailviewer.Ui.ViewModels
 {
+	/// <summary>
+	///     The view model to represent a single quick filter:
+	///     The filter expression may be modified and various settings be changed
+	///     (<see cref="BusinessLogic.Filters.QuickFilter.IsInverted" />,
+	///     <see cref="BusinessLogic.Filters.QuickFilter.MatchType" />,
+	///     etc..).
+	/// </summary>
 	public sealed class QuickFilterViewModel
 		: INotifyPropertyChanged
 	{
 		private readonly QuickFilter _quickFilter;
-		private readonly ICommand _removeCommand;
 		private IDataSource _currentDataSource;
 		private bool _isEditing;
 		private bool _isValid;
@@ -25,7 +31,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (onRemove == null) throw new ArgumentNullException(nameof(onRemove));
 
 			_quickFilter = quickFilter;
-			_removeCommand = new DelegateCommand(() => onRemove(this));
+			RemoveCommand = new DelegateCommand(() => onRemove(this));
 
 			UpdateValidity();
 		}
@@ -43,7 +49,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public ICommand RemoveCommand => _removeCommand;
+		public ICommand RemoveCommand { get; }
 
 		public IDataSource CurrentDataSource
 		{
@@ -53,16 +59,16 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == CurrentDataSource)
 					return;
 
-				IDataSource hadDataSource = _currentDataSource;
-				bool before = IsActive;
+				var hadDataSource = _currentDataSource;
+				var before = IsActive;
 				_currentDataSource = value;
-				bool after = IsActive;
+				var after = IsActive;
 
-				if ((hadDataSource != null) != (_currentDataSource != null))
-					EmitPropertyChanged("CanBeActivated");
+				if (hadDataSource != null != (_currentDataSource != null))
+					EmitPropertyChanged(nameof(CanBeActivated));
 
 				if (before != after)
-					EmitPropertyChanged("IsActive");
+					EmitPropertyChanged(nameof(IsActive));
 			}
 		}
 
@@ -72,7 +78,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			get
 			{
-				IDataSource dataSource = _currentDataSource;
+				var dataSource = _currentDataSource;
 				if (dataSource == null)
 					return false;
 
@@ -83,19 +89,14 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == IsActive)
 					return;
 
-				IDataSource dataSource = _currentDataSource;
+				var dataSource = _currentDataSource;
 				if (dataSource == null)
 					throw new InvalidOperationException();
 
 				if (value)
-				{
-					// Should I add a sanity check here?
 					dataSource.ActivateQuickFilter(_quickFilter.Id);
-				}
 				else
-				{
 					dataSource.DeactivateQuickFilter(_quickFilter.Id);
-				}
 				EmitPropertyChanged();
 			}
 		}

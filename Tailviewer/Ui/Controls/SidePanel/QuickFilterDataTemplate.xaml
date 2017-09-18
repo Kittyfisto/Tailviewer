@@ -13,7 +13,7 @@
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
-    <DataTemplate DataType="{x:Type viewModels:QuickFiltersViewModel}">
+    <DataTemplate DataType="{x:Type viewModels:QuickFiltersSidePanelViewModel}">
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>

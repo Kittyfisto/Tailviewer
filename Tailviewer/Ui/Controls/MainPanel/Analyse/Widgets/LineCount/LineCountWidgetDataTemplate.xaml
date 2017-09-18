@@ -24,6 +24,9 @@
             </StackPanel>
             
             <!-- Editor -->
+            <Grid>
+                <ContentPresenter Content="{Binding QuickFilters}" />
+            </Grid>
         </Grid>
     </DataTemplate>
 
