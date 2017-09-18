@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
+using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.ViewModels;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;

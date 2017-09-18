@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
 

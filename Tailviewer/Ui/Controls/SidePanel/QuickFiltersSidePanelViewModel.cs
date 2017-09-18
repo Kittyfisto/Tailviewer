@@ -8,9 +8,10 @@ using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.QuickFilter;
+using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.Controls.SidePanel
 {
 	/// <summary>
 	///     Represents the list of all quick filters.

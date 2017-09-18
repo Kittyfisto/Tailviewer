@@ -1,4 +1,5 @@
-﻿using Tailviewer.Ui.ViewModels;
+﻿using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.Ui.Controls.QuickFilter;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 {
@@ -7,12 +8,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 	{
 		private int _count;
 		private string _caption;
-		private QuickFiltersSidePanelViewModel _quickFilters;
+		private readonly QuickFiltersViewModel _quickFilters;
 
 		public LineCountWidgetViewModel()
 		{
 			Title = "Line Count";
-			
+			var filters = new QuickFilters(new Core.Settings.QuickFilters());
+			_quickFilters = new QuickFiltersViewModel(filters);
 		}
 
 		public int Count
@@ -41,9 +43,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 			}
 		}
 
-		public QuickFiltersSidePanelViewModel QuickFilters
-		{
-			get { return _quickFilters; }
-		}
+		public QuickFiltersViewModel QuickFilters => _quickFilters;
 	}
 }

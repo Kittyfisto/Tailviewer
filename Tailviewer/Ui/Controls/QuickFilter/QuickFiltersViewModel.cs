@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.Controls.QuickFilter
 {
 	/// <summary>
 	///     The view model for a quick filter editor: New filters can be added,
@@ -91,7 +91,7 @@ namespace Tailviewer.Ui.ViewModels
 			return viewModel;
 		}
 
-		private QuickFilterViewModel CreateAndAddViewModel(QuickFilter quickFilter)
+		private QuickFilterViewModel CreateAndAddViewModel(BusinessLogic.Filters.QuickFilter quickFilter)
 		{
 			var viewModel = new QuickFilterViewModel(quickFilter, OnRemoveQuickFilter)
 			{

@@ -1,0 +1,109 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:controls1="clr-namespace:Tailviewer.Ui.Controls"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:quickFilter="clr-namespace:Tailviewer.Ui.Controls.QuickFilter">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
+    
+    <DataTemplate DataType="{x:Type quickFilter:QuickFilterViewModel}">
+        <Grid Margin="8,4,0,4">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="10" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox
+                    x:Name="PART_IsActive"
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"
+                    IsChecked="{Binding IsActive}"
+                    IsEnabled="{Binding CanBeActivated}" />
+
+                <controls:FilterTextBox
+                    x:Name="PART_Value"
+                    Grid.Column="1"
+                    Height="26"
+                    FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                    IsValid="{Binding IsValid, Mode=OneWay}"
+                    Watermark="Filter log file" />
+
+                <controls:EditToggleButton
+                    SnapsToDevicePixels="True"
+                    x:Name="PART_EditToggleButton"
+                    Grid.Column="2"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding IsEditing, Mode=TwoWay}" />
+
+                <controls:RemoveButton
+                    x:Name="PART_RemoveButton"
+                    Grid.Column="3"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Right"
+                    Command="{Binding RemoveCommand}" />
+            </Grid>
+
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="1" />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <controls:VisibilityToggleButton
+                        x:Name="PART_Inverted"
+                        IsChecked="{Binding IsInverted, Converter={StaticResource InvertBoolConverter}}"
+                        Width="24"
+                        Height="24">
+                    </controls:VisibilityToggleButton>
+
+                    <controls1:QuickFilterMatchTypeToggleButton
+                        QuickFilterMatchType="{Binding MatchType, Mode=TwoWay}"
+                        Grid.Column="1"
+                        Margin="0,8,0,8" />
+                </Grid>
+
+                <!--<local:QuickFilterActionTypeToggleButton
+                                                        Grid.Row="1"
+                                                        Margin="0,0,0,8"
+                                                        />-->
+
+                <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="2" />
+            </Grid>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsInverted}" Value="True">
+                <Setter Property="ToolTip" TargetName="PART_Inverted"
+                        Value="Entries matching this filter will be EXCLUDED" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsInverted}" Value="False">
+                <Setter Property="ToolTip" TargetName="PART_Inverted"
+                        Value="Only those entries matching this filter will be INCLUDED" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+    
+</ResourceDictionary>

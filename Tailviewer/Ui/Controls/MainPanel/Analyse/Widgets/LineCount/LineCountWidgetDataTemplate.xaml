@@ -24,7 +24,7 @@
             </StackPanel>
             
             <!-- Editor -->
-            <Grid>
+            <Grid Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                 <ContentPresenter Content="{Binding QuickFilters}" />
             </Grid>
         </Grid>

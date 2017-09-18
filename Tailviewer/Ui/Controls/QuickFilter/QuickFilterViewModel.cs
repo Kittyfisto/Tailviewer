@@ -6,9 +6,8 @@ using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;
-using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 
-namespace Tailviewer.Ui.ViewModels
+namespace Tailviewer.Ui.Controls.QuickFilter
 {
 	/// <summary>
 	///     The view model to represent a single quick filter:
@@ -20,12 +19,12 @@ namespace Tailviewer.Ui.ViewModels
 	public sealed class QuickFilterViewModel
 		: INotifyPropertyChanged
 	{
-		private readonly QuickFilter _quickFilter;
+		private readonly BusinessLogic.Filters.QuickFilter _quickFilter;
 		private IDataSource _currentDataSource;
 		private bool _isEditing;
 		private bool _isValid;
 
-		public QuickFilterViewModel(QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
+		public QuickFilterViewModel(BusinessLogic.Filters.QuickFilter quickFilter, Action<QuickFilterViewModel> onRemove)
 		{
 			if (quickFilter == null) throw new ArgumentNullException(nameof(quickFilter));
 			if (onRemove == null) throw new ArgumentNullException(nameof(onRemove));

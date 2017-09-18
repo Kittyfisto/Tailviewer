@@ -212,6 +212,7 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFiltersDataTemplate.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
@@ -265,9 +266,9 @@
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
-    <Compile Include="Ui\ViewModels\QuickFiltersSidePanelViewModel.cs" />
-    <Compile Include="Ui\ViewModels\QuickFiltersViewModel.cs" />
-    <Compile Include="Ui\ViewModels\QuickFilterViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFiltersSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\QuickFiltersViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\QuickFilterViewModel.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
@@ -391,6 +392,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\QuickFilter\QuickFilterDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilter\QuickFiltersDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\SidePanel\BookmarksDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -419,7 +428,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\QuickFilterDataTemplate.xaml">
+    <Page Include="Ui\Controls\SidePanel\QuickFiltersSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

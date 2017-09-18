@@ -2,6 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ResourceDictionary.MergedDictionaries>
+        <!-- Resources used by many widgets -->
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilter/QuickFiltersDataTemplate.xaml" />
+        
+        <!-- Widgets -->
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Help/HelpWidgetDataTemplate.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/LineCount/LineCountWidgetDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
