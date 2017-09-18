@@ -59,7 +59,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <TextBlock Text="No widgets added!"
-                               FontSize="24"
+                               FontSize="20"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center" />
                     <TextBlock Grid.Row="1"

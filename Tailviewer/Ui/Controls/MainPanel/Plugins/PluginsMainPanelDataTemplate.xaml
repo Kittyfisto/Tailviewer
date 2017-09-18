@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Plugins"
-                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="PluginDataTemplate.xaml" />
@@ -32,7 +31,7 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBlock Text="No plugins installed!"
-                           FontSize="24"
+                           FontSize="20"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center" />
                 <TextBlock Grid.Row="1"

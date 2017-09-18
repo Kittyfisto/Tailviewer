@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows;
-using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core.LogTables;
 
 namespace TablePlayground
 {

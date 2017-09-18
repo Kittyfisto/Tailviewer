@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogTables;
+using Tailviewer.Core;
 
 namespace TablePlayground
 {
