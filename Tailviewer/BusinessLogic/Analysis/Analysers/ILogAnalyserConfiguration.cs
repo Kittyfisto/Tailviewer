@@ -1,3 +1,5 @@
+using System;
+
 namespace Tailviewer.BusinessLogic.Analysis.Analysers
 {
 	/// <summary>
@@ -13,6 +15,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 	///     if they are not equal, they may not produce the same result).
 	/// </remarks>
 	public interface ILogAnalyserConfiguration
+		: ICloneable
 	{
 	}
 }

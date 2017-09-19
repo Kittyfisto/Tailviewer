@@ -5,8 +5,9 @@ using Tailviewer.BusinessLogic.DataSources;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Represents a continuous analysis of a data source given a possibly
-	///     changing configuration.
+	///     Responsible for encapsulating a <see cref="IDataSourceAnalysis" />.
+	///     Whenever the configuration is changed, the previous analysis is stopped
+	///     and a new one created.
 	/// </summary>
 	public sealed class DataSourceAnalyser
 		: IDataSourceAnalyser
@@ -30,12 +31,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 			if (logAnalyserType == null)
 				throw new ArgumentNullException(nameof(logAnalyserType));
 
+			Id = Guid.NewGuid();
 			_dataSource = dataSource;
 			_analysisEngine = analysisEngine;
 			_logAnalyserType = logAnalyserType;
 		}
 
+		public Guid Id { get; }
+
 		public ILogAnalysisResult Result => _analysis?.Result;
+
+		public bool IsFrozen => false;
 
 		public ILogAnalyserConfiguration Configuration
 		{
@@ -53,6 +59,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public void Dispose()
 		{
 			_analysisEngine.RemoveAnalysis(_analysis);
+		}
+
+		public DataSourceAnalyserSnapshot CreateSnapshot()
+		{
+			var configuration = _configuration?.Clone() as ILogAnalyserConfiguration;
+			var result = Result?.Clone() as ILogAnalysisResult;
+			return new DataSourceAnalyserSnapshot(Id,
+				configuration,
+				result);
 		}
 
 		private void RestartAnalysis()

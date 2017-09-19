@@ -1,4 +1,5 @@
-﻿using Tailviewer.BusinessLogic.Analysis.Analysers;
+﻿using System;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -11,11 +12,23 @@ namespace Tailviewer.BusinessLogic.Analysis
 	public interface IDataSourceAnalyser
 	{
 		/// <summary>
+		///     A unique id which identifies this analyser.
+		/// </summary>
+		Guid Id { get; }
+
+		/// <summary>
 		///     The result of the analysis.
 		///     May change over the lifetime of this analyser.
 		///     May be null.
 		/// </summary>
 		ILogAnalysisResult Result { get; }
+
+		/// <summary>
+		///     Whether or not this analyser is frozen.
+		///     A frozen analyser may not be modified and thus changing
+		///     the configuration is not allowed.
+		/// </summary>
+		bool IsFrozen { get; }
 
 		/// <summary>
 		///     The current configuration used by the analyser.

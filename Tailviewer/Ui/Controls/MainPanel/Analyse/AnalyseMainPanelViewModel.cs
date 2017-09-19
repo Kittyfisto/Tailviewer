@@ -45,7 +45,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void CreateAnalysis()
 		{
 			var dataSource = new AnalysisDataSource();
-			var analyser = new MultiAnalyser(dataSource, _analysisEngine);
+			var analyser = new AnalyserGroup(dataSource, _analysisEngine);
 			var analysisViewModel = new AnalysisViewModel(analyser);
 			_analysesSidePanel.Add(analysisViewModel);
 			Analysis = analysisViewModel;

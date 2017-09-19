@@ -4,5 +4,10 @@
 		: ILogAnalysisResult
 	{
 		public long Count { get; set; }
+
+		public object Clone()
+		{
+			return new CountResult {Count = Count};
+		}
 	}
 }

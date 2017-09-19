@@ -11,7 +11,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 	/// </remarks>
 	public interface IAnalysisEngine
 	{
+		/// <summary>
+		/// Creates a new analysis for the given data source.
+		/// </summary>
+		/// <param name="dataSource"></param>
+		/// <param name="configuration"></param>
+		/// <returns></returns>
 		IDataSourceAnalysis CreateAnalysis(IDataSource dataSource, DataSourceAnalysisConfiguration configuration);
+
 		void RemoveAnalysis(IDataSourceAnalysis analysis);
 	}
 }

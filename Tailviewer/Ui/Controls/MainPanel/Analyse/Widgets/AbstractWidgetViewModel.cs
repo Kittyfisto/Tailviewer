@@ -25,13 +25,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 		/// <summary>
 		/// </summary>
-		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser, bool canBeEdited = true)
+		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
 		{
 			if (dataSourceAnalyser == null)
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
-			CanBeEdited = canBeEdited;
+			CanBeEdited = dataSourceAnalyser.Configuration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
 		}
 
