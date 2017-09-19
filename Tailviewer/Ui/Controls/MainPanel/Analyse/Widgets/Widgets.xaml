@@ -7,7 +7,7 @@
         
         <!-- Widgets -->
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Help/HelpWidgetDataTemplate.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/LineCount/LineCountWidgetDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Count/LogEntryCountWidgetDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

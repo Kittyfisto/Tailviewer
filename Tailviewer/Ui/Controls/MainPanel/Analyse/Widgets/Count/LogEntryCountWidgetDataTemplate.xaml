@@ -1,13 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:count="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count">
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
-    <DataTemplate DataType="{x:Type local:LineCountWidgetViewModel}">
+    <DataTemplate DataType="{x:Type count:EntryCountWidgetViewModel}">
         <Grid>
             <!-- Line count display, NOT editing -->
             <StackPanel VerticalAlignment="Center"

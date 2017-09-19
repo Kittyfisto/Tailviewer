@@ -98,6 +98,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
+    <Compile Include="BusinessLogic\Analysers\Count\LogEntryCountAnalyserTest.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\LogEventDefinitionTest.cs" />
     <Compile Include="BusinessLogic\Analysers\Event\EventsLogAnalyserTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />

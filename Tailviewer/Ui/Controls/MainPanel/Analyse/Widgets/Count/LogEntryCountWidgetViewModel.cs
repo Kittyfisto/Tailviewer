@@ -3,16 +3,16 @@ using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Ui.Controls.QuickFilter;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 {
-	public sealed class LineCountWidgetViewModel
+	public sealed class EntryCountWidgetViewModel
 		: AbstractWidgetViewModel
 	{
 		private int _count;
 		private string _caption;
 		private readonly QuickFiltersViewModel _quickFilters;
 
-		public LineCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
+		public EntryCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
 			: base(dataSourceAnalyser)
 		{
 			Title = "Line Count";

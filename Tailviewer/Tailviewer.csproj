@@ -95,8 +95,8 @@
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalyserGroupSnapshot.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountLogAnalyserFactory.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\Count\CountResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyserFactory.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountResult.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
@@ -114,7 +114,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
@@ -162,7 +162,7 @@
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\BookmarkSettings.cs" />
     <Compile Include="Settings\BookmarksSettings.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountAnalyserConfiguration.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventSettings.cs" />
     <Compile Include="Settings\Dashboard\DashboardSettings.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserConfiguration.cs" />
@@ -218,8 +218,8 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetViewModel.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyser.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetFactory.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\LineCount\LineCountWidgetFactory.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\LineCount\LineCountWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetFactory.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
@@ -374,7 +374,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\LineCount\LineCountWidgetDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

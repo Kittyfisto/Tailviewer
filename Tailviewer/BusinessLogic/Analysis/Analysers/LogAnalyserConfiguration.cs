@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		{
 			WidgetTypes = new Dictionary<string, Type>();
 
-			Add<LineCountAnalyserConfiguration>();
+			Add<LogEntryCountAnalyserConfiguration>();
 			Add<EventsLogAnalyserConfiguration>();
 		}
 
