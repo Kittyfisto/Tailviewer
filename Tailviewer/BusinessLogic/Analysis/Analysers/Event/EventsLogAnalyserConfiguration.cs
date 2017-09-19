@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using Metrolib;
-using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
-namespace Tailviewer.Settings.Dashboard.Analysers.Event
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {
 	/// <summary>
 	/// Contains all settings for a <see cref="EventsLogAnalyser"/>.
 	/// Consists of mainly a list of <see cref="EventSettings"/>.
 	/// </summary>
-	public sealed class EventsAnalyserSettings
-		: AnalyserSettings
+	public sealed class EventsLogAnalyserConfiguration
+		: LogAnalyserConfiguration
 	{
 		public readonly List<EventSettings> Events;
 		public int MaxEvents;
 
-		public EventsAnalyserSettings()
+		public EventsLogAnalyserConfiguration()
 		{
 			Events = new List<EventSettings>();
 		}
@@ -59,6 +58,11 @@ namespace Tailviewer.Settings.Dashboard.Analysers.Event
 				@event.Save(writer);
 				writer.WriteEndElement();
 			}
+		}
+
+		public override object Clone()
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {

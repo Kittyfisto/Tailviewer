@@ -18,28 +18,33 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly ILogAnalyser _analyser;
-		private readonly DataSourceAnalysisConfiguration _configuration;
+		private readonly ILogAnalyserConfiguration _configuration;
 
 		private readonly IDataSource _dataSource;
 		private readonly ITaskScheduler _scheduler;
 		private readonly IPeriodicTask _task;
+		private readonly ILogAnalyserFactory _factory;
 
 		public DataSourceAnalysis(ITaskScheduler scheduler,
 			IDataSource dataSource,
-			DataSourceAnalysisConfiguration configuration)
+			ILogAnalyserFactory factory,
+			ILogAnalyserConfiguration configuration)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException(nameof(scheduler));
 			if (dataSource == null)
 				throw new ArgumentNullException(nameof(dataSource));
+			if (factory == null)
+				throw new ArgumentNullException(nameof(factory));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
 			_scheduler = scheduler;
 			_dataSource = dataSource;
+			_factory = factory;
 			_configuration = configuration;
-			_task = _scheduler.StartPeriodic(OnUpdate, TimeSpan.FromSeconds(0.5), "");
 			_analyser = TryCreateAnalyser();
+			_task = _scheduler.StartPeriodic(OnUpdate, TimeSpan.FromSeconds(0.5), "");
 		}
 
 		public ILogAnalysisResult Result { get; private set; }
@@ -54,18 +59,13 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			try
 			{
-				var obj = Activator.CreateInstance(_configuration.LogAnalyserType, BindingFlags.Default, null, new object[]
-				{
-					_dataSource.UnfilteredLogFile,
-					_configuration.Configuration
-				});
-				var analyser = (ILogAnalyser) obj;
+				var analyser = _factory.Create(_scheduler, _dataSource.UnfilteredLogFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while trying to create analyser '{0}': {1}",
-					_configuration.LogAnalyserType,
+					_factory.Id,
 					e);
 				return null;
 			}
@@ -80,7 +80,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while trying to fetch analysis result '{0}': {1}",
-					_configuration.LogAnalyserType,
+					_factory.Id,
 					e);
 			}
 		}

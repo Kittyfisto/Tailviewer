@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
+using log4net;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.BusinessLogic.Analysis
@@ -12,7 +15,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IAnalysisEngine
 			, IDisposable
 	{
-		private readonly List<DataSourceAnalysis> _analyses;
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly List<IDataSourceAnalysis> _analyses;
+		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory> _factoriesById;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
 
@@ -22,32 +28,88 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(scheduler));
 
 			_scheduler = scheduler;
-			_analyses = new List<DataSourceAnalysis>();
+			_analyses = new List<IDataSourceAnalysis>();
 			_syncRoot = new object();
+			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory>();
 		}
 
 		public IDataSourceAnalysis CreateAnalysis(IDataSource dataSource, DataSourceAnalysisConfiguration configuration)
 		{
-			var analysis = new DataSourceAnalysis(_scheduler, dataSource, configuration);
 			lock (_syncRoot)
 			{
+				var analysis = CreatAnalysisFor(configuration.AnalyserId, dataSource, configuration.Configuration);
 				_analyses.Add(analysis);
+				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
+				return analysis;
 			}
-			return analysis;
 		}
 
-		public void RemoveAnalysis(IDataSourceAnalysis analysis)
+		public bool RemoveAnalysis(IDataSourceAnalysis analysis)
 		{
 			lock (_syncRoot)
 			{
-				var tmp = analysis as DataSourceAnalysis;
-				if (tmp != null && _analyses.Remove(tmp))
-					tmp.Dispose();
+				if (_analyses.Remove(analysis))
+				{
+					var disposable = analysis as IDisposable;
+					disposable?.Dispose();
+					return true;
+				}
+
+				return false;
 			}
 		}
 
 		public void Dispose()
 		{
+			lock (_syncRoot)
+			{
+				foreach (var analysis in _analyses)
+				{
+					var disposable = analysis as IDisposable;
+					disposable?.Dispose();
+				}
+				_analyses.Clear();
+			}
+		}
+
+		public void RegisterFactory(ILogAnalyserFactory factory)
+		{
+			if (factory == null)
+				throw new ArgumentNullException(nameof(factory));
+
+			lock (_syncRoot)
+			{
+				var id = factory.Id;
+				if (_factoriesById.ContainsKey(id))
+					throw new ArgumentException(string.Format("There already exists a factory of id '{0}'", id));
+
+				_factoriesById.Add(id, factory);
+			}
+		}
+
+		private IDataSourceAnalysis CreatAnalysisFor(LogAnalyserFactoryId id,
+			IDataSource dataSource,
+			ILogAnalyserConfiguration configuration)
+		{
+			IDataSourceAnalysis analysis;
+			ILogAnalyserFactory factory;
+			if (_factoriesById.TryGetValue(id, out factory))
+			{
+				analysis = new DataSourceAnalysis(_scheduler, dataSource, factory, configuration);
+			}
+			else
+			{
+				Log.ErrorFormat("Unable to find factory '{0}', analysis will be skipped", id);
+				analysis = new DummyAnalysis();
+			}
+
+			return analysis;
+		}
+
+		private sealed class DummyAnalysis
+			: IDataSourceAnalysis
+		{
+			public ILogAnalysisResult Result => null;
 		}
 	}
 }

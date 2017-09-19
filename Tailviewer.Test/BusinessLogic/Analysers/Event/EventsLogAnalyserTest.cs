@@ -7,7 +7,6 @@ using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.LogTables;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
 
 namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 {
@@ -35,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 			using (var analyser = new EventsLogAnalyser(_scheduler,
 				_source,
 				TimeSpan.Zero,
-				new EventsAnalyserSettings()
+				new EventsLogAnalyserConfiguration()
 			))
 			{
 				analyser.Events.Should().NotBeNull();
@@ -49,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 		[Test]
 		public void TestConstruction2()
 		{
-			var settings = new EventsAnalyserSettings
+			var settings = new EventsLogAnalyserConfiguration
 			{
 				Events =
 				{
@@ -68,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 		[Test]
 		public void TestOneEntry1()
 		{
-			var settings = new EventsAnalyserSettings
+			var settings = new EventsLogAnalyserConfiguration
 			{
 				Events =
 				{
@@ -91,7 +90,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 		[Test]
 		public void TestOneEntry2()
 		{
-			var settings = new EventsAnalyserSettings
+			var settings = new EventsLogAnalyserConfiguration
 			{
 				Events =
 				{
@@ -114,7 +113,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysers.Event
 		[Test]
 		public void TestAddEntry1()
 		{
-			var settings = new EventsAnalyserSettings
+			var settings = new EventsLogAnalyserConfiguration
 			{
 				Events =
 				{

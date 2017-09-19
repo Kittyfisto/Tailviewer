@@ -29,7 +29,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public bool IsFrozen => true;
 
-		public IDataSourceAnalyser Add(Type logAnalyserType, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
 		{
 			throw new InvalidOperationException("Adding new analysers to a snapshot is not allowed");
 		}

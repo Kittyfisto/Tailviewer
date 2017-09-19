@@ -1,7 +1,6 @@
 using System.Xml;
-using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
-namespace Tailviewer.Settings.Dashboard.Analysers.Event
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {
 	/// <summary>
 	/// Contains the settings for a single event of a <see cref="EventsLogAnalyser"/>.

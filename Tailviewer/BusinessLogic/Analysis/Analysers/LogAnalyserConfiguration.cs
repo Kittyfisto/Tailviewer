@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
-namespace Tailviewer.Settings.Dashboard.Analysers
+namespace Tailviewer.BusinessLogic.Analysis.Analysers
 {
-	public abstract class AnalyserSettings
+	public abstract class LogAnalyserConfiguration
+		: ILogAnalyserConfiguration
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private static readonly Dictionary<string, Type> WidgetTypes;
 
-		static AnalyserSettings()
+		static LogAnalyserConfiguration()
 		{
 			WidgetTypes = new Dictionary<string, Type>();
 
-			Add<CounterAnalyserSettings>();
-			Add<EventsAnalyserSettings>();
-			Add<QuickInfosAnalyserSettings>();
+			Add<LineCountAnalyserConfiguration>();
+			Add<EventsLogAnalyserConfiguration>();
 		}
 
 		private static void Add<T>()
@@ -28,7 +29,7 @@ namespace Tailviewer.Settings.Dashboard.Analysers
 			WidgetTypes.Add(type.FullName, type);
 		}
 
-		public static AnalyserSettings Restore(XmlReader reader)
+		public static LogAnalyserConfiguration Restore(XmlReader reader)
 		{
 			Type type = null;
 			for (int i = 0; i < reader.AttributeCount; ++i)
@@ -50,7 +51,7 @@ namespace Tailviewer.Settings.Dashboard.Analysers
 
 			reader.MoveToElement();
 
-			var widget = (AnalyserSettings)Activator.CreateInstance(type);
+			var widget = (LogAnalyserConfiguration)Activator.CreateInstance(type);
 			widget.RestoreInternal(reader);
 			return widget;
 		}
@@ -71,5 +72,7 @@ namespace Tailviewer.Settings.Dashboard.Analysers
 		}
 
 		protected abstract void SaveInternal(XmlWriter writer);
+
+		public abstract object Clone();
 	}
 }

@@ -7,7 +7,6 @@ using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogTables;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {
@@ -40,20 +39,20 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 		public EventsLogAnalyser(ITaskScheduler scheduler,
 			ILogFile source,
 			TimeSpan maximumWaitTime,
-			EventsAnalyserSettings settings)
+			EventsLogAnalyserConfiguration configuration)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException(nameof(scheduler));
-			if (settings == null)
-				throw new ArgumentNullException(nameof(settings));
+			if (configuration == null)
+				throw new ArgumentNullException(nameof(configuration));
 
 			_scheduler = scheduler;
 			_source = source;
 			_buffer = new LogLine[MaximumLineCount];
 			_events = new InMemoryLogTable();
 			_indices = new List<LogLineIndex>();
-			_eventDefinitions = new List<LogEventDefinition>(settings.Events.Count);
-			_eventDefinitions.AddRange(settings.Events.Select(x => TryCreateDefinition(x)).Where(x => x != null));
+			_eventDefinitions = new List<LogEventDefinition>(configuration.Events.Count);
+			_eventDefinitions.AddRange(configuration.Events.Select(x => TryCreateDefinition(x)).Where(x => x != null));
 			_modifications = new ConcurrentQueue<LogFileSection>();
 
 			_source.AddListener(this, maximumWaitTime, MaximumLineCount);

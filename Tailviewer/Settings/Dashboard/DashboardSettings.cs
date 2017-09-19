@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using Tailviewer.Settings.Dashboard.Analysers;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
 
 namespace Tailviewer.Settings.Dashboard
 {
@@ -10,18 +10,18 @@ namespace Tailviewer.Settings.Dashboard
 	public sealed class DashboardSettings
 	{
 		private readonly List<LayoutSettings> _layouts;
-		private readonly List<AnalyserSettings> _analysers;
+		private readonly List<LogAnalyserConfiguration> _analysers;
 
 		public DashboardSettings()
 		{
 			_layouts = new List<LayoutSettings>();
-			_analysers = new List<AnalyserSettings>();
+			_analysers = new List<LogAnalyserConfiguration>();
 		}
 
 		public void Restore(XmlReader reader)
 		{
 			var layouts = new List<LayoutSettings>();
-			var analysers = new List<AnalyserSettings>();
+			var analysers = new List<LogAnalyserConfiguration>();
 			XmlReader subtree = reader.ReadSubtree();
 
 			while (subtree.Read())
@@ -45,7 +45,7 @@ namespace Tailviewer.Settings.Dashboard
 						break;
 
 					case "analyser":
-						var analyser = AnalyserSettings.Restore(reader);
+						var analyser = LogAnalyserConfiguration.Restore(reader);
 						analysers.Add(analyser);
 						break;
 				}
@@ -60,7 +60,7 @@ namespace Tailviewer.Settings.Dashboard
 
 			_analysers.Clear();
 			_analysers.Capacity = analysers.Count;
-			foreach (AnalyserSettings analyser in analysers)
+			foreach (LogAnalyserConfiguration analyser in analysers)
 			{
 				_analysers.Add(analyser);
 			}
@@ -68,7 +68,7 @@ namespace Tailviewer.Settings.Dashboard
 
 		public void Save(XmlWriter writer)
 		{
-			foreach (AnalyserSettings widget in _analysers)
+			foreach (LogAnalyserConfiguration widget in _analysers)
 			{
 				writer.WriteStartElement("analyser");
 				widget.Save(writer);

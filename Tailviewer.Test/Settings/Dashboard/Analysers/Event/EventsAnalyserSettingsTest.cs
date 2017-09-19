@@ -3,8 +3,8 @@ using System.IO;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Settings.Dashboard.Analysers;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
 namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 {
@@ -16,7 +16,7 @@ namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 		{
 			using (var data = new MemoryStream())
 			{
-				var settings = new EventsAnalyserSettings
+				var settings = new EventsLogAnalyserConfiguration
 				{
 					MaxEvents = 9999,
 					Events =
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 					{
 						xmlReader.MoveToContent();
 						xmlReader.MoveToElement();
-						var actualSettings = (EventsAnalyserSettings)AnalyserSettings.Restore(xmlReader);
+						var actualSettings = (EventsLogAnalyserConfiguration)LogAnalyserConfiguration.Restore(xmlReader);
 						actualSettings.MaxEvents.Should().Be(9999);
 						actualSettings.Events.Count.Should().Be(1);
 						actualSettings.Events[0].Name.Should().Be("My custom event");

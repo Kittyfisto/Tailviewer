@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 
@@ -8,7 +7,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 	public sealed class HelpWidgetFactory
 		: IWidgetFactory
 	{
-		public Type AnalyserType => null;
+		public LogAnalyserFactoryId AnalyserId => LogAnalyserFactoryId.None;
 
 		public ILogAnalyserConfiguration DefaultConfiguration => null;
 

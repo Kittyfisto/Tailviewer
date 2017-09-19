@@ -15,26 +15,24 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private readonly IAnalysisEngine _analysisEngine;
 		private readonly IDataSource _dataSource;
-		private readonly Type _logAnalyserType;
+		private readonly LogAnalyserFactoryId _anaylserId;
 		private IDataSourceAnalysis _analysis;
 
 		private ILogAnalyserConfiguration _configuration;
 
 		public DataSourceAnalyser(IDataSource dataSource,
 			IAnalysisEngine analysisEngine,
-			Type logAnalyserType)
+			LogAnalyserFactoryId anaylserId)
 		{
 			if (dataSource == null)
 				throw new ArgumentNullException(nameof(dataSource));
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
-			if (logAnalyserType == null)
-				throw new ArgumentNullException(nameof(logAnalyserType));
 
 			Id = Guid.NewGuid();
 			_dataSource = dataSource;
 			_analysisEngine = analysisEngine;
-			_logAnalyserType = logAnalyserType;
+			_anaylserId = anaylserId;
 		}
 
 		public Guid Id { get; }
@@ -82,7 +80,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				var configuration = new DataSourceAnalysisConfiguration
 				{
-					LogAnalyserType = _logAnalyserType,
+					AnalyserId = _anaylserId,
 					Configuration = _configuration
 				};
 				_analysis = _analysisEngine.CreateAnalysis(_dataSource, configuration);

@@ -9,7 +9,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 	public sealed class LineCountWidgetFactory
 		: IWidgetFactory
 	{
-		public Type AnalyserType => typeof(CountLogAnalyser);
+		public LogAnalyserFactoryId AnalyserId => LineCountLogAnalyserFactory.Id;
 
 		public ILogAnalyserConfiguration DefaultConfiguration => null;
 

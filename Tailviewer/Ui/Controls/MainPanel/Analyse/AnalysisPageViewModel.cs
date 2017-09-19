@@ -127,7 +127,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			try
 			{
-				var analyserType = factory.AnalyserType;
+				var analyserType = factory.AnalyserId;
 				if (analyserType != null)
 				{
 					var configuration = factory.DefaultConfiguration;

@@ -42,12 +42,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		/// <summary>
 		/// </summary>
-		/// <param name="logAnalyserType"></param>
+		/// <param name="analyserId"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		public IDataSourceAnalyser Add(Type logAnalyserType, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
 		{
-			var analyser = new DataSourceAnalyser(_dataSource, _analysisEngine, logAnalyserType);
+			var analyser = new DataSourceAnalyser(_dataSource, _analysisEngine, analyserId);
 			try
 			{
 				analyser.Configuration = configuration;

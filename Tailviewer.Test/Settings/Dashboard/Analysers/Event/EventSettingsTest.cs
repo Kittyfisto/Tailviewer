@@ -2,7 +2,7 @@
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Settings.Dashboard.Analysers.Event;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Event;
 
 namespace Tailviewer.Test.Settings.Dashboard.Analysers.Event
 {

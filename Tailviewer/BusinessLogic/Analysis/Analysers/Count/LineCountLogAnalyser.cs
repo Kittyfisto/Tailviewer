@@ -1,22 +1,27 @@
 ﻿using System;
+using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 {
-	public sealed class CountLogAnalyser
+	public sealed class LineCountLogAnalyser
 		: LogAnalyser
 	{
 		private readonly ILogFile _source;
 		private readonly ILogAnalyserConfiguration _configuration;
+		private readonly ITaskScheduler _scheduler;
 
-		public CountLogAnalyser(ILogFile source, ILogAnalyserConfiguration configuration)
+		public LineCountLogAnalyser(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)
 		{
+			if (scheduler == null)
+				throw new ArgumentNullException(nameof(scheduler));
 			if (source == null)
 				throw new ArgumentNullException(nameof(source));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
+			_scheduler = scheduler;
 			_source = source;
 			_configuration = configuration;
 		}

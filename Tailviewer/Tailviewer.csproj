@@ -95,8 +95,12 @@
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalyserGroupSnapshot.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountLogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Count\CountResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserFactory.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyserFactoryId.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoResult.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />
@@ -110,7 +114,7 @@
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\Count\CountLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
@@ -158,14 +162,12 @@
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\BookmarkSettings.cs" />
     <Compile Include="Settings\BookmarksSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\CounterAnalyserSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\Event\EventSettings.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LineCountAnalyserConfiguration.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventSettings.cs" />
     <Compile Include="Settings\Dashboard\DashboardSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\DataSourcesAnalyserSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\Event\EventsAnalyserSettings.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserConfiguration.cs" />
     <Compile Include="Settings\Dashboard\LayoutSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\QuickInfosAnalyserSettings.cs" />
-    <Compile Include="Settings\Dashboard\Analysers\AnalyserSettings.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyserConfiguration.cs" />
     <Compile Include="Settings\Dashboard\Widgets\WidgetSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />
     <Compile Include="Constants.cs" />
@@ -560,7 +562,9 @@
       <Name>Tailviewer.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Settings\Dashboard\Analysers\Event\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
