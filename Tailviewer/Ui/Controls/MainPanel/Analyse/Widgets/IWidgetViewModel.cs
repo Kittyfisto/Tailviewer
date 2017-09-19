@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
@@ -41,6 +42,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		///     The command to delete this widget.
 		/// </summary>
 		ICommand DeleteCommand { get; }
+
+		/// <summary>
+		///     This method is called periodically to allow the view model to fetch data from the analysis.
+		/// </summary>
+		void OnUpdate();
 
 		/// <summary>
 		///     This event is fired when the <see cref="DeleteCommand" /> is executed.

@@ -9,11 +9,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     Responsible for creating and maintaining and scheduling analyses of data sources.
 	/// </summary>
 	public sealed class AnalysisEngine
-		: IDisposable
+		: IAnalysisEngine
+			, IDisposable
 	{
 		private readonly List<DataSourceAnalysis> _analyses;
-		private readonly object _syncRoot;
 		private readonly ITaskScheduler _scheduler;
+		private readonly object _syncRoot;
 
 		public AnalysisEngine(ITaskScheduler scheduler)
 		{
@@ -41,9 +42,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				var tmp = analysis as DataSourceAnalysis;
 				if (tmp != null && _analyses.Remove(tmp))
-				{
 					tmp.Dispose();
-				}
 			}
 		}
 

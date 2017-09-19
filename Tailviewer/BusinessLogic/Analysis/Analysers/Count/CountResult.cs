@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.BusinessLogic.Analysis.Analysers
+﻿namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 {
 	public sealed class CountResult
 		: ILogAnalysisResult

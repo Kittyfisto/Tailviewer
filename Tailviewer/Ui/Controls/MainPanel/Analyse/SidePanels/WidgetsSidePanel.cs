@@ -16,15 +16,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		{
 			_widgets = new List<WidgetFactoryViewModel>
 			{
-				new WidgetFactoryViewModel(
-					() => new HelpWidgetViewModel(),
-					"Tutorial",
-					"Describes the first steps after having created an analysis"),
-				new WidgetFactoryViewModel(
-					() => new LineCountWidgetViewModel(),
-					"Line Count",
-					"Counts the number of lines matching a filter expression"
-					)
+				new WidgetFactoryViewModel(new HelpWidgetFactory()),
+				new WidgetFactoryViewModel(new LineCountWidgetFactory())
 			};
 		}
 

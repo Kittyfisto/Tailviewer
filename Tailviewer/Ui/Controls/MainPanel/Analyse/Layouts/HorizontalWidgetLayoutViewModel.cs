@@ -27,12 +27,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 			_widgets.Remove(widget);
 		}
 
-		public void RaiseRequestAdd(IWidgetViewModel widget)
+		public void RaiseRequestAdd(IWidgetFactory factory)
 		{
-			RequestAdd?.Invoke(widget);
+			RequestAdd?.Invoke(factory);
 		}
 
-		public event Action<IWidgetViewModel> RequestAdd;
+		public event Action<IWidgetFactory> RequestAdd;
 
 		public ICollection<IWidgetViewModel> Widgets => _widgets;
 

@@ -1,4 +1,6 @@
-﻿using Tailviewer.BusinessLogic.Filters;
+﻿using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Ui.Controls.QuickFilter;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
@@ -10,9 +12,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 		private string _caption;
 		private readonly QuickFiltersViewModel _quickFilters;
 
-		public LineCountWidgetViewModel()
+		public LineCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
+			: base(dataSourceAnalyser)
 		{
 			Title = "Line Count";
+			Caption = "Line(s)";
 			var filters = new QuickFilters(new Core.Settings.QuickFilters());
 			_quickFilters = new QuickFiltersViewModel(filters);
 		}
@@ -44,5 +48,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount
 		}
 
 		public QuickFiltersViewModel QuickFilters => _quickFilters;
+
+		protected override ILogAnalyserConfiguration Configuration => null;
+
+		public override void OnUpdate()
+		{
+			
+		}
 	}
 }

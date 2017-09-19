@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
@@ -19,6 +22,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalysisPageViewModel
 		: INotifyPropertyChanged
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<IWidgetViewModel> _widgets;
 		private bool _canBeDeleted;
@@ -27,8 +33,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
 
-		public AnalysisPageViewModel()
+		public AnalysisPageViewModel(IAnalyserGroup analyser)
 		{
+			if (analyser == null)
+				throw new ArgumentNullException(nameof(analyser));
+
+			_analyser = analyser;
 			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
 			_widgets = new List<IWidgetViewModel>();
@@ -106,11 +116,32 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private void LayoutOnRequestAdd(IWidgetViewModel widgetViewModel)
+		private void LayoutOnRequestAdd(IWidgetFactory factory)
 		{
-			// For now, we don't need to do anything else but
-			// grant the request...
-			Add(widgetViewModel);
+			var analyser = CreateAnalyser(factory);
+			var widget = factory.Create(analyser);
+			Add(widget);
+		}
+
+		private IDataSourceAnalyser CreateAnalyser(IWidgetFactory factory)
+		{
+			try
+			{
+				var analyserType = factory.AnalyserType;
+				if (analyserType != null)
+				{
+					var configuration = factory.DefaultConfiguration;
+					return _analyser.Add(analyserType, configuration);
+				}
+
+				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", factory);
+				return new NoAnalyser();
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", factory, e);
+				return new NoAnalyser();
+			}
 		}
 
 		public void Add(IWidgetViewModel widget)

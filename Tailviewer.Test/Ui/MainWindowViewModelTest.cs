@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -34,11 +35,13 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
+			_analysisEngine = new Mock<IAnalysisEngine>();
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
 			                                      _quickFilters,
 			                                      _actionCenter,
 			                                      _updater.Object,
+			                                      _analysisEngine.Object,
 			                                      _dispatcher,
 			                                      Enumerable.Empty<IPluginDescription>());
 		}
@@ -58,6 +61,7 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
+		private Mock<IAnalysisEngine> _analysisEngine;
 
 		[Test]
 		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]
@@ -71,6 +75,7 @@ namespace Tailviewer.Test.Ui
 				_quickFilters,
 				_actionCenter,
 				_updater.Object,
+				_analysisEngine.Object,
 				_dispatcher,
 				Enumerable.Empty<IPluginDescription>());
 

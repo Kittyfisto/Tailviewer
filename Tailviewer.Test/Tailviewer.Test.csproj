@@ -164,7 +164,6 @@
     <Compile Include="Ui\Controls\ActionCenter\ExportViewModelTest.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalysisPageViewModelTest.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalysisViewModelTest.cs" />
-    <Compile Include="Ui\Controls\Analyse\WidgetFactoryViewModelTest.cs" />
     <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumberCanvasTest.cs" />

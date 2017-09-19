@@ -12,39 +12,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 	/// </summary>
 	public sealed class WidgetFactoryViewModel
 	{
-		private readonly Func<IWidgetViewModel> _factory;
+		private readonly IWidgetFactory _factory;
 
 		public WidgetFactoryViewModel(
-			Func<IWidgetViewModel> factory,
-			string name,
-			string description,
-			Geometry icon = null)
+			IWidgetFactory factory)
 		{
 			if (factory == null)
 				throw new ArgumentNullException(nameof(factory));
-			if (name == null)
-				throw new ArgumentNullException(nameof(name));
-			if (description == null)
-				throw new ArgumentNullException(nameof(description));
 
 			_factory = factory;
-			Name = name;
-			Description = description;
-			Icon = icon;
 		}
 
-		public string Name { get; }
-		public string Description { get; }
-		public Geometry Icon { get; }
+		public string Name => _factory.Name;
+		public string Description => _factory.Description;
+		public Geometry Icon => _factory.Icon;
 
 		public override string ToString()
 		{
 			return string.Format("WidgetFactory: {0}", Name);
 		}
 
-		public IWidgetViewModel Create()
-		{
-			return _factory();
-		}
+		public IWidgetFactory Factory => _factory;
 	}
 }

@@ -2,7 +2,7 @@
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogTables;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 {
 	public sealed class CountLogAnalyser
 		: LogAnalyser

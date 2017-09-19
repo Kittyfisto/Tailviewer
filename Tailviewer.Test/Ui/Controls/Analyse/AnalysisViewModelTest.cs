@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 
 namespace Tailviewer.Test.Ui.Controls.Analyse
@@ -8,10 +10,18 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	[TestFixture]
 	public sealed class AnalysisViewModelTest
 	{
+		private Mock<IAnalyserGroup> _analyser;
+
+		[SetUp]
+		public void Setup()
+		{
+			_analyser = new Mock<IAnalyserGroup>();
+		}
+
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisViewModel();
+			var model = new AnalysisViewModel(_analyser.Object);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
@@ -21,7 +31,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage()
 		{
-			var model = new AnalysisViewModel();
+			var model = new AnalysisViewModel(_analyser.Object);
 			model.Pages.Should().HaveCount(1);
 			model.AddPageCommand.Execute(null);
 			model.Pages.Should().HaveCount(2);

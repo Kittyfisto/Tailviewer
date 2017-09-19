@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.LineCount"
-                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
@@ -17,12 +18,12 @@
                            FontSize="48"
                            FontWeight="Bold"
                            Margin="6" />
-                <TextBlock Text="{Binding Caption}"
-                           HorizontalAlignment="Center"
-                           FontSize="16"
-                           Margin="6,0,6,6" />
+                <controls:EditableTextBlock Text="{Binding Caption}"
+                                            HorizontalAlignment="Center"
+                                            FontSize="16"
+                                            Margin="6,0,6,6" />
             </StackPanel>
-            
+
             <!-- Editor -->
             <Grid Visibility="{Binding IsEditing, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                 <ContentPresenter Content="{Binding QuickFilters}" />

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -13,13 +15,18 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalysisViewModel
 		: INotifyPropertyChanged
 	{
+		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _addPageCommand;
 
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
 		private string _name;
 
-		public AnalysisViewModel()
+		public AnalysisViewModel(IAnalyserGroup analyser)
 		{
+			if (analyser == null)
+				throw new ArgumentNullException(nameof(analyser));
+
+			_analyser = analyser;
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			AddPage();
 			_addPageCommand = new DelegateCommand(AddPage);
@@ -46,7 +53,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddPage()
 		{
-			var page = new AnalysisPageViewModel();
+			var page = new AnalysisPageViewModel(_analyser);
 			page.OnDelete += PageOnOnDelete;
 			_pages.Add(page);
 			UpdateCanBeDeleted();

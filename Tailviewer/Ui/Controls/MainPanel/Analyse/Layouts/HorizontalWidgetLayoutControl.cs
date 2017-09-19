@@ -25,12 +25,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 
 		private void HandleDrop(DragEventArgs e)
 		{
-			var factory = e.Data.GetData(typeof(WidgetFactoryViewModel)) as WidgetFactoryViewModel;
-			if (factory != null)
+			var viewModel = e.Data.GetData(typeof(WidgetFactoryViewModel)) as WidgetFactoryViewModel;
+			if (viewModel != null)
 			{
-				var widget = factory.Create();
 				var dataContext = DataContext as HorizontalWidgetLayoutViewModel;
-				dataContext?.RaiseRequestAdd(widget);
+				dataContext?.RaiseRequestAdd(viewModel.Factory);
 			}
 		}
 

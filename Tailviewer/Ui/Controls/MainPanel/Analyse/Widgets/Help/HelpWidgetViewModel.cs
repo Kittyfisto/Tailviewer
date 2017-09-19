@@ -1,12 +1,25 @@
-﻿namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
+﻿using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
+
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 {
 	public sealed class HelpWidgetViewModel
 		: AbstractWidgetViewModel
 	{
-		public HelpWidgetViewModel()
-			: base(canBeEdited: false)
+		public HelpWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
+			: base(dataSourceAnalyser, canBeEdited: false)
 		{
 			Title = "Help";
+		}
+
+		protected override ILogAnalyserConfiguration Configuration
+		{
+			get { throw new System.NotImplementedException(); }
+		}
+
+		public override void OnUpdate()
+		{
+			
 		}
 	}
 }

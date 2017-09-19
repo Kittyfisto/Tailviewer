@@ -1,8 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Analysis.Analysers;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
@@ -12,13 +16,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 	public abstract class AbstractWidgetViewModel
 		: IWidgetViewModel
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly IDataSourceAnalyser _dataSourceAnalyser;
+
 		private bool _isEditing;
 		private string _title;
 
 		/// <summary>
 		/// </summary>
-		protected AbstractWidgetViewModel(bool canBeEdited = true)
+		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser, bool canBeEdited = true)
 		{
+			if (dataSourceAnalyser == null)
+				throw new ArgumentNullException(nameof(dataSourceAnalyser));
+
+			_dataSourceAnalyser = dataSourceAnalyser;
 			CanBeEdited = canBeEdited;
 			DeleteCommand = new DelegateCommand(Delete);
 		}
@@ -33,8 +45,30 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 				_isEditing = value;
 				EmitPropertyChanged();
+
+				if (!value)
+				{
+					// For now, we'll only update the configuration when the edit
+					// mode is disabled.
+					UpdateConfiguration();
+				}
 			}
 		}
+
+		private void UpdateConfiguration()
+		{
+			try
+			{
+				var configuration = Configuration;
+				_dataSourceAnalyser.Configuration = configuration;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
+		}
+
+		protected abstract ILogAnalyserConfiguration Configuration { get; }
 
 		public bool CanBeEdited { get; }
 
@@ -54,6 +88,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		public ICommand DeleteCommand { get; }
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public abstract void OnUpdate();
 
 		public event Action<IWidgetViewModel> OnDelete;
 

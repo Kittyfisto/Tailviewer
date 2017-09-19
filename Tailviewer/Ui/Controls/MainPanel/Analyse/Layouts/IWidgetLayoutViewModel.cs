@@ -37,6 +37,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 		///     This event is used while dropping widgets onto the layout (from the widgets side panel):
 		///     Once the user has made the drop, this event is fired and the widget has been added.
 		/// </remarks>
-		event Action<IWidgetViewModel> RequestAdd;
+		event Action<IWidgetFactory> RequestAdd;
 	}
 }
