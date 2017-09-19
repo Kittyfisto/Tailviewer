@@ -41,6 +41,7 @@ namespace Tailviewer.Test.Ui
 			                                      _quickFilters,
 			                                      _actionCenter,
 			                                      _updater.Object,
+			                                      _scheduler,
 			                                      _analysisEngine.Object,
 			                                      _dispatcher,
 			                                      Enumerable.Empty<IPluginDescription>());
@@ -75,6 +76,7 @@ namespace Tailviewer.Test.Ui
 				_quickFilters,
 				_actionCenter,
 				_updater.Object,
+				_scheduler,
 				_analysisEngine.Object,
 				_dispatcher,
 				Enumerable.Empty<IPluginDescription>());

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -10,6 +11,9 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
+	/// <summary>
+	///     The data source used for a <see cref="AnalyserGroup" />.
+	/// </summary>
 	public class AnalysisDataSource
 		: IDataSource
 	{

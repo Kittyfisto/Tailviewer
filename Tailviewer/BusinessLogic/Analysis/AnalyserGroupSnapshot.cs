@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -27,7 +28,18 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public IEnumerable<IDataSourceAnalyser> Analysers => _analysers;
 
+		public IEnumerable<ILogFile> LogFiles => new ILogFile[0];
+
 		public bool IsFrozen => true;
+		public void Add(ILogFile logFile)
+		{
+			throw new InvalidOperationException("Adding log files to a snapshot is not allowed");
+		}
+
+		public void Remove(ILogFile logFile)
+		{
+			throw new InvalidOperationException("Removing log files from a snapshot is not allowed");
+		}
 
 		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
 		{

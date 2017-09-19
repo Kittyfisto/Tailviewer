@@ -116,6 +116,7 @@ namespace Tailviewer
 							quickFilters,
 							actionCenter,
 							updater,
+							taskScheduler,
 							analysisEngine,
 							uiDispatcher,
 							scanner.Plugins)

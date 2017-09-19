@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
@@ -70,6 +71,7 @@ namespace Tailviewer.Ui.ViewModels
 		                           QuickFilters quickFilters,
 		                           IActionCenter actionCenter,
 		                           IAutoUpdater updater,
+		                           ITaskScheduler taskScheduler,
 		                           IAnalysisEngine analysisEngine,
 		                           IDispatcher dispatcher,
 		                           IEnumerable<IPluginDescription> plugins)
@@ -86,7 +88,7 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, analysisEngine);
+			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, taskScheduler, analysisEngine);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,

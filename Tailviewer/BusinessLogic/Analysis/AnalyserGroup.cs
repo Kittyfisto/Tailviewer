@@ -1,27 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
-	/// <summary>
-	///     Responsible for holding one or more <see cref="IDataSourceAnalyser" />:
-	///     They can be <see cref="Add" />ed as well as <see cref="Remove" />d.
-	/// </summary>
 	public sealed class AnalyserGroup
 		: IAnalyserGroup
 			, IDisposable
 	{
 		private readonly List<DataSourceAnalyser> _analysers;
 		private readonly IAnalysisEngine _analysisEngine;
-		private readonly IDataSource _dataSource;
+		private readonly LogFileProxy _logFile;
+		private readonly List<ILogFile> _logFiles;
+		private readonly TimeSpan _maximumWaitTime;
 		private readonly object _syncRoot;
+		private readonly ITaskScheduler _taskScheduler;
 
-		public AnalyserGroup(IDataSource dataSource, IAnalysisEngine analysisEngine)
+		public AnalyserGroup(ITaskScheduler taskScheduler,
+			IAnalysisEngine analysisEngine,
+			TimeSpan maximumWaitTime)
 		{
-			_dataSource = dataSource;
+			if (taskScheduler == null)
+				throw new ArgumentNullException(nameof(taskScheduler));
+			if (analysisEngine == null)
+				throw new ArgumentNullException(nameof(analysisEngine));
+
+			_taskScheduler = taskScheduler;
+			_maximumWaitTime = maximumWaitTime;
+			_logFiles = new List<ILogFile>();
+			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_analysisEngine = analysisEngine;
 			_analysers = new List<DataSourceAnalyser>();
 			_syncRoot = new object();
@@ -38,6 +49,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
+		public IEnumerable<ILogFile> LogFiles
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _logFiles.ToList();
+				}
+			}
+		}
+
 		public bool IsFrozen => false;
 
 		/// <summary>
@@ -47,7 +69,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <returns></returns>
 		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
 		{
-			var analyser = new DataSourceAnalyser(_dataSource, _analysisEngine, analyserId);
+			var analyser = new DataSourceAnalyser(_logFile, _analysisEngine, analyserId);
 			try
 			{
 				analyser.Configuration = configuration;
@@ -84,7 +106,35 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				foreach (var analyser in _analysers)
 					analyser.Dispose();
+
+				_logFile.Dispose();
 			}
+		}
+
+		public void Add(ILogFile logFile)
+		{
+			lock (_syncRoot)
+			{
+				_logFiles.Add(logFile);
+				UpdateProxy();
+			}
+		}
+
+		public void Remove(ILogFile logFile)
+		{
+			lock (_syncRoot)
+			{
+				_logFiles.Remove(logFile);
+				UpdateProxy();
+			}
+		}
+
+		private void UpdateProxy()
+		{
+			var merged = new MergedLogFile(_taskScheduler,
+				_maximumWaitTime,
+				_logFiles);
+			_logFile.InnerLogFile = merged;
 		}
 
 		/// <summary>

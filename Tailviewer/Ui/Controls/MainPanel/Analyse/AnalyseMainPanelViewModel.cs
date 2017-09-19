@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
@@ -15,6 +16,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalyseMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
+		private readonly ITaskScheduler _taskScheduler;
 		private readonly IAnalysisEngine _analysisEngine;
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly ICommand _createAnalysisCommand;
@@ -27,12 +29,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _windowTitleSuffix;
 
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
+			ITaskScheduler taskScheduler,
 			IAnalysisEngine analysisEngine)
 			: base(applicationSettings)
 		{
+			if (taskScheduler == null)
+				throw new ArgumentNullException(nameof(taskScheduler));
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
 
+			_taskScheduler = taskScheduler;
 			_analysisEngine = analysisEngine;
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -44,8 +50,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CreateAnalysis()
 		{
-			var dataSource = new AnalysisDataSource();
-			var analyser = new AnalyserGroup(dataSource, _analysisEngine);
+			var analyser = new AnalyserGroup(_taskScheduler, _analysisEngine, TimeSpan.FromMilliseconds(100));
 			var analysisViewModel = new AnalysisViewModel(analyser);
 			_analysesSidePanel.Add(analysisViewModel);
 			Analysis = analysisViewModel;

@@ -1,6 +1,6 @@
 using System;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -14,23 +14,23 @@ namespace Tailviewer.BusinessLogic.Analysis
 			, IDisposable
 	{
 		private readonly IAnalysisEngine _analysisEngine;
-		private readonly IDataSource _dataSource;
+		private readonly ILogFile _logFile;
 		private readonly LogAnalyserFactoryId _anaylserId;
 		private IDataSourceAnalysis _analysis;
 
 		private ILogAnalyserConfiguration _configuration;
 
-		public DataSourceAnalyser(IDataSource dataSource,
+		public DataSourceAnalyser(ILogFile logFile,
 			IAnalysisEngine analysisEngine,
 			LogAnalyserFactoryId anaylserId)
 		{
-			if (dataSource == null)
-				throw new ArgumentNullException(nameof(dataSource));
+			if (logFile == null)
+				throw new ArgumentNullException(nameof(logFile));
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
 
 			Id = Guid.NewGuid();
-			_dataSource = dataSource;
+			_logFile = logFile;
 			_analysisEngine = analysisEngine;
 			_anaylserId = anaylserId;
 		}
@@ -83,7 +83,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 					AnalyserId = _anaylserId,
 					Configuration = _configuration
 				};
-				_analysis = _analysisEngine.CreateAnalysis(_dataSource, configuration);
+				_analysis = _analysisEngine.CreateAnalysis(_logFile, configuration);
 			}
 		}
 	}

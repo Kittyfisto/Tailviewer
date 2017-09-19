@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -20,27 +20,27 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalyser _analyser;
 		private readonly ILogAnalyserConfiguration _configuration;
 
-		private readonly IDataSource _dataSource;
+		private readonly ILogFile _logFile;
 		private readonly ITaskScheduler _scheduler;
 		private readonly IPeriodicTask _task;
 		private readonly ILogAnalyserFactory _factory;
 
 		public DataSourceAnalysis(ITaskScheduler scheduler,
-			IDataSource dataSource,
+			ILogFile logFile,
 			ILogAnalyserFactory factory,
 			ILogAnalyserConfiguration configuration)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException(nameof(scheduler));
-			if (dataSource == null)
-				throw new ArgumentNullException(nameof(dataSource));
+			if (logFile == null)
+				throw new ArgumentNullException(nameof(logFile));
 			if (factory == null)
 				throw new ArgumentNullException(nameof(factory));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
 			_scheduler = scheduler;
-			_dataSource = dataSource;
+			_logFile = logFile;
 			_factory = factory;
 			_configuration = configuration;
 			_analyser = TryCreateAnalyser();
@@ -59,7 +59,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			try
 			{
-				var analyser = _factory.Create(_scheduler, _dataSource.UnfilteredLogFile, _configuration);
+				var analyser = _factory.Create(_scheduler, _logFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)

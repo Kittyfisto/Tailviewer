@@ -1,4 +1,4 @@
-﻿using Tailviewer.BusinessLogic.DataSources;
+﻿using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -16,10 +16,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     The analysis will examine the data source and react to changes until the analysis
 		///     is removed via <see cref="RemoveAnalysis" />.
 		/// </summary>
-		/// <param name="dataSource"></param>
+		/// <param name="logFile"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IDataSourceAnalysis CreateAnalysis(IDataSource dataSource, DataSourceAnalysisConfiguration configuration);
+		IDataSourceAnalysis CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration);
 
 		/// <summary>
 		///     Removes the given analysis from this engine, if it was created via <see cref="CreateAnalysis" />.

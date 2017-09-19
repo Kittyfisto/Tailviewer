@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -33,11 +33,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory>();
 		}
 
-		public IDataSourceAnalysis CreateAnalysis(IDataSource dataSource, DataSourceAnalysisConfiguration configuration)
+		public IDataSourceAnalysis CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration)
 		{
 			lock (_syncRoot)
 			{
-				var analysis = CreatAnalysisFor(configuration.AnalyserId, dataSource, configuration.Configuration);
+				var analysis = CreatAnalysisFor(configuration.AnalyserId, logFile, configuration.Configuration);
 				_analyses.Add(analysis);
 				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
 				return analysis;
@@ -88,14 +88,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		private IDataSourceAnalysis CreatAnalysisFor(LogAnalyserFactoryId id,
-			IDataSource dataSource,
+			ILogFile logFile,
 			ILogAnalyserConfiguration configuration)
 		{
 			IDataSourceAnalysis analysis;
 			ILogAnalyserFactory factory;
 			if (_factoriesById.TryGetValue(id, out factory))
 			{
-				analysis = new DataSourceAnalysis(_scheduler, dataSource, factory, configuration);
+				analysis = new DataSourceAnalysis(_scheduler, logFile, factory, configuration);
 			}
 			else
 			{
