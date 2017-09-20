@@ -5,7 +5,7 @@ using System.Xml;
 using Tailviewer.BusinessLogic;
 using log4net;
 using Metrolib;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Settings
 {
@@ -15,7 +15,7 @@ namespace Tailviewer.Settings
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly List<Guid> _activatedQuickFilters;
+		private readonly List<QuickFilterId> _activatedQuickFilters;
 		private readonly HashSet<AnalysisId> _analyses;
 
 		public bool ColorByLevel;
@@ -51,7 +51,7 @@ namespace Tailviewer.Settings
 		{
 			Order = -1;
 
-			_activatedQuickFilters = new List<Guid>();
+			_activatedQuickFilters = new List<QuickFilterId>();
 			_analyses = new HashSet<AnalysisId>();
 
 			LevelFilter = LevelFlags.All;
@@ -68,7 +68,7 @@ namespace Tailviewer.Settings
 			File = file;
 		}
 
-		public List<Guid> ActivatedQuickFilters => _activatedQuickFilters;
+		public List<QuickFilterId> ActivatedQuickFilters => _activatedQuickFilters;
 
 		public HashSet<AnalysisId> Analyses => _analyses;
 
@@ -98,10 +98,10 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
 
 			writer.WriteStartElement("activatedquickfilters");
-			foreach (Guid guid in ActivatedQuickFilters)
+			foreach (QuickFilterId guid in ActivatedQuickFilters)
 			{
 				writer.WriteStartElement("quickfilter");
-				writer.WriteAttributeGuid("id", guid);
+				writer.WriteAttribute("id", guid);
 				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
@@ -196,7 +196,7 @@ namespace Tailviewer.Settings
 				switch (subtree.Name)
 				{
 					case "activatedquickfilters":
-						IEnumerable<Guid> filters = ReadActivatedQuickFilters(reader);
+						IEnumerable<QuickFilterId> filters = ReadActivatedQuickFilters(reader);
 						ActivatedQuickFilters.Clear();
 						ActivatedQuickFilters.AddRange(filters);
 						break;
@@ -204,9 +204,9 @@ namespace Tailviewer.Settings
 			}
 		}
 
-		private IEnumerable<Guid> ReadActivatedQuickFilters(XmlReader reader)
+		private IEnumerable<QuickFilterId> ReadActivatedQuickFilters(XmlReader reader)
 		{
-			var guids = new List<Guid>();
+			var guids = new List<QuickFilterId>();
 			XmlReader subtree = reader.ReadSubtree();
 
 			while (subtree.Read())
@@ -221,7 +221,7 @@ namespace Tailviewer.Settings
 							switch (reader.Name)
 							{
 								case "id":
-									guids.Add(reader.ReadContentAsGuid());
+									guids.Add(reader.ReadContentAsQuickFilterId());
 									break;
 							}
 						}

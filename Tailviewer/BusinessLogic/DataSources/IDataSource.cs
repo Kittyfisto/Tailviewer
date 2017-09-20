@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 
@@ -54,9 +55,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		#region QuickFilters
 
-		void ActivateQuickFilter(Guid id);
-		bool DeactivateQuickFilter(Guid id);
-		bool IsQuickFilterActive(Guid id);
+		void ActivateQuickFilter(QuickFilterId id);
+		bool DeactivateQuickFilter(QuickFilterId id);
+		bool IsQuickFilterActive(QuickFilterId id);
 
 		#endregion
 

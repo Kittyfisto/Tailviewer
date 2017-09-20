@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {

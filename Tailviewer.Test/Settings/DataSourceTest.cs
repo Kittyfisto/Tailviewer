@@ -6,7 +6,7 @@ using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.Settings
@@ -53,7 +53,7 @@ namespace Tailviewer.Test.Settings
 		{
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
-			var filter = Guid.NewGuid();
+			var filter = QuickFilterId.CreateNew();
 			var dataSource = new DataSource
 			{
 				VisibleLogLine = new LogLineIndex(42),
@@ -112,7 +112,7 @@ namespace Tailviewer.Test.Settings
 		{
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
-			var filter = Guid.NewGuid();
+			var filter = QuickFilterId.CreateNew();
 
 			using (var stream = new MemoryStream())
 			{

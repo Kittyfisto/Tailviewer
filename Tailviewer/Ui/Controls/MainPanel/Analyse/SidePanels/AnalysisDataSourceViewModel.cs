@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 {

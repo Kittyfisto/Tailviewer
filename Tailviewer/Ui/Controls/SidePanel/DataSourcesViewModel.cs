@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;

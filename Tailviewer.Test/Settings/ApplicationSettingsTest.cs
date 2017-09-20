@@ -6,7 +6,7 @@ using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 
@@ -184,9 +184,9 @@ namespace Tailviewer.Test.Settings
 					HideEmptyLines = true,
 					ActivatedQuickFilters =
 						{
-							Guid.NewGuid(),
-							Guid.NewGuid(),
-							Guid.NewGuid(),
+							QuickFilterId.CreateNew(),
+							QuickFilterId.CreateNew(),
+							QuickFilterId.CreateNew(),
 						}
 				});
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1700.log")
@@ -196,7 +196,7 @@ namespace Tailviewer.Test.Settings
 				ShowLineNumbers = true,
 				IsSingleLine = true,
 			});
-			List<Guid> guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
+			List<QuickFilterId> guids = settings.DataSources[0].ActivatedQuickFilters.ToList();
 			settings.QuickFilters.Add(new QuickFilter
 				{
 					Value = "foobar",
@@ -211,8 +211,8 @@ namespace Tailviewer.Test.Settings
 				MatchType = QuickFilterMatchType.WildcardFilter,
 				IsInverted = false,
 			});
-			Guid filterId1 = settings.QuickFilters[0].Id;
-			Guid filterId2 = settings.QuickFilters[1].Id;
+			QuickFilterId filterId1 = settings.QuickFilters[0].Id;
+			QuickFilterId filterId2 = settings.QuickFilters[1].Id;
 			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
 			settings.Export.ExportFolder = @"C:\hello\world";
 			settings.Save().Should().BeTrue();

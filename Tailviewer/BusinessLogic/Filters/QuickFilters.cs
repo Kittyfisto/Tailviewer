@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
@@ -50,7 +51,7 @@ namespace Tailviewer.BusinessLogic.Filters
 			}
 		}
 
-		public void Remove(Guid id)
+		public void Remove(QuickFilterId id)
 		{
 			lock (_syncRoot)
 			{

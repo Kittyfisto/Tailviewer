@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Xml;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 
 namespace Tailviewer.Settings
 {

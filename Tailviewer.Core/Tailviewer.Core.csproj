@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalysisId.cs" />
+    <Compile Include="DataSourceId.cs" />
     <Compile Include="Filters\EmptyLogLineFilter.cs" />
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="Filters\AndFilter.cs" />
@@ -114,10 +116,13 @@
     <Compile Include="LogTables\Parsers\TimestampParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueExtensions.cs" />
+    <Compile Include="QuickFilterId.cs" />
     <Compile Include="Settings\QuickFilter.cs" />
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\QuickFilterMatchType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
+    <Compile Include="XmlReaderExtensions.cs" />
+    <Compile Include="XmlWriterExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">

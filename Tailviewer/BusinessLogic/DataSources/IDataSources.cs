@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Bookmarks;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {

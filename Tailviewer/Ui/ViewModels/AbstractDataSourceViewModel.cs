@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.ViewModels

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;
 
@@ -158,7 +159,7 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 			}
 		}
 
-		public Guid Id => _quickFilter.Id;
+		public QuickFilterId Id => _quickFilter.Id;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

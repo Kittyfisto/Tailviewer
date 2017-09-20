@@ -11,16 +11,16 @@ namespace Tailviewer.Core.Settings
 		public QuickFilterMatchType MatchType;
 		public string Value;
 		public bool IsInverted;
-		private Guid _id;
+		private QuickFilterId _id;
 
 		public QuickFilter()
 		{
-			_id = Guid.NewGuid();
+			_id = QuickFilterId.CreateNew();
 			IgnoreCase = true;
 			IsInverted = false;
 		}
 
-		public Guid Id => _id;
+		public QuickFilterId Id => _id;
 
 		public bool Restore(XmlReader reader)
 		{
@@ -32,7 +32,7 @@ namespace Tailviewer.Core.Settings
 				switch (reader.Name)
 				{
 					case "id":
-						_id = reader.ReadContentAsGuid();
+						_id = reader.ReadContentAsQuickFilterId();
 						break;
 
 					case "type":
@@ -53,7 +53,7 @@ namespace Tailviewer.Core.Settings
 				}
 			}
 
-			if (Id == Guid.Empty)
+			if (Id == QuickFilterId.Empty)
 				return false;
 
 			return true;
@@ -61,7 +61,7 @@ namespace Tailviewer.Core.Settings
 
 		public void Save(XmlWriter writer)
 		{
-			writer.WriteAttributeGuid("id", Id);
+			writer.WriteAttribute("id", Id);
 			writer.WriteAttributeEnum("type", MatchType);
 			writer.WriteAttributeString("value", Value);
 			writer.WriteAttributeBool("ignorecase", IgnoreCase);

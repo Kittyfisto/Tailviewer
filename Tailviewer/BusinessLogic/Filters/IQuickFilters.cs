@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
@@ -13,6 +13,6 @@ namespace Tailviewer.BusinessLogic.Filters
 		/// <returns></returns>
 		QuickFilter Add();
 
-		void Remove(Guid id);
+		void Remove(QuickFilterId id);
 	}
 }

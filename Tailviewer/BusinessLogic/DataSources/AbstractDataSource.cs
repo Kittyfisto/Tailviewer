@@ -4,6 +4,7 @@ using System.Threading;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -101,18 +102,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public DataSourceId ParentId => _settings.ParentId;
 
-		public void ActivateQuickFilter(Guid id)
+		public void ActivateQuickFilter(QuickFilterId id)
 		{
 			// Should I add a sanity check here?
 			_settings.ActivatedQuickFilters.Add(id);
 		}
 
-		public bool DeactivateQuickFilter(Guid id)
+		public bool DeactivateQuickFilter(QuickFilterId id)
 		{
 			return _settings.ActivatedQuickFilters.Remove(id);
 		}
 
-		public bool IsQuickFilterActive(Guid id)
+		public bool IsQuickFilterActive(QuickFilterId id)
 		{
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}

@@ -8,6 +8,7 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources

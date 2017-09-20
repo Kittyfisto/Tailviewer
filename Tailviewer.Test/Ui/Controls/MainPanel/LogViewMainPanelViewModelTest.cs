@@ -10,6 +10,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -134,14 +135,14 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		private Mock<IDataSource> CreateDataSource()
 		{
 			var dataSource = new Mock<IDataSource>();
-			var activeFilters = new HashSet<Guid>();
-			dataSource.Setup(x => x.ActivateQuickFilter(It.IsAny<Guid>()))
+			var activeFilters = new HashSet<QuickFilterId>();
+			dataSource.Setup(x => x.ActivateQuickFilter(It.IsAny<QuickFilterId>()))
 				.Callback(
-					(Guid id) => { activeFilters.Add(id); });
-			dataSource.Setup(x => x.DeactivateQuickFilter(It.IsAny<Guid>()))
-				.Returns((Guid id) => activeFilters.Remove(id));
-			dataSource.Setup(x => x.IsQuickFilterActive(It.IsAny<Guid>()))
-				.Returns((Guid id) => activeFilters.Contains(id));
+					(QuickFilterId id) => { activeFilters.Add(id); });
+			dataSource.Setup(x => x.DeactivateQuickFilter(It.IsAny<QuickFilterId>()))
+				.Returns((QuickFilterId id) => activeFilters.Remove(id));
+			dataSource.Setup(x => x.IsQuickFilterActive(It.IsAny<QuickFilterId>()))
+				.Returns((QuickFilterId id) => activeFilters.Contains(id));
 
 			var logFile = new InMemoryLogFile();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile);

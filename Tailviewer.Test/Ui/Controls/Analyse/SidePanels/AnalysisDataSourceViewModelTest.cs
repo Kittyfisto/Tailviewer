@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 

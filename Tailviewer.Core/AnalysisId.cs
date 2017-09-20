@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.BusinessLogic.DataSources
+namespace Tailviewer.Core
 {
+	/// <summary>
+	///     A globally unique identifier for an analysis.
+	/// </summary>
 	public struct AnalysisId
 		: IEquatable<AnalysisId>
 	{
-		public AnalysisId(Guid id)
+		public static readonly AnalysisId Empty = new AnalysisId();
+
+		public AnalysisId(Guid value)
 		{
-			_id = id;
+			_value = value;
 		}
+
+		public Guid Value => _value;
 
 		public bool Equals(AnalysisId other)
 		{
-			return _id.Equals(other._id);
+			return _value.Equals(other._value);
 		}
 
 		public override bool Equals(object obj)
@@ -24,7 +31,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public override int GetHashCode()
 		{
-			return _id.GetHashCode();
+			return _value.GetHashCode();
 		}
 
 		public static bool operator ==(AnalysisId left, AnalysisId right)
@@ -39,10 +46,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public override string ToString()
 		{
-			return _id.ToString();
+			return _value.ToString();
 		}
 
-		private readonly Guid _id;
+		private readonly Guid _value;
 
 		[Pure]
 		public static AnalysisId CreateNew()

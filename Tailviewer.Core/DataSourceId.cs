@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.BusinessLogic.DataSources
+namespace Tailviewer.Core
 {
 	/// <summary>
-	///     Uniquely identifies a <see cref="IDataSource" />.
+	///     Uniquely identifies a data source.
 	/// </summary>
 	public struct DataSourceId
 		: IEquatable<DataSourceId>

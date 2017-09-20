@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
 
