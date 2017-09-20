@@ -95,6 +95,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractIdTest.cs" />
+    <Compile Include="AnalysisIdTest.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
@@ -144,10 +146,13 @@
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
     <Compile Include="ChangelogTest.cs" />
+    <Compile Include="DataSourceIdTest.cs" />
     <Compile Include="DefectAttribute.cs" />
     <Compile Include="EnhancementAttribute.cs" />
     <Compile Include="FileExTest.cs" />
     <Compile Include="LocalTest.cs" />
+    <Compile Include="LogAnalyserIdTest.cs" />
+    <Compile Include="QuickFilterIdTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\Dashboard\Analysers\Event\EventsAnalyserSettingsTest.cs" />
@@ -191,6 +196,7 @@
     <Compile Include="Ui\MainWindowViewModelTest.cs" />
     <Compile Include="Ui\QuickFiltersViewModelTest.cs" />
     <Compile Include="Ui\QuickFilterViewModelTest.cs" />
+    <Compile Include="WidgetIdTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Settings\settings_no_file_guid.xml">

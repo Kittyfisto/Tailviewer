@@ -22,5 +22,17 @@ namespace Tailviewer.Core
 			var guid = reader.ReadContentAsGuid();
 			return new AnalysisId(guid);
 		}
+
+		public static LogAnalyserId ReadContentAsLogAnalyserId(this XmlReader reader)
+		{
+			var guid = reader.ReadContentAsGuid();
+			return new LogAnalyserId(guid);
+		}
+
+		public static WidgetId ReadContentAsWidgetId(this XmlReader reader)
+		{
+			var guid = reader.ReadContentAsGuid();
+			return new WidgetId(guid);
+		}
 	}
 }

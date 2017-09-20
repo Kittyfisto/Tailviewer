@@ -19,5 +19,15 @@ namespace Tailviewer.Core
 		{
 			writer.WriteAttributeGuid(localName, id.Value);
 		}
+
+		public static void WriteAttribute(this XmlWriter writer, string localName, LogAnalyserId id)
+		{
+			writer.WriteAttributeGuid(localName, id.Value);
+		}
+
+		public static void WriteAttribute(this XmlWriter writer, string localName, WidgetId id)
+		{
+			writer.WriteAttributeGuid(localName, id.Value);
+		}
 	}
 }
