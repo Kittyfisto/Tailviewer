@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
@@ -83,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				{
 					new DataSource(@"E:\Code\test.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						}
 				};
 			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings))
@@ -103,18 +102,18 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				{
 					new DataSource("test1.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						},
 					new DataSource("test2.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						},
 					new DataSource("test.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						}
 				};
-			var merged = new DataSource {Id = Guid.NewGuid()};
+			var merged = new DataSource {Id = DataSourceId.CreateNew()};
 			settings.Add(merged);
 			settings[0].ParentId = merged.Id;
 			settings[1].ParentId = merged.Id;
@@ -142,22 +141,22 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				{
 					new DataSource("test1.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						},
 					new DataSource("test2.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						},
 					new DataSource("test.log")
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						}
 				};
-			var merged1 = new DataSource {Id = Guid.NewGuid()};
+			var merged1 = new DataSource {Id = DataSourceId.CreateNew()};
 			settings.Add(merged1);
-			var merged2 = new DataSource {Id = Guid.NewGuid()};
+			var merged2 = new DataSource {Id = DataSourceId.CreateNew()};
 			settings.Add(merged2);
-			var merged3 = new DataSource {Id = Guid.NewGuid()};
+			var merged3 = new DataSource {Id = DataSourceId.CreateNew()};
 			settings.Add(merged3);
 			settings[0].ParentId = merged1.Id;
 			settings[1].ParentId = merged2.Id;

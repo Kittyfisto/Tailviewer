@@ -1,12 +1,12 @@
-using System;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Settings
 {
 	public interface IDataSourcesSettings
 		: IList<DataSource>
 	{
-		Guid SelectedItem { get; set; }
+		DataSourceId SelectedItem { get; set; }
 
 		/// <summary>
 		///     Moves the element <paramref name="dataSource" /> to appear *anchor*

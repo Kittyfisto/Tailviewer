@@ -57,7 +57,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public Guid Id => _dataSource.Id;
+		public DataSourceId Id => _dataSource.Id;
 
 		public bool IsGrouped
 		{
@@ -438,7 +438,7 @@ namespace Tailviewer.Ui.ViewModels
 			get { return _parent; }
 			set
 			{
-				_dataSource.Settings.ParentId = value?.DataSource.Id ?? Guid.Empty;
+				_dataSource.Settings.ParentId = value?.DataSource.Id ?? DataSourceId.Empty;
 				_parent = value;
 				IsGrouped = value != null;
 			}

@@ -31,7 +31,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
-			if (settings.Id == Guid.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
+			if (settings.Id == DataSourceId.Empty) throw new ArgumentException("settings.Id shall be set to an actually generated id");
 
 			_taskScheduler = taskScheduler;
 			_settings = settings;
@@ -97,9 +97,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.LastViewed = value; }
 		}
 
-		public Guid Id => _settings.Id;
+		public DataSourceId Id => _settings.Id;
 
-		public Guid ParentId => _settings.ParentId;
+		public DataSourceId ParentId => _settings.ParentId;
 
 		public void ActivateQuickFilter(Guid id)
 		{

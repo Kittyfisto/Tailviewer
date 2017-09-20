@@ -61,7 +61,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestConstruction1()
 		{
-			using (var source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") { Id = Guid.NewGuid() }))
+			using (var source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				source.FullFileName.Should().Be(@"E:\somelogfile.txt");
 				source.LevelFilter.Should().Be(LevelFlags.All);
@@ -75,7 +75,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			var settings = new DataSource(@"E:\somelogfile.txt")
 			{
-				Id = Guid.NewGuid(),
+				Id = DataSourceId.CreateNew(),
 				SelectedLogLines = new HashSet<LogLineIndex> {1, 2}
 			};
 			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
@@ -92,7 +92,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			LogFileSearchProxy permanentSearch;
 
 			SingleDataSource source;
-			using (source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = Guid.NewGuid()}))
+			using (source = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()}))
 			{
 				permanentLogFile = (LogFileProxy) source.FilteredLogFile;
 				permanentSearch = (LogFileSearchProxy) source.Search;
@@ -110,7 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose2()
 		{
 			SingleDataSource source = new SingleDataSource(_logFileFactory, _scheduler,
-				new DataSource(@"E:\somelogfile.txt") {Id = Guid.NewGuid()});
+				new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()});
 			_scheduler.PeriodicTaskCount.Should().BeGreaterThan(0);
 			source.Dispose();
 			_scheduler.PeriodicTaskCount.Should().Be(0);
@@ -120,7 +120,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				_scheduler.RunOnce();
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
@@ -139,7 +139,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the level of a log line is unambigously defined")]
 		public void TestLevelPrecedence()
 		{
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				_scheduler.Run(count: 2);
 
@@ -241,7 +241,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 		private DataSource CreateDataSource()
 		{
-			return new DataSource("ffff") {Id = Guid.NewGuid()};
+			return new DataSource("ffff") {Id = DataSourceId.CreateNew()};
 		}
 	}
 }

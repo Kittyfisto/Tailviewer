@@ -6,6 +6,7 @@ using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.Settings
@@ -50,8 +51,8 @@ namespace Tailviewer.Test.Settings
 			[ValueSource(nameof(Bool))] bool isSingleLine,
 			[ValueSource(nameof(Bool))] bool isExpanded)
 		{
-			var id = Guid.NewGuid();
-			var parent = Guid.NewGuid();
+			var id = DataSourceId.CreateNew();
+			var parent = DataSourceId.CreateNew();
 			var filter = Guid.NewGuid();
 			var dataSource = new DataSource
 			{
@@ -109,8 +110,8 @@ namespace Tailviewer.Test.Settings
 			[ValueSource(nameof(Bool))] bool isSingleLine,
 			[ValueSource(nameof(Bool))] bool isExpanded)
 		{
-			var id = Guid.NewGuid();
-			var parent = Guid.NewGuid();
+			var id = DataSourceId.CreateNew();
+			var parent = DataSourceId.CreateNew();
 			var filter = Guid.NewGuid();
 
 			using (var stream = new MemoryStream())

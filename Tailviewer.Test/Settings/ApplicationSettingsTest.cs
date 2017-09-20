@@ -6,6 +6,7 @@ using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 
@@ -41,7 +42,7 @@ namespace Tailviewer.Test.Settings
 			string fname = Path.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			var dataSource = new DataSource("foo");
-			dataSource.Id = Guid.NewGuid();
+			dataSource.Id = DataSourceId.CreateNew();
 			settings.DataSources.Add(dataSource);
 			settings.Save();
 
@@ -62,8 +63,8 @@ namespace Tailviewer.Test.Settings
 			string fname = Path.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
 			var dataSource = new DataSource("foo");
-			dataSource.Id = Guid.NewGuid();
-			dataSource.ParentId = Guid.NewGuid();
+			dataSource.Id = DataSourceId.CreateNew();
+			dataSource.ParentId = DataSourceId.CreateNew();
 			settings.DataSources.Add(dataSource);
 			settings.Save();
 
@@ -174,7 +175,7 @@ namespace Tailviewer.Test.Settings
 			settings.MainWindow.State = WindowState.Maximized;
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1600.log")
 				{
-					Id = Guid.NewGuid(),
+					Id = DataSourceId.CreateNew(),
 					FollowTail = true,
 					SearchTerm = "foobar",
 					LevelFilter = LevelFlags.Debug,
@@ -190,7 +191,7 @@ namespace Tailviewer.Test.Settings
 				});
 			settings.DataSources.Add(new DataSource(@"SharpRemote.Host.1700.log")
 			{
-				Id = Guid.NewGuid(),
+				Id = DataSourceId.CreateNew(),
 				FollowTail = false,
 				ShowLineNumbers = true,
 				IsSingleLine = true,

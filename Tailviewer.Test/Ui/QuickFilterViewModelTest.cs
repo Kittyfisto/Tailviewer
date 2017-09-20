@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_quickFilter = new QuickFilter(new Core.Settings.QuickFilter());
-			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _dataSourceSettings = new DataSource("nothing") {Id = Guid.NewGuid()});
+			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _dataSourceSettings = new DataSource("nothing") {Id = DataSourceId.CreateNew()});
 			_model = new QuickFilterViewModel(_quickFilter, x => { })
 				{
 					CurrentDataSource = _dataSource

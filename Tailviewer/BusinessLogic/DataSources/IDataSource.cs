@@ -8,7 +8,8 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
-	public interface IDataSource : IDisposable
+	public interface IDataSource
+		: IDisposable
 	{
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.
@@ -36,8 +37,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool ColorByLevel { get; set; }
 		bool HideEmptyLines { get; set; }
 		bool IsSingleLine { get; set; }
-		Guid Id { get; }
-		Guid ParentId { get; }
+		DataSourceId Id { get; }
+		DataSourceId ParentId { get; }
 
 		#region Counts
 

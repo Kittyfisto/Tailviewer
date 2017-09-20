@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Metrolib;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Settings
 {
@@ -16,7 +16,7 @@ namespace Tailviewer.Settings
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public Guid SelectedItem { get; set; }
+		public DataSourceId SelectedItem { get; set; }
 
 		object ICloneable.Clone()
 		{
@@ -28,7 +28,7 @@ namespace Tailviewer.Settings
 			neededPatching = false;
 			var dataSources = new List<DataSource>();
 			var subtree = reader.ReadSubtree();
-			var selectedItem = Guid.Empty;
+			var selectedItem = DataSourceId.Empty;
 
 			while (subtree.Read())
 				switch (subtree.Name)
@@ -40,7 +40,7 @@ namespace Tailviewer.Settings
 							switch (subtree.Name)
 							{
 								case "selecteditem":
-									selectedItem = subtree.ReadContentAsGuid();
+									selectedItem = subtree.ReadContentAsDataSourceId();
 									break;
 							}
 						}
@@ -65,7 +65,7 @@ namespace Tailviewer.Settings
 					SelectedItem = selectedItem;
 			}
 
-			if (SelectedItem != selectedItem || selectedItem == Guid.Empty)
+			if (SelectedItem != selectedItem || selectedItem == DataSourceId.Empty)
 			{
 				Log.WarnFormat("Selected item '{0}' not found in data-sources, ignoring it...", selectedItem);
 				if (Count > 0)
@@ -75,7 +75,7 @@ namespace Tailviewer.Settings
 
 		public void Save(XmlWriter writer)
 		{
-			writer.WriteAttributeGuid("selecteditem", SelectedItem);
+			writer.WriteAttribute("selecteditem", SelectedItem);
 
 			foreach (var dataSource in this)
 			{

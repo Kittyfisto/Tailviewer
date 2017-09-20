@@ -4,6 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -148,10 +149,10 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor1()
 		{
 			_settings = new ApplicationSettings("foobar");
-			var group = new DataSource {Id = Guid.NewGuid()};
-			var source1 = new DataSource("foo") {Id = Guid.NewGuid(), ParentId = group.Id};
-			var source2 = new DataSource("bar") {Id = Guid.NewGuid(), ParentId = group.Id};
-			var source3 = new DataSource("clondyke") {Id = Guid.NewGuid()};
+			var group = new DataSource {Id = DataSourceId.CreateNew()};
+			var source1 = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = group.Id};
+			var source2 = new DataSource("bar") {Id = DataSourceId.CreateNew(), ParentId = group.Id};
+			var source3 = new DataSource("clondyke") {Id = DataSourceId .CreateNew()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
@@ -179,8 +180,8 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor2()
 		{
 			_settings = new ApplicationSettings("foobar");
-			var group = new DataSource {Id = Guid.NewGuid()};
-			var source = new DataSource("foo") {Id = Guid.NewGuid(), ParentId = Guid.NewGuid()};
+			var group = new DataSource {Id = DataSourceId.CreateNew()};
+			var source = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
@@ -305,12 +306,12 @@ namespace Tailviewer.Test.Ui
 			_model.OnDropped(a, merged, DataSourceDropType.ArrangeTop);
 
 			a.Parent.Should().BeNull();
-			a.DataSource.ParentId.Should().Be(Guid.Empty);
+			a.DataSource.ParentId.Should().Be(DataSourceId.Empty);
 			_dataSources.Should().Contain(a.DataSource);
 			_settings.DataSources.Should().Contain(a.DataSource.Settings);
 
 			b.Parent.Should().BeNull();
-			b.DataSource.ParentId.Should().Be(Guid.Empty);
+			b.DataSource.ParentId.Should().Be(DataSourceId.Empty);
 			_dataSources.Should().Contain(b.DataSource);
 			_settings.DataSources.Should().Contain(b.DataSource.Settings);
 
@@ -559,7 +560,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove1()
 		{
 			_settings = new ApplicationSettings("foobar");
-			var source = new DataSource("foo") {Id = Guid.NewGuid()};
+			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
@@ -578,10 +579,10 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove2()
 		{
 			_settings = new ApplicationSettings("foobar");
-			var group = new DataSource {Id = Guid.NewGuid()};
-			var source1 = new DataSource("foo") {Id = Guid.NewGuid(), ParentId = group.Id};
-			var source2 = new DataSource("bar") {Id = Guid.NewGuid(), ParentId = group.Id};
-			var source3 = new DataSource("clondyke") {Id = Guid.NewGuid(), ParentId = group.Id};
+			var group = new DataSource {Id = DataSourceId.CreateNew()};
+			var source1 = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = group.Id};
+			var source2 = new DataSource("bar") {Id = DataSourceId.CreateNew(), ParentId = group.Id};
+			var source3 = new DataSource("clondyke") {Id = DataSourceId.CreateNew(), ParentId = group.Id};
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
@@ -607,7 +608,7 @@ namespace Tailviewer.Test.Ui
 		)]
 		public void TestRemove3()
 		{
-			var source = new DataSource("foo") { Id = Guid.NewGuid() };
+			var source = new DataSource("foo") { Id = DataSourceId.CreateNew() };
 			_settings.DataSources.Add(source);
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
 			_model = new DataSourcesViewModel(_settings, _dataSources);
@@ -655,9 +656,9 @@ namespace Tailviewer.Test.Ui
 			b.Parent.Should().BeSameAs(merged);
 			merged.RemoveCommand.Execute(null);
 			a.Parent.Should().BeNull();
-			a.DataSource.ParentId.Should().Be(Guid.Empty);
+			a.DataSource.ParentId.Should().Be(DataSourceId.Empty);
 			b.Parent.Should().BeNull();
-			b.DataSource.ParentId.Should().Be(Guid.Empty);
+			b.DataSource.ParentId.Should().Be(DataSourceId.Empty);
 		}
 
 		[Test]

@@ -34,7 +34,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		bool Contains(Guid id);
+		bool Contains(DataSourceId id);
 
 		SingleDataSource AddDataSource(string fileName);
 		MergedDataSource AddGroup();

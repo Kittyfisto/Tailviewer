@@ -55,7 +55,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 
 		public string DisplayName => _displayName;
 
-		public Guid Id => _dataSource.Id;
+		public DataSourceId Id => _dataSource.Id;
 
 		public string Folder => _folder;
 

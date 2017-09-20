@@ -24,7 +24,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_settings = new DataSource
 				{
-					Id = Guid.NewGuid()
+					Id = DataSourceId.CreateNew()
 				};
 			_merged = new MergedDataSource(_scheduler, _settings);
 		}
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that adding a data source to a group sets the parent id of the settings object")]
 		public void TestAdd1()
 		{
-			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that adding a data source to a group adds it's logfile to the group's one")]
 		public void TestAdd2()
 		{
-			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			_merged.UnfilteredLogFile.Should().NotBeNull();
@@ -61,7 +61,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that the data source disposed of the merged log file")]
 		public void TestAdd3()
 		{
-			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 
@@ -78,7 +78,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 			_merged.SearchTerm = "foo";
-			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
 			_merged.Add(dataSource1);
 			ILogFile logFile2 = _merged.UnfilteredLogFile;
@@ -123,22 +123,22 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			"Verifies that removing a data source from a group sets the parent id of the settings object to Empty again")]
 		public void TestRemove1()
 		{
-			var settings = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
-			dataSource.Settings.ParentId.Should().Be(Guid.Empty);
+			dataSource.Settings.ParentId.Should().Be(DataSourceId.Empty);
 		}
 
 		[Test]
 		[Description("Verifies that removing a data source from a group also removes its logfile from the merged logfile")]
 		public void TestRemove2()
 		{
-			var settings1 = new DataSource("foo") {Id = Guid.NewGuid()};
+			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
 			_merged.Add(dataSource1);
 
-			var settings2 = new DataSource("bar") {Id = Guid.NewGuid()};
+			var settings2 = new DataSource("bar") {Id = DataSourceId.CreateNew()};
 			var dataSource2 = new SingleDataSource(_logFileFactory, _scheduler, settings2);
 			_merged.Add(dataSource2);
 

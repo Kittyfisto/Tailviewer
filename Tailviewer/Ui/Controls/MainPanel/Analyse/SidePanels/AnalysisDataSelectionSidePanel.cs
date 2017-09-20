@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using Metrolib;
@@ -12,7 +11,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 	public sealed class AnalysisDataSelectionSidePanel
 		: AbstractSidePanelViewModel
 	{
-		private readonly Dictionary<Guid, AnalysisDataSourceViewModel> _dataSourcesById;
+		private readonly Dictionary<DataSourceId, AnalysisDataSourceViewModel> _dataSourcesById;
 		private readonly ObservableCollection<AnalysisDataSourceViewModel> _dataSourceViewModels;
 		private readonly IDataSources _dataSources;
 		private AnalysisViewModel _currentAnalysis;
@@ -20,7 +19,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		public AnalysisDataSelectionSidePanel(IApplicationSettings settings, IDataSources dataSources)
 		{
 			_dataSources = dataSources;
-			_dataSourcesById = new Dictionary<Guid, AnalysisDataSourceViewModel>();
+			_dataSourcesById = new Dictionary<DataSourceId, AnalysisDataSourceViewModel>();
 			_dataSourceViewModels = new ObservableCollection<AnalysisDataSourceViewModel>();
 
 			Update();

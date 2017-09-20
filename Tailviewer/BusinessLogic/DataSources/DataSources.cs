@@ -22,7 +22,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly ILogFileFactory _logFileFactory;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<IDataSource> _dataSources;
-		private readonly HashSet<Guid> _dataSourceIds;
+		private readonly HashSet<DataSourceId> _dataSourceIds;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly IDataSourcesSettings _settings;
 		private readonly object _syncRoot;
@@ -40,7 +40,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_settings = settings;
 			_bookmarks = new BookmarkCollection(_maximumWaitTime);
 			_dataSources = new List<IDataSource>();
-			_dataSourceIds = new HashSet<Guid>();
+			_dataSourceIds = new HashSet<DataSourceId>();
 			foreach (DataSource dataSource in settings)
 			{
 				AddDataSource(dataSource);
@@ -48,8 +48,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			foreach (IDataSource dataSource in _dataSources)
 			{
-				Guid parentId = dataSource.Settings.ParentId;
-				if (parentId != Guid.Empty)
+				DataSourceId parentId = dataSource.Settings.ParentId;
+				if (parentId != DataSourceId.Empty)
 				{
 					var parent = _dataSources.FirstOrDefault(x => x.Id == parentId) as MergedDataSource;
 					if (parent != null)
@@ -65,7 +65,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 						// We don't want the rest of the application having to deal with this.
 						// Therefore we'll simply remove the parent link and treat this data
 						// source as any other ungrouped one.
-						dataSource.Settings.ParentId = Guid.Empty;
+						dataSource.Settings.ParentId = DataSourceId.Empty;
 					}
 				}
 			}
@@ -100,7 +100,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_bookmarks.RemoveBookmark(bookmark);
 		}
 
-		public bool Contains(Guid id)
+		public bool Contains(DataSourceId id)
 		{
 			return _dataSourceIds.Contains(id);
 		}
@@ -171,7 +171,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			{
 				var settings = new DataSource
 					{
-						Id = Guid.NewGuid()
+						Id = DataSourceId.CreateNew()
 					};
 				_settings.Add(settings);
 				dataSource = (MergedDataSource) AddDataSource(settings);
@@ -195,7 +195,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				{
 					var settings = new DataSource(fullFileName)
 						{
-							Id = Guid.NewGuid()
+							Id = DataSourceId.CreateNew()
 						};
 					_settings.Add(settings);
 					dataSource = (SingleDataSource) AddDataSource(settings);

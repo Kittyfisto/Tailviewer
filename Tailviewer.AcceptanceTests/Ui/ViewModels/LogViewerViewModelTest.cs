@@ -7,7 +7,6 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
@@ -46,7 +45,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Description("Verifies listener modifications from previous log files are properly discarded")]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(TextLogFileAcceptanceTest.File20Mb) { Id = Guid.NewGuid() }))
+			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(TextLogFileAcceptanceTest.File20Mb) { Id = DataSourceId.CreateNew() }))
 			{
 				var dataSourceModel = new SingleDataSourceViewModel(dataSource);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);

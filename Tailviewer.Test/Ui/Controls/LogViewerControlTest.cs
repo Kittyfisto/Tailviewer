@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void SetUp()
 		{
 			_settings = new Mock<IApplicationSettings>();
-			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
+			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			_control = new LogViewerControl
 				{
 					DataSource = _dataSource,
@@ -333,7 +333,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestCtor()
 		{
-			var source = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = Guid.NewGuid()}));
+			var source = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl

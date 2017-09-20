@@ -42,7 +42,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAdd()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") {Id = Guid.NewGuid()});
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") {Id = DataSourceId.CreateNew()});
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
@@ -52,7 +52,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") { Id = DataSourceId.CreateNew() });
 			QuickFilterViewModel filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
 
@@ -68,7 +68,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			model.CurrentDataSource =
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("adw") { Id = Guid.NewGuid() }));
+				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("adw") { Id = DataSourceId.CreateNew() }));
 
 			int numFilterChanges = 0;
 			QuickFilterViewModel filter = model.AddQuickFilter();
@@ -105,7 +105,7 @@ namespace Tailviewer.Test.Ui
 		public void TestCtor2()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
@@ -120,7 +120,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove1()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
@@ -140,7 +140,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemove2()
 		{
 			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.Ui
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			model.QuickInfo.Should().BeNull();
 
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = Guid.NewGuid() });
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
 			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
 			model.QuickFilters.ElementAt(0).IsActive = true;
 			model.QuickInfo.Should().Be("1 active");

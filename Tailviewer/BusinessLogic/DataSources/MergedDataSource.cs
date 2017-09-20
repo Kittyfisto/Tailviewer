@@ -44,7 +44,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Add(IDataSource dataSource)
 		{
-			if (dataSource.ParentId != Guid.Empty && dataSource.ParentId != Id)
+			if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)
 				throw new ArgumentException("This data source already belongs to a different parent");
 
 			if (_dataSources.Add(dataSource))
@@ -63,7 +63,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");
 
-			dataSource.Settings.ParentId = Guid.Empty;
+			dataSource.Settings.ParentId = DataSourceId.Empty;
 			UpdateLogFile();
 		}
 

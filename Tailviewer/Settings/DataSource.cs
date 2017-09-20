@@ -30,7 +30,7 @@ namespace Tailviewer.Settings
 		/// <summary>
 		///     Uniquely identifies this data source amongst all others.
 		/// </summary>
-		public Guid Id;
+		public DataSourceId Id;
 
 		public DateTime LastViewed;
 		public LevelFlags LevelFilter;
@@ -40,7 +40,7 @@ namespace Tailviewer.Settings
 		///     Uniquely identifies this data-source's parent, if any.
 		///     Set to <see cref="Guid.Empty" /> if this data source has no parent.
 		/// </summary>
-		public Guid ParentId;
+		public DataSourceId ParentId;
 
 		public HashSet<LogLineIndex> SelectedLogLines;
 		public string SearchTerm;
@@ -92,8 +92,8 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeBool("singleline", IsSingleLine);
 			writer.WriteAttributeBool("expanded", IsExpanded);
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
-			writer.WriteAttributeGuid("id", Id);
-			writer.WriteAttributeGuid("parentid", ParentId);
+			writer.WriteAttribute("id", Id);
+			writer.WriteAttribute("parentid", ParentId);
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
 
@@ -157,11 +157,11 @@ namespace Tailviewer.Settings
 						break;
 
 					case "id":
-						Id = reader.ReadContentAsGuid();
+						Id = reader.ReadContentAsDataSourceId();
 						break;
 
 					case "parentid":
-						ParentId = reader.ReadContentAsGuid();
+						ParentId = reader.ReadContentAsDataSourceId();
 						break;
 
 					case "lastviewed":
@@ -174,9 +174,9 @@ namespace Tailviewer.Settings
 				}
 			}
 
-			if (Id == Guid.Empty)
+			if (Id == DataSourceId.Empty)
 			{
-				Id = Guid.NewGuid();
+				Id = DataSourceId.CreateNew();
 				Log.InfoFormat("Data Source '{0}' doesn't have an ID yet, setting it to: {1}",
 				               File,
 				               Id

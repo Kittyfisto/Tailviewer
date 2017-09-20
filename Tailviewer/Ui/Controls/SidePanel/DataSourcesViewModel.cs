@@ -37,7 +37,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			_dataSources = dataSources;
 			foreach (IDataSource dataSource in dataSources)
 			{
-				if (dataSource.ParentId == Guid.Empty)
+				if (dataSource.ParentId == DataSourceId.Empty)
 				{
 					Add(dataSource);
 				}
@@ -45,8 +45,8 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 			foreach (IDataSource dataSource in dataSources)
 			{
-				Guid parentId = dataSource.ParentId;
-				if (parentId != Guid.Empty)
+				DataSourceId parentId = dataSource.ParentId;
+				if (parentId != DataSourceId.Empty)
 				{
 					IDataSourceViewModel parent = _observable.First(x => x.DataSource.Id == parentId);
 					var group = (MergedDataSourceViewModel) parent;
@@ -100,7 +100,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				}
 				else
 				{
-					_settings.DataSources.SelectedItem = Guid.Empty;
+					_settings.DataSources.SelectedItem = DataSourceId.Empty;
 					QuickInfo = null;
 				}
 

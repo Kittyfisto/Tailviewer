@@ -5,8 +5,6 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -23,7 +21,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
 			_settings = new DataSource(TextLogFileAcceptanceTest.File20Mb)
 			{
-				Id = Guid.NewGuid()
+				Id = DataSourceId.CreateNew()
 			};
 			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
