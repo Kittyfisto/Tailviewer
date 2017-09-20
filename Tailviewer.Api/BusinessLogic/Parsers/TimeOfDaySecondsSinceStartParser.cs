@@ -51,11 +51,11 @@ namespace Tailviewer.BusinessLogic.Parsers
 			minutes = 0;
 			seconds = 0;
 
-			var minutesIndex = content.IndexOf(":", startIndex, StringComparison.CurrentCulture);
+			var minutesIndex = content.IndexOf(":", startIndex, length-startIndex, StringComparison.CurrentCulture);
 			if (minutesIndex == -1)
 				return false;
 
-			var secondsIndex = content.IndexOf(":", minutesIndex + 1, StringComparison.CurrentCulture);
+			var secondsIndex = content.IndexOf(":", minutesIndex + 1, length - minutesIndex- 1, StringComparison.CurrentCulture);
 			if (secondsIndex == -1)
 				return false;
 

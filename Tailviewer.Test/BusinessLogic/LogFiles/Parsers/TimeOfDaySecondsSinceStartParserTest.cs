@@ -55,5 +55,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 
 			parser.TryParse(content, out timestamp).Should().BeFalse();
 		}
+
+		[Test]
+		public void TestTryParse4()
+		{
+			var parser = new TimeOfDaySecondsSinceStartParser();
+
+			DateTime timestamp;
+
+			const string content = " \"c:\\windows\\syswow64\\\\windowspowershell\\v1.0\\powershell.exe\" -NonInteractive -NoLogo -NoProfile -ExecutionPolicy Bypass -InputFormat None \"$ErrorActionPreference=\"\"\"Stop\"\"\"; $VerbosePreference=\"\"\"Continue\"\"\"; $CeipSetting=\"\"\"on\"\"\"; $ScriptPath=\"\"\"C:\\";
+			parser.TryParse(content, out timestamp).Should().BeFalse();
+			timestamp.Should().Be(DateTime.MinValue);
+		}
 	}
 }
