@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     A globally unique identifier for a log analyser instance.
