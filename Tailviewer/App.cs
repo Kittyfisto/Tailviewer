@@ -15,6 +15,7 @@ using Tailviewer.Ui.ViewModels;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -75,6 +76,8 @@ namespace Tailviewer
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 				using (var analysisEngine = new AnalysisEngine(taskScheduler))
 				{
+					analysisEngine.RegisterFactory(new LogEntryCountAnalyserFactory());
+
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)
 					{

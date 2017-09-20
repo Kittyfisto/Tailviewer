@@ -100,7 +100,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public abstract void OnUpdate();
+		public abstract void Update();
 
 		public event Action<IWidgetViewModel> OnDelete;
 

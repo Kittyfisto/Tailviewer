@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 {
@@ -15,7 +16,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 		{
 			return new LogEntryCountAnalyser(scheduler,
 				source,
-				TimeSpan.FromMilliseconds(500),
+				TimeSpan.FromMilliseconds(100),
 				(LogEntryCountAnalyserConfiguration)configuration);
 		}
 	}

@@ -1,6 +1,8 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {

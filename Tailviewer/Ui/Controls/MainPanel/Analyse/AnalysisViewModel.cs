@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
@@ -19,8 +20,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	{
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _addPageCommand;
-
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
+		private AnalysisPageViewModel _selectedPage;
+
 		private string _name;
 
 		public AnalysisViewModel(IAnalyserGroup analyser)
@@ -33,11 +35,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			AddPage();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_name = "Unsaved analysis";
+
+			_selectedPage = _pages.FirstOrDefault();
 		}
 
 		public AnalysisId Id => _analyser.Id;
 
 		public IEnumerable<AnalysisPageViewModel> Pages => _pages;
+
+		public AnalysisPageViewModel SelectedPage
+		{
+			get { return _selectedPage; }
+			set
+			{
+				if (value == _selectedPage)
+					return;
+
+				_selectedPage = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public string Name
 		{
@@ -53,7 +70,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		}
 
 		public ICommand AddPageCommand => _addPageCommand;
+
+		public void Add(ILogFile logFile)
+		{
+			_analyser.Add(logFile);
+		}
+
+		public void Remove(ILogFile logFile)
+		{
+			_analyser.Remove(logFile);
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
+
+		public void Update()
+		{
+			_selectedPage?.Update();
+		}
 
 		private void AddPage()
 		{

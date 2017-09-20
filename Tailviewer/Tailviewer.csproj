@@ -100,7 +100,6 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyserFactoryId.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoResult.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />

@@ -1,9 +1,9 @@
 ﻿using System;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.Core
 {
 	/// <summary>
+	///     Identifies a log analyer factory type (i.e. an implementation of the interface).
 	/// </summary>
 	/// <remarks>
 	///     TODO: Make serializable
@@ -14,7 +14,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		///     This id may be used to specify that a <see cref="IWidgetFactory" /> does not need a
 		///     <see cref="ILogAnalyserFactory" />.
 		/// </summary>
-		public static readonly LogAnalyserFactoryId None = new LogAnalyserFactoryId();
+		public static readonly LogAnalyserFactoryId Empty = new LogAnalyserFactoryId();
 
 		public bool Equals(LogAnalyserFactoryId other)
 		{

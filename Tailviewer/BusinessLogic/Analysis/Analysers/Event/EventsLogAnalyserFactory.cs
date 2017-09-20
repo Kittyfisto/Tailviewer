@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 {

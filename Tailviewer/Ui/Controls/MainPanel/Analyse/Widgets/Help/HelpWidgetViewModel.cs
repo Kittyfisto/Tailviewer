@@ -11,7 +11,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 			Title = "Help";
 		}
 
-		public override void OnUpdate()
+		public override void Update()
 		{
 			
 		}

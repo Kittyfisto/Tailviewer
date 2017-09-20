@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Tailviewer.BusinessLogic.DataSources;
@@ -45,10 +44,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 					if (value)
 					{
 						_dataSource.EnableAnalysis(_currentAnalysis.Id);
+						_currentAnalysis.Add(_dataSource.UnfilteredLogFile);
 					}
 					else
 					{
 						_dataSource.DisableAnalysis(_currentAnalysis.Id);
+						_currentAnalysis.Remove(_dataSource.UnfilteredLogFile);
 					}
 				}
 			}

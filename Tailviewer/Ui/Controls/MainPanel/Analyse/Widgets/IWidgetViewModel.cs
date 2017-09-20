@@ -46,7 +46,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		/// <summary>
 		///     This method is called periodically to allow the view model to fetch data from the analysis.
 		/// </summary>
-		void OnUpdate();
+		void Update();
 
 		/// <summary>
 		///     This event is fired when the <see cref="DeleteCommand" /> is executed.

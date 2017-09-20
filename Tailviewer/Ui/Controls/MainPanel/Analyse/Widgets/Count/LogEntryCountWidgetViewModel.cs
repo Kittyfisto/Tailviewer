@@ -49,7 +49,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 
 		public QuickFiltersViewModel QuickFilters => _quickFilters;
 
-		public override void OnUpdate()
+		public override void Update()
 		{
 			LogEntryCountResult result;
 			if (TryGetResult(out result))

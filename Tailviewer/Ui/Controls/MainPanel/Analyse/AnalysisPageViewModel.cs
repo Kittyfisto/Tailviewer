@@ -8,6 +8,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
@@ -128,7 +129,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			try
 			{
 				var analyserType = factory.AnalyserId;
-				if (analyserType != null)
+				if (analyserType != LogAnalyserFactoryId.Empty)
 				{
 					var configuration = factory.DefaultAnalyserConfiguration;
 					return _analyser.Add(analyserType, configuration);
@@ -201,6 +202,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public void Update()
+		{
+			foreach(var widget in _widgets)
+			{
+				widget.Update();
+			}
 		}
 	}
 }

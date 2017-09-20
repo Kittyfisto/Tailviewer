@@ -141,6 +141,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public override void Update()
 		{
+			_analysis?.Update();
 			SelectedSidePanel?.Update();
 		}
 	}

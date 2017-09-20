@@ -2,6 +2,7 @@
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 {

@@ -1,6 +1,7 @@
 using System;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {

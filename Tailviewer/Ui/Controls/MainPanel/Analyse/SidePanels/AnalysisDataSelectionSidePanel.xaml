@@ -1,14 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisDataSourceDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
     
     <DataTemplate DataType="{x:Type local:AnalysisDataSelectionSidePanel}">
-        <ItemsControl ItemsSource="{Binding DataSources}"
-                      ItemTemplate="{StaticResource AnalysisDataSourceDataTemplate}"/>
+        <controls:FlatScrollViewer HorizontalScrollBarVisibility="Hidden"
+                                   VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding DataSources}"
+                          ItemTemplate="{StaticResource AnalysisDataSourceDataTemplate}"/>
+        </controls:FlatScrollViewer>
     </DataTemplate>
     
 </ResourceDictionary>
