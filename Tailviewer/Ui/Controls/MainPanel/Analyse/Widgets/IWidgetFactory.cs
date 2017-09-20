@@ -23,7 +23,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		/// <summary>
 		///     The configuration which shall be used when creating a new widget of this type.
 		/// </summary>
-		ILogAnalyserConfiguration DefaultConfiguration { get; }
+		ILogAnalyserConfiguration DefaultAnalyserConfiguration { get; }
 
 		/// <summary>
 		///     The name of this widget - will be displayed to the user.

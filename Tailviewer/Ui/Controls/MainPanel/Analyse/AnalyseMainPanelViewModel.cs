@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -21,6 +22,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly ICommand _createAnalysisCommand;
 		private readonly AnalysesSidePanel _analysesSidePanel;
+		private readonly AnalysisDataSelectionSidePanel _dataSelectionSidePanel;
 		private readonly WidgetsSidePanel _widgetsSidePanel;
 		private AnalysisViewModel _analysis;
 
@@ -29,10 +31,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _windowTitleSuffix;
 
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
+			IDataSources dataSources,
 			ITaskScheduler taskScheduler,
 			IAnalysisEngine analysisEngine)
 			: base(applicationSettings)
 		{
+			if (dataSources == null)
+				throw new ArgumentNullException(nameof(dataSources));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
 			if (analysisEngine == null)
@@ -43,6 +48,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_sidePanels = new ISidePanelViewModel[]
 			{
 				_analysesSidePanel = new AnalysesSidePanel(),
+				_dataSelectionSidePanel = new AnalysisDataSelectionSidePanel(applicationSettings, dataSources),
 				_widgetsSidePanel = new WidgetsSidePanel()
 			};
 			_createAnalysisCommand = new DelegateCommand(CreateAnalysis);
@@ -68,6 +74,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				EmitPropertyChanged();
 
 				IsAnalysisSelected = value != null;
+				// So that the side panel may update the list of selected data sources and
+				// also tell the analysis when new data sources are (de-)selected.
+				_dataSelectionSidePanel.CurrentAnalysis = value;
 
 				UpdateWindowTitle();
 			}

@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 
 		public override object Clone()
 		{
-			throw new System.NotImplementedException();
+			return new LogEntryCountAnalyserConfiguration();
 		}
 	}
 }

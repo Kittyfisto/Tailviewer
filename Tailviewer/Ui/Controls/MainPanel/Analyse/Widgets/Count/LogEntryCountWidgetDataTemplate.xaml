@@ -2,10 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:count="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count">
+                    xmlns:count="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count"
+                    xmlns:converters1="clr-namespace:Tailviewer.Ui.Converters">
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+    <converters1:NullToNotAvailableConverter x:Key="NullToNotAvailableConverter" />
 
     <DataTemplate DataType="{x:Type count:EntryCountWidgetViewModel}">
         <Grid>
@@ -13,7 +15,7 @@
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
                         Visibility="{Binding IsEditing, Converter={StaticResource BoolTrueToCollapsedConverter}}">
-                <TextBlock Text="{Binding Count}"
+                <TextBlock Text="{Binding Count, Converter={StaticResource NullToNotAvailableConverter}}"
                            HorizontalAlignment="Center"
                            FontSize="48"
                            FontWeight="Bold"

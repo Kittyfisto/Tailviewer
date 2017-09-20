@@ -1,5 +1,5 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Ui.Controls.QuickFilter;
 
@@ -8,7 +8,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 	public sealed class EntryCountWidgetViewModel
 		: AbstractWidgetViewModel
 	{
-		private int _count;
+		private long? _count;
 		private string _caption;
 		private readonly QuickFiltersViewModel _quickFilters;
 
@@ -21,7 +21,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 			_quickFilters = new QuickFiltersViewModel(filters);
 		}
 
-		public int Count
+		public long? Count
 		{
 			get { return _count; }
 			private set
@@ -49,11 +49,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 
 		public QuickFiltersViewModel QuickFilters => _quickFilters;
 
-		protected override ILogAnalyserConfiguration Configuration => null;
-
 		public override void OnUpdate()
 		{
-			
+			LogEntryCountResult result;
+			if (TryGetResult(out result))
+			{
+				Count = result.Count;
+			}
+			else
+			{
+				Count = null;
+			}
 		}
 	}
 }

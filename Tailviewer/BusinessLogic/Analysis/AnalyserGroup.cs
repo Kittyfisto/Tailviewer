@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -19,6 +20,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly AnalysisId _id;
 
 		public AnalyserGroup(ITaskScheduler taskScheduler,
 			IAnalysisEngine analysisEngine,
@@ -29,6 +31,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
 
+			_id = AnalysisId.CreateNew();
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;
 			_logFiles = new List<ILogFile>();
@@ -61,6 +64,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		public bool IsFrozen => false;
+
+		public AnalysisId Id => _id;
 
 		/// <summary>
 		/// </summary>

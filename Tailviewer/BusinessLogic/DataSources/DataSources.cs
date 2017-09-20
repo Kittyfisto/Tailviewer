@@ -8,7 +8,6 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -23,6 +22,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly ILogFileFactory _logFileFactory;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<IDataSource> _dataSources;
+		private readonly HashSet<Guid> _dataSourceIds;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly IDataSourcesSettings _settings;
 		private readonly object _syncRoot;
@@ -40,6 +40,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_settings = settings;
 			_bookmarks = new BookmarkCollection(_maximumWaitTime);
 			_dataSources = new List<IDataSource>();
+			_dataSourceIds = new HashSet<Guid>();
 			foreach (DataSource dataSource in settings)
 			{
 				AddDataSource(dataSource);
@@ -99,6 +100,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_bookmarks.RemoveBookmark(bookmark);
 		}
 
+		public bool Contains(Guid id)
+		{
+			return _dataSourceIds.Contains(id);
+		}
+
 		#endregion
 
 		public int Count
@@ -151,6 +157,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				}
 
 				_dataSources.Add(dataSource);
+				_dataSourceIds.Add(dataSource.Id);
 				_bookmarks.AddDataSource(dataSource);
 				return dataSource;
 			}

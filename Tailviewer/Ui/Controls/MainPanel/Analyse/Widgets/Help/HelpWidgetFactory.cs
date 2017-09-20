@@ -9,7 +9,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 	{
 		public LogAnalyserFactoryId AnalyserId => LogAnalyserFactoryId.None;
 
-		public ILogAnalyserConfiguration DefaultConfiguration => null;
+		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 
 		public string Name => "Tutorial";
 

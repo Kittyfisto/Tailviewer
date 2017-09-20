@@ -120,6 +120,7 @@
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysis.cs" />
+    <Compile Include="BusinessLogic\DataSources\AnalysisId.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\DataSources\ISingleDataSource.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
@@ -205,11 +206,13 @@
     <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisDataSource.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
@@ -264,6 +267,7 @@
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\SidePanelControl.cs" />
+    <Compile Include="Ui\Converters\NullToNotAvailableConverter.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\VersionConverter.cs" />
@@ -363,6 +367,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageHeaderDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

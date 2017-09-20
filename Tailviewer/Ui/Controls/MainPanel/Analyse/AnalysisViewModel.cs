@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -13,7 +14,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	///     Represents a running analysis of one or more data sources.
 	/// </summary>
 	public sealed class AnalysisViewModel
-		: INotifyPropertyChanged
+		: IAnalysisViewModel
 	{
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _addPageCommand;
@@ -32,6 +33,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_addPageCommand = new DelegateCommand(AddPage);
 			_name = "Unsaved analysis";
 		}
+
+		public AnalysisId Id => _analyser.Id;
 
 		public IEnumerable<AnalysisPageViewModel> Pages => _pages;
 

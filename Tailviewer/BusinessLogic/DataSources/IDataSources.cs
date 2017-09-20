@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Bookmarks;
 
@@ -9,7 +10,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		#region Bookmarks
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="dataSource"></param>
 		/// <param name="orignalLogLineIndex"></param>
@@ -17,12 +17,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 		Bookmark TryAddBookmark(IDataSource dataSource, LogLineIndex orignalLogLineIndex);
 
 		/// <summary>
-		/// 
 		/// </summary>
 		IReadOnlyList<Bookmark> Bookmarks { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="bookmark"></param>
 		void RemoveBookmark(Bookmark bookmark);
@@ -30,6 +28,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		#endregion
 
 		#region Datasources
+
+		/// <summary>
+		///     Tests if a data source with the given id exists.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		bool Contains(Guid id);
 
 		SingleDataSource AddDataSource(string fileName);
 		MergedDataSource AddGroup();

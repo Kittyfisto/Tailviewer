@@ -5,6 +5,7 @@ using System.Xml;
 using Tailviewer.BusinessLogic;
 using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Settings
 {
@@ -15,6 +16,8 @@ namespace Tailviewer.Settings
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<Guid> _activatedQuickFilters;
+		private readonly HashSet<AnalysisId> _analyses;
+
 		public bool ColorByLevel;
 		public bool HideEmptyLines;
 		public bool IsSingleLine;
@@ -47,7 +50,10 @@ namespace Tailviewer.Settings
 		public DataSource()
 		{
 			Order = -1;
+
 			_activatedQuickFilters = new List<Guid>();
+			_analyses = new HashSet<AnalysisId>();
+
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;
 			ShowLineNumbers = true;
@@ -62,11 +68,9 @@ namespace Tailviewer.Settings
 			File = file;
 		}
 
-		public List<Guid> ActivatedQuickFilters
-		{
-			get { return _activatedQuickFilters; }
-		}
+		public List<Guid> ActivatedQuickFilters => _activatedQuickFilters;
 
+		public HashSet<AnalysisId> Analyses => _analyses;
 
 		public override string ToString()
 		{

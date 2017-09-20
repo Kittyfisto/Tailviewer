@@ -7,7 +7,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/ActiveAnalysisDataTemplate.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisTemplateDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    
+
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type sidePanels:AnalysesSidePanel}">

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
@@ -10,6 +12,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 	/// </summary>
 	public interface IAnalyserGroup
 	{
+		/// <summary>
+		///     A globally unique identifier for this group.
+		///     No two groups have the same id.
+		/// </summary>
+		/// <remarks>
+		///     Even snapshots have a different id than the group they were created from.
+		/// </remarks>
+		AnalysisId Id { get; }
+
 		/// <summary>
 		///     The current list of analysers.
 		/// </summary>

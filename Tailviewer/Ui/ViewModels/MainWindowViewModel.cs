@@ -88,7 +88,7 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, taskScheduler, analysisEngine);
+			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, taskScheduler, analysisEngine);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
@@ -16,6 +17,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	public sealed class AnalyserGroupSnapshot
 		: IAnalyserGroup
 	{
+		private readonly AnalysisId _id;
 		private readonly DataSourceAnalyserSnapshot[] _analysers;
 
 		public AnalyserGroupSnapshot(IEnumerable<DataSourceAnalyserSnapshot> analysers)
@@ -23,6 +25,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			if (analysers == null)
 				throw new ArgumentNullException(nameof(analysers));
 
+			_id = AnalysisId.CreateNew();
 			_analysers = analysers.ToArray();
 		}
 
@@ -31,6 +34,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public IEnumerable<ILogFile> LogFiles => new ILogFile[0];
 
 		public bool IsFrozen => true;
+
+		public AnalysisId Id => _id;
+
 		public void Add(ILogFile logFile)
 		{
 			throw new InvalidOperationException("Adding log files to a snapshot is not allowed");

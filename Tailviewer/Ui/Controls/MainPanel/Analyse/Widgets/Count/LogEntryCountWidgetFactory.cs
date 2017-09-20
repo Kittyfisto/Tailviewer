@@ -5,12 +5,12 @@ using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 {
-	public sealed class EntryCountWidgetFactory
+	public sealed class LogEntryCountWidgetFactory
 		: IWidgetFactory
 	{
 		public LogAnalyserFactoryId AnalyserId => LogEntryCountAnalyserFactory.Id;
 
-		public ILogAnalyserConfiguration DefaultConfiguration => null;
+		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new LogEntryCountAnalyserConfiguration();
 
 		public string Name => "Log Entry Count";
 

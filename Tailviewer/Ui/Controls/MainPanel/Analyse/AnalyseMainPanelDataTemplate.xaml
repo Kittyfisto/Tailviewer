@@ -8,7 +8,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageHeaderDataTemplate.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageContentDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    
+
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
     <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />

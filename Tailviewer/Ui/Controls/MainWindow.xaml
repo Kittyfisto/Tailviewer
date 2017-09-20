@@ -32,9 +32,12 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
+                
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalyseMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysesDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisDataSelectionSidePanel.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/WidgetsDataTemplate.xaml" />
+                
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/LogViewMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Plugins/PluginsMainPanelDataTemplate.xaml" />

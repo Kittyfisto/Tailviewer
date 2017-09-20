@@ -46,10 +46,9 @@
                 <!-- Folder -->
                 <controls:FlatTextBlock Text="{Binding Folder}"
                                         Foreground="{StaticResource TextBrushUnimportant}"
-                                        
-                           ToolTip="{Binding Folder}"
-                           TextTrimming="CharacterEllipsis"
-                           Grid.Row="1" />
+                                        ToolTip="{Binding Folder}"
+                                        TextTrimming="CharacterEllipsis"
+                                        Grid.Row="1" />
 
                 <!-- Misc: Skipped, etc... -->
                 <Grid Grid.Row="2">

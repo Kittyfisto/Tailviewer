@@ -117,6 +117,21 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.ActivatedQuickFilters.Contains(id);
 		}
 
+		public void EnableAnalysis(AnalysisId id)
+		{
+			_settings.Analyses.Add(id);
+		}
+
+		public void DisableAnalysis(AnalysisId id)
+		{
+			_settings.Analyses.Remove(id);
+		}
+
+		public bool IsAnalysisActive(AnalysisId id)
+		{
+			return _settings.Analyses.Contains(id);
+		}
+
 		public abstract ILogFile UnfilteredLogFile { get; }
 
 		protected ILogFile FilterSource => _filterSource;

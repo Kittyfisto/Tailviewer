@@ -31,8 +31,36 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
-			CanBeEdited = dataSourceAnalyser.Configuration != null && !dataSourceAnalyser.IsFrozen;
+			Configuration = CloneConfiguration(dataSourceAnalyser);
+			CanBeEdited = Configuration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
+		}
+
+		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)
+		{
+			try
+			{
+				return (ILogAnalyserConfiguration) dataSourceAnalyser.Configuration?.Clone();
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while cloning configuration: {0}", e);
+				return null;
+			}
+		}
+
+		/// <summary>
+		///     The current configuration of the analysis.
+		///     The values of this configuration shall be displayed when <see cref="IsEditing" /> is set to true.
+		///     When <see cref="IsEditing" /> is set to false again, the current value of this property is then forwarded
+		///     to the <see cref="IDataSourceAnalyser" /> via <see cref="IDataSourceAnalyser.Configuration" />.
+		/// </summary>
+		protected ILogAnalyserConfiguration Configuration { get; }
+
+		protected bool TryGetResult<T>(out T result) where T : class, ILogAnalysisResult
+		{
+			result = _dataSourceAnalyser.Result as T;
+			return result != null;
 		}
 
 		public bool IsEditing
@@ -48,27 +76,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 				if (!value)
 				{
-					// For now, we'll only update the configuration when the edit
-					// mode is disabled.
-					UpdateConfiguration();
+					_dataSourceAnalyser.Configuration = Configuration;
 				}
 			}
 		}
-
-		private void UpdateConfiguration()
-		{
-			try
-			{
-				var configuration = Configuration;
-				_dataSourceAnalyser.Configuration = configuration;
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-			}
-		}
-
-		protected abstract ILogAnalyserConfiguration Configuration { get; }
 
 		public bool CanBeEdited { get; }
 
