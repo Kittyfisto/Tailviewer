@@ -63,7 +63,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 			if (!ReferenceEquals(handle, _currentAnalysis))
 				return; //< It's likely that we've received a callback from a previous analysis that we MOST CERTAINLY need to thrash
 
-			Progress = progress;
+			if (Percentage.IsNan(progress))
+			{
+				Progress = Percentage.HundredPercent;
+			}
+			else
+			{
+				Progress = progress;
+			}
 		}
 
 		public void OnAnalysisResultChanged(IDataSourceAnalysisHandle handle, ILogAnalysisResult result)

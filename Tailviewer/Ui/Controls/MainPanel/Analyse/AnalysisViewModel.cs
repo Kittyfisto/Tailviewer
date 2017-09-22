@@ -25,6 +25,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private AnalysisPageViewModel _selectedPage;
 
 		private string _name;
+		private double _progress;
 
 		public AnalysisViewModel(IAnalyserGroup analyser)
 		{
@@ -79,6 +80,24 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public ICommand AddPageCommand => _addPageCommand;
 		public ICommand RemoveCommand => _removeCommand;
 
+		public double Progress
+		{
+			get { return _progress; }
+			private set
+			{
+				if (value == _progress)
+					return;
+
+				if (double.IsNaN(value))
+				{
+					int N = 0;
+				}
+
+				_progress = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public event Action<AnalysisViewModel> OnRemove;
 
 		public void Add(ILogFile logFile)
@@ -96,6 +115,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public void Update()
 		{
 			_selectedPage?.Update();
+			Progress = _analyser.Progress.RelativeValue;
 		}
 
 		private void AddPage()

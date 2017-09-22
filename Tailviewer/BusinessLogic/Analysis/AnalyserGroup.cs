@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
@@ -60,6 +59,29 @@ namespace Tailviewer.BusinessLogic.Analysis
 				lock (_syncRoot)
 				{
 					return _logFiles.ToList();
+				}
+			}
+		}
+
+		public Percentage Progress
+		{
+			get
+			{
+				// TODO: Move this portion into a separate timer that updates at 10Hz or so...
+				var progress = Percentage.Zero;
+				lock (_syncRoot)
+				{
+					if (_analysers.Count == 0)
+						return Percentage.HundredPercent;
+
+					foreach (var analyser in _analysers)
+					{
+						var tmp = analyser.Progress;
+						if (!Percentage.IsNan(tmp))
+							progress += tmp;
+					}
+
+					return progress;
 				}
 			}
 		}
@@ -154,7 +176,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				var analysers = new List<DataSourceAnalyserSnapshot>(_analysers.Count);
 				foreach (var analyser in _analysers)
 					analysers.Add(analyser.CreateSnapshot());
-				return new AnalyserGroupSnapshot(analysers);
+				return new AnalyserGroupSnapshot(Progress, analysers);
 			}
 		}
 	}

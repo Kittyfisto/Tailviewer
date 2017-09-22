@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
@@ -31,6 +29,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     The current list of log files being analyses by the <see cref="Analysers" />.
 		/// </summary>
 		IEnumerable<ILogFile> LogFiles { get; }
+
+		/// <summary>
+		///     The combined progress of all analysers.
+		///     If there are none, then <see cref="Percentage.HundredPercent" /> is returned.
+		/// </summary>
+		Percentage Progress { get; }
 
 		/// <summary>
 		///     Whether or not this analyser group is frozen.

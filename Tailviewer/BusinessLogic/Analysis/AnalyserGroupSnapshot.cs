@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
@@ -20,19 +19,26 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private readonly AnalysisId _id;
 		private readonly DataSourceAnalyserSnapshot[] _analysers;
+		private readonly Percentage _progress;
 
-		public AnalyserGroupSnapshot(IEnumerable<DataSourceAnalyserSnapshot> analysers)
+		public AnalyserGroupSnapshot(Percentage progress, IEnumerable<DataSourceAnalyserSnapshot> analysers)
 		{
 			if (analysers == null)
 				throw new ArgumentNullException(nameof(analysers));
 
 			_id = AnalysisId.CreateNew();
+			_progress = progress;
 			_analysers = analysers.ToArray();
 		}
 
 		public IEnumerable<IDataSourceAnalyser> Analysers => _analysers;
 
 		public IEnumerable<ILogFile> LogFiles => new ILogFile[0];
+
+		public Percentage Progress
+		{
+			get { return _progress; }
+		}
 
 		public bool IsFrozen => true;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer.Core
 {
@@ -51,6 +52,16 @@ namespace Tailviewer.Core
 			return !left.Equals(right);
 		}
 
+		public static Percentage operator +(Percentage left, Percentage right)
+		{
+			return new Percentage(left.RelativeValue + right.RelativeValue);
+		}
+
+		public static Percentage operator -(Percentage left, Percentage right)
+		{
+			return new Percentage(left.RelativeValue - right.RelativeValue);
+		}
+
 		private Percentage(float value)
 		{
 			RelativeValue = value;
@@ -99,6 +110,15 @@ namespace Tailviewer.Core
 		public static bool operator <(Percentage lhs, Percentage rhs)
 		{
 			return lhs.RelativeValue < rhs.RelativeValue;
+		}
+
+		[Pure]
+		public static bool IsNan(Percentage value)
+		{
+			if (double.IsNaN(value.RelativeValue))
+				return true;
+
+			return false;
 		}
 	}
 }
