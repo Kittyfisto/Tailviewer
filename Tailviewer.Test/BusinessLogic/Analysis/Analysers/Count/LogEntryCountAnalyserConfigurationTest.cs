@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
+using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.Analysis.Analysers.Count
 {
@@ -24,6 +25,24 @@ namespace Tailviewer.Test.BusinessLogic.Analysis.Analysers.Count
 			var config2 = new LogEntryCountAnalyserConfiguration();
 			config1.IsEquivalent(config2).Should().BeTrue();
 			config2.IsEquivalent(config1).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestIsEquivalent3()
+		{
+			var config1 = new LogEntryCountAnalyserConfiguration();
+			var config2 = new LogEntryCountAnalyserConfiguration
+			{
+				QuickFilters =
+				{
+					new QuickFilter
+					{
+						Value = "foo"
+					}
+				}
+			};
+			config1.IsEquivalent(config2).Should().BeFalse();
+			config2.IsEquivalent(config1).Should().BeFalse();
 		}
 	}
 }

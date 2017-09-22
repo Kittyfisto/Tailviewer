@@ -43,7 +43,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 			}
 		}
 
-
 		public IEnumerable<AnalysisViewModel> Active => _active;
 		public IEnumerable<AnalysisTemplateViewModel> Available => _available;
 
@@ -87,7 +86,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		public void Add(AnalysisViewModel analysis)
 		{
 			_active.Add(analysis);
+			analysis.OnRemove += AnalysisOnOnRemove;
 			Update();
+		}
+
+		private void AnalysisOnOnRemove(AnalysisViewModel analysis)
+		{
+			_active.Remove(analysis);
 		}
 
 		private void UpdateQuickInfo()

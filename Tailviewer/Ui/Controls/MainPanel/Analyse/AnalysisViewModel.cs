@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	{
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _addPageCommand;
+		private readonly DelegateCommand _removeCommand;
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
 		private AnalysisPageViewModel _selectedPage;
 
@@ -34,9 +35,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			AddPage();
 			_addPageCommand = new DelegateCommand(AddPage);
+			_removeCommand = new DelegateCommand(RemoveThis);
 			_name = "Unsaved analysis";
 
 			_selectedPage = _pages.FirstOrDefault();
+		}
+
+		private void RemoveThis()
+		{
+			OnRemove?.Invoke(this);
 		}
 
 		public AnalysisId Id => _analyser.Id;
@@ -70,6 +77,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		}
 
 		public ICommand AddPageCommand => _addPageCommand;
+		public ICommand RemoveCommand => _removeCommand;
+
+		public event Action<AnalysisViewModel> OnRemove;
 
 		public void Add(ILogFile logFile)
 		{

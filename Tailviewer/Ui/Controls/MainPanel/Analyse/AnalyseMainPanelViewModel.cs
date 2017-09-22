@@ -58,8 +58,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			var analyser = new AnalyserGroup(_taskScheduler, _analysisEngine, TimeSpan.FromMilliseconds(100));
 			var analysisViewModel = new AnalysisViewModel(analyser);
+			analysisViewModel.OnRemove += AnalysisViewModelOnOnRemove;
 			_analysesSidePanel.Add(analysisViewModel);
 			Analysis = analysisViewModel;
+		}
+
+		private void AnalysisViewModelOnOnRemove(AnalysisViewModel analysis)
+		{
+			if (analysis == Analysis)
+				Analysis = null;
 		}
 
 		public AnalysisViewModel Analysis

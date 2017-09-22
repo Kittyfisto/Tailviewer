@@ -41,6 +41,7 @@
 
             <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToCollapsedConverter}}">
                 <TabControl ItemsSource="{Binding Analysis.Pages}"
+                            SelectedItem="{Binding Analysis.SelectedPage}"
                             ItemTemplate="{StaticResource AnalysisPageHeaderDataTemplate}"
                             Foreground="#333333"
                             ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}"/>
