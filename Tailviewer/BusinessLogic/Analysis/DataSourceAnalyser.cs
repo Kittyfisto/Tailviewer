@@ -6,20 +6,21 @@ using Tailviewer.Core;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Responsible for encapsulating a <see cref="IDataSourceAnalysis" />.
+	///     Responsible for encapsulating a <see cref="IDataSourceAnalysisHandle" />.
 	///     Whenever the configuration is changed, the previous analysis is stopped
 	///     and a new one created.
 	/// </summary>
 	public sealed class DataSourceAnalyser
 		: IDataSourceAnalyser
+			, IDataSourceAnalysisListener
 			, IDisposable
 	{
 		private readonly IAnalysisEngine _analysisEngine;
-		private readonly ILogFile _logFile;
 		private readonly LogAnalyserFactoryId _anaylserId;
-		private IDataSourceAnalysis _analysis;
+		private readonly ILogFile _logFile;
 
 		private ILogAnalyserConfiguration _configuration;
+		private IDataSourceAnalysisHandle _currentAnalysis;
 
 		public DataSourceAnalyser(ILogFile logFile,
 			IAnalysisEngine analysisEngine,
@@ -38,7 +39,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public Guid Id { get; }
 
-		public ILogAnalysisResult Result => _analysis?.Result;
+		public Percentage Progress { get; private set; }
+
+		public ILogAnalysisResult Result { get; private set; }
 
 		public bool IsFrozen => false;
 
@@ -55,26 +58,44 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
+		public void OnProgress(IDataSourceAnalysisHandle handle, Percentage progress)
+		{
+			if (!ReferenceEquals(handle, _currentAnalysis))
+				return; //< It's likely that we've received a callback from a previous analysis that we MOST CERTAINLY need to thrash
+
+			Progress = progress;
+		}
+
+		public void OnAnalysisResultChanged(IDataSourceAnalysisHandle handle, ILogAnalysisResult result)
+		{
+			if (!ReferenceEquals(handle, _currentAnalysis))
+				return; //< It's likely that we've received a callback from a previous analysis that we MOST CERTAINLY need to thrash
+
+			Result = result;
+		}
+
 		public void Dispose()
 		{
-			_analysisEngine.RemoveAnalysis(_analysis);
+			_analysisEngine.RemoveAnalysis(_currentAnalysis);
 		}
 
 		public DataSourceAnalyserSnapshot CreateSnapshot()
 		{
 			var configuration = _configuration?.Clone() as ILogAnalyserConfiguration;
 			var result = Result?.Clone() as ILogAnalysisResult;
+			var progress = Progress;
 			return new DataSourceAnalyserSnapshot(Id,
 				configuration,
-				result);
+				result,
+				progress);
 		}
 
 		private void RestartAnalysis()
 		{
-			if (_analysis != null)
+			if (_currentAnalysis != null)
 			{
-				_analysisEngine.RemoveAnalysis(_analysis);
-				_analysis = null;
+				_analysisEngine.RemoveAnalysis(_currentAnalysis);
+				_currentAnalysis = null;
 			}
 
 			if (_configuration != null)
@@ -84,7 +105,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 					AnalyserId = _anaylserId,
 					Configuration = _configuration
 				};
-				_analysis = _analysisEngine.CreateAnalysis(_logFile, configuration);
+				_currentAnalysis = _analysisEngine.CreateAnalysis(_logFile, configuration, this);
+				// Now that we've assigned the current analysis, we can actually start it
+				// (otherwise there would be the race condition of being notified through the
+				// listener interface before we've assigned the new handle, effectively losing
+				// the values provided by the callback).
+				_currentAnalysis.Start();
 			}
 		}
 	}

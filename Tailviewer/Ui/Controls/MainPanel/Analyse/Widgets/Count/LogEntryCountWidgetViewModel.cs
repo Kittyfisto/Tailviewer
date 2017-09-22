@@ -60,6 +60,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 			{
 				Count = null;
 			}
+
+			base.Update();
 		}
 	}
 }

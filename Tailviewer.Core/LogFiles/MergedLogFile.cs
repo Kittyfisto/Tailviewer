@@ -32,6 +32,8 @@ namespace Tailviewer.Core.LogFiles
 
 		private DateTime? _startTimestamp;
 		private int _maxCharactersPerLine;
+		private int _totalLineCount;
+		private Percentage _progress;
 
 		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
 			: this(scheduler, maximumWaitTime, sources.ToArray())
@@ -144,7 +146,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override double Progress => 1;
+		public override double Progress => _progress.RelativeValue;
 
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
@@ -154,6 +156,9 @@ namespace Tailviewer.Core.LogFiles
 			{
 				if (token.IsCancellationRequested)
 					return TimeSpan.Zero;
+
+				_totalLineCount = CalculateTotalLogLineCount();
+				_progress = Percentage.Of(_indices.Count, _totalLineCount);
 
 				if (modification.Section.IsReset)
 				{
@@ -220,7 +225,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-
+			_progress = Percentage.Of(_indices.Count, _totalLineCount);
 			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.Size);
 			_lastModified = _sources.Aggregate(DateTime.MinValue,
 											   (a, file) =>
@@ -250,6 +255,18 @@ namespace Tailviewer.Core.LogFiles
 			SetEndOfSourceReached();
 
 			return _maximumWaitTime;
+		}
+
+		[Pure]
+		private int CalculateTotalLogLineCount()
+		{
+			var count = 0;
+			foreach (var logFile in _sources)
+			{
+				// TODO: Introduce separate property that counts the number of lines with a timestamp as only those are of interest to us
+				count += logFile.Count;
+			}
+			return count;
 		}
 
 		/// <summary>

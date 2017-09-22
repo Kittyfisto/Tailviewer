@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers
@@ -30,7 +31,13 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		TimeSpan AnalysisTime { get; }
 
 		/// <summary>
+		/// 
 		/// </summary>
 		ILogAnalysisResult Result { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		Percentage Progress { get; }
 	}
 }

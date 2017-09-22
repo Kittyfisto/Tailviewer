@@ -1,8 +1,9 @@
 using System;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogTables;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 {
 	public sealed class QuickInfoLogAnalyser
 		: LogAnalyser
@@ -13,6 +14,11 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		}
 
 		public override ILogAnalysisResult Result => null;
+
+		public override Percentage Progress
+		{
+			get { throw new NotImplementedException(); }
+		}
 
 		protected override void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section)
 		{

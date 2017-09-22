@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.LogTables;
@@ -51,6 +52,8 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 		}
 
 		public override ILogAnalysisResult Result => _result;
+
+		public override Percentage Progress => Percentage.FromPercent((float)_logFile.Progress * 100);
 
 		protected override void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section)
 		{

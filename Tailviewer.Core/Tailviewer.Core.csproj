@@ -116,6 +116,7 @@
     <Compile Include="LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="QuickFilterId.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -15,6 +16,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     A unique id which identifies this analyser.
 		/// </summary>
 		Guid Id { get; }
+
+		/// <summary>
+		///     The current progress of the analysis.
+		/// </summary>
+		Percentage Progress { get; }
 
 		/// <summary>
 		///     The result of the analysis.

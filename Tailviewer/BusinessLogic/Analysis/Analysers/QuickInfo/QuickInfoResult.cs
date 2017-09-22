@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.BusinessLogic.Analysis.Analysers
+﻿namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 {
 	public sealed class QuickInfoResult
 		: ILogAnalysisResult

@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Exporter;
+using Tailviewer.Core;
 
 namespace Tailviewer.Test.BusinessLogic.ActionCenter
 {

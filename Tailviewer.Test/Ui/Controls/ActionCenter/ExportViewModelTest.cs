@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
+using Tailviewer.Core;
 using Tailviewer.Ui.Controls.ActionCenter;
 
 namespace Tailviewer.Test.Ui.Controls.ActionCenter

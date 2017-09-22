@@ -1,5 +1,6 @@
 ﻿using System;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -14,20 +15,25 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IDataSourceAnalyser
 	{
 		private readonly ILogAnalyserConfiguration _configuration;
+		private readonly Percentage _progress;
+		private readonly ILogAnalysisResult _result;
 
-		public DataSourceAnalyserSnapshot(Guid id, ILogAnalyserConfiguration configuration, ILogAnalysisResult result)
+		public DataSourceAnalyserSnapshot(Guid id, ILogAnalyserConfiguration configuration, ILogAnalysisResult result, Percentage progress)
 		{
 			if (id == null)
 				throw new ArgumentNullException(nameof(id));
 
 			Id = id;
 			_configuration = configuration;
-			Result = result;
+			_result = result;
+			_progress = progress;
 		}
 
 		public Guid Id { get; }
 
-		public ILogAnalysisResult Result { get; }
+		public Percentage Progress => _progress;
+
+		public ILogAnalysisResult Result => _result;
 
 		public bool IsFrozen => true;
 

@@ -18,7 +18,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly List<IDataSourceAnalysis> _analyses;
+		private readonly List<IDataSourceAnalysisHandle> _analyses;
 		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory> _factoriesById;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
@@ -29,23 +29,30 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(scheduler));
 
 			_scheduler = scheduler;
-			_analyses = new List<IDataSourceAnalysis>();
+			_analyses = new List<IDataSourceAnalysisHandle>();
 			_syncRoot = new object();
 			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory>();
 		}
 
-		public IDataSourceAnalysis CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration)
+		public IDataSourceAnalysisHandle CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration, IDataSourceAnalysisListener listener)
 		{
+			if (logFile == null)
+				throw new ArgumentNullException(nameof(logFile));
+			if (configuration == null)
+				throw new ArgumentNullException(nameof(configuration));
+			if (listener == null)
+				throw new ArgumentNullException(nameof(listener));
+
 			lock (_syncRoot)
 			{
-				var analysis = CreatAnalysisFor(configuration.AnalyserId, logFile, configuration.Configuration);
+				var analysis = CreatAnalysisFor(configuration.AnalyserId, logFile, configuration.Configuration, listener);
 				_analyses.Add(analysis);
 				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
 				return analysis;
 			}
 		}
 
-		public bool RemoveAnalysis(IDataSourceAnalysis analysis)
+		public bool RemoveAnalysis(IDataSourceAnalysisHandle analysis)
 		{
 			lock (_syncRoot)
 			{
@@ -88,15 +95,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		private IDataSourceAnalysis CreatAnalysisFor(LogAnalyserFactoryId id,
+		private IDataSourceAnalysisHandle CreatAnalysisFor(LogAnalyserFactoryId id,
 			ILogFile logFile,
-			ILogAnalyserConfiguration configuration)
+			ILogAnalyserConfiguration configuration,
+			IDataSourceAnalysisListener listener)
 		{
-			IDataSourceAnalysis analysis;
+			IDataSourceAnalysisHandle analysis;
 			ILogAnalyserFactory factory;
 			if (_factoriesById.TryGetValue(id, out factory))
 			{
-				analysis = new DataSourceAnalysis(_scheduler, logFile, factory, configuration);
+				analysis = new DataSourceAnalysis(_scheduler, logFile, factory, configuration, listener);
 			}
 			else
 			{
@@ -108,9 +116,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		private sealed class DummyAnalysis
-			: IDataSourceAnalysis
+			: IDataSourceAnalysisHandle
 		{
-			public ILogAnalysisResult Result => null;
+			public void Start()
+			{}
 		}
 	}
 }

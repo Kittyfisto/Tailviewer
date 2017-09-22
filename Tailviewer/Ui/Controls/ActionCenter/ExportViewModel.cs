@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.ActionCenter
 {

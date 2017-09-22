@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer
+namespace Tailviewer.Core
 {
 	public struct Percentage
 		: IEquatable<Percentage>

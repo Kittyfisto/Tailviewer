@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
@@ -42,6 +42,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		///     The command to delete this widget.
 		/// </summary>
 		ICommand DeleteCommand { get; }
+
+		/// <summary>
+		///     Whether or not the analysis has been finished.
+		///     The analysis is only ever finished when <see cref="Progress" /> has reached
+		///     <see cref="Percentage.HundredPercent" />.
+		/// </summary>
+		bool IsAnalysisFinished { get; }
+
+		/// <summary>
+		///     The current progress of the analysis.
+		/// </summary>
+		double Progress { get; }
+
+		/// <summary>
+		/// A 
+		/// </summary>
+		string ProgressTooltip { get; }
 
 		/// <summary>
 		///     This method is called periodically to allow the view model to fetch data from the analysis.

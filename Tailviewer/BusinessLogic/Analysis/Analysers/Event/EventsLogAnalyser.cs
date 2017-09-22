@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
@@ -80,6 +81,8 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 		public ILogTable Events => _events;
 
 		public override ILogAnalysisResult Result => null;
+
+		public override Percentage Progress => Percentage.FromPercent((float)_source.Progress*100);
 
 		private void DoWork()
 		{

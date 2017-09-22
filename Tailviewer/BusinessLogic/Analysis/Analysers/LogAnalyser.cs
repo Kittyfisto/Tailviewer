@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers
@@ -99,6 +100,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 
 		public TimeSpan AnalysisTime => _elapsed;
 		public abstract ILogAnalysisResult Result { get; }
+		public abstract Percentage Progress { get; }
 
 		public void Dispose()
 		{

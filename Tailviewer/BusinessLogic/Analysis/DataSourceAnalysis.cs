@@ -4,6 +4,7 @@ using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -13,22 +14,29 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     and hides all of its (possible) failures.
 	/// </summary>
 	public sealed class DataSourceAnalysis
-		: IDataSourceAnalysis
+		: IDataSourceAnalysisHandle
 		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private readonly ILogAnalyser _analyser;
-		private readonly ILogAnalyserConfiguration _configuration;
 
+		private readonly object _syncRoot;
+		private ILogAnalyser _analyser;
+		private readonly ILogAnalyserConfiguration _configuration;
 		private readonly ILogFile _logFile;
 		private readonly ITaskScheduler _scheduler;
-		private readonly IPeriodicTask _task;
 		private readonly ILogAnalyserFactory _factory;
+		private readonly IDataSourceAnalysisListener _listener;
+		private IPeriodicTask _task;
+
+		private ILogAnalysisResult _result;
+		private bool _isDisposed;
+		private Percentage _progress;
 
 		public DataSourceAnalysis(ITaskScheduler scheduler,
 			ILogFile logFile,
 			ILogAnalyserFactory factory,
-			ILogAnalyserConfiguration configuration)
+			ILogAnalyserConfiguration configuration,
+			IDataSourceAnalysisListener listener)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException(nameof(scheduler));
@@ -38,21 +46,65 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(factory));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
+			if (listener == null)
+				throw new ArgumentNullException(nameof(listener));
 
+			_syncRoot = new object();
 			_scheduler = scheduler;
 			_logFile = logFile;
 			_factory = factory;
 			_configuration = configuration;
-			_analyser = TryCreateAnalyser();
-			_task = _scheduler.StartPeriodic(OnUpdate, TimeSpan.FromSeconds(0.5), "");
+			_listener = listener;
 		}
 
-		public ILogAnalysisResult Result { get; private set; }
+		public ILogAnalysisResult Result
+		{
+			get { return _result; }
+			private set
+			{
+				if (Equals(_result, value))
+					return;
+
+				_result = value;
+				_listener.OnAnalysisResultChanged(this, value);
+			}
+		}
+
+		public Percentage Progress
+		{
+			set
+			{
+				if (_progress == value)
+					return;
+
+				_progress = value;
+				_listener.OnProgress(this, value);
+			}
+		}
+
+		public void Start()
+		{
+			lock (_syncRoot)
+			{
+				if (_isDisposed)
+				{
+					Log.WarnFormat("Ignoring Start(): This analysis has already been disposed of");
+					return;
+				}
+
+				_analyser = TryCreateAnalyser();
+				_task = _scheduler.StartPeriodic(OnUpdate, TimeSpan.FromSeconds(0.5), "");
+			}
+		}
 
 		public void Dispose()
 		{
-			_scheduler.StopPeriodic(_task);
-			_analyser?.Dispose();
+			lock (_syncRoot)
+			{
+				_scheduler.StopPeriodic(_task);
+				_analyser?.Dispose();
+				_isDisposed = true;
+			}
 		}
 
 		private ILogAnalyser TryCreateAnalyser()
@@ -76,6 +128,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			try
 			{
 				Result = _analyser.Result;
+				Progress = _analyser.Progress;
 			}
 			catch (Exception e)
 			{

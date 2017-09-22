@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
 using Tailviewer.BusinessLogic.Exporter;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.ActionCenter
 {

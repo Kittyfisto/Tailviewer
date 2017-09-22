@@ -1,5 +1,6 @@
 ﻿using System;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -14,6 +15,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		public Guid Id => _id;
+
+		public Percentage Progress => Percentage.HundredPercent;
+
 		public ILogAnalysisResult Result => null;
 
 		public bool IsFrozen => false;

@@ -100,7 +100,7 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoResult.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalysisConfiguration.cs" />
@@ -108,6 +108,7 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisEngine.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalyserGroup.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisListener.cs" />
     <Compile Include="BusinessLogic\Analysis\NoAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalyserGroup.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
@@ -118,7 +119,7 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinition.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
-    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysis.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisHandle.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\DataSources\ISingleDataSource.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfoLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoLogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalysis.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\LogAnalyser.cs" />
@@ -156,7 +157,6 @@
     <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
     <Compile Include="PageLayoutConverter.cs" />
-    <Compile Include="Percentage.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\BookmarkSettings.cs" />

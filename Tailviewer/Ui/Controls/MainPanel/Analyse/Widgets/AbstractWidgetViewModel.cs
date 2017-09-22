@@ -22,6 +22,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 		private bool _isEditing;
 		private string _title;
+		private bool _isAnalysisFinished;
+		private double _progress;
+		private string _progressTooltip;
 
 		/// <summary>
 		/// </summary>
@@ -31,6 +34,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
+			_isAnalysisFinished = false;
 			Configuration = CloneConfiguration(dataSourceAnalyser);
 			CanBeEdited = Configuration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
@@ -98,9 +102,54 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 		public ICommand DeleteCommand { get; }
 
+		public bool IsAnalysisFinished
+		{
+			get { return _isAnalysisFinished; }
+			private set
+			{
+				if (value == _isAnalysisFinished)
+					return;
+
+				_isAnalysisFinished = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public double Progress
+		{
+			get { return _progress; }
+			protected set
+			{
+				if (value == _progress)
+					return;
+
+				_progress = value;
+				EmitPropertyChanged();
+
+				IsAnalysisFinished = value >= 1;
+				ProgressTooltip = string.Format("Analysis {0:P} complete", value);
+			}
+		}
+
+		public string ProgressTooltip
+		{
+			get { return _progressTooltip; }
+			private set
+			{
+				if (value == _progressTooltip)
+					return;
+
+				_progressTooltip = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public abstract void Update();
+		public virtual void Update()
+		{
+			Progress = _dataSourceAnalyser.Progress.RelativeValue;
+		}
 
 		public event Action<IWidgetViewModel> OnDelete;
 
