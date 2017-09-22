@@ -28,6 +28,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<IWidgetViewModel> _widgets;
+		private readonly Dictionary<IWidgetViewModel, IDataSourceAnalyser> _analysersPerWidget;
 		private bool _canBeDeleted;
 		private IWidgetLayoutViewModel _layout;
 		private string _name;
@@ -43,6 +44,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
 			_widgets = new List<IWidgetViewModel>();
+			_analysersPerWidget = new Dictionary<IWidgetViewModel, IDataSourceAnalyser>();
 
 			PageLayout = PageLayout.WrapHorizontal;
 		}
@@ -121,6 +123,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			var analyser = CreateAnalyser(factory);
 			var widget = factory.Create(analyser);
+			_analysersPerWidget.Add(widget, analyser);
 			Add(widget);
 		}
 
@@ -162,6 +165,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
+
+			IDataSourceAnalyser analyser;
+			if (_analysersPerWidget.TryGetValue(widget, out analyser))
+			{
+				_analysersPerWidget.Remove(widget);
+				_analyser.Remove(analyser);
+			}
+
 			widget.OnDelete -= WidgetOnDelete;
 			HasWidgets = _widgets.Any();
 		}
