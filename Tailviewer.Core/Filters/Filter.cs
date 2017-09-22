@@ -12,7 +12,7 @@ namespace Tailviewer.Core.Filters
 	{
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{
-			var tmp = filters.ToList();
+			var tmp = filters.Where(x => x != null).ToList();
 			if (tmp.Count == 0)
 				return null;
 

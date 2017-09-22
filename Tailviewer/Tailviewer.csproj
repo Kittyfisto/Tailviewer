@@ -206,6 +206,7 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\FilterViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\AbstractWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\FiltersViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetViewModel.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyser.cs" />
@@ -377,6 +379,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\FilterDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

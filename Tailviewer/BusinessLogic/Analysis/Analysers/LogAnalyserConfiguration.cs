@@ -74,5 +74,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		protected abstract void SaveInternal(XmlWriter writer);
 
 		public abstract object Clone();
+
+		public abstract bool IsEquivalent(ILogAnalyserConfiguration other);
 	}
 }

@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:count="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+
+    <DataTemplate DataType="{x:Type count:FilterViewModel}" x:Key="FilterDataTemplate">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <controls:FilterTextBox Height="26"
+                                    FilterText="{Binding Value, Mode=TwoWay}"
+                                    Watermark="Enter filter string" />
+
+            <controls:DeleteButton Command="{Binding RemoveCommand}"
+                                   Grid.Column="1" />
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

@@ -80,7 +80,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 				if (!value)
 				{
-					_dataSourceAnalyser.Configuration = Configuration;
+					_dataSourceAnalyser.Configuration = Configuration.Clone() as ILogAnalyserConfiguration;
 				}
 			}
 		}
@@ -120,6 +120,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 			get { return _progress; }
 			protected set
 			{
+				if (double.IsNaN(value))
+					value = 1;
+
 				if (value == _progress)
 					return;
 

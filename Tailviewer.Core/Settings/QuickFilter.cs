@@ -8,31 +8,35 @@ namespace Tailviewer.Core.Settings
 		: ICloneable
 	{
 		public bool IgnoreCase;
+		public bool IsInverted;
 		public QuickFilterMatchType MatchType;
 		public string Value;
-		public bool IsInverted;
-		private QuickFilterId _id;
 
 		public QuickFilter()
 		{
-			_id = QuickFilterId.CreateNew();
+			Id = QuickFilterId.CreateNew();
 			IgnoreCase = true;
 			IsInverted = false;
 		}
 
-		public QuickFilterId Id => _id;
+		public QuickFilterId Id { get; private set; }
+
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
 
 		public bool Restore(XmlReader reader)
 		{
-			int count = reader.AttributeCount;
-			for (int i = 0; i < count; ++i)
+			var count = reader.AttributeCount;
+			for (var i = 0; i < count; ++i)
 			{
 				reader.MoveToAttribute(i);
 
 				switch (reader.Name)
 				{
 					case "id":
-						_id = reader.ReadContentAsQuickFilterId();
+						Id = reader.ReadContentAsQuickFilterId();
 						break;
 
 					case "type":
@@ -72,7 +76,7 @@ namespace Tailviewer.Core.Settings
 		{
 			return new QuickFilter
 			{
-				_id = _id,
+				Id = Id,
 				IgnoreCase = IgnoreCase,
 				IsInverted = IsInverted,
 				MatchType = MatchType,
@@ -80,9 +84,33 @@ namespace Tailviewer.Core.Settings
 			};
 		}
 
-		object ICloneable.Clone()
+		/// <summary>
+		///     Tests if this filter and the given one would produce the same result
+		///     for the same data.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>True when there is no doubt that the two filters perform identical, false otherwise</returns>
+		public bool IsEquivalent(QuickFilter other)
 		{
-			return Clone();
+			if (ReferenceEquals(other, objB: null))
+				return false;
+
+			// We won't need to include the id because it doesn't have
+			// any influence on the outcome of a filter operation.
+
+			if (IgnoreCase != other.IgnoreCase)
+				return false;
+
+			if (IsInverted != other.IsInverted)
+				return false;
+
+			if (MatchType != other.MatchType)
+				return false;
+
+			if (!Equals(Value, other.Value))
+				return false;
+
+			return true;
 		}
 	}
 }

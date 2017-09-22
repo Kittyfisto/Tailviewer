@@ -64,5 +64,10 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 		{
 			throw new System.NotImplementedException();
 		}
+
+		public override bool IsEquivalent(ILogAnalyserConfiguration other)
+		{
+			return false;
+		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Linq;
+using System.Xml;
 using Tailviewer.Core.Settings;
 
 
@@ -25,10 +26,35 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 		{
 			
 		}
+		
+		public override int GetHashCode()
+		{
+			return 412231;
+		}
 
 		public override object Clone()
 		{
-			return new LogEntryCountAnalyserConfiguration();
+			var clone = new LogEntryCountAnalyserConfiguration();
+			clone.QuickFilters.AddRange(_quickFilters.Select(x => x.Clone()));
+			return clone;
+		}
+
+		public override bool IsEquivalent(ILogAnalyserConfiguration obj)
+		{
+			if (ReferenceEquals(obj, null))
+				return false;
+
+			if (ReferenceEquals(this, obj))
+				return true;
+
+			var other = obj as LogEntryCountAnalyserConfiguration;
+			if (ReferenceEquals(other, null))
+				return false;
+
+			if (!_quickFilters.IsEquivalent(other.QuickFilters))
+				return false;
+
+			return true;
 		}
 	}
 }

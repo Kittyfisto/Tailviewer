@@ -1,24 +1,23 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
-using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Ui.Controls.QuickFilter;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 {
 	public sealed class EntryCountWidgetViewModel
 		: AbstractWidgetViewModel
 	{
+		private readonly LogEntryCountAnalyserConfiguration _configuration;
+		private readonly FiltersViewModel _quickFilters;
 		private long? _count;
 		private string _caption;
-		private readonly QuickFiltersViewModel _quickFilters;
 
 		public EntryCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
 			: base(dataSourceAnalyser)
 		{
+			_configuration = Configuration as LogEntryCountAnalyserConfiguration;
 			Title = "Line Count";
 			Caption = "Line(s)";
-			var filters = new QuickFilters(new Core.Settings.QuickFilters());
-			_quickFilters = new QuickFiltersViewModel(filters);
+			_quickFilters = new FiltersViewModel(_configuration?.QuickFilters);
 		}
 
 		public long? Count
@@ -47,7 +46,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 			}
 		}
 
-		public QuickFiltersViewModel QuickFilters => _quickFilters;
+		public FiltersViewModel Filters => _quickFilters;
 
 		public override void Update()
 		{

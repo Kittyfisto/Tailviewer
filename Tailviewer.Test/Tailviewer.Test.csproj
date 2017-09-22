@@ -101,6 +101,7 @@
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalyserGroupTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyserConfigurationTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyserTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinitionTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserTest.cs" />

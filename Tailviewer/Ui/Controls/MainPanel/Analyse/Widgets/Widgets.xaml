@@ -3,7 +3,6 @@
     
     <ResourceDictionary.MergedDictionaries>
         <!-- Resources used by many widgets -->
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilter/QuickFiltersDataTemplate.xaml" />
         
         <!-- Widgets -->
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Help/HelpWidgetDataTemplate.xaml" />
