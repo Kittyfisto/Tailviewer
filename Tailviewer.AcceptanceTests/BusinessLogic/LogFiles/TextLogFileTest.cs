@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -16,10 +17,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		private ManualTaskScheduler _scheduler;
 		private string _fname;
 		private FileStream _stream;
-		private StreamWriter _writer;
+		private StreamWriter _streamWriter;
 		private TextLogFile _file;
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _changes;
+		private BinaryWriter _binaryWriter;
 
 		[SetUp]
 		public void Setup()
@@ -30,7 +32,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				File.Delete(_fname);
 
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
-			_writer = new StreamWriter(_stream);
+			_streamWriter = new StreamWriter(_stream);
+			_binaryWriter = new BinaryWriter(_stream);
 
 			_file = new TextLogFile(_scheduler, _fname);
 
@@ -45,15 +48,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[TearDown]
 		public void TearDown()
 		{
-			_writer?.Dispose();
+			_binaryWriter?.Dispose();
+			//_streamWriter?.Dispose();
 			_stream?.Dispose();
 		}
 
 		[Test]
 		public void TestCtor()
 		{
-			_writer.Write("Foo");
-			_writer.Flush();
+			_streamWriter.Write("Foo");
+			_streamWriter.Flush();
 
 			var info = new FileInfo(_fname);
 			_scheduler.RunOnce();
@@ -63,15 +67,51 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestEncodingLatin1()
+		{
+			_binaryWriter.Write((byte) 0x36);
+			_binaryWriter.Write((byte) 0x35);
+			_binaryWriter.Write((byte) 0xB0);
+			_binaryWriter.Write((byte) '\r');
+			_binaryWriter.Write((byte) '\n');
+			_binaryWriter.Flush();
+
+			_file = new TextLogFile(_scheduler, _fname, encoding: Encoding.GetEncoding(1252));
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(1);
+			var line = _file.GetLine(0);
+			line.Message.Should().Be("65°");
+		}
+
+		[Test]
+		public void TestEncodingUtf8()
+		{
+			_binaryWriter.Write((byte)0x36);
+			_binaryWriter.Write((byte)0x35);
+			_binaryWriter.Write((byte)0xC2);
+			_binaryWriter.Write((byte)0xB0);
+			_binaryWriter.Write((byte)'\r');
+			_binaryWriter.Write((byte)'\n');
+			_binaryWriter.Flush();
+
+			_file = new TextLogFile(_scheduler, _fname);
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(1);
+			var line = _file.GetLine(0);
+			line.Message.Should().Be("65°");
+		}
+
+		[Test]
 		public void TestTranslator1()
 		{
 			var translator = new Mock<ILogLineTranslator>();
 			_file = new TextLogFile(_scheduler, _fname, translator: translator.Object);
 			_file.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
-
-			_writer.Write("Foo");
-			_writer.Flush();
+			_streamWriter.Write("Foo");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
 			translator.Verify(x => x.Translate(It.Is<ILogFile>(y => y == _file), It.IsAny<LogLine>()),
@@ -86,7 +126,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file.Error.Should().Be(ErrorFlags.None);
 			_file.Created.Should().NotBe(DateTime.MinValue);
 
-			_writer?.Dispose();
+			_streamWriter?.Dispose();
 			_stream?.Dispose();
 			File.Delete(_fname);
 			_scheduler.RunOnce();
@@ -98,7 +138,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestExclusiveAccess()
 		{
-			_writer?.Dispose();
+			_streamWriter?.Dispose();
 			_stream?.Dispose();
 
 			using (var stream = new FileStream(_fname, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
@@ -115,8 +155,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadOneLine1()
 		{
-			_writer.Write("Foo");
-			_writer.Flush();
+			_streamWriter.Write("Foo");
+			_streamWriter.Flush();
 
 			_scheduler.RunOnce();
 			_file.Count.Should().Be(1);
@@ -127,12 +167,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that a line written in two separate flushes is correctly assembly to a single log line")]
 		public void TestReadOneLine2()
 		{
-			_writer.Write("Hello ");
-			_writer.Flush();
+			_streamWriter.Write("Hello ");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("World!");
-			_writer.Flush();
+			_streamWriter.Write("World!");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -143,16 +183,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that a line written in three separate flushes is correctly assembly to a single log line")]
 		public void TestReadOneLine3()
 		{
-			_writer.Write("A");
-			_writer.Flush();
+			_streamWriter.Write("A");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("B");
-			_writer.Flush();
+			_streamWriter.Write("B");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("C");
-			_writer.Flush();
+			_streamWriter.Write("C");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -163,16 +203,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the correct sequence of modification is fired when a log line is assembled from many reads")]
 		public void TestReadOneLine4()
 		{
-			_writer.Write("A");
-			_writer.Flush();
+			_streamWriter.Write("A");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("B");
-			_writer.Flush();
+			_streamWriter.Write("B");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("C");
-			_writer.Flush();
+			_streamWriter.Write("C");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
 			_changes.Should().Equal(new object[]
@@ -192,12 +232,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadTwoLines1()
 		{
-			_writer.Write("Hello\r\n");
-			_writer.Flush();
+			_streamWriter.Write("Hello\r\n");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
-			_writer.Write("World!\r\n");
-			_writer.Flush();
+			_streamWriter.Write("World!\r\n");
+			_streamWriter.Flush();
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);

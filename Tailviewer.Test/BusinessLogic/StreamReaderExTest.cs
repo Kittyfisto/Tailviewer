@@ -2,8 +2,6 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
-using Tailviewer.Core;
 
 namespace Tailviewer.Test.BusinessLogic
 {
@@ -23,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestReadLine1()
 		{
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().BeNull("because the source stream is empty");
 		}
 
@@ -34,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be("Foo");
 		}
 
@@ -45,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be("Foo\n");
 		}
 
@@ -56,7 +54,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be("Foo\r\n");
 		}
 
@@ -68,7 +66,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be("Foo\r\n");
 			reader.ReadLine().Should().Be("Bar");
 		}
@@ -84,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be(line);
 			reader.ReadLine().Should().Be(null);
 		}
@@ -102,7 +100,7 @@ namespace Tailviewer.Test.BusinessLogic
 			_writer.Flush();
 			_stream.Position = 0;
 
-			var reader = new StreamReaderEx(_stream);
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
 			reader.ReadLine().Should().Be(line1);
 			reader.ReadLine().Should().Be("Foobar");
 			reader.ReadLine().Should().BeNull();

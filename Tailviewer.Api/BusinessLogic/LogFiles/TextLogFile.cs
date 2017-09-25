@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using log4net;
 using Metrolib;
@@ -23,6 +24,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		#region Data
 
+		private readonly Encoding _encoding;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private ErrorFlags _error;
@@ -62,10 +64,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="fileName"></param>
 		/// <param name="timestampParser">An optional timestamp parser that is used to find timestamps in log messages. If none is specified, then <see cref="TimestampParser"/> is used</param>
 		/// <param name="translator">An optional translator that is used to translate each log line in memory. If none is specified, then log lines are displayed as they are in the file on disk</param>
+		/// <param name="encoding">The encoding to use to interpet the file, if none is specified, then <see cref="Encoding.UTF8"/> is used</param>
 		public TextLogFile(ITaskScheduler scheduler,
 		                   string fileName,
 		                   ITimestampParser timestampParser = null,
-		                   ILogLineTranslator translator = null)
+		                   ILogLineTranslator translator = null,
+		                   Encoding encoding = null)
 			: base(scheduler)
 		{
 			if (fileName == null) throw new ArgumentNullException(nameof(fileName));
@@ -80,6 +84,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_entries = new List<LogLine>();
 			_syncRoot = new object();
+			_encoding = encoding ?? Encoding.UTF8;
+
+			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
 
 			if (timestampParser != null)
 			{
@@ -206,7 +213,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 						FileMode.Open,
 						FileAccess.Read,
 						FileShare.ReadWrite))
-					using (var reader = new StreamReaderEx(stream))
+					using (var reader = new StreamReaderEx(stream, _encoding))
 					{
 						// We change the error flag explicitly AFTER opening
 						// the stream because that operation might throw if we're

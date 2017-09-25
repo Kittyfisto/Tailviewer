@@ -17,13 +17,20 @@ namespace Tailviewer
 		private readonly StreamReader _reader;
 		private readonly Stream _stream;
 
-		public StreamReaderEx(Stream stream)
+		/// <summary>
+		///     Initializes this enhanced stream reader.
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <param name="encoding"></param>
+		public StreamReaderEx(Stream stream, Encoding encoding)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
+			if (encoding == null)
+				throw new ArgumentNullException(nameof(encoding));
 
 			_stream = stream;
-			_reader = new StreamReader(_stream);
+			_reader = new StreamReader(_stream, encoding, true);
 
 			_readBuffer = new char[1024];
 			_contentBuffer = new StringBuilder();
@@ -37,11 +44,11 @@ namespace Tailviewer
 
 		public string ReadLine()
 		{
-			string line = TryFormLine();
+			var line = TryFormLine();
 			while (line == null && !_reader.EndOfStream)
 			{
-				var numRead = _reader.Read(_readBuffer, 0, _readBuffer.Length);
-				_contentBuffer.Append(_readBuffer, 0, numRead);
+				var numRead = _reader.Read(_readBuffer, index: 0, count: _readBuffer.Length);
+				_contentBuffer.Append(_readBuffer, startIndex: 0, charCount: numRead);
 
 				line = TryFormLine();
 			}
@@ -73,8 +80,8 @@ namespace Tailviewer
 
 		private string FormLine(int length)
 		{
-			var line = _contentBuffer.ToString(0, length);
-			_contentBuffer.Remove(0, length);
+			var line = _contentBuffer.ToString(startIndex: 0, length: length);
+			_contentBuffer.Remove(startIndex: 0, length: length);
 			return line;
 		}
 	}
