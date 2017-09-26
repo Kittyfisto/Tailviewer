@@ -226,6 +226,9 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetConfiguration.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoTitle.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetConfiguration.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />

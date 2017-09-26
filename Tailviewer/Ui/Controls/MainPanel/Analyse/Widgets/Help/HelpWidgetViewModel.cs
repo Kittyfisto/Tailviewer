@@ -6,7 +6,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 		: AbstractWidgetViewModel
 	{
 		public HelpWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
-			: base(dataSourceAnalyser)
+			: base(dataSourceAnalyser, null)
 		{
 			Title = "Help";
 		}

@@ -6,7 +6,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 		: AbstractWidgetViewModel
 	{
 		public QuickInfoWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
-			: base(dataSourceAnalyser)
+			: base(dataSourceAnalyser, new QuickInfoWidgetConfiguration())
 		{}
 	}
 }

@@ -19,38 +19,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
+		private bool _isAnalysisFinished;
 
 		private bool _isEditing;
-		private string _title;
-		private bool _isAnalysisFinished;
 		private double _progress;
 		private string _progressTooltip;
+		private string _title;
 
 		/// <summary>
 		/// </summary>
-		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
+		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration viewConfiguration)
 		{
 			if (dataSourceAnalyser == null)
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
 			_isAnalysisFinished = false;
-			Configuration = CloneConfiguration(dataSourceAnalyser);
-			CanBeEdited = Configuration != null && !dataSourceAnalyser.IsFrozen;
+			AnalyserConfiguration = CloneConfiguration(dataSourceAnalyser);
+			ViewConfiguration = viewConfiguration;
+			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
-		}
-
-		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)
-		{
-			try
-			{
-				return (ILogAnalyserConfiguration) dataSourceAnalyser.Configuration?.Clone();
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception while cloning configuration: {0}", e);
-				return null;
-			}
 		}
 
 		/// <summary>
@@ -59,13 +47,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		///     When <see cref="IsEditing" /> is set to false again, the current value of this property is then forwarded
 		///     to the <see cref="IDataSourceAnalyser" /> via <see cref="IDataSourceAnalyser.Configuration" />.
 		/// </summary>
-		protected ILogAnalyserConfiguration Configuration { get; }
+		protected ILogAnalyserConfiguration AnalyserConfiguration { get; }
 
-		protected bool TryGetResult<T>(out T result) where T : class, ILogAnalysisResult
-		{
-			result = _dataSourceAnalyser.Result as T;
-			return result != null;
-		}
+		/// <summary>
+		///     The current configuration of the view.
+		/// </summary>
+		protected IWidgetConfiguration ViewConfiguration { get; }
 
 		public bool IsEditing
 		{
@@ -79,9 +66,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 				EmitPropertyChanged();
 
 				if (!value)
-				{
-					_dataSourceAnalyser.Configuration = Configuration.Clone() as ILogAnalyserConfiguration;
-				}
+					_dataSourceAnalyser.Configuration = AnalyserConfiguration.Clone() as ILogAnalyserConfiguration;
 			}
 		}
 
@@ -155,6 +140,25 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		}
 
 		public event Action<IWidgetViewModel> OnDelete;
+
+		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)
+		{
+			try
+			{
+				return (ILogAnalyserConfiguration) dataSourceAnalyser.Configuration?.Clone();
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while cloning configuration: {0}", e);
+				return null;
+			}
+		}
+
+		protected bool TryGetResult<T>(out T result) where T : class, ILogAnalysisResult
+		{
+			result = _dataSourceAnalyser.Result as T;
+			return result != null;
+		}
 
 		private void Delete()
 		{

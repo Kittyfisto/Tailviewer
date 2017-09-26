@@ -12,9 +12,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 		private string _caption;
 
 		public EntryCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
-			: base(dataSourceAnalyser)
+			: base(dataSourceAnalyser, null)
 		{
-			_configuration = Configuration as LogEntryCountAnalyserConfiguration;
+			_configuration = AnalyserConfiguration as LogEntryCountAnalyserConfiguration;
 			Title = "Line Count";
 			Caption = "Line(s)";
 			_quickFilters = new FiltersViewModel(_configuration?.QuickFilters);

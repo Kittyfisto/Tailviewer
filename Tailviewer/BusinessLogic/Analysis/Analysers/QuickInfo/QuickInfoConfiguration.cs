@@ -26,6 +26,11 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 		/// </remarks>
 		public string Format;
 
+		/// <summary>
+		///     Identifier for this quick info.
+		/// </summary>
+		public Guid Id;
+
 		object ICloneable.Clone()
 		{
 			return Clone();
@@ -36,6 +41,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			return new QuickInfoConfiguration
 			{
+				Id = Id,
 				Filter = Filter.Clone(),
 				Format = Format
 			};
