@@ -32,7 +32,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Export folder"
                                    Margin="0,6,6,6"/>
-                        <controls:WatermarkTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        <controls:EditorTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                    Grid.Column="1"/>
                     </Grid>
                 </controls:FlatGroupBox>
@@ -76,7 +76,7 @@
                         <TextBlock Grid.Row="2" TextWrapping="Wrap" Margin="0,4,0,0"
                                    Text="If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available." />
                         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
-                            <controls:WatermarkTextBox Watermark="Proxy username" Width="110"
+                            <controls:EditorTextBox Watermark="Proxy username" Width="110"
                                                        Text="{Binding ProxyUsername}" Margin="0,0,4,0"
                                                        IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
                             <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
@@ -84,7 +84,7 @@
                                                       PasswordChanged="OnPasswordChanged"
                                                       Margin="0,0,4,0"
                                                       IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                            <controls:WatermarkTextBox Watermark="Proxy server" Width="150"
+                            <controls:EditorTextBox Watermark="Proxy server" Width="150"
                                                        Text="{Binding ProxyServer}" Margin="0"
                                                        IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
                         </StackPanel>
