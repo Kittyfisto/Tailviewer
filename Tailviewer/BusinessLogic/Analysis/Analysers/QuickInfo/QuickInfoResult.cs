@@ -1,13 +1,18 @@
-﻿namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
+﻿using System.Linq;
+
+namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 {
 	public sealed class QuickInfoResult
 		: ILogAnalysisResult
 	{
-		public long Count { get; set; }
+		public string[] Values;
 
 		public object Clone()
 		{
-			return new QuickInfoResult {Count = Count};
+			return new QuickInfoResult
+			{
+				Values = Values?.ToArray()
+			};
 		}
 	}
 }
