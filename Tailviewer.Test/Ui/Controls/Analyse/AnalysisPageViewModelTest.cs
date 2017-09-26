@@ -2,7 +2,6 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.Core;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
@@ -59,7 +58,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetFactory>();
-			factory.Setup(x => x.Create(It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.Create(It.IsAny<IDataSourceAnalyser>(), It.IsAny<IWidgetConfiguration>()))
 				.Returns(widget);
 
 			layout.Widgets.Should().NotContain(widget);
@@ -76,7 +75,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetFactory>();
-			factory.Setup(x => x.Create(It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.Create(It.IsAny<IDataSourceAnalyser>(), It.IsAny<IWidgetConfiguration>()))
 				.Returns(widget.Object);
 			
 			layout.RaiseRequestAdd(factory.Object);

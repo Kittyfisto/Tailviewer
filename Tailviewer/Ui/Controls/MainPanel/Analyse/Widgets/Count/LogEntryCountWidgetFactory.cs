@@ -13,13 +13,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new LogEntryCountAnalyserConfiguration();
 
+		public IWidgetConfiguration DefaultViewConfiguration => null;
+
 		public string Name => "Log Entry Count";
 
 		public string Description => "Counts the number of log entries matching a filter expression";
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
 		{
 			return new EntryCountWidgetViewModel(dataSourceAnalyser);
 		}

@@ -12,13 +12,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 
+		public IWidgetConfiguration DefaultViewConfiguration => null;
+
 		public string Name => "Tutorial";
 
 		public string Description => "Describes the first steps after having created an analysis";
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
 		{
 			return new HelpWidgetViewModel(dataSourceAnalyser);
 		}

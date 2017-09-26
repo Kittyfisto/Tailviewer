@@ -122,9 +122,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void LayoutOnRequestAdd(IWidgetFactory factory)
 		{
 			var analyser = CreateAnalyser(factory);
-			var widget = factory.Create(analyser);
+			var viewConfiguration = CreateViewConfiguration(factory);
+			var widget = factory.Create(analyser, viewConfiguration);
 			_analysersPerWidget.Add(widget, analyser);
 			Add(widget);
+		}
+
+		private IWidgetConfiguration CreateViewConfiguration(IWidgetFactory factory)
+		{
+			try
+			{
+				return factory.DefaultViewConfiguration?.Clone() as IWidgetConfiguration;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while creating view configuration for widget '{0}': {1}", factory, e);
+				return null;
+			}
 		}
 
 		private IDataSourceAnalyser CreateAnalyser(IWidgetFactory factory)

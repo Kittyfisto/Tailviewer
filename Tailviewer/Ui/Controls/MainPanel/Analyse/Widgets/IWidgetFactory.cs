@@ -7,12 +7,11 @@ using Tailviewer.Core;
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {
 	/// <summary>
-	/// 
 	/// </summary>
 	/// <remarks>
-	/// TODO: Should this interface be part of the plugin architecture? If yes, then how exactly?
-	///       Is it good enough to just inherit from <see cref="IPlugin"/>?
-	///       Can we move all dependant types to the Tailviewer.Api project?
+	///     TODO: Should this interface be part of the plugin architecture? If yes, then how exactly?
+	///     Is it good enough to just inherit from <see cref="IPlugin" />?
+	///     Can we move all dependant types to the Tailviewer.Api project?
 	/// </remarks>
 	public interface IWidgetFactory
 	{
@@ -26,6 +25,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		///     The configuration which shall be used when creating a new widget of this type.
 		/// </summary>
 		ILogAnalyserConfiguration DefaultAnalyserConfiguration { get; }
+
+		/// <summary>
+		///     The configuration wich shall be used if no other view configuration is present.
+		/// </summary>
+		IWidgetConfiguration DefaultViewConfiguration { get; }
 
 		/// <summary>
 		///     The name of this widget - will be displayed to the user.
@@ -51,7 +55,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		///     the configuration as well as to present results from <see cref="IDataSourceAnalyser.Result" />.
 		/// </summary>
 		/// <param name="dataSourceAnalyser"></param>
+		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser);
+		IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration);
 	}
 }

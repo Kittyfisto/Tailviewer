@@ -13,18 +13,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new QuickInfoAnalyserConfiguration();
 
+		public IWidgetConfiguration DefaultViewConfiguration => new QuickInfoWidgetConfiguration();
+
 		public string Name => "Quick Info";
 
 		public string Description => "Obtain a quick overview by displaying extracts of matching log entries";
 
-		public Geometry Icon
-		{
-			get { return null; }
-		}
+		public Geometry Icon => null;
 
-		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
 		{
-			return new QuickInfoWidgetViewModel(dataSourceAnalyser);
+			return new QuickInfoWidgetViewModel(dataSourceAnalyser, configuration as QuickInfoWidgetConfiguration);
 		}
 	}
 }
