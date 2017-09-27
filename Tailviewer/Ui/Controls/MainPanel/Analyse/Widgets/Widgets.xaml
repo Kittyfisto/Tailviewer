@@ -6,8 +6,8 @@
         
         <!-- Widgets -->
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Help/HelpWidgetDataTemplate.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/Count/LogEntryCountWidgetDataTemplate.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/QuickInfo/QuickInfoWidgetDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer.Count;component/Ui/LogEntryCountWidgetDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer.QuickInfo;component/Ui/QuickInfoWidgetDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

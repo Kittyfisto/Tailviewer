@@ -21,6 +21,8 @@
   </metadata>
   <files>
     <file src="..\bin\Tailviewer.Api.pdb" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.dll" target="lib\net45\" />
+    <file src="..\bin\Tailviewer.Core.pdb" target="lib\net45\" />
     <file src="..\bin\archive.exe" target="build\" />
   </files>
 </package>

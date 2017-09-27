@@ -47,8 +47,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.48, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.48\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.49, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.49\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -203,6 +203,17 @@
   <ItemGroup>
     <EmbeddedResource Include="..\bin\archive.exe">
       <Link>InstallationFiles\archive.exe</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\bin\Tailviewer.Count.dll">
+      <Link>InstallationFiles\Tailviewer.Count.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\Tailviewer.Events.dll">
+      <Link>InstallationFiles\Tailviewer.Events.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\Tailviewer.QuickInfo.dll">
+      <Link>InstallationFiles\Tailviewer.QuickInfo.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count;
+using Tailviewer.Count.Ui;
+using Tailviewer.QuickInfo.Ui;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels

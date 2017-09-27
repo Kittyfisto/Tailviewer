@@ -15,9 +15,11 @@ using Tailviewer.Ui.ViewModels;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Count.BusinessLogic;
+using Tailviewer.Events.BusinessLogic;
+using Tailviewer.QuickInfo.BusinessLogic;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -77,6 +79,8 @@ namespace Tailviewer
 				using (var analysisEngine = new AnalysisEngine(taskScheduler))
 				{
 					analysisEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
+					analysisEngine.RegisterFactory(new QuickInfoAnalyserPlugin());
+					analysisEngine.RegisterFactory(new EventsLogAnalyserPlugin());
 
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)
