@@ -4,8 +4,10 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
 	///     This abstract <see cref="ILogFile" /> implementation serves as a solid base class for most, if not all needs.

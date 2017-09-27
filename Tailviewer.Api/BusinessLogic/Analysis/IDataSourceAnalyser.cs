@@ -3,10 +3,10 @@
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Represents a continuous analysis of a set of data sources where
-	///     the configuration of the analysis may be changed on the fly
-	///     (as opposed to <see cref="DataSourceAnalysis" /> which only supports
-	///     a static configuration).
+	///     Represents a live analysis or a snapshot (depending on <see cref="IsFrozen" />) of a
+	///     previous analysis.
+	///     When this is a live analysis, then changes to <see cref="Configuration" /> are eventually
+	///     forwarded to a <see cref="ILogAnalyser" />.
 	/// </summary>
 	public interface IDataSourceAnalyser
 	{

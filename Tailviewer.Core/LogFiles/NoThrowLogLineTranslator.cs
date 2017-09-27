@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using log4net;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
 	///     Wraps a given <see cref="ILogLineTranslator" /> and ensures that any exceptions thrown

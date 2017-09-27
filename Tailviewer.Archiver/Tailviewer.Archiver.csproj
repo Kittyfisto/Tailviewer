@@ -103,6 +103,10 @@
       <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
       <Name>Tailviewer.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\bin\CommandLine.dll">

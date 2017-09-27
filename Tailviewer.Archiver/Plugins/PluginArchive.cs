@@ -18,7 +18,6 @@ namespace Tailviewer.Archiver.Plugins
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private readonly Dictionary<ZipArchiveEntry, Assembly> _assemblyCache;
-		private Assembly _pluginAssembly;
 
 		public const string PluginAssemblyEntryName = "Plugin.dll";
 		public const string IndexEntryName = "Index.xml";

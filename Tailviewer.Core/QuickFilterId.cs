@@ -10,31 +10,52 @@ namespace Tailviewer.Core
 	public struct QuickFilterId
 		: IEquatable<QuickFilterId>
 	{
+		/// <summary>
+		///     The value for an empty id, representing nothing.
+		/// </summary>
 		public static readonly QuickFilterId Empty = new QuickFilterId();
 
+		/// <summary>
+		///     The underlying value of this id.
+		/// </summary>
 		public Guid Value => _value;
 
+		/// <inheritdoc />
 		public bool Equals(QuickFilterId other)
 		{
 			return _value.Equals(other._value);
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
 			return obj is QuickFilterId && Equals((QuickFilterId) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			return _value.GetHashCode();
 		}
 
+		/// <summary>
+		///     Compares the two values for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(QuickFilterId left, QuickFilterId right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two values for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(QuickFilterId left, QuickFilterId right)
 		{
 			return !left.Equals(right);
@@ -42,16 +63,25 @@ namespace Tailviewer.Core
 
 		private readonly Guid _value;
 
+		/// <summary>
+		///     Initializes this id.
+		/// </summary>
+		/// <param name="value"></param>
 		public QuickFilterId(Guid value)
 		{
 			_value = value;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return _value.ToString();
 		}
 
+		/// <summary>
+		///     Creates a new id that is guarantueed to be globally unique.
+		/// </summary>
+		/// <returns></returns>
 		[Pure]
 		public static QuickFilterId CreateNew()
 		{

@@ -308,12 +308,25 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return !left.Equals(right);
 		}
 
+		/// <summary>
+		///     Parses the given line and extracts log4net levels from it,
+		///     if there are any.
+		/// </summary>
+		/// <param name="line"></param>
+		/// <returns></returns>
 		public static LevelFlags DetermineLevelsFromLine(string line)
 		{
 			LevelFlags unused;
 			return DetermineLevelsFromLine(line, out unused);
 		}
 
+		/// <summary>
+		///     Parses the given line and extracts log4net levels from it,
+		///     if there are any.
+		/// </summary>
+		/// <param name="line"></param>
+		/// <param name="leftMost">The left-most log level in the given <paramref name="line"/></param>
+		/// <returns></returns>
 		public static LevelFlags DetermineLevelsFromLine(string line, out LevelFlags leftMost)
 		{
 			LevelFlags level = LevelFlags.None;
@@ -380,6 +393,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return level;
 		}
 
+		/// <summary>
+		///     Parses the given line and returns the left most log level
+		///     from it.
+		/// </summary>
+		/// <param name="line"></param>
+		/// <returns></returns>
 		public static LevelFlags DetermineLevelFromLine(string line)
 		{
 			LevelFlags leftMost;

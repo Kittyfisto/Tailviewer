@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.Core.Parsers
 {
 	/// <summary>
 	///     The interface for a parser that is responsible for determining the timestamp of a message

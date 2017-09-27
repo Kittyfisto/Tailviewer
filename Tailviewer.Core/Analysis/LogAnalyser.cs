@@ -24,7 +24,7 @@ namespace Tailviewer.Core.Analysis
 		private readonly object _syncRoot;
 
 		/// <summary>
-		/// Initializes this analyser.
+		///     Initializes this analyser.
 		/// </summary>
 		protected LogAnalyser()
 		{
@@ -86,11 +86,17 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <summary>
+		///     Invoke this method right before work is being done.
+		/// </summary>
 		protected void StartMeasure()
 		{
 			_stopwatch.Start();
 		}
 
+		/// <summary>
+		///     Invoke this method right before work no longer needs to be performed.
+		/// </summary>
 		protected void StopMeasure()
 		{
 			_stopwatch.Stop();
@@ -107,8 +113,16 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <summary>
+		///     This method is called when the log file is modified.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
 		protected abstract void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section);
 
+		/// <summary>
+		///     This method is called when this object is being disposed of.
+		/// </summary>
 		protected abstract void DisposeInternal();
 	}
 }

@@ -127,7 +127,7 @@ namespace Tailviewer
 		}
 
 		/// <summary>
-		///     Returns the fraction between <paramref name="current" /> and <paramref cref="count" />.
+		///     Returns the fraction between <paramref name="current" /> and <paramref name="count" />.
 		/// </summary>
 		/// <param name="current"></param>
 		/// <param name="count"></param>

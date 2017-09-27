@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
 	///     Holds a list of zero or more <see cref="ILogFileListener" /> and forwards events to every single listener,

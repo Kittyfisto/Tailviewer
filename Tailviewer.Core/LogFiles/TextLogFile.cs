@@ -7,9 +7,11 @@ using System.Text;
 using System.Threading;
 using log4net;
 using Metrolib;
-using Tailviewer.BusinessLogic.Parsers;
+using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Parsers;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
 	///     The bead-and-butter <see cref="ILogFile" /> implementation for Tailviewer.

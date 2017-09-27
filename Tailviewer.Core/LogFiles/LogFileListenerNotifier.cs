@@ -1,6 +1,7 @@
 using System;
+using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.BusinessLogic.LogFiles
+namespace Tailviewer.Core.LogFiles
 {
 	public sealed class LogFileListenerNotifier
 	{

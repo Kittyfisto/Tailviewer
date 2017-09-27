@@ -2,7 +2,7 @@
 using System.Reflection;
 using log4net;
 
-namespace Tailviewer.BusinessLogic.Parsers
+namespace Tailviewer.Core.Parsers
 {
 	/// <summary>
 	///     This class is responsible for ensuring that if a given <see cref="ITimestampParser" />

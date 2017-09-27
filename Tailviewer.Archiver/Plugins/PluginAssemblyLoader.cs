@@ -8,6 +8,7 @@ using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Archiver.Plugins
 {

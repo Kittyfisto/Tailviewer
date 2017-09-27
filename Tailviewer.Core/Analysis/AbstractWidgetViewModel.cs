@@ -54,6 +54,7 @@ namespace Tailviewer.Core.Analysis
 		/// </summary>
 		protected IWidgetConfiguration ViewConfiguration { get; }
 
+		/// <inheritdoc />
 		public bool IsEditing
 		{
 			get { return _isEditing; }
@@ -70,8 +71,10 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <inheritdoc />
 		public bool CanBeEdited { get; }
 
+		/// <inheritdoc />
 		public string Title
 		{
 			get { return _title; }
@@ -85,8 +88,10 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <inheritdoc />
 		public ICommand DeleteCommand { get; }
 
+		/// <inheritdoc />
 		public bool IsAnalysisFinished
 		{
 			get { return _isAnalysisFinished; }
@@ -100,6 +105,7 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <inheritdoc />
 		public double Progress
 		{
 			get { return _progress; }
@@ -119,6 +125,7 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <inheritdoc />
 		public string ProgressTooltip
 		{
 			get { return _progressTooltip; }
@@ -132,13 +139,16 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <inheritdoc />
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		/// <inheritdoc />
 		public virtual void Update()
 		{
 			Progress = _dataSourceAnalyser.Progress.RelativeValue;
 		}
 
+		/// <inheritdoc />
 		public event Action<IWidgetViewModel> OnDelete;
 
 		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)
@@ -154,6 +164,12 @@ namespace Tailviewer.Core.Analysis
 			}
 		}
 
+		/// <summary>
+		///     Tries to get the latest result.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="result"></param>
+		/// <returns></returns>
 		protected bool TryGetResult<T>(out T result) where T : class, ILogAnalysisResult
 		{
 			result = _dataSourceAnalyser.Result as T;
@@ -165,6 +181,10 @@ namespace Tailviewer.Core.Analysis
 			OnDelete?.Invoke(this);
 		}
 
+		/// <summary>
+		///     Call this method when a publicly visible property has changed its value.
+		/// </summary>
+		/// <param name="propertyName"></param>
 		protected virtual void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

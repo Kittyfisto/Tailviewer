@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer
+namespace Tailviewer.Core
 {
 	public static class StringExtensions
 	{

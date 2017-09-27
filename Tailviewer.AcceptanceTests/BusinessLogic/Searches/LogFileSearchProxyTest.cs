@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 {

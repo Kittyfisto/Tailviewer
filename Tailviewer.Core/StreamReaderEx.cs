@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Tailviewer
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     Similar to <see cref="StreamReader" />, but is able to ReadLine() without

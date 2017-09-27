@@ -17,7 +17,7 @@ namespace Tailviewer
 
 		static LogEntryIndex()
 		{
-			Invalid = new LogEntryIndex(-1);
+			Invalid = new LogEntryIndex(value: -1);
 		}
 
 		/// <summary>
@@ -97,10 +97,11 @@ namespace Tailviewer
 		/// <returns>true if the given object is a <see cref="LogEntryIndex" /> and is equal in value to this one, false otherwise</returns>
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(objA: null, objB: obj)) return false;
 			return obj is LogEntryIndex && Equals((LogEntryIndex) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			return Value;
@@ -115,46 +116,100 @@ namespace Tailviewer
 			return string.Format("#{0}", Value);
 		}
 
+		/// <summary>
+		///     Compares the two indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator <(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Value < right.Value;
 		}
 
+		/// <summary>
+		///     Compares the two indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator >(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Value > right.Value;
 		}
 
+		/// <summary>
+		///     Compares the two indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator <=(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Value <= right.Value;
 		}
 
+		/// <summary>
+		///     Compares the two indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator >=(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Value >= right.Value;
 		}
 
+		/// <summary>
+		///     Returns the sum of the two given indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static LogEntryIndex operator +(LogEntryIndex left, int right)
 		{
 			return new LogEntryIndex(left.Value + right);
 		}
 
+		/// <summary>
+		///     Returns the sum of the two given indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static LogEntryIndex operator +(int left, LogEntryIndex right)
 		{
 			return new LogEntryIndex(left + right.Value);
 		}
 
+		/// <summary>
+		///     Returns the differences of the two given indices.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static int operator -(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Value - right.Value;
 		}
 
+		/// <summary>
+		///     Compares the two indices for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogEntryIndex left, LogEntryIndex right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two indices for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogEntryIndex left, LogEntryIndex right)
 		{
 			return !left.Equals(right);

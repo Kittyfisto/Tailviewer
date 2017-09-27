@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Tailviewer
+namespace Tailviewer.Core
 {
 	/// <summary>
 	///     "Extension" methods to the static <see cref="File" /> methods.

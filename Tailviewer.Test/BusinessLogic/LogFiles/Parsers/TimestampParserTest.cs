@@ -3,8 +3,8 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Parsers;
 using Tailviewer.Core;
+using Tailviewer.Core.Parsers;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 {

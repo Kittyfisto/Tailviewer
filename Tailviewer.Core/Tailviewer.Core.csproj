@@ -20,8 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,8 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -64,6 +62,8 @@
     <Compile Include="AnalysisId.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
     <Compile Include="DataSourceId.cs" />
+    <Compile Include="Drive.cs" />
+    <Compile Include="FileEx.cs" />
     <Compile Include="Filters\EmptyLogLineFilter.cs" />
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="Filters\AndFilter.cs" />
@@ -80,15 +80,20 @@
     <Compile Include="LogAnalyserId.cs" />
     <Compile Include="LogDataAccessQueue.cs" />
     <Compile Include="LogDataCache.cs" />
+    <Compile Include="LogFiles\AbstractLogFile.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\ILogFileFactory.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
+    <Compile Include="LogFiles\LogFileListenerCollection.cs" />
+    <Compile Include="LogFiles\LogFileListenerNotifier.cs" />
     <Compile Include="LogFiles\LogFileProxy.cs" />
     <Compile Include="LogFiles\MergedLogFile.cs" />
     <Compile Include="LogFiles\MultiLineLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
+    <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="LogFiles\TextLogFile.cs" />
     <Compile Include="LogLineMatch.cs" />
     <Compile Include="LogTables\ColumnType.cs" />
     <Compile Include="LogTables\IColumnHeader.cs" />
@@ -118,7 +123,13 @@
     <Compile Include="LogTables\Parsers\NewlineParser.cs" />
     <Compile Include="LogTables\Parsers\ThreadParser.cs" />
     <Compile Include="LogTables\Parsers\TimestampParser.cs" />
+    <Compile Include="MathEx.cs" />
     <Compile Include="NullToNotAvailableConverter.cs" />
+    <Compile Include="Parsers\DateTimeParser.cs" />
+    <Compile Include="Parsers\ITimestampParser.cs" />
+    <Compile Include="Parsers\NoThrowTimestampParser.cs" />
+    <Compile Include="Parsers\TimeOfDaySecondsSinceStartParser.cs" />
+    <Compile Include="Parsers\TimestampParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueExtensions.cs" />
     <Compile Include="QuickFilterId.cs" />
@@ -126,6 +137,8 @@
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\FilterMatchType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
+    <Compile Include="StreamReaderEx.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="WidgetId.cs" />
     <Compile Include="XmlReaderExtensions.cs" />
     <Compile Include="XmlWriterExtensions.cs" />

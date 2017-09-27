@@ -108,6 +108,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			       index < Index + Count;
 		}
 
+		/// <summary>
+		///     Tests if the given index is greater than <see cref="LastIndex" />.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		[Pure]
 		public bool IsEndOfSection(LogLineIndex index)
 		{
