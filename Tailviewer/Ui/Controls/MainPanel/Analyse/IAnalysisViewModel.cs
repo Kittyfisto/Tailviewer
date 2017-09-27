@@ -16,6 +16,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		IEnumerable<AnalysisPageViewModel> Pages { get; }
 		string Name { get; set; }
 		ICommand AddPageCommand { get; }
+		double Progress { get; }
 
 		void Add(ILogFile logFile);
 		void Remove(ILogFile logFile);

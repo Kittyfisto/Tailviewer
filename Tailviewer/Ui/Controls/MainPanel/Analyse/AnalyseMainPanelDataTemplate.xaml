@@ -52,7 +52,7 @@
                     
                 </Grid>
 
-                <metrolib:FlatProgressBar Value="{Binding Analysis.Progress}"
+                <metrolib:FlatProgressBar Value="{Binding Analysis.Progress, Mode=OneWay}"
                                           Minimum="0"
                                           Maximum="1" />
 
