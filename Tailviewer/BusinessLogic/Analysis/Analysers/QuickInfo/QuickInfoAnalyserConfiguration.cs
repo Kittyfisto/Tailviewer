@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
@@ -6,7 +8,12 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 	public sealed class QuickInfoAnalyserConfiguration
 		: LogAnalyserConfiguration
 	{
-		public QuickInfoConfiguration[] QuickInfos;
+		public Dictionary<Guid, QuickInfoConfiguration> QuickInfos;
+
+		public QuickInfoAnalyserConfiguration()
+		{
+			QuickInfos = new Dictionary<Guid, QuickInfoConfiguration>();
+		}
 
 		protected override void RestoreInternal(XmlReader reader)
 		{
@@ -20,7 +27,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			return new QuickInfoAnalyserConfiguration
 			{
-				QuickInfos = QuickInfos?.Select(x => x.Clone()).ToArray()
+				QuickInfos = QuickInfos?.ToDictionary(x => x.Key, x => x.Value?.Clone())
 			};
 		}
 

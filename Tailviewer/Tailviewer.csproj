@@ -53,8 +53,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.47, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.47\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.48, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.48\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -100,6 +100,7 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\ILogAnalysisResult.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfo.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoAnalyserFactory.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoConfiguration.cs" />
@@ -227,7 +228,10 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Count\LogEntryCountWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\IWidgetConfiguration.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoTitle.cs" />
+    <Compile Include="DelegateCommand2.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoFormatter.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoViewConfiguration.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetConfiguration.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetFactory.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\QuickInfo\QuickInfoWidgetViewModel.cs" />

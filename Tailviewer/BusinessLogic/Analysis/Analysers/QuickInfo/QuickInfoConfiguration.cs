@@ -10,26 +10,15 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 	public sealed class QuickInfoConfiguration
 		: ICloneable
 	{
+		public QuickInfoConfiguration()
+		{
+			Filter = new QuickFilter();
+		}
+
 		/// <summary>
 		///     The filter used to find matching lines.
 		/// </summary>
 		public QuickFilter Filter;
-
-		/// <summary>
-		///     An optional format string used to present matches from the filter.
-		///     Is only used when <see cref="QuickFilter.MatchType" /> is set to
-		///     <see cref="QuickFilterMatchType.RegexpFilter" />.
-		/// </summary>
-		/// <remarks>
-		///     Shall be in the form of .NET format strings: "v{0}.{1}" uses
-		///     the first two matches of the regular expression, etc...
-		/// </remarks>
-		public string Format;
-
-		/// <summary>
-		///     Identifier for this quick info.
-		/// </summary>
-		public Guid Id;
 
 		object ICloneable.Clone()
 		{
@@ -41,9 +30,7 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			return new QuickInfoConfiguration
 			{
-				Id = Id,
 				Filter = Filter.Clone(),
-				Format = Format
 			};
 		}
 	}
