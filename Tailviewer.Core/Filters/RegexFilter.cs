@@ -4,11 +4,20 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
+	/// <summary>
+	///     A filter based on regular expressions:
+	///     A line matches when the regex does.
+	/// </summary>
 	public sealed class RegexFilter
 		: ILogEntryFilter
 	{
 		private readonly Regex _regex;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="pattern"></param>
+		/// <param name="isCaseSensitive"></param>
 		public RegexFilter(string pattern, bool isCaseSensitive)
 		{
 			var options = RegexOptions.Compiled;
@@ -22,12 +31,10 @@ namespace Tailviewer.Core.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (LogLine logLine in logEntry)
+			foreach (var logLine in logEntry)
 				// ReSharper restore LoopCanBeConvertedToQuery
-			{
 				if (PassesFilter(logLine))
 					return true;
-			}
 
 			return false;
 		}
@@ -54,10 +61,8 @@ namespace Tailviewer.Core.Filters
 		{
 			var regexMatches = _regex.Matches(line.Message);
 			matches.Capacity += regexMatches.Count;
-			for(int i = 0; i < regexMatches.Count; ++i)
-			{
+			for (var i = 0; i < regexMatches.Count; ++i)
 				matches.Add(new LogLineMatch(regexMatches[i]));
-			}
 		}
 	}
 }

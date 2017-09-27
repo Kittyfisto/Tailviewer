@@ -6,10 +6,18 @@ using Tailviewer.Core.Settings;
 namespace Tailviewer.Core.Filters
 {
 	/// <summary>
-	///     This class serves as a collection of named constructors to create various <see cref="ILogEntryFilter"/>s.
+	///     This class serves as a collection of named constructors to create various <see cref="ILogEntryFilter" />s.
 	/// </summary>
 	public static class Filter
 	{
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="matchType"></param>
+		/// <param name="ignoreCase"></param>
+		/// <param name="isInverted"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(string value, FilterMatchType matchType, bool ignoreCase, bool isInverted)
 		{
 			ILogEntryFilter filter = null;
@@ -37,6 +45,11 @@ namespace Tailviewer.Core.Filters
 			return filter;
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="filters"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{
 			var tmp = filters.Where(x => x != null).ToList();
@@ -44,22 +57,40 @@ namespace Tailviewer.Core.Filters
 				return null;
 
 			if (tmp.Count == 1)
-				return tmp[0];
+				return tmp[index: 0];
 			return new AndFilter(tmp);
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="substringFilter"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(string substringFilter)
 		{
-			var filter = new SubstringFilter(substringFilter, true);
+			var filter = new SubstringFilter(substringFilter, ignoreCase: true);
 			return filter;
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="substringFilter"></param>
+		/// <param name="levelFilter"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(string substringFilter,
 			LevelFlags levelFilter)
 		{
-			return Create(CreateFilters(substringFilter, true, levelFilter));
+			return Create(CreateFilters(substringFilter, ignoreCase: true, levelFilter: levelFilter));
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="substringFilter"></param>
+		/// <param name="ignoreCase"></param>
+		/// <param name="levelFilter"></param>
+		/// <returns></returns>
 		public static List<ILogEntryFilter> CreateFilters(string substringFilter,
 			bool ignoreCase,
 			LevelFlags levelFilter)
@@ -72,6 +103,13 @@ namespace Tailviewer.Core.Filters
 			return filters;
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="levelFilter"></param>
+		/// <param name="andFilters"></param>
+		/// <param name="orFilters"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(LevelFlags levelFilter,
 			IEnumerable<ILogEntryFilter> andFilters = null,
 			IEnumerable<ILogEntryFilter> orFilters = null)
@@ -82,6 +120,14 @@ namespace Tailviewer.Core.Filters
 			return Create(filters);
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
+		/// </summary>
+		/// <param name="substringFilter"></param>
+		/// <param name="ignoreCase"></param>
+		/// <param name="levelFilter"></param>
+		/// <param name="additionalFilters"></param>
+		/// <returns></returns>
 		public static ILogEntryFilter Create(string substringFilter,
 			bool ignoreCase,
 			LevelFlags levelFilter,

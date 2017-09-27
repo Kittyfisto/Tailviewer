@@ -4,19 +4,27 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
+	/// <summary>
+	///     A simple wildcard filter.
+	/// </summary>
 	public class WildcardFilter : ILogEntryFilter
 	{
 		private readonly Regex _regex;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="pattern"></param>
+		/// <param name="ignoreCase"></param>
 		public WildcardFilter(string pattern, bool ignoreCase)
 		{
 			var options = RegexOptions.Compiled;
 			if (ignoreCase)
 				options |= RegexOptions.IgnoreCase;
 
-			string regexPattern = Regex.Escape(pattern)
-			                           .Replace(@"\*", ".*")
-			                           .Replace(@"\?", ".");
+			var regexPattern = Regex.Escape(pattern)
+				.Replace(@"\*", ".*")
+				.Replace(@"\?", ".");
 			_regex = new Regex(regexPattern, options);
 		}
 
@@ -24,12 +32,10 @@ namespace Tailviewer.Core.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (LogLine logLine in logEntry)
+			foreach (var logLine in logEntry)
 				// ReSharper restore LoopCanBeConvertedToQuery
-			{
 				if (PassesFilter(logLine))
 					return true;
-			}
 
 			return false;
 		}
@@ -56,10 +62,8 @@ namespace Tailviewer.Core.Filters
 		{
 			var regexMatches = _regex.Matches(line.Message);
 			matches.Capacity += regexMatches.Count;
-			for (int i = 0; i < regexMatches.Count; ++i)
-			{
+			for (var i = 0; i < regexMatches.Count; ++i)
 				matches.Add(new LogLineMatch(regexMatches[i]));
-			}
 		}
 	}
 }

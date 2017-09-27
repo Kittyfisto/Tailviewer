@@ -13,6 +13,10 @@ namespace Tailviewer.Core.Filters
 	{
 		private readonly ILogEntryFilter[] _filters;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="filters"></param>
 		public AndFilter(IEnumerable<ILogEntryFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException(nameof(filters));

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -12,11 +11,15 @@ namespace Tailviewer.Core.Filters
 	public sealed class LevelFilter
 		: ILogEntryFilter
 	{
-		public readonly LevelFlags Level;
+		private  readonly LevelFlags _level;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="level"></param>
 		public LevelFilter(LevelFlags level)
 		{
-			Level = level;
+			_level = level;
 		}
 
 		/// <inheritdoc />
@@ -36,7 +39,7 @@ namespace Tailviewer.Core.Filters
 		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
-			if ((logLine.Level & Level) != 0)
+			if ((logLine.Level & _level) != 0)
 				return true;
 
 			if (logLine.Level != LevelFlags.None)
@@ -62,7 +65,7 @@ namespace Tailviewer.Core.Filters
 		{
 			var flags =
 				new[] {LevelFlags.Debug, LevelFlags.Info, LevelFlags.Warning, LevelFlags.Error, LevelFlags.Fatal }
-				.Where(m => Level.HasFlag(m))
+				.Where(m => _level.HasFlag(m))
 				.ToList();
 
 			if (flags.Count == 0)

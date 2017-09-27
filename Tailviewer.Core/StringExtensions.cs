@@ -3,6 +3,9 @@ using System.Diagnostics.Contracts;
 
 namespace Tailviewer.Core
 {
+	/// <summary>
+	/// Extension methods for the <see cref="string"/> class.
+	/// </summary>
 	public static class StringExtensions
 	{
 		public static bool EndsWithNewline(this string that)

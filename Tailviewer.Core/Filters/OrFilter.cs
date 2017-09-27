@@ -5,11 +5,19 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters
 {
+	/// <summary>
+	///     This filter implements the logical or operation:
+	///     The filter matches if any of its child filter match.
+	/// </summary>
 	public sealed class OrFilter
 		: ILogEntryFilter
 	{
 		private readonly ILogEntryFilter[] _filters;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="filters"></param>
 		public OrFilter(IEnumerable<ILogEntryFilter> filters)
 		{
 			if (filters == null) throw new ArgumentNullException(nameof(filters));
@@ -22,11 +30,9 @@ namespace Tailviewer.Core.Filters
 		public bool PassesFilter(LogLine logLine)
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _filters.Length; ++i)
-			{
+			for (var i = 0; i < _filters.Length; ++i)
 				if (_filters[i].PassesFilter(logLine))
 					return true;
-			}
 
 			return false;
 		}
@@ -43,10 +49,8 @@ namespace Tailviewer.Core.Filters
 		public bool PassesFilter(IEnumerable<LogLine> logEntry)
 		{
 			foreach (var logLine in logEntry)
-			{
 				if (PassesFilter(logLine))
 					return true;
-			}
 
 			return false;
 		}
@@ -55,10 +59,8 @@ namespace Tailviewer.Core.Filters
 		public void Match(LogLine line, List<LogLineMatch> matches)
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _filters.Length; ++i)
-			{
+			for (var i = 0; i < _filters.Length; ++i)
 				_filters[i].Match(line, matches);
-			}
 		}
 
 		/// <inheritdoc />

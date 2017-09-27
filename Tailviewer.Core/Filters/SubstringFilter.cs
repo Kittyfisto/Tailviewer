@@ -11,16 +11,21 @@ namespace Tailviewer.Core.Filters
 	public sealed class SubstringFilter
 		: ILogEntryFilter
 	{
-		public readonly StringComparison Comparison;
-		public readonly string StringFilter;
+		private readonly StringComparison _comparison;
+		private readonly string _stringFilter;
 
+		/// <summary>
+		///     Initializes this filter.
+		/// </summary>
+		/// <param name="stringFilter"></param>
+		/// <param name="ignoreCase"></param>
 		public SubstringFilter(string stringFilter, bool ignoreCase)
 		{
 			if (string.IsNullOrEmpty(stringFilter))
 				throw new ArgumentException("stringFilter may not be empty");
 
-			StringFilter = stringFilter;
-			Comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
+			_stringFilter = stringFilter;
+			_comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
 		}
 
 		/// <inheritdoc />
@@ -41,7 +46,7 @@ namespace Tailviewer.Core.Filters
 		[Pure]
 		public bool PassesFilter(LogLine logLine)
 		{
-			int idx = logLine.Message.IndexOf(StringFilter, Comparison);
+			int idx = logLine.Message.IndexOf(_stringFilter, _comparison);
 			if (idx == -1)
 				return false;
 
@@ -66,11 +71,11 @@ namespace Tailviewer.Core.Filters
 			int startIndex = 0;
 			do
 			{
-				startIndex = message.IndexOf(StringFilter, startIndex, Comparison);
+				startIndex = message.IndexOf(_stringFilter, startIndex, _comparison);
 				if (startIndex < 0)
 					break;
 
-				var length = StringFilter.Length;
+				var length = _stringFilter.Length;
 				matches.Add(new LogLineMatch(startIndex, length));
 				startIndex += length;
 			} while (startIndex < message.Length - 1);
@@ -79,7 +84,7 @@ namespace Tailviewer.Core.Filters
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return string.Format("message.Contains({0}, {1})", StringFilter, Comparison);
+			return string.Format("message.Contains({0}, {1})", _stringFilter, _comparison);
 		}
 	}
 }

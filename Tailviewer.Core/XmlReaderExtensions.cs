@@ -3,6 +3,9 @@ using Metrolib;
 
 namespace Tailviewer.Core
 {
+	/// <summary>
+	///     Extension methods for the <see cref="XmlReader" /> class.
+	/// </summary>
 	public static class XmlReaderExtensions
 	{
 		public static DataSourceId ReadContentAsDataSourceId(this XmlReader reader)

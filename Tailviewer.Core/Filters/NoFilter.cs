@@ -9,6 +9,7 @@ namespace Tailviewer.Core.Filters
 	public sealed class NoFilter
 		: ILogEntryFilter
 	{
+		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
 		{
 			return true;
