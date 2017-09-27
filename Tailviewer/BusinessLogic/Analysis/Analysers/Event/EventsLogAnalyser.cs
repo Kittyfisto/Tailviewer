@@ -194,10 +194,6 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Event
 			_modifications.Enqueue(section);
 		}
 
-		protected override void OnLogTableModifiedInternal(ILogTable logTable, LogTableModification modification)
-		{
-		}
-
 		protected override void DisposeInternal()
 		{
 			_scheduler.StopPeriodic(_task);

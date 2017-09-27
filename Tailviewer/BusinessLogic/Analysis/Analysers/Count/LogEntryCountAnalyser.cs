@@ -63,9 +63,6 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 			};
 		}
 
-		protected override void OnLogTableModifiedInternal(ILogTable logTable, LogTableModification modification)
-		{}
-
 		protected override void DisposeInternal()
 		{
 			_logFile.RemoveListener(this);

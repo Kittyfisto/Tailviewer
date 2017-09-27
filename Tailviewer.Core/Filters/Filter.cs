@@ -10,6 +10,33 @@ namespace Tailviewer.Core.Filters
 	/// </summary>
 	public static class Filter
 	{
+		public static ILogEntryFilter Create(string value, FilterMatchType matchType, bool ignoreCase, bool isInverted)
+		{
+			ILogEntryFilter filter = null;
+			switch (matchType)
+			{
+				case FilterMatchType.StringFilter:
+					if (!string.IsNullOrEmpty(value))
+						filter = new SubstringFilter(value, ignoreCase);
+					break;
+
+				case FilterMatchType.WildcardFilter:
+					if (!string.IsNullOrEmpty(value))
+						filter = new WildcardFilter(value, ignoreCase);
+					break;
+
+				case FilterMatchType.RegexpFilter:
+					if (!string.IsNullOrEmpty(value))
+						filter = new RegexFilter(value, ignoreCase);
+					break;
+			}
+
+			if (filter != null && isInverted)
+				filter = new InvertFilter(filter);
+
+			return filter;
+		}
+
 		public static ILogEntryFilter Create(IEnumerable<ILogEntryFilter> filters)
 		{
 			var tmp = filters.Where(x => x != null).ToList();

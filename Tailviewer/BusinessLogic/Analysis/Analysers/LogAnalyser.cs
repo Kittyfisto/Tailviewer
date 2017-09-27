@@ -68,25 +68,6 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 			}
 		}
 
-		public void OnLogTableModified(ILogTable logTable, LogTableModification modification)
-		{
-			try
-			{
-				_stopwatch.Start();
-				OnLogTableModifiedInternal(logTable, modification);
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-				AddException(e);
-			}
-			finally
-			{
-				_stopwatch.Stop();
-				_elapsed += _stopwatch.Elapsed;
-			}
-		}
-
 		public IReadOnlyList<Exception> UnexpectedExceptions
 		{
 			get
@@ -115,8 +96,6 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		}
 		
 		protected abstract void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section);
-
-		protected abstract void OnLogTableModifiedInternal(ILogTable logTable, LogTableModification modification);
 
 		protected abstract void DisposeInternal();
 	}

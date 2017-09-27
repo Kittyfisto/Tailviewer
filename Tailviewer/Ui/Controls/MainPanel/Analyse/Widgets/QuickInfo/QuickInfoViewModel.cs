@@ -54,13 +54,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 
 		public string FilterValue
 		{
-			get { return _analyserConfig.Filter.Value; }
+			get { return _analyserConfig.FilterValue; }
 			set
 			{
-				if (value == _analyserConfig.Filter.Value)
+				if (value == _analyserConfig.FilterValue)
 					return;
 
-				_analyserConfig.Filter.Value = value;
+				_analyserConfig.FilterValue = value;
 				EmitPropertyChanged();
 
 				_formatter = new QuickInfoFormatter(_analyserConfig);

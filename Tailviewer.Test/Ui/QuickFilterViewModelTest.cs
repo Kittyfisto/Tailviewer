@@ -47,9 +47,9 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeType()
 		{
-			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_model.MatchType = FilterMatchType.RegexpFilter;
 			_changes.Should().Equal(new[] {"MatchType"});
-			_model.MatchType = QuickFilterMatchType.RegexpFilter;
+			_model.MatchType = FilterMatchType.RegexpFilter;
 			_changes.Should().Equal(new[] {"MatchType"});
 		}
 

@@ -15,7 +15,7 @@ namespace Tailviewer.Test.Settings
 			{
 				new QuickFilter
 				{
-					MatchType = QuickFilterMatchType.WildcardFilter
+					MatchType = FilterMatchType.WildcardFilter
 				}
 			};
 			var clone = filters.Clone();

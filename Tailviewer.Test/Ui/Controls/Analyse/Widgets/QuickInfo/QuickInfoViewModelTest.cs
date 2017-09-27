@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.Widgets.QuickInfo
 		[Test]
 		public void TestFormat1()
 		{
-			_analyserConfig.Filter.MatchType = QuickFilterMatchType.StringFilter;
+			_analyserConfig.MatchType = FilterMatchType.StringFilter;
 			var model = new QuickInfoViewModel(_id, _viewConfig, _analyserConfig);
 			model.Result = new Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo.QuickInfo("Foobar");
 			model.Value.Should().Be("Foobar", "because by default, the entire matched line shall be printed");
@@ -42,7 +42,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.Widgets.QuickInfo
 		[Test]
 		public void TestChangeFormat()
 		{
-			_analyserConfig.Filter.MatchType = QuickFilterMatchType.StringFilter;
+			_analyserConfig.MatchType = FilterMatchType.StringFilter;
 			var model = new QuickInfoViewModel(_id, _viewConfig, _analyserConfig);
 			model.Result = new Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo.QuickInfo("Foobar");
 			model.Format = "Match: {message} Found!";

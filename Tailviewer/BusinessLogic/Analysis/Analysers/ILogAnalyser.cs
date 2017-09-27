@@ -17,7 +17,6 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 	/// </remarks>
 	public interface ILogAnalyser
 		: ILogFileListener
-		, ILogTableListener
 		, IDisposable
 	{
 		/// <summary>

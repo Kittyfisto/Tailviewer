@@ -16,7 +16,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 		/// <summary>
 		///     An optional format string used to present matches from the filter.
 		///     Is only used when <see cref="QuickFilter.MatchType" /> is set to
-		///     <see cref="Core.Settings.QuickFilterMatchType.RegexpFilter" />.
+		///     <see cref="Core.Settings.FilterMatchType.RegexpFilter" />.
 		/// </summary>
 		/// <remarks>
 		///     Shall be in the form of .NET format strings: "v{0}.{1}" uses

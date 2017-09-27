@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.Filters
 			set { _settings.IsInverted = value; }
 		}
 
-		public QuickFilterMatchType MatchType
+		public FilterMatchType MatchType
 		{
 			get { return _settings.MatchType; }
 			set { _settings.MatchType = value; }
@@ -46,30 +46,7 @@ namespace Tailviewer.BusinessLogic.Filters
 		[Pure]
 		public ILogEntryFilter CreateFilter()
 		{
-			string value = Value;
-			ILogEntryFilter filter = null;
-			switch (MatchType)
-			{
-				case QuickFilterMatchType.StringFilter:
-					if (!string.IsNullOrEmpty(value))
-						filter = new SubstringFilter(value, IgnoreCase);
-					break;
-
-				case QuickFilterMatchType.WildcardFilter:
-					if (!string.IsNullOrEmpty(value))
-						filter = new WildcardFilter(value, IgnoreCase);
-					break;
-
-				case QuickFilterMatchType.RegexpFilter:
-					if (!string.IsNullOrEmpty(value))
-						filter = new RegexFilter(value, IgnoreCase);
-					break;
-			}
-
-			if (filter != null && IsInverted)
-				filter = new InvertFilter(filter);
-
-			return filter;
+			return _settings.CreateFilter();
 		}
 	}
 }

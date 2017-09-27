@@ -14,11 +14,8 @@ namespace Tailviewer.Test.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			var config = new QuickInfoConfiguration
 			{
-				Filter =
-				{
-					Value = "v\\d.\\d.\\d.\\d",
-					MatchType = QuickFilterMatchType.RegexpFilter
-				}
+				FilterValue = "v\\d.\\d.\\d.\\d",
+				MatchType = FilterMatchType.RegexpFilter
 			};
 			var formatter = new QuickInfoFormatter(config);
 			var result = new Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo.QuickInfo("Product version: v1.2.4.8");
@@ -31,11 +28,8 @@ namespace Tailviewer.Test.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			var config = new QuickInfoConfiguration
 			{
-				Filter =
-				{
-					Value = "v(\\d+).(\\d+).\\d.\\d",
-					MatchType = QuickFilterMatchType.RegexpFilter
-				}
+				FilterValue = "v(\\d+).(\\d+).\\d.\\d",
+				MatchType = FilterMatchType.RegexpFilter
 			};
 			var formatter = new QuickInfoFormatter(config);
 			var result = new Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo.QuickInfo("Product version: v3.12.4.8");

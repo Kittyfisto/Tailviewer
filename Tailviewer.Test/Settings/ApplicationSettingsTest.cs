@@ -201,14 +201,14 @@ namespace Tailviewer.Test.Settings
 				{
 					Value = "foobar",
 					IgnoreCase = true,
-					MatchType = QuickFilterMatchType.RegexpFilter,
+					MatchType = FilterMatchType.RegexpFilter,
 					IsInverted = true,
 				});
 			settings.QuickFilters.Add(new QuickFilter
 			{
 				Value = "clondykebar",
 				IgnoreCase = false,
-				MatchType = QuickFilterMatchType.WildcardFilter,
+				MatchType = FilterMatchType.WildcardFilter,
 				IsInverted = false,
 			});
 			QuickFilterId filterId1 = settings.QuickFilters[0].Id;
@@ -247,13 +247,13 @@ namespace Tailviewer.Test.Settings
 			settings.QuickFilters[0].Id.Should().Be(filterId1);
 			settings.QuickFilters[0].Value.Should().Be("foobar");
 			settings.QuickFilters[0].IgnoreCase.Should().BeTrue();
-			settings.QuickFilters[0].MatchType.Should().Be(QuickFilterMatchType.RegexpFilter);
+			settings.QuickFilters[0].MatchType.Should().Be(FilterMatchType.RegexpFilter);
 			settings.QuickFilters[0].IsInverted.Should().BeTrue();
 
 			settings.QuickFilters[1].Id.Should().Be(filterId2);
 			settings.QuickFilters[1].Value.Should().Be("clondykebar");
 			settings.QuickFilters[1].IgnoreCase.Should().BeFalse();
-			settings.QuickFilters[1].MatchType.Should().Be(QuickFilterMatchType.WildcardFilter);
+			settings.QuickFilters[1].MatchType.Should().Be(FilterMatchType.WildcardFilter);
 			settings.QuickFilters[1].IsInverted.Should().BeFalse();
 
 			settings.Export.Should().NotBeNull();

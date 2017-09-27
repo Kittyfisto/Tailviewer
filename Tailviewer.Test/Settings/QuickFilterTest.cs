@@ -15,7 +15,7 @@ namespace Tailviewer.Test.Settings
 			{
 				IgnoreCase = true,
 				IsInverted = true,
-				MatchType = QuickFilterMatchType.TimeFilter,
+				MatchType = FilterMatchType.TimeFilter,
 				Value = "hello"
 			};
 			var clone = filter.Clone();
@@ -23,7 +23,7 @@ namespace Tailviewer.Test.Settings
 			clone.Should().NotBeSameAs(filter);
 			clone.IgnoreCase.Should().BeTrue();
 			clone.IsInverted.Should().BeTrue();
-			clone.MatchType.Should().Be(QuickFilterMatchType.TimeFilter);
+			clone.MatchType.Should().Be(FilterMatchType.TimeFilter);
 			clone.Value.Should().Be("hello");
 		}
 	}

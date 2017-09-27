@@ -12,13 +12,15 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 	{
 		public QuickInfoConfiguration()
 		{
-			Filter = new QuickFilter();
+			MatchType = FilterMatchType.RegexpFilter;
 		}
 
 		/// <summary>
 		///     The filter used to find matching lines.
 		/// </summary>
-		public QuickFilter Filter;
+		public string FilterValue;
+
+		public FilterMatchType MatchType;
 
 		object ICloneable.Clone()
 		{
@@ -30,7 +32,8 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 		{
 			return new QuickInfoConfiguration
 			{
-				Filter = Filter.Clone(),
+				FilterValue = FilterValue,
+				MatchType = MatchType
 			};
 		}
 	}

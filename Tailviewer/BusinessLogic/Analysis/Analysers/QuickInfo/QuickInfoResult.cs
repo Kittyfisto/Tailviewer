@@ -10,6 +10,16 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers.QuickInfo
 	public sealed class QuickInfoResult
 		: ILogAnalysisResult
 	{
+		public QuickInfoResult()
+		{
+			QuickInfos = new Dictionary<Guid, QuickInfo>();
+		}
+
+		public QuickInfoResult(int capacity)
+		{
+			QuickInfos = new Dictionary<Guid, QuickInfo>(capacity);
+		}
+
 		/// <summary>
 		///     The list of quick infos for which a match has been found, grouped by their id.
 		///     Each quick info consists of the entire log line which matched.

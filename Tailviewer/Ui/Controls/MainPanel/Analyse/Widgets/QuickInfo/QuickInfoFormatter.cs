@@ -24,14 +24,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 
 		public QuickInfoFormatter(QuickInfoConfiguration configuration)
 		{
-			_filterExpression = configuration.Filter.Value;
-			switch (configuration.Filter.MatchType)
+			_filterExpression = configuration.FilterValue;
+			switch (configuration.MatchType)
 			{
-				case QuickFilterMatchType.StringFilter:
-				case QuickFilterMatchType.WildcardFilter:
+				case FilterMatchType.StringFilter:
+				case FilterMatchType.WildcardFilter:
 					break;
 
-				case QuickFilterMatchType.RegexpFilter:
+				case FilterMatchType.RegexpFilter:
 					_regex = TryCreateRegex(_filterExpression);
 					break;
 			}
@@ -48,6 +48,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 			}
 			catch (Exception e)
 			{
+				Log.DebugFormat("Unable to create regular expression from '{0}': {1}", filterValue, e);
 				return null;
 			}
 		}

@@ -81,7 +81,7 @@
                     </controls:VisibilityToggleButton>
 
                     <controls1:QuickFilterMatchTypeToggleButton
-                        QuickFilterMatchType="{Binding MatchType, Mode=TwoWay}"
+                        FilterMatchType="{Binding MatchType, Mode=TwoWay}"
                         Grid.Column="1"
                         Margin="0,8,0,8" />
                 </Grid>

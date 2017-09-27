@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Xml;
 using Metrolib;
+using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Core.Settings
 {
@@ -9,7 +11,7 @@ namespace Tailviewer.Core.Settings
 	{
 		public bool IgnoreCase;
 		public bool IsInverted;
-		public QuickFilterMatchType MatchType;
+		public FilterMatchType MatchType;
 		public string Value;
 
 		public QuickFilter()
@@ -40,7 +42,7 @@ namespace Tailviewer.Core.Settings
 						break;
 
 					case "type":
-						MatchType = reader.ReadContentAsEnum<QuickFilterMatchType>();
+						MatchType = reader.ReadContentAsEnum<FilterMatchType>();
 						break;
 
 					case "value":
@@ -111,6 +113,12 @@ namespace Tailviewer.Core.Settings
 				return false;
 
 			return true;
+		}
+
+		[Pure]
+		public ILogEntryFilter CreateFilter()
+		{
+			return Filter.Create(Value, MatchType, IgnoreCase, IsInverted);
 		}
 	}
 }

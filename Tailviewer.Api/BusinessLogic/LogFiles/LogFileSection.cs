@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -9,10 +10,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	public struct LogFileSection
 		: IEquatable<LogFileSection>
 	{
+		/// <summary>
+		/// This value is used to represent a section which does not exist.
+		/// Is used when a log file's source no longer exists, for example.
+		/// </summary>
 		public static readonly LogFileSection Reset;
 
+		/// <summary>
+		/// The number of lines in this section
+		/// </summary>
 		public readonly int Count;
+
+		/// <summary>
+		/// The index of the first line in this section.
+		/// </summary>
 		public readonly LogLineIndex Index;
+
+		/// <summary>
+		/// Whether or not this section represents an addition (=False)
+		/// or an invalidation (i.e. Removal, True).
+		/// </summary>
 		public readonly bool IsInvalidate;
 
 		static LogFileSection()
@@ -20,6 +37,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			Reset = new LogFileSection(LogLineIndex.Invalid, 0);
 		}
 
+		/// <summary>
+		///     Creates a new section which represents an invalidation of the given
+		///     section [<paramref name="index" />, <paramref name="index" /> + <paramref name="count" />).
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="count"></param>
+		/// <returns></returns>
 		public static LogFileSection Invalidate(LogLineIndex index, int count)
 		{
 			return new LogFileSection(index, count, true);
@@ -35,6 +59,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			IsInvalidate = isInvalidate;
 		}
 
+		/// <summary>
+		///     Creates a new section which represents the given
+		///     section [<paramref name="index" />, <paramref name="index" /> + <paramref name="count" />).
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="count"></param>
 		public LogFileSection(LogLineIndex index, int count)
 		{
 			if (count < 0)
@@ -45,12 +75,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			IsInvalidate = false;
 		}
 
+		/// <summary>
+		///     Whether or not this section represents a complete reset of the source.
+		/// </summary>
 		public bool IsReset => this == Reset;
 
+		/// <summary>
+		///     The last valid index of this section.
+		///     Is always <see cref="Index" /> + <see cref="Count" /> - 1.
+		/// </summary>
 		public int LastIndex => Index + Count - 1;
 
 		/// <summary>
-		/// Tests if this and the given section represent the same section: [Index, Index+Count)
+		///     Tests if this and the given section represent the same section: [Index, Index+Count)
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
@@ -59,6 +96,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return Index == other.Index && Count == other.Count;
 		}
 
+		/// <summary>
+		///     Tests if the given index is part of this section.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		[Pure]
+		public bool Contains(LogLineIndex index)
+		{
+			return index >= Index &&
+			       index < Index + Count;
+		}
+
+		[Pure]
 		public bool IsEndOfSection(LogLineIndex index)
 		{
 			return index >= Index + Count;
@@ -76,6 +126,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return string.Format("Changed [{0}, #{1}]", Index, Count);
 		}
 
+		/// <summary>
+		///     Creates a new section which spawns from the lowest <see cref="Index" />
+		///     of the given two sections to the greatest <see cref="LastIndex" />.
+		/// </summary>
+		/// <param name="lhs"></param>
+		/// <param name="rhs"></param>
+		/// <returns></returns>
 		public static LogFileSection MinimumBoundingLine(LogFileSection lhs, LogFileSection rhs)
 		{
 			LogLineIndex minIndex = LogLineIndex.Min(lhs.Index, rhs.Index);
@@ -101,11 +158,23 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		/// <summary>
+		///     Compares the two given sections for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogFileSection left, LogFileSection right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two given sections for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogFileSection left, LogFileSection right)
 		{
 			return !left.Equals(right);

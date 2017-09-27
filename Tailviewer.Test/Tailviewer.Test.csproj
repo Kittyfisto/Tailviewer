@@ -105,7 +105,9 @@
     <Compile Include="BusinessLogic\Analysis\Analysers\Count\LogEntryCountAnalyserTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\LogEventDefinitionTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\Event\EventsLogAnalyserTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoConfigurationTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoFormatterTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoResultTest.cs" />
     <Compile Include="BusinessLogic\Analysis\Analysers\QuickInfo\QuickInfoTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />

@@ -145,7 +145,7 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 			}
 		}
 
-		public QuickFilterMatchType MatchType
+		public FilterMatchType MatchType
 		{
 			get { return _quickFilter.MatchType; }
 			set

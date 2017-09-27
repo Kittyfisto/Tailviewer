@@ -122,7 +122,7 @@
     <Compile Include="QuickFilterId.cs" />
     <Compile Include="Settings\QuickFilter.cs" />
     <Compile Include="Settings\QuickFilterActionType.cs" />
-    <Compile Include="Settings\QuickFilterMatchType.cs" />
+    <Compile Include="Settings\FilterMatchType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="WidgetId.cs" />
     <Compile Include="XmlReaderExtensions.cs" />

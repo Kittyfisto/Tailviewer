@@ -1,16 +1,15 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Tailviewer.Core.Settings;
-using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls
 {
 	public class QuickFilterMatchTypeToggleButton : Control
 	{
-		public static readonly DependencyProperty QuickFilterTypeProperty =
-			DependencyProperty.Register("QuickFilterMatchType", typeof (QuickFilterMatchType),
+		public static readonly DependencyProperty FilterTypeProperty =
+			DependencyProperty.Register("FilterMatchType", typeof (FilterMatchType),
 			                            typeof (QuickFilterMatchTypeToggleButton),
-			                            new PropertyMetadata(default(QuickFilterMatchType), OnQuickFilterTypeChanged));
+			                            new PropertyMetadata(default(FilterMatchType), OnFilterTypeChanged));
 
 		public static readonly DependencyProperty IsStringCheckedProperty =
 			DependencyProperty.Register("IsStringChecked", typeof (bool), typeof (QuickFilterMatchTypeToggleButton),
@@ -48,10 +47,10 @@ namespace Tailviewer.Ui.Controls
 			set { SetValue(IsStringCheckedProperty, value); }
 		}
 
-		public QuickFilterMatchType QuickFilterMatchType
+		public FilterMatchType FilterMatchType
 		{
-			get { return (QuickFilterMatchType) GetValue(QuickFilterTypeProperty); }
-			set { SetValue(QuickFilterTypeProperty, value); }
+			get { return (FilterMatchType) GetValue(FilterTypeProperty); }
+			set { SetValue(FilterTypeProperty, value); }
 		}
 
 		private static void OnIsStringCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -65,7 +64,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				IsWildcardChecked = false;
 				IsRegexChecked = false;
-				QuickFilterMatchType = QuickFilterMatchType.StringFilter;
+				FilterMatchType = FilterMatchType.StringFilter;
 			}
 		}
 
@@ -80,7 +79,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				IsStringChecked = false;
 				IsRegexChecked = false;
-				QuickFilterMatchType = QuickFilterMatchType.WildcardFilter;
+				FilterMatchType = FilterMatchType.WildcardFilter;
 			}
 		}
 
@@ -95,20 +94,20 @@ namespace Tailviewer.Ui.Controls
 			{
 				IsStringChecked = false;
 				IsWildcardChecked = false;
-				QuickFilterMatchType = QuickFilterMatchType.RegexpFilter;
+				FilterMatchType = FilterMatchType.RegexpFilter;
 			}
 		}
 
-		private static void OnQuickFilterTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		private static void OnFilterTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			((QuickFilterMatchTypeToggleButton) d).OnQuickFilterTypeChanged((QuickFilterMatchType) e.NewValue);
+			((QuickFilterMatchTypeToggleButton) d).OnFilterTypeChanged((FilterMatchType) e.NewValue);
 		}
 
-		private void OnQuickFilterTypeChanged(QuickFilterMatchType newValue)
+		private void OnFilterTypeChanged(FilterMatchType newValue)
 		{
-			IsStringChecked = newValue == QuickFilterMatchType.StringFilter;
-			IsWildcardChecked = newValue == QuickFilterMatchType.WildcardFilter;
-			IsRegexChecked = newValue == QuickFilterMatchType.RegexpFilter;
+			IsStringChecked = newValue == FilterMatchType.StringFilter;
+			IsWildcardChecked = newValue == FilterMatchType.WildcardFilter;
+			IsRegexChecked = newValue == FilterMatchType.RegexpFilter;
 		}
 	}
 }
