@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
+namespace Tailviewer.Ui.Analysis
 {
 	/// <summary>
 	///     The interface for a configuration that affects the way a widget presents its data

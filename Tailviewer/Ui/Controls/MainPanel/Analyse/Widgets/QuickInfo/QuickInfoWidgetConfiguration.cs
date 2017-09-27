@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.QuickInfo
 {

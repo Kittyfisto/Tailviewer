@@ -1,12 +1,11 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.Core;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 {
-	public sealed class HelpWidgetFactory
-		: IWidgetFactory
+	public sealed class HelpWidgetPlugin
+		: IWidgetPlugin
 	{
 		public LogAnalyserFactoryId AnalyserId => LogAnalyserFactoryId.Empty;
 
@@ -20,7 +19,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
+		public IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
 		{
 			return new HelpWidgetViewModel(dataSourceAnalyser);
 		}

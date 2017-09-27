@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
-using Tailviewer.Core.LogTables;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     The interface for an analyser, responsible for looking at a <see cref="ILogFile" /> or <see cref="ILogTable" />
+	///     The interface for an analyser, responsible for looking at a <see cref="ILogFile" />
 	///     and producing a result. The result should be updated when the log file or table changes.
 	/// </summary>
-	/// <remarks>
-	///     The constructor of a <see cref="ILogAnalyser" /> is expected to take two parameters of types
-	///     <see cref="ILogFile" /> and
-	///     <see cref="ILogAnalyserConfiguration" /> in that order.
-	/// </remarks>
 	public interface ILogAnalyser
 		: ILogFileListener
 		, IDisposable
@@ -30,13 +23,23 @@ namespace Tailviewer.BusinessLogic.Analysis.Analysers
 		TimeSpan AnalysisTime { get; }
 
 		/// <summary>
-		/// 
+		///     The current result of this analysis.
 		/// </summary>
+		/// <remarks>
+		///     Is queried every now and then from a background thread.
+		///     So implementations will have to make sure that accessing this property
+		///     does not introduce race conditions.
+		/// </remarks>
 		ILogAnalysisResult Result { get; }
 
 		/// <summary>
-		/// 
+		///     The current progress of this analysis.
 		/// </summary>
+		/// <remarks>
+		///     Is queried every now and then from a background thread.
+		///     So implementations will have to make sure that accessing this property
+		///     does not introduce race conditions.
+		/// </remarks>
 		Percentage Progress { get; }
 	}
 }

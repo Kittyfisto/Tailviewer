@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
@@ -27,12 +28,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 			_widgets.Remove(widget);
 		}
 
-		public void RaiseRequestAdd(IWidgetFactory factory)
+		public void RaiseRequestAdd(IWidgetPlugin plugin)
 		{
-			RequestAdd?.Invoke(factory);
+			RequestAdd?.Invoke(plugin);
 		}
 
-		public event Action<IWidgetFactory> RequestAdd;
+		public event Action<IWidgetPlugin> RequestAdd;
 
 		public ICollection<IWidgetViewModel> Widgets => _widgets;
 

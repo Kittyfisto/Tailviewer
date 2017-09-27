@@ -1,12 +1,9 @@
-using Tailviewer.BusinessLogic.Analysis.Analysers;
-using Tailviewer.Core;
-
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	public sealed class DataSourceAnalysisConfiguration
 	{
 		/// <summary>
-		///     The id of the <see cref="ILogAnalyserFactory" /> to use.
+		///     The id of the <see cref="ILogAnalyserPlugin" /> to use.
 		/// </summary>
 		public LogAnalyserFactoryId AnalyserId { get; set; }
 

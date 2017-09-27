@@ -1,20 +1,15 @@
 ﻿using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     The interface for a factory to create <see cref="ILogAnalyser" /> instances that perform
 	///     a specific analysis on a log file.
 	/// </summary>
-	/// <remarks>
-	/// TODO: Should this interface be part of the plugin architecture? If yes, then how exactly?
-	///       Is it good enough to just inherit from <see cref="IPlugin"/>?
-	///       Can we move all dependant types to the Tailviewer.Api project?
-	/// </remarks>
-	public interface ILogAnalyserFactory
+	public interface ILogAnalyserPlugin
+		: IPlugin
 	{
 		/// <summary>
 		///     A (hopefully) globally unique id that describes this factory.

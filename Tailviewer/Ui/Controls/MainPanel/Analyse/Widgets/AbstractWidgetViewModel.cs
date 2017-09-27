@@ -6,7 +6,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 {

@@ -2,9 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -24,7 +22,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalyserConfiguration _configuration;
 		private readonly ILogFile _logFile;
 		private readonly ITaskScheduler _scheduler;
-		private readonly ILogAnalyserFactory _factory;
+		private readonly ILogAnalyserPlugin _plugin;
 		private readonly IDataSourceAnalysisListener _listener;
 		private IPeriodicTask _task;
 
@@ -34,7 +32,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public DataSourceAnalysis(ITaskScheduler scheduler,
 			ILogFile logFile,
-			ILogAnalyserFactory factory,
+			ILogAnalyserPlugin plugin,
 			ILogAnalyserConfiguration configuration,
 			IDataSourceAnalysisListener listener)
 		{
@@ -42,8 +40,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(scheduler));
 			if (logFile == null)
 				throw new ArgumentNullException(nameof(logFile));
-			if (factory == null)
-				throw new ArgumentNullException(nameof(factory));
+			if (plugin == null)
+				throw new ArgumentNullException(nameof(plugin));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 			if (listener == null)
@@ -52,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_syncRoot = new object();
 			_scheduler = scheduler;
 			_logFile = logFile;
-			_factory = factory;
+			_plugin = plugin;
 			_configuration = configuration;
 			_listener = listener;
 		}
@@ -111,13 +109,13 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			try
 			{
-				var analyser = _factory.Create(_scheduler, _logFile, _configuration);
+				var analyser = _plugin.Create(_scheduler, _logFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while trying to create analyser '{0}': {1}",
-					_factory.Id,
+					_plugin.Id,
 					e);
 				return null;
 			}
@@ -133,7 +131,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while trying to fetch analysis result '{0}': {1}",
-					_factory.Id,
+					_plugin.Id,
 					e);
 			}
 		}

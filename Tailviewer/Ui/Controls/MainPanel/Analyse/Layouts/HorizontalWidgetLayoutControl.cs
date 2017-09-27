@@ -29,7 +29,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 			if (viewModel != null)
 			{
 				var dataContext = DataContext as HorizontalWidgetLayoutViewModel;
-				dataContext?.RaiseRequestAdd(viewModel.Factory);
+				dataContext?.RaiseRequestAdd(viewModel.Plugin);
 			}
 		}
 

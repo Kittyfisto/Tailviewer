@@ -3,7 +3,8 @@
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
+                    xmlns:analysis="clr-namespace:Tailviewer.Ui.Analysis;assembly=Tailviewer.Api">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
@@ -12,7 +13,7 @@
     <Style x:Key="WidgetStyle" TargetType="ContentPresenter">
         <Setter Property="ContentTemplate">
             <Setter.Value>
-                <DataTemplate DataType="{x:Type widgets:IWidgetViewModel}">
+                <DataTemplate DataType="{x:Type analysis:IWidgetViewModel}">
                     <Border widgets:Widget.IsEditing="{Binding IsEditing}"
                             x:Name="Widget"
                             BorderThickness="1"

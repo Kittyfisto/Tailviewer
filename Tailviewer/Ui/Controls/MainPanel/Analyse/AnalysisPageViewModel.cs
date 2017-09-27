@@ -8,9 +8,8 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.Core;
+using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -119,45 +118,45 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private void LayoutOnRequestAdd(IWidgetFactory factory)
+		private void LayoutOnRequestAdd(IWidgetPlugin plugin)
 		{
-			var analyser = CreateAnalyser(factory);
-			var viewConfiguration = CreateViewConfiguration(factory);
-			var widget = factory.Create(analyser, viewConfiguration);
+			var analyser = CreateAnalyser(plugin);
+			var viewConfiguration = CreateViewConfiguration(plugin);
+			var widget = plugin.CreateViewModel(analyser, viewConfiguration);
 			_analysersPerWidget.Add(widget, analyser);
 			Add(widget);
 		}
 
-		private IWidgetConfiguration CreateViewConfiguration(IWidgetFactory factory)
+		private IWidgetConfiguration CreateViewConfiguration(IWidgetPlugin plugin)
 		{
 			try
 			{
-				return factory.DefaultViewConfiguration?.Clone() as IWidgetConfiguration;
+				return plugin.DefaultViewConfiguration?.Clone() as IWidgetConfiguration;
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception while creating view configuration for widget '{0}': {1}", factory, e);
+				Log.ErrorFormat("Caught unexpected exception while creating view configuration for widget '{0}': {1}", plugin, e);
 				return null;
 			}
 		}
 
-		private IDataSourceAnalyser CreateAnalyser(IWidgetFactory factory)
+		private IDataSourceAnalyser CreateAnalyser(IWidgetPlugin plugin)
 		{
 			try
 			{
-				var analyserType = factory.AnalyserId;
+				var analyserType = plugin.AnalyserId;
 				if (analyserType != LogAnalyserFactoryId.Empty)
 				{
-					var configuration = factory.DefaultAnalyserConfiguration;
+					var configuration = plugin.DefaultAnalyserConfiguration;
 					return _analyser.Add(analyserType, configuration);
 				}
 
-				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", factory);
+				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", plugin);
 				return new NoAnalyser();
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", factory, e);
+				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", plugin, e);
 				return new NoAnalyser();
 			}
 		}

@@ -17,9 +17,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		{
 			_widgets = new List<WidgetFactoryViewModel>
 			{
-				new WidgetFactoryViewModel(new HelpWidgetFactory()),
-				new WidgetFactoryViewModel(new LogEntryCountWidgetFactory()),
-				new WidgetFactoryViewModel(new QuickInfoWidgetFactory())
+				new WidgetFactoryViewModel(new HelpWidgetPlugin()),
+				new WidgetFactoryViewModel(new LogEntryCountWidgetPlugin()),
+				new WidgetFactoryViewModel(new QuickInfoWidgetPlugin())
 			};
 		}
 

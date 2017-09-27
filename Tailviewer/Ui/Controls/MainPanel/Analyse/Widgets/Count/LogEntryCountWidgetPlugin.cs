@@ -1,15 +1,14 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
-using Tailviewer.Core;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 {
-	public sealed class LogEntryCountWidgetFactory
-		: IWidgetFactory
+	public sealed class LogEntryCountWidgetPlugin
+		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId AnalyserId => LogEntryCountAnalyserFactory.Id;
+		public LogAnalyserFactoryId AnalyserId => LogEntryCountAnalyserPlugin.Id;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new LogEntryCountAnalyserConfiguration();
 
@@ -21,7 +20,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Count
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
+		public IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
 		{
 			return new EntryCountWidgetViewModel(dataSourceAnalyser);
 		}

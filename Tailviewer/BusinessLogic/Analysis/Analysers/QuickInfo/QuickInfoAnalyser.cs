@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 

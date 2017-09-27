@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
@@ -37,6 +38,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 		///     This event is used while dropping widgets onto the layout (from the widgets side panel):
 		///     Once the user has made the drop, this event is fired and the widget has been added.
 		/// </remarks>
-		event Action<IWidgetFactory> RequestAdd;
+		event Action<IWidgetPlugin> RequestAdd;
 	}
 }

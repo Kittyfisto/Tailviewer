@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Analysis.Analysers.Count;
 using Tailviewer.Core.Settings;

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count
 {
-	public sealed class LogEntryCountAnalyserFactory
-		: ILogAnalyserFactory
+	public sealed class LogEntryCountAnalyserPlugin
+		: ILogAnalyserPlugin
 	{
 		public static readonly LogAnalyserFactoryId Id = new LogAnalyserFactoryId("Tailviewer.Analyser.LogEntryCount");
 
-		LogAnalyserFactoryId ILogAnalyserFactory.Id => Id;
+		LogAnalyserFactoryId ILogAnalyserPlugin.Id => Id;
 
 		public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)
 		{

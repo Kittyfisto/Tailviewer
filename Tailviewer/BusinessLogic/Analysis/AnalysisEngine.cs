@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -19,7 +17,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<IDataSourceAnalysisHandle> _analyses;
-		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory> _factoriesById;
+		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin> _factoriesById;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
 
@@ -31,7 +29,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_scheduler = scheduler;
 			_analyses = new List<IDataSourceAnalysisHandle>();
 			_syncRoot = new object();
-			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserFactory>();
+			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin>();
 		}
 
 		public IDataSourceAnalysisHandle CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration, IDataSourceAnalysisListener listener)
@@ -80,18 +78,18 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void RegisterFactory(ILogAnalyserFactory factory)
+		public void RegisterFactory(ILogAnalyserPlugin plugin)
 		{
-			if (factory == null)
-				throw new ArgumentNullException(nameof(factory));
+			if (plugin == null)
+				throw new ArgumentNullException(nameof(plugin));
 
 			lock (_syncRoot)
 			{
-				var id = factory.Id;
+				var id = plugin.Id;
 				if (_factoriesById.ContainsKey(id))
-					throw new ArgumentException(string.Format("There already exists a factory of id '{0}'", id));
+					throw new ArgumentException(string.Format("There already exists a plugin of id '{0}'", id));
 
-				_factoriesById.Add(id, factory);
+				_factoriesById.Add(id, plugin);
 			}
 		}
 
@@ -101,14 +99,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 			IDataSourceAnalysisListener listener)
 		{
 			IDataSourceAnalysisHandle analysis;
-			ILogAnalyserFactory factory;
-			if (_factoriesById.TryGetValue(id, out factory))
+			ILogAnalyserPlugin plugin;
+			if (_factoriesById.TryGetValue(id, out plugin))
 			{
-				analysis = new DataSourceAnalysis(_scheduler, logFile, factory, configuration, listener);
+				analysis = new DataSourceAnalysis(_scheduler, logFile, plugin, configuration, listener);
 			}
 			else
 			{
-				Log.ErrorFormat("Unable to find factory '{0}', analysis will be skipped", id);
+				Log.ErrorFormat("Unable to find plugin '{0}', analysis will be skipped", id);
 				analysis = new DummyAnalysis();
 			}
 

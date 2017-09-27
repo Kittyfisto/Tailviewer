@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Media;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 {
@@ -12,26 +12,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 	/// </summary>
 	public sealed class WidgetFactoryViewModel
 	{
-		private readonly IWidgetFactory _factory;
+		private readonly IWidgetPlugin _plugin;
 
 		public WidgetFactoryViewModel(
-			IWidgetFactory factory)
+			IWidgetPlugin plugin)
 		{
-			if (factory == null)
-				throw new ArgumentNullException(nameof(factory));
+			if (plugin == null)
+				throw new ArgumentNullException(nameof(plugin));
 
-			_factory = factory;
+			_plugin = plugin;
 		}
 
-		public string Name => _factory.Name;
-		public string Description => _factory.Description;
-		public Geometry Icon => _factory.Icon;
+		public string Name => _plugin.Name;
+		public string Description => _plugin.Description;
+		public Geometry Icon => _plugin.Icon;
 
 		public override string ToString()
 		{
 			return string.Format("WidgetFactory: {0}", Name);
 		}
 
-		public IWidgetFactory Factory => _factory;
+		public IWidgetPlugin Plugin => _plugin;
 	}
 }

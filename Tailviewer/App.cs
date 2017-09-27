@@ -76,7 +76,7 @@ namespace Tailviewer
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 				using (var analysisEngine = new AnalysisEngine(taskScheduler))
 				{
-					analysisEngine.RegisterFactory(new LogEntryCountAnalyserFactory());
+					analysisEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
 
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)

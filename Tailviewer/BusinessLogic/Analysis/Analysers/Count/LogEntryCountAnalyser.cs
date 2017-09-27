@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogTables;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Analysis.Analysers.Count

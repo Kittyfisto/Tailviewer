@@ -1,6 +1,6 @@
 using System;
 
-namespace Tailviewer.BusinessLogic.Analysis.Analysers
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     The interface for each and every <see cref="ILogAnalyser" /> implementation.

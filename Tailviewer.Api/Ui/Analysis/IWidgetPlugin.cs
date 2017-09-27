@@ -1,19 +1,15 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.Analysis.Analysers;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
+namespace Tailviewer.Ui.Analysis
 {
 	/// <summary>
+	///     The interface for a plugin to create widgets:
+	///     Is responsible for providing view models as well as a template to display them.
 	/// </summary>
-	/// <remarks>
-	///     TODO: Should this interface be part of the plugin architecture? If yes, then how exactly?
-	///     Is it good enough to just inherit from <see cref="IPlugin" />?
-	///     Can we move all dependant types to the Tailviewer.Api project?
-	/// </remarks>
-	public interface IWidgetFactory
+	public interface IWidgetPlugin
+		: IPlugin
 	{
 		/// <summary>
 		///     The type of analyser that shall be used to produce the analysis result
@@ -57,6 +53,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		/// <param name="dataSourceAnalyser"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IWidgetViewModel Create(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration);
+		IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration);
 	}
 }

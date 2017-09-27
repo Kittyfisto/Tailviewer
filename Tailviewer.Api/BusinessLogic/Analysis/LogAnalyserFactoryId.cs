@@ -1,6 +1,7 @@
 ﻿using System;
+using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Core
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     Identifies a log analyer factory type (i.e. an implementation of the interface).
@@ -11,32 +12,47 @@ namespace Tailviewer.Core
 	public struct LogAnalyserFactoryId : IEquatable<LogAnalyserFactoryId>
 	{
 		/// <summary>
-		///     This id may be used to specify that a <see cref="IWidgetFactory" /> does not need a
-		///     <see cref="ILogAnalyserFactory" />.
+		///     This id may be used to specify that a <see cref="IWidgetPlugin" /> does not need a
+		///     <see cref="ILogAnalyserPlugin" />.
 		/// </summary>
 		public static readonly LogAnalyserFactoryId Empty = new LogAnalyserFactoryId();
 
+		/// <inheritdoc />
 		public bool Equals(LogAnalyserFactoryId other)
 		{
 			return string.Equals(_value, other._value);
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
 			return obj is LogAnalyserFactoryId && Equals((LogAnalyserFactoryId) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			return _value != null ? _value.GetHashCode() : 0;
 		}
 
+		/// <summary>
+		///     Compares the two given ids for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogAnalyserFactoryId left, LogAnalyserFactoryId right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two given ids for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogAnalyserFactoryId left, LogAnalyserFactoryId right)
 		{
 			return !left.Equals(right);
@@ -44,11 +60,16 @@ namespace Tailviewer.Core
 
 		private readonly string _value;
 
+		/// <summary>
+		///     Creates a new id from the given value.
+		/// </summary>
+		/// <param name="value"></param>
 		public LogAnalyserFactoryId(string value)
 		{
 			_value = value;
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return _value ?? string.Empty;

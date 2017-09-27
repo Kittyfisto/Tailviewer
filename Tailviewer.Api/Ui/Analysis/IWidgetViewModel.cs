@@ -1,10 +1,8 @@
 using System;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Input;
-using Tailviewer.Core;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
+namespace Tailviewer.Ui.Analysis
 {
 	/// <summary>
 	///     The interface for the view model of a widget.
