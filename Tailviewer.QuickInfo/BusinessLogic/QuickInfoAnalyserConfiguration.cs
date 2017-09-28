@@ -27,5 +27,15 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 		{
 			return false;
 		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

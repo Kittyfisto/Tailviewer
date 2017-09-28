@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core;
+using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Settings
 {

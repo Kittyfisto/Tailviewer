@@ -1,46 +1,35 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.Core
+namespace Tailviewer
 {
 	/// <summary>
-	///     A globally unique identifier for a log analyser instance.
+	///     Uniquely identifies a data source.
 	/// </summary>
-	public struct LogAnalyserId
-		: IEquatable<LogAnalyserId>
+	public struct DataSourceId
+		: IEquatable<DataSourceId>
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
 		/// </summary>
-		public static readonly LogAnalyserId Empty = new LogAnalyserId();
+		public static readonly DataSourceId Empty = new DataSourceId();
 
-		private readonly Guid _value;
-
-		/// <summary>
-		///     Initializes this id.
-		/// </summary>
-		/// <param name="value"></param>
-		public LogAnalyserId(Guid value)
+		/// <inheritdoc />
+		public bool Equals(DataSourceId other)
 		{
-			_value = value;
+			return Value.Equals(other.Value);
 		}
 
 		/// <summary>
 		///     The underlying value of this id.
 		/// </summary>
-		public Guid Value => _value;
-
-		/// <inheritdoc />
-		public bool Equals(LogAnalyserId other)
-		{
-			return Value.Equals(other.Value);
-		}
+		public Guid Value { get; }
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is LogAnalyserId && Equals((LogAnalyserId) obj);
+			return obj is DataSourceId && Equals((DataSourceId) obj);
 		}
 
 		/// <inheritdoc />
@@ -55,7 +44,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(LogAnalyserId left, LogAnalyserId right)
+		public static bool operator ==(DataSourceId left, DataSourceId right)
 		{
 			return left.Equals(right);
 		}
@@ -66,15 +55,18 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(LogAnalyserId left, LogAnalyserId right)
+		public static bool operator !=(DataSourceId left, DataSourceId right)
 		{
 			return !left.Equals(right);
 		}
 
-		/// <inheritdoc />
-		public override string ToString()
+		/// <summary>
+		///     Initializes this id.
+		/// </summary>
+		/// <param name="value"></param>
+		public DataSourceId(Guid value)
 		{
-			return _value.ToString();
+			Value = value;
 		}
 
 		/// <summary>
@@ -82,9 +74,15 @@ namespace Tailviewer.Core
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public static LogAnalyserId CreateNew()
+		public static DataSourceId CreateNew()
 		{
-			return new LogAnalyserId(Guid.NewGuid());
+			return new DataSourceId(Guid.NewGuid());
+		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return Value.ToString();
 		}
 	}
 }

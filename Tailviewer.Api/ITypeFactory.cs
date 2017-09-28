@@ -11,6 +11,6 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="typeName"></param>
 		/// <returns></returns>
-		ISerializable TryCreateNew(string typeName);
+		ISerializableType TryCreateNew(string typeName);
 	}
 }

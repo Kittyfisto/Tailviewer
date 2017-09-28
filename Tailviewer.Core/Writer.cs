@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
+using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Core
 {
@@ -15,8 +16,16 @@ namespace Tailviewer.Core
 		: IWriter
 		, IDisposable
 	{
+		/// <summary>
+		///     The current version of the xml format, produced by this writer.
+		///     Has to be incremented when backwards incompatible changes have been
+		///     made.
+		/// </summary>
+		public const int FormatVersion = 1;
+
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly DateTime _created;
 		private readonly XmlWriter _writer;
 		private bool _isDisposed;
 
@@ -26,19 +35,49 @@ namespace Tailviewer.Core
 		/// <param name="output"></param>
 		public Writer(Stream output)
 		{
+			_created = DateTime.Now;
+
 			var settings = new XmlWriterSettings
 			{
-				Indent = true,
+				Indent = true
 			};
 			_writer = XmlWriter.Create(output, settings);
 			_writer.WriteStartDocument();
 			_writer.WriteStartElement("Document");
+			WriteAttribute("FormatVersion", FormatVersion.ToString(CultureInfo.InvariantCulture));
+			WriteAttribute("Created", _created);
+			WriteAttribute("TailviewerVersion", Constants.ApplicationVersion);
+			WriteAttribute("TailviewerBuildDate", Constants.BuildDate);
 		}
+
+		/// <summary>
+		///     The timestamp when this writer was created.
+		/// </summary>
+		public DateTime Created => _created;
 
 		/// <inheritdoc />
 		public void WriteAttribute(string name, string value)
 		{
 			_writer.WriteAttributeString(name, value);
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, Version value)
+		{
+			_writer.WriteAttributeString(name, value?.ToString() ?? string.Empty);
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, DateTime value)
+		{
+			var tmp = value.ToString("o");
+			_writer.WriteAttributeString(name, tmp);
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, Guid value)
+		{
+			WriteAttribute(name, value.ToString());
 		}
 
 		/// <inheritdoc />
@@ -48,7 +87,43 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public void WriteAttribute(string name, ISerializable value)
+		public void WriteAttribute(string name, long value)
+		{
+			WriteAttribute(name, value.ToString(CultureInfo.InvariantCulture));
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, WidgetId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, LogAnalyserFactoryId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, DataSourceId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, AnalysisId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, LogAnalyserId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, ISerializableType value)
 		{
 			_writer.WriteStartElement(name);
 			try
@@ -62,7 +137,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public void WriteAttribute(string name, IEnumerable<ISerializable> values)
+		public void WriteAttribute(string name, IEnumerable<ISerializableType> values)
 		{
 			_writer.WriteStartElement(name);
 			try
@@ -88,12 +163,7 @@ namespace Tailviewer.Core
 			}
 		}
 
-		public void Flush()
-		{
-			_writer.Flush();
-		}
-
-		private void WriteCustomType(ISerializable value)
+		private void WriteCustomType(ISerializableType value)
 		{
 			if (value != null)
 			{

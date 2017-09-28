@@ -70,5 +70,15 @@ namespace Tailviewer.Events.BusinessLogic
 		{
 			return false;
 		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

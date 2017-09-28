@@ -6,7 +6,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     The interface for a result of a <see cref="ILogAnalyser" />.
 	/// </summary>
 	public interface ILogAnalysisResult
-		: ICloneable
+		: ISerializableType
+		, ICloneable
 	{
 	}
 }

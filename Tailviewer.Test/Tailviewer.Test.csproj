@@ -151,6 +151,11 @@
     <Compile Include="LogAnalyserIdTest.cs" />
     <Compile Include="QuickFilterIdTest.cs" />
     <Compile Include="ReaderWriterTest.cs" />
+    <Compile Include="Settings\Analysis\AnalyserResultTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisSnapshotTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisPageTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\WidgetTemplateTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\DataSourcesTest.cs" />

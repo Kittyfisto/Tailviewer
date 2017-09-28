@@ -1,5 +1,6 @@
 ﻿using System.Xml;
 using Metrolib;
+using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Core
 {
@@ -14,21 +15,6 @@ namespace Tailviewer.Core
 		}
 
 		public static void WriteAttribute(this XmlWriter writer, string localName, QuickFilterId id)
-		{
-			writer.WriteAttributeGuid(localName, id.Value);
-		}
-
-		public static void WriteAttribute(this XmlWriter writer, string localName, AnalysisId id)
-		{
-			writer.WriteAttributeGuid(localName, id.Value);
-		}
-
-		public static void WriteAttribute(this XmlWriter writer, string localName, LogAnalyserId id)
-		{
-			writer.WriteAttributeGuid(localName, id.Value);
-		}
-
-		public static void WriteAttribute(this XmlWriter writer, string localName, WidgetId id)
 		{
 			writer.WriteAttributeGuid(localName, id.Value);
 		}

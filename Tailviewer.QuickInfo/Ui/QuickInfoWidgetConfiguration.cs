@@ -28,5 +28,15 @@ namespace Tailviewer.QuickInfo.Ui
 				Titles = Titles?.ToDictionary(x => x.Key, x=> x.Value?.Clone())
 			};
 		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

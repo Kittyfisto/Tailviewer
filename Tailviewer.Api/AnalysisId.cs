@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.Core
+namespace Tailviewer
 {
 	/// <summary>
-	///     Uniquely identifies a data source.
+	///     A globally unique identifier for an analysis.
 	/// </summary>
-	public struct DataSourceId
-		: IEquatable<DataSourceId>
+	public struct AnalysisId
+		: IEquatable<AnalysisId>
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
 		/// </summary>
-		public static readonly DataSourceId Empty = new DataSourceId();
+		public static readonly AnalysisId Empty = new AnalysisId();
 
-		/// <inheritdoc />
-		public bool Equals(DataSourceId other)
+		/// <summary>
+		///     Initializes this id.
+		/// </summary>
+		/// <param name="value"></param>
+		public AnalysisId(Guid value)
 		{
-			return Value.Equals(other.Value);
+			Value = value;
 		}
 
 		/// <summary>
@@ -26,10 +29,16 @@ namespace Tailviewer.Core
 		public Guid Value { get; }
 
 		/// <inheritdoc />
+		public bool Equals(AnalysisId other)
+		{
+			return Value.Equals(other.Value);
+		}
+
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is DataSourceId && Equals((DataSourceId) obj);
+			return obj is AnalysisId && Equals((AnalysisId) obj);
 		}
 
 		/// <inheritdoc />
@@ -44,7 +53,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(DataSourceId left, DataSourceId right)
+		public static bool operator ==(AnalysisId left, AnalysisId right)
 		{
 			return left.Equals(right);
 		}
@@ -55,18 +64,15 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(DataSourceId left, DataSourceId right)
+		public static bool operator !=(AnalysisId left, AnalysisId right)
 		{
 			return !left.Equals(right);
 		}
 
-		/// <summary>
-		///     Initializes this id.
-		/// </summary>
-		/// <param name="value"></param>
-		public DataSourceId(Guid value)
+		/// <inheritdoc />
+		public override string ToString()
 		{
-			Value = value;
+			return Value.ToString();
 		}
 
 		/// <summary>
@@ -74,15 +80,9 @@ namespace Tailviewer.Core
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public static DataSourceId CreateNew()
+		public static AnalysisId CreateNew()
 		{
-			return new DataSourceId(Guid.NewGuid());
-		}
-
-		/// <inheritdoc />
-		public override string ToString()
-		{
-			return Value.ToString();
+			return new AnalysisId(Guid.NewGuid());
 		}
 	}
 }

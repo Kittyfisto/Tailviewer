@@ -13,12 +13,12 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 	{
 		public QuickInfoResult()
 		{
-			QuickInfos = new Dictionary<Guid, Tailviewer.QuickInfo.BusinessLogic.QuickInfo>();
+			QuickInfos = new Dictionary<Guid, QuickInfo>();
 		}
 
 		public QuickInfoResult(int capacity)
 		{
-			QuickInfos = new Dictionary<Guid, Tailviewer.QuickInfo.BusinessLogic.QuickInfo>(capacity);
+			QuickInfos = new Dictionary<Guid, QuickInfo>(capacity);
 		}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 		///     If the analyser didn't find a matching log line for a quick info, then the quick info will
 		///     not be added to the list of values.
 		/// </remarks>
-		public Dictionary<Guid, Tailviewer.QuickInfo.BusinessLogic.QuickInfo> QuickInfos;
+		public Dictionary<Guid, QuickInfo> QuickInfos;
 
 		public object Clone()
 		{
@@ -37,6 +37,16 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 			{
 				QuickInfos = QuickInfos?.ToDictionary(p => p.Key, p => p.Value)
 			};
+		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Tailviewer.Core
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private static readonly Type[] NoTypes = new Type[0];
 
-		private readonly IReadOnlyDictionary<string, Func<ISerializable>> _factories;
+		private readonly IReadOnlyDictionary<string, Func<ISerializableType>> _factories;
 
 		/// <summary>
 		/// Initializes this 
@@ -23,15 +23,15 @@ namespace Tailviewer.Core
 		/// <param name="types"></param>
 		public TypeFactory(IEnumerable<KeyValuePair<string, Type>> types)
 		{
-			var factoriesByType = new Dictionary<Type, Func<ISerializable>>();
-			var factories = new Dictionary<string, Func<ISerializable>>();
+			var factoriesByType = new Dictionary<Type, Func<ISerializableType>>();
+			var factories = new Dictionary<string, Func<ISerializableType>>();
 
 			foreach (var pair in types)
 			{
 				// Once plugins begin renaming their types its quite plausible to have the same
 				// type identified with different names and thus we don't want to create the same
 				// factory over an over, so we cache it...
-				Func<ISerializable> factory;
+				Func<ISerializableType> factory;
 				if (!factoriesByType.TryGetValue(pair.Value, out factory))
 				{
 					factory = CreateFactory(pair.Value);
@@ -47,7 +47,7 @@ namespace Tailviewer.Core
 			_factories = factories;
 		}
 
-		private Func<ISerializable> CreateFactory(Type type)
+		private Func<ISerializableType> CreateFactory(Type type)
 		{
 			var ctor = type.GetConstructor(NoTypes);
 			if (ctor == null)
@@ -56,18 +56,18 @@ namespace Tailviewer.Core
 				return null;
 			}
 
-			var expression = Expression.Lambda<Func<ISerializable>>(Expression.New(ctor));
+			var expression = Expression.Lambda<Func<ISerializableType>>(Expression.New(ctor));
 			var factory = expression.Compile();
 			return factory;
 		}
 
 		/// <inheritdoc />
-		public ISerializable TryCreateNew(string typeName)
+		public ISerializableType TryCreateNew(string typeName)
 		{
 			if (typeName == null)
 				return null;
 
-			Func<ISerializable> factory;
+			Func<ISerializableType> factory;
 			if (!_factories.TryGetValue(typeName, out factory))
 			{
 				return null;

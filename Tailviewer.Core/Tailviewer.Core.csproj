@@ -59,9 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
-    <Compile Include="AnalysisId.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
-    <Compile Include="DataSourceId.cs" />
+    <Compile Include="AssemblyExtensions.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Drive.cs" />
     <Compile Include="FileEx.cs" />
     <Compile Include="Filters\EmptyLogLineFilter.cs" />
@@ -77,7 +77,6 @@
     <Compile Include="Filters\SubstringFilter.cs" />
     <Compile Include="Filters\WildcardFilter.cs" />
     <Compile Include="ILogDataAccessor.cs" />
-    <Compile Include="LogAnalyserId.cs" />
     <Compile Include="LogDataAccessQueue.cs" />
     <Compile Include="LogDataCache.cs" />
     <Compile Include="LogFiles\AbstractLogFile.cs" />
@@ -141,7 +140,6 @@
     <Compile Include="StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />
-    <Compile Include="WidgetId.cs" />
     <Compile Include="Writer.cs" />
     <Compile Include="XmlReaderExtensions.cs" />
     <Compile Include="XmlWriterExtensions.cs" />

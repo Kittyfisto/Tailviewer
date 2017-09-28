@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Core
+namespace Tailviewer
 {
 	/// <summary>
-	///     A globally unique identifier for a <see cref="IWidgetViewModel"/>.
+	///     A globally unique identifier for a log analyser instance.
 	/// </summary>
-	public struct WidgetId
-		: IEquatable<WidgetId>
+	public struct LogAnalyserId
+		: IEquatable<LogAnalyserId>
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
 		/// </summary>
-		public static readonly WidgetId Empty = new WidgetId();
+		public static readonly LogAnalyserId Empty = new LogAnalyserId();
 
 		private readonly Guid _value;
 
@@ -21,7 +20,7 @@ namespace Tailviewer.Core
 		///     Initializes this id.
 		/// </summary>
 		/// <param name="value"></param>
-		public WidgetId(Guid value)
+		public LogAnalyserId(Guid value)
 		{
 			_value = value;
 		}
@@ -32,22 +31,22 @@ namespace Tailviewer.Core
 		public Guid Value => _value;
 
 		/// <inheritdoc />
-		public bool Equals(WidgetId other)
+		public bool Equals(LogAnalyserId other)
 		{
-			return _value.Equals(other._value);
+			return Value.Equals(other.Value);
 		}
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			return obj is WidgetId && Equals((WidgetId) obj);
+			if (ReferenceEquals(objA: null, objB: obj)) return false;
+			return obj is LogAnalyserId && Equals((LogAnalyserId) obj);
 		}
 
 		/// <inheritdoc />
 		public override int GetHashCode()
 		{
-			return _value.GetHashCode();
+			return Value.GetHashCode();
 		}
 
 		/// <summary>
@@ -56,7 +55,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(WidgetId left, WidgetId right)
+		public static bool operator ==(LogAnalyserId left, LogAnalyserId right)
 		{
 			return left.Equals(right);
 		}
@@ -67,7 +66,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(WidgetId left, WidgetId right)
+		public static bool operator !=(LogAnalyserId left, LogAnalyserId right)
 		{
 			return !left.Equals(right);
 		}
@@ -83,9 +82,9 @@ namespace Tailviewer.Core
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public static WidgetId CreateNew()
+		public static LogAnalyserId CreateNew()
 		{
-			return new WidgetId(Guid.NewGuid());
+			return new LogAnalyserId(Guid.NewGuid());
 		}
 	}
 }

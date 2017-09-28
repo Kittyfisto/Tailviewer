@@ -45,5 +45,15 @@ namespace Tailviewer.Count.BusinessLogic
 
 			return true;
 		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

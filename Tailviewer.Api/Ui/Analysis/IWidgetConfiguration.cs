@@ -7,7 +7,8 @@ namespace Tailviewer.Ui.Analysis
 	///     (but not the analysis).
 	/// </summary>
 	public interface IWidgetConfiguration
-		: ICloneable
+		: ISerializableType
+		, ICloneable
 	{
 	}
 }

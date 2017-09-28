@@ -9,7 +9,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     to hold the actual configuration.
 	/// </summary>
 	public interface ILogAnalyserConfiguration
-		: ICloneable
+		: ISerializableType
+		, ICloneable
 	{
 		/// <summary>
 		///     It is advisable that the implementation properly implements this method

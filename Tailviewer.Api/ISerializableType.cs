@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace Tailviewer
+﻿namespace Tailviewer
 {
 	/// <summary>
 	///     The interface for a serializable type.
 	/// </summary>
-	public interface ISerializable
+	public interface ISerializableType
 	{
 		/// <summary>
 		///     Serializes this object using the given writer.
@@ -20,14 +18,5 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="reader"></param>
 		void Deserialize(IReader reader);
-
-		#region Deserialization
-
-		//void OnAttributeRead(string name, string value);
-		//void OnAttributeRead(string name, int value);
-		//void OnAttributeRead(string name, ISerializable value);
-		//void OnAttributeRead(string name, IEnumerable<ISerializable> value);
-
-		#endregion
 	}
 }

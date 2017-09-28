@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer
 {
@@ -20,24 +22,87 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
-		void WriteAttribute(string name, int value);
+		void WriteAttribute(string name, Version value);
 
 		/// <summary>
-		///     Use this method to serialize a child owned by your
-		///     <see cref="ISerializable" />.
-		///     Will in turn call <see cref="ISerializable.Serialize" />.
+		/// 
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
-		void WriteAttribute(string name, ISerializable value);
+		void WriteAttribute(string name, DateTime value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, Guid value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, int value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, long value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, WidgetId value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, LogAnalyserFactoryId value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, DataSourceId value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, AnalysisId value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, LogAnalyserId value);
+
+		/// <summary>
+		///     Use this method to serialize a child owned by your
+		///     <see cref="ISerializableType" />.
+		///     Will in turn call <see cref="ISerializableType.Serialize" />.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, ISerializableType value);
 
 		/// <summary>
 		///     Use this method to serialize a list of children owned by your
-		///     <see cref="ISerializable" />.
-		///     Will in turn call <see cref="ISerializable.Serialize" /> on each non-null child.
+		///     <see cref="ISerializableType" />.
+		///     Will in turn call <see cref="ISerializableType.Serialize" /> on each non-null child.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="values"></param>
-		void WriteAttribute(string name, IEnumerable<ISerializable> values);
+		void WriteAttribute(string name, IEnumerable<ISerializableType> values);
 	}
 }

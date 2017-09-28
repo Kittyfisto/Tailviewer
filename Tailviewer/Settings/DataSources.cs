@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Core;
 
 namespace Tailviewer.Settings

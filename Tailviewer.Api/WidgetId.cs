@@ -1,50 +1,53 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Core
+namespace Tailviewer
 {
 	/// <summary>
-	///     A globally unique identifier for an analysis.
+	///     A globally unique identifier for a <see cref="IWidgetViewModel"/>.
 	/// </summary>
-	public struct AnalysisId
-		: IEquatable<AnalysisId>
+	public struct WidgetId
+		: IEquatable<WidgetId>
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
 		/// </summary>
-		public static readonly AnalysisId Empty = new AnalysisId();
+		public static readonly WidgetId Empty = new WidgetId();
+
+		private readonly Guid _value;
 
 		/// <summary>
 		///     Initializes this id.
 		/// </summary>
 		/// <param name="value"></param>
-		public AnalysisId(Guid value)
+		public WidgetId(Guid value)
 		{
-			Value = value;
+			_value = value;
 		}
 
 		/// <summary>
 		///     The underlying value of this id.
 		/// </summary>
-		public Guid Value { get; }
+		public Guid Value => _value;
 
 		/// <inheritdoc />
-		public bool Equals(AnalysisId other)
+		public bool Equals(WidgetId other)
 		{
-			return Value.Equals(other.Value);
+			return _value.Equals(other._value);
 		}
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is AnalysisId && Equals((AnalysisId) obj);
+			if (ReferenceEquals(null, obj)) return false;
+			return obj is WidgetId && Equals((WidgetId) obj);
 		}
 
 		/// <inheritdoc />
 		public override int GetHashCode()
 		{
-			return Value.GetHashCode();
+			return _value.GetHashCode();
 		}
 
 		/// <summary>
@@ -53,7 +56,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(AnalysisId left, AnalysisId right)
+		public static bool operator ==(WidgetId left, WidgetId right)
 		{
 			return left.Equals(right);
 		}
@@ -64,7 +67,7 @@ namespace Tailviewer.Core
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(AnalysisId left, AnalysisId right)
+		public static bool operator !=(WidgetId left, WidgetId right)
 		{
 			return !left.Equals(right);
 		}
@@ -72,7 +75,7 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return Value.ToString();
+			return _value.ToString();
 		}
 
 		/// <summary>
@@ -80,9 +83,9 @@ namespace Tailviewer.Core
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public static AnalysisId CreateNew()
+		public static WidgetId CreateNew()
 		{
-			return new AnalysisId(Guid.NewGuid());
+			return new WidgetId(Guid.NewGuid());
 		}
 	}
 }
