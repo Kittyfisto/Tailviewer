@@ -59,7 +59,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
+    <Compile Include="Analysis\ActiveAnalysis.cs" />
+    <Compile Include="Analysis\AnalyserResult.cs" />
+    <Compile Include="Analysis\AnalysisPageTemplate.cs" />
+    <Compile Include="Analysis\AnalysisSnapshot.cs" />
+    <Compile Include="Analysis\AnalysisTemplate.cs" />
+    <Compile Include="Analysis\HorizontalWidgetLayoutTemplate.cs" />
+    <Compile Include="Analysis\IAnalysisPageTemplate.cs" />
+    <Compile Include="Analysis\IAnalysisTemplate.cs" />
+    <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
+    <Compile Include="Analysis\IWidgetTemplate.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
+    <Compile Include="Analysis\WidgetTemplate.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Drive.cs" />

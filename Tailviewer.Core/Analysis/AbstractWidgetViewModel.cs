@@ -19,12 +19,12 @@ namespace Tailviewer.Core.Analysis
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
+		private readonly WidgetTemplate _template;
 		private bool _isAnalysisFinished;
 
 		private bool _isEditing;
 		private double _progress;
 		private string _progressTooltip;
-		private string _title;
 
 		/// <summary>
 		/// </summary>
@@ -35,8 +35,10 @@ namespace Tailviewer.Core.Analysis
 
 			_dataSourceAnalyser = dataSourceAnalyser;
 			_isAnalysisFinished = false;
-			AnalyserConfiguration = CloneConfiguration(dataSourceAnalyser);
-			ViewConfiguration = viewConfiguration;
+			_template = new WidgetTemplate(
+				WidgetId.CreateNew(),
+				CloneConfiguration(dataSourceAnalyser),
+				viewConfiguration);
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
 		}
@@ -47,12 +49,12 @@ namespace Tailviewer.Core.Analysis
 		///     When <see cref="IsEditing" /> is set to false again, the current value of this property is then forwarded
 		///     to the <see cref="IDataSourceAnalyser" /> via <see cref="IDataSourceAnalyser.Configuration" />.
 		/// </summary>
-		protected ILogAnalyserConfiguration AnalyserConfiguration { get; }
+		protected ILogAnalyserConfiguration AnalyserConfiguration => _template.AnalysisConfiguration;
 
 		/// <summary>
 		///     The current configuration of the view.
 		/// </summary>
-		protected IWidgetConfiguration ViewConfiguration { get; }
+		protected IWidgetConfiguration ViewConfiguration => _template.ViewConfiguration;
 
 		/// <inheritdoc />
 		public bool IsEditing
@@ -77,13 +79,13 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public string Title
 		{
-			get { return _title; }
+			get { return _template.Title; }
 			set
 			{
-				if (value == _title)
+				if (value == _template.Title)
 					return;
 
-				_title = value;
+				_template.Title = value;
 				EmitPropertyChanged();
 			}
 		}

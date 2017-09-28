@@ -78,10 +78,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Settings\Analysis\ActiveAnalysis.cs" />
-    <Compile Include="Settings\Analysis\AnalyserResult.cs" />
-    <Compile Include="Settings\Analysis\AnalysisSnapshot.cs" />
-    <Compile Include="Settings\Analysis\AnalysisTemplate.cs" />
     <Compile Include="App.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="Bootstrapper.cs" />
@@ -146,9 +142,6 @@
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
-    <Compile Include="Settings\Analysis\HorizontalWidgetLayoutTemplate.cs" />
-    <Compile Include="Settings\Analysis\IWidgetLayoutTemplate.cs" />
-    <Compile Include="Settings\Analysis\AnalysisPageTemplate.cs" />
     <Compile Include="PageLayoutConverter.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
@@ -278,7 +271,6 @@
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
-    <Compile Include="Settings\Analysis\WidgetTemplate.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -35,7 +35,7 @@ namespace Tailviewer.Core
 
 		/// <summary>
 		///     We obtain the build date from the PE header of this assembly,
-		///     <see cref="http://stackoverflow.com/questions/1600962/displaying-the-build-date" />.
+		///     http://stackoverflow.com/questions/1600962/displaying-the-build-date.
 		/// </summary>
 		/// <param name="assembly"></param>
 		/// <param name="target"></param>
