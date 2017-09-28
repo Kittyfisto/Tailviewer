@@ -73,6 +73,10 @@
     <Compile Include="BusinessLogic\Plugins\PluginVersionAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginWebsiteAttribute.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin.cs" />
+    <Compile Include="IReader.cs" />
+    <Compile Include="ISerializable.cs" />
+    <Compile Include="ITypeFactory.cs" />
+    <Compile Include="IWriter.cs" />
     <Compile Include="LogEntryIndex.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

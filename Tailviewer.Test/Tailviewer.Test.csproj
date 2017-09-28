@@ -150,6 +150,7 @@
     <Compile Include="LocalTest.cs" />
     <Compile Include="LogAnalyserIdTest.cs" />
     <Compile Include="QuickFilterIdTest.cs" />
+    <Compile Include="ReaderWriterTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
     <Compile Include="Settings\DataSourcesTest.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Settings\QuickFiltersTest.cs" />
     <Compile Include="Settings\QuickFilterTest.cs" />
     <Compile Include="StringExtensionsTest.cs" />
+    <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
     <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
