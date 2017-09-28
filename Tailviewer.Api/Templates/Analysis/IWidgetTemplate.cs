@@ -1,4 +1,5 @@
-﻿using Tailviewer.BusinessLogic.Analysis;
+﻿using System;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Templates.Analysis
@@ -12,6 +13,7 @@ namespace Tailviewer.Templates.Analysis
 	/// </summary>
 	public interface IWidgetTemplate
 		: ISerializableType
+		, ICloneable
 	{
 		/// <summary>
 		///     The title of the widget.

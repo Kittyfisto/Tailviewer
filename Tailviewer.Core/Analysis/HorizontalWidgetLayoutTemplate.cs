@@ -1,4 +1,7 @@
-﻿namespace Tailviewer.Core.Analysis
+﻿using System;
+using System.Diagnostics.Contracts;
+
+namespace Tailviewer.Core.Analysis
 {
 	/// <summary>
 	///     The template for a horizontal widget layout:
@@ -15,6 +18,21 @@
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+
+		/// <summary>
+		///     Creates a deep clone of this template.
+		/// </summary>
+		/// <returns></returns>
+		[Pure]
+		public HorizontalWidgetLayoutTemplate Clone()
+		{
+			return new HorizontalWidgetLayoutTemplate();
 		}
 	}
 }

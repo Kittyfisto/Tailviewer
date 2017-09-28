@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.Core.Analysis
 {
@@ -15,6 +16,7 @@ namespace Tailviewer.Core.Analysis
 	/// </remarks>
 	public interface IAnalysisTemplate
 		: ISerializableType
+		, ICloneable
 	{
 		/// <summary>
 		///     The pages that are part of this template.

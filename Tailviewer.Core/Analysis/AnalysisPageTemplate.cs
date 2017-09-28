@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Core.Analysis
@@ -19,6 +22,11 @@ namespace Tailviewer.Core.Analysis
 		public AnalysisPageTemplate()
 		{
 			_widgets = new List<IWidgetTemplate>();
+		}
+
+		private AnalysisPageTemplate(IEnumerable<IWidgetTemplate> widgets)
+		{
+			_widgets = new List<IWidgetTemplate>(widgets);
 		}
 
 		/// <inheritdoc />
@@ -45,6 +53,11 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("Widgets", _widgets);
 		}
 
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+
 		/// <summary>
 		///     Adds the given widget to this template.
 		/// </summary>
@@ -55,12 +68,25 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
-		/// Removes the given widget from this template.
+		///     Removes the given widget from this template.
 		/// </summary>
 		/// <param name="template"></param>
 		public void Remove(IWidgetTemplate template)
 		{
 			_widgets.Remove(template);
+		}
+
+		/// <summary>
+		///     Creates a deep clone of this page.
+		/// </summary>
+		/// <returns></returns>
+		[Pure]
+		public AnalysisPageTemplate Clone()
+		{
+			return new AnalysisPageTemplate(_widgets.Select(x => x?.Clone() as IWidgetTemplate))
+			{
+				Layout = _layout?.Clone() as IWidgetLayoutTemplate
+			};
 		}
 	}
 }

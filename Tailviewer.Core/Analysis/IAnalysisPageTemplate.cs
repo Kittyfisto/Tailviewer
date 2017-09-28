@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Core.Analysis
@@ -9,6 +10,7 @@ namespace Tailviewer.Core.Analysis
 	/// </summary>
 	public interface IAnalysisPageTemplate
 		: ISerializableType
+		, ICloneable
 	{
 		/// <summary>
 		///     The widgets that are placed on this page.

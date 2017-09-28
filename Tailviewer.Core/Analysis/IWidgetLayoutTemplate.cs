@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.Core.Analysis
+﻿using System;
+
+namespace Tailviewer.Core.Analysis
 {
 	/// <summary>
 	///     The interface for the template of a widget layout.
@@ -7,6 +9,7 @@
 	/// </summary>
 	public interface IWidgetLayoutTemplate
 		: ISerializableType
+		, ICloneable
 	{
 	}
 }

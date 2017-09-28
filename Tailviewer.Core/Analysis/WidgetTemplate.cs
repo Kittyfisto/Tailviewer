@@ -1,4 +1,6 @@
-﻿using Tailviewer.BusinessLogic.Analysis;
+﻿using System;
+using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
@@ -32,7 +34,9 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     Initializes this template.
 		/// </summary>
-		public WidgetTemplate(WidgetId id, ILogAnalyserConfiguration logAnalyserConfiguration, IWidgetConfiguration viewConfiguration)
+		public WidgetTemplate(WidgetId id,
+			ILogAnalyserConfiguration logAnalyserConfiguration,
+			IWidgetConfiguration viewConfiguration)
 		{
 			_id = id;
 			_analysisConfiguration = logAnalyserConfiguration;
@@ -80,6 +84,26 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("AnalyserFactoryId", out _analyserFactoryId);
 			reader.TryReadAttribute("AnalyserId", out _analyserId);
 			reader.TryReadAttribute("AnalysisConfiguration", out _analysisConfiguration);
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+
+		/// <summary>
+		///     Creates a deep clone of this template.
+		/// </summary>
+		/// <returns></returns>
+		[Pure]
+		public WidgetTemplate Clone()
+		{
+			return new WidgetTemplate(_id,
+				_analysisConfiguration?.Clone() as ILogAnalyserConfiguration,
+				_viewConfiguration?.Clone() as IWidgetConfiguration)
+			{
+				Title = _title
+			};
 		}
 	}
 }

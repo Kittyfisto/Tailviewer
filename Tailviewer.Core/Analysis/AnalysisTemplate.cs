@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tailviewer.Core.Analysis
 {
@@ -26,6 +28,11 @@ namespace Tailviewer.Core.Analysis
 			_pages = new List<AnalysisPageTemplate>();
 		}
 
+		private AnalysisTemplate(IEnumerable<AnalysisPageTemplate> pages)
+		{
+			_pages = new List<AnalysisPageTemplate>(pages);
+		}
+
 		/// <inheritdoc />
 		public IEnumerable<IAnalysisPageTemplate> Pages => _pages;
 
@@ -41,6 +48,11 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("Pages", _pages);
 		}
 
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+
 		/// <summary>
 		///     Adds the given page to this template.
 		/// </summary>
@@ -48,6 +60,15 @@ namespace Tailviewer.Core.Analysis
 		public void Add(AnalysisPageTemplate template)
 		{
 			_pages.Add(template);
+		}
+
+		/// <summary>
+		///     Returns a deep clone of this template.
+		/// </summary>
+		/// <returns></returns>
+		public AnalysisTemplate Clone()
+		{
+			return new AnalysisTemplate(_pages.Select(x => x.Clone()));
 		}
 	}
 }
