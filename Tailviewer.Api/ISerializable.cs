@@ -1,4 +1,6 @@
-﻿namespace Tailviewer
+﻿using System.Collections.Generic;
+
+namespace Tailviewer
 {
 	/// <summary>
 	///     The interface for a serializable type.
@@ -18,5 +20,14 @@
 		/// </summary>
 		/// <param name="reader"></param>
 		void Deserialize(IReader reader);
+
+		#region Deserialization
+
+		//void OnAttributeRead(string name, string value);
+		//void OnAttributeRead(string name, int value);
+		//void OnAttributeRead(string name, ISerializable value);
+		//void OnAttributeRead(string name, IEnumerable<ISerializable> value);
+
+		#endregion
 	}
 }

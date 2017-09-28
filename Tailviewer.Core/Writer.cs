@@ -26,7 +26,11 @@ namespace Tailviewer.Core
 		/// <param name="output"></param>
 		public Writer(Stream output)
 		{
-			_writer = XmlWriter.Create(output);
+			var settings = new XmlWriterSettings
+			{
+				Indent = true,
+			};
+			_writer = XmlWriter.Create(output, settings);
 			_writer.WriteStartDocument();
 			_writer.WriteStartElement("Document");
 		}

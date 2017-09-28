@@ -44,6 +44,26 @@ namespace Tailviewer
 		///     reading back the value.
 		/// </summary>
 		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		bool TryReadAttribute<T>(string name, out T value) where T : class, ISerializable;
+
+		/// <summary>
+		///     Tries to read the attribute with the given name.
+		///     Returns false if there is no such attribute or some other prevented
+		///     reading back the value.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		bool TryReadAttribute<T>(string name, out T? value) where T : struct, ISerializable;
+
+		/// <summary>
+		///     Tries to read the attribute with the given name.
+		///     Returns false if there is no such attribute or some other prevented
+		///     reading back the value.
+		/// </summary>
+		/// <param name="name"></param>
 		/// <param name="values"></param>
 		/// <returns></returns>
 		bool TryReadAttribute(string name, out IEnumerable<ISerializable> values);

@@ -14,7 +14,6 @@ namespace Tailviewer.Core
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private static readonly Type[] NoTypes = new Type[0];
-		private static readonly ParameterModifier[] NoModifiers = new ParameterModifier[0];
 
 		private readonly IReadOnlyDictionary<string, Func<ISerializable>> _factories;
 
@@ -50,7 +49,7 @@ namespace Tailviewer.Core
 
 		private Func<ISerializable> CreateFactory(Type type)
 		{
-			var ctor = type.GetConstructor(BindingFlags.CreateInstance | BindingFlags.Public, null, CallingConventions.Any, NoTypes, NoModifiers);
+			var ctor = type.GetConstructor(NoTypes);
 			if (ctor == null)
 			{
 				Log.ErrorFormat("Unable to find parameterless public constructor for: {0}", type.AssemblyQualifiedName);
