@@ -1,4 +1,5 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Core.Analysis

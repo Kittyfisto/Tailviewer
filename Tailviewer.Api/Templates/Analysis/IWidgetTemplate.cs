@@ -1,7 +1,7 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Core.Analysis
+namespace Tailviewer.Templates.Analysis
 {
 	/// <summary>
 	///     The template for a widget:
@@ -16,7 +16,7 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     The title of the widget.
 		/// </summary>
-		string Title { get; }
+		string Title { get; set; }
 
 		/// <summary>
 		///     The configuration of the view (widget).

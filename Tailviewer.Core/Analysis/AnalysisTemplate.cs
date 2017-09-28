@@ -40,5 +40,14 @@ namespace Tailviewer.Core.Analysis
 		{
 			reader.TryReadAttribute("Pages", _pages);
 		}
+
+		/// <summary>
+		///     Adds the given page to this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Add(AnalysisPageTemplate template)
+		{
+			_pages.Add(template);
+		}
 	}
 }

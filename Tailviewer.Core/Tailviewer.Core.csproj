@@ -68,7 +68,6 @@
     <Compile Include="Analysis\IAnalysisPageTemplate.cs" />
     <Compile Include="Analysis\IAnalysisTemplate.cs" />
     <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\IWidgetTemplate.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
     <Compile Include="Analysis\WidgetTemplate.cs" />
     <Compile Include="AssemblyExtensions.cs" />

@@ -1,6 +1,7 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Count.BusinessLogic;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Count.Ui
 {
@@ -12,8 +13,8 @@ namespace Tailviewer.Count.Ui
 		private long? _count;
 		private string _caption;
 
-		public EntryCountWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser)
-			: base(dataSourceAnalyser, null)
+		public EntryCountWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+			: base(template, dataSourceAnalyser)
 		{
 			_configuration = AnalyserConfiguration as LogEntryCountAnalyserConfiguration;
 			Title = "Line Count";

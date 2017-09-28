@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		}
 
 		[Test]
-		public void TestAddPage()
+		public void TestAddPage1()
 		{
 			var model = new AnalysisViewModel(_analyser.Object);
 			model.Pages.Should().HaveCount(1);
@@ -37,6 +37,19 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.Pages.Should().HaveCount(2);
 			model.Pages.ElementAt(0).DeletePageCommand.CanExecute(null).Should().BeTrue();
 			model.Pages.ElementAt(1).DeletePageCommand.CanExecute(null).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestAddPage2()
+		{
+			var model = new AnalysisViewModel(_analyser.Object);
+			model.Template.Pages.Should().HaveCount(1);
+
+			model.AddPageCommand.Execute(null);
+			model.Template.Pages.Should().HaveCount(2);
+			model.Template.Pages.ElementAt(1).Should().BeSameAs(
+				model.Pages.ElementAt(1).Template
+			);
 		}
 	}
 }

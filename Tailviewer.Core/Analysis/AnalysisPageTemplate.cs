@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Core.Analysis
 {
@@ -9,7 +10,7 @@ namespace Tailviewer.Core.Analysis
 	public sealed class AnalysisPageTemplate
 		: IAnalysisPageTemplate
 	{
-		private readonly List<WidgetTemplate> _widgets;
+		private readonly List<IWidgetTemplate> _widgets;
 		private IWidgetLayoutTemplate _layout;
 
 		/// <summary>
@@ -17,7 +18,7 @@ namespace Tailviewer.Core.Analysis
 		/// </summary>
 		public AnalysisPageTemplate()
 		{
-			_widgets = new List<WidgetTemplate>();
+			_widgets = new List<IWidgetTemplate>();
 		}
 
 		/// <inheritdoc />
@@ -42,6 +43,24 @@ namespace Tailviewer.Core.Analysis
 		{
 			reader.TryReadAttribute("Layout", out _layout);
 			reader.TryReadAttribute("Widgets", _widgets);
+		}
+
+		/// <summary>
+		///     Adds the given widget to this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Add(IWidgetTemplate template)
+		{
+			_widgets.Add(template);
+		}
+
+		/// <summary>
+		/// Removes the given widget from this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Remove(IWidgetTemplate template)
+		{
+			_widgets.Remove(template);
 		}
 	}
 }

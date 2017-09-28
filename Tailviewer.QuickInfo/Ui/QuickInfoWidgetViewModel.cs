@@ -7,6 +7,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
 using Tailviewer.QuickInfo.BusinessLogic;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.QuickInfo.Ui
 {
@@ -20,11 +21,11 @@ namespace Tailviewer.QuickInfo.Ui
 		private readonly ObservableCollection<QuickInfoViewModel> _quickInfos;
 		private readonly DelegateCommand2 _addQuickInfoCommand;
 
-		public QuickInfoWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser,
-			QuickInfoWidgetConfiguration viewConfiguration)
-			: base(dataSourceAnalyser, viewConfiguration)
+		public QuickInfoWidgetViewModel(IWidgetTemplate template,
+			IDataSourceAnalyser dataSourceAnalyser)
+			: base(template, dataSourceAnalyser)
 		{
-			_viewConfiguration = viewConfiguration;
+			_viewConfiguration = template.ViewConfiguration as QuickInfoWidgetConfiguration;
 			_analyserConfiguration = AnalyserConfiguration as QuickInfoAnalyserConfiguration;
 
 			_quickInfosById = new Dictionary<Guid, QuickInfoViewModel>();

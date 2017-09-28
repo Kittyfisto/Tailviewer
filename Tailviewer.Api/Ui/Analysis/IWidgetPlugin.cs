@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Ui.Analysis
 {
@@ -51,8 +52,8 @@ namespace Tailviewer.Ui.Analysis
 		///     the configuration as well as to present results from <see cref="IDataSourceAnalyser.Result" />.
 		/// </summary>
 		/// <param name="dataSourceAnalyser"></param>
-		/// <param name="configuration"></param>
+		/// <param name="template"></param>
 		/// <returns></returns>
-		IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration);
+		IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser);
 	}
 }

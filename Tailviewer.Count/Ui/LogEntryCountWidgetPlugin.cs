@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Count.BusinessLogic;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Count.Ui
@@ -20,9 +21,9 @@ namespace Tailviewer.Count.Ui
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
+		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new EntryCountWidgetViewModel(dataSourceAnalyser);
+			return new EntryCountWidgetViewModel(template, dataSourceAnalyser);
 		}
 	}
 }

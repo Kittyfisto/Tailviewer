@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Ui.Analysis
 {
@@ -55,9 +56,16 @@ namespace Tailviewer.Ui.Analysis
 		double Progress { get; }
 
 		/// <summary>
-		/// A 
+		///     A
 		/// </summary>
 		string ProgressTooltip { get; }
+
+		/// <summary>
+		///     The current template of this widget.
+		///     Shall be continuously modified whenever changes to this widget
+		///     (such as title, view- or analysis configuration) are made.
+		/// </summary>
+		IWidgetTemplate Template { get; }
 
 		/// <summary>
 		///     This method is called periodically to allow the view model to fetch data from the analysis.

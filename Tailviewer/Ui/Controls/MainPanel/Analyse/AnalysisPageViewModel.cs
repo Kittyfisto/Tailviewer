@@ -8,6 +8,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 
@@ -24,6 +25,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly AnalysisPageTemplate _template;
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<IWidgetViewModel> _widgets;
@@ -34,11 +36,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
 
-		public AnalysisPageViewModel(IAnalyserGroup analyser)
+		public AnalysisPageViewModel(AnalysisPageTemplate template, IAnalyserGroup analyser)
 		{
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
 			if (analyser == null)
 				throw new ArgumentNullException(nameof(analyser));
 
+			_template = template;
 			_analyser = analyser;
 			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
@@ -98,14 +103,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 				if (_layout != null)
 				{
-					_layout.RequestAdd -= LayoutOnRequestAdd;
+					_layout.RequestAdd -= LayoutOnRequestAddWidget;
 				}
 
 				_layout = value;
 
 				if (_layout != null)
 				{
-					_layout.RequestAdd += LayoutOnRequestAdd;
+					_layout.RequestAdd += LayoutOnRequestAddWidget;
 				}
 
 				EmitPropertyChanged();
@@ -118,12 +123,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private void LayoutOnRequestAdd(IWidgetPlugin plugin)
+		private void LayoutOnRequestAddWidget(IWidgetPlugin plugin)
 		{
 			var analyser = CreateAnalyser(plugin);
 			var viewConfiguration = CreateViewConfiguration(plugin);
-			var widget = plugin.CreateViewModel(analyser, viewConfiguration);
+			var template = new WidgetTemplate(WidgetId.CreateNew(),
+				analyser.Configuration,
+				viewConfiguration);
+			var widget = plugin.CreateViewModel(template, analyser);
+
 			_analysersPerWidget.Add(widget, analyser);
+
 			Add(widget);
 		}
 
@@ -165,6 +175,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			_widgets.Add(widget);
 			_layout?.Add(widget);
+			_template.Add(widget.Template);
 			widget.OnDelete += WidgetOnDelete;
 			HasWidgets = _widgets.Any();
 		}
@@ -178,6 +189,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
+			_template.Remove(widget.Template);
 
 			IDataSourceAnalyser analyser;
 			if (_analysersPerWidget.TryGetValue(widget, out analyser))
@@ -213,6 +225,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_deletePageCommand.RaiseCanExecuteChanged();
 			}
 		}
+
+		public IAnalysisPageTemplate Template => _template;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
@@ -19,9 +20,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
+		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new HelpWidgetViewModel(dataSourceAnalyser);
+			return new HelpWidgetViewModel(template, dataSourceAnalyser);
 		}
 	}
 }

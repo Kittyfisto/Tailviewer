@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Core.Analysis
 {

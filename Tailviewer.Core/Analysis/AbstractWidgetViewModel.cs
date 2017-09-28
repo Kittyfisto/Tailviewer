@@ -6,6 +6,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Core.Analysis
@@ -19,7 +20,7 @@ namespace Tailviewer.Core.Analysis
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
-		private readonly WidgetTemplate _template;
+		private readonly IWidgetTemplate _template;
 		private bool _isAnalysisFinished;
 
 		private bool _isEditing;
@@ -28,17 +29,15 @@ namespace Tailviewer.Core.Analysis
 
 		/// <summary>
 		/// </summary>
-		protected AbstractWidgetViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration viewConfiguration)
+		protected AbstractWidgetViewModel(IWidgetTemplate template,
+			IDataSourceAnalyser dataSourceAnalyser)
 		{
 			if (dataSourceAnalyser == null)
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
 			_isAnalysisFinished = false;
-			_template = new WidgetTemplate(
-				WidgetId.CreateNew(),
-				CloneConfiguration(dataSourceAnalyser),
-				viewConfiguration);
+			_template = template;
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
 			DeleteCommand = new DelegateCommand(Delete);
 		}
@@ -140,6 +139,9 @@ namespace Tailviewer.Core.Analysis
 				EmitPropertyChanged();
 			}
 		}
+
+		/// <inheritdoc />
+		public IWidgetTemplate Template => _template;
 
 		/// <inheritdoc />
 		public event PropertyChangedEventHandler PropertyChanged;

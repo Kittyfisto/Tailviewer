@@ -8,7 +8,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
+using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -18,6 +18,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalysisViewModel
 		: IAnalysisViewModel
 	{
+		private readonly AnalysisTemplate _template;
 		private readonly IAnalyserGroup _analyser;
 		private readonly DelegateCommand _addPageCommand;
 		private readonly DelegateCommand _removeCommand;
@@ -33,14 +34,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				throw new ArgumentNullException(nameof(analyser));
 
 			_analyser = analyser;
+			_template = new AnalysisTemplate();
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
-			AddPage();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
 			_name = "Unsaved analysis";
 
+			AddPage();
 			_selectedPage = _pages.FirstOrDefault();
 		}
+
+		public IAnalysisTemplate Template => _template;
 
 		private void RemoveThis()
 		{
@@ -120,9 +124,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddPage()
 		{
-			var page = new AnalysisPageViewModel(_analyser);
+			var template = new AnalysisPageTemplate();
+			var page = new AnalysisPageViewModel(template, _analyser);
 			page.OnDelete += PageOnOnDelete;
+
 			_pages.Add(page);
+			_template.Add(template);
+
 			UpdateCanBeDeleted();
 		}
 

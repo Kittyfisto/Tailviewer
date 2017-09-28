@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.QuickInfo.BusinessLogic;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.QuickInfo.Ui
@@ -20,9 +21,9 @@ namespace Tailviewer.QuickInfo.Ui
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IDataSourceAnalyser dataSourceAnalyser, IWidgetConfiguration configuration)
+		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new QuickInfoWidgetViewModel(dataSourceAnalyser, configuration as QuickInfoWidgetConfiguration);
+			return new QuickInfoWidgetViewModel(template, dataSourceAnalyser);
 		}
 	}
 }
