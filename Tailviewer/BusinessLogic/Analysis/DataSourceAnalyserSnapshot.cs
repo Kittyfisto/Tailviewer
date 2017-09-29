@@ -16,10 +16,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly Percentage _progress;
 		private readonly ILogAnalysisResult _result;
 
-		public DataSourceAnalyserSnapshot(Guid id, ILogAnalyserConfiguration configuration, ILogAnalysisResult result, Percentage progress)
+		public DataSourceAnalyserSnapshot(AnalyserId id, ILogAnalyserConfiguration configuration, ILogAnalysisResult result, Percentage progress)
 		{
-			if (id == null)
-				throw new ArgumentNullException(nameof(id));
+			if (id == AnalyserId.Empty)
+				throw new ArgumentException(nameof(id));
 
 			Id = id;
 			_configuration = configuration;
@@ -27,7 +27,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_progress = progress;
 		}
 
-		public Guid Id { get; }
+		public AnalyserId Id { get; }
 
 		public Percentage Progress => _progress;
 

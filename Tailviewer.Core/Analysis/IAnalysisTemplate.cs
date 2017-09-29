@@ -21,6 +21,11 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     The pages that are part of this template.
 		/// </summary>
-		IEnumerable<IAnalysisPageTemplate> Pages { get; }
+		IEnumerable<IPageTemplate> Pages { get; }
+
+		/// <summary>
+		/// The analysers which are part of this template.
+		/// </summary>
+		IEnumerable<IAnalyserTemplate> Analysers { get; }
 	}
 }

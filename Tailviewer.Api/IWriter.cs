@@ -85,7 +85,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
-		void WriteAttribute(string name, LogAnalyserId value);
+		void WriteAttribute(string name, AnalyserId value);
 
 		/// <summary>
 		///     Use this method to serialize a child owned by your

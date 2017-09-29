@@ -1,5 +1,6 @@
 using System;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -10,32 +11,33 @@ namespace Tailviewer.BusinessLogic.Analysis
 	/// </summary>
 	public sealed class DataSourceAnalyser
 		: IDataSourceAnalyser
-			, IDataSourceAnalysisListener
-			, IDisposable
+		, IDataSourceAnalysisListener
+		, IDisposable
 	{
+		private readonly AnalyserTemplate _template;
 		private readonly IAnalysisEngine _analysisEngine;
-		private readonly LogAnalyserFactoryId _anaylserId;
 		private readonly ILogFile _logFile;
 
 		private ILogAnalyserConfiguration _configuration;
 		private IDataSourceAnalysisHandle _currentAnalysis;
 
-		public DataSourceAnalyser(ILogFile logFile,
-			IAnalysisEngine analysisEngine,
-			LogAnalyserFactoryId anaylserId)
+		public DataSourceAnalyser(AnalyserTemplate template,
+			ILogFile logFile,
+			IAnalysisEngine analysisEngine)
 		{
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
 			if (logFile == null)
 				throw new ArgumentNullException(nameof(logFile));
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
 
-			Id = Guid.NewGuid();
+			_template = template;
 			_logFile = logFile;
 			_analysisEngine = analysisEngine;
-			_anaylserId = anaylserId;
 		}
 
-		public Guid Id { get; }
+		public AnalyserId Id => _template.Id;
 
 		public Percentage Progress { get; private set; }
 
@@ -107,7 +109,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				var configuration = new DataSourceAnalysisConfiguration
 				{
-					AnalyserId = _anaylserId,
+					FactoryId = _template.FactoryId,
 					Configuration = _configuration
 				};
 				_currentAnalysis = _analysisEngine.CreateAnalysis(_logFile, configuration, this);

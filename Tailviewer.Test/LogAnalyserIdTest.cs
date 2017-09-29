@@ -6,16 +6,16 @@ namespace Tailviewer.Test
 {
 	[TestFixture]
 	public sealed class LogAnalyserIdTest
-		: AbstractIdTest<LogAnalyserId>
+		: AbstractIdTest<AnalyserId>
 	{
-		protected override LogAnalyserId Empty()
+		protected override AnalyserId Empty()
 		{
-			return LogAnalyserId.Empty;
+			return AnalyserId.Empty;
 		}
 
-		protected override LogAnalyserId CreateNew()
+		protected override AnalyserId CreateNew()
 		{
-			return LogAnalyserId.CreateNew();
+			return AnalyserId.CreateNew();
 		}
 
 		[Test]

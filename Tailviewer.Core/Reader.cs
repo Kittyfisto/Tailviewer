@@ -120,7 +120,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public bool TryReadAttribute(string name, out LogAnalyserId value)
+		public bool TryReadAttribute(string name, out AnalyserId value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
 		}
@@ -330,16 +330,16 @@ namespace Tailviewer.Core
 				return true;
 			}
 
-			public bool TryReadAttribute(string name, out LogAnalyserId value)
+			public bool TryReadAttribute(string name, out AnalyserId value)
 			{
 				Guid tmp;
 				if (!TryReadAttribute(name, out tmp))
 				{
-					value = default(LogAnalyserId);
+					value = default(AnalyserId);
 					return false;
 				}
 
-				value = new LogAnalyserId(tmp);
+				value = new AnalyserId(tmp);
 				return true;
 			}
 

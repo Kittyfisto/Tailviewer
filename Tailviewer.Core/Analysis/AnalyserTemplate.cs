@@ -7,34 +7,27 @@ namespace Tailviewer.Core.Analysis
 	/// 
 	/// </summary>
 	public sealed class AnalyserTemplate
-		: ISerializableType
-		, ICloneable
+		: IAnalyserTemplate
 	{
 		private LogAnalyserFactoryId _factoryId;
-		private LogAnalyserId _id;
+		private AnalyserId _id;
 		private ILogAnalyserConfiguration _configuration;
 
-		/// <summary>
-		///     The id of the factory which produced the analysier.
-		/// </summary>
+		/// <inheritdoc />
 		public LogAnalyserFactoryId FactoryId
 		{
 			get { return _factoryId; }
 			set { _factoryId = value; }
 		}
 
-		/// <summary>
-		///     The id of the analyser instance.
-		/// </summary>
-		public LogAnalyserId Id
+		/// <inheritdoc />
+		public AnalyserId Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
 
-		/// <summary>
-		///     The configuration of the analyser.
-		/// </summary>
+		/// <inheritdoc />
 		public ILogAnalyserConfiguration Configuration
 		{
 			get { return _configuration; }

@@ -118,7 +118,7 @@ namespace Tailviewer
 		/// <param name="name"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryReadAttribute(string name, out LogAnalyserId value);
+		bool TryReadAttribute(string name, out AnalyserId value);
 
 		/// <summary>
 		///     Tries to read the attribute with the given name.

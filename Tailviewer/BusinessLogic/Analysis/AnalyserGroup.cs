@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
@@ -12,7 +12,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IAnalyserGroup
 			, IDisposable
 	{
-		private readonly List<DataSourceAnalyser> _analysers;
+		private readonly AnalysisTemplate _template;
+		private readonly Dictionary<DataSourceAnalyser, AnalyserTemplate> _analysers;
 		private readonly IAnalysisEngine _analysisEngine;
 		private readonly LogFileProxy _logFile;
 		private readonly List<ILogFile> _logFiles;
@@ -21,22 +22,26 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly AnalysisId _id;
 
-		public AnalyserGroup(ITaskScheduler taskScheduler,
+		public AnalyserGroup(AnalysisTemplate template,
+			ITaskScheduler taskScheduler,
 			IAnalysisEngine analysisEngine,
 			TimeSpan maximumWaitTime)
 		{
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
 			if (analysisEngine == null)
 				throw new ArgumentNullException(nameof(analysisEngine));
 
 			_id = AnalysisId.CreateNew();
+			_template = template;
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;
 			_logFiles = new List<ILogFile>();
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_analysisEngine = analysisEngine;
-			_analysers = new List<DataSourceAnalyser>();
+			_analysers = new Dictionary<DataSourceAnalyser, AnalyserTemplate>();
 			_syncRoot = new object();
 		}
 
@@ -46,7 +51,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				lock (_syncRoot)
 				{
-					return _analysers.ToList();
+					return _analysers.Keys.ToList();
 				}
 			}
 		}
@@ -73,7 +78,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 					if (_analysers.Count == 0)
 						return Percentage.HundredPercent;
 
-					foreach (var analyser in _analysers)
+					foreach (var analyser in _analysers.Keys)
 					{
 						var tmp = analyser.Progress;
 						if (!Percentage.IsNan(tmp))
@@ -91,18 +96,26 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		/// <summary>
 		/// </summary>
-		/// <param name="analyserId"></param>
+		/// <param name="factoryId"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Add(LogAnalyserFactoryId factoryId, ILogAnalyserConfiguration configuration)
 		{
-			var analyser = new DataSourceAnalyser(_logFile, _analysisEngine, analyserId);
+			var template = new AnalyserTemplate
+			{
+				Id = AnalyserId.CreateNew(),
+				FactoryId = factoryId,
+				Configuration = configuration
+			};
+
+			var analyser = new DataSourceAnalyser(template, _logFile, _analysisEngine);
 			try
 			{
 				analyser.Configuration = configuration;
 				lock (_syncRoot)
 				{
-					_analysers.Add(analyser);
+					_analysers.Add(analyser, template);
+					_template.Add(template);
 				}
 
 				return analyser;
@@ -122,8 +135,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var tmp = analyser as DataSourceAnalyser;
 			lock (_syncRoot)
 			{
-				if (_analysers.Remove(tmp))
+				AnalyserTemplate template;
+				if (tmp != null && _analysers.TryGetValue(tmp, out template))
+				{
+					_template.Remove(template);
+					_analysers.Remove(tmp);
+
 					tmp?.Dispose();
+				}
 			}
 		}
 
@@ -131,8 +150,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			lock (_syncRoot)
 			{
-				foreach (var analyser in _analysers)
+				foreach (var analyser in _analysers.Keys)
 					analyser.Dispose();
+				_analysers.Clear();
 
 				_logFile.Dispose();
 			}
@@ -173,7 +193,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			lock (_syncRoot)
 			{
 				var analysers = new List<DataSourceAnalyserSnapshot>(_analysers.Count);
-				foreach (var analyser in _analysers)
+				foreach (var analyser in _analysers.Keys)
 					analysers.Add(analyser.CreateSnapshot());
 				return new AnalyserGroupSnapshot(Progress, analysers);
 			}

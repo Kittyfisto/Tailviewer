@@ -9,13 +9,13 @@ namespace Tailviewer.Core.Analysis
 	public sealed class AnalyserResult
 		: ISerializableType
 	{
-		private LogAnalyserId _analyserId;
+		private AnalyserId _analyserId;
 		private ILogAnalysisResult _result;
 
 		/// <summary>
 		///     The id of the analyser that produced the result.
 		/// </summary>
-		public LogAnalyserId AnalyserId => _analyserId;
+		public AnalyserId AnalyserId => _analyserId;
 
 		/// <summary>
 		///     The result of the analyser.

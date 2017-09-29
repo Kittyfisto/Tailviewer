@@ -79,7 +79,7 @@
     <Compile Include="ISerializableType.cs" />
     <Compile Include="ITypeFactory.cs" />
     <Compile Include="IWriter.cs" />
-    <Compile Include="LogAnalyserId.cs" />
+    <Compile Include="AnalyserId.cs" />
     <Compile Include="LogEntryIndex.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

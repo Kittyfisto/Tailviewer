@@ -6,12 +6,12 @@ using Tailviewer.Core.Analysis;
 namespace Tailviewer.Test.Settings.Analysis
 {
 	[TestFixture]
-	public sealed class AnalysisPageTemplateTest
+	public sealed class PageTemplateTest
 	{
 		[Test]
 		public void TestClone1()
 		{
-			var template = new AnalysisPageTemplate();
+			var template = new PageTemplate();
 			var clone = template.Clone();
 			clone.Should().NotBeNull();
 			clone.Should().NotBeSameAs(template);
@@ -22,7 +22,7 @@ namespace Tailviewer.Test.Settings.Analysis
 		[Test]
 		public void TestClone2()
 		{
-			var template = new AnalysisPageTemplate();
+			var template = new PageTemplate();
 			template.Layout = new HorizontalWidgetLayoutTemplate();
 
 			var clone = template.Clone();
@@ -37,7 +37,7 @@ namespace Tailviewer.Test.Settings.Analysis
 		[Test]
 		public void TestClone3()
 		{
-			var template = new AnalysisPageTemplate();
+			var template = new PageTemplate();
 			var widget = new WidgetTemplate();
 			template.Add(widget);
 

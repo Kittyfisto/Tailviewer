@@ -19,25 +19,28 @@ namespace Tailviewer.Core.Analysis
 		: IAnalysisTemplate
 	{
 		private readonly List<AnalyserTemplate> _analysers;
-		private readonly List<AnalysisPageTemplate> _pages;
+		private readonly List<PageTemplate> _pages;
 
 		/// <summary>
 		///     Initializes this template.
 		/// </summary>
 		public AnalysisTemplate()
 		{
-			_pages = new List<AnalysisPageTemplate>();
+			_pages = new List<PageTemplate>();
 			_analysers = new List<AnalyserTemplate>();
 		}
 
-		private AnalysisTemplate(IEnumerable<AnalysisPageTemplate> pages)
+		private AnalysisTemplate(IEnumerable<PageTemplate> pages)
 		{
-			_pages = new List<AnalysisPageTemplate>(pages);
+			_pages = new List<PageTemplate>(pages);
 			_analysers = new List<AnalyserTemplate>();
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<IAnalysisPageTemplate> Pages => _pages;
+		public IEnumerable<IPageTemplate> Pages => _pages;
+
+		/// <inheritdoc />
+		public IEnumerable<IAnalyserTemplate> Analysers => _analysers;
 
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
@@ -59,12 +62,39 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
+		///     Adds the given analyser to this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Add(AnalyserTemplate template)
+		{
+			_analysers.Add(template);
+		}
+
+		/// <summary>
+		///     Removes the given analyser from this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Remove(AnalyserTemplate template)
+		{
+			_analysers.Remove(template);
+		}
+
+		/// <summary>
 		///     Adds the given page to this template.
 		/// </summary>
 		/// <param name="template"></param>
-		public void Add(AnalysisPageTemplate template)
+		public void Add(PageTemplate template)
 		{
 			_pages.Add(template);
+		}
+
+		/// <summary>
+		///     Removes the given page from this template.
+		/// </summary>
+		/// <param name="template"></param>
+		public void Remove(PageTemplate template)
+		{
+			_pages.Remove(template);
 		}
 
 		/// <summary>

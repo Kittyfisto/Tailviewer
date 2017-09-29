@@ -28,13 +28,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _name;
 		private double _progress;
 
-		public AnalysisViewModel(IAnalyserGroup analyser)
+		public AnalysisViewModel(AnalysisTemplate template, IAnalyserGroup analyser)
 		{
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
 			if (analyser == null)
 				throw new ArgumentNullException(nameof(analyser));
 
 			_analyser = analyser;
-			_template = new AnalysisTemplate();
+			_template = template;
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
@@ -92,11 +94,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				if (value == _progress)
 					return;
 
-				if (double.IsNaN(value))
-				{
-					int N = 0;
-				}
-
 				_progress = value;
 				EmitPropertyChanged();
 			}
@@ -124,7 +121,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddPage()
 		{
-			var template = new AnalysisPageTemplate();
+			var template = new PageTemplate();
 			var page = new AnalysisPageViewModel(template, _analyser);
 			page.OnDelete += PageOnOnDelete;
 
@@ -145,6 +142,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void PageOnOnDelete(AnalysisPageViewModel analysisPageViewModel)
 		{
 			_pages.Remove(analysisPageViewModel);
+			_template.Remove(analysisPageViewModel.Template);
 			UpdateCanBeDeleted();
 		}
 

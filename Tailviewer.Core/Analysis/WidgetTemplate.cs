@@ -18,7 +18,7 @@ namespace Tailviewer.Core.Analysis
 	{
 		private WidgetId _id;
 		private string _title;
-		private LogAnalyserId _analyserId;
+		private AnalyserId _analyserId;
 		private IWidgetConfiguration _viewConfiguration;
 
 		/// <summary>
@@ -38,7 +38,7 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
-		///     The id if this widget.
+		///     The id of this widget.
 		/// </summary>
 		public WidgetId Id
 		{
@@ -47,9 +47,10 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
-		///     The id of the analyser instance.
+		///     The id of the analyser instance which is coupled
+		///     with this widget.
 		/// </summary>
-		public LogAnalyserId AnalyserId
+		public AnalyserId AnalyserId
 		{
 			get { return _analyserId; }
 			set { _analyserId = value; }

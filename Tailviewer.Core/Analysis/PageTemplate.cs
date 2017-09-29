@@ -10,8 +10,8 @@ namespace Tailviewer.Core.Analysis
 	///     The template for an entire page of an analysis:
 	///     Maintains the page's layout and all widgets placed on that page.
 	/// </summary>
-	public sealed class AnalysisPageTemplate
-		: IAnalysisPageTemplate
+	public sealed class PageTemplate
+		: IPageTemplate
 	{
 		private readonly List<IWidgetTemplate> _widgets;
 		private IWidgetLayoutTemplate _layout;
@@ -19,12 +19,12 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     Initializes this template.
 		/// </summary>
-		public AnalysisPageTemplate()
+		public PageTemplate()
 		{
 			_widgets = new List<IWidgetTemplate>();
 		}
 
-		private AnalysisPageTemplate(IEnumerable<IWidgetTemplate> widgets)
+		private PageTemplate(IEnumerable<IWidgetTemplate> widgets)
 		{
 			_widgets = new List<IWidgetTemplate>(widgets);
 		}
@@ -81,9 +81,9 @@ namespace Tailviewer.Core.Analysis
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public AnalysisPageTemplate Clone()
+		public PageTemplate Clone()
 		{
-			return new AnalysisPageTemplate(_widgets.Select(x => x?.Clone() as IWidgetTemplate))
+			return new PageTemplate(_widgets.Select(x => x?.Clone() as IWidgetTemplate))
 			{
 				Layout = _layout?.Clone() as IWidgetLayoutTemplate
 			};

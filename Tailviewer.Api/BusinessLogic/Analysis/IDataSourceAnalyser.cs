@@ -13,7 +13,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <summary>
 		///     A unique id which identifies this analyser.
 		/// </summary>
-		Guid Id { get; }
+		AnalyserId Id { get; }
 
 		/// <summary>
 		///     The current progress of the analysis.

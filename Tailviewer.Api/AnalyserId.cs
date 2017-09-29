@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer
 {
 	/// <summary>
-	///     A globally unique identifier for a log analyser instance.
+	///     A globally unique identifier for a <see cref="IDataSourceAnalyser"/> instance.
 	/// </summary>
-	public struct LogAnalyserId
-		: IEquatable<LogAnalyserId>
+	public struct AnalyserId
+		: IEquatable<AnalyserId>
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
 		/// </summary>
-		public static readonly LogAnalyserId Empty = new LogAnalyserId();
+		public static readonly AnalyserId Empty = new AnalyserId();
 
 		private readonly Guid _value;
 
@@ -20,7 +21,7 @@ namespace Tailviewer
 		///     Initializes this id.
 		/// </summary>
 		/// <param name="value"></param>
-		public LogAnalyserId(Guid value)
+		public AnalyserId(Guid value)
 		{
 			_value = value;
 		}
@@ -31,7 +32,7 @@ namespace Tailviewer
 		public Guid Value => _value;
 
 		/// <inheritdoc />
-		public bool Equals(LogAnalyserId other)
+		public bool Equals(AnalyserId other)
 		{
 			return Value.Equals(other.Value);
 		}
@@ -40,7 +41,7 @@ namespace Tailviewer
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is LogAnalyserId && Equals((LogAnalyserId) obj);
+			return obj is AnalyserId && Equals((AnalyserId) obj);
 		}
 
 		/// <inheritdoc />
@@ -55,7 +56,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(LogAnalyserId left, LogAnalyserId right)
+		public static bool operator ==(AnalyserId left, AnalyserId right)
 		{
 			return left.Equals(right);
 		}
@@ -66,7 +67,7 @@ namespace Tailviewer
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(LogAnalyserId left, LogAnalyserId right)
+		public static bool operator !=(AnalyserId left, AnalyserId right)
 		{
 			return !left.Equals(right);
 		}
@@ -82,9 +83,9 @@ namespace Tailviewer
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public static LogAnalyserId CreateNew()
+		public static AnalyserId CreateNew()
 		{
-			return new LogAnalyserId(Guid.NewGuid());
+			return new AnalyserId(Guid.NewGuid());
 		}
 	}
 }

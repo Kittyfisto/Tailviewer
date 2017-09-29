@@ -43,7 +43,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			lock (_syncRoot)
 			{
-				var analysis = CreatAnalysisFor(configuration.AnalyserId, logFile, configuration.Configuration, listener);
+				var analysis = CreatAnalysisFor(configuration.FactoryId, logFile, configuration.Configuration, listener);
 				_analyses.Add(analysis);
 				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
 				return analysis;

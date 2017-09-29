@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -56,8 +57,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CreateAnalysis()
 		{
-			var analyser = new AnalyserGroup(_taskScheduler, _analysisEngine, TimeSpan.FromMilliseconds(100));
-			var analysisViewModel = new AnalysisViewModel(analyser);
+			var template = new AnalysisTemplate();
+			var analyser = new AnalyserGroup(template,
+				_taskScheduler,
+				_analysisEngine,
+				TimeSpan.FromMilliseconds(100));
+			var analysisViewModel = new AnalysisViewModel(template, analyser);
 			analysisViewModel.OnRemove += AnalysisViewModelOnOnRemove;
 			_analysesSidePanel.Add(analysisViewModel);
 			Analysis = analysisViewModel;

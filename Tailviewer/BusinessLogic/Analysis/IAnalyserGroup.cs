@@ -54,10 +54,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		/// <summary>
 		/// </summary>
-		/// <param name="analyserId"></param>
+		/// <param name="factoryId"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration);
+		IDataSourceAnalyser Add(LogAnalyserFactoryId factoryId, ILogAnalyserConfiguration configuration);
 
 		/// <summary>
 		/// </summary>

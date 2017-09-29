@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 
 namespace Tailviewer.Test.Ui.Controls.Analyse
@@ -11,17 +12,19 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	public sealed class AnalysisViewModelTest
 	{
 		private Mock<IAnalyserGroup> _analyser;
+		private AnalysisTemplate _template;
 
 		[SetUp]
 		public void Setup()
 		{
+			_template = new AnalysisTemplate();
 			_analyser = new Mock<IAnalyserGroup>();
 		}
 
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisViewModel(_analyser.Object);
+			var model = new AnalysisViewModel(_template, _analyser.Object);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
@@ -31,7 +34,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage1()
 		{
-			var model = new AnalysisViewModel(_analyser.Object);
+			var model = new AnalysisViewModel(_template, _analyser.Object);
 			model.Pages.Should().HaveCount(1);
 			model.AddPageCommand.Execute(null);
 			model.Pages.Should().HaveCount(2);
@@ -42,7 +45,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage2()
 		{
-			var model = new AnalysisViewModel(_analyser.Object);
+			var model = new AnalysisViewModel(_template, _analyser.Object);
 			model.Template.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);
@@ -50,6 +53,19 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.Template.Pages.ElementAt(1).Should().BeSameAs(
 				model.Pages.ElementAt(1).Template
 			);
+		}
+
+		[Test]
+		public void TestRemovePage1()
+		{
+			var model = new AnalysisViewModel(_template, _analyser.Object);
+			model.Template.Pages.Should().HaveCount(1);
+
+			model.AddPageCommand.Execute(null);
+			model.Template.Pages.Should().HaveCount(2);
+			model.Pages.ElementAt(1).DeletePageCommand.Execute(null);
+
+			model.Template.Pages.Should().HaveCount(1);
 		}
 	}
 }

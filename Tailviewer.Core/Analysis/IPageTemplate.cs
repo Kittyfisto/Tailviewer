@@ -8,7 +8,7 @@ namespace Tailviewer.Core.Analysis
 	///     The template for an entire page of an analysis:
 	///     Maintains the page's layout and all widgets placed on that page.
 	/// </summary>
-	public interface IAnalysisPageTemplate
+	public interface IPageTemplate
 		: ISerializableType
 		, ICloneable
 	{

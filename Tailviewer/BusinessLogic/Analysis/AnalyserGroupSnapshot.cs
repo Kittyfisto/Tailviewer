@@ -53,7 +53,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			throw new InvalidOperationException("Removing log files from a snapshot is not allowed");
 		}
 
-		public IDataSourceAnalyser Add(LogAnalyserFactoryId analyserId, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Add(LogAnalyserFactoryId factoryId, ILogAnalyserConfiguration configuration)
 		{
 			throw new InvalidOperationException("Adding new analysers to a snapshot is not allowed");
 		}
