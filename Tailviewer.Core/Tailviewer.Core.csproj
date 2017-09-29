@@ -64,9 +64,11 @@
     <Compile Include="Analysis\AnalysisPageTemplate.cs" />
     <Compile Include="Analysis\AnalysisSnapshot.cs" />
     <Compile Include="Analysis\AnalysisTemplate.cs" />
+    <Compile Include="Analysis\FileDescriptor.cs" />
     <Compile Include="Analysis\HorizontalWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\IAnalysisPageTemplate.cs" />
     <Compile Include="Analysis\IAnalysisTemplate.cs" />
+    <Compile Include="Analysis\IDataSourceDescriptor.cs" />
     <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
     <Compile Include="Analysis\WidgetTemplate.cs" />
