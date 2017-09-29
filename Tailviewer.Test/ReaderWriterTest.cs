@@ -311,6 +311,22 @@ namespace Tailviewer.Test
 		}
 
 		[Test]
+		public void TestChild5()
+		{
+			_writer.WriteAttribute("Stuff", new SomeType { Value = "Important Stuff!" });
+			_writer.WriteAttribute("MyNumber", "0190 666666");
+			var reader = CloseAndRead();
+
+			var child = new SomeType();
+			reader.TryReadAttribute("Stuff", child).Should().BeTrue();
+			child.Value.Should().Be("Important Stuff!");
+
+			string number;
+			reader.TryReadAttribute("MyNumber", out number).Should().BeTrue();
+			number.Should().Be("0190 666666");
+		}
+
+		[Test]
 		public void TestChildren1()
 		{
 			_writer.WriteAttribute("Stuff", new ISerializableType[]

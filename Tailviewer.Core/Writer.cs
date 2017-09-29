@@ -58,20 +58,22 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public void WriteAttribute(string name, string value)
 		{
-			_writer.WriteAttributeString(name, value);
+			_writer.WriteStartElement(name);
+			_writer.WriteValue(value);
+			_writer.WriteEndElement();
 		}
 
 		/// <inheritdoc />
 		public void WriteAttribute(string name, Version value)
 		{
-			_writer.WriteAttributeString(name, value?.ToString() ?? string.Empty);
+			WriteAttribute(name, value?.ToString() ?? string.Empty);
 		}
 
 		/// <inheritdoc />
 		public void WriteAttribute(string name, DateTime value)
 		{
 			var tmp = value.ToString("o");
-			_writer.WriteAttributeString(name, tmp);
+			WriteAttribute(name, tmp);
 		}
 
 		/// <inheritdoc />

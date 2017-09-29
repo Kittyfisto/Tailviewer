@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
@@ -171,12 +172,10 @@ namespace Tailviewer.Core
 			: IReader
 		{
 			private readonly Dictionary<string, XmlElement> _childElements;
-			private readonly XmlElement _element;
 			private readonly ITypeFactory _typeFactory;
 
 			public ElementReader(XmlElement element, ITypeFactory typeFactory)
 			{
-				_element = element;
 				_typeFactory = typeFactory;
 
 				var childNodes = element.ChildNodes;
@@ -188,14 +187,14 @@ namespace Tailviewer.Core
 
 			public bool TryReadAttribute(string name, out string value)
 			{
-				var node = _element.GetAttributeNode(name);
-				if (node == null)
+				XmlElement element;
+				if (!_childElements.TryGetValue(name, out element))
 				{
 					value = null;
 					return false;
 				}
 
-				value = node.Value;
+				value = element.InnerText;
 				return true;
 			}
 
@@ -399,8 +398,8 @@ namespace Tailviewer.Core
 				if (!_childElements.TryGetValue(name, out element))
 					return false;
 
-				var child = element.FirstChild as XmlElement;
-				if (child == null || child.Name != "Value")
+				var child = element.ChildNodes.OfType<XmlElement>().FirstOrDefault(x => x.Name == "Value");
+				if (child == null)
 					return false;
 
 				var reader = new ElementReader(child, _typeFactory);
@@ -441,12 +440,12 @@ namespace Tailviewer.Core
 				if (!_childElements.TryGetValue(name, out element))
 					return false;
 
-				var node = element.GetAttributeNode("Count");
+				var node = element.ChildNodes.OfType<XmlElement>().FirstOrDefault(x => x.Name == "Count");
 				if (node == null)
 					return false;
 
 				int count;
-				if (!int.TryParse(node.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out count))
+				if (!int.TryParse(node.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out count))
 					return false;
 
 				values.Clear();
@@ -456,20 +455,20 @@ namespace Tailviewer.Core
 
 			private bool TryReadChild<T>(XmlElement element, out T value) where T : class, ISerializableType
 			{
-				var node = element.GetAttributeNode("Type");
-				if (node == null) //< This is the case when a null value was persisted
+				var type = element.GetElementsByTagName("Type").OfType<XmlElement>().FirstOrDefault();
+				if (type == null) //< This is the case when a null value was persisted
 				{
 					value = null;
 					return true;
 				}
 
-				var typeName = node.Value;
+				var typeName = type.InnerText;
 				value = _typeFactory.TryCreateNew(typeName) as T;
 				if (value == null) //< Type doesn't exist or couldn't be created
 					return false;
 
-				var child = element.FirstChild as XmlElement;
-				if (child == null || child.Name != "Value")
+				var child = element.GetElementsByTagName("Value").OfType<XmlElement>().FirstOrDefault();
+				if (child == null)
 					return false;
 
 				var reader = new ElementReader(child, _typeFactory);

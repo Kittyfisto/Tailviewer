@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
@@ -20,13 +19,6 @@ namespace Tailviewer.Core.Analysis
 		private string _title;
 		private AnalyserId _analyserId;
 		private IWidgetConfiguration _viewConfiguration;
-
-		/// <summary>
-		///     Initializes this template.
-		/// </summary>
-		public WidgetTemplate()
-		{
-		}
 
 		/// <summary>
 		///     The title of the widget.
@@ -64,7 +56,7 @@ namespace Tailviewer.Core.Analysis
 			get { return _viewConfiguration; }
 			set { _viewConfiguration = value; }
 		}
-		
+
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
