@@ -27,6 +27,7 @@ _ReSharper*/
 *.vssscc
 $tf*/
 *.nupkg
+.vs/
 
 /packages
 /Live
