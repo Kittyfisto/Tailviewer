@@ -127,9 +127,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			var analyser = CreateAnalyser(plugin);
 			var viewConfiguration = CreateViewConfiguration(plugin);
-			var template = new WidgetTemplate(WidgetId.CreateNew(),
-				analyser.Configuration,
-				viewConfiguration);
+			var template = new WidgetTemplate
+			{
+				Id = WidgetId.CreateNew(),
+				AnalysisConfiguration = analyser.Configuration,
+				ViewConfiguration = viewConfiguration
+			};
 			var widget = plugin.CreateViewModel(template, analyser);
 
 			_analysersPerWidget.Add(widget, analyser);

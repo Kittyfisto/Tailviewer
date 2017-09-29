@@ -32,18 +32,6 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
-		///     Initializes this template.
-		/// </summary>
-		public WidgetTemplate(WidgetId id,
-			ILogAnalyserConfiguration logAnalyserConfiguration,
-			IWidgetConfiguration viewConfiguration)
-		{
-			_id = id;
-			_analysisConfiguration = logAnalyserConfiguration;
-			_viewConfiguration = viewConfiguration;
-		}
-
-		/// <summary>
 		///     The title of the widget.
 		/// </summary>
 		public string Title
@@ -53,14 +41,49 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
+		///     The id if this widget.
+		/// </summary>
+		public WidgetId Id
+		{
+			get { return _id; }
+			set { _id = value; }
+		}
+
+		/// <summary>
+		///     The id of the factory which produced the analysier.
+		/// </summary>
+		public LogAnalyserFactoryId AnalyserFactoryId
+		{
+			get { return _analyserFactoryId; }
+			set { _analyserFactoryId = value; }
+		}
+
+		/// <summary>
+		///     The id of the analyser instance.
+		/// </summary>
+		public LogAnalyserId AnalyserId
+		{
+			get { return _analyserId; }
+			set { _analyserId = value; }
+		}
+
+		/// <summary>
 		///     The configuration of the view (widget).
 		/// </summary>
-		public IWidgetConfiguration ViewConfiguration => _viewConfiguration;
+		public IWidgetConfiguration ViewConfiguration
+		{
+			get { return _viewConfiguration; }
+			set { _viewConfiguration = value; }
+		}
 
 		/// <summary>
 		///     The configuration of the analyser.
 		/// </summary>
-		public ILogAnalyserConfiguration AnalysisConfiguration => _analysisConfiguration;
+		public ILogAnalyserConfiguration AnalysisConfiguration
+		{
+			get { return _analysisConfiguration; }
+			set { _analysisConfiguration = value; }
+		}
 
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
@@ -98,11 +121,14 @@ namespace Tailviewer.Core.Analysis
 		[Pure]
 		public WidgetTemplate Clone()
 		{
-			return new WidgetTemplate(_id,
-				_analysisConfiguration?.Clone() as ILogAnalyserConfiguration,
-				_viewConfiguration?.Clone() as IWidgetConfiguration)
+			return new WidgetTemplate
 			{
-				Title = _title
+				Id = _id,
+				Title = _title,
+				AnalyserFactoryId = AnalyserFactoryId,
+				AnalyserId = AnalyserId,
+				AnalysisConfiguration = _analysisConfiguration?.Clone() as ILogAnalyserConfiguration,
+				ViewConfiguration = _viewConfiguration?.Clone() as IWidgetConfiguration
 			};
 		}
 	}

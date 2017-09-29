@@ -1,7 +1,6 @@
 using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core;
 
 namespace Tailviewer.Test
 {
