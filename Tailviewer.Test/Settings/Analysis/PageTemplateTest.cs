@@ -49,5 +49,46 @@ namespace Tailviewer.Test.Settings.Analysis
 			clone.Widgets.ElementAt(0).Should().NotBeNull();
 			clone.Widgets.ElementAt(0).Should().NotBeSameAs(widget);
 		}
+
+		[Test]
+		public void TestSerialize1()
+		{
+			var template = new PageTemplate();
+
+			var actualTemplate = template.Roundtrip();
+			actualTemplate.Should().NotBeNull();
+			actualTemplate.Layout.Should().BeNull();
+			actualTemplate.Widgets.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestSerialize2()
+		{
+			var template = new PageTemplate
+			{
+				Layout = new HorizontalWidgetLayoutTemplate()
+			};
+
+			var actualTemplate = template.Roundtrip(typeof(HorizontalWidgetLayoutTemplate));
+			actualTemplate.Should().NotBeNull();
+			actualTemplate.Layout.Should().NotBeNull();
+			actualTemplate.Layout.Should().BeOfType<HorizontalWidgetLayoutTemplate>();
+			actualTemplate.Layout.Should().NotBeSameAs(template.Layout);
+			actualTemplate.Widgets.Should().BeEmpty();
+		}
+
+		[Test]
+		[Description("Verifies that not being able to restore the layout is NOT a problem")]
+		public void TestSerialize3()
+		{
+			var template = new PageTemplate
+			{
+				Layout = new HorizontalWidgetLayoutTemplate()
+			};
+
+			var actualTemplate = template.Roundtrip();
+			actualTemplate.Should().NotBeNull();
+			actualTemplate.Layout.Should().BeNull();
+		}
 	}
 }

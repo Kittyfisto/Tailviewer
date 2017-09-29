@@ -15,6 +15,7 @@ namespace Tailviewer.Core.Analysis
 	{
 		private readonly List<IWidgetTemplate> _widgets;
 		private IWidgetLayoutTemplate _layout;
+		private string _title;
 
 		/// <summary>
 		///     Initializes this template.
@@ -42,6 +43,7 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
+			writer.WriteAttribute("Title", _title);
 			writer.WriteAttribute("Layout", _layout);
 			writer.WriteAttribute("Widgets", _widgets);
 		}
@@ -49,6 +51,7 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
+			reader.TryReadAttribute("Title", out _title);
 			reader.TryReadAttribute("Layout", out _layout);
 			reader.TryReadAttribute("Widgets", _widgets);
 		}

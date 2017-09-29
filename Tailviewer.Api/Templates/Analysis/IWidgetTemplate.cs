@@ -23,7 +23,7 @@ namespace Tailviewer.Templates.Analysis
 		/// <summary>
 		///     The configuration of the view (widget).
 		/// </summary>
-		IWidgetConfiguration ViewConfiguration { get; }
+		IWidgetConfiguration Configuration { get; }
 
 	}
 }

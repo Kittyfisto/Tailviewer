@@ -55,7 +55,7 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     The current configuration of the view.
 		/// </summary>
-		protected IWidgetConfiguration ViewConfiguration => _template.ViewConfiguration;
+		protected IWidgetConfiguration ViewConfiguration => _template.Configuration;
 
 		/// <inheritdoc />
 		public bool IsEditing

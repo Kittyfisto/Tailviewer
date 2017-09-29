@@ -18,7 +18,7 @@ namespace Tailviewer.Core.Analysis
 		private WidgetId _id;
 		private string _title;
 		private AnalyserId _analyserId;
-		private IWidgetConfiguration _viewConfiguration;
+		private IWidgetConfiguration _configuration;
 
 		/// <summary>
 		///     The title of the widget.
@@ -51,10 +51,10 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     The configuration of the view (widget).
 		/// </summary>
-		public IWidgetConfiguration ViewConfiguration
+		public IWidgetConfiguration Configuration
 		{
-			get { return _viewConfiguration; }
-			set { _viewConfiguration = value; }
+			get { return _configuration; }
+			set { _configuration = value; }
 		}
 
 		/// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Tailviewer.Core.Analysis
 		{
 			writer.WriteAttribute("Id", _id);
 			writer.WriteAttribute("Title", _title);
-			writer.WriteAttribute("ViewConfiguration", _viewConfiguration);
+			writer.WriteAttribute("Configuration", _configuration);
 			writer.WriteAttribute("AnalyserId", _analyserId);
 		}
 
@@ -71,7 +71,7 @@ namespace Tailviewer.Core.Analysis
 		{
 			reader.TryReadAttribute("Id", out _id);
 			reader.TryReadAttribute("Title", out _title);
-			reader.TryReadAttribute("ViewConfiguration", out _viewConfiguration);
+			reader.TryReadAttribute("Configuration", out _configuration);
 			reader.TryReadAttribute("AnalyserId", out _analyserId);
 		}
 
@@ -92,7 +92,7 @@ namespace Tailviewer.Core.Analysis
 				Id = _id,
 				Title = _title,
 				AnalyserId = AnalyserId,
-				ViewConfiguration = _viewConfiguration?.Clone() as IWidgetConfiguration
+				Configuration = _configuration?.Clone() as IWidgetConfiguration
 			};
 		}
 	}

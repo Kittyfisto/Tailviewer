@@ -25,7 +25,7 @@ namespace Tailviewer.QuickInfo.Ui
 			IDataSourceAnalyser dataSourceAnalyser)
 			: base(template, dataSourceAnalyser)
 		{
-			_viewConfiguration = template.ViewConfiguration as QuickInfoWidgetConfiguration;
+			_viewConfiguration = template.Configuration as QuickInfoWidgetConfiguration;
 			_analyserConfiguration = AnalyserConfiguration as QuickInfoAnalyserConfiguration;
 
 			_quickInfosById = new Dictionary<Guid, QuickInfoViewModel>();

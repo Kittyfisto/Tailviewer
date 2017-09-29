@@ -394,6 +394,9 @@ namespace Tailviewer.Core
 
 			public bool TryReadAttribute<T>(string name, T value) where T : class, ISerializableType
 			{
+				if (value == null)
+					throw new ArgumentNullException(nameof(value), "You must construct the object beforehand if you use this overload. If you cannot do that, then you need to use the overload with value as an out parameter!");
+
 				XmlElement element;
 				if (!_childElements.TryGetValue(name, out element))
 					return false;

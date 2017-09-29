@@ -48,7 +48,7 @@ namespace Tailviewer.Core.Analysis
 		{
 			reader.TryReadAttribute("Id", out _id);
 			reader.TryReadAttribute("FactoryId", out _factoryId);
-			reader.TryReadAttribute("Configuration", _configuration);
+			reader.TryReadAttribute("Configuration", out _configuration);
 		}
 
 		/// <summary>

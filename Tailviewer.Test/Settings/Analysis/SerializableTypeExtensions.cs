@@ -8,7 +8,7 @@ namespace Tailviewer.Test.Settings.Analysis
 {
 	public static class SerializableTypeExtensions
 	{
-		public static T Roundtrip<T>(this T that) where T : class, ISerializableType
+		public static T Roundtrip<T>(this T that, params Type[] additionalTypes) where T : class, ISerializableType
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -18,10 +18,15 @@ namespace Tailviewer.Test.Settings.Analysis
 				}
 
 				stream.Position = 0;
-				var reader = new Reader(stream, new TypeFactory(new[]
+
+				var types = new Dictionary<string, Type>();
+				types.Add(typeof(T).FullName, typeof(T));
+				foreach (var additional in additionalTypes)
 				{
-					new KeyValuePair<string, Type>(typeof(T).FullName, typeof(T))
-				}));
+					types.Add(additional.FullName, additional);
+				}
+
+				var reader = new Reader(stream, new TypeFactory(types));
 
 				T actualValue;
 				reader.TryReadAttribute("Test", out actualValue).Should().BeTrue();
