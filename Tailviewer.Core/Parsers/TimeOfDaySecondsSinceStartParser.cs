@@ -77,7 +77,7 @@ namespace Tailviewer.Core.Parsers
 		private bool TryParseSecondsSinceStart(string content, int timeOfDayIndex, int length, out float secondsSinceStart)
 		{
 			var value = content.Substring(timeOfDayIndex, length).Trim();
-			if (!float.TryParse(value, NumberStyles.Float, CultureInfo.CurrentCulture, out secondsSinceStart))
+			if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out secondsSinceStart))
 				return false;
 
 			return true;

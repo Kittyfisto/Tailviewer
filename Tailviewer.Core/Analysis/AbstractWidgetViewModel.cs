@@ -21,6 +21,7 @@ namespace Tailviewer.Core.Analysis
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
 		private readonly IWidgetTemplate _template;
+		private readonly ILogAnalyserConfiguration _analyserConfiguration;
 		private bool _isAnalysisFinished;
 
 		private bool _isEditing;
@@ -36,6 +37,7 @@ namespace Tailviewer.Core.Analysis
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
+			_analyserConfiguration = dataSourceAnalyser.Configuration?.Clone() as ILogAnalyserConfiguration;
 			_isAnalysisFinished = false;
 			_template = template;
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
@@ -48,7 +50,7 @@ namespace Tailviewer.Core.Analysis
 		///     When <see cref="IsEditing" /> is set to false again, the current value of this property is then forwarded
 		///     to the <see cref="IDataSourceAnalyser" /> via <see cref="IDataSourceAnalyser.Configuration" />.
 		/// </summary>
-		protected ILogAnalyserConfiguration AnalyserConfiguration => _template.AnalysisConfiguration;
+		protected ILogAnalyserConfiguration AnalyserConfiguration => _analyserConfiguration;
 
 		/// <summary>
 		///     The current configuration of the view.

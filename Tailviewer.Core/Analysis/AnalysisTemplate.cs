@@ -18,6 +18,7 @@ namespace Tailviewer.Core.Analysis
 	public sealed class AnalysisTemplate
 		: IAnalysisTemplate
 	{
+		private readonly List<AnalyserTemplate> _analysers;
 		private readonly List<AnalysisPageTemplate> _pages;
 
 		/// <summary>
@@ -26,11 +27,13 @@ namespace Tailviewer.Core.Analysis
 		public AnalysisTemplate()
 		{
 			_pages = new List<AnalysisPageTemplate>();
+			_analysers = new List<AnalyserTemplate>();
 		}
 
 		private AnalysisTemplate(IEnumerable<AnalysisPageTemplate> pages)
 		{
 			_pages = new List<AnalysisPageTemplate>(pages);
+			_analysers = new List<AnalyserTemplate>();
 		}
 
 		/// <inheritdoc />
@@ -40,12 +43,14 @@ namespace Tailviewer.Core.Analysis
 		public void Serialize(IWriter writer)
 		{
 			writer.WriteAttribute("Pages", _pages);
+			writer.WriteAttribute("Analysers", _analysers);
 		}
 
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
 			reader.TryReadAttribute("Pages", _pages);
+			reader.TryReadAttribute("Analysers", _analysers);
 		}
 
 		object ICloneable.Clone()

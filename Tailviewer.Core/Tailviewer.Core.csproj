@@ -61,6 +61,7 @@
     <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
     <Compile Include="Analysis\ActiveAnalysis.cs" />
     <Compile Include="Analysis\AnalyserResult.cs" />
+    <Compile Include="Analysis\AnalyserTemplate.cs" />
     <Compile Include="Analysis\AnalysisPageTemplate.cs" />
     <Compile Include="Analysis\AnalysisSnapshot.cs" />
     <Compile Include="Analysis\AnalysisTemplate.cs" />

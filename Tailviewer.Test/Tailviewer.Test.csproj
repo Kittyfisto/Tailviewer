@@ -146,6 +146,7 @@
     <Compile Include="QuickFilterIdTest.cs" />
     <Compile Include="ReaderWriterTest.cs" />
     <Compile Include="Settings\Analysis\AnalyserResultTest.cs" />
+    <Compile Include="Settings\Analysis\AnalyserTemplateTest.cs" />
     <Compile Include="Settings\Analysis\AnalysisSnapshotTest.cs" />
     <Compile Include="Settings\Analysis\AnalysisTemplateTest.cs" />
     <Compile Include="Settings\Analysis\AnalysisPageTemplateTest.cs" />

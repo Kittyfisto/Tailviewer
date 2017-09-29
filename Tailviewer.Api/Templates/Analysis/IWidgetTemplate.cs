@@ -25,10 +25,5 @@ namespace Tailviewer.Templates.Analysis
 		/// </summary>
 		IWidgetConfiguration ViewConfiguration { get; }
 
-		/// <summary>
-		///     The configuration of the analyser.
-		/// </summary>
-		ILogAnalyserConfiguration AnalysisConfiguration { get; }
-
 	}
 }

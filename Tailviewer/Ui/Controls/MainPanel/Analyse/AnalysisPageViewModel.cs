@@ -125,15 +125,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void LayoutOnRequestAddWidget(IWidgetPlugin plugin)
 		{
-			var analyser = CreateAnalyser(plugin);
 			var viewConfiguration = CreateViewConfiguration(plugin);
-			var template = new WidgetTemplate
+			var widgetTemplate = new WidgetTemplate
 			{
 				Id = WidgetId.CreateNew(),
-				AnalysisConfiguration = analyser.Configuration,
 				ViewConfiguration = viewConfiguration
 			};
-			var widget = plugin.CreateViewModel(template, analyser);
+			var analyserTemplate = new AnalyserTemplate
+			{
+				Id = LogAnalyserId.CreateNew(),
+				FactoryId = plugin.AnalyserId,
+				Configuration = plugin.DefaultAnalyserConfiguration?.Clone() as ILogAnalyserConfiguration,
+			};
+
+			var analyser = CreateAnalyser(analyserTemplate);
+			var widget = plugin.CreateViewModel(widgetTemplate, analyser);
 
 			_analysersPerWidget.Add(widget, analyser);
 
@@ -153,23 +159,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private IDataSourceAnalyser CreateAnalyser(IWidgetPlugin plugin)
+		private IDataSourceAnalyser CreateAnalyser(AnalyserTemplate template)
 		{
+			var analyserType = template.FactoryId;
 			try
 			{
-				var analyserType = plugin.AnalyserId;
 				if (analyserType != LogAnalyserFactoryId.Empty)
 				{
-					var configuration = plugin.DefaultAnalyserConfiguration;
-					return _analyser.Add(analyserType, configuration);
+					return _analyser.Add(analyserType, template.Configuration);
 				}
 
-				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", plugin);
+				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", analyserType);
 				return new NoAnalyser();
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", plugin, e);
+				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", analyserType, e);
 				return new NoAnalyser();
 			}
 		}
