@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using FluentAssertions;
 using Tailviewer.Core;
 
-namespace Tailviewer.Test.Settings.Analysis
+namespace Tailviewer.Test
 {
 	public static class SerializableTypeExtensions
 	{
@@ -18,6 +19,10 @@ namespace Tailviewer.Test.Settings.Analysis
 				}
 
 				stream.Position = 0;
+				using (var tmp = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
+				{
+					Console.WriteLine(tmp.ReadToEnd());
+				}
 
 				var types = new Dictionary<string, Type>();
 				types.Add(typeof(T).FullName, typeof(T));
@@ -26,6 +31,7 @@ namespace Tailviewer.Test.Settings.Analysis
 					types.Add(additional.FullName, additional);
 				}
 
+				stream.Position = 0;
 				var reader = new Reader(stream, new TypeFactory(types));
 
 				T actualValue;

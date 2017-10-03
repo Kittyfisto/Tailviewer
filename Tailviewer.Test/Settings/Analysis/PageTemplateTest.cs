@@ -86,6 +86,8 @@ namespace Tailviewer.Test.Settings.Analysis
 				Layout = new HorizontalWidgetLayoutTemplate()
 			};
 
+			// We don't specify the layout type here, causing the factory to not be able to restore
+			// the layout upon deserialization
 			var actualTemplate = template.Roundtrip();
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Layout.Should().BeNull();
