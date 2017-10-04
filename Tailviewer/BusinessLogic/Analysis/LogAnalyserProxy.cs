@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     Encapsules an underlying <see cref="ILogAnalyser" />, forwards its result
 	///     and hides all of its (possible) failures.
 	/// </summary>
-	public sealed class DataSourceAnalysis
+	public sealed class LogAnalyserProxy
 		: IDataSourceAnalysisHandle
 		, IDisposable
 	{
@@ -30,7 +30,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private bool _isDisposed;
 		private Percentage _progress;
 
-		public DataSourceAnalysis(ITaskScheduler scheduler,
+		public LogAnalyserProxy(ITaskScheduler scheduler,
 			ILogFile logFile,
 			ILogAnalyserPlugin plugin,
 			ILogAnalyserConfiguration configuration,

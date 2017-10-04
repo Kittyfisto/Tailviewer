@@ -19,16 +19,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		: IAnalysisViewModel
 	{
 		private readonly AnalysisTemplate _template;
-		private readonly IAnalyserGroup _analyser;
+		private readonly IAnalysis _analyser;
 		private readonly DelegateCommand _addPageCommand;
 		private readonly DelegateCommand _removeCommand;
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
+		private readonly DelegateCommand2 _captureSnapshotCommand;
 		private AnalysisPageViewModel _selectedPage;
 
 		private string _name;
 		private double _progress;
 
-		public AnalysisViewModel(AnalysisTemplate template, IAnalyserGroup analyser)
+		public AnalysisViewModel(AnalysisTemplate template, IAnalysis analyser)
 		{
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
@@ -40,11 +41,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
+			_captureSnapshotCommand = new DelegateCommand2(CaptureSnapshot)
+			{
+				CanBeExecuted = false
+			};
 			_name = "Unsaved analysis";
 
 			AddPage();
 			_selectedPage = _pages.FirstOrDefault();
 		}
+
+		private void CaptureSnapshot()
+		{
+			// TODO
+		}
+
+		public ICommand CaptureSnapshotCommand => _captureSnapshotCommand;
 
 		public IAnalysisTemplate Template => _template;
 
@@ -55,7 +67,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public AnalysisId Id => _analyser.Id;
 
-		public IEnumerable<AnalysisPageViewModel> Pages => _pages;
+		public IEnumerable<IAnalysisPageViewModel> Pages => _pages;
 
 		public AnalysisPageViewModel SelectedPage
 		{

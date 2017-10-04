@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -13,7 +12,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		: INotifyPropertyChanged
 	{
 		AnalysisId Id { get; }
-		IEnumerable<AnalysisPageViewModel> Pages { get; }
+		IEnumerable<IAnalysisPageViewModel> Pages { get; }
 		string Name { get; set; }
 		ICommand AddPageCommand { get; }
 		double Progress { get; }

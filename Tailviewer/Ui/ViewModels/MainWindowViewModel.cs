@@ -72,14 +72,14 @@ namespace Tailviewer.Ui.ViewModels
 		                           IActionCenter actionCenter,
 		                           IAutoUpdater updater,
 		                           ITaskScheduler taskScheduler,
-		                           IAnalysisEngine analysisEngine,
+		                           ILogAnalyserEngine logAnalyserEngine,
 		                           IDispatcher dispatcher,
 		                           IEnumerable<IPluginDescription> plugins)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 			if (updater == null) throw new ArgumentNullException(nameof(updater));
-			if (analysisEngine == null) throw new ArgumentNullException(nameof(analysisEngine));
+			if (logAnalyserEngine == null) throw new ArgumentNullException(nameof(logAnalyserEngine));
 			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
 			_applicationSettings = settings;
@@ -88,7 +88,7 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, taskScheduler, analysisEngine);
+			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, taskScheduler, logAnalyserEngine);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,

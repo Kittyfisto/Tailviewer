@@ -49,12 +49,20 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.49, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.49\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.52, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.52\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -64,8 +72,8 @@
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Threading.Extensions, Version=1.0.14.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.0.14\lib\net45\System.Threading.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Extensions, Version=1.0.18.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.0.18\lib\net45\System.Threading.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -73,6 +81,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -93,16 +102,24 @@
     <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalyserGroupSnapshot.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshot.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshotHandle.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalysisConfiguration.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalysisEngine.cs" />
-    <Compile Include="BusinessLogic\Analysis\IAnalysisEngine.cs" />
-    <Compile Include="BusinessLogic\Analysis\IAnalyserGroup.cs" />
+    <Compile Include="BusinessLogic\Filesystem\Filesystem.cs" />
+    <Compile Include="BusinessLogic\Filesystem\IFilesystem.cs" />
+    <Compile Include="BusinessLogic\Filesystem\FileInfo2.cs" />
+    <Compile Include="BusinessLogic\Filesystem\DirectoryInfo2.cs" />
+    <Compile Include="BusinessLogic\Filesystem\IDirectoryInfo.cs" />
+    <Compile Include="BusinessLogic\Filesystem\IFileInfo.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\ILogAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\IAnalysis.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisListener.cs" />
     <Compile Include="BusinessLogic\Analysis\NoAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalyserGroup.cs" />
+    <Compile Include="BusinessLogic\Analysis\ActiveAnalysis.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
@@ -116,7 +133,7 @@
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalysis.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserProxy.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
@@ -188,11 +205,16 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\IItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateItemViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotItemViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
@@ -210,7 +232,7 @@
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysesSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Widget.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\IWidgetLayoutViewModel.cs" />
@@ -343,6 +365,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -379,11 +409,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\ActiveAnalysisDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisTemplateDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\ActiveAnalysisDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -419,7 +445,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysesDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

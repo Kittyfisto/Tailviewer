@@ -1,123 +1,133 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using System.Threading;
-using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
+using System.Threading.Tasks;
+using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Responsible for creating and maintaining and scheduling analyses of data sources.
+	///     Responsible for maintaining the list of active analyses, analysis snapshots and -templates.
 	/// </summary>
 	public sealed class AnalysisEngine
-		: IAnalysisEngine
-			, IDisposable
 	{
-		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-		private readonly List<IDataSourceAnalysisHandle> _analyses;
-		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin> _factoriesById;
-		private readonly ITaskScheduler _scheduler;
+		private readonly List<ActiveAnalysis> _activeAnalyses;
+		private readonly List<AnalysisSnapshotHandle> _analysisSnapshots;
+		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly object _syncRoot;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly ISerialTaskScheduler _ioScheduler;
 
-		public AnalysisEngine(ITaskScheduler scheduler)
+		public AnalysisEngine(ITaskScheduler taskScheduler,
+			ISerialTaskScheduler ioScheduler,
+			ILogAnalyserEngine logAnalyserEngine)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
+			if (taskScheduler == null)
+				throw new ArgumentNullException(nameof(taskScheduler));
+			if (ioScheduler == null)
+				throw new ArgumentNullException(nameof(ioScheduler));
+			if (logAnalyserEngine == null)
+				throw new ArgumentNullException(nameof(logAnalyserEngine));
 
-			_scheduler = scheduler;
-			_analyses = new List<IDataSourceAnalysisHandle>();
+			_taskScheduler = taskScheduler;
+			_ioScheduler = ioScheduler;
+			_logAnalyserEngine = logAnalyserEngine;
 			_syncRoot = new object();
-			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin>();
+
+			_activeAnalyses = new List<ActiveAnalysis>();
+			_analysisSnapshots = new List<AnalysisSnapshotHandle>();
+
+			_taskScheduler.StartPeriodic(TriggerSnapshotFolderScan, TimeSpan.FromSeconds(5));
 		}
 
-		public IDataSourceAnalysisHandle CreateAnalysis(ILogFile logFile, DataSourceAnalysisConfiguration configuration, IDataSourceAnalysisListener listener)
+		private void TriggerSnapshotFolderScan()
 		{
-			if (logFile == null)
-				throw new ArgumentNullException(nameof(logFile));
-			if (configuration == null)
-				throw new ArgumentNullException(nameof(configuration));
-			if (listener == null)
-				throw new ArgumentNullException(nameof(listener));
+			throw new NotImplementedException();
+		}
 
-			lock (_syncRoot)
+		public IEnumerable<IAnalysis> Active
+		{
+			get
 			{
-				var analysis = CreatAnalysisFor(configuration.FactoryId, logFile, configuration.Configuration, listener);
-				_analyses.Add(analysis);
-				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
-				return analysis;
+				lock (_syncRoot)
+				{
+					return _activeAnalyses.ToList();
+				}
 			}
 		}
 
-		public bool RemoveAnalysis(IDataSourceAnalysisHandle analysis)
+		public IEnumerable<AnalysisSnapshotHandle> Snapshots
 		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _analysisSnapshots.ToList();
+				}
+			}
+		}
+
+		public IAnalysis CreateNewAnalysis(AnalysisTemplate template)
+		{
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
+
+			var analyser = new ActiveAnalysis(template,
+				_taskScheduler,
+				_logAnalyserEngine,
+				TimeSpan.FromMilliseconds(value: 100));
+
 			lock (_syncRoot)
 			{
-				if (_analyses.Remove(analysis))
+				_activeAnalyses.Add(analyser);
+			}
+
+			return analyser;
+		}
+
+		public AnalysisSnapshotHandle CreateSnapshot(IAnalysis analysis)
+		{
+			var tmp = analysis as ActiveAnalysis;
+			if (tmp == null)
+				throw new ArgumentException("It makes no sense to create a snapshot from anything else but an active analysis",
+					nameof(analysis));
+
+			var snapshot = tmp.CreateSnapshot();
+			var handle = AnalysisSnapshotHandle.FromSnapshot(snapshot);
+
+			lock (_syncRoot)
+			{
+				_analysisSnapshots.Add(handle);
+			}
+
+			StoreSnapshotAsync();
+
+			return handle;
+		}
+
+		private void StoreSnapshotAsync()
+		{
+			// TODO: Serialize snapshot and store on disk...
+			throw new NotImplementedException();
+		}
+
+		public Task<IAnalysis> LoadSnapshot(AnalysisSnapshotHandle handle)
+		{
+			// Actually loads the snapshot from disk
+			throw new NotImplementedException();
+		}
+
+		public bool Remove(IAnalysis analysis)
+		{
+			var active = analysis as ActiveAnalysis;
+			if (active != null)
+				lock (_syncRoot)
 				{
-					var disposable = analysis as IDisposable;
-					disposable?.Dispose();
-					return true;
+					return _activeAnalyses.Remove(active);
 				}
 
-				return false;
-			}
-		}
-
-		public void Dispose()
-		{
-			lock (_syncRoot)
-			{
-				foreach (var analysis in _analyses)
-				{
-					var disposable = analysis as IDisposable;
-					disposable?.Dispose();
-				}
-				_analyses.Clear();
-			}
-		}
-
-		public void RegisterFactory(ILogAnalyserPlugin plugin)
-		{
-			if (plugin == null)
-				throw new ArgumentNullException(nameof(plugin));
-
-			lock (_syncRoot)
-			{
-				var id = plugin.Id;
-				if (_factoriesById.ContainsKey(id))
-					throw new ArgumentException(string.Format("There already exists a plugin of id '{0}'", id));
-
-				_factoriesById.Add(id, plugin);
-			}
-		}
-
-		private IDataSourceAnalysisHandle CreatAnalysisFor(LogAnalyserFactoryId id,
-			ILogFile logFile,
-			ILogAnalyserConfiguration configuration,
-			IDataSourceAnalysisListener listener)
-		{
-			IDataSourceAnalysisHandle analysis;
-			ILogAnalyserPlugin plugin;
-			if (_factoriesById.TryGetValue(id, out plugin))
-			{
-				analysis = new DataSourceAnalysis(_scheduler, logFile, plugin, configuration, listener);
-			}
-			else
-			{
-				Log.ErrorFormat("Unable to find plugin '{0}', analysis will be skipped", id);
-				analysis = new DummyAnalysis();
-			}
-
-			return analysis;
-		}
-
-		private sealed class DummyAnalysis
-			: IDataSourceAnalysisHandle
-		{
-			public void Start()
-			{}
+			return false;
 		}
 	}
 }

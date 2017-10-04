@@ -35,7 +35,7 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
-			_analysisEngine = new Mock<IAnalysisEngine>();
+			_analysisEngine = new Mock<ILogAnalyserEngine>();
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
 			                                      _quickFilters,
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
-		private Mock<IAnalysisEngine> _analysisEngine;
+		private Mock<ILogAnalyserEngine> _analysisEngine;
 
 		[Test]
 		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]

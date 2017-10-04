@@ -14,14 +14,14 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 	public sealed class AnalyserGroupTest
 	{
 		private ManualTaskScheduler _taskScheduler;
-		private Mock<IAnalysisEngine> _analysisEngine;
+		private Mock<ILogAnalyserEngine> _analysisEngine;
 		private AnalysisTemplate _template;
 
 		[SetUp]
 		public void Setup()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_analysisEngine = new Mock<IAnalysisEngine>();
+			_analysisEngine = new Mock<ILogAnalyserEngine>();
 			_analysisEngine.Setup(x => x.CreateAnalysis(It.IsAny<ILogFile>(),
 					It.IsAny<DataSourceAnalysisConfiguration>(),
 					It.IsAny<IDataSourceAnalysisListener>()))
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAdd1()
 		{
-			var group = new AnalyserGroup(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAddRemove1()
 		{
-			var group = new AnalyserGroup(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var analyser = group.Add(new LogAnalyserFactoryId("foobar"), null);
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestDispose()
 		{
-			var group = new AnalyserGroup(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			group.Dispose();
 
 			_taskScheduler.PeriodicTaskCount.Should()

@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
@@ -19,9 +20,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		: AbstractMainPanelViewModel
 	{
 		private readonly ITaskScheduler _taskScheduler;
-		private readonly IAnalysisEngine _analysisEngine;
+		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly ICommand _createAnalysisCommand;
+
 		private readonly AnalysesSidePanel _analysesSidePanel;
 		private readonly AnalysisDataSelectionSidePanel _dataSelectionSidePanel;
 		private readonly WidgetsSidePanel _widgetsSidePanel;
@@ -34,18 +36,18 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
 			IDataSources dataSources,
 			ITaskScheduler taskScheduler,
-			IAnalysisEngine analysisEngine)
+			ILogAnalyserEngine logAnalyserEngine)
 			: base(applicationSettings)
 		{
 			if (dataSources == null)
 				throw new ArgumentNullException(nameof(dataSources));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (analysisEngine == null)
-				throw new ArgumentNullException(nameof(analysisEngine));
+			if (logAnalyserEngine == null)
+				throw new ArgumentNullException(nameof(logAnalyserEngine));
 
 			_taskScheduler = taskScheduler;
-			_analysisEngine = analysisEngine;
+			_logAnalyserEngine = logAnalyserEngine;
 			_sidePanels = new ISidePanelViewModel[]
 			{
 				_analysesSidePanel = new AnalysesSidePanel(),
@@ -58,9 +60,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void CreateAnalysis()
 		{
 			var template = new AnalysisTemplate();
-			var analyser = new AnalyserGroup(template,
+			var analyser = new BusinessLogic.Analysis.ActiveAnalysis(template,
 				_taskScheduler,
-				_analysisEngine,
+				_logAnalyserEngine,
 				TimeSpan.FromMilliseconds(100));
 			var analysisViewModel = new AnalysisViewModel(template, analyser);
 			analysisViewModel.OnRemove += AnalysisViewModelOnOnRemove;

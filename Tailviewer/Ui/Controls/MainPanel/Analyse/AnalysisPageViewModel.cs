@@ -21,12 +21,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	///     The layout of a page can be changed through <see cref="PageLayout" />.
 	/// </summary>
 	public sealed class AnalysisPageViewModel
-		: INotifyPropertyChanged
+		: IAnalysisPageViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly PageTemplate _template;
-		private readonly IAnalyserGroup _analyser;
+		private readonly IAnalysis _analyser;
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<IWidgetViewModel> _widgets;
 		private readonly Dictionary<IWidgetViewModel, IDataSourceAnalyser> _analysersPerWidget;
@@ -36,7 +36,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
 
-		public AnalysisPageViewModel(PageTemplate template, IAnalyserGroup analyser)
+		public AnalysisPageViewModel(PageTemplate template, IAnalysis analyser)
 		{
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
@@ -53,9 +53,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			PageLayout = PageLayout.WrapHorizontal;
 		}
 
-		/// <summary>
-		///     The layout used to display widgets.
-		/// </summary>
 		public PageLayout PageLayout
 		{
 			get { return _pageLayout; }

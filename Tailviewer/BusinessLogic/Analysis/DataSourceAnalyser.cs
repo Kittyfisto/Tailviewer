@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		, IDisposable
 	{
 		private readonly AnalyserTemplate _template;
-		private readonly IAnalysisEngine _analysisEngine;
+		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly ILogFile _logFile;
 
 		private ILogAnalyserConfiguration _configuration;
@@ -23,18 +23,18 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public DataSourceAnalyser(AnalyserTemplate template,
 			ILogFile logFile,
-			IAnalysisEngine analysisEngine)
+			ILogAnalyserEngine logAnalyserEngine)
 		{
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
 			if (logFile == null)
 				throw new ArgumentNullException(nameof(logFile));
-			if (analysisEngine == null)
-				throw new ArgumentNullException(nameof(analysisEngine));
+			if (logAnalyserEngine == null)
+				throw new ArgumentNullException(nameof(logAnalyserEngine));
 
 			_template = template;
 			_logFile = logFile;
-			_analysisEngine = analysisEngine;
+			_logAnalyserEngine = logAnalyserEngine;
 		}
 
 		public AnalyserId Id => _template.Id;
@@ -83,7 +83,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public void Dispose()
 		{
-			_analysisEngine.RemoveAnalysis(_currentAnalysis);
+			_logAnalyserEngine.RemoveAnalysis(_currentAnalysis);
 		}
 
 		public DataSourceAnalyserSnapshot CreateSnapshot()
@@ -101,7 +101,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			if (_currentAnalysis != null)
 			{
-				_analysisEngine.RemoveAnalysis(_currentAnalysis);
+				_logAnalyserEngine.RemoveAnalysis(_currentAnalysis);
 				_currentAnalysis = null;
 			}
 
@@ -112,7 +112,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 					FactoryId = _template.FactoryId,
 					Configuration = _configuration
 				};
-				_currentAnalysis = _analysisEngine.CreateAnalysis(_logFile, configuration, this);
+				_currentAnalysis = _logAnalyserEngine.CreateAnalysis(_logFile, configuration, this);
 				// Now that we've assigned the current analysis, we can actually start it
 				// (otherwise there would be the race condition of being notified through the
 				// listener interface before we've assigned the new handle, effectively losing

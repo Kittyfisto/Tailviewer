@@ -14,14 +14,14 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	[TestFixture]
 	public sealed class AnalysisPageViewModelTest
 	{
-		private Mock<IAnalyserGroup> _analyser;
+		private Mock<IAnalysis> _analyser;
 		private PageTemplate _template;
 
 		[SetUp]
 		public void Setup()
 		{
 			_template = new PageTemplate();
-			_analyser = new Mock<IAnalyserGroup>();
+			_analyser = new Mock<IAnalysis>();
 		}
 
 		[Test]

@@ -34,7 +34,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
                 
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalyseMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysesDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/Analyses/AnalysesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisDataSelectionSidePanel.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/WidgetsDataTemplate.xaml" />
                 

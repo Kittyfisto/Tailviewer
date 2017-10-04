@@ -76,7 +76,7 @@ namespace Tailviewer
 				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-				using (var analysisEngine = new AnalysisEngine(taskScheduler))
+				using (var analysisEngine = new LogAnalyserEngine(taskScheduler))
 				{
 					analysisEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
 					analysisEngine.RegisterFactory(new QuickInfoAnalyserPlugin());

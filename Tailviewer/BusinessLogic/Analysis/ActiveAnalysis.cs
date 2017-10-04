@@ -8,13 +8,13 @@ using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
-	public sealed class AnalyserGroup
-		: IAnalyserGroup
+	public sealed class ActiveAnalysis
+		: IAnalysis
 			, IDisposable
 	{
 		private readonly AnalysisTemplate _template;
 		private readonly Dictionary<DataSourceAnalyser, AnalyserTemplate> _analysers;
-		private readonly IAnalysisEngine _analysisEngine;
+		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly LogFileProxy _logFile;
 		private readonly List<ILogFile> _logFiles;
 		private readonly TimeSpan _maximumWaitTime;
@@ -22,17 +22,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly AnalysisId _id;
 
-		public AnalyserGroup(AnalysisTemplate template,
+		public ActiveAnalysis(AnalysisTemplate template,
 			ITaskScheduler taskScheduler,
-			IAnalysisEngine analysisEngine,
+			ILogAnalyserEngine logAnalyserEngine,
 			TimeSpan maximumWaitTime)
 		{
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (analysisEngine == null)
-				throw new ArgumentNullException(nameof(analysisEngine));
+			if (logAnalyserEngine == null)
+				throw new ArgumentNullException(nameof(logAnalyserEngine));
 
 			_id = AnalysisId.CreateNew();
 			_template = template;
@@ -40,7 +40,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_maximumWaitTime = maximumWaitTime;
 			_logFiles = new List<ILogFile>();
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_analysisEngine = analysisEngine;
+			_logAnalyserEngine = logAnalyserEngine;
 			_analysers = new Dictionary<DataSourceAnalyser, AnalyserTemplate>();
 			_syncRoot = new object();
 		}
@@ -108,7 +108,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				Configuration = configuration
 			};
 
-			var analyser = new DataSourceAnalyser(template, _logFile, _analysisEngine);
+			var analyser = new DataSourceAnalyser(template, _logFile, _logAnalyserEngine);
 			try
 			{
 				analyser.Configuration = configuration;
@@ -188,14 +188,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     Creates a snapshot of this group's analysers.
 		/// </summary>
 		/// <returns></returns>
-		public AnalyserGroupSnapshot CreateSnapshot()
+		public AnalysisSnapshot CreateSnapshot()
 		{
 			lock (_syncRoot)
 			{
 				var analysers = new List<DataSourceAnalyserSnapshot>(_analysers.Count);
 				foreach (var analyser in _analysers.Keys)
 					analysers.Add(analyser.CreateSnapshot());
-				return new AnalyserGroupSnapshot(Progress, analysers);
+				return new AnalysisSnapshot(Progress, analysers);
 			}
 		}
 	}

@@ -8,7 +8,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     Responsible for holding one or more <see cref="IDataSourceAnalyser" />s
 	///     as well the list of <see cref="ILogFile" />s they shall analyse.
 	/// </summary>
-	public interface IAnalyserGroup
+	public interface IAnalysis
 	{
 		/// <summary>
 		///     A globally unique identifier for this group.

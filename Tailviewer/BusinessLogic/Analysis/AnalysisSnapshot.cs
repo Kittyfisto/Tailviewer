@@ -7,25 +7,27 @@ using Tailviewer.Core;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Represents a snapshot of a previous <see cref="IAnalyserGroup" />.
+	///     Represents a snapshot of a previous <see cref="IAnalysis" />.
 	///     The snapshot consists of the group's configuration as well as result.
 	/// </summary>
 	/// <remarks>
 	///     TODO: Snapshots should be serializable so they can be stored to disk.
 	/// </remarks>
-	public sealed class AnalyserGroupSnapshot
-		: IAnalyserGroup
+	public sealed class AnalysisSnapshot
+		: IAnalysis
 	{
 		private readonly AnalysisId _id;
 		private readonly DataSourceAnalyserSnapshot[] _analysers;
 		private readonly Percentage _progress;
+		private readonly DateTime _creationDate;
 
-		public AnalyserGroupSnapshot(Percentage progress, IEnumerable<DataSourceAnalyserSnapshot> analysers)
+		public AnalysisSnapshot(Percentage progress, IEnumerable<DataSourceAnalyserSnapshot> analysers)
 		{
 			if (analysers == null)
 				throw new ArgumentNullException(nameof(analysers));
 
 			_id = AnalysisId.CreateNew();
+			_creationDate = DateTime.Now;
 			_progress = progress;
 			_analysers = analysers.ToArray();
 		}
@@ -34,14 +36,13 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public IEnumerable<ILogFile> LogFiles => new ILogFile[0];
 
-		public Percentage Progress
-		{
-			get { return _progress; }
-		}
+		public Percentage Progress => _progress;
 
 		public bool IsFrozen => true;
 
 		public AnalysisId Id => _id;
+
+		public DateTime CreationDate => _creationDate;
 
 		public void Add(ILogFile logFile)
 		{

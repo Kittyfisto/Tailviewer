@@ -3,13 +3,14 @@
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Responsible for creating and executing <see cref="IDataSourceAnalysisHandle" />.
+	///     Responsible for creating and executing analyses on <see cref="ILogFile" />:
+	///     Each analysis produces a continuous stream of results which are forwarded to their <see cref="IDataSourceAnalysisListener" />.
 	/// </summary>
 	/// <remarks>
 	///     An analysis is executing for as long as the engine exists or until it is removed through
 	///     <see cref="RemoveAnalysis" />.
 	/// </remarks>
-	public interface IAnalysisEngine
+	public interface ILogAnalyserEngine
 	{
 		/// <summary>
 		///     Creates a new analysis for the given data source.

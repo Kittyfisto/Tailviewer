@@ -5,16 +5,17 @@ using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Ui.Controls.SidePanel;
 
-namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
+namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 {
 	/// <summary>
-	///     Represents the side panel of available and actually active analyses.
+	///     Represents the side panel of available and actually active analyses, snapshots and templates.
 	/// </summary>
 	public sealed class AnalysesSidePanel
 		: AbstractSidePanelViewModel
 	{
 		private readonly ObservableCollection<AnalysisViewModel> _active;
 		private readonly ObservableCollection<AnalysisTemplateViewModel> _available;
+		private readonly ObservableCollection<AnalysisSnapshotItemViewModel> _snapshots;
 		private bool _hasActiveAnalyses;
 		private bool _hasAvailableAnalyses;
 
@@ -22,6 +23,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 		{
 			_active = new ObservableCollection<AnalysisViewModel>();
 			_available = new ObservableCollection<AnalysisTemplateViewModel>();
+			_snapshots = new ObservableCollection<AnalysisSnapshotItemViewModel>();
+
 			UpdateTooltip();
 			PropertyChanged += OnPropertyChanged;
 		}
@@ -45,6 +48,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 
 		public IEnumerable<AnalysisViewModel> Active => _active;
 		public IEnumerable<AnalysisTemplateViewModel> Available => _available;
+		public IEnumerable<AnalysisSnapshotItemViewModel> Snapshots => _snapshots;
 
 		public override Geometry Icon => Icons.ChartGantt;
 

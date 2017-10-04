@@ -6,8 +6,10 @@
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageHeaderDataTemplate.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageContentDataTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageHeaderDataTemplate.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalysisPageContentDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
@@ -41,27 +43,49 @@
             </Grid>
 
             <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToCollapsedConverter}}">
-                
+
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
                     
+                    <controls:FlatButton ToolTip="Capture and save a snapshot of this analysis"
+                                         Command="{Binding Analysis.CaptureSnapshotCommand}"
+                                         Height="32"
+                                         Grid.Column="1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Capture Snapshot"
+                                       VerticalAlignment="Center"
+                                       Margin="4,4,4,4" />
+                            <Viewbox>
+                                <Canvas Width="24" Height="24">
+                                    <Path x:Name="PART_Icon" Data="{x:Static metrolib:Icons.Camera}"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:FlatButton}}, Mode=OneWay}" />
+                                </Canvas>
+                            </Viewbox>
+                        </StackPanel>
+                    </controls:FlatButton>
                 </Grid>
 
-                <metrolib:FlatProgressBar Value="{Binding Analysis.Progress, Mode=OneWay}"
+                <metrolib:FlatProgressBar Grid.Row="1"
+                                          Value="{Binding Analysis.Progress, Mode=OneWay}"
                                           Minimum="0"
                                           Maximum="1" />
 
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3">
                     <TabControl ItemsSource="{Binding Analysis.Pages}"
                                 SelectedItem="{Binding Analysis.SelectedPage}"
                                 ItemTemplate="{StaticResource AnalysisPageHeaderDataTemplate}"
                                 Foreground="#333333"
-                                ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}"/>
+                                ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}" />
 
                     <controls:AddButton Command="{Binding Analysis.AddPageCommand}"
                                         VerticalAlignment="Top"
@@ -72,7 +96,7 @@
                                         Height="28" />
                 </Grid>
             </Grid>
-            
+
         </Grid>
 
     </DataTemplate>
