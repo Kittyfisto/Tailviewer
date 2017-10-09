@@ -21,6 +21,15 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
+		///     Initializes this snapshot.
+		/// </summary>
+		public AnalysisSnapshot(AnalysisTemplate template, IEnumerable<AnalyserResult> results)
+		{
+			Template = template;
+			_results = new List<AnalyserResult>(results);
+		}
+
+		/// <summary>
 		///     The template used to create the analysis, from which this snapshot was created.
 		/// </summary>
 		public AnalysisTemplate Template { get; }

@@ -144,7 +144,7 @@ namespace Tailviewer.Archiver.Test
 
 		private string CreatePlugin(string id, Version version)
 		{
-			var fileName = string.Format("{0}.{1}.dll", id, version);
+			var fileName = Path.Combine(_pluginFolder, string.Format("{0}.{1}.dll", id, version));
 			using (var packer = PluginPacker.Create(fileName))
 			{
 				var builder = new PluginBuilder(id, "dawawdwdaaw") { PluginVersion = version };

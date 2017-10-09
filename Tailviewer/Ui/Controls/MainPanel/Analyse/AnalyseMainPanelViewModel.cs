@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Windows.Input;
 using Metrolib;
@@ -27,6 +28,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly AnalysesSidePanel _analysesSidePanel;
 		private readonly AnalysisDataSelectionSidePanel _dataSelectionSidePanel;
 		private readonly WidgetsSidePanel _widgetsSidePanel;
+		private readonly IDispatcher _dispatcher;
+		private readonly IAnalysisStorage _analysisStorage;
+
 		private AnalysisViewModel _analysis;
 
 		private bool _isAnalysisSelected;
@@ -35,22 +39,33 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
 			IDataSources dataSources,
+			IDispatcher dispatcher,
 			ITaskScheduler taskScheduler,
-			ILogAnalyserEngine logAnalyserEngine)
+			IFilesystem filesystem,
+			ILogAnalyserEngine logAnalyserEngine,
+			IAnalysisStorage analysisStorage)
 			: base(applicationSettings)
 		{
 			if (dataSources == null)
 				throw new ArgumentNullException(nameof(dataSources));
+			if (dispatcher == null)
+				throw new ArgumentNullException(nameof(dispatcher));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
+			if (filesystem == null)
+				throw new ArgumentNullException(nameof(filesystem));
 			if (logAnalyserEngine == null)
 				throw new ArgumentNullException(nameof(logAnalyserEngine));
+			if (analysisStorage == null)
+				throw new ArgumentNullException(nameof(analysisStorage));
 
+			_dispatcher = dispatcher;
 			_taskScheduler = taskScheduler;
 			_logAnalyserEngine = logAnalyserEngine;
+			_analysisStorage = analysisStorage;
 			_sidePanels = new ISidePanelViewModel[]
 			{
-				_analysesSidePanel = new AnalysesSidePanel(),
+				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, filesystem),
 				_dataSelectionSidePanel = new AnalysisDataSelectionSidePanel(applicationSettings, dataSources),
 				_widgetsSidePanel = new WidgetsSidePanel()
 			};
@@ -64,7 +79,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_taskScheduler,
 				_logAnalyserEngine,
 				TimeSpan.FromMilliseconds(100));
-			var analysisViewModel = new AnalysisViewModel(template, analyser);
+			var analysisViewModel = new AnalysisViewModel(_dispatcher, template, analyser, _analysisStorage);
 			analysisViewModel.OnRemove += AnalysisViewModelOnOnRemove;
 			_analysesSidePanel.Add(analysisViewModel);
 			Analysis = analysisViewModel;

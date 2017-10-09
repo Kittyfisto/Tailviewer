@@ -69,18 +69,22 @@ namespace Tailviewer
 
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
+			using (var serialTaskScheduler = new SerialTaskScheduler())
 			using (var scanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
 				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>();
+				var filesystem = new Filesystem(serialTaskScheduler);
 
 				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-				using (var analysisEngine = new LogAnalyserEngine(taskScheduler))
+				using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler))
+				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine))
+				//using (var analyses = new Analyses(taskScheduler, filesystem, logAnalyserEngine))
 				{
-					analysisEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
-					analysisEngine.RegisterFactory(new QuickInfoAnalyserPlugin());
-					analysisEngine.RegisterFactory(new EventsLogAnalyserPlugin());
+					logAnalyserEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
+					logAnalyserEngine.RegisterFactory(new QuickInfoAnalyserPlugin());
+					logAnalyserEngine.RegisterFactory(new EventsLogAnalyserPlugin());
 
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)
@@ -124,8 +128,10 @@ namespace Tailviewer
 							actionCenter,
 							updater,
 							taskScheduler,
-							analysisEngine,
+							logAnalyserEngine,
+							analysisStorage,
 							uiDispatcher,
+							filesystem,
 							scanner.Plugins)
 					};
 

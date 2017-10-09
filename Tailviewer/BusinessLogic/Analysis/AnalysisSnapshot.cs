@@ -15,11 +15,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 	/// </remarks>
 	public sealed class AnalysisSnapshot
 		: IAnalysis
+		, ISerializableType
 	{
 		private readonly AnalysisId _id;
 		private readonly DataSourceAnalyserSnapshot[] _analysers;
 		private readonly Percentage _progress;
 		private readonly DateTime _creationDate;
+
+		public AnalysisSnapshot()
+		{ }
 
 		public AnalysisSnapshot(Percentage progress, IEnumerable<DataSourceAnalyserSnapshot> analysers)
 		{
@@ -62,6 +66,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public void Remove(IDataSourceAnalyser analyser)
 		{
 			throw new InvalidOperationException("Removing analysers from a snapshot is not allowed");
+		}
+
+		public void Serialize(IWriter writer)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

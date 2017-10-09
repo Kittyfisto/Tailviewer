@@ -1,11 +1,12 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     Represents a complete snapshot of an analysis without having the entire snapshot loaded into memory.
-	///     Must be used in conjunction with <see cref="AnalysisEngine" /> in order to actually retrieve the snapshot.
+	///     Must be used in conjunction with <see cref="AnalysisStorage" /> in order to actually retrieve the snapshot.
 	/// </summary>
 	public sealed class AnalysisSnapshotHandle
 	{
@@ -23,6 +24,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public AnalysisId Id => _id;
 		public string Name => _name;
 		public DateTime CreationDate => _creationDate;
+
+		public static AnalysisSnapshotHandle FromFile(Stream stream)
+		{
+			throw new NotImplementedException();
+		}
 
 		[Pure]
 		public static AnalysisSnapshotHandle FromSnapshot(AnalysisSnapshot snapshot)

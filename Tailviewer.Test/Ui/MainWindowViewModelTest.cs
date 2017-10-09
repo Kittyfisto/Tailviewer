@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -36,6 +37,10 @@ namespace Tailviewer.Test.Ui
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
 			_analysisEngine = new Mock<ILogAnalyserEngine>();
+			_analysisStorage = new Mock<IAnalysisStorage>();
+			_filesystem = new InMemoryFilesystem();
+			_filesystem.AddRoot(@"C:\");
+
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
 			                                      _quickFilters,
@@ -43,7 +48,9 @@ namespace Tailviewer.Test.Ui
 			                                      _updater.Object,
 			                                      _scheduler,
 			                                      _analysisEngine.Object,
+												  _analysisStorage.Object,
 			                                      _dispatcher,
+			                                      _filesystem,
 			                                      Enumerable.Empty<IPluginDescription>());
 		}
 
@@ -63,6 +70,8 @@ namespace Tailviewer.Test.Ui
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
 		private Mock<ILogAnalyserEngine> _analysisEngine;
+		private InMemoryFilesystem _filesystem;
+		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[Test]
 		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]
@@ -78,7 +87,9 @@ namespace Tailviewer.Test.Ui
 				_updater.Object,
 				_scheduler,
 				_analysisEngine.Object,
+				_analysisStorage.Object,
 				_dispatcher,
+				_filesystem,
 				Enumerable.Empty<IPluginDescription>());
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));

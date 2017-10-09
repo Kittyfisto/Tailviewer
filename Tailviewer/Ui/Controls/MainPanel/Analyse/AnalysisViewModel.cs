@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
@@ -18,8 +19,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalysisViewModel
 		: IAnalysisViewModel
 	{
+		private readonly IDispatcher _dispatcher;
 		private readonly AnalysisTemplate _template;
 		private readonly IAnalysis _analyser;
+		private readonly IAnalysisStorage _analysisStorage;
 		private readonly DelegateCommand _addPageCommand;
 		private readonly DelegateCommand _removeCommand;
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
@@ -28,22 +31,32 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private string _name;
 		private double _progress;
+		private Task _saveSnapshotTask;
 
-		public AnalysisViewModel(AnalysisTemplate template, IAnalysis analyser)
+		public AnalysisViewModel(IDispatcher dispatcher,
+			AnalysisTemplate template,
+			IAnalysis analyser,
+			IAnalysisStorage analysisStorage)
 		{
+			if (dispatcher == null)
+				throw new ArgumentNullException(nameof(dispatcher));
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
 			if (analyser == null)
 				throw new ArgumentNullException(nameof(analyser));
+			if (analysisStorage == null)
+				throw new ArgumentNullException(nameof(analysisStorage));
 
+			_dispatcher = dispatcher;
 			_analyser = analyser;
+			_analysisStorage = analysisStorage;
 			_template = template;
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
 			_captureSnapshotCommand = new DelegateCommand2(CaptureSnapshot)
 			{
-				CanBeExecuted = false
+				CanBeExecuted = true
 			};
 			_name = "Unsaved analysis";
 
@@ -53,7 +66,25 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CaptureSnapshot()
 		{
-			// TODO
+			_saveSnapshotTask = _analysisStorage.SaveSnapshot(_analyser, _template);
+			UpdateCanCaptureSnapshot(); //< DO NOT CHANGE CALL ORDER
+			_saveSnapshotTask.ContinueWith(OnSnapshotSaved);
+		}
+
+		private void OnSnapshotSaved(Task task)
+		{
+			_dispatcher.BeginInvoke(() => OnSnapshotSaved2(task));
+		}
+
+		private void OnSnapshotSaved2(Task task)
+		{
+			_saveSnapshotTask = null;
+			UpdateCanCaptureSnapshot();
+		}
+
+		private void UpdateCanCaptureSnapshot()
+		{
+			_captureSnapshotCommand.CanBeExecuted = _saveSnapshotTask == null;
 		}
 
 		public ICommand CaptureSnapshotCommand => _captureSnapshotCommand;

@@ -15,12 +15,20 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     The id of the analyser that produced the result.
 		/// </summary>
-		public AnalyserId AnalyserId => _analyserId;
+		public AnalyserId AnalyserId
+		{
+			get { return _analyserId; }
+			set { _analyserId = value; }
+		}
 
 		/// <summary>
 		///     The result of the analyser.
 		/// </summary>
-		public ILogAnalysisResult Result => _result;
+		public ILogAnalysisResult Result
+		{
+			get { return _result; }
+			set { _result = value; }
+		}
 
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)

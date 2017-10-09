@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
@@ -11,20 +12,24 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	[TestFixture]
 	public sealed class AnalysisViewModelTest
 	{
+		private ManualDispatcher _dispatcher;
 		private Mock<IAnalysis> _analyser;
 		private AnalysisTemplate _template;
+		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[SetUp]
 		public void Setup()
 		{
+			_dispatcher = new ManualDispatcher();
 			_template = new AnalysisTemplate();
 			_analyser = new Mock<IAnalysis>();
+			_analysisStorage = new Mock<IAnalysisStorage>();
 		}
 
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisViewModel(_template, _analyser.Object);
+			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
@@ -34,7 +39,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage1()
 		{
-			var model = new AnalysisViewModel(_template, _analyser.Object);
+			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
 			model.Pages.Should().HaveCount(1);
 			model.AddPageCommand.Execute(null);
 			model.Pages.Should().HaveCount(2);
@@ -45,7 +50,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage2()
 		{
-			var model = new AnalysisViewModel(_template, _analyser.Object);
+			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
 			model.Template.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);
@@ -58,7 +63,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRemovePage1()
 		{
-			var model = new AnalysisViewModel(_template, _analyser.Object);
+			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
 			model.Template.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);

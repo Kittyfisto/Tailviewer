@@ -281,7 +281,7 @@ namespace Tailviewer.Archiver.Plugins
 				case "CommandLine":
 				case "log4net":
 				case "Metrolib":
-				case "System.Threading.Extensions":
+				case "System.Extensions":
 				case "Tailviewer.Api":
 				case "PE":
 					return false;

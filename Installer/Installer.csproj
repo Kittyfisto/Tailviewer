@@ -177,9 +177,6 @@
     <EmbeddedResource Include="..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
-      <Link>InstallationFiles\System.Threading.Extensions.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.Api.dll">
       <Link>InstallationFiles\Tailviewer.Api.dll</Link>
     </EmbeddedResource>
@@ -214,6 +211,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.QuickInfo.dll">
       <Link>InstallationFiles\Tailviewer.QuickInfo.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\bin\System.Extensions.dll">
+      <Link>InstallationFiles\System.Extensions.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
