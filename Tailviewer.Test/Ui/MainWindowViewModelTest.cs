@@ -39,7 +39,8 @@ namespace Tailviewer.Test.Ui
 			_analysisEngine = new Mock<ILogAnalyserEngine>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 			_filesystem = new InMemoryFilesystem();
-			_filesystem.AddRoot(@"C:\");
+			var root = Path.GetPathRoot(Constants.SnapshotDirectory);
+			_filesystem.AddRoot(root);
 
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
