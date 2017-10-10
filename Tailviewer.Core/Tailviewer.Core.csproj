@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
+    <Compile Include="Analysis\ActiveAnalysisConfiguration.cs" />
     <Compile Include="Analysis\AnalyserResult.cs" />
     <Compile Include="Analysis\AnalyserTemplate.cs" />
     <Compile Include="Analysis\AnalysisViewTemplate.cs" />

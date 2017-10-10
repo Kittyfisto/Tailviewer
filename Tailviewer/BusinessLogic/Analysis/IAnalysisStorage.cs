@@ -7,16 +7,32 @@ namespace Tailviewer.BusinessLogic.Analysis
 	public interface IAnalysisStorage
 	{
 		/// <summary>
-		///     The current list of analyses.
+		/// 
 		/// </summary>
-		IEnumerable<IAnalysis> Analyses { get; }
+		IEnumerable<ActiveAnalysisConfiguration> AnalysisTemplates { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="analysis"></param>
+		/// <returns></returns>
+		bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis);
 
 		/// <summary>
 		///     Creates a new analysis from the given template.
 		///     Changes to the analysis will reflect back onto the given template instance.
 		/// </summary>
+		/// <paramref name="template"/>
+		/// <paramref name="viewTemplate"/>
 		/// <returns></returns>
-		IAnalysis CreateAnalysis(AnalysisTemplate template);
+		IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		void Remove(AnalysisId id);
 
 		/// <summary>
 		/// </summary>

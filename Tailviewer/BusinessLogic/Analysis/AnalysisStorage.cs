@@ -18,11 +18,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IAnalysisStorage
 		, IDisposable
 	{
-		private readonly List<ActiveAnalysis> _activeAnalyses;
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly SnapshotsWatchdog _snapshots;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly List<ActiveAnalysisConfiguration> _templates;
+		private readonly Dictionary<AnalysisId, ActiveAnalysis> _analyses;
 
 		public AnalysisStorage(ITaskScheduler taskScheduler,
 			IFilesystem filesystem,
@@ -40,8 +41,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_logAnalyserEngine = logAnalyserEngine;
 			_syncRoot = new object();
 
-			_activeAnalyses = new List<ActiveAnalysis>();
 			_snapshots = new SnapshotsWatchdog(taskScheduler, filesystem, typeFactory);
+			_templates = new List<ActiveAnalysisConfiguration>();
+			_analyses = new Dictionary<AnalysisId, ActiveAnalysis>();
 		}
 
 		public void Dispose()
@@ -49,42 +51,69 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_snapshots?.Dispose();
 		}
 
-		public IAnalysis CreateNewAnalysis(AnalysisTemplate template)
-		{
-			if (template == null)
-				throw new ArgumentNullException(nameof(template));
-
-			var analyser = new ActiveAnalysis(template,
-				_taskScheduler,
-				_logAnalyserEngine,
-				TimeSpan.FromMilliseconds(value: 100));
-
-			lock (_syncRoot)
-			{
-				_activeAnalyses.Add(analyser);
-			}
-
-			return analyser;
-		}
-
-		public IEnumerable<IAnalysis> Analyses
+		public IEnumerable<ActiveAnalysisConfiguration> AnalysisTemplates
 		{
 			get
 			{
 				lock (_syncRoot)
 				{
-					return _activeAnalyses.ToList();
+					return _templates.ToList();
 				}
 			}
 		}
 
-		public IAnalysis CreateAnalysis(AnalysisTemplate template)
+		public bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis)
+		{
+			lock (_syncRoot)
+			{
+				ActiveAnalysis tmp;
+				if (_analyses.TryGetValue(id, out tmp))
+				{
+					analysis = tmp;
+					return true;
+				}
+			}
+
+			analysis = null;
+			return false;
+		}
+
+		public IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate)
 		{
 			var analysis = new ActiveAnalysis(template,
 				_taskScheduler,
 				_logAnalyserEngine,
 				TimeSpan.FromMilliseconds(100));
+			try
+			{
+				lock (_syncRoot)
+				{
+					_templates.Add(new ActiveAnalysisConfiguration(analysis.Id, template, viewTemplate));
+					_analyses.Add(analysis.Id, analysis);
+				}
+
+			}
+			catch (Exception)
+			{
+				analysis.Dispose(); //< ActiveAnalysis actually spawns new analyses on the engine so we should cancel those in case an exception si thrown here...
+				throw;
+			}
+
 			return analysis;
+		}
+
+		public void Remove(AnalysisId id)
+		{
+			lock (_syncRoot)
+			{
+				_templates.RemoveAll(x => x.Id == id);
+				ActiveAnalysis analysis;
+				if (_analyses.TryGetValue(id, out analysis))
+				{
+					analysis.Dispose();
+					_analyses.Remove(id);
+				}
+			}
 		}
 
 		/// <inheritdoc />
@@ -116,18 +145,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}).ToList();
 			var snapshot = new Core.Analysis.AnalysisSnapshot(template, clone, results);
 			return _snapshots.Save(snapshot);
-		}
-
-		public bool Remove(IAnalysis analysis)
-		{
-			var active = analysis as ActiveAnalysis;
-			if (active != null)
-				lock (_syncRoot)
-				{
-					return _activeAnalyses.Remove(active);
-				}
-
-			return false;
 		}
 
 		private sealed class SnapshotsWatchdog

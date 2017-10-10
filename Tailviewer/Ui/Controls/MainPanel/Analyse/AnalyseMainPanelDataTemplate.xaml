@@ -57,6 +57,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     
+                    <!--
                     <controls:FlatButton ToolTip="Capture and save a snapshot of this analysis"
                                          Command="{Binding Analysis.CaptureSnapshotCommand}"
                                          Height="32"
@@ -73,6 +74,7 @@
                             </Viewbox>
                         </StackPanel>
                     </controls:FlatButton>
+                    -->
                 </Grid>
 
                 <metrolib:FlatProgressBar Grid.Row="1"

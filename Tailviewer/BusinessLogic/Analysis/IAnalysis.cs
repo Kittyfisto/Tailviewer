@@ -4,8 +4,10 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Responsible for holding one or more <see cref="IDataSourceAnalyser" />s
-	///     as well the list of <see cref="ILogFile" />s they shall analyse.
+	///     Represents an ongoing analysis (or a snapshot thereof).
+	///     An analysis produces results for various aspects of one or more log file(s)
+	///     where each aspect is analysed by a single analyser
+	///     (this interface groups all of them together).
 	/// </summary>
 	public interface IAnalysis
 	{

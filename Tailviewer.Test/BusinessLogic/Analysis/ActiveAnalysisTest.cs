@@ -11,7 +11,7 @@ using Tailviewer.Core.Analysis;
 namespace Tailviewer.Test.BusinessLogic.Analysis
 {
 	[TestFixture]
-	public sealed class AnalyserGroupTest
+	public sealed class ActiveAnalysisTest
 	{
 		private ManualTaskScheduler _taskScheduler;
 		private Mock<ILogAnalyserEngine> _analysisEngine;
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAdd1()
 		{
-			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;

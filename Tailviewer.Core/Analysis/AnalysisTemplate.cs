@@ -5,15 +5,12 @@ using System.Linq;
 namespace Tailviewer.Core.Analysis
 {
 	/// <summary>
-	///     Represents view- and analysis configuration of an analysis.
+	///     Represents analysis configuration of an analysis.
 	///     Can be used to start an active analysis.
 	/// </summary>
 	/// <remarks>
 	///     Contains:
-	///     - Pages and their layouts
-	///     - Widgets per page
-	///     - View configuration of every widget
-	///     - Analysis configuration of every widget
+	///     - Analysis configuration of every analyser
 	/// </remarks>
 	public sealed class AnalysisTemplate
 		: IAnalysisTemplate

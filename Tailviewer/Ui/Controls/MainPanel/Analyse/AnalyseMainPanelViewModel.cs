@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core.Analysis;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses;
@@ -27,7 +26,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly AnalysisDataSelectionSidePanel _dataSelectionSidePanel;
 		private readonly WidgetsSidePanel _widgetsSidePanel;
 		private readonly IDispatcher _dispatcher;
-		private readonly IAnalysisStorage _analysisStorage;
 
 		private AnalysisViewModel _analysis;
 
@@ -52,7 +50,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				throw new ArgumentNullException(nameof(analysisStorage));
 
 			_dispatcher = dispatcher;
-			_analysisStorage = analysisStorage;
 			_sidePanels = new ISidePanelViewModel[]
 			{
 				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, analysisStorage),
@@ -66,9 +63,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CreateAnalysis()
 		{
-			var template = new AnalysisTemplate();
-			var analysis = _analysisStorage.CreateAnalysis(template);
-			var viewModel = _analysesSidePanel.Add(analysis);
+			var viewModel = _analysesSidePanel.CreateNew();
 			viewModel.OnRemove += AnalysisViewModelOnOnRemove;
 			Analysis = viewModel;
 		}

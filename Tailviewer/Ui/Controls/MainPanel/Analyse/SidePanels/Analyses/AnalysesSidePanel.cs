@@ -25,13 +25,19 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		public static readonly string PanelId = "Analysis.Analyses";
 
-		private readonly ObservableCollection<AnalysisViewModel> _active;
 		private readonly ObservableCollection<AnalysisTemplateViewModel> _available;
 		private readonly IDispatcher _dispatcher;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly PathComparer _pathComparer;
 		private bool _hasActiveAnalyses;
 		private bool _hasAvailableAnalyses;
+
+		#region Active Analyses
+
+		private readonly Dictionary<AnalysisId, AnalysisViewModel> _activeById;
+		private readonly ObservableCollection<AnalysisViewModel> _active;
+
+		#endregion
 
 		#region Snapshots
 
@@ -57,7 +63,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			_analysisStorage = analysisStorage;
 			_pathComparer = new PathComparer();
 
+			_activeById = new Dictionary<AnalysisId, AnalysisViewModel>();
 			_active = new ObservableCollection<AnalysisViewModel>();
+
 			_available = new ObservableCollection<AnalysisTemplateViewModel>();
 
 			_availableSnapshotsByFileName = new Dictionary<string, AnalysisSnapshotItemViewModel>();
@@ -172,7 +180,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			{
 				case nameof(IsSelected):
 					UpdateTooltip();
-					UpdateFolderScan();
+					//UpdateFolderScan();
 					break;
 			}
 		}
@@ -197,26 +205,53 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		public override void Update()
 		{
-			HasActiveAnalyses = _active.Count > 0;
-			HasAvailableAnalyses = _available.Count > 0;
+			foreach (var config in _analysisStorage.AnalysisTemplates)
+			{
+				var id = config.Id;
+				AnalysisViewModel viewModel;
+				if (!_activeById.TryGetValue(id, out viewModel))
+				{
+					IAnalysis analysis;
+					if (_analysisStorage.TryGetAnalysisFor(id, out analysis))
+					{
+						viewModel = new AnalysisViewModel(_dispatcher, config.ViewTemplate, analysis, _analysisStorage);
+						_activeById.Add(id, viewModel);
+						_active.Add(viewModel);
+					}
+				}
+			}
+
+			UpdateFlags();
 			UpdateQuickInfo();
 		}
 
-		public AnalysisViewModel Add(IAnalysis analysis)
+		public AnalysisViewModel CreateNew()
 		{
 			var viewTemplate = new AnalysisViewTemplate();
-			var analysisViewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
+			var template = new AnalysisTemplate();
+			var analysis = _analysisStorage.CreateAnalysis(template, viewTemplate);
+			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
 
-			_active.Add(analysisViewModel);
-			analysisViewModel.OnRemove += AnalysisOnOnRemove;
+			_active.Add(viewModel);
+			_activeById.Add(viewModel.Id, viewModel);
+
+			viewModel.OnRemove += AnalysisOnOnRemove;
 			Update();
 
-			return analysisViewModel;
+			return viewModel;
 		}
 
 		private void AnalysisOnOnRemove(AnalysisViewModel analysis)
 		{
+			_analysisStorage.Remove(analysis.Id);
+			_activeById.Remove(analysis.Id);
 			_active.Remove(analysis);
+		}
+
+		private void UpdateFlags()
+		{
+			HasActiveAnalyses = _active.Count > 0;
+			HasAvailableAnalyses = _available.Count > 0;
 		}
 
 		private void UpdateQuickInfo()

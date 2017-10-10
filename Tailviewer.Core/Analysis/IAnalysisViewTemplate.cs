@@ -14,7 +14,7 @@ namespace Tailviewer.Core.Analysis
 	/// </remarks>
 	public interface IAnalysisViewTemplate
 		: ISerializableType
-		, ICloneable
+			, ICloneable
 	{
 		/// <summary>
 		///     The pages that are part of this template.

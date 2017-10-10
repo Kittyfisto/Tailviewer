@@ -31,6 +31,7 @@
                     Visibility="{Binding HasActiveAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
             </StackPanel>
 
+            <!--
             <StackPanel Grid.Row="1"
                         Margin="8,0,0,8">
                 <TextBlock Text="Snapshots"
@@ -42,7 +43,9 @@
                 <TextBlock Text="You haven't saved any snapshot yet"
                            Visibility="{Binding HasAvailableAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
             </StackPanel>
+            -->
 
+            <!--
             <StackPanel Grid.Row="2"
                         Margin="8,0,0,0">
                 <TextBlock Text="Stored analyses"
@@ -54,6 +57,7 @@
                 <TextBlock Text="You haven't created any analysis yet"
                            Visibility="{Binding HasAvailableAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
             </StackPanel>
+            -->
         </Grid>
     </DataTemplate>
     

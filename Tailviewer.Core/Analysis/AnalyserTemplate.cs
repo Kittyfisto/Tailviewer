@@ -4,14 +4,16 @@ using Tailviewer.BusinessLogic.Analysis;
 namespace Tailviewer.Core.Analysis
 {
 	/// <summary>
-	/// 
+	///     The template for a log analyser.
+	///     Defines the id of the analyser instance, the factory which created the analyser and
+	///     the analyser's configuration.
 	/// </summary>
 	public sealed class AnalyserTemplate
 		: IAnalyserTemplate
 	{
+		private ILogAnalyserConfiguration _configuration;
 		private LogAnalyserFactoryId _factoryId;
 		private AnalyserId _id;
-		private ILogAnalyserConfiguration _configuration;
 
 		/// <inheritdoc />
 		public LogAnalyserFactoryId FactoryId
@@ -51,6 +53,11 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("Configuration", out _configuration);
 		}
 
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+
 		/// <summary>
 		///     Returns a new clone of this template.
 		/// </summary>
@@ -61,13 +68,8 @@ namespace Tailviewer.Core.Analysis
 			{
 				Id = Id,
 				FactoryId = FactoryId,
-				Configuration = _configuration?.Clone() as ILogAnalyserConfiguration,
+				Configuration = _configuration?.Clone() as ILogAnalyserConfiguration
 			};
-		}
-
-		object ICloneable.Clone()
-		{
-			return Clone();
 		}
 	}
 }
