@@ -127,9 +127,6 @@
     <EmbeddedResource Include="..\bin\Metrolib.dll">
       <Link>Resources\Metrolib.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\bin\System.Threading.Extensions.dll">
-      <Link>Resources\System.Threading.Extensions.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.Api.dll">
       <Link>Resources\Tailviewer.Api.dll</Link>
     </EmbeddedResource>
@@ -146,6 +143,9 @@
     <Content Include="..\bin\ImageProcessor.dll">
       <Link>Resources\ImageProcessor.dll</Link>
     </Content>
+    <EmbeddedResource Include="..\bin\System.Extensions.dll">
+      <Link>Resources\System.Extensions.dll</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
