@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		{
 			_actionCenter = new Mock<IActionCenter>();
 			_dataSources = new Mock<IDataSources>();
-			_dataSources.Setup(x => x.GetEnumerator()).Returns(new List<IDataSource>().GetEnumerator());
+			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource>());
 
 			_quickFilters = new Mock<IQuickFilters>();
 			_quickFilters.Setup(x => x.Add()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
@@ -80,7 +80,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource2.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
 
-			_dataSources.Setup(x => x.GetEnumerator()).Returns(new List<IDataSource> {dataSource1.Object, dataSource2.Object}.GetEnumerator());
+			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {dataSource1.Object, dataSource2.Object});
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
 			model.RecentFiles.Should().HaveCount(2);
 

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Media;
 using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
@@ -21,10 +22,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		public static readonly string PanelId = "Analysis.Analyses";
+
 		private readonly ObservableCollection<AnalysisViewModel> _active;
 		private readonly ObservableCollection<AnalysisTemplateViewModel> _available;
 		private readonly IDispatcher _dispatcher;
-		private readonly IFilesystem _filesystem;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly PathComparer _pathComparer;
 		private bool _hasActiveAnalyses;
@@ -32,27 +34,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		#region Snapshots
 
-		private readonly IDirectoryInfoAsync _snapshotsDirectory;
 		private IPeriodicTask _snapshotScanTask;
 		private readonly Dictionary<string, AnalysisSnapshotItemViewModel> _availableSnapshotsByFileName;
 		private readonly ObservableCollection<AnalysisSnapshotItemViewModel> _availableSnapshots;
+		private readonly IAnalysisStorage _analysisStorage;
 		private bool _loggedIoException;
 
 		#endregion
 
-		public AnalysesSidePanel(IDispatcher dispatcher, ITaskScheduler taskScheduler, IFilesystem filesystem)
+		public AnalysesSidePanel(IDispatcher dispatcher, ITaskScheduler taskScheduler, IAnalysisStorage analysisStorage)
 		{
 			if (dispatcher == null)
 				throw new ArgumentNullException(nameof(dispatcher));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (filesystem == null)
-				throw new ArgumentNullException(nameof(filesystem));
+			if (analysisStorage == null)
+				throw new ArgumentNullException(nameof(analysisStorage));
 
 			_dispatcher = dispatcher;
 			_taskScheduler = taskScheduler;
-			_filesystem = filesystem;
-			_snapshotsDirectory = _filesystem.GetDirectoryInfo(Constants.SnapshotDirectory);
+			_analysisStorage = analysisStorage;
 			_pathComparer = new PathComparer();
 
 			_active = new ObservableCollection<AnalysisViewModel>();
@@ -71,7 +72,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		public override Geometry Icon => Icons.ChartGantt;
 
-		public override string Id => "Analysis";
+		public override string Id => PanelId;
 
 		public bool HasActiveAnalyses
 		{
@@ -105,7 +106,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			try
 			{
 				// Blocking the timer task is on purpose so we don't perform more scans than we actually can
-				var files = _snapshotsDirectory.EnumerateFiles(searchPattern).AwaitResult().ToList();
+				var files = _analysisStorage.EnumerateSnapshots().AwaitResult().ToList();
 				_dispatcher.BeginInvoke(() => Synchronise(files));
 			}
 			catch (IOException e)
@@ -130,15 +131,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 		///     Called on the UI thread.
 		/// </summary>
 		/// <param name="files"></param>
-		private void Synchronise(IReadOnlyList<IFileInfoAsync> files)
+		private void Synchronise(IReadOnlyList<string> files)
 		{
 			foreach (var fileInfo in files)
 			{
-				var fname = fileInfo.FullPath;
-				if (!_availableSnapshotsByFileName.ContainsKey(fname))
+				if (!_availableSnapshotsByFileName.ContainsKey(fileInfo))
 				{
-					var viewModel = new AnalysisSnapshotItemViewModel(fname);
-					_availableSnapshotsByFileName.Add(fname, viewModel);
+					var viewModel = new AnalysisSnapshotItemViewModel(fileInfo);
+					_availableSnapshotsByFileName.Add(fileInfo, viewModel);
 					_availableSnapshots.Add(viewModel);
 				}
 			}
@@ -149,7 +149,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 				{
 					var fname = pair.Key;
 					var viewModel = pair.Value;
-					if (!files.Any(x => _pathComparer.Equals(x.FullPath, fname)))
+					if (!files.Any(x => _pathComparer.Equals(x, fname)))
 					{
 						_availableSnapshotsByFileName.Remove(fname);
 						_availableSnapshots.Remove(viewModel);

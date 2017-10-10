@@ -13,6 +13,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 	{
 		private readonly List<WidgetFactoryViewModel> _widgets;
 
+		public static readonly string PanelId = "Analysis.Widgets";
+
 		public WidgetsSidePanel()
 		{
 			_widgets = new List<WidgetFactoryViewModel>
@@ -27,7 +29,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 
 		public override Geometry Icon => Icons.Widgets;
 
-		public override string Id => "Widgets";
+		public override string Id => PanelId;
 
 		public override void Update()
 		{

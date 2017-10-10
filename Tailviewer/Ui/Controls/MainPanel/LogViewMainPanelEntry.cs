@@ -10,6 +10,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		public string Id => "log";
 
+		public string ToolTip => "View one or more log files as is";
+
 		public Geometry Icon => Icons.ViewHeadline;
 	}
 }

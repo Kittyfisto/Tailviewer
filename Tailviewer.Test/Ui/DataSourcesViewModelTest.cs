@@ -307,15 +307,15 @@ namespace Tailviewer.Test.Ui
 
 			a.Parent.Should().BeNull();
 			a.DataSource.ParentId.Should().Be(DataSourceId.Empty);
-			_dataSources.Should().Contain(a.DataSource);
+			_dataSources.Sources.Should().Contain(a.DataSource);
 			_settings.DataSources.Should().Contain(a.DataSource.Settings);
 
 			b.Parent.Should().BeNull();
 			b.DataSource.ParentId.Should().Be(DataSourceId.Empty);
-			_dataSources.Should().Contain(b.DataSource);
+			_dataSources.Sources.Should().Contain(b.DataSource);
 			_settings.DataSources.Should().Contain(b.DataSource.Settings);
 
-			_dataSources.Should().NotContain(merged.DataSource);
+			_dataSources.Sources.Should().NotContain(merged.DataSource);
 			_settings.DataSources.Should().NotContain(merged.DataSource.Settings);
 		}
 
@@ -568,7 +568,7 @@ namespace Tailviewer.Test.Ui
 			viewModel.RemoveCommand.Execute(null);
 
 			_model.Observable.Should().BeEmpty();
-			_dataSources.Should().BeEmpty();
+			_dataSources.Sources.Should().BeEmpty();
 			_settings.DataSources.Should().BeEmpty();
 		}
 
@@ -598,7 +598,7 @@ namespace Tailviewer.Test.Ui
 			merged.ChildCount.Should().Be(2);
 			merged.Observable.Should().NotContain(viewModel1);
 			_model.Observable.Should().Equal(new object[] {merged});
-			_dataSources.Should().Equal(new object[] {viewModel2.DataSource, viewModel3.DataSource, merged.DataSource});
+			_dataSources.Sources.Should().Equal(new object[] {viewModel2.DataSource, viewModel3.DataSource, merged.DataSource});
 			_settings.DataSources.Should().Equal(new object[] {source2, source3, group});
 		}
 

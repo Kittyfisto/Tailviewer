@@ -28,6 +28,12 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersSidePanelViewModel _quickFilters;
 
+		private LogViewerViewModel _currentDataSourceLogView;
+		private readonly IActionCenter _actionCenter;
+		private readonly IApplicationSettings _applicationSettings;
+		private string _windowTitle;
+		private string _windowTitleSuffix;
+
 		public LogViewMainPanelViewModel(IActionCenter actionCenter,
 			IDataSources dataSources,
 			IQuickFilters quickFilters,
@@ -218,12 +224,6 @@ namespace Tailviewer.Ui.Controls.MainPanel
 				CurrentDataSourceLogView = null;
 			}
 		}
-
-		private LogViewerViewModel _currentDataSourceLogView;
-		private readonly IActionCenter _actionCenter;
-		private readonly IApplicationSettings _applicationSettings;
-		private string _windowTitle;
-		private string _windowTitleSuffix;
 
 		public LogViewerViewModel CurrentDataSourceLogView
 		{

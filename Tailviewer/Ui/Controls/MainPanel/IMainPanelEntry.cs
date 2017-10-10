@@ -6,6 +6,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 	{
 		string Title { get; }
 		string Id { get; }
+		string ToolTip { get; }
 		Geometry Icon { get; }
 	}
 }

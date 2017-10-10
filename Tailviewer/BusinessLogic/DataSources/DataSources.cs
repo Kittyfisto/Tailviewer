@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Threading;
 using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -130,17 +128,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public IEnumerator<IDataSource> GetEnumerator()
+		public IReadOnlyList<IDataSource> Sources
 		{
-			lock (_syncRoot)
+			get
 			{
-				return _dataSources.ToList().GetEnumerator();
+				lock (_syncRoot)
+				{
+					return _dataSources.ToList();
+				}
 			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 
 		private IDataSource AddDataSource(DataSource settings)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -76,7 +75,6 @@ namespace Tailviewer.Ui.ViewModels
 		                           ILogAnalyserEngine logAnalyserEngine,
 		                           IAnalysisStorage analysisStorage,
 		                           IDispatcher dispatcher,
-		                           IFilesystem filesystem,
 		                           IEnumerable<IPluginDescription> plugins)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
@@ -91,7 +89,7 @@ namespace Tailviewer.Ui.ViewModels
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, dispatcher, taskScheduler, filesystem, logAnalyserEngine, analysisStorage);
+			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, dispatcher, taskScheduler, logAnalyserEngine, analysisStorage);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
@@ -114,8 +112,8 @@ namespace Tailviewer.Ui.ViewModels
 			_rawEntry = new LogViewMainPanelEntry();
 			_topEntries = new IMainPanelEntry[]
 			{
-				_analyseEntry,
-				_rawEntry
+				_rawEntry,
+				_analyseEntry
 			};
 
 			_settingsEntry = new SettingsMainPanelEntry();

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Media;
 using Metrolib;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -12,6 +12,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 	public sealed class AnalysisDataSelectionSidePanel
 		: AbstractSidePanelViewModel
 	{
+		public static readonly string PanelId = "Analysis.DataSelection";
+
 		private readonly Dictionary<DataSourceId, AnalysisDataSourceViewModel> _dataSourcesById;
 		private readonly ObservableCollection<AnalysisDataSourceViewModel> _dataSourceViewModels;
 		private readonly IDataSources _dataSources;
@@ -46,14 +48,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 
 		public override Geometry Icon => Icons.Database;
 
-		public override string Id => "Analysis.DataSelection";
+		public override string Id => PanelId;
 
 		public IEnumerable<AnalysisDataSourceViewModel> DataSources => _dataSourceViewModels;
 
 		public override void Update()
 		{
 			// #1: Add new data sources and update them
-			foreach (var dataSource in _dataSources)
+			foreach (var dataSource in _dataSources.Sources ?? Enumerable.Empty<IDataSource>())
 			{
 				// For now we'll just display every single data source
 				// and completely skip merged data sources.

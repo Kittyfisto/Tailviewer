@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings))
 			{
 				dataSources.Count.Should().Be(1);
-				IDataSource dataSource = dataSources.First();
+				IDataSource dataSource = dataSources.Sources.First();
 				dataSource.FullFileName.Should().Be(settings[0].File);
 				dataSource.Id.Should().Be(settings[0].Id);
 			}

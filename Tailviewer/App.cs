@@ -131,7 +131,6 @@ namespace Tailviewer
 							logAnalyserEngine,
 							analysisStorage,
 							uiDispatcher,
-							filesystem,
 							scanner.Plugins)
 					};
 

@@ -10,6 +10,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public string Id => "analyse";
 
+		public string ToolTip => "Analayse log files and generate reports";
+
 		public Geometry Icon => Icons.ChartBar;
 	}
 }

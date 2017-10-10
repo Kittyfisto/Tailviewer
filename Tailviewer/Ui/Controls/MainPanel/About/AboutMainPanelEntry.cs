@@ -10,6 +10,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.About
 
 		public string Id => "about";
 
+		public string ToolTip => null;
+
 		public Geometry Icon => Icons.InformationOutline;
 	}
 }

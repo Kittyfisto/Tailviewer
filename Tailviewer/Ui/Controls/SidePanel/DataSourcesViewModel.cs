@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -36,7 +35,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
 			_addDataSourceCommand = new DelegateCommand(AddDataSource);
 			_dataSources = dataSources;
-			foreach (IDataSource dataSource in dataSources)
+			foreach (IDataSource dataSource in dataSources.Sources)
 			{
 				if (dataSource.ParentId == DataSourceId.Empty)
 				{
@@ -44,7 +43,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				}
 			}
 
-			foreach (IDataSource dataSource in dataSources)
+			foreach (IDataSource dataSource in dataSources.Sources)
 			{
 				DataSourceId parentId = dataSource.ParentId;
 				if (parentId != DataSourceId.Empty)

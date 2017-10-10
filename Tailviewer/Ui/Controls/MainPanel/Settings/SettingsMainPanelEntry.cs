@@ -10,6 +10,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 
 		public string Id => "settings";
 
+		public string ToolTip => "Configure tailviewer to your liking";
+
 		public Geometry Icon => Icons.Settings;
 	}
 }

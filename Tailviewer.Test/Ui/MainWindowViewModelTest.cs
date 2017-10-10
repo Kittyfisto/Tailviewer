@@ -38,9 +38,6 @@ namespace Tailviewer.Test.Ui
 			_updater = new Mock<IAutoUpdater>();
 			_analysisEngine = new Mock<ILogAnalyserEngine>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
-			_filesystem = new InMemoryFilesystem();
-			var root = Path.GetPathRoot(Constants.SnapshotDirectory);
-			_filesystem.AddRoot(root);
 
 			_mainWindow = new MainWindowViewModel(_settings,
 			                                      _dataSources,
@@ -51,7 +48,6 @@ namespace Tailviewer.Test.Ui
 			                                      _analysisEngine.Object,
 												  _analysisStorage.Object,
 			                                      _dispatcher,
-			                                      _filesystem,
 			                                      Enumerable.Empty<IPluginDescription>());
 		}
 
@@ -90,7 +86,6 @@ namespace Tailviewer.Test.Ui
 				_analysisEngine.Object,
 				_analysisStorage.Object,
 				_dispatcher,
-				_filesystem,
 				Enumerable.Empty<IPluginDescription>());
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
@@ -101,13 +96,13 @@ namespace Tailviewer.Test.Ui
 		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/75")]
 		public void TestShowLog()
 		{
-			_dataSources.Should().BeEmpty();
+			_dataSources.Sources.Should().BeEmpty();
 			_mainWindow.ShowLogCommand.Should().NotBeNull();
 			_mainWindow.ShowLogCommand.CanExecute(null).Should().BeTrue();
 			_mainWindow.ShowLogCommand.Execute(null);
 
-			_dataSources.Should().HaveCount(1);
-			var dataSource = _dataSources.First();
+			_dataSources.Sources.Should().HaveCount(1);
+			var dataSource = _dataSources.Sources.First();
 			dataSource.FullFileName.Should().Be(Constants.ApplicationLogFile);
 		}
 

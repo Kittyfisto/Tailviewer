@@ -10,6 +10,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 
 		public string Id => "plugins";
 
+		public string ToolTip => "View installed plugins";
+
 		public Geometry Icon => Icons.Puzzle;
 	}
 }

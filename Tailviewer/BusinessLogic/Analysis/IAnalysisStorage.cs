@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tailviewer.Core.Analysis;
 
@@ -5,6 +6,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 {
 	public interface IAnalysisStorage
 	{
+		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		Task<IReadOnlyList<string>> EnumerateSnapshots();
+
 		/// <summary>
 		///     Creates a new snapshot from the current state of the given analysis.
 		///     The snapshot will be persisted in the background, but can be accessed

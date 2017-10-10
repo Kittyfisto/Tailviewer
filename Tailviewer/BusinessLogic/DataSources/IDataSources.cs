@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Bookmarks;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
 	public interface IDataSources
-		: IEnumerable<IDataSource>
 	{
 		#region Bookmarks
 
@@ -29,6 +26,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		#endregion
 
 		#region Datasources
+
+		IReadOnlyList<IDataSource> Sources { get; }
 
 		/// <summary>
 		///     Tests if a data source with the given id exists.

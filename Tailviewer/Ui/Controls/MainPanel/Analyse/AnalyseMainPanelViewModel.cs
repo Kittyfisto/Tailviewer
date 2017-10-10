@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Input;
 using Metrolib;
@@ -41,7 +41,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			IDataSources dataSources,
 			IDispatcher dispatcher,
 			ITaskScheduler taskScheduler,
-			IFilesystem filesystem,
 			ILogAnalyserEngine logAnalyserEngine,
 			IAnalysisStorage analysisStorage)
 			: base(applicationSettings)
@@ -52,8 +51,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				throw new ArgumentNullException(nameof(dispatcher));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (filesystem == null)
-				throw new ArgumentNullException(nameof(filesystem));
 			if (logAnalyserEngine == null)
 				throw new ArgumentNullException(nameof(logAnalyserEngine));
 			if (analysisStorage == null)
@@ -65,11 +62,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_analysisStorage = analysisStorage;
 			_sidePanels = new ISidePanelViewModel[]
 			{
-				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, filesystem),
+				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, analysisStorage),
 				_dataSelectionSidePanel = new AnalysisDataSelectionSidePanel(applicationSettings, dataSources),
 				_widgetsSidePanel = new WidgetsSidePanel()
 			};
 			_createAnalysisCommand = new DelegateCommand(CreateAnalysis);
+
+			SelectedSidePanel = _sidePanels.FirstOrDefault(x => x.Id == applicationSettings.MainWindow?.SelectedSidePanel);
 		}
 
 		private void CreateAnalysis()

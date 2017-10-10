@@ -183,8 +183,10 @@
                                             <metrolib:FlatTextBlock Grid.Column="1"
                                                                     Margin="8,0,0,0"
                                                                     Text="{Binding Title}"
+                                                                    ToolTip="{Binding ToolTip}"
                                                                     VerticalAlignment="Center"
                                                                     TextTrimming="CharacterEllipsis"
+                                                                    Background="Transparent"
                                                                     Foreground="{StaticResource PrimaryForegroundBrush}" />
                                         </Grid>
                                     </DataTemplate>
@@ -220,8 +222,10 @@
                                             <metrolib:FlatTextBlock Grid.Column="1"
                                                                     Margin="8,0,0,0"
                                                                     Text="{Binding Title}"
+                                                                    ToolTip="{Binding ToolTip}"
                                                                     VerticalAlignment="Center"
                                                                     TextTrimming="CharacterEllipsis"
+                                                                    Background="Transparent"
                                                                     Foreground="{StaticResource PrimaryForegroundBrush}" />
                                         </Grid>
                                     </DataTemplate>

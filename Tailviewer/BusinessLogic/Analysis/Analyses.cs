@@ -79,6 +79,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		/// <inheritdoc />
+		public Task<IReadOnlyList<string>> EnumerateSnapshots()
+		{
+			return _snapshots.EnumerateSnapshots();
+		}
+
+		/// <inheritdoc />
 		public Task SaveSnapshot(IAnalysis analysis, AnalysisTemplate template)
 		{
 			var tmp = analysis as ActiveAnalysis;
@@ -135,15 +141,25 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 			}
 
+			public Task<IReadOnlyList<string>> EnumerateSnapshots()
+			{
+				var pattern = string.Format("*.{0}", Constants.SnapshotExtension);
+				return _filesystem.EnumerateFiles(Constants.SnapshotDirectory, pattern);
+			}
+
 			public Task Save(Core.Analysis.AnalysisSnapshot snapshot)
 			{
 				var fileName = DetermineFilename(snapshot);
 				return SaveAsync(fileName, snapshot);
 			}
 
-			private Task SaveAsync(string filename, Core.Analysis.AnalysisSnapshot snapshot)
+			private Task SaveAsync(string filePath, Core.Analysis.AnalysisSnapshot snapshot)
 			{
-				return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysisSnapshot(x, snapshot));
+				var directory = Path.GetDirectoryName(filePath);
+
+				// 
+				_filesystem.CreateDirectory(directory);
+				return _filesystem.OpenWrite(filePath).ContinueWith(x => WriteAnalysisSnapshot(x, snapshot));
 			}
 
 			private void WriteAnalysisSnapshot(Task<Stream> task, Core.Analysis.AnalysisSnapshot snapshot)
