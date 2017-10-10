@@ -20,8 +20,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	public sealed class AnalyseMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly ICommand _createAnalysisCommand;
 
@@ -41,7 +39,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			IDataSources dataSources,
 			IDispatcher dispatcher,
 			ITaskScheduler taskScheduler,
-			ILogAnalyserEngine logAnalyserEngine,
 			IAnalysisStorage analysisStorage)
 			: base(applicationSettings)
 		{
@@ -51,14 +48,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				throw new ArgumentNullException(nameof(dispatcher));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (logAnalyserEngine == null)
-				throw new ArgumentNullException(nameof(logAnalyserEngine));
 			if (analysisStorage == null)
 				throw new ArgumentNullException(nameof(analysisStorage));
 
 			_dispatcher = dispatcher;
-			_taskScheduler = taskScheduler;
-			_logAnalyserEngine = logAnalyserEngine;
 			_analysisStorage = analysisStorage;
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -74,14 +67,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void CreateAnalysis()
 		{
 			var template = new AnalysisTemplate();
-			var analyser = new BusinessLogic.Analysis.ActiveAnalysis(template,
-				_taskScheduler,
-				_logAnalyserEngine,
-				TimeSpan.FromMilliseconds(100));
-			var analysisViewModel = new AnalysisViewModel(_dispatcher, template, analyser, _analysisStorage);
-			analysisViewModel.OnRemove += AnalysisViewModelOnOnRemove;
-			_analysesSidePanel.Add(analysisViewModel);
-			Analysis = analysisViewModel;
+			var analysis = _analysisStorage.CreateAnalysis(template);
+			var viewModel = _analysesSidePanel.Add(analysis);
+			viewModel.OnRemove += AnalysisViewModelOnOnRemove;
+			Analysis = viewModel;
 		}
 
 		private void AnalysisViewModelOnOnRemove(AnalysisViewModel analysis)

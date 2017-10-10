@@ -105,7 +105,7 @@
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalysisSnapshot.cs" />
-    <Compile Include="BusinessLogic\Analysis\Analyses.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisStorage.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalysisSnapshotHandle.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
@@ -201,11 +202,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			UpdateQuickInfo();
 		}
 
-		public void Add(AnalysisViewModel analysis)
+		public AnalysisViewModel Add(IAnalysis analysis)
 		{
-			_active.Add(analysis);
-			analysis.OnRemove += AnalysisOnOnRemove;
+			var viewTemplate = new AnalysisViewTemplate();
+			var analysisViewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
+
+			_active.Add(analysisViewModel);
+			analysisViewModel.OnRemove += AnalysisOnOnRemove;
 			Update();
+
+			return analysisViewModel;
 		}
 
 		private void AnalysisOnOnRemove(AnalysisViewModel analysis)

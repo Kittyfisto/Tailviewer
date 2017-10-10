@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tailviewer.BusinessLogic.Analysis
+﻿namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     Represents a live analysis or a snapshot (depending on <see cref="IsFrozen" />) of a
@@ -14,6 +12,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     A unique id which identifies this analyser.
 		/// </summary>
 		AnalyserId Id { get; }
+
+		/// <summary>
+		///     The id of the factory which created this analyser.
+		/// </summary>
+		LogAnalyserFactoryId FactoryId { get; }
 
 		/// <summary>
 		///     The current progress of the analysis.

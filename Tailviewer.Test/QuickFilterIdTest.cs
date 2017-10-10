@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
+#pragma warning disable CS1718
 
 namespace Tailviewer.Test
 {

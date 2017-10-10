@@ -44,17 +44,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_snapshots = new SnapshotsWatchdog(taskScheduler, filesystem, typeFactory);
 		}
 
-		public IEnumerable<IAnalysis> Active
-		{
-			get
-			{
-				lock (_syncRoot)
-				{
-					return _activeAnalyses.ToList();
-				}
-			}
-		}
-
 		public void Dispose()
 		{
 			_snapshots?.Dispose();
@@ -78,6 +67,26 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return analyser;
 		}
 
+		public IEnumerable<IAnalysis> Analyses
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _activeAnalyses.ToList();
+				}
+			}
+		}
+
+		public IAnalysis CreateAnalysis(AnalysisTemplate template)
+		{
+			var analysis = new ActiveAnalysis(template,
+				_taskScheduler,
+				_logAnalyserEngine,
+				TimeSpan.FromMilliseconds(100));
+			return analysis;
+		}
+
 		/// <inheritdoc />
 		public Task<IReadOnlyList<string>> EnumerateSnapshots()
 		{
@@ -85,21 +94,28 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		/// <inheritdoc />
-		public Task SaveSnapshot(IAnalysis analysis, AnalysisTemplate template)
+		public Task SaveSnapshot(IAnalysis analysis, AnalysisViewTemplate viewTemplate)
 		{
 			var tmp = analysis as ActiveAnalysis;
 			if (tmp == null)
 				throw new ArgumentException("It makes no sense to create a snapshot from anything else but an active analysis",
 					nameof(analysis));
 
-			var snapshot = tmp.CreateSnapshot();
-			var serializable = new Core.Analysis.AnalysisSnapshot(template.Clone(),
-				snapshot.Analysers.Select(x => new AnalyserResult
-				{
-					AnalyserId = x.Id,
-					Result = x.Result
-				}));
-			return _snapshots.Save(serializable);
+			var analysisSnapshot = tmp.CreateSnapshot();
+			var template = new AnalysisTemplate(analysisSnapshot.Analysers.Select(x => new AnalyserTemplate
+			{
+				Id = x.Id,
+				FactoryId = x.FactoryId,
+				Configuration = x.Configuration
+			}));
+			var clone = viewTemplate.Clone();
+			var results = analysisSnapshot.Analysers.Select(x => new AnalyserResult
+			{
+				AnalyserId = x.Id,
+				Result = x.Result
+			}).ToList();
+			var snapshot = new Core.Analysis.AnalysisSnapshot(template, clone, results);
+			return _snapshots.Save(snapshot);
 		}
 
 		public bool Remove(IAnalysis analysis)

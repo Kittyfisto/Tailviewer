@@ -128,7 +128,6 @@ namespace Tailviewer
 							actionCenter,
 							updater,
 							taskScheduler,
-							logAnalyserEngine,
 							analysisStorage,
 							uiDispatcher,
 							scanner.Plugins)

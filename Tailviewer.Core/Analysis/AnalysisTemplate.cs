@@ -19,25 +19,22 @@ namespace Tailviewer.Core.Analysis
 		: IAnalysisTemplate
 	{
 		private readonly List<AnalyserTemplate> _analysers;
-		private readonly List<PageTemplate> _pages;
 
 		/// <summary>
 		///     Initializes this template.
 		/// </summary>
 		public AnalysisTemplate()
 		{
-			_pages = new List<PageTemplate>();
 			_analysers = new List<AnalyserTemplate>();
 		}
 
-		private AnalysisTemplate(IEnumerable<PageTemplate> pages)
+		/// <summary>
+		///     Initializes this template with the given analyser templates.
+		/// </summary>
+		public AnalysisTemplate(IEnumerable<AnalyserTemplate> analysers)
 		{
-			_pages = new List<PageTemplate>(pages);
-			_analysers = new List<AnalyserTemplate>();
+			_analysers = new List<AnalyserTemplate>(analysers);
 		}
-
-		/// <inheritdoc />
-		public IEnumerable<IPageTemplate> Pages => _pages;
 
 		/// <inheritdoc />
 		public IEnumerable<IAnalyserTemplate> Analysers => _analysers;
@@ -45,14 +42,12 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
-			writer.WriteAttribute("Pages", _pages);
 			writer.WriteAttribute("Analysers", _analysers);
 		}
 
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
-			reader.TryReadAttribute("Pages", _pages);
 			reader.TryReadAttribute("Analysers", _analysers);
 		}
 
@@ -79,23 +74,6 @@ namespace Tailviewer.Core.Analysis
 			_analysers.Remove(template);
 		}
 
-		/// <summary>
-		///     Adds the given page to this template.
-		/// </summary>
-		/// <param name="template"></param>
-		public void Add(PageTemplate template)
-		{
-			_pages.Add(template);
-		}
-
-		/// <summary>
-		///     Removes the given page from this template.
-		/// </summary>
-		/// <param name="template"></param>
-		public void Remove(PageTemplate template)
-		{
-			_pages.Remove(template);
-		}
 
 		/// <summary>
 		///     Returns a deep clone of this template.
@@ -103,7 +81,7 @@ namespace Tailviewer.Core.Analysis
 		/// <returns></returns>
 		public AnalysisTemplate Clone()
 		{
-			return new AnalysisTemplate(_pages.Select(x => x.Clone()));
+			return new AnalysisTemplate(_analysers.Select(x => x.Clone()));
 		}
 	}
 }

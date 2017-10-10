@@ -27,7 +27,7 @@ namespace Tailviewer.QuickInfo.Ui
 			_filterExpression = configuration.FilterValue;
 			switch (configuration.MatchType)
 			{
-				case FilterMatchType.StringFilter:
+				case FilterMatchType.SubstringFilter:
 				case FilterMatchType.WildcardFilter:
 					break;
 

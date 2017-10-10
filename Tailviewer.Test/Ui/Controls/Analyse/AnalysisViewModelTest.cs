@@ -14,14 +14,14 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	{
 		private ManualDispatcher _dispatcher;
 		private Mock<IAnalysis> _analyser;
-		private AnalysisTemplate _template;
+		private AnalysisViewTemplate _viewTemplate;
 		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[SetUp]
 		public void Setup()
 		{
 			_dispatcher = new ManualDispatcher();
-			_template = new AnalysisTemplate();
+			_viewTemplate = new AnalysisViewTemplate();
 			_analyser = new Mock<IAnalysis>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 		}
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
@@ -39,7 +39,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage1()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
 			model.Pages.Should().HaveCount(1);
 			model.AddPageCommand.Execute(null);
 			model.Pages.Should().HaveCount(2);
@@ -50,12 +50,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage2()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
-			model.Template.Pages.Should().HaveCount(1);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			_viewTemplate.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);
-			model.Template.Pages.Should().HaveCount(2);
-			model.Template.Pages.ElementAt(1).Should().BeSameAs(
+			_viewTemplate.Pages.Should().HaveCount(2);
+			_viewTemplate.Pages.ElementAt(1).Should().BeSameAs(
 				model.Pages.ElementAt(1).Template
 			);
 		}
@@ -63,14 +63,14 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRemovePage1()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _template, _analyser.Object, _analysisStorage.Object);
-			model.Template.Pages.Should().HaveCount(1);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			_viewTemplate.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);
-			model.Template.Pages.Should().HaveCount(2);
+			_viewTemplate.Pages.Should().HaveCount(2);
 			model.Pages.ElementAt(1).DeletePageCommand.Execute(null);
 
-			model.Template.Pages.Should().HaveCount(1);
+			_viewTemplate.Pages.Should().HaveCount(1);
 		}
 	}
 }

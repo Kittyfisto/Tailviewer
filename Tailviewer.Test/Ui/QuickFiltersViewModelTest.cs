@@ -72,7 +72,7 @@ namespace Tailviewer.Test.Ui
 
 			int numFilterChanges = 0;
 			QuickFilterViewModel filter = model.AddQuickFilter();
-			filter.MatchType.Should().Be(FilterMatchType.StringFilter);
+			filter.MatchType.Should().Be(FilterMatchType.SubstringFilter);
 			filter.Value = "Foobar";
 			filter.IsActive = true;
 

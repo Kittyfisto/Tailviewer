@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -36,7 +35,6 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
-			_analysisEngine = new Mock<ILogAnalyserEngine>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 
 			_mainWindow = new MainWindowViewModel(_settings,
@@ -45,8 +43,7 @@ namespace Tailviewer.Test.Ui
 			                                      _actionCenter,
 			                                      _updater.Object,
 			                                      _scheduler,
-			                                      _analysisEngine.Object,
-												  _analysisStorage.Object,
+			                                      _analysisStorage.Object,
 			                                      _dispatcher,
 			                                      Enumerable.Empty<IPluginDescription>());
 		}
@@ -66,8 +63,6 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
-		private Mock<ILogAnalyserEngine> _analysisEngine;
-		private InMemoryFilesystem _filesystem;
 		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[Test]
@@ -83,7 +78,6 @@ namespace Tailviewer.Test.Ui
 				_actionCenter,
 				_updater.Object,
 				_scheduler,
-				_analysisEngine.Object,
 				_analysisStorage.Object,
 				_dispatcher,
 				Enumerable.Empty<IPluginDescription>());

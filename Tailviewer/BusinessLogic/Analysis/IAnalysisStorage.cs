@@ -6,10 +6,19 @@ namespace Tailviewer.BusinessLogic.Analysis
 {
 	public interface IAnalysisStorage
 	{
-		
+		/// <summary>
+		///     The current list of analyses.
+		/// </summary>
+		IEnumerable<IAnalysis> Analyses { get; }
 
 		/// <summary>
-		/// 
+		///     Creates a new analysis from the given template.
+		///     Changes to the analysis will reflect back onto the given template instance.
+		/// </summary>
+		/// <returns></returns>
+		IAnalysis CreateAnalysis(AnalysisTemplate template);
+
+		/// <summary>
 		/// </summary>
 		/// <returns></returns>
 		Task<IReadOnlyList<string>> EnumerateSnapshots();
@@ -20,8 +29,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     via the returned handle immediately.
 		/// </summary>
 		/// <param name="analysis"></param>
-		/// <param name="template"></param>
+		/// <param name="viewTemplate"></param>
 		/// <returns></returns>
-		Task SaveSnapshot(IAnalysis analysis, AnalysisTemplate template);
+		Task SaveSnapshot(IAnalysis analysis, AnalysisViewTemplate viewTemplate);
 	}
 }

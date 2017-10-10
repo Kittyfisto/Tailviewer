@@ -169,7 +169,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", factoryId, e);
-				return new NoAnalyser();
+				return new NoAnalyser(factoryId);
 			}
 		}
 

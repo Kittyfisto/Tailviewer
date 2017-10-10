@@ -6,14 +6,42 @@ using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Core.Settings
 {
+	/// <summary>
+	///     The configuration of an application-wide quick filter.
+	/// </summary>
 	public sealed class QuickFilter
 		: ICloneable
 	{
+		/// <summary>
+		///     The id of this quick filter.
+		///     Is used to define for each data source which quick filter is active or not.
+		/// </summary>
+		public QuickFilterId Id;
+
+		/// <summary>
+		///     True when the case of the filter value doesn't matter.
+		/// </summary>
 		public bool IgnoreCase;
+
+		/// <summary>
+		///     When set to false, then a line will only be shown if it matches the filter.
+		///     When set to true, then only those lines NOT matching the filter will be shown.
+		/// </summary>
 		public bool IsInverted;
+
+		/// <summary>
+		///     How <see cref="Value" /> is to be intepreted.
+		/// </summary>
 		public FilterMatchType MatchType;
+
+		/// <summary>
+		///     The actual filter value, <see cref="MatchType" /> defines how it is interpreted.
+		/// </summary>
 		public string Value;
 
+		/// <summary>
+		///     Initializes this quick filter.
+		/// </summary>
 		public QuickFilter()
 		{
 			Id = QuickFilterId.CreateNew();
@@ -21,13 +49,16 @@ namespace Tailviewer.Core.Settings
 			IsInverted = false;
 		}
 
-		public QuickFilterId Id { get; private set; }
-
 		object ICloneable.Clone()
 		{
 			return Clone();
 		}
 
+		/// <summary>
+		///     Restores this filter from the given xml reader.
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <returns></returns>
 		public bool Restore(XmlReader reader)
 		{
 			var count = reader.AttributeCount;
@@ -65,6 +96,10 @@ namespace Tailviewer.Core.Settings
 			return true;
 		}
 
+		/// <summary>
+		///     Saves the contents of this object into the given writer.
+		/// </summary>
+		/// <param name="writer"></param>
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttribute("id", Id);
@@ -74,6 +109,10 @@ namespace Tailviewer.Core.Settings
 			writer.WriteAttributeBool("isinclude", IsInverted);
 		}
 
+		/// <summary>
+		///     Creates a deep clone of this object.
+		/// </summary>
+		/// <returns></returns>
 		public QuickFilter Clone()
 		{
 			return new QuickFilter
@@ -115,6 +154,12 @@ namespace Tailviewer.Core.Settings
 			return true;
 		}
 
+		/// <summary>
+		///     Creates a new <see cref="ILogEntryFilter" /> which behaves just like this quick filter is
+		///     configured. Any further changes to this object will NOT influence the returned filter:
+		///     This method must be called and the newly returned filter be used instead.
+		/// </summary>
+		/// <returns></returns>
 		[Pure]
 		public ILogEntryFilter CreateFilter()
 		{

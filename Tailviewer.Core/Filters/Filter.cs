@@ -23,7 +23,7 @@ namespace Tailviewer.Core.Filters
 			ILogEntryFilter filter = null;
 			switch (matchType)
 			{
-				case FilterMatchType.StringFilter:
+				case FilterMatchType.SubstringFilter:
 					if (!string.IsNullOrEmpty(value))
 						filter = new SubstringFilter(value, ignoreCase);
 					break;

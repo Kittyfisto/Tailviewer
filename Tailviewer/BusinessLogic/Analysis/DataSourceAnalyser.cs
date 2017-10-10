@@ -39,6 +39,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id => _template.Id;
 
+		public LogAnalyserFactoryId FactoryId => _template.FactoryId;
+
 		public Percentage Progress { get; private set; }
 
 		public ILogAnalysisResult Result { get; private set; }
@@ -92,6 +94,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var result = Result?.Clone() as ILogAnalysisResult;
 			var progress = Progress;
 			return new DataSourceAnalyserSnapshot(Id,
+				FactoryId,
 				configuration,
 				result,
 				progress);

@@ -8,6 +8,11 @@ namespace Tailviewer.Core
 	/// </summary>
 	public static class StringExtensions
 	{
+		/// <summary>
+		/// Tests if this string ends with \n.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <returns></returns>
 		public static bool EndsWithNewline(this string that)
 		{
 			if (that == null)
@@ -23,6 +28,11 @@ namespace Tailviewer.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Tests if this string ends with \r\n.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <returns></returns>
 		public static bool EndsWithCarriageFeedLineReturn(this string that)
 		{
 			if (that == null)
@@ -39,12 +49,23 @@ namespace Tailviewer.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Returns a new string which has any trailing newlines removed.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <returns></returns>
 		public static string TrimNewlineEnd(this string that)
 		{
 			bool unused;
 			return TrimNewlineEnd(that, out unused);
 		}
 
+		/// <summary>
+		/// Returns a new string which has any trailing newlines removed.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <param name="trimmed"></param>
+		/// <returns></returns>
 		public static string TrimNewlineEnd(this string that, out bool trimmed)
 		{
 			if (that.EndsWithCarriageFeedLineReturn())
@@ -63,11 +84,24 @@ namespace Tailviewer.Core
 			return that;
 		}
 
+		/// <summary>
+		/// Finds the first index that satisfies the given predicate.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <param name="pred"></param>
+		/// <returns></returns>
 		public static int IndexOf(this string that, Predicate<char> pred)
 		{
 			return IndexOf(that, pred, 0);
 		}
 
+		/// <summary>
+		/// Finds the first index that satisfies the given predicate.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <param name="pred"></param>
+		/// <param name="startIndex"></param>
+		/// <returns></returns>
 		public static int IndexOf(this string that, Predicate<char> pred, int startIndex)
 		{
 			return IndexOf(that, pred, startIndex, that.Length - startIndex);
@@ -102,6 +136,13 @@ namespace Tailviewer.Core
 			return -1;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="that"></param>
+		/// <param name="value"></param>
+		/// <param name="startIndex"></param>
+		/// <returns></returns>
 		[Pure]
 		public static bool ContainsAt(this string that, string value, int startIndex)
 		{

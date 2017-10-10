@@ -84,7 +84,7 @@ namespace Tailviewer.Count.Test.BusinessLogic
 						new QuickFilter
 						{
 							Value = "fuck this shit",
-							MatchType = FilterMatchType.StringFilter
+							MatchType = FilterMatchType.SubstringFilter
 						}
 					}
 				});

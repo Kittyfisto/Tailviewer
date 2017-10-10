@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		: IAnalysisViewModel
 	{
 		private readonly IDispatcher _dispatcher;
-		private readonly AnalysisTemplate _template;
+		private readonly AnalysisViewTemplate _viewTemplate;
 		private readonly IAnalysis _analyser;
 		private readonly IAnalysisStorage _analysisStorage;
 		private readonly DelegateCommand _addPageCommand;
@@ -34,14 +34,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private Task _saveSnapshotTask;
 
 		public AnalysisViewModel(IDispatcher dispatcher,
-			AnalysisTemplate template,
+			AnalysisViewTemplate viewTemplate,
 			IAnalysis analyser,
 			IAnalysisStorage analysisStorage)
 		{
 			if (dispatcher == null)
 				throw new ArgumentNullException(nameof(dispatcher));
-			if (template == null)
-				throw new ArgumentNullException(nameof(template));
+			if (viewTemplate == null)
+				throw new ArgumentNullException(nameof(viewTemplate));
 			if (analyser == null)
 				throw new ArgumentNullException(nameof(analyser));
 			if (analysisStorage == null)
@@ -50,7 +50,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_dispatcher = dispatcher;
 			_analyser = analyser;
 			_analysisStorage = analysisStorage;
-			_template = template;
+			_viewTemplate = viewTemplate;
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			_addPageCommand = new DelegateCommand(AddPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
@@ -66,7 +66,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CaptureSnapshot()
 		{
-			_saveSnapshotTask = _analysisStorage.SaveSnapshot(_analyser, _template);
+			_saveSnapshotTask = _analysisStorage.SaveSnapshot(_analyser, _viewTemplate);
 			UpdateCanCaptureSnapshot(); //< DO NOT CHANGE CALL ORDER
 			_saveSnapshotTask.ContinueWith(OnSnapshotSaved);
 		}
@@ -88,8 +88,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		}
 
 		public ICommand CaptureSnapshotCommand => _captureSnapshotCommand;
-
-		public IAnalysisTemplate Template => _template;
 
 		private void RemoveThis()
 		{
@@ -169,7 +167,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			page.OnDelete += PageOnOnDelete;
 
 			_pages.Add(page);
-			_template.Add(template);
+			_viewTemplate.Add(template);
 
 			UpdateCanBeDeleted();
 		}
@@ -185,7 +183,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void PageOnOnDelete(AnalysisPageViewModel analysisPageViewModel)
 		{
 			_pages.Remove(analysisPageViewModel);
-			_template.Remove(analysisPageViewModel.Template);
+			_viewTemplate.Remove(analysisPageViewModel.Template);
 			UpdateCanBeDeleted();
 		}
 

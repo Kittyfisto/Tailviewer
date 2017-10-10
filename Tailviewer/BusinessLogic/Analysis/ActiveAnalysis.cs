@@ -45,6 +45,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_syncRoot = new object();
 		}
 
+		public AnalysisTemplate Template => _template;
+
 		public IEnumerable<IDataSourceAnalyser> Analysers
 		{
 			get

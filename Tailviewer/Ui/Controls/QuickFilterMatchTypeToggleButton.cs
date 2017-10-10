@@ -64,7 +64,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				IsWildcardChecked = false;
 				IsRegexChecked = false;
-				FilterMatchType = FilterMatchType.StringFilter;
+				FilterMatchType = FilterMatchType.SubstringFilter;
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace Tailviewer.Ui.Controls
 
 		private void OnFilterTypeChanged(FilterMatchType newValue)
 		{
-			IsStringChecked = newValue == FilterMatchType.StringFilter;
+			IsStringChecked = newValue == FilterMatchType.SubstringFilter;
 			IsWildcardChecked = newValue == FilterMatchType.WildcardFilter;
 			IsRegexChecked = newValue == FilterMatchType.RegexpFilter;
 		}

@@ -30,18 +30,23 @@ namespace Tailviewer.Core
 				throw new ArgumentNullException(nameof(encoding));
 
 			_stream = stream;
-			_reader = new StreamReader(_stream, encoding, true);
+			_reader = new StreamReader(_stream, encoding, detectEncodingFromByteOrderMarks: true);
 
 			_readBuffer = new char[1024];
 			_contentBuffer = new StringBuilder();
 		}
 
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			_reader.Dispose();
 			_stream.Dispose();
 		}
 
+		/// <summary>
+		///     Reads the next line from the given stream.
+		/// </summary>
+		/// <returns></returns>
 		public string ReadLine()
 		{
 			var line = TryFormLine();

@@ -67,10 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
-    <Compile Include="Analysis\ActiveAnalysis.cs" />
     <Compile Include="Analysis\AnalyserResult.cs" />
     <Compile Include="Analysis\AnalyserTemplate.cs" />
+    <Compile Include="Analysis\AnalysisViewTemplate.cs" />
     <Compile Include="Analysis\IAnalyserTemplate.cs" />
+    <Compile Include="Analysis\IAnalysisViewTemplate.cs" />
     <Compile Include="Analysis\PageTemplate.cs" />
     <Compile Include="Analysis\AnalysisSnapshot.cs" />
     <Compile Include="Analysis\AnalysisTemplate.cs" />

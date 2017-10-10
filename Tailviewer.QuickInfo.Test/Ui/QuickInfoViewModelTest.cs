@@ -25,7 +25,7 @@ namespace Tailviewer.QuickInfo.Test.Ui
 		[Test]
 		public void TestChangeFormat()
 		{
-			_analyserConfig.MatchType = FilterMatchType.StringFilter;
+			_analyserConfig.MatchType = FilterMatchType.SubstringFilter;
 			var model = new QuickInfoViewModel(_id, _viewConfig, _analyserConfig);
 			model.Result = new QuickInfo.BusinessLogic.QuickInfo("Foobar");
 			model.Format = "Match: {message} Found!";
@@ -46,7 +46,7 @@ namespace Tailviewer.QuickInfo.Test.Ui
 		[Test]
 		public void TestFormat1()
 		{
-			_analyserConfig.MatchType = FilterMatchType.StringFilter;
+			_analyserConfig.MatchType = FilterMatchType.SubstringFilter;
 			var model = new QuickInfoViewModel(_id, _viewConfig, _analyserConfig);
 			model.Result = new QuickInfo.BusinessLogic.QuickInfo("Foobar");
 			model.Value.Should().Be("Foobar", "because by default, the entire matched line shall be printed");

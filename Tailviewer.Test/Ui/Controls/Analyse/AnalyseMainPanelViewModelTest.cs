@@ -19,7 +19,6 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		private Mock<IDataSources> _dataSources;
 		private ManualDispatcher _dispatcher;
 		private ManualTaskScheduler _taskScheduler;
-		private Mock<ILogAnalyserEngine> _logAnalyser;
 		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[SetUp]
@@ -32,7 +31,6 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_dataSources = new Mock<IDataSources>();
 			_dispatcher = new ManualDispatcher();
 			_taskScheduler = new ManualTaskScheduler();
-			_logAnalyser = new Mock<ILogAnalyserEngine>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 		}
 
@@ -46,7 +44,6 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				_dataSources.Object,
 				_dispatcher,
 				_taskScheduler,
-				_logAnalyser.Object,
 				_analysisStorage.Object);
 
 			const string reason = "because the settings don't have a panel selected and thus the view model should neither";
@@ -63,7 +60,6 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				_dataSources.Object,
 				_dispatcher,
 				_taskScheduler,
-				_logAnalyser.Object,
 				_analysisStorage.Object);
 
 			const string reason = "because there is no such panel and thus no panel should've been selected";
@@ -80,7 +76,6 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				_dataSources.Object,
 				_dispatcher,
 				_taskScheduler,
-				_logAnalyser.Object,
 				_analysisStorage.Object);
 
 			const string reason = "because the widgets side panel should've been selected";

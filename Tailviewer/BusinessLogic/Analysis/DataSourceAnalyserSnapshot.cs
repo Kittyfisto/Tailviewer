@@ -16,18 +16,27 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly Percentage _progress;
 		private readonly ILogAnalysisResult _result;
 
-		public DataSourceAnalyserSnapshot(AnalyserId id, ILogAnalyserConfiguration configuration, ILogAnalysisResult result, Percentage progress)
+		public DataSourceAnalyserSnapshot(AnalyserId id,
+			LogAnalyserFactoryId factoryId,
+			ILogAnalyserConfiguration configuration,
+			ILogAnalysisResult result,
+			Percentage progress)
 		{
 			if (id == AnalyserId.Empty)
 				throw new ArgumentException(nameof(id));
+			if (factoryId ==  LogAnalyserFactoryId.Empty)
+				throw new ArgumentException(nameof(factoryId));
 
 			Id = id;
+			FactoryId = factoryId;
 			_configuration = configuration;
 			_result = result;
 			_progress = progress;
 		}
 
 		public AnalyserId Id { get; }
+
+		public LogAnalyserFactoryId FactoryId { get; }
 
 		public Percentage Progress => _progress;
 

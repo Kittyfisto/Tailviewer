@@ -3,6 +3,10 @@ using System.Globalization;
 
 namespace Tailviewer.Core.Parsers
 {
+	/// <summary>
+	///     A parser responsible for parsing a timestamp in a obscure custom format into
+	///     <see cref="DateTime" /> values.
+	/// </summary>
 	public sealed class TimeOfDaySecondsSinceStartParser
 		: ITimestampParser
 	{
@@ -14,16 +18,17 @@ namespace Tailviewer.Core.Parsers
 			if (content == null)
 				return false;
 
-			var timeOfDayIndex = content.IndexOf(";", 0, StringComparison.CurrentCulture);
+			var timeOfDayIndex = content.IndexOf(";", startIndex: 0, comparisonType: StringComparison.CurrentCulture);
 			if (timeOfDayIndex == -1)
 				return false;
 
-			var secondsSinceStartIndex = content.IndexOf(";", timeOfDayIndex+1, StringComparison.CurrentCulture);
+			var secondsSinceStartIndex = content.IndexOf(";", timeOfDayIndex + 1, StringComparison.CurrentCulture);
 			if (secondsSinceStartIndex == -1)
 				return false;
 
 			int hours, minutes, seconds;
-			if (!TryParseTimeOfDay(content, 0, timeOfDayIndex, out hours, out minutes, out seconds))
+			if (!TryParseTimeOfDay(content, startIndex: 0, length: timeOfDayIndex, hours: out hours, minutes: out minutes,
+				seconds: out seconds))
 				return false;
 
 			float secondsSinceStart;
@@ -51,18 +56,19 @@ namespace Tailviewer.Core.Parsers
 			minutes = 0;
 			seconds = 0;
 
-			var minutesIndex = content.IndexOf(":", startIndex, length-startIndex, StringComparison.CurrentCulture);
+			var minutesIndex = content.IndexOf(":", startIndex, length - startIndex, StringComparison.CurrentCulture);
 			if (minutesIndex == -1)
 				return false;
 
-			var secondsIndex = content.IndexOf(":", minutesIndex + 1, length - minutesIndex- 1, StringComparison.CurrentCulture);
+			var secondsIndex = content.IndexOf(":", minutesIndex + 1, length - minutesIndex - 1,
+				StringComparison.CurrentCulture);
 			if (secondsIndex == -1)
 				return false;
 
 			if (secondsIndex + 1 >= content.Length)
 				return false;
 
-			var hoursValue = content.Substring(startIndex, minutesIndex-startIndex);
+			var hoursValue = content.Substring(startIndex, minutesIndex - startIndex);
 			var minutesValue = content.Substring(minutesIndex + 1, secondsIndex - minutesIndex - 1);
 			var secondsValue = content.Substring(secondsIndex + 1, length - secondsIndex - 1);
 
