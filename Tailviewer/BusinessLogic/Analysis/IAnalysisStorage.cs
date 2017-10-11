@@ -4,15 +4,17 @@ using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
+	/// <summary>
+	///     Maintains the list of active analyses.
+	///     Can be used to create new analyses, to store existing ones or to retrieve the list of analyses.
+	/// </summary>
 	public interface IAnalysisStorage
 	{
 		/// <summary>
-		/// 
 		/// </summary>
 		IEnumerable<ActiveAnalysisConfiguration> AnalysisTemplates { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="analysis"></param>
@@ -23,13 +25,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     Creates a new analysis from the given template.
 		///     Changes to the analysis will reflect back onto the given template instance.
 		/// </summary>
-		/// <paramref name="template"/>
-		/// <paramref name="viewTemplate"/>
+		/// <paramref name="template" />
+		/// <paramref name="viewTemplate" />
 		/// <returns></returns>
 		IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate);
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <param name="id"></param>
 		void Remove(AnalysisId id);

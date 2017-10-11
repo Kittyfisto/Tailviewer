@@ -24,6 +24,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<ActiveAnalysisConfiguration> _templates;
 		private readonly Dictionary<AnalysisId, ActiveAnalysis> _analyses;
+		private readonly IFilesystem _filesystem;
 
 		public AnalysisStorage(ITaskScheduler taskScheduler,
 			IFilesystem filesystem,
@@ -39,6 +40,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			_taskScheduler = taskScheduler;
 			_logAnalyserEngine = logAnalyserEngine;
+			_filesystem = filesystem;
 			_syncRoot = new object();
 
 			_snapshots = new SnapshotsWatchdog(taskScheduler, filesystem, typeFactory);
@@ -80,18 +82,21 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate)
 		{
+			ActiveAnalysisConfiguration configuration;
+
 			var analysis = new ActiveAnalysis(template,
 				_taskScheduler,
 				_logAnalyserEngine,
 				TimeSpan.FromMilliseconds(100));
+
 			try
 			{
+				configuration = new ActiveAnalysisConfiguration(analysis.Id, template, viewTemplate);
 				lock (_syncRoot)
 				{
-					_templates.Add(new ActiveAnalysisConfiguration(analysis.Id, template, viewTemplate));
+					_templates.Add(configuration);
 					_analyses.Add(analysis.Id, analysis);
 				}
-
 			}
 			catch (Exception)
 			{
@@ -99,7 +104,30 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw;
 			}
 
+			Save(configuration);
+
 			return analysis;
+		}
+
+		private Task Save(ActiveAnalysisConfiguration analysis)
+		{
+			var fname = string.Format("{0}.{1}", analysis.Id, Constants.AnalysisExtension);
+			var filename = Path.Combine(Constants.AnalysisDirectory, fname);
+
+			_filesystem.CreateDirectory(Constants.AnalysisDirectory);
+			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
+		}
+
+		private void WriteAnalysis(Task<Stream> task, ActiveAnalysisConfiguration analysis)
+		{
+			using (var stream = task.Result)
+			{
+				stream.SetLength(0);
+				using (var writer = new Writer(stream))
+				{
+					writer.WriteAttribute("Analysis", analysis);
+				}
+			}
 		}
 
 		public void Remove(AnalysisId id)

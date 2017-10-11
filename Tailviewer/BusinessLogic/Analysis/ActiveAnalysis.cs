@@ -21,6 +21,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly AnalysisId _id;
+		private bool _isDiposed;
 
 		public ActiveAnalysis(AnalysisTemplate template,
 			ITaskScheduler taskScheduler,
@@ -96,6 +97,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalysisId Id => _id;
 
+		public bool IsDisposed
+		{
+			get { return _isDiposed; }
+		}
+
 		/// <summary>
 		/// </summary>
 		/// <param name="factoryId"></param>
@@ -157,6 +163,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				_analysers.Clear();
 
 				_logFile.Dispose();
+				_isDiposed = true;
 			}
 		}
 

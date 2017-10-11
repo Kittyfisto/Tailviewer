@@ -18,11 +18,19 @@ namespace Tailviewer
 		public static readonly string ApplicationLogFile;
 		public static readonly string MyDocumentsFolder;
 		public static readonly string ExportDirectory;
-		public static readonly string SnapshotDirectory;
 		public static readonly string DownloadFolder;
 		public static readonly string PluginPath;
-		public static string ApplicationLicense => Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
+
+		public static readonly string SnapshotDirectory;
 		public static readonly string SnapshotExtension;
+
+		public static readonly string AnalysisDirectory;
+		public static readonly string AnalysisExtension;
+
+		public static readonly string AnalysisTemplateDirectory;
+		public static readonly string AnalysisTemplateExtension;
+
+		public static string ApplicationLicense => Resource.ReadResourceToEnd("Licenses/Tailviewer/LICENSE");
 
 		static Constants()
 		{
@@ -40,8 +48,15 @@ namespace Tailviewer
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
 			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationTitle);
 			ExportDirectory = Path.Combine(MyDocumentsFolder, "Export");
+
 			SnapshotDirectory = Path.Combine(MyDocumentsFolder, "Snapshots");
 			SnapshotExtension = "tvas";
+
+			AnalysisDirectory = Path.Combine(MyDocumentsFolder, "Analyses");
+			AnalysisExtension = "tva";
+
+			AnalysisTemplateDirectory = Path.Combine(MyDocumentsFolder, "Templates");
+			AnalysisTemplateExtension = "tvat";
 		}
 	}
 }

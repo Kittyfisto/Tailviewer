@@ -45,5 +45,27 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 			_sidePanel.HasActiveAnalyses.Should().BeTrue();
 			_sidePanel.Active.Should().HaveCount(1);
 		}
+
+		[Test]
+		public void TestRemoveAnalysis1()
+		{
+			var viewModel = _sidePanel.CreateNew();
+			_sidePanel.Active.Should().HaveCount(1);
+
+			viewModel.RemoveCommand.Execute(null);
+			_sidePanel.Active.Should().BeEmpty("because we've just removed the only analysis");
+		}
+
+		[Test]
+		public void TestRemoveAnalysis2()
+		{
+			var viewModel = _sidePanel.CreateNew();
+			_sidePanel.Active.Should().HaveCount(1);
+
+			_analysisStorage.Verify(x => x.Remove(It.IsAny<AnalysisId>()), Times.Never);
+			viewModel.RemoveCommand.Execute(null);
+			_analysisStorage.Verify(x => x.Remove(It.Is<AnalysisId>(y => y == viewModel.Id)), Times.Once,
+				"because the view model is responsible for removing the analysis (so it doesn't continue to run in the background)");
+		}
 	}
 }
