@@ -109,12 +109,38 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return analysis;
 		}
 
+		public void Remove(AnalysisId id)
+		{
+			lock (_syncRoot)
+			{
+				_templates.RemoveAll(x => x.Id == id);
+				ActiveAnalysis analysis;
+				if (_analyses.TryGetValue(id, out analysis))
+				{
+					analysis.Dispose();
+					_analyses.Remove(id);
+
+					var filename = GetFilename(id);
+					_filesystem.DeleteFile(filename);
+				}
+			}
+		}
+
+		internal static string GetFilename(AnalysisId id)
+		{
+			var fname = string.Format("{0}.{1}", id, Constants.AnalysisExtension);
+			var filename = Path.Combine(Constants.AnalysisDirectory, fname);
+			return filename;
+		}
+
 		private Task Save(ActiveAnalysisConfiguration analysis)
 		{
-			var fname = string.Format("{0}.{1}", analysis.Id, Constants.AnalysisExtension);
-			var filename = Path.Combine(Constants.AnalysisDirectory, fname);
+			var filename = GetFilename(analysis.Id);
+			var directory = Path.GetDirectoryName(filename);
 
-			_filesystem.CreateDirectory(Constants.AnalysisDirectory);
+			// We don't know if the directory exists, so we'll just create
+			// it beforehand...
+			_filesystem.CreateDirectory(directory);
 			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
 		}
 
@@ -126,20 +152,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 				using (var writer = new Writer(stream))
 				{
 					writer.WriteAttribute("Analysis", analysis);
-				}
-			}
-		}
-
-		public void Remove(AnalysisId id)
-		{
-			lock (_syncRoot)
-			{
-				_templates.RemoveAll(x => x.Id == id);
-				ActiveAnalysis analysis;
-				if (_analyses.TryGetValue(id, out analysis))
-				{
-					analysis.Dispose();
-					_analyses.Remove(id);
 				}
 			}
 		}

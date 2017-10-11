@@ -15,8 +15,8 @@
     <tags>.NET Tailviewer API SDK logfile</tags>
     <dependencies>
       <dependency id="log4net" version="2.0.8" />
-      <dependency id="Metrolib" version="0.2.2.34" />
-      <dependency id="System.Threading.Extensions" version="1.0.14" />
+      <dependency id="Metrolib" version="0.3.0.52" />
+      <dependency id="System.Threading.Extensions" version="1.1.18" />
     </dependencies>
   </metadata>
   <files>

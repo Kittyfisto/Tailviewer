@@ -74,5 +74,19 @@ namespace Tailviewer.Test.BusinessLogic
 			_storage.Remove(analysis.Id);
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeTrue("because the storage created the analysis so it should dispose of it as well");
 		}
+
+		[Test]
+		[Description("Verifies that the analysis is also removed from disk")]
+		public void TestRemove3()
+		{
+			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
+
+			var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
+			file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
+
+			_storage.Remove(analysis.Id);
+			file.Exists.Result.Should().BeFalse("because Remove should've also removed the analysis from disk");
+		}
 	}
 }
