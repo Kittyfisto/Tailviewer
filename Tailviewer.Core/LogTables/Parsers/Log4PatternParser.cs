@@ -11,16 +11,19 @@ namespace Tailviewer.Core.LogTables.Parsers
 	public sealed class Log4PatternParser
 		: ILogFileParser
 	{
-		private readonly Log4ColumnParser[] _parsers;
 		private readonly string _pattern;
 
+		/// <summary>
+		///     Initializes this parser with the given pattern.
+		/// </summary>
+		/// <param name="pattern"></param>
 		public Log4PatternParser(string pattern)
 		{
 			_pattern = pattern;
 
 			var parsers = new List<Log4ColumnParser>();
 			Log4ColumnParser parser;
-			int startIndex = 0;
+			var startIndex = 0;
 			int columnLength;
 			while ((parser = Log4ColumnParser.Create(pattern, startIndex, out columnLength)) != null && columnLength > 0)
 			{
@@ -28,36 +31,38 @@ namespace Tailviewer.Core.LogTables.Parsers
 				startIndex += columnLength;
 			}
 
-			_parsers = parsers.ToArray();
+			Parsers = parsers.ToArray();
 		}
 
-		public string Pattern
-		{
-			get { return _pattern; }
-		}
+		/// <summary>
+		///     The pattern used to parses a log line.
+		/// </summary>
+		public string Pattern => _pattern;
 
-		public Log4ColumnParser[] Parsers
-		{
-			get { return _parsers; }
-		}
+		/// <summary>
+		///     The individual parsers for each column, ordered from first to last column.
+		/// </summary>
+		public Log4ColumnParser[] Parsers { get; }
 
+		/// <inheritdoc />
 		[Pure]
 		public LogEntry Parse(LogLine line)
 		{
-			var fields = new object[_parsers.Length];
+			var fields = new object[Parsers.Length];
 
-			string message = line.Message;
-			int startIndex = 0;
-			for (int i = 0; i < _parsers.Length; ++i)
+			var message = line.Message;
+			var startIndex = 0;
+			for (var i = 0; i < Parsers.Length; ++i)
 			{
 				int length;
-				fields[i] = _parsers[i].Parse(message, startIndex, out length);
+				fields[i] = Parsers[i].Parse(message, startIndex, out length);
 				startIndex += length;
 			}
 
 			return new LogEntry(fields);
 		}
 
+		/// <inheritdoc />
 		[Pure]
 		public LogEntry Parse(IEnumerable<LogLine> entry)
 		{

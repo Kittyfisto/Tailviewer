@@ -16,8 +16,15 @@ namespace Tailviewer.Core.LogTables
 	public struct LogEntry
 		: IEquatable<LogEntry>
 	{
+		/// <summary>
+		///     The values of the individual fields of this log entry.
+		/// </summary>
 		public readonly object[] Fields;
 
+		/// <summary>
+		///     Initializes this log entry with the given fields.
+		/// </summary>
+		/// <param name="fields"></param>
 		public LogEntry(IEnumerable<object> fields)
 		{
 			if (fields == null)
@@ -26,6 +33,10 @@ namespace Tailviewer.Core.LogTables
 			Fields = fields.ToArray();
 		}
 
+		/// <summary>
+		///     Initializes this log entry with the given fields.
+		/// </summary>
+		/// <param name="fields"></param>
 		public LogEntry(params object[] fields)
 		{
 			if (fields == null)
@@ -41,7 +52,7 @@ namespace Tailviewer.Core.LogTables
 			if (fields != null)
 			{
 				var builder = new StringBuilder();
-				for (int i = 0; i < fields.Length; ++i)
+				for (var i = 0; i < fields.Length; ++i)
 				{
 					if (i != 0)
 						builder.Append("|");
@@ -66,12 +77,10 @@ namespace Tailviewer.Core.LogTables
 				return false;
 
 // ReSharper disable LoopCanBeConvertedToQuery
-			for (int i = 0; i < Fields.Length; ++i)
+			for (var i = 0; i < Fields.Length; ++i)
 // ReSharper restore LoopCanBeConvertedToQuery
-			{
 				if (!Equals(Fields[i], other.Fields[i]))
 					return false;
-			}
 
 			return true;
 		}
@@ -79,7 +88,7 @@ namespace Tailviewer.Core.LogTables
 		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(objA: null, objB: obj)) return false;
 			return obj is LogEntry && Equals((LogEntry) obj);
 		}
 
@@ -89,11 +98,23 @@ namespace Tailviewer.Core.LogTables
 			return 0;
 		}
 
+		/// <summary>
+		///     Compares the two log entries for equality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogEntry left, LogEntry right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		///     Compares the two log entries for inequality.
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogEntry left, LogEntry right)
 		{
 			return !left.Equals(right);

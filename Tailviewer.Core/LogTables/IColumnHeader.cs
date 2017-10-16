@@ -1,5 +1,8 @@
 ﻿namespace Tailviewer.Core.LogTables
 {
+	/// <summary>
+	///     The header for a column.
+	/// </summary>
 	public interface IColumnHeader
 	{
 		/// <summary>

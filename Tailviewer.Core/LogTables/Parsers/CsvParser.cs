@@ -13,18 +13,24 @@ namespace Tailviewer.Core.LogTables.Parsers
 	{
 		private readonly char _delimiter;
 
+		/// <summary>
+		///     Initializes this parser.
+		/// </summary>
+		/// <param name="delimiter"></param>
 		public CsvParser(char delimiter)
 		{
 			_delimiter = delimiter;
 		}
 
+		/// <inheritdoc />
 		[Pure]
 		public LogEntry Parse(LogLine line)
 		{
-			var fields = line.Message.Split(new[] {_delimiter});
-			return new LogEntry((IEnumerable<object>)fields);
+			var fields = line.Message.Split(_delimiter);
+			return new LogEntry((IEnumerable<object>) fields);
 		}
 
+		/// <inheritdoc />
 		[Pure]
 		public LogEntry Parse(IEnumerable<LogLine> entry)
 		{

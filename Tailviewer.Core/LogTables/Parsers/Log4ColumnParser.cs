@@ -84,36 +84,25 @@ namespace Tailviewer.Core.LogTables.Parsers
 			_parser = ColumnParser.Create(type, format);
 		}
 
-		public int? MinimumLength
-		{
-			get { return _minimumLength; }
-		}
+		/// <inheritdoc />
+		public int? MinimumLength => _minimumLength;
 
-		public int? MaximumLength
-		{
-			get { return _maximumLength; }
-		}
+		/// <inheritdoc />
+		public int? MaximumLength => _maximumLength;
 
-		public string Pattern
-		{
-			get { return _pattern; }
-		}
+		/// <inheritdoc />
+		public string Pattern => _pattern;
 
-		public string Name
-		{
-			get { return _name; }
-		}
+		/// <inheritdoc />
+		public string Name => _name;
 
-		public ColumnType Type
-		{
-			get { return _type; }
-		}
+		/// <inheritdoc />
+		public ColumnType Type => _type;
 
-		public string Format
-		{
-			get { return _format; }
-		}
+		/// <inheritdoc />
+		public string Format => _format;
 
+		/// <inheritdoc />
 		public object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
 			numCharactersConsumed = 0;
@@ -139,6 +128,13 @@ namespace Tailviewer.Core.LogTables.Parsers
 			return content;
 		}
 
+		/// <summary>
+		/// Creates a new parser from the given log4(net/j/cpp) pattern.
+		/// </summary>
+		/// <param name="pattern"></param>
+		/// <param name="startIndex"></param>
+		/// <param name="patternLength"></param>
+		/// <returns></returns>
 		public static Log4ColumnParser Create(string pattern, int startIndex, out int patternLength)
 		{
 			if (pattern == null)

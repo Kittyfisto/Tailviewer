@@ -3,11 +3,17 @@ using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Core.LogTables.Parsers
 {
+	/// <summary>
+	/// Responsible for parsing a log4net level from 
+	/// </summary>
 	public sealed class LevelParser
 		: ColumnParser
 	{
 		private readonly Dictionary<string, LevelFlags> _levels;
 
+		/// <summary>
+		/// Initializes this parser.
+		/// </summary>
 		public LevelParser()
 		{
 			_levels = new Dictionary<string, LevelFlags>
@@ -20,6 +26,7 @@ namespace Tailviewer.Core.LogTables.Parsers
 				};
 		}
 
+		/// <inheritdoc />
 		public override object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
 			foreach (var pair in _levels)

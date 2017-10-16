@@ -2,10 +2,13 @@
 
 namespace Tailviewer.Core
 {
+	/// <summary>
+	///     Provides extension methods for the <see cref="Queue{T}" /> class.
+	/// </summary>
 	public static class QueueExtensions
 	{
 		/// <summary>
-		/// Tries to dequeue the next value from this queue.
+		///     Tries to dequeue the next value from this queue.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="queue"></param>

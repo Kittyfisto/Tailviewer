@@ -3,8 +3,17 @@ using System.Collections.Generic;
 
 namespace Tailviewer.Core.LogTables.Parsers
 {
+	/// <summary>
+	///     Base class for most column parsers.
+	/// </summary>
 	public abstract class ColumnParser
 	{
+		/// <summary>
+		///     Factory method to create parsers for a specific column-type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="format"></param>
+		/// <returns></returns>
 		public static ColumnParser Create(ColumnType type, string format)
 		{
 			switch (type)
@@ -41,6 +50,12 @@ namespace Tailviewer.Core.LogTables.Parsers
 			}
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <param name="line"></param>
+		/// <param name="startIndex"></param>
+		/// <param name="numCharactersConsumed"></param>
+		/// <returns></returns>
 		public abstract object Parse(string line, int startIndex, out int numCharactersConsumed);
 	}
 }

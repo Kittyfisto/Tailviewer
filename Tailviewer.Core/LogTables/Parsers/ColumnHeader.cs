@@ -2,27 +2,31 @@
 
 namespace Tailviewer.Core.LogTables.Parsers
 {
+	/// <summary>
+	///     The header of a column.
+	/// </summary>
 	public sealed class ColumnHeader
 		: IColumnHeader
 	{
-		private readonly string _name;
-
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="name"></param>
 		public ColumnHeader(string name)
 		{
 			if (name == null)
 				throw new ArgumentNullException(nameof(name));
 
-			_name = name;
+			Name = name;
 		}
 
-		public string Name
-		{
-			get { return _name; }
-		}
+		/// <inheritdoc />
+		public string Name { get; }
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
-			return _name;
+			return Name;
 		}
 	}
 }

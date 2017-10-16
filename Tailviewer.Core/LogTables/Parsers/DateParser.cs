@@ -3,12 +3,20 @@ using System.Globalization;
 
 namespace Tailviewer.Core.LogTables.Parsers
 {
+	/// <summary>
+	///     A parser responsible for parsing a string representing a point in time into <see cref="DateTime" /> values.
+	/// </summary>
 	public sealed class DateParser
 		: ColumnParser
 	{
 		private readonly string _format;
 		private readonly DateTimeStyles _style;
 
+		/// <summary>
+		///     Initializes this parser.
+		/// </summary>
+		/// <param name="format"></param>
+		/// <param name="kind"></param>
 		public DateParser(string format, DateTimeKind kind)
 		{
 			switch (kind)
@@ -39,6 +47,7 @@ namespace Tailviewer.Core.LogTables.Parsers
 			_format = format;
 		}
 
+		/// <inheritdoc />
 		public override object Parse(string line, int startIndex, out int numCharactersConsumed)
 		{
 			DateTime dateTime;
