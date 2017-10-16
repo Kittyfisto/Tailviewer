@@ -90,6 +90,7 @@
     <Compile Include="App.cs" />
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
+    <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceCanvas.cs" />
     <Compile Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml.cs">
       <DependentUpon>ChangelogControl.xaml</DependentUpon>
     </Compile>

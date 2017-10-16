@@ -7,12 +7,16 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
+	/// <summary>
+	///     A "canvas" which draws the log line number in the same vertical alignment as <see cref="TextCanvas" />
+	///     draws the <see cref="LogLine.Message" />.
+	/// </summary>
 	public sealed class LineNumberCanvas
 		: FrameworkElement
 	{
 		private readonly List<LineNumber> _lineNumbers;
-		private double _yOffset;
 		private double _lineNumberWidth;
+		private double _yOffset;
 
 		public LineNumberCanvas()
 		{
@@ -21,11 +25,14 @@ namespace Tailviewer.Ui.Controls.LogView
 			ClipToBounds = true;
 		}
 
+		public IReadOnlyList<LineNumber> LineNumbers => _lineNumbers;
+
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			drawingContext.DrawRectangle(Brushes.White, null, new Rect(0, 0, ActualWidth, ActualHeight));
+			drawingContext.DrawRectangle(Brushes.White, pen: null,
+				rectangle: new Rect(x: 0, y: 0, width: ActualWidth, height: ActualHeight));
 
-			double y = _yOffset;
+			var y = _yOffset;
 			foreach (var number in _lineNumbers)
 			{
 				number.Render(drawingContext, y, _lineNumberWidth);
@@ -33,22 +40,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public IReadOnlyList<LineNumber> LineNumbers => _lineNumbers;
-
 		public void UpdateLineNumbers(ILogFile logFile, LogFileSection visibleSection, double yOffset)
 		{
 			int lineNumberCharacterCount;
 			if (logFile != null)
-			{
-				lineNumberCharacterCount = (int)Math.Ceiling(Math.Log10(logFile.OriginalCount));
-			}
+				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.OriginalCount));
 			else
-			{
 				lineNumberCharacterCount = 0;
-			}
 
 			// We always reserve space for at least 3 characters.
-			_lineNumberWidth = TextHelper.EstimateWidthUpperLimit(Math.Max(lineNumberCharacterCount, 3));
+			_lineNumberWidth = TextHelper.EstimateWidthUpperLimit(Math.Max(lineNumberCharacterCount, val2: 3));
 			Width = _lineNumberWidth + TextHelper.LineNumberSpacing;
 
 			_yOffset = yOffset;
@@ -59,9 +60,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				var indices = new LogLineIndex[visibleSection.Count];
 				logFile.GetOriginalIndicesFrom(visibleSection, indices);
 				foreach (var index in indices)
-				{
 					_lineNumbers.Add(new LineNumber(index));
-				}
 			}
 
 			InvalidateVisual();

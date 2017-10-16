@@ -179,6 +179,7 @@
     <Compile Include="Ui\Controls\Analyse\SidePanels\AnalysisDataSourceViewModelTest.cs" />
     <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
     <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceCanvasTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumberCanvasTest.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />

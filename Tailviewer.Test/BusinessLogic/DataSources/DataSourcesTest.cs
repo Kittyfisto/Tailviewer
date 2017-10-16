@@ -128,7 +128,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				IDataSource dataSource1 = dataSources[0];
 				IDataSource dataSource2 = dataSources[1];
 
-				mergedDataSource.DataSources.Should().Equal(new object[] {dataSource1, dataSource2});
+				mergedDataSource.OriginalSources.Should().Equal(new object[] {dataSource1, dataSource2});
 				dataSource1.ParentId.Should().Be(merged.Id);
 				dataSource2.ParentId.Should().Be(merged.Id);
 			}
@@ -168,15 +168,15 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				dataSources.Count.Should().Be(6, "Because we've loaded 6 data sources");
 				var mergedDataSource1 = dataSources[3] as MergedDataSource;
 				mergedDataSource1.Should().NotBeNull();
-				mergedDataSource1.DataSources.Should().Equal(new object[] {dataSources[0]});
+				mergedDataSource1.OriginalSources.Should().Equal(new object[] {dataSources[0]});
 
 				var mergedDataSource2 = dataSources[4] as MergedDataSource;
 				mergedDataSource2.Should().NotBeNull();
-				mergedDataSource2.DataSources.Should().Equal(new object[] {dataSources[1]});
+				mergedDataSource2.OriginalSources.Should().Equal(new object[] {dataSources[1]});
 
 				var mergedDataSource3 = dataSources[5] as MergedDataSource;
 				mergedDataSource3.Should().NotBeNull();
-				mergedDataSource3.DataSources.Should().Equal(new object[] {dataSources[2]});
+				mergedDataSource3.OriginalSources.Should().Equal(new object[] {dataSources[2]});
 			}
 		}
 

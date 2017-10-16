@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -21,6 +22,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		, ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		public static readonly DependencyProperty DataSourceProperty =
+			DependencyProperty.Register("DataSource", typeof(IDataSource), typeof(LogEntryListView),
+				new PropertyMetadata(null));
 
 		public static readonly DependencyProperty LogFileProperty =
 			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogEntryListView),
@@ -50,6 +55,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
+		private readonly DataSourceCanvas _dataSourceCanvas;
 		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
 		private readonly FlatScrollBar _verticalScrollBar;
@@ -85,7 +91,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, 0);
-			_verticalScrollBar.SetValue(ColumnProperty, 2);
+			_verticalScrollBar.SetValue(ColumnProperty, 3);
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10*TextHelper.LineHeight);
 
@@ -97,10 +103,11 @@ namespace Tailviewer.Ui.Controls.LogView
 				};
 			_horizontalScrollBar.SetValue(RowProperty, 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, 0);
-			_horizontalScrollBar.SetValue(ColumnSpanProperty, 2);
+			_horizontalScrollBar.SetValue(ColumnSpanProperty, 3);
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)});
 			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
@@ -109,9 +116,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_textCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
 			_textCanvas.SetValue(RowProperty, 0);
-			_textCanvas.SetValue(ColumnProperty, 1);
-			_textCanvas.SetValue(RowProperty, 0);
-			_textCanvas.SetValue(ColumnProperty, 1);
+			_textCanvas.SetValue(ColumnProperty, 2);
 			_textCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
 			_textCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
 			_textCanvas.SizeChanged += TextCanvasOnSizeChanged;
@@ -125,7 +130,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberCanvas.SetValue(ColumnProperty, 0);
 			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(5, 0, 0, 0));
 
+			_dataSourceCanvas = new DataSourceCanvas();
+			_dataSourceCanvas.SetValue(RowProperty, 0);
+			_dataSourceCanvas.SetValue(ColumnProperty, 1);
+			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(5, 0, 0, 0));
+
 			Children.Add(_lineNumberCanvas);
+			Children.Add(_dataSourceCanvas);
 			Children.Add(_textCanvas);
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
@@ -158,19 +169,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FollowTailProperty, value); }
 		}
 
-		public int PendingModificationsCount
-		{
-			get { return _pendingModificationsCount; }
-		}
+		public int PendingModificationsCount => _pendingModificationsCount;
 
-		public ScrollBar VerticalScrollBar
-		{
-			get { return _verticalScrollBar; }
-		}
+		public ScrollBar VerticalScrollBar => _verticalScrollBar;
 
-		public ScrollBar HorizontalScrollBar
+		public ScrollBar HorizontalScrollBar => _horizontalScrollBar;
+
+		public IDataSource DataSource
 		{
-			get { return _horizontalScrollBar; }
+			get { return (IDataSource)GetValue(DataSourceProperty); }
+			set { SetValue(DataSourceProperty, value); }
 		}
 
 		public ILogFile LogFile
@@ -331,6 +339,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberCanvas.UpdateLineNumbers(LogFile,
 			                                    _textCanvas.CurrentlyVisibleSection,
 			                                    _textCanvas.YOffset);
+			_dataSourceCanvas.UpdateLineNumbers(DataSource,
+				_textCanvas.CurrentlyVisibleSection,
+				_textCanvas.YOffset);
 		}
 
 		private void TextCanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

@@ -106,6 +106,7 @@
     <Compile Include="LogFiles\AbstractLogFile.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\ILogFileFactory.cs" />
+    <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
     <Compile Include="LogFiles\LogFileListenerCollection.cs" />

@@ -181,6 +181,7 @@
         <logView:LogEntryListView
             x:Name="PART_ListView"
             Grid.Row="3"
+            DataSource="{Binding DataSource.DataSource, ElementName=This}"
             LogFile="{Binding LogFile, ElementName=This}"
             Search="{Binding Search, ElementName=This}"
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"

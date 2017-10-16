@@ -10,11 +10,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 {
 	public sealed class MergedDataSource
 		: AbstractDataSource
+		, IMergedDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ITaskScheduler _taskScheduler;
 		private MergedLogFile _unfilteredLogFile;
+		private IReadOnlyList<IDataSource> _orderedDataSources;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(10))
@@ -27,12 +29,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;
 			_dataSources = new HashSet<IDataSource>();
+			_orderedDataSources = new IDataSource[0];
 			UpdateLogFile();
 		}
 
 		public int DataSourceCount => _dataSources.Count;
 
-		public IEnumerable<IDataSource> DataSources => _dataSources;
+		public IReadOnlyList<IDataSource> OriginalSources => _orderedDataSources;
 
 		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
 
@@ -71,9 +74,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			_unfilteredLogFile?.Dispose();
 
+			_orderedDataSources = _dataSources.ToList();
+			var logFiles = _orderedDataSources.Select(x => x.UnfilteredLogFile); //< We want to make sure that we match the order we're providing to the outside world is the same order we're forwarding to the actual MergedLogFile!!!!
 			_unfilteredLogFile = new MergedLogFile(_taskScheduler,
 			                                       _maximumWaitTime,
-			                                       _dataSources.Select(x => x.UnfilteredLogFile));
+			                                       logFiles);
 			OnUnfilteredLogFileChanged();
 		}
 	}

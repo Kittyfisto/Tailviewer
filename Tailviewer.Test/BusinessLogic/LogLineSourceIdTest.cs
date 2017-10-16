@@ -135,5 +135,17 @@ namespace Tailviewer.Test.BusinessLogic
 			Marshal.SizeOf<LogLineSourceId>().Should().Be(1, reason);
 			sizeof(LogLineSourceId).Should().Be(1, reason);
 		}
+
+		[Test]
+		public void TestConvertToInt1()
+		{
+			((int) LogLineSourceId.Invalid).Should().Be(-1);
+		}
+
+		[Test]
+		public void TestConvertToInt2([Values(0, 1, 2, 10, 100, 200, 254)] byte value)
+		{
+			((int)new LogLineSourceId(value)).Should().Be(value);
+		}
 	}
 }

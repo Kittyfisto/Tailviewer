@@ -87,5 +87,21 @@ namespace Tailviewer.BusinessLogic
 
 			return string.Format("#{0}", _value);
 		}
+
+		/// <summary>
+		///     Converts the given source id to an integer.
+		/// </summary>
+		/// <remarks>
+		///     <see cref="Invalid" /> will be converted to -1 and <see cref="Default" /> to 0.
+		///     Every other index will be converted to the numerical value given upon construction.
+		/// </remarks>
+		/// <param name="id"></param>
+		public static explicit operator int(LogLineSourceId id)
+		{
+			if (id == Invalid)
+				return -1;
+
+			return id._value;
+		}
 	}
 }

@@ -17,24 +17,25 @@ namespace Tailviewer.Core.LogFiles
 	/// </summary>
 	public sealed class MergedLogFile
 		: AbstractLogFile
-		  , ILogFileListener
+		, IMergedLogFile
+		, ILogFileListener
 	{
 		private const int BatchSize = 1000;
 
 		private readonly List<Index> _indices;
 		private readonly IReadOnlyDictionary<ILogFile, byte> _logFileIndices;
+		private readonly TimeSpan _maximumWaitTime;
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly ILogFile[] _sources;
 		private readonly object _syncRoot;
-		private readonly TimeSpan _maximumWaitTime;
 		private Size _fileSize;
 		private DateTime _lastModified;
+		private int _maxCharactersPerLine;
+		private Percentage _progress;
 
 		private DateTime? _startTimestamp;
-		private int _maxCharactersPerLine;
 		private int _totalLineCount;
-		private Percentage _progress;
 
 		/// <summary>
 		///     Initializes this object.
@@ -68,7 +69,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 
 			byte idx = 0;
-			foreach (ILogFile logFile in _sources)
+			foreach (var logFile in _sources)
 			{
 				logFile.AddListener(this, maximumWaitTime, BatchSize);
 				logFileIndices.Add(logFile, idx);
@@ -78,30 +79,23 @@ namespace Tailviewer.Core.LogFiles
 			StartTask();
 		}
 
-		/// <summary>
-		///     The actual sources from which the merged view is created.
-		/// </summary>
-		public IEnumerable<ILogFile> Sources => _sources;
-
+		/// <inheritdoc />
+		public IReadOnlyList<ILogFile> Sources => _sources;
 
 		/// <summary>
-		/// 
 		/// </summary>
 		/// <remarks>
-		/// This should return false in order to show a detailed error
-		/// message as to why a view is empty, however I'm not sure if stating
-		/// "All data sources do not exist" is such an improvement over
-		/// "The data source is empty".
+		///     This should return false in order to show a detailed error
+		///     message as to why a view is empty, however I'm not sure if stating
+		///     "All data sources do not exist" is such an improvement over
+		///     "The data source is empty".
 		/// </remarks>
 		public override ErrorFlags Error => ErrorFlags.None;
 
 		/// <inheritdoc />
 		public override bool EndOfSourceReached
 		{
-			get
-			{
-				return _sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached;
-			}
+			get { return _sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached; }
 		}
 
 		/// <inheritdoc />
@@ -135,6 +129,9 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
+		public override double Progress => _progress.RelativeValue;
+
+		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
@@ -144,11 +141,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			for (int i = 0; i < section.Count; ++i)
-			{
+			for (var i = 0; i < section.Count; ++i)
 				// TODO: This seems rubbish - maybe I should change the interface to SourceLineIndex altogether?
 				dest[i] = GetLine((int) (section.Index + i));
-			}
 		}
 
 		/// <inheritdoc />
@@ -163,16 +158,13 @@ namespace Tailviewer.Core.LogFiles
 			var logFileIndex = idx.LogFileIndex;
 			var logFile = _sources[logFileIndex];
 
-			LogLine line = logFile.GetLine(idx.SourceLineIndex);
+			var line = logFile.GetLine(idx.SourceLineIndex);
 			var actualLine = new LogLine(index,
-			                             idx.MergedLogEntryIndex,
-										 new LogLineSourceId((byte) logFileIndex),
-			                             line);
+				idx.MergedLogEntryIndex,
+				new LogLineSourceId(logFileIndex),
+				line);
 			return actualLine;
 		}
-
-		/// <inheritdoc />
-		public override double Progress => _progress.RelativeValue;
 
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
@@ -187,60 +179,41 @@ namespace Tailviewer.Core.LogFiles
 				_progress = Percentage.Of(_indices.Count, _totalLineCount);
 
 				if (modification.Section.IsReset)
-				{
 					Clear(modification.LogFile);
-				}
 				else if (modification.Section.IsInvalidate)
-				{
-					// This one only needs to be implemented when MergedLogFiles use other
-					// MergedLogFiles as source.
 					throw new NotImplementedException();
-				}
 				else
-				{
-					for (int i = 0; i < modification.Section.Count; ++i)
+					for (var i = 0; i < modification.Section.Count; ++i)
 					{
-						LogLineIndex sourceIndex = modification.Section.Index + i;
-						LogLine newLogLine = modification.LogFile.GetLine((int)sourceIndex);
+						var sourceIndex = modification.Section.Index + i;
+						var newLogLine = modification.LogFile.GetLine((int) sourceIndex);
 						if (newLogLine.Timestamp != null)
 						{
 							// We need to find out where this new entry (or entries) is/are to be inserted.
-							int insertionIndex = _indices.Count;
+							var insertionIndex = _indices.Count;
 							byte logFileIndex;
 							_logFileIndices.TryGetValue(modification.LogFile, out logFileIndex);
-							for (int n = _indices.Count - 1; n >= 0; --n)
+							for (var n = _indices.Count - 1; n >= 0; --n)
 							{
-								Index idx = _indices[n];
-								ILogFile logFile = _sources[idx.LogFileIndex];
-								LogLine entry = logFile.GetLine(idx.SourceLineIndex);
+								var idx = _indices[n];
+								var logFile = _sources[idx.LogFileIndex];
+								var entry = logFile.GetLine(idx.SourceLineIndex);
 								if (entry.Timestamp <= newLogLine.Timestamp)
 								{
 									insertionIndex = n + 1;
 									break;
 								}
 								if (entry.Timestamp > newLogLine.Timestamp)
-								{
-									// We know that we MIGHT have to insert the new item *before*
-									// the current entry, but we can't stop looking yet until
-									// we've either reached the first entry or find an entry
-									// that is *before* the new entry... => hence no break here!
 									insertionIndex = n;
-								}
 							}
 
-							int mergedLogEntryIndex = GetMergedLogEntryIndex(modification.LogFile, insertionIndex, newLogLine);
-							var index = new Index((int)sourceIndex,
-												  mergedLogEntryIndex,
-												  newLogLine.LogEntryIndex,
-												  logFileIndex);
+							var mergedLogEntryIndex = GetMergedLogEntryIndex(modification.LogFile, insertionIndex, newLogLine);
+							var index = new Index((int) sourceIndex,
+								mergedLogEntryIndex,
+								newLogLine.LogEntryIndex,
+								logFileIndex);
 							if (insertionIndex < _indices.Count)
-							{
-								// TODO: We need to re-evaluate the entire file until this point
-								//       in order to determine the maximum number of characters again,
-								//       which could be less because of the invalidation...
-
 								InvalidateOnward(insertionIndex, modification.LogFile, newLogLine);
-							}
 
 							lock (_syncRoot)
 							{
@@ -251,34 +224,33 @@ namespace Tailviewer.Core.LogFiles
 							Listeners.OnRead(_indices.Count);
 						}
 					}
-				}
 			}
 
 			_progress = Percentage.Of(_indices.Count, _totalLineCount);
 			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.Size);
 			_lastModified = _sources.Aggregate(DateTime.MinValue,
-											   (a, file) =>
-											   {
-												   DateTime modified = file.LastModified;
-												   if (modified > a)
-													   return modified;
+				(a, file) =>
+				{
+					var modified = file.LastModified;
+					if (modified > a)
+						return modified;
 
-												   return a;
-											   }
-				);
-			_startTimestamp = _sources.Aggregate((DateTime?)null,
-												 (a, file) =>
-												 {
-													 DateTime? startTime = file.StartTimestamp;
-													 if (startTime == null)
-														 return a;
-													 if (a == null)
-														 return startTime;
-													 if (startTime < a)
-														 return startTime;
-													 return a;
-												 }
-				);
+					return a;
+				}
+			);
+			_startTimestamp = _sources.Aggregate((DateTime?) null,
+				(a, file) =>
+				{
+					var startTime = file.StartTimestamp;
+					if (startTime == null)
+						return a;
+					if (a == null)
+						return startTime;
+					if (startTime < a)
+						return startTime;
+					return a;
+				}
+			);
 
 			Listeners.OnRead(_indices.Count);
 			SetEndOfSourceReached();
@@ -291,10 +263,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			var count = 0;
 			foreach (var logFile in _sources)
-			{
 				// TODO: Introduce separate property that counts the number of lines with a timestamp as only those are of interest to us
 				count += logFile.Count;
-			}
 			return count;
 		}
 
@@ -310,14 +280,12 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (insertionIndex > 0)
 			{
-				Index previousLine = _indices[insertionIndex - 1];
+				var previousLine = _indices[insertionIndex - 1];
 				var previousLineLogFile = _sources[previousLine.LogFileIndex];
 
 				if (previousLineLogFile == logFile &&
 				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
-				{
 					return previousLine.MergedLogEntryIndex;
-				}
 
 				return previousLine.MergedLogEntryIndex + 1;
 			}
@@ -331,46 +299,41 @@ namespace Tailviewer.Core.LogFiles
 			// everything from that index on, insert the new line at the given index and then
 			// issue another modification that includes everything from the newly inserted index
 			// to the end.
-			int count = _indices.Count - insertionIndex;
+			var count = _indices.Count - insertionIndex;
 			Listeners.Invalidate(insertionIndex, count);
 
 			// This is really interesting.
 			// We're inserting a line somewhere in the middle which means that the logentry index of all following
 			// entries MAY increase by 1, depending on whether or not the inserted log line is a new entry
 			// or belongs to the previous line's entry
-			bool patchFollowingIndices = true;
+			var patchFollowingIndices = true;
 			if (insertionIndex > 0)
 			{
-				Index previousLine = _indices[insertionIndex - 1];
+				var previousLine = _indices[insertionIndex - 1];
 				var previousLineLogFile = _sources[previousLine.LogFileIndex];
 
 				if (previousLineLogFile == source &&
 				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
-				{
-					// We're inserting 
 					patchFollowingIndices = false;
-				}
 			}
 
 			if (patchFollowingIndices)
-			{
-				for (int i = 0; i < count; ++i)
+				for (var i = 0; i < count; ++i)
 				{
-					Index idx = _indices[insertionIndex + i];
+					var idx = _indices[insertionIndex + i];
 					idx.MergedLogEntryIndex++;
 					_indices[insertionIndex + i] = idx;
 				}
-			}
 		}
 
 		private void Clear(ILogFile logFile)
 		{
-			int numRemoved = 0;
+			var numRemoved = 0;
 			lock (_indices)
 			{
-				for (int i = _indices.Count - 1; i >= 0; --i)
+				for (var i = _indices.Count - 1; i >= 0; --i)
 				{
-					Index index = _indices[i];
+					var index = _indices[i];
 					var indexLogFile = _sources[index.LogFileIndex];
 					if (indexLogFile == logFile)
 					{
@@ -400,9 +363,9 @@ namespace Tailviewer.Core.LogFiles
 			public int MergedLogEntryIndex;
 
 			public Index(int sourceLineIndex,
-			             int mergedLogEntryIndex,
-			             int originalLogEntryIndex,
-			             byte logFileIndex)
+				int mergedLogEntryIndex,
+				int originalLogEntryIndex,
+				byte logFileIndex)
 			{
 				SourceLineIndex = sourceLineIndex;
 				MergedLogEntryIndex = mergedLogEntryIndex;
@@ -413,7 +376,7 @@ namespace Tailviewer.Core.LogFiles
 			public override string ToString()
 			{
 				return string.Format("SourceLineIndex: {0}, OriginalLogEntryIndex: {1}, LogFile: {2}, MergedLogEntryIndex: {3}",
-				                     SourceLineIndex, OriginalLogEntryIndex, LogFileIndex, MergedLogEntryIndex);
+					SourceLineIndex, OriginalLogEntryIndex, LogFileIndex, MergedLogEntryIndex);
 			}
 		}
 
