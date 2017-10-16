@@ -82,6 +82,20 @@ namespace Tailviewer.Ui.Controls.LogView
 						case LevelFlags.Fatal:
 						case LevelFlags.Error:
 							return TextHelper.ErrorForegroundBrush;
+
+						case LevelFlags.Debug:
+							if (IsSelected)
+								if (IsFocused)
+									return TextHelper.SelectedForegroundBrush;
+
+							return TextHelper.DebugForegroundBrush;
+
+						case LevelFlags.Trace:
+							if (IsSelected)
+								if (IsFocused)
+									return TextHelper.SelectedForegroundBrush;
+
+							return TextHelper.TraceForegroundBrush;
 					}
 				}
 

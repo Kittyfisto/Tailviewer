@@ -10,7 +10,7 @@ namespace Tailviewer
 		private static readonly List<Change> AllChanges;
 
 		/// <summary>
-		/// Returns all changesets (i.e. effectively all patches) of the latest minor version.
+		///     Returns all changesets (i.e. effectively all patches) of the latest minor version.
 		/// </summary>
 		public static IEnumerable<Change> MostRecentPatches
 		{

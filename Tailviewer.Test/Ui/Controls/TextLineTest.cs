@@ -143,7 +143,10 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
+			textLine.ForegroundBrush.Should().Be(TextHelper.DebugForegroundBrush);
+
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true);
+			textLine.ForegroundBrush.Should().Be(TextHelper.TraceForegroundBrush);
 
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
 			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
