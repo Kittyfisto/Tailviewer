@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -20,6 +21,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Level.Should().Be(LevelFlags.Info);
 			line.Timestamp.Should().NotHaveValue();
 			line.MatchedFilters.Should().Be(0);
+			line.SourceId.Should().Be(LogLineSourceId.Default);
 		}
 
 		[Test]
@@ -32,6 +34,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Message.Should().Be("Foobar");
 			line.Level.Should().Be(LevelFlags.Error);
 			line.MatchedFilters.Should().Be(0);
+			line.SourceId.Should().Be(LogLineSourceId.Default);
 		}
 
 		[Test]
@@ -45,6 +48,7 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Level.Should().Be(LevelFlags.All);
 			line.Timestamp.Should().BeNull();
 			line.MatchedFilters.Should().Be(0);
+			line.SourceId.Should().Be(LogLineSourceId.Default);
 		}
 
 		[Test]
@@ -58,6 +62,89 @@ namespace Tailviewer.Test.BusinessLogic
 			line.Level.Should().Be(LevelFlags.All);
 			line.Timestamp.Should().BeNull();
 			line.MatchedFilters.Should().Be(42);
+			line.SourceId.Should().Be(LogLineSourceId.Default);
+		}
+
+		[Test]
+		public void TestConstruction5()
+		{
+			var line = new LogLine(0, 0, 0, new LogLineSourceId(42), null, LevelFlags.All, null, 42);
+			line.LineIndex.Should().Be(0);
+			line.OriginalLineIndex.Should().Be(0);
+			line.LogEntryIndex.Should().Be(0);
+			line.Message.Should().BeNull();
+			line.Level.Should().Be(LevelFlags.All);
+			line.Timestamp.Should().BeNull();
+			line.MatchedFilters.Should().Be(42);
+			line.SourceId.Should().Be(new LogLineSourceId(42));
+		}
+
+		[Test]
+		public void TestConstruction6()
+		{
+			var originalLine = new LogLine(1, 2, 3, "foobar", LevelFlags.Trace, new DateTime(2017, 10, 16, 23, 28, 20));
+			var line = new LogLine(new LogLineSourceId(200), originalLine);
+			line.LineIndex.Should().Be(1);
+			line.OriginalLineIndex.Should().Be(2);
+			line.LogEntryIndex.Should().Be(3);
+			line.SourceId.Should().Be(new LogLineSourceId(200));
+			line.Message.Should().Be("foobar");
+			line.Level.Should().Be(LevelFlags.Trace);
+			line.Timestamp.Should().Be(new DateTime(2017, 10, 16, 23, 28, 20));
+			line.MatchedFilters.Should().Be(0);
+		}
+
+		[Test]
+		public void TestConstruction7()
+		{
+			var originalLine = new LogLine(1, 2, "foobar", LevelFlags.Trace);
+			var line = new LogLine(3, 4, new LogLineSourceId(128), originalLine);
+			line.LineIndex.Should().Be(3);
+			line.OriginalLineIndex.Should().Be(3);
+			line.LogEntryIndex.Should().Be(4);
+			line.SourceId.Should().Be(new LogLineSourceId(128));
+			line.Message.Should().Be("foobar");
+			line.Level.Should().Be(LevelFlags.Trace);
+			line.Timestamp.Should().BeNull();
+			line.MatchedFilters.Should().Be(0);
+		}
+
+		[Test]
+		public void TestConstruction8()
+		{
+			var line = new LogLine(1, 2, 3, new LogLineSourceId(201), "stuff", LevelFlags.Trace, new DateTime(2017, 10, 16, 23, 43, 00));
+			line.LineIndex.Should().Be(1);
+			line.OriginalLineIndex.Should().Be(2);
+			line.LogEntryIndex.Should().Be(3);
+			line.SourceId.Should().Be(new LogLineSourceId(201));
+			line.Message.Should().Be("stuff");
+			line.Level.Should().Be(LevelFlags.Trace);
+			line.Timestamp.Should().Be(new DateTime(2017, 10, 16, 23, 43, 00));
+			line.MatchedFilters.Should().Be(0);
+		}
+
+		[Test]
+		[Description("Verifies that two lines with different data source ids are not equal")]
+		public void TestEquality1()
+		{
+			var line = new LogLine(0, 0, 0, new LogLineSourceId(42), null, LevelFlags.Trace, null, 0);
+			var otherLine = new LogLine(0, 0, 0, new LogLineSourceId(41), null, LevelFlags.Trace, null, 0);
+
+			line.Equals(otherLine).Should().BeFalse();
+			otherLine.Equals(line).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestSize()
+		{
+			Console.WriteLine("sizeof(LogLine): {0} bytes", Marshal.SizeOf<LogLine>());
+		}
+
+		[Test]
+		public void TestToString1()
+		{
+			var line = new LogLine(1, 2, 3, new LogLineSourceId(4), "foobar", LevelFlags.Trace, null, 0);
+			line.ToString().Should().Be("#1 (Original #3) (Source #4): foobar");
 		}
 
 		[Test]

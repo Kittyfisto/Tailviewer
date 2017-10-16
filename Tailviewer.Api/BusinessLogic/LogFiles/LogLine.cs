@@ -55,6 +55,30 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public readonly int MatchedFilters;
 
 		/// <summary>
+		///     An id which describes the source of this log line.
+		/// </summary>
+		/// <remarks>
+		///     As a result, only up to 256 different sources may be used at once.
+		/// </remarks>
+		public readonly LogLineSourceId SourceId;
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <see name="LogLine.Message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="sourceId"></param>
+		/// <param name="line"></param>
+		[DebuggerStepThrough]
+		public LogLine(LogLineSourceId sourceId, LogLine line)
+			: this(line.LineIndex, line.OriginalLineIndex, line.LogEntryIndex, sourceId, line.Message, line.Level, line.Timestamp, 0)
+		{
+		}
+
+		/// <summary>
 		///     Initializes this log line.
 		/// </summary>
 		/// <remarks>
@@ -178,6 +202,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="lineIndex"></param>
 		/// <param name="logEntryIndex"></param>
+		/// <param name="sourceId">The source from which this line originated</param>
+		/// <param name="line"></param>
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int logEntryIndex, LogLineSourceId sourceId, LogLine line)
+			: this(lineIndex, lineIndex, logEntryIndex, sourceId, line.Message, line.Level, line.Timestamp, 0)
+		{ }
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
 		/// <param name="line"></param>
 		[DebuggerStepThrough]
 		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLine line)
@@ -214,12 +250,53 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="lineIndex"></param>
 		/// <param name="originalLineIndex"></param>
 		/// <param name="logEntryIndex"></param>
+		/// <param name="sourceId">The source from which this line originated</param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
+			: this(lineIndex, originalLineIndex, logEntryIndex, sourceId, message, level, timestamp, 0)
+		{ }
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="originalLineIndex"></param>
+		/// <param name="logEntryIndex"></param>
 		/// <param name="message">The message as it will be displayed to the user</param>
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
 		/// <param name="matchedFilters"></param>
 		[DebuggerStepThrough]
 		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
+			: this(lineIndex, originalLineIndex, logEntryIndex, LogLineSourceId.Default, message, level, timestamp, matchedFilters)
+		{}
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
+		/// <remarks>
+		///     ONLY <paramref name="message" /> will be displayed to the user.
+		///     All other parameters are meta information for filtering and merging multiple data sources, but
+		///     ARE NOT DISPLAYED ON THEIR OWN.
+		/// </remarks>
+		/// <param name="lineIndex"></param>
+		/// <param name="originalLineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="sourceId">The source from which this line originated</param>
+		/// <param name="message">The message as it will be displayed to the user</param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
+		/// <param name="matchedFilters"></param>
+		[DebuggerStepThrough]
+		public LogLine(int lineIndex, int originalLineIndex, int logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp, int matchedFilters)
 		{
 			LineIndex = lineIndex;
 			OriginalLineIndex = originalLineIndex;
@@ -228,6 +305,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			LogEntryIndex = logEntryIndex;
 			Timestamp = timestamp;
 			MatchedFilters = matchedFilters;
+			SourceId = sourceId;
 		}
 
 		/// <summary>
@@ -246,6 +324,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			if (LogEntryIndex != other.LogEntryIndex)
 				return false;
 
+			if (SourceId != other.SourceId)
+				return false;
+
 			if (!string.Equals(Message, other.Message))
 				return false;
 
@@ -258,7 +339,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return string.Format("#{0} (#{1}): {2}", LineIndex, LogEntryIndex, Message);
+			return string.Format("#{0} (Original #{1}) (Source {2}): {3}", LineIndex, LogEntryIndex, SourceId, Message);
 		}
 
 		/// <summary>

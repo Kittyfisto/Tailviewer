@@ -144,64 +144,65 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		]
 		public void TestMerge3()
 		{
+			var source0 = new List<LogLine>();
+			Mock<ILogFile> logFile0 = CreateLogFile(source0);
+
 			var source1 = new List<LogLine>();
 			Mock<ILogFile> logFile1 = CreateLogFile(source1);
 
-			var source2 = new List<LogLine>();
-			Mock<ILogFile> logFile2 = CreateLogFile(source2);
-
-			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile0.Object, logFile1.Object);
 			var data = Listen(merged);
 
 			DateTime timestamp = DateTime.Now;
-			source1.Add(new LogLine(0, "a", LevelFlags.Info, timestamp));
-			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
+			source0.Add(new LogLine(0, "a", LevelFlags.Info, timestamp));
+			merged.OnLogFileModified(logFile0.Object, new LogFileSection(0, 1));
 			_scheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 
-			source2.Add(new LogLine(1, "b", LevelFlags.Debug, timestamp));
-			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
+			source1.Add(new LogLine(1, "b", LevelFlags.Debug, timestamp));
+			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
 
 			_scheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new object[] {source1[0], source2[0]});
+			data.Should().Equal(new object[]
+			{
+				new LogLine(new LogLineSourceId(0), source0[0]),
+				new LogLine(new LogLineSourceId(1), source1[0])
+			});
 		}
 
 		[Test]
 		[Description("Verifies that log lines without timestamp are ignored")]
 		public void TestMerge4()
 		{
-			var source = new List<LogLine>();
-			Mock<ILogFile> source1 = CreateLogFile(source);
+			var source1Lines = new List<LogLine>();
+			Mock<ILogFile> source1 = CreateLogFile(source1Lines);
 			var source2 = new Mock<ILogFile>();
 			source2.Setup(x => x.EndOfSourceReached).Returns(true);
 			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			var data = Listen(merged);
 
-			source.Add(new LogLine(0, "a", LevelFlags.Warning, DateTime.Now));
-			source.Add(new LogLine(1, "b", LevelFlags.Info));
-			source.Add(new LogLine(2, "c", LevelFlags.Error, DateTime.Now));
+			source1Lines.Add(new LogLine(0, "a", LevelFlags.Warning, DateTime.Now));
+			source1Lines.Add(new LogLine(1, "b", LevelFlags.Info));
+			source1Lines.Add(new LogLine(2, "c", LevelFlags.Error, DateTime.Now));
 			merged.OnLogFileModified(source1.Object, new LogFileSection(0, 3));
 
 			_scheduler.RunOnce();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new[]
-				{
-					new LogLine(0, 0, source[0]),
-					new LogLine(1, 1, source[2])
-				});
+			data.Should().Equal(new LogLine(0, 0, new LogLineSourceId(0), source1Lines[0]),
+								new LogLine(1, 1, new LogLineSourceId(0), source1Lines[2]));
 		}
 
 		[Test]
 		[Description("Verifies that log messages from different sources are ordered correctly, even when arring out of order")]
 		public void TestMerge5()
 		{
-			var source1 = new List<LogLine>();
-			Mock<ILogFile> logFile1 = CreateLogFile(source1);
+			var source0 = new List<LogLine>();
+			Mock<ILogFile> logFile1 = CreateLogFile(source0);
 
-			var source2 = new List<LogLine>();
-			Mock<ILogFile> logFile2 = CreateLogFile(source2);
+			var source1 = new List<LogLine>();
+			Mock<ILogFile> logFile2 = CreateLogFile(source1);
 
 			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
 			var data = Listen(merged);
@@ -209,13 +210,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var later = new DateTime(2016, 2, 16);
 			var earlier = new DateTime(2016, 2, 15);
 
-			source1.Add(new LogLine(0, "a", LevelFlags.Warning, later));
+			source0.Add(new LogLine(0, "a", LevelFlags.Warning, later));
 			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
 
 			_scheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 
-			source2.Add(new LogLine(0, "c", LevelFlags.Error, earlier));
+			source1.Add(new LogLine(0, "c", LevelFlags.Error, earlier));
 			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
 
 			_scheduler.RunOnce();
@@ -223,8 +224,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.Count.Should().Be(2);
 			data.Should().Equal(new object[]
 				{
-					new LogLine(0, 0, source2[0]),
-					new LogLine(1, 1, source1[0])
+					new LogLine(0, 0, new LogLineSourceId(1), source1[0]),
+					new LogLine(1, 1, new LogLineSourceId(0), source0[0])
 				});
 		}
 
@@ -234,31 +235,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			)]
 		public void TestMerge6()
 		{
+			var source0 = new List<LogLine>();
+			Mock<ILogFile> logFile0 = CreateLogFile(source0);
+
 			var source1 = new List<LogLine>();
+			DateTime timestamp = DateTime.Now;
+			source1.Add(new LogLine(0, 0, "Hello World", LevelFlags.Info, timestamp));
 			Mock<ILogFile> logFile1 = CreateLogFile(source1);
 
-			var source2 = new List<LogLine>();
-			DateTime timestamp = DateTime.Now;
-			source2.Add(new LogLine(0, 0, "Hello World", LevelFlags.Info, timestamp));
-			Mock<ILogFile> logFile2 = CreateLogFile(source2);
-
-			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile1.Object, logFile2.Object);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), logFile0.Object, logFile1.Object);
 			var data = Listen(merged);
 			var changes = ListenToChanges(merged);
 
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
+			merged.OnLogFileModified(logFile0.Object, LogFileSection.Reset);
 			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile1.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile2.Object, LogFileSection.Reset);
-			merged.OnLogFileModified(logFile2.Object, new LogFileSection(0, 1));
+			merged.OnLogFileModified(logFile1.Object, new LogFileSection(0, 1));
 
 			_scheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 
-			data.Should().Equal(source2);
+			data.Should().Equal(new LogLine(new LogLineSourceId(1), source1[0]));
 
 			int count = changes.Count;
 			changes.ElementAt(count - 2).Should().Be(LogFileSection.Reset);

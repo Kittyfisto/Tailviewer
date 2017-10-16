@@ -22,6 +22,7 @@ namespace Tailviewer.Core.LogFiles
 		private const int BatchSize = 1000;
 
 		private readonly List<Index> _indices;
+		private readonly IReadOnlyDictionary<ILogFile, byte> _logFileIndices;
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly ILogFile[] _sources;
@@ -35,11 +36,23 @@ namespace Tailviewer.Core.LogFiles
 		private int _totalLineCount;
 		private Percentage _progress;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="scheduler"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="sources"></param>
 		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
 			: this(scheduler, maximumWaitTime, sources.ToArray())
 		{
 		}
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="scheduler"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="sources"></param>
 		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, params ILogFile[] sources)
 			: base(scheduler)
 		{
@@ -49,16 +62,25 @@ namespace Tailviewer.Core.LogFiles
 			_sources = sources;
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_indices = new List<Index>();
+			var logFileIndices = new Dictionary<ILogFile, byte>();
+			_logFileIndices = logFileIndices;
 			_syncRoot = new object();
 			_maximumWaitTime = maximumWaitTime;
 
+			byte idx = 0;
 			foreach (ILogFile logFile in _sources)
 			{
 				logFile.AddListener(this, maximumWaitTime, BatchSize);
+				logFileIndices.Add(logFile, idx);
+
+				++idx;
 			}
 			StartTask();
 		}
 
+		/// <summary>
+		///     The actual sources from which the merged view is created.
+		/// </summary>
 		public IEnumerable<ILogFile> Sources => _sources;
 
 
@@ -138,9 +160,13 @@ namespace Tailviewer.Core.LogFiles
 				idx = _indices[index];
 			}
 
-			LogLine line = idx.LogFile.GetLine(idx.SourceLineIndex);
+			var logFileIndex = idx.LogFileIndex;
+			var logFile = _sources[logFileIndex];
+
+			LogLine line = logFile.GetLine(idx.SourceLineIndex);
 			var actualLine = new LogLine(index,
 			                             idx.MergedLogEntryIndex,
+										 new LogLineSourceId((byte) logFileIndex),
 			                             line);
 			return actualLine;
 		}
@@ -180,10 +206,13 @@ namespace Tailviewer.Core.LogFiles
 						{
 							// We need to find out where this new entry (or entries) is/are to be inserted.
 							int insertionIndex = _indices.Count;
+							byte logFileIndex;
+							_logFileIndices.TryGetValue(modification.LogFile, out logFileIndex);
 							for (int n = _indices.Count - 1; n >= 0; --n)
 							{
 								Index idx = _indices[n];
-								LogLine entry = idx.LogFile.GetLine(idx.SourceLineIndex);
+								ILogFile logFile = _sources[idx.LogFileIndex];
+								LogLine entry = logFile.GetLine(idx.SourceLineIndex);
 								if (entry.Timestamp <= newLogLine.Timestamp)
 								{
 									insertionIndex = n + 1;
@@ -203,7 +232,7 @@ namespace Tailviewer.Core.LogFiles
 							var index = new Index((int)sourceIndex,
 												  mergedLogEntryIndex,
 												  newLogLine.LogEntryIndex,
-												  modification.LogFile);
+												  logFileIndex);
 							if (insertionIndex < _indices.Count)
 							{
 								// TODO: We need to re-evaluate the entire file until this point
@@ -282,7 +311,9 @@ namespace Tailviewer.Core.LogFiles
 			if (insertionIndex > 0)
 			{
 				Index previousLine = _indices[insertionIndex - 1];
-				if (previousLine.LogFile == logFile &&
+				var previousLineLogFile = _sources[previousLine.LogFileIndex];
+
+				if (previousLineLogFile == logFile &&
 				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
 				{
 					return previousLine.MergedLogEntryIndex;
@@ -311,7 +342,9 @@ namespace Tailviewer.Core.LogFiles
 			if (insertionIndex > 0)
 			{
 				Index previousLine = _indices[insertionIndex - 1];
-				if (previousLine.LogFile == source &&
+				var previousLineLogFile = _sources[previousLine.LogFileIndex];
+
+				if (previousLineLogFile == source &&
 				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
 				{
 					// We're inserting 
@@ -338,7 +371,8 @@ namespace Tailviewer.Core.LogFiles
 				for (int i = _indices.Count - 1; i >= 0; --i)
 				{
 					Index index = _indices[i];
-					if (index.LogFile == logFile)
+					var indexLogFile = _sources[index.LogFileIndex];
+					if (indexLogFile == logFile)
 					{
 						_indices.RemoveAt(i);
 						++numRemoved;
@@ -360,26 +394,26 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		private struct Index
 		{
-			public readonly ILogFile LogFile;
 			public readonly int OriginalLogEntryIndex;
 			public readonly int SourceLineIndex;
+			public readonly byte LogFileIndex;
 			public int MergedLogEntryIndex;
 
 			public Index(int sourceLineIndex,
 			             int mergedLogEntryIndex,
 			             int originalLogEntryIndex,
-			             ILogFile logFile)
+			             byte logFileIndex)
 			{
 				SourceLineIndex = sourceLineIndex;
 				MergedLogEntryIndex = mergedLogEntryIndex;
 				OriginalLogEntryIndex = originalLogEntryIndex;
-				LogFile = logFile;
+				LogFileIndex = logFileIndex;
 			}
 
 			public override string ToString()
 			{
 				return string.Format("SourceLineIndex: {0}, OriginalLogEntryIndex: {1}, LogFile: {2}, MergedLogEntryIndex: {3}",
-				                     SourceLineIndex, OriginalLogEntryIndex, LogFile, MergedLogEntryIndex);
+				                     SourceLineIndex, OriginalLogEntryIndex, LogFileIndex, MergedLogEntryIndex);
 			}
 		}
 

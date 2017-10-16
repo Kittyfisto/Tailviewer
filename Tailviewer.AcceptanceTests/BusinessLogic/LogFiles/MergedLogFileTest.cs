@@ -57,49 +57,50 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void Test2SmallSources()
 		{
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Entries))
-			using (var source2 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Lines))
+			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Entries))
+			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Lines))
+			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
 			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
-			using (var multi2 = new MultiLineLogFile(_scheduler, source2, TimeSpan.Zero))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi1, multi2))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
 			{
+				source0.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				source1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-				source2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
+				multi0.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				multi1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-				multi2.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
 																	"Because the merged file should've been finished");
-				merged.Property(x => x.Size).ShouldEventually().Be(source1.Size + source2.Size);
-				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source2.StartTimestamp);
+				merged.Property(x => x.Size).ShouldEventually().Be(source0.Size + source1.Size);
+				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source1.StartTimestamp);
 
+				LogLine[] source0Lines = multi0.GetSection(new LogFileSection(0, source0.Count));
 				LogLine[] source1Lines = multi1.GetSection(new LogFileSection(0, source1.Count));
-				LogLine[] source2Lines = multi2.GetSection(new LogFileSection(0, source2.Count));
 				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
 
-				mergedLines[0].Should().Be(new LogLine(0, 0, source2Lines[0]));
-				mergedLines[1].Should().Be(new LogLine(1, 1, source1Lines[0]));
-				mergedLines[2].Should().Be(new LogLine(2, 1, source1Lines[1]));
-				mergedLines[3].Should().Be(new LogLine(3, 1, source1Lines[2]));
-				mergedLines[4].Should().Be(new LogLine(4, 2, source2Lines[1]));
-				mergedLines[5].Should().Be(new LogLine(5, 3, source1Lines[3]));
-				mergedLines[6].Should().Be(new LogLine(6, 3, source1Lines[4]));
-				mergedLines[7].Should().Be(new LogLine(7, 3, source1Lines[5]));
+				mergedLines[0].Should().Be(new LogLine(0, 0, new LogLineSourceId(1), source1Lines[0]));
+				mergedLines[1].Should().Be(new LogLine(1, 1, new LogLineSourceId(0), source0Lines[0]));
+				mergedLines[2].Should().Be(new LogLine(2, 1, new LogLineSourceId(0), source0Lines[1]));
+				mergedLines[3].Should().Be(new LogLine(3, 1, new LogLineSourceId(0), source0Lines[2]));
+				mergedLines[4].Should().Be(new LogLine(4, 2, new LogLineSourceId(1), source1Lines[1]));
+				mergedLines[5].Should().Be(new LogLine(5, 3, new LogLineSourceId(0), source0Lines[3]));
+				mergedLines[6].Should().Be(new LogLine(6, 3, new LogLineSourceId(0), source0Lines[4]));
+				mergedLines[7].Should().Be(new LogLine(7, 3, new LogLineSourceId(0), source0Lines[5]));
 			}
 		}
 
 		[Test]
+		[Ignore("This test should not use test data which has identical timestamps over multiple sources: The result of the merge is undefined")]
 		public void TestLive1And2()
 		{
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive1))
-			using (var source2 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive2))
-			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2))
+			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive1))
+			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive2))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source0, source1))
 			{
 				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),
 				                                                    "Because the merged file should've been finished");
-				merged.Property(x => x.Size).ShouldEventually().Be(source1.Size + source2.Size);
-				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source1.StartTimestamp);
+				merged.Property(x => x.Size).ShouldEventually().Be(source0.Size + source1.Size);
+				merged.Property(x => x.StartTimestamp).ShouldEventually().Be(source0.StartTimestamp);
 
 				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
 
@@ -112,7 +113,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                              "2016-02-17 22:57:51,559 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello",
 				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 559)));
 				mergedLines[2].Should()
-				              .Be(new LogLine(2, 2,
+				              .Be(new LogLine(2, 2, 2, new LogLineSourceId(1),
 				                              "2016-02-17 22:57:51,560 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello",
 				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 560)));
 				mergedLines[3].Should()
@@ -120,7 +121,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                              "2016-02-17 22:57:51,664 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!",
 				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 664)));
 				mergedLines[4].Should()
-				              .Be(new LogLine(4, 4,
+				              .Be(new LogLine(4, 4, 4, new LogLineSourceId(1),
 				                              "2016-02-17 22:57:51,665 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!",
 				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 665)));
 				mergedLines[5].Should()
@@ -128,7 +129,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                              "2016-02-17 22:57:59,284 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 284)));
 				mergedLines[6].Should()
-				              .Be(new LogLine(6, 6,
+				              .Be(new LogLine(6, 6, 6, new LogLineSourceId(1),
 				                              "2016-02-17 22:57:59,284 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 284)));
 				mergedLines[7].Should()
