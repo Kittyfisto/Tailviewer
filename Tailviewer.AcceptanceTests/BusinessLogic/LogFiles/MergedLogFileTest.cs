@@ -90,7 +90,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("This test should not use test data which has identical timestamps over multiple sources: The result of the merge is undefined")]
 		public void TestLive1And2()
 		{
 			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive1))
@@ -130,14 +129,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 284)));
 				mergedLines[6].Should()
 				              .Be(new LogLine(6, 6, 6, new LogLineSourceId(1),
-				                              "2016-02-17 22:57:59,284 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 284)));
+				                              "2016-02-17 22:57:59,285 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
+				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 285)));
 				mergedLines[7].Should()
 				              .Be(new LogLine(7, 7,
-				                              "2016-02-17 22:57:59,299 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 299)));
+				                              "2016-02-17 22:57:59,298 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
+				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 298)));
 				mergedLines[8].Should()
-				              .Be(new LogLine(8, 8,
+				              .Be(new LogLine(8, 8, 8, new LogLineSourceId(1),
 				                              "2016-02-17 22:57:59,299 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 299)));
 				mergedLines[9].Should()
@@ -145,7 +144,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                              @"2016-02-17 22:57:59,302 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e",
 				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 302)));
 				mergedLines[10].Should()
-				               .Be(new LogLine(10, 10,
+				               .Be(new LogLine(10, 10, 10, new LogLineSourceId(1),
 				                               @"2016-02-17 22:57:59,303 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e",
 				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 303)));
 				mergedLines[11].Should()
@@ -153,7 +152,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                               @"2016-02-17 22:57:59,304 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07",
 				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 304)));
 				mergedLines[12].Should()
-				               .Be(new LogLine(12, 12,
+				               .Be(new LogLine(12, 12, 12, new LogLineSourceId(1),
 				                               @"2016-02-17 22:57:59,305 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07",
 				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 305)));
 				mergedLines[13].Should()
@@ -161,11 +160,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                               "2016-02-17 22:57:59,306 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 306)));
 				mergedLines[14].Should()
-				               .Be(new LogLine(14, 14,
+				               .Be(new LogLine(14, 14, 14, new LogLineSourceId(1),
 				                               "2016-02-17 22:57:59,307 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 307)));
 				mergedLines[15].Should()
-				               .Be(new LogLine(15, 15,
+				               .Be(new LogLine(15, 15, 15, new LogLineSourceId(1),
 				                               "2016-02-17 22:57:59,310 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 310)));
 				mergedLines[16].Should()
@@ -177,7 +176,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                               @"2016-02-17 22:57:59,863 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 863)));
 				mergedLines[18].Should()
-				               .Be(new LogLine(18, 18,
+				               .Be(new LogLine(18, 18, 18, new LogLineSourceId(1),
 				                               @"2016-02-17 22:57:59,864 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 864)));
 			}
