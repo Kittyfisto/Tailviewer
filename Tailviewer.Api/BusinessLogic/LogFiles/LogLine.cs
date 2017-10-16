@@ -326,15 +326,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="line"></param>
 		/// <param name="leftMost">The left-most log level in the given <paramref name="line"/></param>
-		/// <returns></returns>
+		/// <returns>The last log level in the given <paramref name="line"/></returns>
 		public static LevelFlags DetermineLevelsFromLine(string line, out LevelFlags leftMost)
 		{
-			LevelFlags level = LevelFlags.None;
+			LevelFlags rightMost = LevelFlags.None;
 			leftMost = LevelFlags.None;
 			int index = int.MaxValue;
 
 			if (line == null)
-				return level;
+				return rightMost;
 
 			var idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
 			if (idx != -1)
@@ -349,7 +349,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			idx = line.IndexOf("ERROR", StringComparison.InvariantCulture);
 			if (idx != -1)
 			{
-				level |= LevelFlags.Error;
+				rightMost |= LevelFlags.Error;
 				if (idx < index)
 				{
 					leftMost = LevelFlags.Error;
@@ -360,7 +360,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			idx = line.IndexOf("WARN", StringComparison.InvariantCulture);
 			if (idx != -1)
 			{
-				level |= LevelFlags.Warning;
+				rightMost |= LevelFlags.Warning;
 				if (idx < index)
 				{
 					leftMost = LevelFlags.Warning;
@@ -371,7 +371,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			idx = line.IndexOf("INFO", StringComparison.InvariantCulture);
 			if (idx != -1)
 			{
-				level |= LevelFlags.Info;
+				rightMost |= LevelFlags.Info;
 				if (idx < index)
 				{
 					leftMost = LevelFlags.Info;
@@ -382,7 +382,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			idx = line.IndexOf("DEBUG", StringComparison.InvariantCulture);
 			if (idx != -1)
 			{
-				level |= LevelFlags.Debug;
+				rightMost |= LevelFlags.Debug;
 				if (idx < index)
 				{
 					leftMost = LevelFlags.Debug;
@@ -390,7 +390,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
-			return level;
+			idx = line.IndexOf("TRACE", StringComparison.InvariantCulture);
+			if (idx != -1)
+			{
+				rightMost |= LevelFlags.Trace;
+				if (idx < index)
+				{
+					leftMost = LevelFlags.Trace;
+					index = idx;
+				}
+			}
+
+			return rightMost;
 		}
 
 		/// <summary>

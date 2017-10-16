@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -8,10 +7,8 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using LogViewerControl = Tailviewer.Ui.Controls.LogView.LogViewerControl;
 
@@ -92,6 +89,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelAll()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.All;
+			_control.ShowTrace.Should().BeTrue();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeTrue();
 			_control.ShowWarning.Should().BeTrue();
@@ -103,6 +101,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelDebug()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Debug;
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeFalse();
@@ -114,6 +113,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelError()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Error;
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeFalse();
@@ -125,6 +125,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelFatal()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Fatal;
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeFalse();
@@ -136,6 +137,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelInfo()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Info;
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeTrue();
 			_control.ShowWarning.Should().BeFalse();
@@ -147,9 +149,22 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestChangeLevelWarning()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.Warning;
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeTrue();
+			_control.ShowError.Should().BeFalse();
+			_control.ShowFatal.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestChangeLevelTrace()
+		{
+			_control.DataSource.LevelsFilter = LevelFlags.Trace;
+			_control.ShowTrace.Should().BeTrue();
+			_control.ShowDebug.Should().BeFalse();
+			_control.ShowInfo.Should().BeFalse();
+			_control.ShowWarning.Should().BeFalse();
 			_control.ShowError.Should().BeFalse();
 			_control.ShowFatal.Should().BeFalse();
 		}
@@ -341,6 +356,7 @@ namespace Tailviewer.Test.Ui.Controls
 				{
 					DataSource = source
 				};
+			control.ShowTrace.Should().BeTrue();
 			control.ShowDebug.Should().BeTrue();
 			control.ShowInfo.Should().BeTrue();
 			control.ShowWarning.Should().BeTrue();
@@ -352,6 +368,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestShowAll1()
 		{
 			_control.ShowAll = true;
+			_control.ShowTrace.Should().BeTrue();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeTrue();
 			_control.ShowWarning.Should().BeTrue();
@@ -362,6 +379,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestShowAll2()
 		{
+			_control.ShowTrace = true;
 			_control.ShowDebug = true;
 			_control.ShowInfo = true;
 			_control.ShowWarning = true;
@@ -369,6 +387,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowFatal = true;
 			_control.ShowAll = false;
 
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeFalse();
@@ -383,6 +402,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowDebug = false;
 			_control.ShowAll.Should().NotHaveValue();
 
+			_control.ShowTrace.Should().BeTrue();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeTrue();
 			_control.ShowWarning.Should().BeTrue();
@@ -397,6 +417,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowDebug = true;
 			_control.ShowAll.Should().NotHaveValue();
 
+			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeFalse();
 			_control.ShowWarning.Should().BeFalse();
@@ -408,10 +429,23 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestShowAll5()
 		{
 			_control.ShowAll = false;
+			_control.ShowAll.Should().BeFalse();
+
+			_control.ShowTrace = true;
+			_control.ShowAll.Should().NotHaveValue();
+
 			_control.ShowDebug = true;
+			_control.ShowAll.Should().NotHaveValue();
+
 			_control.ShowInfo = true;
+			_control.ShowAll.Should().NotHaveValue();
+
 			_control.ShowWarning = true;
+			_control.ShowAll.Should().NotHaveValue();
+
 			_control.ShowError = true;
+			_control.ShowAll.Should().NotHaveValue();
+
 			_control.ShowFatal = true;
 			_control.ShowAll.Should().BeTrue();
 		}

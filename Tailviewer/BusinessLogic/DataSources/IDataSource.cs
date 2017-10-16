@@ -44,6 +44,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		#region Counts
 
 		int NoLevelCount { get; }
+		int TraceCount { get; }
 		int DebugCount { get; }
 		int InfoCount { get; }
 		int WarningCount { get; }

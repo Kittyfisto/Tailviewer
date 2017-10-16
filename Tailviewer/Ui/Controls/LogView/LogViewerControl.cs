@@ -59,6 +59,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LogViewerControl),
 			                            new PropertyMetadata(false, OnDebugChanged));
 
+		public static readonly DependencyProperty ShowTraceProperty =
+			DependencyProperty.Register("ShowTrace", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(false, OnTraceChanged));
+
 		public static readonly DependencyProperty ShowAllProperty =
 			DependencyProperty.Register("ShowAll", typeof (bool?), typeof (LogViewerControl),
 			                            new PropertyMetadata(false, OnShowAllChanged));
@@ -134,6 +138,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (bool?) GetValue(ShowAllProperty); }
 			set { SetValue(ShowAllProperty, value); }
+		}
+
+		public bool ShowTrace
+		{
+			get { return (bool)GetValue(ShowTraceProperty); }
+			set { SetValue(ShowTraceProperty, value); }
 		}
 
 		public bool ShowDebug
@@ -335,6 +345,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			if (showAll == true)
 			{
+				ShowTrace = true;
 				ShowDebug = true;
 				ShowInfo = true;
 				ShowWarning = true;
@@ -343,6 +354,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else if (showAll == false)
 			{
+				ShowTrace = false;
 				ShowDebug = false;
 				ShowInfo = false;
 				ShowWarning = false;
@@ -461,6 +473,27 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		private static void OnTraceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl)dependencyObject).OnTraceChanged((bool)args.NewValue);
+		}
+
+		private void OnTraceChanged(bool isChecked)
+		{
+			if (DataSource == null)
+				return;
+
+			const LevelFlags level = LevelFlags.Trace;
+			if (isChecked)
+			{
+				DataSource.LevelsFilter |= level;
+			}
+			else
+			{
+				DataSource.LevelsFilter &= ~level;
+			}
+		}
+
 		private void OnLevelsChanged()
 		{
 			if (DataSource == null)
@@ -473,6 +506,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			ShowWarning = levels.HasFlag(LevelFlags.Warning);
 			ShowInfo = levels.HasFlag(LevelFlags.Info);
 			ShowDebug = levels.HasFlag(LevelFlags.Debug);
+			ShowTrace = levels.HasFlag(LevelFlags.Trace);
 
 			if (levels == LevelFlags.All)
 			{

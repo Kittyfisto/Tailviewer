@@ -45,6 +45,24 @@ namespace Tailviewer
 			AddV060();
 			AddV061();
 			AddV062();
+			AddV070();
+		}
+
+		private static void AddV070()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{};
+			var misc = new[]
+			{
+				"Introduced Trace level toggle",
+				//"Debug/Trace messages are display in gray"
+			};
+			var releaseDate = new DateTime(2017, 11, 1);
+			var version = new Version(0, 7, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV062()

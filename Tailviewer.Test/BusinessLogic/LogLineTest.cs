@@ -70,11 +70,24 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestDetermineLevelsFromLine2()
 		{
+			LogLine.DetermineLevelFromLine("TRACE").Should().Be(LevelFlags.Trace);
 			LogLine.DetermineLevelFromLine("DEBUG").Should().Be(LevelFlags.Debug);
 			LogLine.DetermineLevelFromLine("INFO").Should().Be(LevelFlags.Info);
 			LogLine.DetermineLevelFromLine("WARN").Should().Be(LevelFlags.Warning);
 			LogLine.DetermineLevelFromLine("ERROR").Should().Be(LevelFlags.Error);
 			LogLine.DetermineLevelFromLine("FATAL").Should().Be(LevelFlags.Fatal);
+		}
+
+		[Test]
+		[Description("Verifies that DetermineLevelFromLine returns the FIRST occurence of alog level")]
+		public void TestDetermineLevelsFromLine3()
+		{
+			LogLine.DetermineLevelFromLine("TRACE DEBUG INFO WARNING ERROR FATAL").Should().Be(LevelFlags.Trace);
+			LogLine.DetermineLevelFromLine("DEBUG TRACE INFO WARNING ERROR FATAL").Should().Be(LevelFlags.Debug);
+			LogLine.DetermineLevelFromLine("INFO WARNING ERROR FATAL DEBUG TRACE").Should().Be(LevelFlags.Info);
+			LogLine.DetermineLevelFromLine("WARN INFO ERROR FATAL TRACE DEBUG").Should().Be(LevelFlags.Warning);
+			LogLine.DetermineLevelFromLine("ERROR INFO WARNING TRACE DEBUG FATAL").Should().Be(LevelFlags.Error);
+			LogLine.DetermineLevelFromLine("FATAL ERROR WARNING INFO DEBUG TRACE").Should().Be(LevelFlags.Fatal);
 		}
 	}
 }

@@ -125,13 +125,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				_scheduler.RunOnce();
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				dataSource.TotalCount.Should().Be(21);
-				dataSource.DebugCount.Should().Be(1);
-				dataSource.InfoCount.Should().Be(2);
-				dataSource.WarningCount.Should().Be(3);
-				dataSource.ErrorCount.Should().Be(4);
-				dataSource.FatalCount.Should().Be(5);
-				dataSource.NoLevelCount.Should().Be(0);
+				dataSource.TotalCount.Should().Be(27, "because the data source contains that many lines");
+				dataSource.DebugCount.Should().Be(1, "because the data source contains one debug line");
+				dataSource.InfoCount.Should().Be(2, "because the data source contains two info lines");
+				dataSource.WarningCount.Should().Be(3, "because the data source contains three warnings");
+				dataSource.ErrorCount.Should().Be(4, "because the data source contains four errors");
+				dataSource.FatalCount.Should().Be(5, "because the data source contains five fatal lines");
+				dataSource.TraceCount.Should().Be(6, "because the data source contains six trace lines");
+				dataSource.NoLevelCount.Should().Be(0, "because all non-matching lines are assumed to belong to the previous line");
 			}
 		}
 

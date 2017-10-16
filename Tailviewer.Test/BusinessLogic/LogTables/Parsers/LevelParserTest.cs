@@ -13,7 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		{
 			var parser = new LevelParser();
 			int length;
-			parser.Parse("DEBUG", 0, out length).Should().Be(LevelFlags.Debug);
+			parser.Parse("TRACE", 0, out length).Should().Be(LevelFlags.Trace);
 			length.Should().Be(5);
 		}
 
@@ -22,11 +22,20 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		{
 			var parser = new LevelParser();
 			int length;
+			parser.Parse("DEBUG", 0, out length).Should().Be(LevelFlags.Debug);
+			length.Should().Be(5);
+		}
+
+		[Test]
+		public void TestParse3()
+		{
+			var parser = new LevelParser();
+			int length;
 			parser.Parse("DEBUG INFO", 6, out length).Should().Be(LevelFlags.Info);
 			length.Should().Be(4);
 		}
 		[Test]
-		public void TestParse3()
+		public void TestParse4()
 		{
 			var parser = new LevelParser();
 			int length;
@@ -35,7 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		}
 
 		[Test]
-		public void TestParse4()
+		public void TestParse5()
 		{
 			var parser = new LevelParser();
 			int length;

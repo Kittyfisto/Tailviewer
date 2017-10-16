@@ -18,11 +18,12 @@ namespace Tailviewer.Core.LogTables.Parsers
 		{
 			_levels = new Dictionary<string, LevelFlags>
 				{
+					{"TRACE", LevelFlags.Trace},
 					{"DEBUG", LevelFlags.Debug},
 					{"INFO", LevelFlags.Info},
 					{"WARNING", LevelFlags.Warning},
 					{"ERROR", LevelFlags.Error},
-					{"FATAL", LevelFlags.Fatal},
+					{"FATAL", LevelFlags.Fatal}
 				};
 		}
 

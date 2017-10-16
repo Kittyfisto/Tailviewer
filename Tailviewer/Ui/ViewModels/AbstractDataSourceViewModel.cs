@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.ViewModels
@@ -17,6 +16,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IDataSource _dataSource;
 		private readonly ICommand _removeCommand;
 
+		private int _traceCount;
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
@@ -132,6 +132,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_otherCount = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public int TraceCount
+		{
+			get { return _traceCount; }
+			protected set
+			{
+				if (value == _traceCount)
+					return;
+
+				_traceCount = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -465,6 +478,7 @@ namespace Tailviewer.Ui.ViewModels
 			int newBefore = NewLogLineCount;
 
 			OtherCount = _dataSource.NoLevelCount;
+			TraceCount = _dataSource.TraceCount;
 			DebugCount = _dataSource.DebugCount;
 			InfoCount = _dataSource.InfoCount;
 			WarningCount = _dataSource.WarningCount;

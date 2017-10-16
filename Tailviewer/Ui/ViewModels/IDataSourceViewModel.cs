@@ -26,6 +26,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		int OtherCount { get; }
 
+		int TraceCount { get; }
+
 		int DebugCount { get; }
 
 		int InfoCount { get; }

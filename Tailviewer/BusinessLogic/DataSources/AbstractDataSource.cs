@@ -139,6 +139,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
 
+		public int TraceCount => _counter.Trace.LogEntryCount;
+
 		public int DebugCount => _counter.Debugs.LogEntryCount;
 
 		public int InfoCount => _counter.Infos.LogEntryCount;
@@ -328,6 +330,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			#region Counts
 
+			public readonly Counter Trace;
 			public readonly Counter Debugs;
 			public readonly Counter Errors;
 			public readonly Counter Fatals;
@@ -348,6 +351,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				Warnings = new Counter();
 				Infos = new Counter();
 				Debugs = new Counter();
+				Trace = new Counter();
 				NoLevel = new Counter();
 				NoTimestamp = new Counter();
 				Total = new Counter();
@@ -425,6 +429,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 						case LevelFlags.Debug:
 							--Debugs.LogEntryCount;
 							break;
+						case LevelFlags.Trace:
+							--Trace.LogEntryCount;
+							break;
 						default:
 							--NoLevel.LogEntryCount;
 							break;
@@ -454,6 +461,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 						break;
 					case LevelFlags.Debug:
 						--Debugs.LogLineCount;
+						break;
+					case LevelFlags.Trace:
+						--Trace.LogLineCount;
 						break;
 					default:
 						--NoLevel.LogLineCount;
@@ -489,6 +499,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 						case LevelFlags.Debug:
 							++Debugs.LogEntryCount;
 							break;
+						case LevelFlags.Trace:
+							++Trace.LogEntryCount;
+							break;
 						default:
 							++NoLevel.LogEntryCount;
 							break;
@@ -519,6 +532,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 					case LevelFlags.Debug:
 						++Debugs.LogLineCount;
 						break;
+					case LevelFlags.Trace:
+						++Trace.LogLineCount;
+						break;
 					default:
 						++NoLevel.LogLineCount;
 						break;
@@ -540,6 +556,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				Warnings.Reset();
 				Infos.Reset();
 				Debugs.Reset();
+				Trace.Reset();
 				NoLevel.Reset();
 				NoTimestamp.Reset();
 				Total.Reset();
