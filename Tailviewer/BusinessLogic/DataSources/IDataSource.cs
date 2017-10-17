@@ -41,6 +41,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		DataSourceId Id { get; }
 		DataSourceId ParentId { get; }
 
+		/// <summary>
+		///     A one or two digit character code representing this data source.
+		/// </summary>
+		string CharacterCode { get; set; }
+
 		#region Counts
 
 		int NoLevelCount { get; }

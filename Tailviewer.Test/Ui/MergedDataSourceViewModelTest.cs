@@ -60,7 +60,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestAdd1()
+		public void TestAddChild1()
 		{
 			var model = new MergedDataSourceViewModel(_dataSources.AddGroup());
 			SingleDataSource source = _dataSources.AddDataSource("foo");
@@ -68,6 +68,78 @@ namespace Tailviewer.Test.Ui
 			model.AddChild(sourceViewModel);
 			model.Observable.Should().Equal(sourceViewModel);
 			sourceViewModel.Parent.Should().BeSameAs(model);
+		}
+
+		[Test]
+		public void TestAddChild2()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			SingleDataSource source = _dataSources.AddDataSource("foo");
+			var sourceViewModel = new SingleDataSourceViewModel(source);
+
+			model.AddChild(sourceViewModel);
+			sourceViewModel.CharacterCode.Should().Be("A", "because the merged data source is responsible for providing unique character codes");
+		}
+
+		[Test]
+		public void TestInsertChild1()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			SingleDataSource source = _dataSources.AddDataSource("foo");
+			var sourceViewModel = new SingleDataSourceViewModel(source);
+
+			model.Insert(0, sourceViewModel);
+			sourceViewModel.CharacterCode.Should().Be("A", "because the merged data source is responsible for providing unique character codes");
+		}
+
+		[Test]
+		public void TestInsertChild2()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"));
+			model.AddChild(child1);
+			child1.CharacterCode.Should().Be("A");
+
+			var child2 = new SingleDataSourceViewModel(_dataSources.AddDataSource("bar"));
+			model.Insert(0, child2);
+			model.Observable.Should().Equal(new object[]
+			{
+				child2, child1
+			});
+
+			const string reason = "because the merged data source is responsible for providing unique character codes";
+			child2.CharacterCode.Should().Be("A", reason);
+			child1.CharacterCode.Should().Be("B", reason);
+		}
+
+		[Test]
+		public void TestRemoveChild1()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"));
+			model.AddChild(child1);
+
+			var child2 = new SingleDataSourceViewModel(_dataSources.AddDataSource("bar"));
+			model.AddChild(child2);
+			model.Observable.Should().Equal(new object[]
+			{
+				child1, child2
+			});
+
+			child1.CharacterCode.Should().Be("A");
+			child2.CharacterCode.Should().Be("B");
+
+			model.RemoveChild(child1);
+			model.Observable.Should().Equal(new object[] {child2});
+			child2.CharacterCode.Should().Be("A");
 		}
 
 		[Test]

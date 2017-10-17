@@ -155,6 +155,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public string FullFileName => _settings.File;
 
+		/// <summary>
+		/// </summary>
+		/// <remarks>
+		///     Is not persisted on purpose.
+		/// </remarks>
+		public string CharacterCode { get; set; }
+
 		public bool FollowTail
 		{
 			get { return _settings.FollowTail; }

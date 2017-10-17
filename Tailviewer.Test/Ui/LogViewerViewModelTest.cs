@@ -31,7 +31,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestDataSourceDoesntExist1()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
 			var filteredLogFile = new Mock<ILogFile>();
@@ -51,7 +51,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that the NoEntriesSubtext is cleared when the reason why no entries are showing up changes")]
 		public void TestDataSourceDoesntExist2()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
 			var filteredLogFile = new Mock<ILogFile>();
@@ -80,7 +80,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestDataSourceCannotBeAccessed1()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceCannotBeAccessed);
 			var filteredLogFile = new Mock<ILogFile>();
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestDataSourceEmpty()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			var filteredLogFile = new Mock<ILogFile>();
@@ -117,7 +117,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestLevelFilter()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
@@ -139,7 +139,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestQuickFilter()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
@@ -162,7 +162,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestStringFilter()
 		{
-			var dataSource = new Mock<IDataSource>();
+			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);

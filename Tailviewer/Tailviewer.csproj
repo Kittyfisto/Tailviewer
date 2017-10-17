@@ -281,6 +281,7 @@
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\QuickFiltersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\QuickFiltersViewModel.cs" />

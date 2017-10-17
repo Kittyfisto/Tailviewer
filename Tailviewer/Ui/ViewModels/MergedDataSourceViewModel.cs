@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Input;
 using Metrolib;
 using Metrolib.Controls;
@@ -98,6 +99,8 @@ namespace Tailviewer.Ui.ViewModels
 			_observable.Add(dataSource);
 			_dataSource.Add(dataSource.DataSource);
 			dataSource.Parent = this;
+
+			DistributeCharacterCodes();
 		}
 
 		public void Insert(int index, IDataSourceViewModel dataSource)
@@ -109,6 +112,8 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource.Add(dataSource.DataSource);
 			dataSource.Parent = this;
 			Update();
+
+			DistributeCharacterCodes();
 		}
 
 		public void RemoveChild(IDataSourceViewModel dataSource)
@@ -120,6 +125,8 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource.Remove(dataSource.DataSource);
 			dataSource.Parent = null;
 			Update();
+
+			DistributeCharacterCodes();
 		}
 
 		public override void Update()
@@ -167,6 +174,36 @@ namespace Tailviewer.Ui.ViewModels
 				_dataSource.DisplayMode = value;
 				EmitPropertyChanged();
 			}
+		}
+
+		private void DistributeCharacterCodes()
+		{
+			for (int i = 0; i < _observable.Count; ++i)
+			{
+				var viewModel = _observable[i] as ISingleDataSourceViewModel;
+				if (viewModel != null)
+				{
+					var characterCode = GenerateCharacterCode(i);
+					viewModel.CharacterCode = characterCode;
+				}
+			}
+		}
+
+		/// <summary>
+		///     Generates the character code for the n-th data source.
+		/// </summary>
+		/// <param name="dataSourceIndex"></param>
+		/// <returns></returns>
+		private static string GenerateCharacterCode(int dataSourceIndex)
+		{
+			var builder = new StringBuilder(capacity: 2);
+			do
+			{
+				var value = (char)('A' + dataSourceIndex % 26);
+				builder.Append(value);
+				dataSourceIndex /= 26;
+			} while (dataSourceIndex > 0);
+			return builder.ToString();
 		}
 	}
 }

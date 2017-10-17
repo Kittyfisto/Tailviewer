@@ -4,7 +4,8 @@
                     xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                     xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
                     xmlns:converters2="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -31,7 +32,13 @@
                  when an item is selected, covers the entire width of the tree view.
             -->
             <Grid Visibility="{Binding IsGrouped, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                  Width="20" />
+                  Width="20">
+                <!-- What's great is that we can now use this spacer to show the character code of this data
+                     source to the user! -->
+                <TextBlock Text="{Binding CharacterCode}"
+                           Foreground="{x:Static logView:TextHelper.DataSourceForegroundBrush}"
+                           VerticalAlignment="Center" />
+            </Grid>
 
             <Grid Margin="0,4,16,4" Grid.Column="1">
                 <Grid.RowDefinitions>

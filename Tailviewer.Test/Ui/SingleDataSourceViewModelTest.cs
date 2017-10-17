@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
@@ -100,6 +99,26 @@ namespace Tailviewer.Test.Ui
 				model.QuickFilterChain.Should().BeSameAs(chain);
 				dataSource.QuickFilterChain.Should().BeSameAs(chain);
 			}
+		}
+
+		[Test]
+		public void TestCharacterCode()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.SetupAllProperties();
+
+			var model = new SingleDataSourceViewModel(dataSource.Object);
+			model.CharacterCode = "ZZ";
+			model.CharacterCode.Should().Be("ZZ");
+			dataSource.Object.CharacterCode.Should().Be("ZZ");
+
+			model.CharacterCode = "B";
+			model.CharacterCode.Should().Be("B");
+			dataSource.Object.CharacterCode.Should().Be("B");
+
+			model.CharacterCode = null;
+			model.CharacterCode.Should().BeNull();
+			dataSource.Object.CharacterCode.Should().BeNull();
 		}
 	}
 }

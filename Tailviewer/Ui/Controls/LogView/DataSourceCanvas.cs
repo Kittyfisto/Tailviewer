@@ -4,7 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -40,8 +39,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			UpdateDataSources(_dataSource, _visibleSection, _yOffset);
 		}
 
-		private readonly List<string> _characterCodesPerDataSource;
-
 		private readonly List<FormattedText> _dataSourcesPerLogLine;
 		private readonly int _maximumDataSourceCharacters;
 		private readonly double _maximumWidth;
@@ -52,7 +49,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		public DataSourceCanvas()
 		{
 			_dataSourcesPerLogLine = new List<FormattedText>();
-			_characterCodesPerDataSource = new List<string>();
 			_maximumDataSourceCharacters = 22;
 			_maximumWidth = TextHelper.EstimateWidthUpperLimit(_maximumDataSourceCharacters);
 
@@ -100,8 +96,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				var dataSources = merged.OriginalSources;
 				var displayMode = DisplayMode;
-				if (displayMode == DataSourceDisplayMode.CharacterCode)
-					UpdateCharacterCodes(dataSources);
 
 				int actualCharacterCount = 0;
 
@@ -113,8 +107,10 @@ namespace Tailviewer.Ui.Controls.LogView
 					var dataSourceId = (int) logLine.SourceId;
 					if (dataSourceId >= 0 && dataSourceId < dataSources.Count)
 					{
-						var text = CreateFormattedText(GetDataSourceName(displayMode, dataSources, dataSourceId));
-						actualCharacterCount = Math.Max(actualCharacterCount, text.Text.Length);
+						var originalDataSource = dataSources[dataSourceId];
+						var text = CreateFormattedText(GetDataSourceName(displayMode, originalDataSource));
+						if (text != null)
+							actualCharacterCount = Math.Max(actualCharacterCount, text.Text.Length);
 
 						_dataSourcesPerLogLine.Add(text);
 					}
@@ -135,61 +131,23 @@ namespace Tailviewer.Ui.Controls.LogView
 			InvalidateVisual();
 		}
 
-		private void UpdateCharacterCodes(IReadOnlyList<IDataSource> dataSources)
-		{
-			for (var i = 0; i < dataSources.Count; ++i)
-				if (i >= _characterCodesPerDataSource.Count)
-					_characterCodesPerDataSource.Add(GenerateCharacterCode(i));
-				else
-					_characterCodesPerDataSource[i] = GenerateCharacterCode(i);
-
-			var toRemove = _characterCodesPerDataSource.Count - dataSources.Count;
-			if (toRemove > 0)
-				_characterCodesPerDataSource.RemoveRange(_characterCodesPerDataSource.Count - toRemove, toRemove);
-		}
-
-		/// <summary>
-		///     Generates the character code for the n-th data source.
-		/// </summary>
-		/// <param name="dataSourceIndex"></param>
-		/// <returns></returns>
-		[Pure]
-		internal static string GenerateCharacterCode(int dataSourceIndex)
-		{
-			var builder = new StringBuilder(capacity: 2);
-			do
-			{
-				var value = (char) ('A' + dataSourceIndex % 26);
-				builder.Append(value);
-				dataSourceIndex /= 26;
-			} while (dataSourceIndex > 0);
-			return builder.ToString();
-		}
-
 		/// <summary>
 		///     Returns the name of the data source with the given index, depending on the given display mode.
 		/// </summary>
 		/// <param name="displayMode"></param>
-		/// <param name="dataSources"></param>
-		/// <param name="dataSourceIndex"></param>
+		/// <param name="dataSource"></param>
 		/// <returns></returns>
 		[Pure]
-		private string GetDataSourceName(DataSourceDisplayMode displayMode, IReadOnlyList<IDataSource> dataSources,
-			int dataSourceIndex)
+		private string GetDataSourceName(DataSourceDisplayMode displayMode, IDataSource dataSource)
 		{
 			switch (displayMode)
 			{
 				case DataSourceDisplayMode.CharacterCode:
-					return _characterCodesPerDataSource[dataSourceIndex];
+					return dataSource.CharacterCode;
 
 				case DataSourceDisplayMode.Filename:
-					if (dataSourceIndex >= 0 && dataSourceIndex < dataSources.Count)
-					{
-						var dataSource = dataSources[dataSourceIndex];
-						var fullFileName = dataSource.FullFileName;
-						return Path.GetFileName(fullFileName);
-					}
-					return null;
+					var fullFileName = dataSource.FullFileName;
+					return Path.GetFileName(fullFileName);
 
 				default:
 					return null;
@@ -217,7 +175,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					FlowDirection.LeftToRight,
 					TextHelper.Typeface,
 					TextHelper.FontSize,
-					TextHelper.LineNumberForegroundBrush);
+					TextHelper.DataSourceForegroundBrush);
 			}
 			catch (IOException e)
 			{

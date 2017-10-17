@@ -12,14 +12,15 @@ namespace Tailviewer.Ui.ViewModels
 	/// </summary>
 	public sealed class SingleDataSourceViewModel
 		: AbstractDataSourceViewModel
+		, ISingleDataSourceViewModel
 	{
-		private readonly IDataSource _dataSource;
+		private readonly ISingleDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
 		private readonly ICommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
 
-		public SingleDataSourceViewModel(IDataSource dataSource)
+		public SingleDataSourceViewModel(ISingleDataSource dataSource)
 			: base(dataSource)
 		{
 			_dataSource = dataSource;
@@ -56,6 +57,19 @@ namespace Tailviewer.Ui.ViewModels
 		public string Folder => _folder;
 
 		public string FullName => _dataSource.FullFileName;
+
+		public string CharacterCode
+		{
+			get { return _dataSource.CharacterCode; }
+			set
+			{
+				if (value == _dataSource.CharacterCode)
+					return;
+
+				_dataSource.CharacterCode = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
