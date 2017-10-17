@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -12,72 +14,88 @@ namespace Tailviewer.Ui.Controls.LogView
 	public partial class LogViewerControl
 	{
 		public static readonly DependencyProperty LogViewProperty =
-			DependencyProperty.Register("LogView", typeof (LogViewerViewModel), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(LogViewerViewModel), OnLogViewChanged));
+			DependencyProperty.Register("LogView", typeof(LogViewerViewModel), typeof(LogViewerControl),
+				new PropertyMetadata(default(LogViewerViewModel), OnLogViewChanged));
 
 		public static readonly DependencyProperty LogFileProperty =
-			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(ILogFile)));
+			DependencyProperty.Register("LogFile", typeof(ILogFile), typeof(LogViewerControl),
+				new PropertyMetadata(default(ILogFile)));
 
 		public static readonly DependencyProperty SearchProperty =
-			DependencyProperty.Register("Search", typeof (ILogFileSearch), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(ILogFileSearch)));
+			DependencyProperty.Register("Search", typeof(ILogFileSearch), typeof(LogViewerControl),
+				new PropertyMetadata(default(ILogFileSearch)));
 
 		public static readonly DependencyProperty DataSourceProperty =
-			DependencyProperty.Register("DataSource", typeof (IDataSourceViewModel), typeof (LogViewerControl),
-			                            new PropertyMetadata(null, OnDataSourceChanged));
+			DependencyProperty.Register("DataSource", typeof(IDataSourceViewModel), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: null, propertyChangedCallback: OnDataSourceChanged));
 
 		public static readonly DependencyProperty LogEntryCountProperty =
-			DependencyProperty.Register("LogEntryCount", typeof (int), typeof (LogViewerControl),
-			                            new PropertyMetadata(0));
+			DependencyProperty.Register("LogEntryCount", typeof(int), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: 0));
 
 		public static readonly DependencyProperty CurrentLogLineProperty =
-			DependencyProperty.Register("CurrentLogLine", typeof (LogLineIndex), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(LogLineIndex), OnCurrentLogLineChanged));
+			DependencyProperty.Register("CurrentLogLine", typeof(LogLineIndex), typeof(LogViewerControl),
+				new PropertyMetadata(default(LogLineIndex), OnCurrentLogLineChanged));
 
 		public static readonly DependencyProperty ShowLineNumbersProperty =
-			DependencyProperty.Register("ShowLineNumbers", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(bool), OnShowLineNumbersChanged));
+			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(default(bool), OnShowLineNumbersChanged));
 
 		public static readonly DependencyProperty ShowFatalProperty =
-			DependencyProperty.Register("ShowFatal", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnFatalChanged));
+			DependencyProperty.Register("ShowFatal", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnFatalChanged));
 
 		public static readonly DependencyProperty ShowErrorProperty =
-			DependencyProperty.Register("ShowError", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnErrorChanged));
+			DependencyProperty.Register("ShowError", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnErrorChanged));
 
 		public static readonly DependencyProperty ShowWarningProperty =
-			DependencyProperty.Register("ShowWarning", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnWarningChanged));
+			DependencyProperty.Register("ShowWarning", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnWarningChanged));
 
 		public static readonly DependencyProperty ShowInfoProperty =
-			DependencyProperty.Register("ShowInfo", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnInfoChanged));
+			DependencyProperty.Register("ShowInfo", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnInfoChanged));
 
 		public static readonly DependencyProperty ShowDebugProperty =
-			DependencyProperty.Register("ShowDebug", typeof (bool), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnDebugChanged));
+			DependencyProperty.Register("ShowDebug", typeof(bool), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnDebugChanged));
 
 		public static readonly DependencyProperty ShowTraceProperty =
 			DependencyProperty.Register("ShowTrace", typeof(bool), typeof(LogViewerControl),
-				new PropertyMetadata(false, OnTraceChanged));
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnTraceChanged));
 
 		public static readonly DependencyProperty ShowAllProperty =
-			DependencyProperty.Register("ShowAll", typeof (bool?), typeof (LogViewerControl),
-			                            new PropertyMetadata(false, OnShowAllChanged));
+			DependencyProperty.Register("ShowAll", typeof(bool?), typeof(LogViewerControl),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnShowAllChanged));
 
 		public static readonly DependencyProperty TotalLogEntryCountProperty =
-			DependencyProperty.Register("TotalLogEntryCount", typeof (int), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(int)));
+			DependencyProperty.Register("TotalLogEntryCount", typeof(int), typeof(LogViewerControl),
+				new PropertyMetadata(default(int)));
 
 		public static readonly DependencyProperty ErrorMessageProperty =
-			DependencyProperty.Register("ErrorMessage", typeof (string), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(string)));
+			DependencyProperty.Register("ErrorMessage", typeof(string), typeof(LogViewerControl),
+				new PropertyMetadata(default(string)));
 
 		public static readonly DependencyProperty DetailedErrorMessageProperty =
-			DependencyProperty.Register("DetailedErrorMessage", typeof (string), typeof (LogViewerControl),
-			                            new PropertyMetadata(default(string)));
+			DependencyProperty.Register("DetailedErrorMessage", typeof(string), typeof(LogViewerControl),
+				new PropertyMetadata(default(string)));
+
+		public static readonly DependencyProperty MergedDataSourceDisplayModeProperty = DependencyProperty.Register(
+			"MergedDataSourceDisplayMode", typeof(DataSourceDisplayMode), typeof(LogViewerControl),
+			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
+
+		private static void OnMergedDataSourceDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl) d).OnMergedDataSourceDisplayModeChanged((DataSourceDisplayMode)args.NewValue);
+		}
+
+		private void OnMergedDataSourceDisplayModeChanged(DataSourceDisplayMode displayMode)
+		{
+			var dataSource = DataSource as IMergedDataSourceViewModel;
+			if (dataSource != null)
+				dataSource.DisplayMode = displayMode;
+		}
 
 		private bool _changingLogView;
 
@@ -88,6 +106,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			PART_ListView.SelectionChanged += PartListViewOnSelectionChanged;
 			PART_ListView.FollowTailChanged += OnFollowTailChanged;
 			PART_ListView.HorizontalScrollBar.ValueChanged += HorizontalScrollBarOnValueChanged;
+		}
+
+		public DataSourceDisplayMode MergedDataSourceDisplayMode
+		{
+			get { return (DataSourceDisplayMode) GetValue(MergedDataSourceDisplayModeProperty); }
+			set { SetValue(MergedDataSourceDisplayModeProperty, value); }
 		}
 
 		public SearchTextBox SearchBox => PART_SearchBox;
@@ -118,7 +142,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public ILogFileSearch Search
 		{
-			get { return (ILogFileSearch)GetValue(SearchProperty); }
+			get { return (ILogFileSearch) GetValue(SearchProperty); }
 			set { SetValue(SearchProperty, value); }
 		}
 
@@ -142,7 +166,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public bool ShowTrace
 		{
-			get { return (bool)GetValue(ShowTraceProperty); }
+			get { return (bool) GetValue(ShowTraceProperty); }
 			set { SetValue(ShowTraceProperty, value); }
 		}
 
@@ -220,17 +244,15 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void PartListViewOnSelectionChanged(IEnumerable<LogLineIndex> logLineIndices)
 		{
-			IDataSourceViewModel dataSource = DataSource;
+			var dataSource = DataSource;
 			if (dataSource != null)
-			{
 				dataSource.SelectedLogLines = new HashSet<LogLineIndex>(logLineIndices);
-			}
 		}
 
 		private static void OnLogViewChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnLogViewChanged((LogViewerViewModel) args.OldValue,
-			                                                       (LogViewerViewModel) args.NewValue);
+				(LogViewerViewModel) args.NewValue);
 		}
 
 		private void OnLogViewChanged(LogViewerViewModel oldView, LogViewerViewModel newView)
@@ -240,9 +262,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				_changingLogView = true;
 
 				if (oldView != null)
-				{
 					oldView.PropertyChanged -= LogViewOnPropertyChanged;
-				}
 
 				if (newView != null)
 				{
@@ -281,6 +301,9 @@ namespace Tailviewer.Ui.Controls.LogView
 				PART_ListView.SelectedSearchResultIndex = newValue.CurrentSearchResultIndex;
 
 				ShowLineNumbers = newValue.ShowLineNumbers;
+				var merged = newValue as IMergedDataSourceViewModel;
+				if (merged != null)
+					MergedDataSourceDisplayMode = merged.DisplayMode;
 			}
 			OnLevelsChanged();
 		}
@@ -301,36 +324,29 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		private static void OnCurrentLogLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		private static void OnCurrentLogLineChanged(DependencyObject dependencyObject,
+			DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnCurrentLogLineChanged((LogLineIndex) args.NewValue);
 		}
 
 		private void OnCurrentLogLineChanged(LogLineIndex index)
 		{
-			IDataSourceViewModel dataSource = DataSource;
+			var dataSource = DataSource;
 			if (dataSource != null)
-			{
-				// We most certainly do not want to change the
-				// VIsibleLogLine property of a DataSource while we're switching
-				// out said data source. This is bound to happen because stuff
-				// get's resized etc...
 				if (!_changingLogView)
-				{
 					dataSource.VisibleLogLine = index;
-				}
-			}
 		}
 
 		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
-		                                             DependencyPropertyChangedEventArgs args)
+			DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
 		}
 
 		private void OnShowLineNumbersChanged(bool showLineNumbers)
 		{
-			IDataSourceViewModel dataSource = DataSource;
+			var dataSource = DataSource;
 			if (dataSource != null)
 				dataSource.ShowLineNumbers = showLineNumbers;
 		}
@@ -338,7 +354,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private static void OnDataSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnDataSourceChanged(args.OldValue as IDataSourceViewModel,
-			                                                          args.NewValue as IDataSourceViewModel);
+				args.NewValue as IDataSourceViewModel);
 		}
 
 		private void OnShowAllChanged(bool? showAll)
@@ -380,13 +396,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Fatal;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private static void OnErrorChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -401,13 +413,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Error;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private static void OnWarningChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -422,13 +430,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Warning;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private static void OnInfoChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -443,13 +447,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Info;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private static void OnDebugChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -464,18 +464,14 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Debug;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private static void OnTraceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
-			((LogViewerControl)dependencyObject).OnTraceChanged((bool)args.NewValue);
+			((LogViewerControl) dependencyObject).OnTraceChanged((bool) args.NewValue);
 		}
 
 		private void OnTraceChanged(bool isChecked)
@@ -485,13 +481,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			const LevelFlags level = LevelFlags.Trace;
 			if (isChecked)
-			{
 				DataSource.LevelsFilter |= level;
-			}
 			else
-			{
 				DataSource.LevelsFilter &= ~level;
-			}
 		}
 
 		private void OnLevelsChanged()
@@ -499,7 +491,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (DataSource == null)
 				return;
 
-			LevelFlags levels = DataSource.LevelsFilter;
+			var levels = DataSource.LevelsFilter;
 
 			ShowFatal = levels.HasFlag(LevelFlags.Fatal);
 			ShowError = levels.HasFlag(LevelFlags.Error);
@@ -509,22 +501,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			ShowTrace = levels.HasFlag(LevelFlags.Trace);
 
 			if (levels == LevelFlags.All)
-			{
 				ShowAll = true;
-			}
 			else if (levels == LevelFlags.None)
-			{
 				ShowAll = false;
-			}
 			else
-			{
 				ShowAll = null;
-			}
 		}
 
 		private void DataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			var dataSource = ((IDataSourceViewModel) sender);
+			var dataSource = (IDataSourceViewModel) sender;
 			switch (args.PropertyName)
 			{
 				case "FollowTail":
@@ -551,21 +537,21 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnFollowTailChanged(bool followTail)
 		{
-			IDataSourceViewModel dataSource = DataSource;
+			var dataSource = DataSource;
 			if (dataSource != null)
 				dataSource.FollowTail = followTail;
 		}
 
 		private void HorizontalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
-			IDataSourceViewModel dataSource = DataSource;
+			var dataSource = DataSource;
 			if (dataSource != null && !_changingLogView)
 				dataSource.HorizontalOffset = args.NewValue;
 		}
 
 		public void FocusStringFilter()
 		{
-			SearchTextBox element = PART_SearchBox;
+			var element = PART_SearchBox;
 			element?.Focus();
 		}
 	}

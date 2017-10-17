@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -472,6 +473,47 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_dataSource.VisibleLogLine = new LogLineIndex(9001);
 			_control.CurrentLogLine.Should().Be(new LogLineIndex(9001), "because the control is expected to listen to changes of the data source");
+		}
+
+		[Test]
+		[Description("Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
+		public void TestChangeMergedDataSourceDisplayMode1()
+		{
+			var dataSource = new Mock<IMergedDataSourceViewModel>();
+			dataSource.SetupProperty(x => x.DisplayMode);
+
+			_control.DataSource = dataSource.Object;
+
+			_control.MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode;
+			dataSource.Object.DisplayMode.Should().Be(DataSourceDisplayMode.CharacterCode);
+
+			_control.MergedDataSourceDisplayMode = DataSourceDisplayMode.Filename;
+			dataSource.Object.DisplayMode.Should().Be(DataSourceDisplayMode.Filename);
+		}
+
+		[Test]
+		[Description("Verifies that changes to the MergedDataSourceDisplayMode property are ignored if the view model isn't a merged one")]
+		public void TestChangeMergedDataSourceDisplayMode2()
+		{
+			var dataSource = new Mock<IDataSourceViewModel>();
+
+			_control.DataSource = dataSource.Object;
+
+			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode).ShouldNotThrow();
+			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.Filename).ShouldNotThrow();
+		}
+
+		[Test]
+		[Description("Verifies that the display mode of the new data source is used")]
+		public void TestChangeDataSource([Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
+		{
+			var dataSource = new Mock<IMergedDataSourceViewModel>();
+			dataSource.SetupProperty(x => x.DisplayMode);
+			dataSource.Object.DisplayMode = displayMode;
+
+			_control.DataSource = dataSource.Object;
+			_control.MergedDataSourceDisplayMode.Should().Be(displayMode, "because the view model determines the initial display mode and thus the control should just use that");
+			dataSource.Object.DisplayMode.Should().Be(displayMode, "because the display mode of the view model shouldn't have been changed in the process");
 		}
 	}
 }

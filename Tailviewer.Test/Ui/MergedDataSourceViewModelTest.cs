@@ -2,9 +2,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
+using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
 namespace Tailviewer.Test.Ui
 {
@@ -18,43 +19,68 @@ namespace Tailviewer.Test.Ui
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings);
-			_model = new MergedDataSourceViewModel(_settingsDataSource = _dataSources.AddGroup());
+			
 		}
 
-		private MergedDataSourceViewModel _model;
 		private DataSources _dataSources;
 		private Tailviewer.Settings.DataSources _settings;
 		private ManualTaskScheduler _scheduler;
-		private MergedDataSource _settingsDataSource;
 		private ILogFileFactory _logFileFactory;
 
 		[Test]
-		public void TestConstruction()
+		public void TestConstruction1()
 		{
-			_model.IsSelected.Should().BeFalse();
-			_model.IsExpanded.Should().BeTrue();
+			var model = new MergedDataSourceViewModel(_dataSources.AddGroup());
+			model.IsSelected.Should().BeFalse();
+			model.IsExpanded.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestConstruction2([Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
+		{
+			var dataSource = _dataSources.AddGroup();
+			dataSource.DisplayMode = displayMode;
+
+			var model = new MergedDataSourceViewModel(dataSource);
+			model.DisplayMode.Should().Be(displayMode);
 		}
 
 		[Test]
 		public void TestExpand()
 		{
-			_model.IsExpanded = false;
-			_model.IsExpanded.Should().BeFalse();
-			_settingsDataSource.IsExpanded.Should().BeFalse();
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+			model.IsExpanded = false;
+			model.IsExpanded.Should().BeFalse();
+			dataSource.IsExpanded.Should().BeFalse();
 
-			_model.IsExpanded = true;
-			_model.IsExpanded.Should().BeTrue();
-			_settingsDataSource.IsExpanded.Should().BeTrue();
+			model.IsExpanded = true;
+			model.IsExpanded.Should().BeTrue();
+			dataSource.IsExpanded.Should().BeTrue();
 		}
 
 		[Test]
 		public void TestAdd1()
 		{
+			var model = new MergedDataSourceViewModel(_dataSources.AddGroup());
 			SingleDataSource source = _dataSources.AddDataSource("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source);
-			_model.AddChild(sourceViewModel);
-			_model.Observable.Should().Equal(sourceViewModel);
-			sourceViewModel.Parent.Should().BeSameAs(_model);
+			model.AddChild(sourceViewModel);
+			model.Observable.Should().Equal(sourceViewModel);
+			sourceViewModel.Parent.Should().BeSameAs(model);
+		}
+
+		[Test]
+		public void TestChangeDisplayMode()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			model.DisplayMode = DataSourceDisplayMode.CharacterCode;
+			dataSource.DisplayMode.Should().Be(DataSourceDisplayMode.CharacterCode);
+
+			model.DisplayMode = DataSourceDisplayMode.Filename;
+			dataSource.DisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
 	}
 }

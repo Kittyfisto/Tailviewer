@@ -88,5 +88,12 @@ namespace Tailviewer.Test.BusinessLogic
 			_storage.Remove(analysis.Id);
 			file.Exists.Result.Should().BeFalse("because Remove should've also removed the analysis from disk");
 		}
+
+		[Test]
+		[Description("")]
+		public void TestSaveAnalysis1()
+		{
+			
+		}
 	}
 }

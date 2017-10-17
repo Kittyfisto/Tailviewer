@@ -7,13 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using log4net;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using log4net;
-using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -25,124 +26,121 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public static readonly DependencyProperty DataSourceProperty =
 			DependencyProperty.Register("DataSource", typeof(IDataSource), typeof(LogEntryListView),
-				new PropertyMetadata(null));
+				new PropertyMetadata(propertyChangedCallback: null));
 
 		public static readonly DependencyProperty LogFileProperty =
-			DependencyProperty.Register("LogFile", typeof (ILogFile), typeof (LogEntryListView),
-			                            new PropertyMetadata(null, OnLogFileChanged));
+			DependencyProperty.Register("LogFile", typeof(ILogFile), typeof(LogEntryListView),
+				new PropertyMetadata(defaultValue: null, propertyChangedCallback: OnLogFileChanged));
 
 		public static readonly DependencyProperty SearchProperty =
-			DependencyProperty.Register("Search", typeof (ILogFileSearch), typeof (LogEntryListView),
-			                            new PropertyMetadata(null, OnSearchChanged));
+			DependencyProperty.Register("Search", typeof(ILogFileSearch), typeof(LogEntryListView),
+				new PropertyMetadata(defaultValue: null, propertyChangedCallback: OnSearchChanged));
 
 		public static readonly DependencyProperty FollowTailProperty =
-			DependencyProperty.Register("FollowTail", typeof (bool), typeof (LogEntryListView),
-			                            new PropertyMetadata(false, OnFollowTailChanged));
+			DependencyProperty.Register("FollowTail", typeof(bool), typeof(LogEntryListView),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnFollowTailChanged));
 
 		public static readonly DependencyProperty ShowLineNumbersProperty =
-			DependencyProperty.Register("ShowLineNumbers", typeof (bool), typeof (LogEntryListView),
-			                            new PropertyMetadata(true, OnShowLineNumbersChanged));
+			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(LogEntryListView),
+				new PropertyMetadata(defaultValue: true, propertyChangedCallback: OnShowLineNumbersChanged));
 
 		public static readonly DependencyProperty CurrentLineProperty =
-			DependencyProperty.Register("CurrentLine", typeof (LogLineIndex), typeof (LogEntryListView),
-			                            new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
+			DependencyProperty.Register("CurrentLine", typeof(LogLineIndex), typeof(LogEntryListView),
+				new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
 
 		public static readonly DependencyProperty ColorByLevelProperty =
-			DependencyProperty.Register("ColorByLevel", typeof (bool), typeof (LogEntryListView),
-			                            new PropertyMetadata(false, OnColorByLevelChanged));
+			DependencyProperty.Register("ColorByLevel", typeof(bool), typeof(LogEntryListView),
+				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnColorByLevelChanged));
 
-		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(33);
+		public static readonly DependencyProperty MergedDataSourceDisplayModeProperty = DependencyProperty.Register(
+			"MergedDataSourceDisplayMode", typeof(DataSourceDisplayMode), typeof(LogEntryListView),
+			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
+
+		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
+		private readonly DataSourceCanvas _dataSourceCanvas;
 		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
-		private readonly DataSourceCanvas _dataSourceCanvas;
-		private readonly TextCanvas _textCanvas;
 		private readonly DispatcherTimer _timer;
 		private readonly FlatScrollBar _verticalScrollBar;
 
 		private int _maxLineWidth;
 		private int _pendingModificationsCount;
 
-		#region Scrolling
-
-		private ScrollEvent _lastScroll;
-
-		private struct ScrollEvent
-		{
-			public double NewValue;
-			public double OldValue;
-		}
-
-		#endregion
-
 		static LogEntryListView()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof (LogEntryListView),
-			                                         new FrameworkPropertyMetadata(typeof (LogEntryListView)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(LogEntryListView),
+				new FrameworkPropertyMetadata(typeof(LogEntryListView)));
 		}
 
 		public LogEntryListView()
 		{
 			_verticalScrollBar = new FlatScrollBar
-				{
-					Name = "PART_VerticalScrollBar",
-					Thickness = 18
-				};
+			{
+				Name = "PART_VerticalScrollBar",
+				Thickness = 18
+			};
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
-			_verticalScrollBar.SetValue(RowProperty, 0);
-			_verticalScrollBar.SetValue(ColumnProperty, 3);
+			_verticalScrollBar.SetValue(RowProperty, value: 0);
+			_verticalScrollBar.SetValue(ColumnProperty, value: 3);
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
-			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10*TextHelper.LineHeight);
+			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
 			_horizontalScrollBar = new FlatScrollBar
-				{
-					Name = "PART_HorizontalScrollBar",
-					Orientation = Orientation.Horizontal,
-					Thickness = 18
-				};
-			_horizontalScrollBar.SetValue(RowProperty, 1);
-			_horizontalScrollBar.SetValue(ColumnProperty, 0);
-			_horizontalScrollBar.SetValue(ColumnSpanProperty, 3);
+			{
+				Name = "PART_HorizontalScrollBar",
+				Orientation = Orientation.Horizontal,
+				Thickness = 18
+			};
+			_horizontalScrollBar.SetValue(RowProperty, value: 1);
+			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
+			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 3);
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Star)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(1, GridUnitType.Auto)});
-			RowDefinitions.Add(new RowDefinition {Height = new GridLength(1, GridUnitType.Star)});
-			RowDefinitions.Add(new RowDefinition {Height = new GridLength(1, GridUnitType.Auto)});
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Star)});
+			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
+			RowDefinitions.Add(new RowDefinition {Height = new GridLength(value: 1, type: GridUnitType.Star)});
+			RowDefinitions.Add(new RowDefinition {Height = new GridLength(value: 1, type: GridUnitType.Auto)});
 
-			_textCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
-			_textCanvas.SetValue(RowProperty, 0);
-			_textCanvas.SetValue(ColumnProperty, 2);
-			_textCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
-			_textCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
-			_textCanvas.SizeChanged += TextCanvasOnSizeChanged;
-			_textCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
-			_textCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
-			_textCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
-			_textCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
+			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
+			PartTextCanvas.SetValue(RowProperty, value: 0);
+			PartTextCanvas.SetValue(ColumnProperty, value: 2);
+			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
+			PartTextCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
+			PartTextCanvas.SizeChanged += TextCanvasOnSizeChanged;
+			PartTextCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
+			PartTextCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
+			PartTextCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
+			PartTextCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
 
 			_lineNumberCanvas = new LineNumberCanvas();
-			_lineNumberCanvas.SetValue(RowProperty, 0);
-			_lineNumberCanvas.SetValue(ColumnProperty, 0);
-			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(5, 0, 0, 0));
+			_lineNumberCanvas.SetValue(RowProperty, value: 0);
+			_lineNumberCanvas.SetValue(ColumnProperty, value: 0);
+			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 0, bottom: 0));
 
 			_dataSourceCanvas = new DataSourceCanvas();
-			_dataSourceCanvas.SetValue(RowProperty, 0);
-			_dataSourceCanvas.SetValue(ColumnProperty, 1);
-			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(5, 0, 0, 0));
+			_dataSourceCanvas.SetValue(RowProperty, value: 0);
+			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
+			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
 			Children.Add(_lineNumberCanvas);
 			Children.Add(_dataSourceCanvas);
-			Children.Add(_textCanvas);
+			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
 
 			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
 			_timer.Start();
+		}
+
+		public DataSourceDisplayMode MergedDataSourceDisplayMode
+		{
+			get { return (DataSourceDisplayMode) GetValue(MergedDataSourceDisplayModeProperty); }
+			set { SetValue(MergedDataSourceDisplayModeProperty, value); }
 		}
 
 		public bool ColorByLevel
@@ -177,7 +175,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public IDataSource DataSource
 		{
-			get { return (IDataSource)GetValue(DataSourceProperty); }
+			get { return (IDataSource) GetValue(DataSourceProperty); }
 			set { SetValue(DataSourceProperty, value); }
 		}
 
@@ -189,35 +187,29 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public ILogFileSearch Search
 		{
-			get { return (ILogFileSearch)GetValue(SearchProperty); }
+			get { return (ILogFileSearch) GetValue(SearchProperty); }
 			set { SetValue(SearchProperty, value); }
 		}
 
-		public List<TextLine> VisibleTextLines
-		{
-			get { return _textCanvas.VisibleTextLines; }
-		}
+		public List<TextLine> VisibleTextLines => PartTextCanvas.VisibleTextLines;
 
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{
-			get { return _textCanvas.SelectedIndices; }
-			set { _textCanvas.SelectedIndices = value; }
+			get { return PartTextCanvas.SelectedIndices; }
+			set { PartTextCanvas.SelectedIndices = value; }
 		}
 
-		public TextCanvas PartTextCanvas
-		{
-			get { return _textCanvas; }
-		}
+		public TextCanvas PartTextCanvas { get; }
 
 		public int SelectedSearchResultIndex
 		{
-			get { return _textCanvas.SelectedSearchResultIndex; }
-			set {_textCanvas.SelectedSearchResultIndex = value;}
+			get { return PartTextCanvas.SelectedSearchResultIndex; }
+			set { PartTextCanvas.SelectedSearchResultIndex = value; }
 		}
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			double width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
+			var width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
 			var upperWidth = (int) Math.Ceiling(width);
 
 			// Setting an integer is an atomic operation and thus no
@@ -227,6 +219,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			Interlocked.Increment(ref _pendingModificationsCount);
 		}
 
+		private static void OnMergedDataSourceDisplayModeChanged(DependencyObject dependencyObject,
+			DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView) dependencyObject).OnMergedDataSourceDisplayModeChanged((DataSourceDisplayMode) args.NewValue);
+		}
+
+		private void OnMergedDataSourceDisplayModeChanged(DataSourceDisplayMode displayMode)
+		{
+			_dataSourceCanvas.DisplayMode = displayMode;
+		}
+
 		private static void OnSearchChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogEntryListView) dependencyObject).OnSearchChanged((ILogFileSearch) args.NewValue);
@@ -234,7 +237,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSearchChanged(ILogFileSearch search)
 		{
-			_textCanvas.Search = search;
+			PartTextCanvas.Search = search;
 		}
 
 		private static void OnColorByLevelChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -244,7 +247,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnColorByLevelChanged(bool colorByLevel)
 		{
-			_textCanvas.ColorByLevel = colorByLevel;
+			PartTextCanvas.ColorByLevel = colorByLevel;
 		}
 
 		private static void OnCurrentLineChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
@@ -253,7 +256,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		private static void OnShowLineNumbersChanged(DependencyObject dependencyObject,
-		                                             DependencyPropertyChangedEventArgs args)
+			DependencyPropertyChangedEventArgs args)
 		{
 			((LogEntryListView) dependencyObject).OnShowLineNumbersChanged((bool) args.NewValue);
 		}
@@ -261,24 +264,22 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnShowLineNumbersChanged(bool showLineNumbers)
 		{
 			_lineNumberCanvas.Visibility = showLineNumbers
-				                               ? Visibility.Visible
-				                               : Visibility.Collapsed;
+				? Visibility.Visible
+				: Visibility.Collapsed;
 		}
 
 		private void OnCurrentLineChanged(LogLineIndex index)
 		{
-			LogFileSection current = _textCanvas.CurrentlyVisibleSection;
+			var current = PartTextCanvas.CurrentlyVisibleSection;
 			if (index != LogLineIndex.Invalid)
 			{
-				_textCanvas.CurrentLine = (int) index;
+				PartTextCanvas.CurrentLine = (int) index;
 				//< We don't want to call BringIntoView() everytime because that one scrolls to fully
 				// bring a line into view. This would mean that if the currently visible section changed
 				// so that the top line is only partially visible, then this method would always bring
 				// it fully visible. Removing the following filter would completely remove per pixel scrolling...
 				if (current.Index != index)
-				{
-					_verticalScrollBar.Value = (int) index*TextHelper.LineHeight;
-				}
+					_verticalScrollBar.Value = (int) index * TextHelper.LineHeight;
 			}
 		}
 
@@ -301,47 +302,41 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void BringIntoView(LogLineIndex logLineIndex, LogLineMatch match = new LogLineMatch())
 		{
-			double height = _textCanvas.ActualHeight;
-			double offset = _textCanvas.YOffset;
-			int start = _textCanvas.CurrentLine;
-			int diff = logLineIndex - start;
-			double minY = ((diff)*TextHelper.LineHeight + offset);
-			double maxY = ((diff + 1)*TextHelper.LineHeight + offset);
+			var height = PartTextCanvas.ActualHeight;
+			var offset = PartTextCanvas.YOffset;
+			var start = PartTextCanvas.CurrentLine;
+			var diff = logLineIndex - start;
+			var minY = diff * TextHelper.LineHeight + offset;
+			var maxY = (diff + 1) * TextHelper.LineHeight + offset;
 			if (minY < 0)
-			{
 				_verticalScrollBar.Value += minY;
-			}
 			else if (maxY > height)
-			{
-				_verticalScrollBar.Value += (maxY - height);
-			}
+				_verticalScrollBar.Value += maxY - height;
 
-			double minX = TextHelper.GlyphWidth * match.Index;
-			double maxX = TextHelper.GlyphWidth * (match.Index + match.Count);
+			var minX = TextHelper.GlyphWidth * match.Index;
+			var maxX = TextHelper.GlyphWidth * (match.Index + match.Count);
 			var visibleMinX = _horizontalScrollBar.Value;
 			var visibleMaxX = visibleMinX + _horizontalScrollBar.ViewportSize;
 			if (maxX < visibleMinX || minX > visibleMaxX)
 				_horizontalScrollBar.Value = minX;
 
-			ILogFile logFile = LogFile;
+			var logFile = LogFile;
 			if (logFile != null)
 			{
-				int count = logFile.Count;
+				var count = logFile.Count;
 				if (count > 0)
-				{
 					FollowTail = logLineIndex >= count - 1;
-				}
 			}
 		}
 
 		private void TextCanvasOnVisibleLinesChanged()
 		{
 			_lineNumberCanvas.UpdateLineNumbers(LogFile,
-			                                    _textCanvas.CurrentlyVisibleSection,
-			                                    _textCanvas.YOffset);
-			_dataSourceCanvas.UpdateLineNumbers(DataSource,
-				_textCanvas.CurrentlyVisibleSection,
-				_textCanvas.YOffset);
+				PartTextCanvas.CurrentlyVisibleSection,
+				PartTextCanvas.YOffset);
+			_dataSourceCanvas.UpdateDataSources(DataSource,
+				PartTextCanvas.CurrentlyVisibleSection,
+				PartTextCanvas.YOffset);
 		}
 
 		private void TextCanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -351,8 +346,8 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void TextCanvasOnMouseWheelUp()
 		{
-			double delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
-			double toScroll = Math.Min(delta, TextHelper.LineHeight);
+			var delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
+			var toScroll = Math.Min(delta, TextHelper.LineHeight);
 
 			if (toScroll > 0)
 			{
@@ -363,14 +358,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void TextCanvasOnMouseWheelDown()
 		{
-			double delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
-			double toScroll = Math.Min(delta, TextHelper.LineHeight);
+			var delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
+			var toScroll = Math.Min(delta, TextHelper.LineHeight);
 			_verticalScrollBar.Value += toScroll;
 
 			if (_verticalScrollBar.Value >= _verticalScrollBar.Maximum)
-			{
 				FollowTail = true;
-			}
 		}
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -383,9 +376,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnFollowTailChanged(bool followTail)
 		{
 			if (followTail)
-			{
 				ScrollToBottom();
-			}
 
 			FollowTailChanged?.Invoke(followTail);
 		}
@@ -397,18 +388,17 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnTimer(object sender, EventArgs args)
 		{
-			if (Interlocked.Exchange(ref _pendingModificationsCount, 0) > 0)
-			{
+			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0)
 				try
 				{
-					_textCanvas.DetermineVerticalOffset();
-					_textCanvas.CurrentlyVisibleSection = CalculateVisibleSection();
+					PartTextCanvas.DetermineVerticalOffset();
+					PartTextCanvas.CurrentlyVisibleSection = CalculateVisibleSection();
 
 					UpdateScrollViewerRegions();
 					ScrollToBottomIfRequired();
 
-					_textCanvas.UpdateVisibleLines();
-					_textCanvas.OnMouseMove();
+					PartTextCanvas.UpdateVisibleLines();
+					PartTextCanvas.OnMouseMove();
 				}
 				catch (Exception e)
 				{
@@ -417,15 +407,12 @@ namespace Tailviewer.Ui.Controls.LogView
 					// Let's pray that this was just a hickup and try next time...
 					Interlocked.Increment(ref _pendingModificationsCount);
 				}
-			}
 		}
 
 		private void ScrollToBottomIfRequired()
 		{
 			if (FollowTail)
-			{
 				ScrollToBottom();
-			}
 		}
 
 		/// <summary>
@@ -434,7 +421,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		[Pure]
 		public LogFileSection CalculateVisibleSection()
 		{
-			return _textCanvas.CalculateVisibleSection();
+			return PartTextCanvas.CalculateVisibleSection();
 		}
 
 		private static void OnLogFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -446,17 +433,17 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			oldValue?.RemoveListener(this);
 
-			_textCanvas.LogFile = newValue;
+			PartTextCanvas.LogFile = newValue;
 
 			if (newValue != null)
 			{
-				newValue.AddListener(this, TimeSpan.FromMilliseconds(100), 10000);
+				newValue.AddListener(this, TimeSpan.FromMilliseconds(value: 100), maximumLineCount: 10000);
 
 				_maxLineWidth = (int) Math.Ceiling(TextHelper.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
 				UpdateScrollViewerRegions();
-				_textCanvas.DetermineVerticalOffset();
-				_textCanvas.UpdateVisibleSection();
-				_textCanvas.UpdateVisibleLines();
+				PartTextCanvas.DetermineVerticalOffset();
+				PartTextCanvas.UpdateVisibleSection();
+				PartTextCanvas.UpdateVisibleLines();
 			}
 			else
 			{
@@ -468,15 +455,11 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void MatchScrollbarValueToCurrentLine()
 		{
-			double value = _textCanvas.CurrentLine*TextHelper.LineHeight;
+			var value = PartTextCanvas.CurrentLine * TextHelper.LineHeight;
 			if (value >= 0 && value <= _verticalScrollBar.Maximum)
-			{
 				_verticalScrollBar.Value = value;
-			}
 			else
-			{
 				_verticalScrollBar.Value = 0;
-			}
 		}
 
 		private void UpdateScrollViewerRegions()
@@ -499,7 +482,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void UpdateHorizontalScrollbar()
 		{
 			double totalWidth = _maxLineWidth;
-			double usableWidth = _textCanvas.ActualWidth;
+			var usableWidth = PartTextCanvas.ActualWidth;
 			if (totalWidth > usableWidth)
 			{
 				_horizontalScrollBar.Minimum = 0;
@@ -518,13 +501,14 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void UpdateVerticalScrollbar()
 		{
-			int count = LogFile.Count;
-			double totalHeight = count*TextHelper.LineHeight;
-			double usableHeight = _textCanvas.ActualHeight;
+			var count = LogFile.Count;
+			var totalHeight = count * TextHelper.LineHeight;
+			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)
 			{
 				_verticalScrollBar.Minimum = 0;
-				_verticalScrollBar.Maximum = Math.Ceiling((totalHeight - usableHeight)/TextHelper.LineHeight)*TextHelper.LineHeight;
+				_verticalScrollBar.Maximum = Math.Ceiling((totalHeight - usableHeight) / TextHelper.LineHeight) *
+				                             TextHelper.LineHeight;
 				_verticalScrollBar.ViewportSize = usableHeight;
 				_verticalScrollBar.Visibility = Visibility.Visible;
 			}
@@ -540,42 +524,38 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void VerticalScrollBarOnScroll(object sender, ScrollEventArgs scrollEventArgs)
 		{
 			if (_lastScroll.NewValue < _lastScroll.OldValue)
-			{
 				FollowTail = false;
-			}
 			if (scrollEventArgs.NewValue >= _verticalScrollBar.Maximum)
-			{
 				FollowTail = true;
-			}
 		}
 
 		private void VerticalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
 			_lastScroll = new ScrollEvent
-				{
-					OldValue = args.OldValue,
-					NewValue = args.NewValue,
-				};
+			{
+				OldValue = args.OldValue,
+				NewValue = args.NewValue
+			};
 		}
 
 		public void Select(LogLineIndex index)
 		{
-			_textCanvas.SetSelected(index, SelectMode.Replace);
+			PartTextCanvas.SetSelected(index, SelectMode.Replace);
 		}
 
 		public void Select(IEnumerable<LogLineIndex> indices)
 		{
-			_textCanvas.SetSelected(indices, SelectMode.Replace);
+			PartTextCanvas.SetSelected(indices, SelectMode.Replace);
 		}
 
 		public void Select(params LogLineIndex[] indices)
 		{
-			_textCanvas.SetSelected(indices, SelectMode.Replace);
+			PartTextCanvas.SetSelected(indices, SelectMode.Replace);
 		}
 
 		public void CopySelectedLinesToClipboard()
 		{
-			_textCanvas.OnCopyToClipboard();
+			PartTextCanvas.OnCopyToClipboard();
 		}
 
 		public void SetHorizontalOffset(double value)
@@ -587,5 +567,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			else
 				_horizontalScrollBar.Value = value;
 		}
+
+		#region Scrolling
+
+		private ScrollEvent _lastScroll;
+
+		private struct ScrollEvent
+		{
+			public double NewValue;
+			public double OldValue;
+		}
+
+		#endregion
 	}
 }

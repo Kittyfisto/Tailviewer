@@ -2,7 +2,6 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
@@ -25,7 +24,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_settings = new DataSource
 				{
-					Id = DataSourceId.CreateNew()
+					Id = DataSourceId.CreateNew(),
+					MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode
 				};
 			_merged = new MergedDataSource(_scheduler, _settings);
 		}
@@ -120,6 +120,12 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		public void TestCtor5()
+		{
+			_merged.DisplayMode.Should().Be(_settings.MergedDataSourceDisplayMode);
+		}
+
+		[Test]
 		[Description(
 			"Verifies that removing a data source from a group sets the parent id of the settings object to Empty again")]
 		public void TestRemove1()
@@ -147,6 +153,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.UnfilteredLogFile.Should().NotBeNull();
 			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
 			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource1.UnfilteredLogFile});
+		}
+
+		[Test]
+		public void TestChangeDisplayMode()
+		{
+			_merged.DisplayMode = DataSourceDisplayMode.CharacterCode;
+			_settings.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.CharacterCode);
+
+			_merged.DisplayMode = DataSourceDisplayMode.Filename;
+			_settings.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
 	}
 }

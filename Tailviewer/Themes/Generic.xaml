@@ -10,4 +10,5 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterActionTypeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
+
 </ResourceDictionary>

@@ -12,8 +12,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
 
             <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
 
@@ -25,6 +25,8 @@
             <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
             <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
+            <logView:NonMergedDataSourceToVisibilityCollapsedConverter x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
+            <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -72,6 +74,14 @@
                 ToolTip="Show/hide line numbers"
                 IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, ElementName=This}"
                 Content="Line Numbers" />
+
+            <logView:DataSourceDisplayModeToggleButton 
+                x:Name="PART_MergedDataSourceDisplayMode"
+                DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
+                VerticalAlignment="Stretch"
+                Margin="0,0,8,8"
+                Padding="4" />
 
             <controls:FlatToggleButton
                 Margin="0,0,8,8"
@@ -172,7 +182,7 @@
         <metrolib:FlatProgressBar Grid.Row="1"
                                   Minimum="0"
                                   Maximum="1"
-                                  Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This}"/>
+                                  Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}"/>
 
         <Grid Grid.Row="2"
               Height="1"
@@ -187,6 +197,7 @@
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+            MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
             SnapsToDevicePixels="True" />
 
         <StackPanel Grid.Row="3" VerticalAlignment="Center">

@@ -39,9 +39,12 @@ namespace Tailviewer.Test.Settings
 			dataSource.ShowLineNumbers.Should().BeTrue();
 
 			dataSource.IsExpanded.Should().BeTrue();
+
+			dataSource.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
 
 		public static IEnumerable<bool> Bool => new[] {true, false};
+		public static IEnumerable<DataSourceDisplayMode> DisplayModes => new[] {DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode };
 
 		[Test]
 		public void TestClone([ValueSource(nameof(Bool))] bool hideEmptyLines,
@@ -49,7 +52,8 @@ namespace Tailviewer.Test.Settings
 			[ValueSource(nameof(Bool))] bool colorByLevel,
 			[ValueSource(nameof(Bool))] bool followTail,
 			[ValueSource(nameof(Bool))] bool isSingleLine,
-			[ValueSource(nameof(Bool))] bool isExpanded)
+			[ValueSource(nameof(Bool))] bool isExpanded,
+			[ValueSource(nameof(DisplayModes))] DataSourceDisplayMode displayMode)
 		{
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
@@ -76,7 +80,8 @@ namespace Tailviewer.Test.Settings
 					new LogLineIndex(1),
 					new LogLineIndex(10)
 				},
-				ActivatedQuickFilters = {filter}
+				ActivatedQuickFilters = {filter},
+				MergedDataSourceDisplayMode = displayMode
 			};
 			var cloned = dataSource.Clone();
 			cloned.Should().NotBeNull();
@@ -100,6 +105,7 @@ namespace Tailviewer.Test.Settings
 			cloned.SelectedLogLines.Should().NotBeSameAs(dataSource.SelectedLogLines);
 			cloned.ActivatedQuickFilters.Should().Equal(new object[] {filter});
 			cloned.ActivatedQuickFilters.Should().NotBeSameAs(dataSource.ActivatedQuickFilters);
+			cloned.MergedDataSourceDisplayMode.Should().Be(displayMode);
 		}
 
 		[Test]
@@ -108,7 +114,8 @@ namespace Tailviewer.Test.Settings
 			[ValueSource(nameof(Bool))] bool colorByLevel,
 			[ValueSource(nameof(Bool))] bool followTail,
 			[ValueSource(nameof(Bool))] bool isSingleLine,
-			[ValueSource(nameof(Bool))] bool isExpanded)
+			[ValueSource(nameof(Bool))] bool isExpanded,
+			[ValueSource(nameof(DisplayModes))] DataSourceDisplayMode displayMode)
 		{
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
@@ -142,7 +149,8 @@ namespace Tailviewer.Test.Settings
 						//	new LogLineIndex(1),
 						//	new LogLineIndex(10)
 						//},
-						ActivatedQuickFilters = { filter }
+						ActivatedQuickFilters = { filter },
+						MergedDataSourceDisplayMode = displayMode
 					};
 					dataSource.Save(writer);
 				}
@@ -173,6 +181,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.SearchTerm.Should().Be("stuff");
 					//dataSource.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));
 					dataSource.ActivatedQuickFilters.Should().Equal(new object[] { filter });
+					dataSource.MergedDataSourceDisplayMode.Should().Be(displayMode);
 				}
 			}
 		}

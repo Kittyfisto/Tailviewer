@@ -24,7 +24,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestUpdateLineNumbers1()
 		{
 			var canvas = new DataSourceCanvas();
-			canvas.UpdateLineNumbers(null, new LogFileSection(0, 0), 0);
+			canvas.UpdateDataSources(null, new LogFileSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
 		}
 
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		{
 			var canvas = new DataSourceCanvas();
 			var dataSource = new Mock<IDataSource>();
-			canvas.UpdateLineNumbers(dataSource.Object, new LogFileSection(0, 0), 0);
+			canvas.UpdateDataSources(dataSource.Object, new LogFileSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
 		}
 
@@ -59,10 +59,10 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 				});
 			mergedDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
 
-			canvas.UpdateLineNumbers(mergedDataSource.Object, new LogFileSection(0, 2), 0);
+			canvas.UpdateDataSources(mergedDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
-			canvas.DataSources[0].Text.Should().Be("a really long file ...");
+			canvas.DataSources[0].Text.Should().Be("a really long file n..");
 			canvas.DataSources[1].Should().NotBeNull();
 			canvas.DataSources[1].Text.Should().Be("bar.txt");
 		}

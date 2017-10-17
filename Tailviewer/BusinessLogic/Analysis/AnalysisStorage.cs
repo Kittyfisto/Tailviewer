@@ -24,6 +24,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly List<ActiveAnalysisConfiguration> _templates;
 		private readonly Dictionary<AnalysisId, ActiveAnalysis> _analyses;
+		private readonly Dictionary<AnalysisId, ActiveAnalysisConfiguration> _lastSavedAnalyses;
 		private readonly IFilesystem _filesystem;
 
 		public AnalysisStorage(ITaskScheduler taskScheduler,
@@ -46,6 +47,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_snapshots = new SnapshotsWatchdog(taskScheduler, filesystem, typeFactory);
 			_templates = new List<ActiveAnalysisConfiguration>();
 			_analyses = new Dictionary<AnalysisId, ActiveAnalysis>();
+			_lastSavedAnalyses = new Dictionary<AnalysisId, ActiveAnalysisConfiguration>();
 		}
 
 		public void Dispose()
@@ -109,6 +111,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return analysis;
 		}
 
+		public Task Save(ActiveAnalysisConfiguration analysis)
+		{
+			var filename = GetFilename(analysis.Id);
+			var directory = Path.GetDirectoryName(filename);
+
+			// We don't know if the directory exists, so we'll just create
+			// it beforehand...
+			_filesystem.CreateDirectory(directory);
+			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
+		}
+
 		public void Remove(AnalysisId id)
 		{
 			lock (_syncRoot)
@@ -133,21 +146,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return filename;
 		}
 
-		private Task Save(ActiveAnalysisConfiguration analysis)
-		{
-			var filename = GetFilename(analysis.Id);
-			var directory = Path.GetDirectoryName(filename);
-
-			// We don't know if the directory exists, so we'll just create
-			// it beforehand...
-			_filesystem.CreateDirectory(directory);
-			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
-		}
-
 		private void WriteAnalysis(Task<Stream> task, ActiveAnalysisConfiguration analysis)
 		{
 			using (var stream = task.Result)
 			{
+				// Just in case we're writing over an existing file...
 				stream.SetLength(0);
 				using (var writer = new Writer(stream))
 				{

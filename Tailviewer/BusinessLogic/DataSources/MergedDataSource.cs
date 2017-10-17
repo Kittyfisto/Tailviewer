@@ -45,6 +45,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { Settings.IsExpanded = value; }
 		}
 
+		public DataSourceDisplayMode DisplayMode
+		{
+			get { return Settings.MergedDataSourceDisplayMode; }
+			set { Settings.MergedDataSourceDisplayMode = value; }
+		}
+
 		public void Add(IDataSource dataSource)
 		{
 			if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)

@@ -47,6 +47,8 @@ namespace Tailviewer.Settings
 		public LogLineIndex VisibleLogLine;
 		public double HorizontalOffset;
 
+		public DataSourceDisplayMode MergedDataSourceDisplayMode;
+
 		public DataSource()
 		{
 			Order = -1;
@@ -72,6 +74,7 @@ namespace Tailviewer.Settings
 
 		public HashSet<AnalysisId> Analyses => _analyses;
 
+
 		public override string ToString()
 		{
 			if (File == null)
@@ -96,6 +99,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttribute("parentid", ParentId);
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
+			writer.WriteAttributeEnum("mergeddatasourcedisplaymode", MergedDataSourceDisplayMode);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (QuickFilterId guid in ActivatedQuickFilters)
@@ -170,6 +174,10 @@ namespace Tailviewer.Settings
 
 					case "horizontaloffset":
 						HorizontalOffset = reader.ReadContentAsDouble2();
+						break;
+
+					case "mergeddatasourcedisplaymode":
+						MergedDataSourceDisplayMode = reader.ReadContentAsEnum<DataSourceDisplayMode>();
 						break;
 				}
 			}
@@ -250,7 +258,8 @@ namespace Tailviewer.Settings
 				SearchTerm = SearchTerm,
 				ShowLineNumbers = ShowLineNumbers,
 				VisibleLogLine = VisibleLogLine,
-				IsExpanded = IsExpanded
+				IsExpanded = IsExpanded,
+				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode
 			};
 			clone.ActivatedQuickFilters.AddRange(ActivatedQuickFilters);
 			clone.SelectedLogLines.AddRange(SelectedLogLines);

@@ -7,12 +7,14 @@ using System.Windows.Input;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	public sealed class MergedDataSourceViewModel
 		: AbstractDataSourceViewModel
 		, ITreeViewItemViewModel
+		, IMergedDataSourceViewModel
 	{
 		private readonly MergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
@@ -150,6 +152,19 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_dataSource.IsExpanded = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public DataSourceDisplayMode DisplayMode
+		{
+			get { return _dataSource.DisplayMode; }
+			set
+			{
+				if (value == _dataSource.DisplayMode)
+					return;
+
+				_dataSource.DisplayMode = value;
 				EmitPropertyChanged();
 			}
 		}

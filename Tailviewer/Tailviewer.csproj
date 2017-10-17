@@ -176,7 +176,11 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverter.cs" />
     <Compile Include="Ui\Controls\LogView\DataSourceCanvas.cs" />
+    <Compile Include="Settings\DataSourceDisplayMode.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButton.cs" />
+    <Compile Include="Ui\Controls\LogView\NonMergedDataSourceToVisibilityCollapsedConverter.cs" />
     <Compile Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml.cs">
       <DependentUpon>ChangelogControl.xaml</DependentUpon>
     </Compile>
@@ -276,6 +280,7 @@
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\QuickFiltersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\QuickFiltersViewModel.cs" />
@@ -300,6 +305,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -11,8 +11,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 	public interface IAnalysisStorage
 	{
 		/// <summary>
+		///    Returns the current list of all active analyses.
 		/// </summary>
 		IEnumerable<ActiveAnalysisConfiguration> AnalysisTemplates { get; }
+
+		/// <summary>
+		///     Saves the given active analysis to disk.
+		/// </summary>
+		/// <param name="configuration"></param>
+		/// <returns></returns>
+		Task Save(ActiveAnalysisConfiguration configuration);
 
 		/// <summary>
 		/// </summary>
