@@ -36,6 +36,7 @@
                 <!-- What's great is that we can now use this spacer to show the character code of this data
                      source to the user! -->
                 <TextBlock Text="{Binding CharacterCode}"
+                           ToolTip="Identifies this data source amongst all others in this group - also displayed next to each log line"
                            Foreground="{x:Static logView:TextHelper.DataSourceForegroundBrush}"
                            VerticalAlignment="Center" />
             </Grid>
