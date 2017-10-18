@@ -65,7 +65,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			canvas.UpdateDataSources(mergedDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
-			canvas.DataSources[0].Text.Should().Be("a really long file n..");
+			canvas.DataSources[0].Text.Should().Be("a really long file nam");
 			canvas.DataSources[1].Should().NotBeNull();
 			canvas.DataSources[1].Text.Should().Be("bar.txt");
 		}

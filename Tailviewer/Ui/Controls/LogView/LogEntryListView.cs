@@ -6,6 +6,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using log4net;
 using Metrolib.Controls;
@@ -75,6 +77,14 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Star) });
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
+			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Star) });
+			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Auto) });
+
 			_verticalScrollBar = new FlatScrollBar
 			{
 				Name = "PART_VerticalScrollBar",
@@ -83,7 +93,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, value: 0);
-			_verticalScrollBar.SetValue(ColumnProperty, value: 3);
+			_verticalScrollBar.SetValue(ColumnProperty, value: 4);
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
@@ -95,20 +105,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			};
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
-			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 3);
+			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 4);
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Star)});
-			ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(value: 1, type: GridUnitType.Auto)});
-			RowDefinitions.Add(new RowDefinition {Height = new GridLength(value: 1, type: GridUnitType.Star)});
-			RowDefinitions.Add(new RowDefinition {Height = new GridLength(value: 1, type: GridUnitType.Auto)});
-
 			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
 			PartTextCanvas.SetValue(RowProperty, value: 0);
-			PartTextCanvas.SetValue(ColumnProperty, value: 2);
+			PartTextCanvas.SetValue(ColumnProperty, value: 3);
 			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
 			PartTextCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
 			PartTextCanvas.SizeChanged += TextCanvasOnSizeChanged;
@@ -120,15 +123,25 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, value: 0);
 			_lineNumberCanvas.SetValue(ColumnProperty, value: 0);
-			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 0, bottom: 0));
+			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
 			_dataSourceCanvas = new DataSourceCanvas();
 			_dataSourceCanvas.SetValue(RowProperty, value: 0);
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
-			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
+			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
+
+			var separator = new Rectangle
+			{
+				Fill = new SolidColorBrush(Color.FromRgb(225, 228, 232)),
+				Width = 2
+			};
+			separator.SetValue(RowProperty, value: 0);
+			separator.SetValue(ColumnProperty, value: 2);
+			separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
 			Children.Add(_lineNumberCanvas);
 			Children.Add(_dataSourceCanvas);
+			Children.Add(separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);

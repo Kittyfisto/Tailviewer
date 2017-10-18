@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
@@ -27,6 +26,32 @@ namespace Tailviewer.Ui.Controls.LogView
 			"DisplayMode", typeof(DataSourceDisplayMode), typeof(DataSourceCanvas),
 			new PropertyMetadata(DataSourceDisplayMode.Filename, OnDisplayModeChanged));
 
+		private static readonly int MaximumDataSourceCharacters = 22;
+
+		private readonly List<FormattedText> _dataSourcesPerLogLine;
+		private readonly double _maximumWidth;
+
+		private IDataSource _dataSource;
+		private LogFileSection _visibleSection;
+		private double _yOffset;
+
+		public DataSourceCanvas()
+		{
+			_dataSourcesPerLogLine = new List<FormattedText>();
+			_maximumWidth = TextHelper.EstimateWidthUpperLimit(MaximumDataSourceCharacters);
+
+			ClipToBounds = true;
+			SnapsToDevicePixels = true;
+		}
+
+		public DataSourceDisplayMode DisplayMode
+		{
+			get { return (DataSourceDisplayMode) GetValue(DisplayModeProperty); }
+			set { SetValue(DisplayModeProperty, value); }
+		}
+
+		public IReadOnlyList<FormattedText> DataSources => _dataSourcesPerLogLine;
+
 		private static void OnDisplayModeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((DataSourceCanvas) dependencyObject).OnDisplayModeChanged();
@@ -39,34 +64,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			UpdateDataSources(_dataSource, _visibleSection, _yOffset);
 		}
 
-		private readonly List<FormattedText> _dataSourcesPerLogLine;
-		private readonly int _maximumDataSourceCharacters;
-		private readonly double _maximumWidth;
-		private double _yOffset;
-		private IDataSource _dataSource;
-		private LogFileSection _visibleSection;
-
-		public DataSourceCanvas()
-		{
-			_dataSourcesPerLogLine = new List<FormattedText>();
-			_maximumDataSourceCharacters = 22;
-			_maximumWidth = TextHelper.EstimateWidthUpperLimit(_maximumDataSourceCharacters);
-
-			ClipToBounds = true;
-		}
-
-		public DataSourceDisplayMode DisplayMode
-		{
-			get { return (DataSourceDisplayMode) GetValue(DisplayModeProperty); }
-			set { SetValue(DisplayModeProperty, value); }
-		}
-
-		public IReadOnlyList<FormattedText> DataSources => _dataSourcesPerLogLine;
-
 		protected override void OnRender(DrawingContext drawingContext)
 		{
+			var actualWidth = ActualWidth;
+			var actualHeight = ActualHeight;
+
 			drawingContext.DrawRectangle(Brushes.White, pen: null,
-				rectangle: new Rect(x: 0, y: 0, width: ActualWidth, height: ActualHeight));
+				rectangle: new Rect(x: 0, y: 0, width: actualWidth, height: actualHeight));
 
 			var y = _yOffset;
 			foreach (var dataSource in _dataSourcesPerLogLine)
@@ -74,15 +78,6 @@ namespace Tailviewer.Ui.Controls.LogView
 				Render(dataSource, drawingContext, y, _maximumWidth);
 				y += TextHelper.LineHeight;
 			}
-		}
-
-		protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-		{
-			e.Handled = true;
-
-			DisplayMode = DisplayMode == DataSourceDisplayMode.CharacterCode
-				? DataSourceDisplayMode.Filename
-				: DataSourceDisplayMode.CharacterCode;
 		}
 
 		public void UpdateDataSources(IDataSource dataSource, LogFileSection visibleSection, double yOffset)
@@ -97,7 +92,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				var dataSources = merged.OriginalSources;
 				var displayMode = DisplayMode;
 
-				int actualCharacterCount = 0;
+				var maximumCharacterCount = GetMaximumCharacterCount(displayMode, dataSources);
 
 				_dataSourcesPerLogLine.Clear();
 				var logLines = new LogLine[visibleSection.Count];
@@ -109,8 +104,6 @@ namespace Tailviewer.Ui.Controls.LogView
 					{
 						var originalDataSource = dataSources[dataSourceId];
 						var text = CreateFormattedText(GetDataSourceName(displayMode, originalDataSource));
-						if (text != null)
-							actualCharacterCount = Math.Max(actualCharacterCount, text.Text.Length);
 
 						_dataSourcesPerLogLine.Add(text);
 					}
@@ -120,7 +113,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					}
 				}
 
-				Width = TextHelper.EstimateWidthUpperLimit(actualCharacterCount);
+				Width = TextHelper.EstimateWidthUpperLimit(maximumCharacterCount);
 			}
 			else
 			{
@@ -132,13 +125,31 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		/// <summary>
+		///     Returns the length of the longest name of any of the given data sources for
+		///     that particular display mode.
+		/// </summary>
+		/// <param name="displayMode"></param>
+		/// <param name="dataSources"></param>
+		/// <returns></returns>
+		private static int GetMaximumCharacterCount(DataSourceDisplayMode displayMode, IReadOnlyList<IDataSource> dataSources)
+		{
+			var max = 0;
+			for (var i = 0; i < dataSources.Count; ++i)
+			{
+				var name = GetDataSourceName(displayMode, dataSources[i]);
+				max = Math.Max(name.Length, max);
+			}
+			return max;
+		}
+
+		/// <summary>
 		///     Returns the name of the data source with the given index, depending on the given display mode.
 		/// </summary>
 		/// <param name="displayMode"></param>
 		/// <param name="dataSource"></param>
 		/// <returns></returns>
 		[Pure]
-		private string GetDataSourceName(DataSourceDisplayMode displayMode, IDataSource dataSource)
+		private static string GetDataSourceName(DataSourceDisplayMode displayMode, IDataSource dataSource)
 		{
 			switch (displayMode)
 			{
@@ -147,7 +158,10 @@ namespace Tailviewer.Ui.Controls.LogView
 
 				case DataSourceDisplayMode.Filename:
 					var fullFileName = dataSource.FullFileName;
-					return Path.GetFileName(fullFileName);
+					var fileName = Path.GetFileName(fullFileName);
+					if (fileName != null && fileName.Length > MaximumDataSourceCharacters)
+						fileName = fileName.Substring(startIndex: 0, length: MaximumDataSourceCharacters);
+					return fileName;
 
 				default:
 					return null;
@@ -165,10 +179,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			// The rendered text may not be greater than N characters...
 			try
 			{
-				if (dataSourceName.Length > _maximumDataSourceCharacters)
-					dataSourceName = string.Format("{0}..",
-						dataSourceName.Substring(startIndex: 0, length: _maximumDataSourceCharacters - 2));
-
 				var culture = CultureInfo.CurrentUICulture;
 				return new FormattedText(dataSourceName,
 					culture,
@@ -201,10 +211,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private static IMergedDataSource UnpackMergedDataSource(IDataSource dataSource)
 		{
 			var mergedDataSource = dataSource as IMergedDataSource;
-			if (mergedDataSource != null)
-				return mergedDataSource;
-
-			return null;
+			return mergedDataSource;
 		}
 	}
 }

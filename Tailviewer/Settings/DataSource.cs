@@ -47,6 +47,11 @@ namespace Tailviewer.Settings
 		public LogLineIndex VisibleLogLine;
 		public double HorizontalOffset;
 
+		/// <summary>
+		///     A supplied by and probably only relevant to the user.
+		/// </summary>
+		public string UserDefinedName;
+
 		public DataSourceDisplayMode MergedDataSourceDisplayMode;
 
 		public DataSource()
