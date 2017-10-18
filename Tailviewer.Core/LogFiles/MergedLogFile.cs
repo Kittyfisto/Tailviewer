@@ -59,6 +59,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (sources == null) throw new ArgumentNullException(nameof(sources));
 			if (sources.Any(x => x == null)) throw new ArgumentException("sources.Any(x => x == null)", nameof(sources));
+			if (sources.Length > LogLineSourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported", sources.Length));
 
 			_sources = sources;
 			_pendingModifications = new ConcurrentQueue<PendingModification>();

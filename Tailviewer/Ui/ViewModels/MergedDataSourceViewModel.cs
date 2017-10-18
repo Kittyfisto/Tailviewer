@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 
@@ -17,6 +20,8 @@ namespace Tailviewer.Ui.ViewModels
 		, ITreeViewItemViewModel
 		, IMergedDataSourceViewModel
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly MergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly DelegateCommand _openInExplorerCommand;
@@ -48,7 +53,7 @@ namespace Tailviewer.Ui.ViewModels
 			return dir;
 		}
 
-		public IEnumerable<IDataSourceViewModel> Observable => _observable;
+		public IReadOnlyList<IDataSourceViewModel> Observable => _observable;
 
 		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
@@ -91,16 +96,23 @@ namespace Tailviewer.Ui.ViewModels
 			return DisplayName;
 		}
 
-		public void AddChild(IDataSourceViewModel dataSource)
+		public bool AddChild(IDataSourceViewModel dataSource)
 		{
 			if (dataSource.Parent != null)
 				throw new ArgumentException("dataSource.Parent");
+
+			if (_observable.Count >= LogLineSourceId.MaxSources)
+			{
+				Log.InfoFormat("Cannot add source '{0}': The maximum number of sources in this group has been reached", dataSource);
+				return false;
+			}
 
 			_observable.Add(dataSource);
 			_dataSource.Add(dataSource.DataSource);
 			dataSource.Parent = this;
 
 			DistributeCharacterCodes();
+			return true;
 		}
 
 		public void Insert(int index, IDataSourceViewModel dataSource)

@@ -81,6 +81,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that a merged log file can be created using the maximum number of supported sources")]
+		public void TestCtor2()
+		{
+			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources)
+				.Select(unused => new Mock<ILogFile>().Object).ToArray();
+			var logFile = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), sources);
+			logFile.Sources.Should().Equal(sources);
+		}
+
+		[Test]
+		[Description("Verifies that the ctor complains if too many sources are merged")]
+		public void TestCtor3()
+		{
+			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources+1)
+				.Select(unused => new Mock<ILogFile>().Object).ToArray();
+
+			new Action(() => new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), sources))
+				.ShouldThrow<ArgumentException>("because the a merged log file can only support so many sources");
+		}
+
+		[Test]
 		[Description("Verifies that disposing a logfile works")]
 		public void TestDispose1()
 		{

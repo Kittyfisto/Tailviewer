@@ -69,6 +69,11 @@ namespace Tailviewer.BusinessLogic
 		/// </summary>
 		public static readonly LogLineSourceId Invalid = new LogLineSourceId(byte.MaxValue);
 
+		/// <summary>
+		///     The maximum number of sources which can be differentiated using this id.
+		/// </summary>
+		public static readonly int MaxSources = 255;
+
 		private readonly byte _value;
 
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using Tailviewer.Settings;
+﻿using System.Collections.Generic;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -13,5 +14,10 @@ namespace Tailviewer.Ui.ViewModels
 		///     Either the filename or a two digit character code is rendered next to each line.
 		/// </summary>
 		DataSourceDisplayMode DisplayMode { get; set; }
+
+		/// <summary>
+		///     The list of sources which are part of this merged data source.
+		/// </summary>
+		IReadOnlyList<IDataSourceViewModel> Observable { get; }
 	}
 }

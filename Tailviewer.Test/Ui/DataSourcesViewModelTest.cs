@@ -145,6 +145,31 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Description("Verifies that a group can only contain up to 255 sources")]
+		public void TestCanBeDropped6()
+		{
+			IDataSourceViewModel a = _model.GetOrAdd("A");
+			IDataSourceViewModel b = _model.GetOrAdd("B");
+			_model.OnDropped(a, b, DataSourceDropType.Group);
+			var group = (MergedDataSourceViewModel)_model.Observable[0];
+			_model.OnDropped(a, group, DataSourceDropType.Group);
+			_model.OnDropped(b, group, DataSourceDropType.Group);
+
+			IDataSourceViewModel unused;
+			for (int i = 0; i < LogLineSourceId.MaxSources - 2; ++i)
+			{
+				var source = _model.GetOrAdd(i.ToString());
+				_model.CanBeDropped(source, group, DataSourceDropType.Group, out unused)
+					.Should().BeTrue();
+				_model.OnDropped(source, group, DataSourceDropType.Group);
+			}
+
+			var next = _model.GetOrAdd("C");
+			_model.CanBeDropped(next, group, DataSourceDropType.Group, out unused)
+				.Should().BeFalse("because there cannot be more than 255 sources in a group");
+		}
+
+		[Test]
 		[Description("Verifies that creating a view model from a group works")]
 		public void TestCtor1()
 		{

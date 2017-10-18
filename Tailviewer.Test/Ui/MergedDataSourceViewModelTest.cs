@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -81,6 +83,29 @@ namespace Tailviewer.Test.Ui
 
 			model.AddChild(sourceViewModel);
 			sourceViewModel.CharacterCode.Should().Be("A", "because the merged data source is responsible for providing unique character codes");
+		}
+
+		[Test]
+		[Description("Verifies that there cannot be more than 255 children in a single group")]
+		public void TestAddChild3()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			var sources = new List<SingleDataSourceViewModel>();
+			for (int i = 0; i < LogLineSourceId.MaxSources; ++i)
+			{
+				var source = _dataSources.AddDataSource(i.ToString());
+				var sourceViewModel = new SingleDataSourceViewModel(source);
+				sources.Add(sourceViewModel);
+
+				model.AddChild(sourceViewModel).Should().BeTrue("because the child should've been added");
+				model.Observable.Should().Equal(sources, "because all previously added children should be there");
+			}
+
+			var tooMuch = new SingleDataSourceViewModel(_dataSources.AddDataSource("dadw"));
+			model.AddChild(tooMuch).Should().BeFalse("because no more children can be added");
+			model.Observable.Should().Equal(sources, "because only those sources which could be added should be present");
 		}
 
 		[Test]

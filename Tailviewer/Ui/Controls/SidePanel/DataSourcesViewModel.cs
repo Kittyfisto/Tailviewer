@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -257,7 +258,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			if (dest == null)
 				return false;
 
-			if (source is MergedDataSourceViewModel)
+			if (source is IMergedDataSourceViewModel)
 			{
 				if (dropType == DataSourceDropType.ArrangeBottom ||
 				    dropType == DataSourceDropType.ArrangeTop)
@@ -276,11 +277,18 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			if (source == dest)
 				return false;
 
-			var single = dest as SingleDataSourceViewModel;
+			var single = dest as ISingleDataSourceViewModel;
 			if (single != null)
 				finalDest = single.Parent ?? dest;
 			else
 				finalDest = dest;
+
+			var group = dest as IMergedDataSourceViewModel;
+			if (group != null)
+			{
+				if (group.Observable.Count >= LogLineSourceId.MaxSources)
+					return false;
+			}
 
 			return true;
 		}

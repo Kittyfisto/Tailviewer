@@ -69,7 +69,7 @@
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalysisResult.cs" />
     <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryId.cs" />
-    <Compile Include="BusinessLogic\LogFileSourceId.cs" />
+    <Compile Include="BusinessLogic\LogLineSourceId.cs" />
     <Compile Include="DataSourceId.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
     <Compile Include="BusinessLogic\ErrorFlags.cs" />
