@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
@@ -48,7 +49,13 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
-		public override string DisplayName => _fileName;
+		public override string DisplayName
+		{
+			get { return _fileName; }
+			set { throw new InvalidOperationException(); }
+		} 
+
+		public override bool CanBeRenamed => false;
 
 		public override string DataSourceOrigin => FullName;
 

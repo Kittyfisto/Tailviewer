@@ -56,10 +56,12 @@ namespace Tailviewer
 			{};
 			var misc = new[]
 			{
+				"Data source filename is displayed per line when viewing merged sources",
+				"Merged data sources can be renamed",
 				"Introduced Trace level toggle",
-				//"Debug/Trace messages are display in gray"
+				"Debug/Trace messages are display in gray"
 			};
-			var releaseDate = new DateTime(2017, 11, 1);
+			var releaseDate = new DateTime(2017, 10, 23);
 			var version = new Version(0, 7, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);

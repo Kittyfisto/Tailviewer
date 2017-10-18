@@ -172,22 +172,42 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			get { return _dataSources.SelectedItem; }
 			set
 			{
-				var before = _dataSources.SelectedItem;
+				var old = _dataSources.SelectedItem;
 				_dataSources.SelectedItem = value;
 
-				if (before != value)
-					EmitPropertyChanged();
+				if (old != null)
+				{
+					old.PropertyChanged -= CurrentDataSourceOnPropertyChanged;
+				}
 
 				if (value != null)
 				{
-					WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, value.DisplayName);
-					WindowTitleSuffix = value.DataSourceOrigin;
+					value.PropertyChanged += CurrentDataSourceOnPropertyChanged;
 				}
-				else
-				{
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = null;
-				}
+
+				if (old != value)
+					EmitPropertyChanged();
+
+				UpdateWindowTitle(value);
+			}
+		}
+
+		private void CurrentDataSourceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			UpdateWindowTitle(CurrentDataSource);
+		}
+
+		private void UpdateWindowTitle(IDataSourceViewModel value)
+		{
+			if (value != null)
+			{
+				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, value.DisplayName);
+				WindowTitleSuffix = value.DataSourceOrigin;
+			}
+			else
+			{
+				WindowTitle = Constants.MainWindowTitle;
+				WindowTitleSuffix = null;
 			}
 		}
 

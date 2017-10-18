@@ -51,6 +51,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { Settings.MergedDataSourceDisplayMode = value; }
 		}
 
+		public string DisplayName
+		{
+			get { return Settings.DisplayName; }
+			set { Settings.DisplayName = value; }
+		}
+
 		public void Add(IDataSource dataSource)
 		{
 			if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)

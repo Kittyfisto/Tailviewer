@@ -54,6 +54,15 @@ namespace Tailviewer.Settings
 
 		public DataSourceDisplayMode MergedDataSourceDisplayMode;
 
+		public List<QuickFilterId> ActivatedQuickFilters => _activatedQuickFilters;
+
+		public HashSet<AnalysisId> Analyses => _analyses;
+
+		/// <summary>
+		///     A user defined name for this data source.
+		/// </summary>
+		public string DisplayName;
+
 		public DataSource()
 		{
 			Order = -1;
@@ -74,10 +83,6 @@ namespace Tailviewer.Settings
 		{
 			File = file;
 		}
-
-		public List<QuickFilterId> ActivatedQuickFilters => _activatedQuickFilters;
-
-		public HashSet<AnalysisId> Analyses => _analyses;
 
 
 		public override string ToString()
@@ -105,6 +110,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
 			writer.WriteAttributeEnum("mergeddatasourcedisplaymode", MergedDataSourceDisplayMode);
+			writer.WriteAttributeString("displayname", DisplayName);
 
 			writer.WriteStartElement("activatedquickfilters");
 			foreach (QuickFilterId guid in ActivatedQuickFilters)
@@ -183,6 +189,10 @@ namespace Tailviewer.Settings
 
 					case "mergeddatasourcedisplaymode":
 						MergedDataSourceDisplayMode = reader.ReadContentAsEnum<DataSourceDisplayMode>();
+						break;
+
+					case "displayname":
+						DisplayName = reader.ReadContentAsString();
 						break;
 				}
 			}
@@ -264,7 +274,8 @@ namespace Tailviewer.Settings
 				ShowLineNumbers = ShowLineNumbers,
 				VisibleLogLine = VisibleLogLine,
 				IsExpanded = IsExpanded,
-				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode
+				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode,
+				DisplayName = DisplayName
 			};
 			clone.ActivatedQuickFilters.AddRange(ActivatedQuickFilters);
 			clone.SelectedLogLines.AddRange(SelectedLogLines);

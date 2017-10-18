@@ -48,6 +48,44 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestConstruction3()
+		{
+			var dataSource = _dataSources.AddGroup();
+			dataSource.DisplayName = "Some group";
+
+			var model = new MergedDataSourceViewModel(dataSource);
+			model.DisplayName.Should().Be("Some group");
+		}
+
+		[Test]
+		public void TestChangeDisplayName1()
+		{
+			var dataSource = _dataSources.AddGroup();
+			var model = new MergedDataSourceViewModel(dataSource);
+			model.CanBeRenamed.Should().BeTrue("because this implementation should support renaming...");
+			model.DisplayName.Should().Be("Merged Data Source");
+
+			model.MonitorEvents();
+			model.DisplayName = "Foobar";
+			model.DisplayName.Should().Be("Foobar");
+			model.DataSourceOrigin.Should().Be("Foobar");
+			model.ShouldRaisePropertyChangeFor(x => x.DisplayName, "because we've just changed the name");
+			model.ShouldRaisePropertyChangeFor(x => x.DataSourceOrigin, "because we've just changed the name");
+		}
+
+		[Test]
+		public void TestChangeDisplayName2()
+		{
+			var dataSource = _dataSources.AddGroup();
+			dataSource.DisplayName = "Some group";
+
+			var model = new MergedDataSourceViewModel(dataSource);
+
+			model.DisplayName = "Foobar";
+			dataSource.DisplayName.Should().Be("Foobar");
+		}
+
+		[Test]
 		public void TestExpand()
 		{
 			var dataSource = _dataSources.AddGroup();

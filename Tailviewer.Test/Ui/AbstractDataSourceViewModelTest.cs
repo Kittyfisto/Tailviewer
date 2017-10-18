@@ -53,6 +53,12 @@ namespace Tailviewer.Test.Ui
 			public override string DisplayName
 			{
 				get { throw new NotImplementedException(); }
+				set { throw new NotImplementedException(); }
+			}
+
+			public override bool CanBeRenamed
+			{
+				get { throw new NotImplementedException(); }
 			}
 
 			public override string DataSourceOrigin

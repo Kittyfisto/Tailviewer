@@ -81,9 +81,10 @@ namespace Tailviewer.Test.Settings
 					new LogLineIndex(10)
 				},
 				ActivatedQuickFilters = {filter},
-				MergedDataSourceDisplayMode = displayMode
+				MergedDataSourceDisplayMode = displayMode,
+				DisplayName = "Some fancy name"
 			};
-			var cloned = dataSource.Clone();
+			var cloned = ((ICloneable)dataSource).Clone() as DataSource;
 			cloned.Should().NotBeNull();
 			cloned.Should().NotBeSameAs(dataSource);
 			cloned.VisibleLogLine.Should().Be(new LogLineIndex(42));
@@ -106,6 +107,7 @@ namespace Tailviewer.Test.Settings
 			cloned.ActivatedQuickFilters.Should().Equal(new object[] {filter});
 			cloned.ActivatedQuickFilters.Should().NotBeSameAs(dataSource.ActivatedQuickFilters);
 			cloned.MergedDataSourceDisplayMode.Should().Be(displayMode);
+			cloned.DisplayName.Should().Be("Some fancy name");
 		}
 
 		[Test]
@@ -150,7 +152,8 @@ namespace Tailviewer.Test.Settings
 						//	new LogLineIndex(10)
 						//},
 						ActivatedQuickFilters = { filter },
-						MergedDataSourceDisplayMode = displayMode
+						MergedDataSourceDisplayMode = displayMode,
+						DisplayName = "A stupid name"
 					};
 					dataSource.Save(writer);
 				}
@@ -182,6 +185,7 @@ namespace Tailviewer.Test.Settings
 					//dataSource.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));
 					dataSource.ActivatedQuickFilters.Should().Equal(new object[] { filter });
 					dataSource.MergedDataSourceDisplayMode.Should().Be(displayMode);
+					dataSource.DisplayName.Should().Be("A stupid name");
 				}
 			}
 		}

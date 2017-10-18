@@ -14,11 +14,23 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		ICommand OpenInExplorerCommand { get; }
 
-		string DisplayName { get; }
+		/// <summary>
+		///     The name of this data source as presented to the user.
+		/// </summary>
+		/// <remarks>
+		///     The setter will throw an <see cref="InvalidOperationException" /> if <see cref="CanBeRenamed" />
+		///     is set to false.
+		/// </remarks>
+		string DisplayName { get; set; }
 
 		/// <summary>
-		/// A user-readable description of the origin of the data source.
-		/// Could be a simpel filesystem path, a URL, etc...
+		///     True when <see cref="DisplayName" /> may be changed, false otherwise.
+		/// </summary>
+		bool CanBeRenamed { get; }
+
+		/// <summary>
+		///     A user-readable description of the origin of the data source.
+		///     Could be a simpel filesystem path, a URL, etc...
 		/// </summary>
 		string DataSourceOrigin { get; }
 
@@ -63,14 +75,6 @@ namespace Tailviewer.Ui.ViewModels
 
 		double Progress { get; }
 
-		#region Search
-
-		string SearchTerm { get; set; }
-		int SearchResultCount { get; }
-		int CurrentSearchResultIndex { get; set; }
-
-		#endregion
-
 		DateTime LastViewed { get; }
 
 		IDataSource DataSource { get; }
@@ -85,5 +89,13 @@ namespace Tailviewer.Ui.ViewModels
 		event Action<IDataSourceViewModel> Remove;
 
 		void Update();
+
+		#region Search
+
+		string SearchTerm { get; set; }
+		int SearchResultCount { get; }
+		int CurrentSearchResultIndex { get; set; }
+
+		#endregion
 	}
 }

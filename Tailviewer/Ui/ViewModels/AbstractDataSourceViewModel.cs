@@ -94,7 +94,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		public abstract ICommand OpenInExplorerCommand { get; }
 
-		public abstract string DisplayName { get; }
+		public abstract string DisplayName { get; set; }
+		public abstract bool CanBeRenamed { get; }
 		public abstract string DataSourceOrigin { get; }
 
 		public int TotalCount

@@ -22,7 +22,7 @@ namespace Tailviewer.Ui.ViewModels
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly MergedDataSource _dataSource;
+		private readonly IMergedDataSource _dataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly DelegateCommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
@@ -57,7 +57,21 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override ICommand OpenInExplorerCommand => _openInExplorerCommand;
 
-		public override string DisplayName => "Merged Data Source";
+		public override string DisplayName
+		{
+			get {return _dataSource.DisplayName; }
+			set
+			{
+				if (value == _dataSource.DisplayName)
+					return;
+
+				_dataSource.DisplayName = value;
+				EmitPropertyChanged();
+				EmitPropertyChanged(nameof(DataSourceOrigin));
+			}
+		}
+
+		public override bool CanBeRenamed => true;
 
 		public override string DataSourceOrigin => DisplayName;
 

@@ -4,7 +4,6 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
@@ -73,6 +72,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			MergedDataSource group = _dataSources.AddGroup();
 			group.Id.Should().NotBe(Guid.Empty);
+		}
+
+		[Test]
+		[Description("Verifies that a newly added group has a display name")]
+		public void TestAddGroup3()
+		{
+			var group = _dataSources.AddGroup();
+			group.DisplayName.Should().Be("Merged Data Source");
 		}
 
 		[Test]
@@ -177,6 +184,34 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				var mergedDataSource3 = dataSources[5] as MergedDataSource;
 				mergedDataSource3.Should().NotBeNull();
 				mergedDataSource3.OriginalSources.Should().Equal(new object[] {dataSources[2]});
+			}
+		}
+
+		[Test]
+		public void TestCtor4()
+		{
+			var settings = new Tailviewer.Settings.DataSources
+			{
+				new DataSource
+				{
+					Id = DataSourceId.CreateNew()
+				},
+				new DataSource
+				{
+					Id = DataSourceId.CreateNew(),
+					DisplayName = "My custom name"
+				}
+			};
+
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings))
+			{
+				var group1 = dataSources.Sources.First() as IMergedDataSource;
+				group1.Should().NotBeNull();
+				group1.DisplayName.Should().Be("Merged Data Source", "because merged data sources which don't have a display name shall be assigned a default one");
+
+				var group2 = dataSources.Sources.Last() as IMergedDataSource;
+				group2.Should().NotBeNull();
+				group2.DisplayName.Should().Be("My custom name", "because a custom name was supplied");
 			}
 		}
 

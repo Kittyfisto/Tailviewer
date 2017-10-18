@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using FluentAssertions;
 using Metrolib;
@@ -70,7 +71,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		}
 
 		[Test]
-		[Description("Verifies that update retrieves certain changed values from ALL data sources, even if they aren't the selected one")]
+		[NUnit.Framework.Description("Verifies that update retrieves certain changed values from ALL data sources, even if they aren't the selected one")]
 		public void TestUpdate3()
 		{
 			var dataSource1 = new Mock<ISingleDataSource>();
@@ -95,7 +96,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		}
 
 		[Test]
-		[Description("Verifies that changing an active filter is automatically applied to the currently selected data source")]
+		[NUnit.Framework.Description("Verifies that changing an active filter is automatically applied to the currently selected data source")]
 		public void TestChangeFilter1()
 		{
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
@@ -130,6 +131,32 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			model.ShowQuickFilters();
 			model.SelectedSidePanel.Should().Be(quickFilterSidePanel);
+		}
+
+		[Test]
+		public void TestRenameMergedDataSource()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+
+			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
+			var dataSource = new Mock<IDataSource>();
+			dataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSourceViewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			dataSourceViewModel.Setup(x => x.DisplayName).Returns("Merged Data Source");
+			dataSourceViewModel.Setup(x => x.DataSourceOrigin).Returns("Merged Data Source");
+
+			model.CurrentDataSource = dataSourceViewModel.Object;
+			model.WindowTitle.Should().Be("Tailviewer, v1.0.0 - Merged Data Source");
+			model.WindowTitleSuffix.Should().Be("Merged Data Source");
+
+			dataSourceViewModel.Setup(x => x.DisplayName).Returns("My custom name");
+			dataSourceViewModel.Raise(x => x.PropertyChanged += null, new PropertyChangedEventArgs("DisplayName"));
+			dataSourceViewModel.Setup(x => x.DataSourceOrigin).Returns("My custom name");
+			dataSourceViewModel.Raise(x => x.PropertyChanged += null, new PropertyChangedEventArgs("DataSourceOrigin"));
+
+			model.WindowTitle.Should().Be("Tailviewer, v1.0.0 - My custom name");
+			model.WindowTitleSuffix.Should().Be("My custom name");
 		}
 
 		private Mock<IDataSource> CreateDataSource()

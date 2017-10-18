@@ -38,6 +38,9 @@ namespace Tailviewer.Test.Ui
 				var model = new SingleDataSourceViewModel(source);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 				model.Id.Should().Be(settings.Id);
+
+				model.DisplayName.Should().Be("20Mb.test");
+				model.CanBeRenamed.Should().BeFalse();
 			}
 		}
 
@@ -52,6 +55,18 @@ namespace Tailviewer.Test.Ui
 				model.FileName.Should().Be("foo.txt");
 				model.SearchTerm.Should().Be("foobar");
 			}
+		}
+
+		[Test]
+		public void TestRename()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
+			var model = new SingleDataSourceViewModel(dataSource.Object);
+
+			model.DisplayName.Should().Be("foo");
+			new Action(() => model.DisplayName = "bar").ShouldThrow<InvalidOperationException>();
+			model.DisplayName.Should().Be("foo");
 		}
 
 		[Test]

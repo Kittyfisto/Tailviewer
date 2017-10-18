@@ -150,6 +150,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 				}
 				else
 				{
+					if (settings.DisplayName == null)
+						settings.DisplayName = "Merged Data Source";
+
 					dataSource = new MergedDataSource(_taskScheduler, settings, _maximumWaitTime);
 				}
 
@@ -168,8 +171,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			{
 				var settings = new DataSource
 					{
-						Id = DataSourceId.CreateNew()
-					};
+						Id = DataSourceId.CreateNew(),
+						DisplayName = "Merged Data Source"
+				};
 				_settings.Add(settings);
 				dataSource = (MergedDataSource) AddDataSource(settings);
 			}

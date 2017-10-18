@@ -31,7 +31,8 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <controls:FlatTextBlock Text="{Binding DisplayName}" />
+                <controls:EditableTextBlock Text="{Binding DisplayName, Mode=TwoWay}"
+                                            Watermark="Enter display name" />
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
