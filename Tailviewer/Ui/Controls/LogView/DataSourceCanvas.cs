@@ -93,6 +93,12 @@ namespace Tailviewer.Ui.Controls.LogView
 				var displayMode = DisplayMode;
 
 				var maximumCharacterCount = GetMaximumCharacterCount(displayMode, dataSources);
+				var texts = new FormattedText[dataSources.Count];
+				for (int i = 0; i < dataSources.Count; ++i)
+				{
+					var originalDataSource = dataSources[i];
+					texts[i] = CreateFormattedText(displayMode, GetDataSourceName(displayMode, originalDataSource));
+				}
 
 				_dataSourcesPerLogLine.Clear();
 				var logLines = new LogLine[visibleSection.Count];
@@ -100,11 +106,9 @@ namespace Tailviewer.Ui.Controls.LogView
 				foreach (var logLine in logLines)
 				{
 					var dataSourceId = (int) logLine.SourceId;
-					if (dataSourceId >= 0 && dataSourceId < dataSources.Count)
+					if (dataSourceId >= 0 && dataSourceId < texts.Length)
 					{
-						var originalDataSource = dataSources[dataSourceId];
-						var text = CreateFormattedText(GetDataSourceName(displayMode, originalDataSource));
-
+						var text = texts[dataSourceId];
 						_dataSourcesPerLogLine.Add(text);
 					}
 					else
@@ -157,11 +161,25 @@ namespace Tailviewer.Ui.Controls.LogView
 					return dataSource.CharacterCode;
 
 				case DataSourceDisplayMode.Filename:
-					var fullFileName = dataSource.FullFileName;
-					var fileName = Path.GetFileName(fullFileName);
-					if (fileName != null && fileName.Length > MaximumDataSourceCharacters)
-						fileName = fileName.Substring(startIndex: 0, length: MaximumDataSourceCharacters);
-					return fileName;
+					try
+					{
+						var fullFileName = dataSource.FullFileName;
+						var fileName = Path.GetFileName(fullFileName);
+						if (fileName != null && fileName.Length > MaximumDataSourceCharacters)
+							fileName = fileName.Substring(startIndex: 0, length: MaximumDataSourceCharacters);
+						return fileName;
+					}
+					catch (IOException e)
+					{
+						// This exception is expected when the path is malformed (for example because that path was passed via command line)
+						Log.DebugFormat("Caught io exception: {0}", e);
+						return null;
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Caught unexpected exception: {0}", e);
+						return null;
+					}
 
 				default:
 					return null;
@@ -171,33 +189,36 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     Creates an actual formatted text object to render the given data source name.
 		/// </summary>
+		/// <param name="displayMode"></param>
 		/// <param name="dataSourceName"></param>
 		/// <returns></returns>
 		[Pure]
-		private FormattedText CreateFormattedText(string dataSourceName)
+		private FormattedText CreateFormattedText(DataSourceDisplayMode displayMode, string dataSourceName)
 		{
-			// The rendered text may not be greater than N characters...
-			try
+			Brush brush;
+			switch (displayMode)
 			{
-				var culture = CultureInfo.CurrentUICulture;
-				return new FormattedText(dataSourceName,
-					culture,
-					FlowDirection.LeftToRight,
-					TextHelper.Typeface,
-					TextHelper.FontSize,
-					TextHelper.DataSourceForegroundBrush);
+				case DataSourceDisplayMode.Filename:
+					brush = TextHelper.DataSourceFilenameForegroundBrush;
+					break;
+
+				case DataSourceDisplayMode.CharacterCode:
+					brush = TextHelper.DataSourceCharacterCodeForegroundBrush;
+					break;
+
+				default:
+					brush = Brushes.Black;
+					break;
 			}
-			catch (IOException e)
-			{
-				// This exception is expected when the path is malformed (for example because that path was passed via command line)
-				Log.DebugFormat("Caught io exception: {0}", e);
-				return null;
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-				return null;
-			}
+
+			var culture = CultureInfo.CurrentUICulture;
+			return new FormattedText(dataSourceName,
+				culture,
+				FlowDirection.LeftToRight,
+				TextHelper.Typeface,
+				TextHelper.FontSize,
+				brush);
+
 		}
 
 		private void Render(FormattedText dataSourceName, DrawingContext drawingContext, double y, double dataSourceWidth)
