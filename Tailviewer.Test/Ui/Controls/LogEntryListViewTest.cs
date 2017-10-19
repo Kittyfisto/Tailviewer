@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -172,6 +171,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that the view synchronizes itself with the log file when the latter was modified after being attached")]
 		public void TestLogFileAdd1()
 		{
+			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -207,6 +207,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that if the most recent log line becomes even partially obstructed, then the view is moved to make it fully visible when FollowTail is enabled")]
 		public void TestFollowTail1()
 		{
+			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
@@ -231,6 +232,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that if FollowTail is enabled and lines are added to the log file, then the view scrolls to the bottom")]
 		public void TestFollowTail2()
 		{
+			_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
 			_control.LogFile = _logFile.Object;
 			DispatcherExtensions.ExecuteAllEvents();
 
