@@ -155,7 +155,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSourceViewModel.Setup(x => x.DataSourceOrigin).Returns("My custom name");
 			dataSourceViewModel.Raise(x => x.PropertyChanged += null, new PropertyChangedEventArgs("DataSourceOrigin"));
 
-			model.WindowTitle.Should().Be("Tailviewer, v1.0.0 - My custom name");
+			model.WindowTitle.Should().Be(string.Format("{0} - My custom name", Constants.MainWindowTitle));
 			model.WindowTitleSuffix.Should().Be("My custom name");
 		}
 
