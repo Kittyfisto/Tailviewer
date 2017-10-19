@@ -146,8 +146,13 @@ namespace Tailviewer.Ui.Controls.LogView
 			Children.Add(_verticalScrollBar);
 			Children.Add(_horizontalScrollBar);
 
-			_timer = new DispatcherTimer(MaximumRefreshInterval, DispatcherPriority.Normal, OnTimer, Dispatcher);
-			_timer.Start();
+			_timer = new DispatcherTimer(DispatcherPriority.Normal)
+				{
+					Interval = MaximumRefreshInterval,
+				};
+			_timer.Tick += OnTimer;
+			Loaded += OnLoaded;
+			Unloaded +=  OnUnloaded;
 		}
 
 		public DataSourceDisplayMode MergedDataSourceDisplayMode
@@ -230,6 +235,16 @@ namespace Tailviewer.Ui.Controls.LogView
 			_maxLineWidth = Math.Max(_maxLineWidth, upperWidth);
 
 			Interlocked.Increment(ref _pendingModificationsCount);
+		}
+
+		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			_timer.Start();
+		}
+
+		private void OnUnloaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			_timer.Stop();
 		}
 
 		private static void OnMergedDataSourceDisplayModeChanged(DependencyObject dependencyObject,
