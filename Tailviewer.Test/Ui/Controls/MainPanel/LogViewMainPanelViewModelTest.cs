@@ -147,7 +147,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSourceViewModel.Setup(x => x.DataSourceOrigin).Returns("Merged Data Source");
 
 			model.CurrentDataSource = dataSourceViewModel.Object;
-			model.WindowTitle.Should().Be("Tailviewer, v1.0.0 - Merged Data Source");
+			model.WindowTitle.Should().Be(string.Format("{0} - Merged Data Source", Constants.MainWindowTitle));
 			model.WindowTitleSuffix.Should().Be("Merged Data Source");
 
 			dataSourceViewModel.Setup(x => x.DisplayName).Returns("My custom name");
