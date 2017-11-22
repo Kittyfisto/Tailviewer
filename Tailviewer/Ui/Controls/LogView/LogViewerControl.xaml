@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
              xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
+             xmlns:converters1="clr-namespace:Metrolib.Converters;assembly=Metrolib"
              x:Name="This"
              Background="White">
 
@@ -15,9 +16,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <converters:TimeSpanConverter x:Key="TimeSpanConverter" />
-
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
+            <converters1:TimeSpanConverter x:Key="TimeSpanConverter" />
 
             <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
             <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />

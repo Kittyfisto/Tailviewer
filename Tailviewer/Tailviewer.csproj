@@ -290,7 +290,6 @@
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSources.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
-    <Compile Include="Ui\Converters\TimeSpanConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\DataSourcesViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
