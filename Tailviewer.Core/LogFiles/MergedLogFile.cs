@@ -27,7 +27,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
-		private readonly ILogFile[] _sources;
+		private readonly IReadOnlyList<ILogFile> _sources;
 		private readonly object _syncRoot;
 		private Size _fileSize;
 		private DateTime _lastModified;
@@ -180,10 +180,15 @@ namespace Tailviewer.Core.LogFiles
 				_progress = Percentage.Of(_indices.Count, _totalLineCount);
 
 				if (modification.Section.IsReset)
+				{
 					Clear(modification.LogFile);
+				}
 				else if (modification.Section.IsInvalidate)
+				{
 					throw new NotImplementedException();
+				}
 				else
+				{
 					for (var i = 0; i < modification.Section.Count; ++i)
 					{
 						var sourceIndex = modification.Section.Index + i;
@@ -223,40 +228,45 @@ namespace Tailviewer.Core.LogFiles
 							}
 
 							Listeners.OnRead(_indices.Count);
+
+							// There's no need to frantically update every time, but every
+							// once in a while would be nice...
+							if (i % 100 == 0)
+								UpdateProperties();
 						}
 					}
+				}
 			}
 
-			_progress = Percentage.Of(_indices.Count, _totalLineCount);
-			_fileSize = _sources.Aggregate(Size.Zero, (a, file) => a + file.Size);
-			_lastModified = _sources.Aggregate(DateTime.MinValue,
-				(a, file) =>
-				{
-					var modified = file.LastModified;
-					if (modified > a)
-						return modified;
-
-					return a;
-				}
-			);
-			_startTimestamp = _sources.Aggregate((DateTime?) null,
-				(a, file) =>
-				{
-					var startTime = file.StartTimestamp;
-					if (startTime == null)
-						return a;
-					if (a == null)
-						return startTime;
-					if (startTime < a)
-						return startTime;
-					return a;
-				}
-			);
+			UpdateProperties();
 
 			Listeners.OnRead(_indices.Count);
 			SetEndOfSourceReached();
 
 			return _maximumWaitTime;
+		}
+
+		private void UpdateProperties()
+		{
+			var fileSize = Size.Zero;
+			var lastModified = DateTime.MinValue;
+			DateTime? startTimestamp = null;
+			for (int n = 0; n < _sources.Count; ++n)
+			{
+				var source = _sources[n];
+
+				fileSize += source.Size;
+				var last = source.LastModified;
+				if (last > lastModified)
+					lastModified = last;
+				var start = source.StartTimestamp;
+				if (start != null && (start < startTimestamp || startTimestamp == null))
+					startTimestamp = start;
+			}
+			_fileSize = fileSize;
+			_lastModified = lastModified;
+			_startTimestamp = startTimestamp;
+			_progress = Percentage.Of(_indices.Count, _totalLineCount);
 		}
 
 		[Pure]
