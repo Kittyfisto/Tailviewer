@@ -183,5 +183,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2017, 5, 22, 18, 36, 51, 541));
 		}
+
+		[Test]
+		[Description("Verifies that the Jetbrains Resharper log file timestamp-format is supported")]
+		public void TestTryParse11()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			var before = DateTime.Now;
+			parser.TryParse("21:15:39.369 |I|", out timestamp).Should().BeTrue();
+			var after = DateTime.Now;
+
+			// The test shall work even on sylvester so the year/month/day
+			// test is a little awkward...
+			timestamp.Year.Should().BeInRange(before.Year, after.Year);
+			timestamp.Month.Should().BeInRange(before.Month, after.Month);
+			timestamp.Day.Should().BeInRange(before.Day, after.Day);
+			timestamp.Hour.Should().Be(21);
+			timestamp.Minute.Should().Be(15);
+			timestamp.Second.Should().Be(39);
+			timestamp.Millisecond.Should().Be(369);
+		}
 	}
 }
