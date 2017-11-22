@@ -50,18 +50,22 @@ namespace Tailviewer
 
 		private static void AddV070()
 		{
-			var features = new string[]
-			{};
-			var bugfixes = new string[]
-			{};
+			var features = new[]
+			{
+				"Introduced file name column for merged data sources"
+			};
+			var bugfixes = new[]
+			{
+				"Fixed last written age display for values > 30 days"
+			};
 			var misc = new[]
 			{
-				"Data source filename is displayed per line when viewing merged sources",
 				"Merged data sources can be renamed",
+				"Merged data source age, size is updated more frequently",
 				"Introduced Trace level toggle",
 				"Debug/Trace messages are display in gray"
 			};
-			var releaseDate = new DateTime(2017, 10, 23);
+			var releaseDate = new DateTime(2017, 11, 22);
 			var version = new Version(0, 7, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
