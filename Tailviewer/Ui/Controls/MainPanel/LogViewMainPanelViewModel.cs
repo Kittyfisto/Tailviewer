@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
@@ -12,6 +13,7 @@ using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.QuickFilter;
+using Tailviewer.Ui.Controls.QuickNavigation;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
 
@@ -28,11 +30,14 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersSidePanelViewModel _quickFilters;
 
-		private LogViewerViewModel _currentDataSourceLogView;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
+		private readonly QuickNavigationViewModel _quickNavigation;
+
+		private LogViewerViewModel _currentDataSourceLogView;
 		private string _windowTitle;
 		private string _windowTitleSuffix;
+		private bool _showQuickNavigation;
 
 		public LogViewMainPanelViewModel(IActionCenter actionCenter,
 			IDataSources dataSources,
@@ -50,6 +55,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersSidePanelViewModel(applicationSettings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;
+
+			_quickNavigation = new QuickNavigationViewModel(dataSources);
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 
@@ -138,6 +145,26 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 				dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { index };
 				dataSourceViewModel.RequestBringIntoView(index);
+			}
+		}
+
+		public QuickNavigationViewModel QuickNavigation => _quickNavigation;
+
+		public bool ShowQuickNavigation
+		{
+			get { return _showQuickNavigation; }
+			set
+			{
+				if (value == _showQuickNavigation)
+					return;
+
+				_showQuickNavigation = value;
+				EmitPropertyChanged();
+
+				if (!value)
+				{
+					_quickNavigation.SearchTerm = null;
+				}
 			}
 		}
 

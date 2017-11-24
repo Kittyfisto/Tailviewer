@@ -26,6 +26,8 @@
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+N"
                     Command="{Binding NewQuickFilterCommand, ElementName=This}"/>
+        <KeyBinding Gesture="Ctrl+T"
+                    Command="{Binding ShowQuickNavigationCommand}"/>
     </Window.InputBindings>
 
     <Window.Resources>
@@ -37,7 +39,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/Analyses/AnalysesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisDataSelectionSidePanel.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/WidgetsDataTemplate.xaml" />
-                
+
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/LogViewMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Plugins/PluginsMainPanelDataTemplate.xaml" />
@@ -192,7 +194,7 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </metrolib:FlatListView>
-                            
+
                             <metrolib:FlatListView ItemsSource="{Binding BottomEntries}"
                                                    SelectedItem="{Binding SelectedBottomEntry, Mode=TwoWay}"
                                                    Background="{StaticResource PrimaryBrush}"
@@ -232,7 +234,7 @@
                                 </ListView.ItemTemplate>
                             </metrolib:FlatListView>
                         </Grid>
-                        
+
                         <ContentPresenter Grid.Column="1"
                                           Content="{Binding SelectedMainPanel}"
                                           x:Name="PART_Content"/>
@@ -249,9 +251,7 @@
                         SelectedPanel="{Binding SelectedMainPanel.SelectedSidePanel, Mode=TwoWay}"/>
                 </Grid>
             </Grid>
-
         </Grid>
-
     </AdornerDecorator>
 
 </metrolib:ChromelessWindow>

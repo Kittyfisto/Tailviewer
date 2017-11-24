@@ -145,6 +145,17 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestShowQuickNavigation()
+		{
+			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeFalse();
+
+			_mainWindow.ShowQuickNavigationCommand.Should().NotBeNull();
+			_mainWindow.ShowQuickNavigationCommand.CanExecute(null).Should().BeTrue();
+			_mainWindow.ShowQuickNavigationCommand.Execute(null);
+			_mainWindow.LogViewPanel.ShowQuickNavigation.Should().BeTrue();
+		}
+
+		[Test]
 		[Description(
 			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
 		public void TestGroup1()

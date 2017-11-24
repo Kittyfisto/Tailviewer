@@ -11,6 +11,7 @@ using log4net;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.ViewModels;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -26,15 +27,26 @@ namespace Tailviewer.Ui.Controls
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static readonly DependencyProperty FocusLogFileSearchCommandProperty =
-			DependencyProperty.Register("FocusLogFileSearchCommand", typeof (ICommand), typeof (MainWindow),
+			DependencyProperty.Register("FocusLogFileSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
 		public static readonly DependencyProperty FocusDataSourceSearchCommandProperty =
-			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof (ICommand), typeof (MainWindow),
+			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
+
+
 		public static readonly DependencyProperty NewQuickFilterCommandProperty = DependencyProperty.Register(
-			"NewQuickFilterCommand", typeof(ICommand), typeof(MainWindow), new PropertyMetadata(default(ICommand)));
+		                                                                                                      "NewQuickFilterCommand",
+		                                                                                                      typeof(ICommand
+		                                                                                                      ),
+		                                                                                                      typeof(
+			                                                                                                      MainWindow),
+		                                                                                                      new
+			                                                                                                      PropertyMetadata(default
+			                                                                                                                       (ICommand
+			                                                                                                                       )))
+			;
 
 		private readonly ApplicationSettings _settings;
 
@@ -46,6 +58,7 @@ namespace Tailviewer.Ui.Controls
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
+			
 
 			InitializeComponent();
 			SizeChanged += OnSizeChanged;
@@ -57,16 +70,6 @@ namespace Tailviewer.Ui.Controls
 			MouseMove += OnMouseMove;
 
 			DragLayer.AdornerLayer = PART_DragDecorator.AdornerLayer;
-		}
-
-		private void OnLocationChanged(object sender, EventArgs eventArgs)
-		{
-			_settings.MainWindow.UpdateFrom(this);
-		}
-
-		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-		{
-			_settings.MainWindow.UpdateFrom(this);
 		}
 
 		public ICommand FocusDataSourceSearchCommand
@@ -83,8 +86,38 @@ namespace Tailviewer.Ui.Controls
 
 		public ICommand NewQuickFilterCommand
 		{
-			get { return (ICommand)GetValue(NewQuickFilterCommandProperty); }
+			get { return (ICommand) GetValue(NewQuickFilterCommandProperty); }
 			set { SetValue(NewQuickFilterCommandProperty, value); }
+		}
+
+		public void OnShowMainwindow()
+		{
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				Log.InfoFormat("Ensuring main window is visible because another process asked us to...");
+				Activate();
+				BringIntoView();
+			}));
+		}
+
+		public void OnOpenDataSource(string dataSourceUri)
+		{
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				Log.InfoFormat("Opening data source because another process asked us to...");
+				var viewModel = DataContext as MainWindowViewModel;
+				viewModel?.OpenFile(dataSourceUri);
+			}));
+		}
+
+		private void OnLocationChanged(object sender, EventArgs eventArgs)
+		{
+			_settings.MainWindow.UpdateFrom(this);
+		}
+
+		private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+		{
+			_settings.MainWindow.UpdateFrom(this);
 		}
 
 		private void OnMouseMove(object sender, MouseEventArgs e)
@@ -94,10 +127,10 @@ namespace Tailviewer.Ui.Controls
 
 		private void FocusLogFileSearch()
 		{
-			var grid = VisualTreeHelper.GetChild(PART_Content, 0) as Grid;
+			var grid = VisualTreeHelper.GetChild(PART_Content, childIndex: 0) as Grid;
 			if (grid != null)
 			{
-				var logViewerControl = VisualTreeHelper.GetChild(grid, 1) as LogView.LogViewerControl;
+				var logViewerControl = VisualTreeHelper.GetChild(grid, childIndex: 1) as LogViewerControl;
 				logViewerControl?.PART_SearchBox.Focus();
 			}
 		}
@@ -169,36 +202,10 @@ namespace Tailviewer.Ui.Controls
 		{
 			DragLayer.UpdateAdornerPosition(e);
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
-			{
 				e.Effects = DragDropEffects.Link;
-			}
 			else
-			{
-				// Why the fuck is the main window even asked to handle
-				// the drag when the mouse is clearly over the data source tree?!
 				DataSourcesControl.Instance?.HandleDrag(e);
-			}
 			e.Handled = true;
-		}
-
-		public void OnShowMainwindow()
-		{
-			Dispatcher.BeginInvoke(new Action(() =>
-			{
-				Log.InfoFormat("Ensuring main window is visible because another process asked us to...");
-				Activate();
-				BringIntoView();
-			}));
-		}
-
-		public void OnOpenDataSource(string dataSourceUri)
-		{
-			Dispatcher.BeginInvoke(new Action(() =>
-			{
-				Log.InfoFormat("Opening data source because another process asked us to...");
-				var viewModel = DataContext as MainWindowViewModel;
-				viewModel?.OpenFile(dataSourceUri);
-			}));
 		}
 	}
 }
