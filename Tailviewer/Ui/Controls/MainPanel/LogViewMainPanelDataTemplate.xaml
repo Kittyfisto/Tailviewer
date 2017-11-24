@@ -46,6 +46,7 @@
                                                   x:Name="PART_FindDataSource"
                                                   Text="{Binding SearchTerm}"
                                                   Suggestions="{Binding Suggestions}"
+                                                  SelectedSuggestion="{Binding SelectedSuggestion}"
                                                   SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
                                                   Width="300">
                     <controls1:SuggestionInputControl.SuggestionTemplate>

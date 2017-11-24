@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 
 		private string _searchTerm;
 		private IReadOnlyList<DataSourceSuggestionViewModel> _suggestions;
+		private DataSourceSuggestionViewModel _selectedSuggestion;
 
 		public event Action<IDataSource> DataSourceChosen;
 
@@ -50,9 +51,17 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 				EmitPropertyChanged();
 
 				if (!string.IsNullOrEmpty(value))
+				{
 					Suggestions = FindMatches(value);
+					if (_suggestions.Count > 0)
+					{
+						SelectedSuggestion = _suggestions[0];
+					}
+				}
 				else
+				{
 					Suggestions = null;
+				}
 			}
 		}
 
@@ -67,6 +76,19 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 		}
 
 		public ICommand ChooseDataSourceCommand => _chooseDataSourceCommand;
+
+		public DataSourceSuggestionViewModel SelectedSuggestion
+		{
+			get { return _selectedSuggestion; }
+			private set
+			{
+				if (value == _selectedSuggestion)
+					return;
+
+				_selectedSuggestion = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

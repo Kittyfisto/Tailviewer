@@ -22,6 +22,7 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		}
 
 		[Test]
+		[Description("Verifies that suggestions are updated once the search term is changed")]
 		public void TestSearch1()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
@@ -33,6 +34,7 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		}
 
 		[Test]
+		[Description("Verifies that the suggestion contains the original path with the original case, not the one of the search term")]
 		public void TestSearch2()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
@@ -44,6 +46,49 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 			suggestion.Prefix.Should().Be("T");
 			suggestion.Midfix.Should().Be("ail");
 			suggestion.Postfix.Should().Be("viewer.log");
+		}
+
+		[Test]
+		[Description("Verifies that no suggestion is created when nothing matches")]
+		public void TestSearch3()
+		{
+			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
+			_sources.Add(CreateDataSource("A"));
+			_sources.Add(CreateDataSource("AA"));
+
+			viewModel.SearchTerm = "B";
+			viewModel.Suggestions.Should().BeNullOrEmpty();
+			viewModel.SelectedSuggestion.Should().BeNull();
+		}
+
+		[Test]
+		[Description("Verifies that the first suggestion is selected by default")]
+		public void TestSearch4()
+		{
+			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
+			_sources.Add(CreateDataSource("A"));
+			_sources.Add(CreateDataSource("AA"));
+
+			viewModel.SearchTerm = "A";
+			viewModel.Suggestions.Should().HaveCount(2);
+			viewModel.SelectedSuggestion.Should().Be(viewModel.Suggestions[0]);
+		}
+
+		[Test]
+		public void TestChooseSuggestion()
+		{
+			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
+			_sources.Add(CreateDataSource("A"));
+			_sources.Add(CreateDataSource("AA"));
+
+			viewModel.SearchTerm = "AA";
+			viewModel.Suggestions.Should().HaveCount(1);
+			var suggestion = viewModel.Suggestions[0];
+			viewModel.ChooseDataSourceCommand.CanExecute(suggestion).Should().BeTrue();
+
+			viewModel.MonitorEvents();
+			viewModel.ChooseDataSourceCommand.Execute(suggestion);
+			viewModel.ShouldRaise(nameof(QuickNavigationViewModel.DataSourceChosen));
 		}
 
 		private static IDataSource CreateDataSource(string fileName)
