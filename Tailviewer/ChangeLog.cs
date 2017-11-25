@@ -53,7 +53,8 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Navigate to data source (ctrl+T)"
+				"Navigate to data source (CTRL+T)",
+				"Go to line (CTRL+G)"
 			};
 			var bugfixes = new string[]
 			{
