@@ -1,7 +1,7 @@
 ﻿using System;
 using Tailviewer.BusinessLogic.DataSources;
 
-namespace Tailviewer.Ui.Controls.QuickNavigation
+namespace Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation
 {
 	public sealed class DataSourceSuggestionViewModel
 	{

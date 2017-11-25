@@ -175,6 +175,9 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\DataSourceSuggestionViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverter.cs" />
@@ -592,7 +595,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
-    <Folder Include="Ui\Controls\MainPanel\Raw\GoToLine\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

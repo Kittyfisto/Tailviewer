@@ -185,6 +185,7 @@
     <Compile Include="Ui\Controls\LogView\LineNumberCanvasTest.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />

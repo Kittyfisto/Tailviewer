@@ -156,6 +156,17 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestShowGoToLine()
+		{
+			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeFalse();
+
+			_mainWindow.ShowGoToLineCommand.Should().NotBeNull();
+			_mainWindow.ShowGoToLineCommand.CanExecute(null).Should().BeTrue();
+			_mainWindow.ShowGoToLineCommand.Execute(null);
+			_mainWindow.LogViewPanel.GoToLine.Show.Should().BeTrue();
+		}
+
+		[Test]
 		[Description(
 			"Verifies that the mainwindow synchronizes the currently selected item correctly after having performed a d&d")]
 		public void TestGroup1()

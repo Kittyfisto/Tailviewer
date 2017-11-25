@@ -11,8 +11,9 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
+using Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine;
+using Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation;
 using Tailviewer.Ui.Controls.QuickFilter;
-using Tailviewer.Ui.Controls.QuickNavigation;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
 
@@ -31,6 +32,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
+		private readonly GoToLineViewModel _goToLine;
 		private readonly QuickNavigationViewModel _quickNavigation;
 
 		private LogViewerViewModel _currentDataSourceLogView;
@@ -55,6 +57,9 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickFilters = new QuickFiltersSidePanelViewModel(applicationSettings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;
 
+			_goToLine = new GoToLineViewModel();
+			_goToLine.LineNumberChosen += GoToLineOnLineNumberChosen;
+
 			_quickNavigation = new QuickNavigationViewModel(dataSources);
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
@@ -71,6 +76,14 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			PropertyChanged += OnPropertyChanged;
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void GoToLineOnLineNumberChosen(LogLineIndex logLineIndex)
+		{
+			Log.DebugFormat("Going to line {0}", logLineIndex);
+			var dataSource = _currentDataSourceLogView.DataSource;
+			dataSource.SelectedLogLines = new HashSet<LogLineIndex> {logLineIndex};
+			dataSource.RequestBringIntoView(logLineIndex);
 		}
 
 		private void QuickNavigationOnDataSourceChosen(IDataSource dataSource)
@@ -162,6 +175,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			}
 		}
 
+		public GoToLineViewModel GoToLine => _goToLine;
 		public QuickNavigationViewModel QuickNavigation => _quickNavigation;
 
 		public bool ShowQuickNavigation

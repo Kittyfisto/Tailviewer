@@ -8,7 +8,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 
-namespace Tailviewer.Ui.Controls.QuickNavigation
+namespace Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation
 {
 	/// <summary>
 	///     Responsible for giving the user a list of opened data sources which match a search term.

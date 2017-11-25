@@ -65,6 +65,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _windowTitleSuffix;
 		private readonly IEnumerable<IPluginDescription> _plugins;
 		private readonly DelegateCommand2 _showQuickNavigationCommand;
+		private readonly DelegateCommand2 _showGoToLineCommand;
 
 		public MainWindowViewModel(IApplicationSettings settings,
 		                           DataSources dataSources,
@@ -105,6 +106,7 @@ namespace Tailviewer.Ui.ViewModels
 
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, dispatcher);
 			_showLogCommand = new DelegateCommand(ShowLog);
+			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
 			_showQuickNavigationCommand = new DelegateCommand2(ShowQuickNavigation);
 
 			_analyseEntry = new AnalyseMainPanelEntry();
@@ -142,6 +144,14 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		private void ShowGoToLine()
+		{
+			if (SelectedMainPanel == _logViewPanel)
+			{
+				_logViewPanel.GoToLine.Show = true;
+			}
+		}
+
 		private void ShowQuickNavigation()
 		{
 			if (SelectedMainPanel == _logViewPanel)
@@ -174,6 +184,7 @@ namespace Tailviewer.Ui.ViewModels
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
 		public ICommand ShowLogCommand => _showLogCommand;
 		public ICommand ShowQuickNavigationCommand => _showQuickNavigationCommand;
+		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
 
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
