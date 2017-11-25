@@ -7,6 +7,7 @@ using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
+using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Ui.Controls.QuickNavigation
 {
@@ -62,9 +63,21 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 		private void HidePopup()
 		{
 			IsOpen = false;
+
 			// We also have to focus something else again as
 			// the control which previously had focus will be hidden again.
-			Application.Current.MainWindow?.Focus();
+			var logViewer = Application.Current?.MainWindow?.FindChildrenOfType<TextCanvas>().FirstOrDefault();
+			if (logViewer != null)
+			{
+				Log.DebugFormat("Focusing log entry list view again");
+				Keyboard.Focus(logViewer);
+				logViewer.Focus();
+			}
+			else
+			{
+				Log.WarnFormat("Unable to find log entry list view to focus it, focusing main window instead...");
+				Application.Current?.MainWindow?.Focus();
+			}
 		}
 
 		private void OnOpened(object sender, EventArgs eventArgs)

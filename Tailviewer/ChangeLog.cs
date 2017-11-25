@@ -46,6 +46,27 @@ namespace Tailviewer
 			AddV061();
 			AddV062();
 			AddV070();
+			AddV071();
+		}
+
+		private static void AddV071()
+		{
+			var features = new[]
+			{
+				"Navigate to data source (ctrl+T)"
+			};
+			var bugfixes = new string[]
+			{
+				
+			};
+			var misc = new string[]
+			{
+				
+			};
+			var releaseDate = new DateTime(2017, 12, 1);
+			var version = new Version(0, 7, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV070()
