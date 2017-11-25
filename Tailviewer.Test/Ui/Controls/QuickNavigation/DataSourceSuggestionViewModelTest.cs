@@ -32,17 +32,5 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 			viewModel1.Equals(viewModel2).Should().BeFalse();
 			viewModel2.Equals(viewModel1).Should().BeFalse();
 		}
-
-		[Test]
-		public void TestEquality4()
-		{
-			var dataSource = new Mock<IDataSource>().Object;
-			var viewModel1 = new DataSourceSuggestionViewModel(dataSource, null, null, null);
-			var viewModel2 = new DataSourceSuggestionViewModel(dataSource, null, null, null);
-			viewModel1.Equals(viewModel2).Should().BeTrue();
-			viewModel1.GetHashCode().Should().Be(viewModel2.GetHashCode());
-			viewModel2.Equals(viewModel1).Should().BeTrue();
-			viewModel2.GetHashCode().Should().Be(viewModel1.GetHashCode());
-		}
 	}
 }
