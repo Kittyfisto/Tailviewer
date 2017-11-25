@@ -19,8 +19,8 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 		private readonly IDataSources _dataSources;
 		private readonly ICommand _chooseDataSourceCommand;
 
-		private string _searchTerm;
 		private IReadOnlyList<DataSourceSuggestionViewModel> _suggestions;
+		private string _searchTerm;
 		private DataSourceSuggestionViewModel _selectedSuggestion;
 
 		public event Action<IDataSource> DataSourceChosen;
@@ -80,7 +80,7 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 		public DataSourceSuggestionViewModel SelectedSuggestion
 		{
 			get { return _selectedSuggestion; }
-			private set
+			set
 			{
 				if (value == _selectedSuggestion)
 					return;

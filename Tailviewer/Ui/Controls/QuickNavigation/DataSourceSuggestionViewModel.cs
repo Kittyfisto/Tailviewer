@@ -29,23 +29,6 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 
 		public IDataSource DataSource => _dataSource;
 
-		private bool Equals(DataSourceSuggestionViewModel other)
-		{
-			return _dataSource.Equals(other._dataSource);
-		}
-
-		public override bool Equals(object obj)
-		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			return obj is DataSourceSuggestionViewModel && Equals((DataSourceSuggestionViewModel) obj);
-		}
-
-		public override int GetHashCode()
-		{
-			return _dataSource.GetHashCode();
-		}
-
 		public override string ToString()
 		{
 			return string.Format("{0}{1}{2}", _prefix, _midfix, _postfix);

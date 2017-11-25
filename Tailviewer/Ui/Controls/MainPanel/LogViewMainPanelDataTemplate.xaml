@@ -42,23 +42,39 @@
             <quickNavigation:QuickNavigationPopup x:Name="PART_FindDataSourcePopup"
                                                   Placement="Center"
                                                   IsOpen="{Binding ShowQuickNavigation, Mode=TwoWay}">
-                <controls1:SuggestionInputControl DataContext="{Binding QuickNavigation}"
-                                                  x:Name="PART_FindDataSource"
-                                                  Text="{Binding SearchTerm}"
-                                                  Suggestions="{Binding Suggestions}"
-                                                  SelectedSuggestion="{Binding SelectedSuggestion}"
-                                                  SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
-                                                  Width="300">
-                    <controls1:SuggestionInputControl.SuggestionTemplate>
-                        <DataTemplate DataType="{x:Type quickNavigation:DataSourceSuggestionViewModel}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Prefix, Mode=OneWay}" />
-                                <TextBlock Text="{Binding Midfix, Mode=OneWay}" FontWeight="Bold" />
-                                <TextBlock Text="{Binding Postfix, Mode=OneWay}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </controls1:SuggestionInputControl.SuggestionTemplate>
-                </controls1:SuggestionInputControl>
+                <Border Padding="2"
+                        BorderThickness="1"
+                        CornerRadius="2"
+                        BorderBrush="Gray"
+                        Background="LightGray">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Search data sources:"
+                                   Margin="0,0,0,2" />
+                        <controls1:SuggestionInputControl x:Name="PART_FindDataSource"
+                                                          Grid.Row="1"
+                                                          DataContext="{Binding QuickNavigation}"
+                                                          Text="{Binding SearchTerm}"
+                                                          Watermark="Enter data source name or path"
+                                                          Suggestions="{Binding Suggestions}"
+                                                          SelectedSuggestion="{Binding SelectedSuggestion}"
+                                                          SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
+                                                          Width="300">
+                            <controls1:SuggestionInputControl.SuggestionTemplate>
+                                <DataTemplate DataType="{x:Type quickNavigation:DataSourceSuggestionViewModel}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Prefix, Mode=OneWay}" />
+                                        <TextBlock Text="{Binding Midfix, Mode=OneWay}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding Postfix, Mode=OneWay}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </controls1:SuggestionInputControl.SuggestionTemplate>
+                        </controls1:SuggestionInputControl>
+                    </Grid>
+                </Border>
             </quickNavigation:QuickNavigationPopup>
         </Grid>
 

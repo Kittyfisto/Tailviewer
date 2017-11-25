@@ -156,7 +156,7 @@ namespace Tailviewer.Ui.Controls
 				// ensure that this method is invoked *after* the control has been created).
 				Dispatcher.BeginInvoke(new Action(() =>
 				{
-					var boxes = this.FindVisualChildren<FilterTextBox>().ToList();
+					var boxes = this.FindChildrenOfType<FilterTextBox>().ToList();
 					var textBox = boxes.LastOrDefault(x => x.DataContext == model);
 					textBox?.Focus();
 				}), DispatcherPriority.Background);

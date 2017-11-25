@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using log4net;
+using Metrolib;
 using Metrolib.Controls;
 
 namespace Tailviewer.Ui.Controls.QuickNavigation
 {
+	/// <summary>
+	///     The popup which hosts a fancy text-box which displays a list of data sources
+	///     which match the entered term.
+	/// </summary>
 	public sealed class QuickNavigationPopup
 		: Popup
 	{
@@ -27,22 +33,24 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 
 		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
-			_suggestionsControl = Child as SuggestionInputControl;
+			var children = Child.FindChildrenOfType<SuggestionInputControl>();
+			_suggestionsControl = children.FirstOrDefault();
 			if (_suggestionsControl != null)
-			{
 				_suggestionsControl.IsKeyboardFocusWithinChanged += ChildOnIsKeyboardFocusWithinChanged;
-			}
 			else
-			{
 				Log.ErrorFormat("Unable to find suggestions control: Child is of type '{0}'", Child?.GetType());
-			}
 		}
 
-		private void ChildOnIsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		private void ChildOnIsKeyboardFocusWithinChanged(object sender,
+		                                                 DependencyPropertyChangedEventArgs
+			                                                 dependencyPropertyChangedEventArgs)
 		{
 			if (!_suggestionsControl.IsKeyboardFocusWithin)
 			{
 				IsOpen = false;
+				// We also have to focus something else again as
+				// the control which previously had focus will be hidden again.
+				Application.Current.MainWindow?.Focus();
 			}
 		}
 
@@ -50,15 +58,10 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 		{
 			Dispatcher.BeginInvoke(new Action(() =>
 			{
-				var child = Child as SuggestionInputControl;
-				if (child != null)
-				{
-					child.Focus();
-				}
+				if (_suggestionsControl != null)
+					_suggestionsControl.Focus();
 				else
-				{
 					Log.Warn("Can't focus quick navigation control, wrong child...");
-				}
 			}));
 		}
 	}

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
@@ -57,6 +56,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;
 
 			_quickNavigation = new QuickNavigationViewModel(dataSources);
+			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
 
@@ -71,6 +71,20 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			PropertyChanged += OnPropertyChanged;
 			ChangeDataSource(CurrentDataSource);
+		}
+
+		private void QuickNavigationOnDataSourceChosen(IDataSource dataSource)
+		{
+			var viewModel = _dataSources.DataSources.FirstOrDefault(x => x.DataSource == dataSource);
+			if (viewModel != null)
+			{
+				Log.DebugFormat("Navigating to '{0}'", viewModel);
+				_dataSources.SelectedItem = viewModel;
+			}
+			else
+			{
+				Log.WarnFormat("Unable to navigate to data source '{0}': Can't find it!", dataSource);
+			}
 		}
 
 		private void OnFiltersChanged()
