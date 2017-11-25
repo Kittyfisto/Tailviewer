@@ -175,8 +175,8 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
-    <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModel.cs" />
-    <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\DataSourceSuggestionViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverter.cs" />
     <Compile Include="Ui\Controls\LogView\DataSourceCanvas.cs" />
     <Compile Include="Settings\DataSourceDisplayMode.cs" />
@@ -230,7 +230,7 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFiltersDataTemplate.cs" />
-    <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationPopup.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
@@ -592,6 +592,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
+    <Folder Include="Ui\Controls\MainPanel\Raw\GoToLine\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
