@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using log4net;
 using Metrolib;
 using Metrolib.Controls;
@@ -27,6 +28,8 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 
 		public QuickNavigationPopup()
 		{
+			InputBindings.Add(new KeyBinding(new DelegateCommand2(OnEscape), new KeyGesture(Key.Escape)));
+
 			Loaded += OnLoaded;
 			Opened += OnOpened;
 		}
@@ -41,17 +44,27 @@ namespace Tailviewer.Ui.Controls.QuickNavigation
 				Log.ErrorFormat("Unable to find suggestions control: Child is of type '{0}'", Child?.GetType());
 		}
 
+		private void OnEscape()
+		{
+			HidePopup();
+		}
+
 		private void ChildOnIsKeyboardFocusWithinChanged(object sender,
 		                                                 DependencyPropertyChangedEventArgs
 			                                                 dependencyPropertyChangedEventArgs)
 		{
 			if (!_suggestionsControl.IsKeyboardFocusWithin)
 			{
-				IsOpen = false;
-				// We also have to focus something else again as
-				// the control which previously had focus will be hidden again.
-				Application.Current.MainWindow?.Focus();
+				HidePopup();
 			}
+		}
+
+		private void HidePopup()
+		{
+			IsOpen = false;
+			// We also have to focus something else again as
+			// the control which previously had focus will be hidden again.
+			Application.Current.MainWindow?.Focus();
 		}
 
 		private void OnOpened(object sender, EventArgs eventArgs)
