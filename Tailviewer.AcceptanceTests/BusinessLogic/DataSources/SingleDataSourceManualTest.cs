@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
@@ -114,6 +113,46 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because only a single line has been written to disk");
 				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+			}
+		}
+
+		[Test]
+		[Description("Verifies that a multi line entry is correctly read into memory")]
+		public void TestReadMultiline()
+		{
+			_settings.IsSingleLine = false;
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			{
+				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
+				_writer.WriteLine("the application...");
+				_writer.Flush();
+				_scheduler.Run(2);
+
+				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
+
+				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
+				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 0, "the application...", LevelFlags.Info, t));
+			}
+		}
+
+		[Test]
+		[Description("Verifies that a single line entry is correctly read into memory")]
+		public void TestReadSingleLine()
+		{
+			_settings.IsSingleLine = true;
+			using (var dataSource = new SingleDataSource(_scheduler, _settings, _logFile, TimeSpan.Zero))
+			{
+				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
+				_writer.WriteLine("the application...");
+				_writer.Flush();
+				_scheduler.Run(2);
+
+				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
+
+				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
+				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.None, null));
 			}
 		}
 	}
