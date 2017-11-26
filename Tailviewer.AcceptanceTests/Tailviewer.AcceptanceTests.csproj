@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="ApplicationTest.cs" />
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceManualTest.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileTest.cs" />
