@@ -27,7 +27,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				throw new ArgumentNullException(nameof(logFileFactory));
 
 			_originalLogFile = logFileFactory.Open(settings.File);
-			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime, _originalLogFile);
+			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
 		}
@@ -40,7 +40,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				throw new ArgumentNullException(nameof(unfilteredLogFile));
 
 			_originalLogFile = unfilteredLogFile;
-			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime, _originalLogFile);
+			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
 		}
