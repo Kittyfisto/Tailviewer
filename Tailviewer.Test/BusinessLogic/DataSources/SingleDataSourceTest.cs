@@ -28,8 +28,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_logFile2 = new InMemoryLogFile();
-
 			_logFile = new Mock<ILogFile>();
 			_entries = new List<LogLine>();
 			_listeners = new LogFileListenerCollection(_logFile.Object);
@@ -52,7 +50,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		private Mock<ILogFile> _logFile;
-		private InMemoryLogFile _logFile2;
 		private LogFileListenerCollection _listeners;
 		private List<LogLine> _entries;
 		private ManualTaskScheduler _scheduler;
@@ -113,7 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				new DataSource(@"E:\somelogfile.txt") {Id = DataSourceId.CreateNew()});
 			_scheduler.PeriodicTaskCount.Should().BeGreaterThan(0);
 			source.Dispose();
-			_scheduler.PeriodicTaskCount.Should().Be(0);
+			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
 		}
 
 		[Test]
@@ -122,7 +119,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = DataSourceId.CreateNew() }))
 			{
-				_scheduler.RunOnce();
+				_scheduler.Run(2);
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				dataSource.TotalCount.Should().Be(27, "because the data source contains that many lines");

@@ -27,7 +27,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 					Id = DataSourceId.CreateNew(),
 					MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode
 				};
-			_merged = new MergedDataSource(_scheduler, _settings);
+			_merged = new MergedDataSource(_scheduler, _settings) {IsSingleLine = true};
 		}
 
 		private MergedDataSource _merged;
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.Add(dataSource);
 			_merged.UnfilteredLogFile.Should().NotBeNull();
 			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource.UnfilteredLogFile});
+			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource.OriginalLogFile});
 		}
 
 		[Test]
@@ -71,6 +71,20 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			logFile2.Should().NotBeSameAs(logFile1);
 			((AbstractLogFile) logFile1).IsDisposed.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestMultiline()
+		{
+			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			ILogFile logFile1 = _merged.UnfilteredLogFile;
+
+			_merged.Add(dataSource);
+			ILogFile logFile2 = _merged.UnfilteredLogFile;
+
+			logFile2.Should().NotBeSameAs(logFile1);
+			((AbstractLogFile)logFile1).IsDisposed.Should().BeTrue();
 		}
 
 		[Test]
@@ -152,7 +166,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.Remove(dataSource2);
 			_merged.UnfilteredLogFile.Should().NotBeNull();
 			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
-			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource1.UnfilteredLogFile});
+			((MergedLogFile) _merged.UnfilteredLogFile).Sources.Should().Equal(new object[] {dataSource1.OriginalLogFile});
 		}
 
 		[Test]

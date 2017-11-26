@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -14,6 +16,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 	public abstract class AbstractDataSource
 		: IDataSource
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly LogFileCounter _counter;
 		private readonly TimeSpan _maximumWaitTime;
@@ -23,9 +27,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
-		private ILogFile _filterSource;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
+		private ILogFile _previousUnfilteredLogFile;
 
 		protected AbstractDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
@@ -43,6 +47,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
 			CreateSearch();
 		}
+
+		protected ITaskScheduler TaskScheduler => _taskScheduler;
+
+		protected TimeSpan MaximumWaitTime => _maximumWaitTime;
 
 		public ILogFile FilteredLogFile => _logFile;
 
@@ -133,9 +141,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _settings.Analyses.Contains(id);
 		}
 
-		public abstract ILogFile UnfilteredLogFile { get; }
+		public abstract ILogFile OriginalLogFile { get; }
 
-		protected ILogFile FilterSource => _filterSource;
+		public abstract ILogFile UnfilteredLogFile { get; }
 
 		public int NoLevelCount => _counter.NoLevel.LogEntryCount;
 
@@ -226,7 +234,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 					return;
 
 				_settings.IsSingleLine = value;
-				CreateMultiLineLogFile();
+				OnSingleLineChanged();
 			}
 		}
 		
@@ -236,12 +244,25 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_search.Dispose();
 
 			DisposeCurrentSearch();
-			FilteredLogFile?.Dispose();
-			FilterSource?.Dispose();
-			UnfilteredLogFile.Dispose();
+			_logFile?.Dispose();
+
+			try
+			{
+				DisposeAdditional();
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+			}
 
 			_isDisposed = true;
 		}
+
+		/// <summary>
+		///     Called during <see cref="Dispose" />, can be implemented to
+		///     dispose of additional resources.
+		/// </summary>
+		protected abstract void DisposeAdditional();
 
 		public bool IsDisposed => _isDisposed;
 
@@ -256,28 +277,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		protected void OnUnfilteredLogFileChanged()
 		{
-			CreateMultiLineLogFile();
-		}
-
-		protected void CreateMultiLineLogFile()
-		{
-			if (!ReferenceEquals(_filterSource, UnfilteredLogFile))
-				_filterSource?.Dispose();
-			
-			if (IsSingleLine)
-			{
-				_filterSource = UnfilteredLogFile;
-			}
-			else
-			{
-				UnfilteredLogFile.RemoveListener(_counter);
-				_filterSource = new MultiLineLogFile(_taskScheduler, UnfilteredLogFile, _maximumWaitTime);
-			}
-
-			_filterSource.AddListener(_counter, TimeSpan.Zero, 1000);
+			_previousUnfilteredLogFile?.RemoveListener(_counter);
+			UnfilteredLogFile.AddListener(_counter, TimeSpan.Zero, 1000);
+			_previousUnfilteredLogFile = UnfilteredLogFile;
 
 			CreateFilteredLogFile();
 		}
+
+		protected abstract void OnSingleLineChanged();
 
 		private void CreateFilteredLogFile()
 		{
@@ -288,13 +295,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
 			if (logEntryFilter != null)
 			{
-				_filteredLogFile = _filterSource.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
+				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
 			}
 			else
 			{
 				_filteredLogFile = null;
-				_logFile.InnerLogFile = _filterSource;
+				_logFile.InnerLogFile = UnfilteredLogFile;
 			}
 		}
 

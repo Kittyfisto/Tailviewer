@@ -13,29 +13,30 @@ namespace Tailviewer.BusinessLogic.DataSources
 		, IMergedDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;
-		private readonly TimeSpan _maximumWaitTime;
-		private readonly ITaskScheduler _taskScheduler;
+
 		private MergedLogFile _unfilteredLogFile;
-		private IReadOnlyList<IDataSource> _orderedDataSources;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
-			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(10))
+			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			_taskScheduler = taskScheduler;
-			_maximumWaitTime = maximumWaitTime;
 			_dataSources = new HashSet<IDataSource>();
-			_orderedDataSources = new IDataSource[0];
-			UpdateLogFile();
+			OriginalSources = new IDataSource[0];
+			UpdateUnfilteredLogFile();
 		}
 
 		public int DataSourceCount => _dataSources.Count;
 
-		public IReadOnlyList<IDataSource> OriginalSources => _orderedDataSources;
+		public IReadOnlyList<IDataSource> OriginalSources { get; private set; }
+
+		public override ILogFile OriginalLogFile
+		{
+			get { throw new NotImplementedException(); }
+		}
 
 		public override ILogFile UnfilteredLogFile => _unfilteredLogFile;
 
@@ -65,7 +66,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (_dataSources.Add(dataSource))
 			{
 				dataSource.Settings.ParentId = Settings.Id;
-				UpdateLogFile();
+				UpdateUnfilteredLogFile();
 			}
 		}
 
@@ -73,23 +74,43 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			if (dataSource.ParentId != Id)
 				throw new ArgumentException(
-					"This data source belongs to a different parent and thus cannot be removed from this one");
+				                            "This data source belongs to a different parent and thus cannot be removed from this one");
 
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");
 
 			dataSource.Settings.ParentId = DataSourceId.Empty;
-			UpdateLogFile();
+			UpdateUnfilteredLogFile();
 		}
 
-		private void UpdateLogFile()
+		protected override void DisposeAdditional()
+		{
+			_unfilteredLogFile?.Dispose();
+		}
+
+		protected override void OnSingleLineChanged()
+		{
+			UpdateUnfilteredLogFile();
+		}
+
+		private void UpdateUnfilteredLogFile()
 		{
 			_unfilteredLogFile?.Dispose();
 
-			_orderedDataSources = _dataSources.ToList();
-			var logFiles = _orderedDataSources.Select(x => x.UnfilteredLogFile); //< We want to make sure that we match the order we're providing to the outside world is the same order we're forwarding to the actual MergedLogFile!!!!
-			_unfilteredLogFile = new MergedLogFile(_taskScheduler,
-			                                       _maximumWaitTime,
+			OriginalSources = _dataSources.ToList();
+			IReadOnlyList<ILogFile> logFiles;
+
+			if (IsSingleLine)
+			{
+				logFiles = OriginalSources.Select(x => x.OriginalLogFile).ToList();
+			}
+			else
+			{
+				logFiles = OriginalSources.Select(x => x.UnfilteredLogFile).ToList();
+			}
+
+			_unfilteredLogFile = new MergedLogFile(TaskScheduler,
+			                                       MaximumWaitTime,
 			                                       logFiles);
 			OnUnfilteredLogFileChanged();
 		}

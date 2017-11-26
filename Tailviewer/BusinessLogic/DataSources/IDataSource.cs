@@ -17,8 +17,25 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
+		/// <summary>
+		///     The actual log file this source eventually represents,
+		///     WITHOUT any of the settings of this source applied
+		///     (such as multiline, filters, etc...).
+		/// </summary>
+		ILogFile OriginalLogFile { get; }
+
+		/// <summary>
+		///     A log file which has the <see cref="IsSingleLine" /> modification
+		///     applied, but is still unfiltered.
+		/// </summary>
 		ILogFile UnfilteredLogFile { get; }
+
+		/// <summary>
+		///     The final log file with all the modifications of this data source
+		///     applied to it.
+		/// </summary>
 		ILogFile FilteredLogFile { get; }
+
 		ILogFileSearch Search { get; }
 
 		DateTime LastModified { get; }
