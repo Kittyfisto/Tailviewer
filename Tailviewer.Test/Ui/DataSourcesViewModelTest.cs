@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -423,6 +424,30 @@ namespace Tailviewer.Test.Ui
 
 			merged1.Observable.Should().Equal(new object[] {a, c});
 			merged2.Observable.Should().Equal(new object[] {d, e, b});
+		}
+
+		[Test]
+		[Description("Verifies that the selected item is preserved when an item is grouped")]
+		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/79")]
+		public void TestDropOntoGroup4()
+		{
+			IDataSourceViewModel a = _model.GetOrAdd("A");
+			IDataSourceViewModel b = _model.GetOrAdd("B");
+			IDataSourceViewModel c = _model.GetOrAdd("C");
+			IDataSourceViewModel d = _model.GetOrAdd("D");
+
+			_model.OnDropped(b, c, DataSourceDropType.Group);
+			var group = (MergedDataSourceViewModel)_model.Observable[1];
+
+			_model.Observable.CollectionChanged += (sender, args) =>
+			{
+				if (args.Action == NotifyCollectionChangedAction.Remove)
+					_model.SelectedItem = _model.Observable[0];
+			};
+
+			_model.SelectedItem = d;
+			_model.OnDropped(d, group, DataSourceDropType.Group);
+			_model.SelectedItem.Should().Be(group, "because the dropped item should still be selected");
 		}
 
 		[Test]

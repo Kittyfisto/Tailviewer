@@ -434,6 +434,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				// Drag from ungrouped onto an existing group
 				// => add to existing group
 				AddFileToGroup(source, merged);
+				SelectedItem = merged;
 			}
 			else
 			{
@@ -443,6 +444,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				if (merged != null)
 				{
 					AddFileToGroup(source, merged);
+					SelectedItem = merged;
 				}
 				else
 				{
