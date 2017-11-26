@@ -9,6 +9,9 @@ using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Core.LogFiles
 {
+	/// <summary>
+	///     A <see cref="ILogFile" /> implementation which offers a filtered view onto a log file.
+	/// </summary>
 	public sealed class FilteredLogFile
 		: AbstractLogFile
 		, ILogFileListener
@@ -30,6 +33,14 @@ namespace Tailviewer.Core.LogFiles
 		private readonly List<LogLine> _lastLogEntry;
 		private int _currentLogEntryIndex;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="scheduler"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="source"></param>
+		/// <param name="logLineFilter"></param>
+		/// <param name="logEntryFilter"></param>
 		public FilteredLogFile(ITaskScheduler scheduler,
 			TimeSpan maximumWaitTime,
 			ILogFile source,
@@ -112,18 +123,19 @@ namespace Tailviewer.Core.LogFiles
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)
-				throw new ArgumentOutOfRangeException("section.Index");
+				throw new ArgumentOutOfRangeException(nameof(section), string.Format("Index '{0}' is expected to be greater or equal to 0", section.Index));
 			if (section.Count < 0)
-				throw new ArgumentOutOfRangeException("section.Count");
+				throw new ArgumentOutOfRangeException(nameof(section), string.Format("Count '{0}' is expected to be greater or equal to 0", section.Count));
 			if (dest == null)
 				throw new ArgumentNullException(nameof(dest));
 			if (dest.Length < section.Count)
-				throw new ArgumentOutOfRangeException("section.Count");
+				throw new ArgumentOutOfRangeException(nameof(section), string.Format("The provided buffer (length '{0}') should hold at least as many items as requested '{1}", dest.Length, section.Count));
 
 			lock (_indices)
 			{
-				if (section.Index + section.Count > _indices.Count)
-					throw new ArgumentOutOfRangeException(nameof(section));
+				var count = section.Index + section.Count;
+				if (count > _indices.Count)
+					throw new ArgumentOutOfRangeException(nameof(section), string.Format("Cannot request more than '{0}' items: '{1}'", _indices.Count, count));
 
 				for (int i = 0; i < section.Count; ++i)
 				{
