@@ -139,7 +139,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\DifferentLevels.txt") { Id = DataSourceId.CreateNew() }))
 			{
-				_scheduler.Run(count: 2);
+				_scheduler.Run(count: 3);
 
 				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				dataSource.UnfilteredLogFile.Count.Should().Be(6);
