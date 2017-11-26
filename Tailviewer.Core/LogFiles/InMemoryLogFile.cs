@@ -157,6 +157,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public double Progress => 1;
 
+		/// <summary>
+		///     Removes all log lines.
+		/// </summary>
 		public void Clear()
 		{
 			lock (_syncRoot)
@@ -167,6 +170,8 @@ namespace Tailviewer.Core.LogFiles
 					MaxCharactersPerLine = 0;
 					StartTimestamp = null;
 					Touch();
+
+					_listeners.Reset();
 				}
 			}
 		}
@@ -203,36 +208,84 @@ namespace Tailviewer.Core.LogFiles
 			LastModified = DateTime.Now;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="level"></param>
 		public void AddEntry(string message, LevelFlags level)
 		{
 			AddEntry(message, level, null);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
 		public void AddEntry(string message, LevelFlags level, DateTime? timestamp)
 		{
 			lock (_syncRoot)
 			{
-				int index;
+				int logEntryIndex;
 				if (_lines.Count > 0)
 				{
 					var last = _lines[_lines.Count - 1];
-					index = last.LogEntryIndex + 1;
+					logEntryIndex = last.LogEntryIndex + 1;
 				}
 				else
 				{
-					index = 0;
+					logEntryIndex = 0;
 					StartTimestamp = timestamp;
 				}
 
-				_lines.Add(new LogLine(_lines.Count, index, message, level, timestamp));
+				_lines.Add(new LogLine(_lines.Count, logEntryIndex, message, level, timestamp));
 				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, message.Length);
 				Touch();
-			}
 
-			_listeners.OnRead(_lines.Count);
+				_listeners.OnRead(_lines.Count);
+			}
 		}
 
-		public void AddEntries(int count)
+		/// <summary>
+		///     Adds a multi line log entry to this log file.
+		/// </summary>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
+		/// <param name="lines"></param>
+		public void AddMultilineEntry(LevelFlags level, DateTime? timestamp, params string[] lines)
+		{
+			lock (_syncRoot)
+			{
+				int logEntryIndex;
+				if (_lines.Count > 0)
+				{
+					var last = _lines[_lines.Count - 1];
+					logEntryIndex = last.LogEntryIndex + 1;
+				}
+				else
+				{
+					logEntryIndex = 0;
+					StartTimestamp = timestamp;
+				}
+
+				foreach (var line in lines)
+				{
+					_lines.Add(new LogLine(_lines.Count, logEntryIndex, line, level, timestamp));
+					MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, line.Length);
+				}
+				Touch();
+
+				_listeners.OnRead(_lines.Count);
+			}
+		}
+
+		/// <summary>
+		///     Adds <paramref name="count" /> amount of empty lines to this log file.
+		/// </summary>
+		/// <param name="count"></param>
+		public void AddEmptyEntries(int count)
 		{
 			for (int i = 0; i < count; ++i)
 			{

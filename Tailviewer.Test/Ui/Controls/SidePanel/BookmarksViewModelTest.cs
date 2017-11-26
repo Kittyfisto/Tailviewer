@@ -70,7 +70,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel
 		{
 			_dataSource.Setup(x => x.SelectedLogLines).Returns(new HashSet<LogLineIndex> {13});
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntries(13);
+			logFile.AddEmptyEntries(13);
 			_dataSource.Setup(x => x.FilteredLogFile).Returns(logFile);
 
 			_viewModel.CurrentDataSource = _dataSource.Object;

@@ -124,6 +124,24 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestConstruction9()
+		{
+			var lineIndex = new LogLineIndex(1);
+			var entryIndex = new LogEntryIndex(42);
+			var sourceId = new LogLineSourceId(254);
+			var t= new DateTime(2017, 11, 26, 12, 20, 1);
+			var line = new LogLine(lineIndex, entryIndex, sourceId, "Hello, World!", LevelFlags.Trace, t);
+			line.LineIndex.Should().Be(1);
+			line.OriginalLineIndex.Should().Be(1);
+			line.LogEntryIndex.Should().Be(42);
+			line.SourceId.Should().Be(sourceId);
+			line.Message.Should().Be("Hello, World!");
+			line.Level.Should().Be(LevelFlags.Trace);
+			line.Timestamp.Should().Be(t);
+			line.MatchedFilters.Should().Be(0);
+		}
+
+		[Test]
 		[Description("Verifies that two lines with different data source ids are not equal")]
 		public void TestEquality1()
 		{

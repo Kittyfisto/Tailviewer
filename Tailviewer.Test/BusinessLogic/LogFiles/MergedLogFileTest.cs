@@ -288,6 +288,89 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that merging a multi line entry in order works")]
+		public void TestMergeMultiline1()
+		{
+			var source1 = new InMemoryLogFile();
+			var source1Id = new LogLineSourceId(0);
+			var source2 = new InMemoryLogFile();
+			var source2Id = new LogLineSourceId(1);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2);
+
+			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
+			source1.AddEntry("Foo", LevelFlags.Info, t1);
+
+			var t2 = new DateTime(2017, 11, 26, 11, 45, 1);
+			source2.AddMultilineEntry(LevelFlags.Debug, t2, "Hello,", "World!");
+
+			var t3 = new DateTime(2017, 11, 26, 11, 45, 2);
+			source1.AddEntry("bar", LevelFlags.Warning, t3);
+
+			_scheduler.RunOnce();
+			merged.Count.Should().Be(4);
+			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
+			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
+			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
+			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+		}
+
+		[Test]
+		[Description("Verifies that merging a multi line entry out of order works")]
+		public void TestMergeMultiline2()
+		{
+			var source1 = new InMemoryLogFile();
+			var source1Id = new LogLineSourceId(0);
+			var source2 = new InMemoryLogFile();
+			var source2Id = new LogLineSourceId(1);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2);
+
+			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
+			source1.AddEntry("Foo", LevelFlags.Info, t1);
+
+			var t3 = new DateTime(2017, 11, 26, 11, 45, 2);
+			source1.AddEntry("bar", LevelFlags.Warning, t3);
+
+			var t2 = new DateTime(2017, 11, 26, 11, 45, 1);
+			source2.AddMultilineEntry(LevelFlags.Debug, t2, "Hello,", "World!");
+
+			_scheduler.RunOnce();
+			merged.Count.Should().Be(4);
+			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
+			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
+			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
+			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+		}
+
+		[Test]
+		[Description("Verifies that merging a multi line entry out of order works")]
+		public void TestMergeMultiline3()
+		{
+			var source1 = new InMemoryLogFile();
+			var source1Id = new LogLineSourceId(0);
+			var source2 = new InMemoryLogFile();
+			var source2Id = new LogLineSourceId(1);
+			var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source1, source2);
+
+			var t1 = new DateTime(2017, 11, 26, 11, 45, 0);
+			source1.AddEntry("Foo", LevelFlags.Info, t1);
+			_scheduler.RunOnce();
+
+			var t3 = new DateTime(2017, 11, 26, 11, 45, 2);
+			source1.AddEntry("bar", LevelFlags.Warning, t3);
+			_scheduler.RunOnce();
+
+			var t2 = new DateTime(2017, 11, 26, 11, 45, 1);
+			source2.AddMultilineEntry(LevelFlags.Debug, t2, "Hello,", "World!");
+			_scheduler.RunOnce();
+
+			merged.Count.Should().Be(4);
+			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
+			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
+			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
+			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+		}
+
+		[Test]
 		[Description("Verifies that starting a merged log file causes it to add listeners with the source files")]
 		public void TestStart1()
 		{

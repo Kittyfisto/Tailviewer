@@ -223,6 +223,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Initializes this log line.
 		/// </summary>
+		/// <param name="lineIndex"></param>
+		/// <param name="logEntryIndex"></param>
+		/// <param name="sourceId"></param>
+		/// <param name="message"></param>
+		/// <param name="level"></param>
+		/// <param name="timestamp"></param>
+		[DebuggerStepThrough]
+		public LogLine(LogLineIndex lineIndex, LogEntryIndex logEntryIndex, LogLineSourceId sourceId, string message, LevelFlags level, DateTime? timestamp)
+			: this((int)lineIndex, (int)lineIndex, (int)logEntryIndex, sourceId, message, level, timestamp, matchedFilters: 0)
+		{ }
+
+		/// <summary>
+		///     Initializes this log line.
+		/// </summary>
 		/// <remarks>
 		///     ONLY <paramref name="message" /> will be displayed to the user.
 		///     All other parameters are meta information for filtering and merging multiple data sources, but

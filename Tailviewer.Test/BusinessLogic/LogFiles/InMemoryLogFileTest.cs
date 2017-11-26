@@ -99,6 +99,64 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestAddMultilineEntry1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddMultilineEntry(LevelFlags.Debug, null, "foo", "bar");
+			logFile.Count.Should().Be(2);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "foo", LevelFlags.Debug, null));
+			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "bar", LevelFlags.Debug, null));
+		}
+
+		[Test]
+		public void TestAddMultilineEntry2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello, World!", LevelFlags.Debug);
+			var t1 = new DateTime(2017, 11, 26, 11, 56, 0);
+			logFile.AddMultilineEntry(LevelFlags.Info, t1, "foo", "bar");
+			logFile.Count.Should().Be(3);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello, World!", LevelFlags.Debug, null));
+			logFile.GetLine(1).Should().Be(new LogLine(1, 1, "foo", LevelFlags.Info, t1));
+			logFile.GetLine(2).Should().Be(new LogLine(2, 1, "bar", LevelFlags.Info, t1));
+		}
+
+		[Test]
+		public void TestAddMultilineEntry3()
+		{
+			var logFile = new InMemoryLogFile();
+			var t1 = new DateTime(2017, 11, 26, 11, 56, 0);
+			logFile.AddMultilineEntry(LevelFlags.Info, t1, "foo", "bar");
+			var t2 = new DateTime(2017, 11, 26, 11, 57, 0);
+			logFile.AddMultilineEntry(LevelFlags.Warning, t2, "H", "e", "l", "l", "o");
+			logFile.Count.Should().Be(7);
+			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "foo", LevelFlags.Info, t1));
+			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "bar", LevelFlags.Info, t1));
+			logFile.GetLine(2).Should().Be(new LogLine(2, 1, "H", LevelFlags.Warning, t2));
+			logFile.GetLine(3).Should().Be(new LogLine(3, 1, "e", LevelFlags.Warning, t2));
+			logFile.GetLine(4).Should().Be(new LogLine(4, 1, "l", LevelFlags.Warning, t2));
+			logFile.GetLine(5).Should().Be(new LogLine(5, 1, "l", LevelFlags.Warning, t2));
+			logFile.GetLine(6).Should().Be(new LogLine(6, 1, "o", LevelFlags.Warning, t2));
+		}
+
+		[Test]
+		public void TestAddMultilineEntry4()
+		{
+			var logFile = new InMemoryLogFile();
+
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 2);
+
+			var t1 = new DateTime(2017, 11, 26, 11, 56, 0);
+			logFile.AddMultilineEntry(LevelFlags.Info, t1, "foo", "bar");
+
+			_modifications.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 2)
+			});
+		}
+
+		[Test]
 		[Description("Verifies that a listener is notified of changes immediately while being added")]
 		public void TestAddListener1()
 		{
@@ -157,6 +215,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.MaxCharactersPerLine.Should().Be(2);
 			logFile.Clear();
 			logFile.MaxCharactersPerLine.Should().Be(0);
+		}
+
+		[Test]
+		[Description("Verifies that a reset event is fired when the log file is cleared")]
+		public void TestClear4()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hi", LevelFlags.Info);
+			logFile.MaxCharactersPerLine.Should().Be(2);
+
+			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
+			logFile.Clear();
+			_modifications.Should().EndWith(LogFileSection.Reset);
 		}
 
 		[Test]
