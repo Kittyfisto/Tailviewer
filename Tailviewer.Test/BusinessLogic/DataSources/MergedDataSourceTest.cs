@@ -12,16 +12,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 	[TestFixture]
 	public sealed class MergedDataSourceTest
 	{
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
+			_scheduler = new ManualTaskScheduler();
+			_logFileFactory = new PluginLogFileFactory(_scheduler);
 			_settings = new DataSource
 				{
 					Id = DataSourceId.CreateNew(),
@@ -137,6 +132,26 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestCtor5()
 		{
 			_merged.DisplayMode.Should().Be(_settings.MergedDataSourceDisplayMode);
+		}
+
+		[Test]
+		public void TestDispose1()
+		{
+			_merged.Dispose();
+			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
+		}
+
+		[Test]
+		public void TestDispose2()
+		{
+			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			_merged.Add(dataSource);
+			_merged.Remove(dataSource);
+			dataSource.Dispose();
+
+			_merged.Dispose();
+			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
 		}
 
 		[Test]
