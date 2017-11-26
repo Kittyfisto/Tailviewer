@@ -141,8 +141,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			{
 				_scheduler.Run(count: 3);
 
-				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
-				dataSource.UnfilteredLogFile.Count.Should().Be(6);
+				dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+				dataSource.FilteredLogFile.Count.Should().Be(6);
+
 				LogLine[] lines = dataSource.FilteredLogFile.GetSection(new LogFileSection(0, 6));
 				lines[0].Message.Should().Be("DEBUG ERROR WARN FATAL INFO");
 				lines[0].Level.Should().Be(LevelFlags.Debug, "Because DEBUG is the first level to appear in the line");
