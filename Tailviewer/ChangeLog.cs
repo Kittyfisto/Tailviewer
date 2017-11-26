@@ -58,6 +58,7 @@ namespace Tailviewer
 			};
 			var bugfixes = new[]
 			{
+				"Fixed merging multiline files",
 				"Fixed item selection after drag 'n drop"
 			};
 			var misc = new string[]
