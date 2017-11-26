@@ -25,8 +25,8 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private const int BatchSize = 10000;
-		private readonly LogLine[] _buffer;
+		private const int MaximumBatchSize = 10000;
+
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -56,11 +56,9 @@ namespace Tailviewer.Core.LogFiles
 			//_allModifications = new List<LogFileSection>();
 			_indices = new List<LogEntryInfo>();
 			_currentLogEntry = new LogEntryInfo(-1, 0);
-
-			_buffer = new LogLine[BatchSize];
-
+			
 			_source = source;
-			_source.AddListener(this, maximumWaitTime, BatchSize);
+			_source.AddListener(this, maximumWaitTime, MaximumBatchSize);
 			StartTask();
 		}
 
@@ -183,15 +181,16 @@ namespace Tailviewer.Core.LogFiles
 
 			if (!_fullSourceSection.IsEndOfSection(_currentSourceIndex))
 			{
-				var remaining = Math.Min(_fullSourceSection.Count - _currentSourceIndex, BatchSize);
-				_source.GetSection(new LogFileSection(_currentSourceIndex, remaining), _buffer);
+				var remaining = Math.Min(_fullSourceSection.Count - _currentSourceIndex, MaximumBatchSize);
+				var buffer = new LogLine[remaining];
+				_source.GetSection(new LogFileSection(_currentSourceIndex, remaining), buffer);
 				LogLineIndex? resetIndex = null;
 
 				lock (_indices)
 				{
 					for (var i = 0; i < remaining; ++i)
 					{
-						var line = _buffer[i];
+						var line = buffer[i];
 						if (_currentLogEntry.EntryIndex.IsInvalid ||
 						    line.Level != LevelFlags.None ||
 						    _currentLogEntryLevel == LevelFlags.None)
