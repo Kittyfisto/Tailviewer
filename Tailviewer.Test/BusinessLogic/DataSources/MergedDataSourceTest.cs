@@ -2,6 +2,7 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
@@ -15,19 +16,19 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_taskScheduler = new ManualTaskScheduler();
+			_logFileFactory = new PluginLogFileFactory(_taskScheduler);
 			_settings = new DataSource
 				{
 					Id = DataSourceId.CreateNew(),
 					MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode
 				};
-			_merged = new MergedDataSource(_scheduler, _settings) {IsSingleLine = true};
+			_merged = new MergedDataSource(_taskScheduler, _settings) {IsSingleLine = true};
 		}
 
 		private MergedDataSource _merged;
 		private DataSource _settings;
-		private ManualTaskScheduler _scheduler;
+		private ManualTaskScheduler _taskScheduler;
 		private PluginLogFileFactory _logFileFactory;
 
 		[Test]
@@ -35,7 +36,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			settings.ParentId.Should()
 			        .Be(_settings.Id, "Because the parent-child relationship should've been declared via ParentId");
@@ -46,7 +47,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd2()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.UnfilteredLogFile.Should().NotBeNull();
 			_merged.UnfilteredLogFile.Should().BeOfType<MergedLogFile>();
@@ -58,7 +59,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestAdd3()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 
 			_merged.Add(dataSource);
@@ -72,7 +73,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestMultiline()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 
 			_merged.Add(dataSource);
@@ -89,7 +90,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			ILogFile logFile1 = _merged.UnfilteredLogFile;
 			_merged.SearchTerm = "foo";
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
+			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 			ILogFile logFile2 = _merged.UnfilteredLogFile;
 
@@ -101,7 +102,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that creating a data-source without specifying the settings object is not allowed")]
 		public void TestCtor1()
 		{
-			new Action(() => new MergedDataSource(_scheduler, null))
+			new Action(() => new MergedDataSource(_taskScheduler, null))
 				.ShouldThrow<ArgumentNullException>();
 		}
 
@@ -109,7 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that creating a data-source without assinging a GUID is not allowed")]
 		public void TestCtor2()
 		{
-			new Action(() => new MergedDataSource(_scheduler, new DataSource()))
+			new Action(() => new MergedDataSource(_taskScheduler, new DataSource()))
 				.ShouldThrow<ArgumentException>();
 		}
 
@@ -138,20 +139,20 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestDispose1()
 		{
 			_merged.Dispose();
-			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
+			_taskScheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
 		}
 
 		[Test]
 		public void TestDispose2()
 		{
 			var settings = new DataSource("foo") { Id = DataSourceId.CreateNew() };
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Dispose();
 
 			_merged.Dispose();
-			_scheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
+			_taskScheduler.PeriodicTaskCount.Should().Be(0, "because all tasks should've been removed");
 		}
 
 		[Test]
@@ -160,7 +161,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove1()
 		{
 			var settings = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings);
+			var dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings);
 			_merged.Add(dataSource);
 			_merged.Remove(dataSource);
 			dataSource.Settings.ParentId.Should().Be(DataSourceId.Empty);
@@ -171,11 +172,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestRemove2()
 		{
 			var settings1 = new DataSource("foo") {Id = DataSourceId.CreateNew()};
-			var dataSource1 = new SingleDataSource(_logFileFactory, _scheduler, settings1);
+			var dataSource1 = new SingleDataSource(_logFileFactory, _taskScheduler, settings1);
 			_merged.Add(dataSource1);
 
 			var settings2 = new DataSource("bar") {Id = DataSourceId.CreateNew()};
-			var dataSource2 = new SingleDataSource(_logFileFactory, _scheduler, settings2);
+			var dataSource2 = new SingleDataSource(_logFileFactory, _taskScheduler, settings2);
 			_merged.Add(dataSource2);
 
 			_merged.Remove(dataSource2);
@@ -192,6 +193,46 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			_merged.DisplayMode = DataSourceDisplayMode.Filename;
 			_settings.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.Filename);
+		}
+
+		[Test]
+		[Description("Verifies that MergedDataSource and SingleDataSource can work in conjunction to provide a merged view of multi line log files")]
+		public void TestMergeMultiline1()
+		{
+			var logFile1 = new InMemoryLogFile();
+			var source1Id = new LogLineSourceId(0);
+			var source1 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile1,
+			                                   TimeSpan.Zero);
+
+			var logFile2 = new InMemoryLogFile();
+			var source2Id = new LogLineSourceId(0);
+			var source2 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile2,
+			                                   TimeSpan.Zero);
+
+			_merged.IsSingleLine = false;
+			_merged.Add(source1);
+			_merged.Add(source2);
+
+			var t1 = new DateTime(2017, 11, 26, 14, 26, 0);
+			logFile1.AddEntry("Hello, World!", LevelFlags.Info, t1);
+
+			var t2 = new DateTime(2017, 11, 26, 14, 27, 0);
+			logFile2.AddEntry("foo", LevelFlags.Trace, t2);
+			logFile2.AddEntry("bar", LevelFlags.None);
+
+			var t3 = new DateTime(2017, 11, 26, 14, 28, 0);
+			logFile1.AddEntry("Houston, we have a problem", LevelFlags.Warning, t3);
+
+			_taskScheduler.Run(4); //< There's a few proxies involved and thus one round won't do it
+			_merged.FilteredLogFile.Count.Should().Be(4, "because there are four lines in total, each of which has a timestamp");
+			_merged.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Hello, World!", LevelFlags.Info, t1));
+			_merged.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "foo", LevelFlags.Trace, t2));
+			_merged.FilteredLogFile.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "bar", LevelFlags.Trace, t2));
+			_merged.FilteredLogFile.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "Houston, we have a problem", LevelFlags.Warning, t3));
 		}
 	}
 }
