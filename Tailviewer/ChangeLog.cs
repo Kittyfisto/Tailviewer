@@ -56,9 +56,9 @@ namespace Tailviewer
 				"Navigate to data source (CTRL+T)",
 				"Go to line (CTRL+G)"
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
-				
+				"Fixed item selection after drag 'n drop"
 			};
 			var misc = new string[]
 			{
