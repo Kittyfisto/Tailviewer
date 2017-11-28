@@ -33,6 +33,8 @@ namespace Tailviewer.Test.Settings
 			clone.QuickFilters.Should().NotBeSameAs(settings.QuickFilters);
 			clone.Export.Should().NotBeNull();
 			clone.Export.Should().NotBeSameAs(settings.Export);
+			clone.LogViewer.Should().NotBeNull();
+			clone.LogViewer.Should().NotBeSameAs(settings.LogViewer);
 		}
 
 		[Test]

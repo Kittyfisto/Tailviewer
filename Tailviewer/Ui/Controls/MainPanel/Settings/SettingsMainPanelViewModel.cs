@@ -106,6 +106,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			}
 		}
 
+		public int ScrollSpeed
+		{
+			get { return _settings.LogViewer.LinesScrolledPerWheelTick; }
+			set
+			{
+				if (value == _settings.LogViewer.LinesScrolledPerWheelTick)
+					return;
+
+				_settings.LogViewer.LinesScrolledPerWheelTick = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
+
 		public bool AlwaysOnTop
 		{
 			get { return _settings.MainWindow.AlwaysOnTop; }

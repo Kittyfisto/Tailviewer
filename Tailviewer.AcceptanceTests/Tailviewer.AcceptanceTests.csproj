@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\WpfUnit.0.1.0.12-alpha\lib\net45\0Harmony.dll</HintPath>
+      <HintPath>..\packages\WpfUnit.0.1.0.14-alpha\lib\net45\0Harmony.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -89,8 +89,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="WpfUnit, Version=0.1.0.12, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\WpfUnit.0.1.0.12-alpha\lib\net45\WpfUnit.dll</HintPath>
+    <Reference Include="WpfUnit, Version=0.1.0.14, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfUnit.0.1.0.14-alpha\lib\net45\WpfUnit.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

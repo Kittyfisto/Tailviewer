@@ -38,7 +38,8 @@
                 TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
                 ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
                 DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
-                LogView="{Binding CurrentDataSourceLogView}" />
+                LogView="{Binding CurrentDataSourceLogView}"
+                Settings="{Binding Settings}"/>
 
             <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
                                     Placement="Center"

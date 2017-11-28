@@ -85,6 +85,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			"MergedDataSourceDisplayMode", typeof(DataSourceDisplayMode), typeof(LogViewerControl),
 			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
 
+		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
+		                                                "Settings", typeof(ILogViewerSettings), typeof(LogViewerControl), new PropertyMetadata(null));
+
 		private static void OnMergedDataSourceDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) d).OnMergedDataSourceDisplayModeChanged((DataSourceDisplayMode)args.NewValue);
@@ -216,6 +219,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (int) GetValue(LogEntryCountProperty); }
 			set { SetValue(LogEntryCountProperty, value); }
+		}
+
+		public ILogViewerSettings Settings
+		{
+			get { return (ILogViewerSettings)GetValue(SettingsProperty); }
+			set { SetValue(SettingsProperty, value); }
 		}
 
 		public IEnumerable<LogLineIndex> SelectedIndices => PART_ListView.SelectedIndices;

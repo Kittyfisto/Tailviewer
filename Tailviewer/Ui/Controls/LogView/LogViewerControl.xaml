@@ -198,6 +198,7 @@
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
             MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+            Settings="{Binding Settings, ElementName=This}"
             SnapsToDevicePixels="True" />
 
         <StackPanel Grid.Row="3" VerticalAlignment="Center">

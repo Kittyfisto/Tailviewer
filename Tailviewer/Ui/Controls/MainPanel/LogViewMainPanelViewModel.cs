@@ -317,6 +317,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		public IEnumerable<IDataSourceViewModel> RecentFiles => _dataSources.Observable;
 
+		public ILogViewerSettings Settings => _applicationSettings.LogViewer;
+
 		public override void Update()
 		{
 			CurrentDataSourceLogView?.Update();

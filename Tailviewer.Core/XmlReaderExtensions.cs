@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System.Globalization;
+using System.Xml;
+using log4net;
 using Metrolib;
 
 namespace Tailviewer.Core
@@ -28,6 +30,52 @@ namespace Tailviewer.Core
 		{
 			var guid = reader.ReadContentAsGuid();
 			return new QuickFilterId(guid);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <param name="attributeName"></param>
+		/// <param name="log"></param>
+		/// <param name="defaultValue"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static void ReadAttributeAsInt(this XmlReader reader, string attributeName, ILog log, int defaultValue, out int value)
+		{
+			if (!TryMoveToAttribute(reader, attributeName, log))
+			{
+				value = defaultValue;
+			}
+			else
+			{
+				var content = reader.ReadContentAsString();
+				if (!int.TryParse(content, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
+				{
+					log.WarnFormat("Cannot parse value '{0}' as an integer, restoring default value for attribute '{1}' instead",
+					               content,
+					               attributeName);
+					value = defaultValue;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <param name="attributeName"></param>
+		/// <param name="log"></param>
+		/// <returns></returns>
+		private static bool TryMoveToAttribute(this XmlReader reader, string attributeName, ILog log)
+		{
+			if (!reader.MoveToAttribute(attributeName))
+			{
+				log.InfoFormat("Cannot find attribute '{0}', restoring default value instead", attributeName);
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

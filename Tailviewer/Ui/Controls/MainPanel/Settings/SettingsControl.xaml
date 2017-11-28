@@ -11,6 +11,12 @@
              Foreground="#333333"
              Background="White">
 
+    <UserControl.Resources>
+        <DataTemplate x:Key="HeaderDataTemplate">
+            <TextBlock FontSize="22" Text="{Binding}" />
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,21 +25,35 @@
             </Grid.ColumnDefinitions>
 
             <Grid>
-                <controls:FlatGroupBox Header="Export" VerticalAlignment="Top" Margin="8">
-                    <controls:FlatGroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock FontSize="22" Text="{Binding}" />
-                        </DataTemplate>
-                    </controls:FlatGroupBox.HeaderTemplate>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                
+                <controls:FlatGroupBox Header="Export" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Export folder"
-                                   Margin="0,6,6,6"/>
+                        <TextBlock Text="Export folder" Margin="0,6,6,6"/>
                         <controls:EditorTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                    Grid.Column="1"/>
+                    </Grid>
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="1" Header="Log Viewer" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Scroll speed" Margin="0,6,6,6"/>
+                        <controls:EditorTextBox Text="{Binding ScrollSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Grid.Column="1"/>
                     </Grid>
                 </controls:FlatGroupBox>
             </Grid>
@@ -45,12 +65,8 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <controls:FlatGroupBox Header="Window" VerticalAlignment="Top" Margin="8">
-                    <controls:FlatGroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock FontSize="22" Text="{Binding}" />
-                        </DataTemplate>
-                    </controls:FlatGroupBox.HeaderTemplate>
+                <controls:FlatGroupBox Header="Window" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
                     </Grid>

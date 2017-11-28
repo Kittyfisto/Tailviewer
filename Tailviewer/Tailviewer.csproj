@@ -91,6 +91,8 @@
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
+    <Compile Include="Settings\ILogViewerSettings.cs" />
+    <Compile Include="Settings\LogViewerSettings.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />

@@ -61,9 +61,10 @@ namespace Tailviewer
 				"Fixed merging multiline files",
 				"Fixed item selection after drag 'n drop"
 			};
-			var misc = new string[]
+			var misc = new[]
 			{
-				
+				"Changed default scrollspeed to 2 lines per wheel tick",
+				"Scrollspeed can be adjusted in settings"
 			};
 			var releaseDate = new DateTime(2017, 12, 1);
 			var version = new Version(0, 7, 1);

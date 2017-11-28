@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 using WpfUnit;
 
@@ -22,11 +23,13 @@ namespace Tailviewer.Test.Ui.Controls
 		private List<LogLine> _lines;
 		private List<ILogFileListener> _listeners;
 		private TestKeyboard _keyboard;
+		private TestMouse _mouse;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_keyboard = new TestKeyboard();
+			_mouse = new TestMouse();
 
 			_control = new LogEntryListView
 				{
@@ -334,9 +337,46 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.VerticalScrollBar.Value.Should().BeLessThan(_control.VerticalScrollBar.Maximum);
 			_control.FollowTail.Should().BeFalse();
 
-			_control.TextCanvasOnMouseWheelDown();
+			_mouse.RotateMouseWheelDown(_control.PartTextCanvas);
 			_control.VerticalScrollBar.Value.Should().Be(_control.VerticalScrollBar.Maximum);
 			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
+		}
+
+		[Test]
+		[Description("Verifies that if no settings are present, then the default scroll speed is used")]
+		public void TestMouseWheelDown2()
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(0, "because the control should display from the first line onwards");
+			_control.Settings = null;
+			_mouse.RotateMouseWheelDown(_control.PartTextCanvas);
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should()
+			        .Be(2, "because we should've scrolled down by the default amount of lines");
+		}
+
+		[Test]
+		[Description("Verifies that the control scrolls by the configured amount of lines")]
+		public void TestMouseWheelDown3([Values(1, 2, 3, 4, 5)] int linesToScroll)
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(0, "because the control should display from the first line onwards");
+			_control.Settings = new LogViewerSettings
+			{
+				LinesScrolledPerWheelTick = linesToScroll
+			};
+			_mouse.RotateMouseWheelDown(_control.PartTextCanvas);
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should()
+			        .Be(linesToScroll, "because we should've scrolled down by the configured amount of lines");
 		}
 
 		[Test]
@@ -349,13 +389,56 @@ namespace Tailviewer.Test.Ui.Controls
 			}
 			_control.LogFile = _logFile.Object;
 
-			_control.TextCanvasOnMouseWheelDown();
+			_mouse.RotateMouseWheelDown(_control.PartTextCanvas);
 			_control.VerticalScrollBar.Value.Should().Be(_control.VerticalScrollBar.Maximum);
 			_control.FollowTail.Should().BeTrue();
 
-			_control.TextCanvasOnMouseWheelUp();
+			_mouse.RotateMouseWheelUp(_control.PartTextCanvas);
 			_control.VerticalScrollBar.Value.Should().BeLessThan(_control.VerticalScrollBar.Maximum);
 			_control.FollowTail.Should().BeFalse("because scrolling up shall automatically disable follow tail");
+		}
+
+		[Test]
+		[Description("Verifies that the control scrolls by the default amount of lines when no settings are available")]
+		public void TestMouseWheelUp2()
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+			_keyboard.Press(Key.LeftCtrl);
+			_keyboard.Click(_control.PartTextCanvas, Key.End);
+
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(50, "because the control should display the last lines of the log file");
+			_control.PartTextCanvas.CurrentlyVisibleSection.Count.Should().Be(50, "because the control should display the last lines of the log file");
+			_control.Settings = null;
+			_mouse.RotateMouseWheelUp(_control.PartTextCanvas);
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should()
+			        .Be(48, "because we should've scrolled up by the default amount of lines");
+		}
+
+		[Test]
+		[Description("Verifies that the control scrolls by the configured amount of lines")]
+		public void TestMouseWheelUp3([Values(1, 2, 3, 4, 5)] int linesToScroll)
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Info));
+			}
+			_control.LogFile = _logFile.Object;
+			_keyboard.Press(Key.LeftCtrl);
+			_keyboard.Click(_control.PartTextCanvas, Key.End);
+
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should().Be(50, "because the control should display the last lines of the log file");
+			_control.PartTextCanvas.CurrentlyVisibleSection.Count.Should().Be(50, "because the control should display the last lines of the log file");
+			_control.Settings = new LogViewerSettings
+			{
+				LinesScrolledPerWheelTick = linesToScroll
+			};
+			_mouse.RotateMouseWheelUp(_control.PartTextCanvas);
+			_control.PartTextCanvas.CurrentlyVisibleSection.Index.Should()
+			        .Be(50 - linesToScroll, "because we should've scrolled up by the configured amount of lines");
 		}
 
 		[Test]

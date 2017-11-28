@@ -1,13 +1,49 @@
 ﻿namespace Tailviewer.Settings
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public interface IApplicationSettings
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		IAutoUpdateSettings AutoUpdate { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
 		IMainWindowSettings MainWindow { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
 		IDataSourcesSettings DataSources { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		ILogViewerSettings LogViewer { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
 		IExportSettings Export { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
 		void SaveAsync();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		bool Save();
+
+		/// <summary>
+		/// 
+		/// </summary>
 		void Restore();
 
 		/// <summary>

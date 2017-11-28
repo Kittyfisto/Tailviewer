@@ -58,6 +58,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			"MergedDataSourceDisplayMode", typeof(DataSourceDisplayMode), typeof(LogEntryListView),
 			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
 
+		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
+		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null));
+
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 		private readonly DataSourceCanvas _dataSourceCanvas;
 		private readonly FlatScrollBar _horizontalScrollBar;
@@ -225,6 +228,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { PartTextCanvas.SelectedSearchResultIndex = value; }
 		}
 
+		public ILogViewerSettings Settings
+		{
+			get { return (ILogViewerSettings)GetValue(SettingsProperty); }
+			set { SetValue(SettingsProperty, value); }
+		}
+
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			var width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
@@ -372,10 +381,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			UpdateScrollViewerRegions();
 		}
 
-		public void TextCanvasOnMouseWheelUp()
+		private void TextCanvasOnMouseWheelUp()
 		{
 			var delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
-			var toScroll = Math.Min(delta, TextHelper.LineHeight);
+			var linesToScroll = Settings?.LinesScrolledPerWheelTick ?? LogViewerSettings.DefaultLinesScrolledPerWheelTick;
+			var heightToScroll = linesToScroll * TextHelper.LineHeight;
+			var toScroll = Math.Min(delta, heightToScroll);
 
 			if (toScroll > 0)
 			{
@@ -384,11 +395,15 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public void TextCanvasOnMouseWheelDown()
+		private void TextCanvasOnMouseWheelDown()
 		{
 			var delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
-			var toScroll = Math.Min(delta, TextHelper.LineHeight);
-			_verticalScrollBar.Value += toScroll;
+			var linesToScroll = Settings?.LinesScrolledPerWheelTick ?? LogViewerSettings.DefaultLinesScrolledPerWheelTick;
+			var heightToScroll = linesToScroll * TextHelper.LineHeight;
+			// We might not be able to scroll that far because there's less content available so we'll have to clamp
+			// that value...
+			var maximumPossibleScroll = Math.Min(delta, heightToScroll);
+			_verticalScrollBar.Value += maximumPossibleScroll;
 
 			if (_verticalScrollBar.Value >= _verticalScrollBar.Maximum)
 				FollowTail = true;
