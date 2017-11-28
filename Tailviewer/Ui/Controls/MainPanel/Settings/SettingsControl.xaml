@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:settings="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Settings"
+             xmlns:tailviewer="clr-namespace:Tailviewer"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance settings:SettingsMainPanelViewModel}"
@@ -52,8 +53,17 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Scroll speed" Margin="0,6,6,6"/>
-                        <controls:EditorTextBox Text="{Binding ScrollSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Grid.Column="1"/>
+                        <controls:EditorTextBox Grid.Column="1">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="ScrollSpeed"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
                     </Grid>
                 </controls:FlatGroupBox>
             </Grid>
