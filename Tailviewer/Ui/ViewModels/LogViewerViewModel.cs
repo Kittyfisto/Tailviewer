@@ -269,7 +269,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = "The data source is empty";
 					NoEntriesSubtext = null;
 				}
-				else if (dataSource.LevelFilter == LevelFlags.None)
+				else if (dataSource.LevelFilter != LevelFlags.All)
 				{
 					NoEntriesExplanation = "Not a single log entry matches the level selection";
 					NoEntriesSubtext = null;

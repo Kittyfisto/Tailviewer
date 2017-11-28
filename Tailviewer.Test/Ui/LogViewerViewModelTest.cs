@@ -114,8 +114,30 @@ namespace Tailviewer.Test.Ui
 			model.NoEntriesSubtext.Should().BeNull();
 		}
 
+		/// <summary>
+		/// </summary>
+		/// <remarks>
+		///     TODO: This should actually contain every possible combination of values besides <see cref="LevelFlags.All" />
+		///     but I'm lazy...
+		/// </remarks>
+		public static IEnumerable<LevelFlags> NotAll => new[]
+		{
+			LevelFlags.None,
+			LevelFlags.Trace,
+			LevelFlags.Debug,
+			LevelFlags.Info,
+			LevelFlags.Warning,
+			LevelFlags.Error,
+			LevelFlags.Fatal,
+			LevelFlags.Debug | LevelFlags.Trace,
+			LevelFlags.Debug | LevelFlags.Info,
+			LevelFlags.Debug | LevelFlags.Warning,
+			LevelFlags.Debug | LevelFlags.Error,
+			LevelFlags.Debug | LevelFlags.Fatal,
+		};
+
 		[Test]
-		public void TestLevelFilter()
+		public void TestLevelFilter1([ValueSource(nameof(NotAll))] LevelFlags flags)
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
@@ -125,7 +147,7 @@ namespace Tailviewer.Test.Ui
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FilteredLogFile).Returns(filteredLogFile.Object);
-			dataSource.Setup(x => x.LevelFilter).Returns(LevelFlags.None);
+			dataSource.Setup(x => x.LevelFilter).Returns(flags);
 			dataSource.Setup(x => x.Search).Returns(new Mock<ILogFileSearch>().Object);
 
 			var dataSourceModel = new SingleDataSourceViewModel(dataSource.Object);
