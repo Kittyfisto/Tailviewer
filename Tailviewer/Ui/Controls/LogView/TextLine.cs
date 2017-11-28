@@ -248,6 +248,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			Brush regularBackgroundBrush = BackgroundBrush;
 
 			double x = xOffset;
+
 			for (int i = 0; i < _segments.Count; ++i)
 			{
 				Brush brush;
@@ -266,8 +267,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				if (brush != null)
 				{
 					var rect = new Rect(x, y,
-					                    segment.Width,
-					                    TextHelper.LineHeight);
+						                segment.Width,
+						                TextHelper.LineHeight);
 					drawingContext.DrawRectangle(brush, null, rect);
 				}
 
@@ -275,17 +276,14 @@ namespace Tailviewer.Ui.Controls.LogView
 				drawingContext.DrawText(segment.FormattedText, topLeft);
 
 				x += segment.Width;
+			}
 
-				if (i == _segments.Count - 1)
-				{
-					if (x < actualWidth && regularBackgroundBrush != null)
-					{
-						var rect = new Rect(x, y,
-											actualWidth - x,
-											TextHelper.LineHeight);
-						drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
-					}
-				}
+			if (x < actualWidth && regularBackgroundBrush != null)
+			{
+				var rect = new Rect(x, y,
+				                    actualWidth - x,
+				                    TextHelper.LineHeight);
+				drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
 			}
 		}
 	}
