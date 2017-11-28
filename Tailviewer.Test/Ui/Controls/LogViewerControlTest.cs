@@ -515,5 +515,15 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.MergedDataSourceDisplayMode.Should().Be(displayMode, "because the view model determines the initial display mode and thus the control should just use that");
 			dataSource.Object.DisplayMode.Should().Be(displayMode, "because the display mode of the view model shouldn't have been changed in the process");
 		}
+
+		[Test]
+		[Description("Verifies that the settings are simply forwarded to the LogEntryListView")]
+		public void TestChangeSettings()
+		{
+			var settings = new LogViewerSettings();
+
+			_control.Settings = settings;
+			_control.PART_ListView.Settings.Should().BeSameAs(settings);
+		}
 	}
 }

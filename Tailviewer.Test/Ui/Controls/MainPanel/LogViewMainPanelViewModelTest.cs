@@ -42,6 +42,14 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			_settings = new Mock<IApplicationSettings>();
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);
 			_settings.Setup(x => x.MainWindow).Returns(new Mock<IMainWindowSettings>().Object);
+			_settings.Setup(x => x.LogViewer).Returns(new Mock<ILogViewerSettings>().Object);
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			model.Settings.Should().BeSameAs(_settings.Object.LogViewer);
 		}
 
 		[Test]
