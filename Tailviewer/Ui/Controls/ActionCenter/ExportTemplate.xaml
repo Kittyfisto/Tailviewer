@@ -53,7 +53,7 @@
                   Visibility="{Binding IsSuccessful, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                 <TextBlock Visibility="{Binding IsFinished, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                            TextWrapping="Wrap">
-                    <textBlocks:HyperlinkRun Text="{Binding FullExportFilename}"
+                    <textBlocks:HyperlinkRun Text="{Binding FullExportFilename, Mode=OneWay}"
                                              ProcessName="explorer.exe"
                                              ProcessStartArguments="{Binding FullExportFilename, StringFormat='/select, {0}'}" />
                 </TextBlock>
