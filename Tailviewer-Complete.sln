@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver", "Tail
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Test", "Tailviewer.Archiver.Test\Tailviewer.Archiver.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogFile2Playground", "LogFile2Playground\LogFile2Playground.csproj", "{26585232-425A-4234-A595-B65F34374F67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{32B4C733-2E01-4633-A163-D947E0743946}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32B4C733-2E01-4633-A163-D947E0743946}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32B4C733-2E01-4633-A163-D947E0743946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26585232-425A-4234-A595-B65F34374F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26585232-425A-4234-A595-B65F34374F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26585232-425A-4234-A595-B65F34374F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26585232-425A-4234-A595-B65F34374F67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,5 +138,6 @@ Global
 		{7C8AC96A-F577-4C33-BD93-DF7C23359969} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 		{8FE68946-2BAA-44AE-8984-E5B71DE7E147} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 		{32B4C733-2E01-4633-A163-D947E0743946} = {790E58D1-E0A7-4B82-B617-3A5D442B8CC0}
+		{26585232-425A-4234-A595-B65F34374F67} = {AA1F1722-A796-4C5B-B3B6-29F3620DC8ED}
 	EndGlobalSection
 EndGlobal
