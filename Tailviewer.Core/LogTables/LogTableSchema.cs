@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Tailviewer.Core.LogTables
 {
-	public sealed class LogTableSchema : ILogTableSchema
+	internal sealed class LogTableSchema : ILogTableSchema
 	{
 		private readonly IColumnHeader[] _columns;
 

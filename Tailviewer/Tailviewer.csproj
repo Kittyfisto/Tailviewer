@@ -91,6 +91,8 @@
     <Compile Include="ArgumentParser.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />

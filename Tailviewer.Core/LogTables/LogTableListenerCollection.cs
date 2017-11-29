@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tailviewer.Core.LogTables
 {
-	public sealed class LogTableListenerCollection
+	internal sealed class LogTableListenerCollection
 	{
 		private readonly Dictionary<ILogTableListener, LogTableListenerNotifier> _notifiers;
 		private readonly object _syncRoot;

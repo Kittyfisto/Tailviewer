@@ -15,6 +15,7 @@ using Tailviewer.Ui.ViewModels;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Count.BusinessLogic;

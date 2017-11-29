@@ -115,6 +115,9 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int Count { get; }
 
 		/// <inheritdoc />
+		public abstract void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer);
+
+		/// <inheritdoc />
 		public abstract void GetSection(LogFileSection section, LogLine[] dest);
 
 		#region Index Translation

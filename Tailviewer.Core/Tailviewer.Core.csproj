@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\Tailviewer.Core.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
@@ -105,9 +107,10 @@
     <Compile Include="LogDataCache.cs" />
     <Compile Include="LogFiles\AbstractLogFile.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
-    <Compile Include="LogFiles\ILogFileFactory.cs" />
     <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
+    <Compile Include="LogFiles\LogFileColumn.cs" />
+    <Compile Include="LogFiles\LogFileColumns.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
     <Compile Include="LogFiles\LogFileListenerCollection.cs" />
     <Compile Include="LogFiles\LogFileListenerNotifier.cs" />
@@ -116,7 +119,6 @@
     <Compile Include="LogFiles\MultiLineLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
-    <Compile Include="LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />
     <Compile Include="LogLineMatch.cs" />
     <Compile Include="LogTables\ColumnType.cs" />

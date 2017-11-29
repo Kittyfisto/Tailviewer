@@ -45,6 +45,12 @@ namespace Tailviewer.Core.LogFiles
 		private DateTime _created;
 		//private readonly List<LogFileSection> _allModifications;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="taskScheduler"></param>
+		/// <param name="source"></param>
+		/// <param name="maximumWaitTime"></param>
 		public MultiLineLogFile(ITaskScheduler taskScheduler, ILogFile source, TimeSpan maximumWaitTime)
 			: base(taskScheduler)
 		{
@@ -98,6 +104,12 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override int OriginalCount => _source.OriginalCount;
+
+		/// <inheritdoc />
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		{
+			throw new NotImplementedException();
+		}
 
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)

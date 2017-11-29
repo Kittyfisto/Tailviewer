@@ -3,17 +3,33 @@ using System.Text.RegularExpressions;
 
 namespace Tailviewer.Core
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public struct LogLineMatch : IEquatable<LogLineMatch>
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly int Count;
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly int Index;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public LogLineMatch(int index, int count)
 		{
 			Index = index;
 			Count = count;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public LogLineMatch(Match regexMatch)
 		{
 			Index = regexMatch.Index;
@@ -42,11 +58,23 @@ namespace Tailviewer.Core
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogLineMatch left, LogLineMatch right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogLineMatch left, LogLineMatch right)
 		{
 			return !left.Equals(right);

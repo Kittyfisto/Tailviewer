@@ -1,7 +1,8 @@
-using Tailviewer.BusinessLogic.LogFiles;
-
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.BusinessLogic.LogFiles
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public interface ILogFileFactory
 	{
 		/// <summary>

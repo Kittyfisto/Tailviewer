@@ -32,6 +32,11 @@ namespace Tailviewer.Core.LogFiles
 		private bool _isDisposed;
 		private readonly TimeSpan _maximumWaitTime;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="taskScheduler"></param>
+		/// <param name="maximumWaitTime"></param>
 		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime)
 		{
 			if (taskScheduler == null)
@@ -45,6 +50,12 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 		}
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="taskScheduler"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="innerLogFile"></param>
 		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogFile innerLogFile)
 			: this(taskScheduler, maximumWaitTime)
 		{
@@ -99,6 +110,9 @@ namespace Tailviewer.Core.LogFiles
 			return TimeSpan.FromMilliseconds(10);
 		}
 
+		/// <summary>
+		///     The log file represented by this proxy.
+		/// </summary>
 		public ILogFile InnerLogFile
 		{
 			get { return _innerLogFile; }
@@ -129,7 +143,9 @@ namespace Tailviewer.Core.LogFiles
 			_isDisposed = true;
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		///     Whether or not <see cref="Dispose" /> has been called already.
+		/// </summary>
 		public bool IsDisposed => _isDisposed;
 
 		/// <inheritdoc />
@@ -239,6 +255,20 @@ namespace Tailviewer.Core.LogFiles
 		public void RemoveListener(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
+		}
+
+		/// <inheritdoc />
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		{
+			ILogFile logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetColumn(section, column, buffer);
+			}
+			else
+			{
+				throw new IndexOutOfRangeException();
+			}
 		}
 
 		/// <inheritdoc />

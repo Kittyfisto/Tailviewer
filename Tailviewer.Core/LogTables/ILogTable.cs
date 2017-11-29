@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogTables
@@ -40,7 +39,19 @@ namespace Tailviewer.Core.LogTables
 		/// <returns></returns>
 		ITask<LogEntry> this[LogEntryIndex index] { get; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="listener"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="maximumLineCount"></param>
 		void AddListener(ILogTableListener listener, TimeSpan maximumWaitTime, int maximumLineCount);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="listener"></param>
+		/// <returns></returns>
 		bool RemoveListener(ILogTableListener listener);
 	}
 }

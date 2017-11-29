@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Core.LogTables
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public sealed class InMemoryLogTable
 		: ILogTable
 	{
@@ -16,6 +18,10 @@ namespace Tailviewer.Core.LogTables
 		private readonly LogTableListenerCollection _listeners;
 		private readonly object _syncRoot;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="columns"></param>
 		public InMemoryLogTable(params IColumnHeader[] columns)
 		{
 			_listeners = new LogTableListenerCollection(this);
@@ -65,7 +71,10 @@ namespace Tailviewer.Core.LogTables
 		{
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
 		public void AddEntry(LogEntry entry)
 		{
 			lock (_syncRoot)
@@ -76,7 +85,10 @@ namespace Tailviewer.Core.LogTables
 			}
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
 		public void RemoveFrom(LogEntryIndex index)
 		{
 			lock (_syncRoot)
@@ -105,6 +117,9 @@ namespace Tailviewer.Core.LogTables
 			LastModified = DateTime.Now;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public void Clear()
 		{
 			lock (_syncRoot)
@@ -113,7 +128,7 @@ namespace Tailviewer.Core.LogTables
 				if (count > 0)
 				{
 					_entries.Clear();
-					_listeners.Invalidate(0, count);
+					_listeners.Invalidate(firstIndex: 0, count: count);
 					Touch();
 				}
 			}

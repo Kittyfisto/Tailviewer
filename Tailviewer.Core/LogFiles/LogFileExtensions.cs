@@ -5,8 +5,32 @@ using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Core.LogFiles
 {
+	/// <summary>
+	///     Extension methods to the <see cref="ILogFile" /> interface.
+	/// </summary>
 	public static class LogFileExtensions
 	{
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection section, ILogFileColumn<T> column)
+		{
+			var cells = new T[section.Count];
+			logFile.GetColumn(section, column, cells);
+			return cells;
+		}
+
+		/// <summary>
+		///     Retrieves a list of log lines from this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <returns></returns>
 		public static LogLine[] GetSection(this ILogFile logFile, LogFileSection section)
 		{
 			var entries = new LogLine[section.Count];
@@ -14,12 +38,36 @@ namespace Tailviewer.Core.LogFiles
 			return entries;
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogLineFilter logLineFilter, ILogEntryFilter logEntryFilter)
+		/// <summary>
+		///     Creates a filtered view onto this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="scheduler"></param>
+		/// <param name="logLineFilter"></param>
+		/// <param name="logEntryFilter"></param>
+		/// <returns></returns>
+		public static FilteredLogFile AsFiltered(this ILogFile logFile,
+		                                         ITaskScheduler scheduler,
+		                                         ILogLineFilter logLineFilter,
+		                                         ILogEntryFilter logEntryFilter)
 		{
-			return AsFiltered(logFile, scheduler, logLineFilter, logEntryFilter, TimeSpan.FromMilliseconds(10));
+			return AsFiltered(logFile, scheduler, logLineFilter, logEntryFilter, TimeSpan.FromMilliseconds(value: 10));
 		}
 
-		public static FilteredLogFile AsFiltered(this ILogFile logFile, ITaskScheduler scheduler, ILogLineFilter logLineFilter, ILogEntryFilter logEntryFilter, TimeSpan maximumWaitTime)
+		/// <summary>
+		///     Creates a filtered view onto this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="scheduler"></param>
+		/// <param name="logLineFilter"></param>
+		/// <param name="logEntryFilter"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <returns></returns>
+		public static FilteredLogFile AsFiltered(this ILogFile logFile,
+		                                         ITaskScheduler scheduler,
+		                                         ILogLineFilter logLineFilter,
+		                                         ILogEntryFilter logEntryFilter,
+		                                         TimeSpan maximumWaitTime)
 		{
 			var file = new FilteredLogFile(scheduler, maximumWaitTime, logFile, logLineFilter, logEntryFilter);
 			return file;

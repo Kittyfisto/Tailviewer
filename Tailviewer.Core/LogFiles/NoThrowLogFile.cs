@@ -236,6 +236,19 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		{
+			try
+			{
+				_logFile.GetColumn(section, column, buffer);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
+			}
+		}
+
+		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			try

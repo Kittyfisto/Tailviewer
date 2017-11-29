@@ -93,6 +93,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Data Retrieval
 
 		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="section"></param>
+		/// <param name="column"></param>
+		/// <param name="buffer"></param>
+		void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer);
+
+		/// <summary>
 		///     Retrieves a list of log lines from this log file.
 		/// </summary>
 		/// <remarks>

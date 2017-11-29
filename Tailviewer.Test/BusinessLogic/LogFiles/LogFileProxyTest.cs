@@ -400,6 +400,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestGetColumn1()
+		{
+			var section = new LogFileSection(42, 100);
+			var buffer = new string[100];
+			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
+			logFile.GetColumn(section, LogFileColumns.RawContent, buffer);
+			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
+			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer))),
+			                Times.Once);
+		}
+
+		[Test]
+		public void TestGetColumn2()
+		{
+			var section = new LogFileSection(42, 100);
+			var buffer = new string[100];
+			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);
+			new Action(() => logFile.GetColumn(section, LogFileColumns.RawContent, buffer))
+				.ShouldThrow<IndexOutOfRangeException>();
+		}
+
+		[Test]
 		public void TestProgress1()
 		{
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);

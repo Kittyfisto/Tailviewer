@@ -201,5 +201,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Verify(x => x.GetOriginalIndicesFrom(It.Is<IReadOnlyList<LogLineIndex>>(y => y == src),
 				It.Is<LogLineIndex[]>(y => y == dest)), Times.Once);
 		}
+
+		[Test]
+		public void TestGetColumn()
+		{
+			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>())).Throws<SystemException>();
+
+			var section = new LogFileSection(42, 100);
+			var buffer = new string[100];
+			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer)).ShouldNotThrow();
+
+			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
+			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer))),
+			                Times.Once);
+		}
 	}
 }

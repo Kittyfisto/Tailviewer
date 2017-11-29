@@ -146,6 +146,12 @@ namespace Tailviewer.Core.LogFiles
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			if (section.Index < 0)

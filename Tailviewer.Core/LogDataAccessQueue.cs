@@ -15,7 +15,7 @@ namespace Tailviewer.Core
 	/// <remarks>
 	/// TODO: This class should be able to spot access patterns and then retrieve multiple values with just one call (for example by requesting a range)
 	/// </remarks>
-	public sealed class LogDataAccessQueue<TIndex, TData>
+	internal sealed class LogDataAccessQueue<TIndex, TData>
 		: IDisposable
 		where TIndex : struct, IEquatable<TIndex>
 	{

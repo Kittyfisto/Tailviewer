@@ -2,7 +2,7 @@
 
 namespace Tailviewer.Core.LogTables
 {
-	public sealed class LogTableListenerNotifier
+	internal sealed class LogTableListenerNotifier
 	{
 		private readonly ILogTableListener _listener;
 		private readonly ILogTable _logTable;

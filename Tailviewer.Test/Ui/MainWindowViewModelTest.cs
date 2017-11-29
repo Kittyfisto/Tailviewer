@@ -10,6 +10,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;

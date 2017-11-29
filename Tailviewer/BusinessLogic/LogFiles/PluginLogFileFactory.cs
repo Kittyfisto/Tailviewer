@@ -5,11 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.BusinessLogic.LogFiles
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public sealed class PluginLogFileFactory
 		: ILogFileFactory
 	{

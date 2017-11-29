@@ -3,7 +3,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
-	public sealed class LogFileListenerNotifier
+	internal sealed class LogFileListenerNotifier
 	{
 		private readonly ILogFileListener _listener;
 		private readonly ILogFile _logFile;

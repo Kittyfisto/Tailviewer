@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Core.LogTables
 {
@@ -10,10 +9,24 @@ namespace Tailviewer.Core.LogTables
 	public struct LogTableModification
 		: IEquatable<LogTableModification>
 	{
+		/// <summary>
+		/// 
+		/// </summary>
 		public static readonly LogTableModification Reset;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly bool IsInvalidate;
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly LogTableSection Section;
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public readonly ILogTableSchema Schema;
 
 		static LogTableModification()
@@ -21,6 +34,10 @@ namespace Tailviewer.Core.LogTables
 			Reset = new LogTableModification(LogEntryIndex.Invalid, 0);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="schema"></param>
 		public LogTableModification(ILogTableSchema schema)
 		{
 			if (schema == null)
@@ -31,6 +48,12 @@ namespace Tailviewer.Core.LogTables
 			IsInvalidate = false;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="count"></param>
+		/// <param name="isInvalidate"></param>
 		public LogTableModification(LogEntryIndex index, int count, bool isInvalidate = false)
 		{
 			Section = new LogTableSection(index, count);
@@ -38,23 +61,32 @@ namespace Tailviewer.Core.LogTables
 			Schema = null;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="firstIndex"></param>
+		/// <param name="invalidateCount"></param>
+		/// <returns></returns>
 		[Pure]
 		public static LogTableModification Invalidate(int firstIndex, int invalidateCount)
 		{
 			return new LogTableModification(firstIndex, invalidateCount, true);
 		}
 
+		/// <inheritdoc />
 		public bool Equals(LogTableModification other)
 		{
 			return Section.Equals(other.Section) && IsInvalidate.Equals(other.IsInvalidate);
 		}
 
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			return obj is LogTableModification && Equals((LogTableModification) obj);
 		}
 
+		/// <inheritdoc />
 		public override int GetHashCode()
 		{
 			unchecked
@@ -63,16 +95,29 @@ namespace Tailviewer.Core.LogTables
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator ==(LogTableModification left, LogTableModification right)
 		{
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		/// <returns></returns>
 		public static bool operator !=(LogTableModification left, LogTableModification right)
 		{
 			return !left.Equals(right);
 		}
 
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			if (Section.Index == LogEntryIndex.Invalid && Section.Count == 0)

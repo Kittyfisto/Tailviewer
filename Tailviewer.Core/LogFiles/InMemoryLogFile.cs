@@ -20,6 +20,9 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly object _syncRoot;
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
 		public InMemoryLogFile()
 		{
 			_syncRoot = new object();
@@ -69,6 +72,12 @@ namespace Tailviewer.Core.LogFiles
 		public void RemoveListener(ILogFileListener listener)
 		{
 			_listeners.RemoveListener(listener);
+		}
+
+		/// <inheritdoc />
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

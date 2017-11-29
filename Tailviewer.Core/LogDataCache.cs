@@ -24,7 +24,7 @@ namespace Tailviewer.Core
 	///     <see cref="LogEntry.Fields" /> are not fully followed and object re-use between different
 	///     <see cref="LogEntry.Fields" /> is not detected.
 	/// </remarks>
-	public sealed class LogDataCache
+	internal sealed class LogDataCache
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

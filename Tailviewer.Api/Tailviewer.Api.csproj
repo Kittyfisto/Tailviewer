@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\Tailviewer.Api.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\bin\Tailviewer.Api.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
@@ -69,6 +71,7 @@
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalysisResult.cs" />
     <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryId.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileColumn.cs" />
     <Compile Include="BusinessLogic\LogLineSourceId.cs" />
     <Compile Include="DataSourceId.cs" />
     <Compile Include="BusinessLogic\LevelFlags.cs" />
