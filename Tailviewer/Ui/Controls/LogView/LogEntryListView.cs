@@ -62,7 +62,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null));
 
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
+
 		private readonly DataSourceCanvas _dataSourceCanvas;
+		private readonly LogEntryElapsedCanvas _elapsedCanvas;
 		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberCanvas _lineNumberCanvas;
@@ -80,6 +82,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
@@ -108,20 +111,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			};
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
-			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 4);
+			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 5);
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
-
-			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
-			PartTextCanvas.SetValue(RowProperty, value: 0);
-			PartTextCanvas.SetValue(ColumnProperty, value: 3);
-			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
-			PartTextCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
-			PartTextCanvas.SizeChanged += TextCanvasOnSizeChanged;
-			PartTextCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
-			PartTextCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
-			PartTextCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
-			PartTextCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
 
 			_lineNumberCanvas = new LineNumberCanvas();
 			_lineNumberCanvas.SetValue(RowProperty, value: 0);
@@ -133,17 +125,34 @@ namespace Tailviewer.Ui.Controls.LogView
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
+			_elapsedCanvas = new LogEntryElapsedCanvas();
+			_elapsedCanvas.SetValue(RowProperty, value: 0);
+			_elapsedCanvas.SetValue(ColumnProperty, value: 2);
+			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
+
+			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
+			PartTextCanvas.SetValue(RowProperty, value: 0);
+			PartTextCanvas.SetValue(ColumnProperty, value: 4);
+			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
+			PartTextCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
+			PartTextCanvas.SizeChanged += TextCanvasOnSizeChanged;
+			PartTextCanvas.VisibleLinesChanged += TextCanvasOnVisibleLinesChanged;
+			PartTextCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
+			PartTextCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
+			PartTextCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
+
 			var separator = new Rectangle
 			{
 				Fill = new SolidColorBrush(Color.FromRgb(225, 228, 232)),
 				Width = 2
 			};
 			separator.SetValue(RowProperty, value: 0);
-			separator.SetValue(ColumnProperty, value: 2);
+			separator.SetValue(ColumnProperty, value: 3);
 			separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
 			Children.Add(_lineNumberCanvas);
 			Children.Add(_dataSourceCanvas);
+			Children.Add(_elapsedCanvas);
 			Children.Add(separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
@@ -369,11 +378,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void TextCanvasOnVisibleLinesChanged()
 		{
 			_lineNumberCanvas.UpdateLineNumbers(LogFile,
-				PartTextCanvas.CurrentlyVisibleSection,
-				PartTextCanvas.YOffset);
+			                                    PartTextCanvas.CurrentlyVisibleSection,
+			                                    PartTextCanvas.YOffset);
 			_dataSourceCanvas.UpdateDataSources(DataSource,
-				PartTextCanvas.CurrentlyVisibleSection,
-				PartTextCanvas.YOffset);
+			                                    PartTextCanvas.CurrentlyVisibleSection,
+			                                    PartTextCanvas.YOffset);
+			_elapsedCanvas.UpdateLines(LogFile,
+			                           PartTextCanvas.CurrentlyVisibleSection,
+			                           PartTextCanvas.YOffset);
 		}
 
 		private void TextCanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -432,6 +444,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void OnTimer(object sender, EventArgs args)
 		{
 			if (Interlocked.Exchange(ref _pendingModificationsCount, value: 0) > 0)
+			{
 				try
 				{
 					PartTextCanvas.DetermineVerticalOffset();
@@ -447,9 +460,12 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					Log.ErrorFormat("Caught unexpected exception while updating: {0}", e);
 
-					// Let's pray that this was just a hickup and try next time...
+					// Common sense says that functions which fail once work when tried again.
+					// The same goes for this control: If drawing fails then it's conceivable
+					// that it will work when we try again in a few milliseconds...
 					Interlocked.Increment(ref _pendingModificationsCount);
 				}
+			}
 		}
 
 		private void ScrollToBottomIfRequired()

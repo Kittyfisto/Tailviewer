@@ -8,7 +8,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Ui.Controls.LogView
 {
 	/// <summary>
-	///     A "canvas" which draws the log line number in the same vertical alignment as <see cref="TextCanvas" />
+	///     A "canvas" which draws <see cref="LogLine.OriginalLineIndex"/> in the same vertical alignment as <see cref="TextCanvas" />
 	///     draws the <see cref="LogLine.Message" />.
 	/// </summary>
 	public sealed class LineNumberCanvas
