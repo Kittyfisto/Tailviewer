@@ -59,7 +59,8 @@ namespace Tailviewer
 			var bugfixes = new[]
 			{
 				"Fixed merging multiline files",
-				"Fixed item selection after drag 'n drop"
+				"Fixed item selection after drag 'n drop",
+				"Action center doesn't crash after export anymore"
 			};
 			var misc = new[]
 			{
