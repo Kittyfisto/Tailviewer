@@ -62,7 +62,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DefaultLogColumns.cs" />
     <Compile Include="GridSplitterPanel.cs" />
+    <Compile Include="ILogColumn.cs" />
+    <Compile Include="LogColumn.cs" />
+    <Compile Include="LogEntry2.cs" />
+    <Compile Include="LogFileContent.cs" />
+    <Compile Include="LogResponse.cs" />
     <Compile Include="LogTableView.xaml.cs">
       <DependentUpon>LogTableView.xaml</DependentUpon>
     </Compile>
@@ -114,6 +120,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
       <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
       <Name>Tailviewer.Core</Name>

@@ -1,6 +1,4 @@
 ﻿using System.Threading;
-using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.LogTables;
 using Tailviewer.Core;
 
 namespace TablePlayground
@@ -9,7 +7,7 @@ namespace TablePlayground
 	{
 		private readonly ITaskScheduler _scheduler;
 		private readonly LogDataCache _cache;
-		private readonly SQLiteLogTable _table;
+		//private readonly SQLiteLogTable _table;
 
 		public MainWindow()
 		{
@@ -17,9 +15,8 @@ namespace TablePlayground
 
 			_scheduler = new DefaultTaskScheduler();
 			_cache = new LogDataCache();
-			_table = new SQLiteLogTable(_scheduler, _cache, @"..\Live\SQLiteLogger.db");
-
-			TableView.LogTable = _table;
+			//_table = new SQLiteLogTable(_scheduler, _cache, @"..\Live\SQLiteLogger.db");
+			//TableView.LogTable = _table;
 		}
 	}
 }
