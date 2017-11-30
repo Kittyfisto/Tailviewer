@@ -148,7 +148,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			if (column == LogFileColumns.RawContent)
+			{
+				throw new NotImplementedException();
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
 		}
 
 		/// <inheritdoc />

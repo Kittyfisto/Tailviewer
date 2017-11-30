@@ -61,8 +61,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.67, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.67\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.68, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.68\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -70,8 +70,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Extensions, Version=1.1.23.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.23\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=1.1.25.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.25\lib\net45\System.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
