@@ -99,7 +99,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, value: 0);
-			_verticalScrollBar.SetValue(ColumnProperty, value: 5);
+			_verticalScrollBar.SetValue(ColumnProperty, value: 4);
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
