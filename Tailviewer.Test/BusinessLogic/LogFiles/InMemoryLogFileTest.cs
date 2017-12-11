@@ -337,5 +337,37 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
 				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
+
+		[Test]
+		public void TestGetEntriesEmpty()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.GetEntries(new LogFileSection()).Should().BeEmpty("because the log file is empty");
+		}
+
+		[Test]
+		public void TestGetEntriesRawContent1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("foobar");
+			var entries = logFile.GetEntries(new LogFileSection(0, 1), LogFileColumns.RawContent);
+			entries.Count.Should().Be(1);
+			entries.Columns.Should().Equal(new object[] {LogFileColumns.RawContent}, "because we've only retrieved that column");
+			entries[0].RawContent.Should().Be("foobar");
+		}
+
+		[Test]
+		public void TestGetEntriesRawContent2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("foo");
+			logFile.AddEntry("bar");
+			logFile.AddEntry("some lazy fox");
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.RawContent);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.RawContent }, "because we've only retrieved that column");
+			entries[0].RawContent.Should().Be("bar");
+			entries[1].RawContent.Should().Be("some lazy fox");
+		}
 	}
 }

@@ -81,6 +81,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				GetTimestamps(section, (DateTime?[])(object)buffer);
 			}
+			else if (column == LogFileColumns.RawContent)
+			{
+				GetRawContent(section, (string[]) (object) buffer);
+			}
 			else
 			{
 				throw new NotImplementedException();
@@ -97,6 +101,18 @@ namespace Tailviewer.Core.LogFiles
 			else
 			{
 				throw new NotImplementedException();
+			}
+		}
+
+		private void GetRawContent(LogFileSection section, string[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = GetRawContent(index);
+				}
 			}
 		}
 
@@ -122,6 +138,19 @@ namespace Tailviewer.Core.LogFiles
 					buffer[i] = GetTimestamp(index);
 				}
 			}
+		}
+
+		private string GetRawContent(LogLineIndex index)
+		{
+			if (index < 0 || index >= _lines.Count)
+			{
+				if (Log.IsDebugEnabled)
+					Log.DebugFormat("{0}: Row {1} doesn't exist", this, index);
+
+				return null;
+			}
+
+			return _lines[index.Value].Message;
 		}
 
 		private DateTime? GetTimestamp(LogLineIndex index)
@@ -277,20 +306,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="level"></param>
-		public void AddEntry(string message, LevelFlags level)
+		/// <param name="rawContent"></param>
+		public void AddEntry(string rawContent)
 		{
-			AddEntry(message, level, null);
+			AddEntry(rawContent, LevelFlags.None);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="message"></param>
+		/// <param name="rawContent"></param>
+		/// <param name="level"></param>
+		public void AddEntry(string rawContent, LevelFlags level)
+		{
+			AddEntry(rawContent, level, null);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rawContent"></param>
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
-		public void AddEntry(string message, LevelFlags level, DateTime? timestamp)
+		public void AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
 			lock (_syncRoot)
 			{
@@ -306,8 +344,8 @@ namespace Tailviewer.Core.LogFiles
 					StartTimestamp = timestamp;
 				}
 
-				_lines.Add(new LogLine(_lines.Count, logEntryIndex, message, level, timestamp));
-				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, message.Length);
+				_lines.Add(new LogLine(_lines.Count, logEntryIndex, rawContent, level, timestamp));
+				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, rawContent.Length);
 				Touch();
 
 				_listeners.OnRead(_lines.Count);

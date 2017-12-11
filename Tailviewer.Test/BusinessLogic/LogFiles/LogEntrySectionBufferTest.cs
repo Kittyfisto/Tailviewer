@@ -14,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction1()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection());
+			var buffer = new LogEntryBuffer(0);
 			buffer.Columns.Should().BeEmpty();
 			buffer.Count.Should().Be(0);
 			buffer.Should().BeEmpty();
@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction2([Values(1, 2, 5, 10, 42, 100, 9001)] int count)
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, count));
+			var buffer = new LogEntryBuffer(count);
 			buffer.Columns.Should().BeEmpty();
 			buffer.Count.Should().Be(count);
 			buffer.Should().HaveCount(count);
@@ -32,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetEntryByIndex1([Values(-1, 0, 1)] int invalidIndex)
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection());
+			var buffer = new LogEntryBuffer(0);
 			new Action(() =>
 			{
 				var unused = buffer[invalidIndex];
@@ -42,7 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFrom()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 1), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			buffer.CopyFrom(LogFileColumns.TimeStamp, new DateTime?[] {timestamp});
 			buffer[0].Timestamp.Should().Be(timestamp, "Because we've just copied this timestamp to the buffer");
@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the sourceIndex parameter is honored")]
 		public void TestCopyFromPartial1()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 1), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
 			var unusedTimestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			var timestamp = new DateTime(2017, 12, 11, 21, 43, 0);
 			buffer.CopyFrom(LogFileColumns.TimeStamp, 0, new DateTime?[] { unusedTimestamp, timestamp }, 1, 1);
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the sourceIndex parameter is honored")]
 		public void TestCopyFromPartial2()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 1), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			var unusedTimestamp = new DateTime(2017, 12, 11, 21, 44, 0);
 			buffer.CopyFrom(LogFileColumns.TimeStamp, 0, new DateTime?[] { timestamp, unusedTimestamp }, 0, 1);
@@ -74,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the destIndex parameter is honored")]
 		public void TestCopyFromPartial3()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 2), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
 
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			buffer.CopyFrom(LogFileColumns.TimeStamp, 1, new DateTime?[] { timestamp }, 0, 1);
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromNullColumn()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 2), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
 			new Action(() => buffer.CopyFrom(null, 0, new string[0], 0, 0))
 				.ShouldThrow<ArgumentNullException>();
 		}
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromUnknownColumn()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(42, 2), LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
 			new Action(() => buffer.CopyFrom(LogFileColumns.RawContent, 0, new string[0], 0, 0))
 				.ShouldThrow<NoSuchColumnException>();
 		}
@@ -101,7 +101,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromMultipleColumns()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(0, 2),
+			var buffer = new LogEntryBuffer(2,
 			                                       LogFileColumns.Index,
 			                                       LogFileColumns.TimeStamp);
 			buffer.CopyFrom(LogFileColumns.Index, new LogEntryIndex[] {1, 42});
@@ -118,7 +118,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromManyRows()
 		{
 			const int count = 1000;
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(0, count), LogFileColumns.OriginalIndex);
+			var buffer = new LogEntryBuffer(count, LogFileColumns.OriginalIndex);
 			buffer.CopyFrom(LogFileColumns.OriginalIndex, Enumerable.Range(0, count).Select(i => (LogEntryIndex)i).ToArray());
 			for (int i = 0; i < count; ++i)
 			{
@@ -129,7 +129,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromOverwrite()
 		{
-			var buffer = new LogEntrySectionBuffer(new LogFileSection(0, 2), LogFileColumns.RawContent);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.RawContent);
 			buffer[0].RawContent.Should().BeNull();
 			buffer[1].RawContent.Should().BeNull();
 
