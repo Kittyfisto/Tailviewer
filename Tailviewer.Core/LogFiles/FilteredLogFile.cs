@@ -122,7 +122,56 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			var actualIndices = new LogLineIndex[section.Count];
+
+			lock (_indices)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					actualIndices[i] = _indices[i];
+				}
+			}
+
+			if (column == LogFileColumns.DeltaTime)
+			{
+				
+			}
+			else
+			{
+				_source.GetColumn(actualIndices, column, buffer);
+			}
+		}
+
+		/// <inheritdoc />
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
+		{
+			var actualIndices = new LogLineIndex[indices.Count];
+			lock (_indices)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					actualIndices[i] = _indices[indices[i].Value];
+				}
+			}
+
+			if (column == LogFileColumns.DeltaTime)
+			{
+				GetDeltaTime(actualIndices, (TimeSpan?[])(object)buffer);
+			}
+			else
+			{
+				_source.GetColumn(actualIndices, column, buffer);
+			}
+		}
+
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
+		{
+			var timestamps = _source.GetColumn(indices, LogFileColumns.TimeStamp);
+			buffer[0] = null; //< TODO: This isn't right just yet...
+			for (int i = 1; i < indices.Count; ++i)
+			{
+				buffer[i] = timestamps[1] - timestamps[0];
+			}
 		}
 
 		/// <inheritdoc />

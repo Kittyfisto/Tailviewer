@@ -17,6 +17,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
 namespace Tailviewer.Ui.Controls.LogView
 {

@@ -249,6 +249,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			try

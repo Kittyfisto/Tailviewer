@@ -32,5 +32,11 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public string Name => _name;
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return _id.ToString();
+		}
 	}
 }

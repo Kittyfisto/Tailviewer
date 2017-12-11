@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Threading;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 
@@ -18,7 +21,24 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="section"></param>
 		/// <param name="column"></param>
 		/// <returns></returns>
+		[Pure]
 		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection section, ILogFileColumn<T> column)
+		{
+			var cells = new T[section.Count];
+			logFile.GetColumn(section, column, cells);
+			return cells;
+		}
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		[Pure]
+		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> section, ILogFileColumn<T> column)
 		{
 			var cells = new T[section.Count];
 			logFile.GetColumn(section, column, cells);
@@ -31,6 +51,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="logFile"></param>
 		/// <param name="section"></param>
 		/// <returns></returns>
+		[Pure]
 		public static LogLine[] GetSection(this ILogFile logFile, LogFileSection section)
 		{
 			var entries = new LogLine[section.Count];

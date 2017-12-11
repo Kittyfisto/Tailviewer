@@ -7,6 +7,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
 namespace Tailviewer.Test.Ui.Controls.LogView
 {

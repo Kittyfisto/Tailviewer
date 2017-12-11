@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Ui.Controls.LogView
+namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 {
 	/// <summary>
 	///     A "canvas" which draws <see cref="LogLine.OriginalLineIndex"/> in the same vertical alignment as <see cref="TextCanvas" />
