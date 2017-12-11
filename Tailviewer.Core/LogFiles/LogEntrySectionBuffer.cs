@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -99,6 +100,10 @@ namespace Tailviewer.Core.LogFiles
 				_buffer = buffer;
 				_index = index;
 			}
+
+			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
+
+			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
 
 			public DateTime? Timestamp => GetColumnValue(LogFileColumns.TimeStamp);
 

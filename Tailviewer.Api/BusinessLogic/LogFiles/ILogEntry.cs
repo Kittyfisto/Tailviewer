@@ -13,6 +13,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	public interface ILogEntry
 	{
 		/// <summary>
+		///     The index of this log entry, from 0 to the number of log entries.
+		/// </summary>
+		/// <remarks>
+		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
+		///     has been removed.
+		/// </remarks>
+		LogLineIndex Index { get; }
+
+		/// <summary>
+		///     The index of the log entry this one was created from.
+		///     Only differs from <see cref="Index" /> when this log entry has been created
+		///     through operations such as filtering, merging, etc...
+		/// </summary>
+		/// <remarks>
+		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
+		///     has been removed.
+		/// </remarks>
+		LogLineIndex OriginalIndex { get; }
+
+		/// <summary>
 		///     The timestamp of this log entry, if available.
 		/// </summary>
 		DateTime? Timestamp { get; }
