@@ -429,8 +429,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = new TextLogFile(_scheduler, File20Mb))
 			{
-				file.MaxCharactersPerLine.Should().Be(0);
-
 				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 
 				file.Count.Should().Be(165342);
