@@ -5,7 +5,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     Hard-coded columns which are provided by all log files.
+	///     Provides access to well-known columns which are provided by all log files:
+	///     Every column has a well-defined meaning which will never change.
 	/// </summary>
 	public static class LogFileColumns
 	{
@@ -39,17 +40,23 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileColumn<TimeSpan?> DeltaTime;
 
 		/// <summary>
+		///     The amount of time elapsed between the first and this log entry.
+		/// </summary>
+		public static readonly ILogFileColumn<TimeSpan?> ElapsedTime;
+
+		/// <summary>
 		///     The absolute timestamp of when the log entry was produced.
 		/// </summary>
 		public static readonly ILogFileColumn<DateTime?> TimeStamp;
 
 		static LogFileColumns()
 		{
-			Index = new LogFileColumn<LogLineIndex>("index", "Index");
-			OriginalIndex = new LogFileColumn<LogLineIndex>("original_index", "Original Index");
-			RawContent = new LogFileColumn<string>("raw_content", "Raw Content");
-			DeltaTime = new LogFileColumn<TimeSpan?>("delta_time", "Delta Time");
-			TimeStamp = new LogFileColumn<DateTime?>("timestamp", "Timestamp");
+			Index = new WellKnownLogFileColumn<LogLineIndex>("index", "Index");
+			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index", "Original Index");
+			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
+			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
+			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");
+			TimeStamp = new WellKnownLogFileColumn<DateTime?>("timestamp", "Timestamp");
 		}
 	}
 }

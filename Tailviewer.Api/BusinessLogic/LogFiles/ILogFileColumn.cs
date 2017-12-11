@@ -1,3 +1,5 @@
+using System;
+
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
@@ -13,6 +15,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Human readable name of this column.
 		/// </summary>
 		string Name { get; }
+
+		/// <summary>
+		///     The type of the data provided by this column.
+		/// </summary>
+		Type DataType { get; }
 	}
 
 	/// <summary>
