@@ -101,6 +101,7 @@
     <Compile Include="LogEntryIndex.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WillBeRemoved.cs" />
     <Compile Include="Templates\Analysis\IWidgetTemplate.cs" />
     <Compile Include="Ui\Analysis\IWidgetConfiguration.cs" />
     <Compile Include="Ui\Analysis\IWidgetPlugin.cs" />

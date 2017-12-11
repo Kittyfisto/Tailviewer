@@ -15,10 +15,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The index of this log entry, from 0 to the number of log entries.
 		/// </summary>
-		/// <remarks>
-		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
-		///     has been removed.
-		/// </remarks>
 		LogEntryIndex Index { get; }
 
 		/// <summary>
@@ -26,10 +22,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Only differs from <see cref="Index" /> when this log entry has been created
 		///     through operations such as filtering, merging, etc...
 		/// </summary>
-		/// <remarks>
-		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
-		///     has been removed.
-		/// </remarks>
 		LogEntryIndex OriginalIndex { get; }
 
 		/// <summary>

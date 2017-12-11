@@ -118,6 +118,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="section"></param>
 		/// <param name="dest"></param>
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		void GetSection(LogFileSection section, LogLine[] dest);
 
 		/// <summary>
@@ -129,6 +130,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="index"></param>
 		/// <returns></returns>
 		[Pure]
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		LogLine GetLine(int index);
 
 		/// <summary>

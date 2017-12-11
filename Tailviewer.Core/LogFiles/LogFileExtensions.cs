@@ -52,6 +52,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="section"></param>
 		/// <returns></returns>
 		[Pure]
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		public static LogLine[] GetSection(this ILogFile logFile, LogFileSection section)
 		{
 			var entries = new LogLine[section.Count];
