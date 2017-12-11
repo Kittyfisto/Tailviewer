@@ -140,7 +140,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					}
 
 					filtered.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
-					filtered.EndOfSourceReached.Should().BeTrue();
+					filtered.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 					sections.Should().EndWith(LogFileSection.Reset);
 				}
 			}
