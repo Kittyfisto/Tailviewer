@@ -134,7 +134,11 @@ namespace Tailviewer.Core.LogFiles
 				{
 					for (int i = 0; i < section.Count; ++i)
 					{
-						actualIndices[i] = _indices[i];
+						var index = section.Index + i;
+						if (index >= 0 && index < _indices.Count)
+							actualIndices[i] = _indices[i];
+						else
+							actualIndices[i] = -1;
 					}
 				}
 
@@ -177,33 +181,54 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			var actualIndices = new LogLineIndex[indices.Count];
-			lock (_indices)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					actualIndices[i] = _indices[indices[i].Value];
-				}
-			}
-
 			if (column == LogFileColumns.DeltaTime)
 			{
-				GetDeltaTime(actualIndices, (TimeSpan?[])(object)buffer);
+				GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
 			}
 			else
 			{
+				var actualIndices = new LogLineIndex[indices.Count];
+				lock (_indices)
+				{
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						actualIndices[i] = ToSourceIndex(indices[i].Value);
+					}
+				}
 				_source.GetColumn(actualIndices, column, buffer);
 			}
 		}
 
 		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
 		{
-			var timestamps = _source.GetColumn(indices, LogFileColumns.TimeStamp);
-			buffer[0] = null; //< TODO: This isn't right just yet...
-			for (int i = 1; i < indices.Count; ++i)
+			// The easiest way to serve random access to this column is to simply retrieve
+			// the timestamp for every requested index as well as for the preceeding index.
+			var actualIndices = new LogLineIndex[indices.Count * 2];
+			lock (_indices)
 			{
-				buffer[i] = timestamps[1] - timestamps[0];
+				for(int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[0];
+					actualIndices[i * 2 + 0] = ToSourceIndex(index - 1);
+					actualIndices[i * 2 + 1] = ToSourceIndex(index);
+				}
 			}
+
+			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.TimeStamp);
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var previousTimestamp = timestamps[i * 2 + 0];
+				var currentTimestamp = timestamps[i * 2 + 1];
+				buffer[i] = currentTimestamp - previousTimestamp;
+			}
+		}
+
+		private LogLineIndex ToSourceIndex(LogLineIndex index)
+		{
+			if (index >= 0 && index < _indices.Count)
+				return _indices[(int) index];
+
+			return LogLineIndex.Invalid;
 		}
 
 		/// <inheritdoc />

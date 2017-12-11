@@ -77,7 +77,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			if (column == LogFileColumns.TimeStamp)
+			{
+				GetTimestamps(section, (DateTime?[])(object)buffer);
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		/// <inheritdoc />
@@ -85,7 +92,23 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (column == LogFileColumns.TimeStamp)
 			{
-				GetTimestamps(indices, (DateTime?[])(object)buffer);
+				GetTimestamps(indices, (DateTime?[]) (object) buffer);
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		private void GetTimestamps(LogFileSection section, DateTime?[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = GetTimestamp(index);
+				}
 			}
 		}
 
