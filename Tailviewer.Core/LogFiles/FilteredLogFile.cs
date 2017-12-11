@@ -168,7 +168,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.TimeStamp);
+			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.Timestamp);
 			for (int i = 1; i <= section.Count; ++i)
 			{
 				var previousTimestamp = timestamps[i - 1];
@@ -214,7 +214,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.TimeStamp);
+			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.Timestamp);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];

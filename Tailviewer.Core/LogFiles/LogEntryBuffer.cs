@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     A buffer which holds and provides read/write access to a consecutive section of <see cref="ILogEntry" />s.
+	///     A fixed-size buffer which provides read/write access to <see cref="ILogEntry" />s.
 	/// </summary>
 	public sealed class LogEntryBuffer
 		: ILogEntries
@@ -20,20 +21,28 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="columns"></param>
-		public LogEntryBuffer(int length, params ILogFileColumn[] columns)
+		public LogEntryBuffer(int length, IEnumerable<ILogFileColumn> columns)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
 
 			_length = length;
-			_columns = columns;
-			var dataByColumn = new Dictionary<ILogFileColumn, IColumnData>(columns.Length);
-			foreach (var column in columns)
+			_columns = columns.ToList();
+			var dataByColumn = new Dictionary<ILogFileColumn, IColumnData>(_columns.Count);
+			foreach (var column in _columns)
 			{
 				dataByColumn.Add(column, CreateColumnData(column, length));
 			}
 			_dataByColumn = dataByColumn;
 		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="length"></param>
+		/// <param name="columns"></param>
+		public LogEntryBuffer(int length, params ILogFileColumn[] columns)
+			: this(length, (IEnumerable<ILogFileColumn>)columns)
+		{}
 
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumn> Columns => _columns;
@@ -62,14 +71,10 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(column));
 
 			IColumnData columnData;
-			if (_dataByColumn.TryGetValue(column, out columnData))
-			{
-				columnData.CopyFrom(destinationIndex, source, section);
-			}
-			else
-			{
+			if (!_dataByColumn.TryGetValue(column, out columnData))
 				throw new NoSuchColumnException(column);
-			}
+
+			columnData.CopyFrom(destinationIndex, source, section);
 		}
 
 		/// <inheritdoc />
@@ -79,14 +84,10 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(column));
 
 			IColumnData columnData;
-			if (_dataByColumn.TryGetValue(column, out columnData))
-			{
-				columnData.CopyFrom(destinationIndex, source, indices);
-			}
-			else
-			{
+			if (!_dataByColumn.TryGetValue(column, out columnData))
 				throw new NoSuchColumnException(column);
-			}
+
+			columnData.CopyFrom(destinationIndex, source, indices);
 		}
 
 		/// <inheritdoc />
@@ -133,25 +134,31 @@ namespace Tailviewer.Core.LogFiles
 				_index = index;
 			}
 
+			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
+
 			public LogEntryIndex Index => GetColumnValue(LogFileColumns.Index);
 
 			public LogEntryIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
 
-			public DateTime? Timestamp => GetColumnValue(LogFileColumns.TimeStamp);
+			public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
 
-			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
+			public int OriginalLineNumber => GetColumnValue(LogFileColumns.OriginalLineNumber);
+
+			public LevelFlags LogLevel => GetColumnValue(LogFileColumns.LogLevel);
+
+			public DateTime? Timestamp => GetColumnValue(LogFileColumns.Timestamp);
+
+			public TimeSpan? ElapsedTime => GetColumnValue(LogFileColumns.ElapsedTime);
+
+			public TimeSpan? DeltaTime => GetColumnValue(LogFileColumns.DeltaTime);
 
 			public T GetColumnValue<T>(ILogFileColumn<T> column)
 			{
 				IColumnData data;
-				if (_buffer._dataByColumn.TryGetValue(column, out data))
-				{
-					return ((ColumnData<T>) data)[_index];
-				}
-				else
-				{
-					throw new NotImplementedException();
-				}
+				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+					throw new NoSuchColumnException(column);
+
+				return ((ColumnData<T>) data)[_index];
 			}
 		}
 

@@ -159,7 +159,7 @@ namespace Tailviewer.Core.LogFiles
 				var retrievedCount = Math.Min(desiredCount, leftCount);
 				var inBoundsSection = new LogFileSection(section.Index, retrievedCount);
 
-				if (column == LogFileColumns.TimeStamp)
+				if (column == LogFileColumns.Timestamp)
 				{
 					GetTimestamp(inBoundsSection, (DateTime?[]) (object) buffer);
 				}
@@ -188,7 +188,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				if (column == LogFileColumns.TimeStamp)
+				if (column == LogFileColumns.Timestamp)
 				{
 					GetTimestamp(indices, (DateTime?[])(object)buffer);
 				}

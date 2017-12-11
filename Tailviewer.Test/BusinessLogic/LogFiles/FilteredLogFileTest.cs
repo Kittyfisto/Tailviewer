@@ -805,7 +805,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.TimeStamp);
+				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().HaveCount(1);
 				timestamps[0].Should().BeNull();
@@ -823,7 +823,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				source.AddEntry("", LevelFlags.None, timestamp);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.TimeStamp);
+				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] {timestamp});
 			}
@@ -843,7 +843,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				source.AddEntry("", LevelFlags.Error, timestamp2);
 				_taskScheduler.RunOnce();
 
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.TimeStamp);
+				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] { timestamp2 }, "because the first entry doesn't match the filter and thus the timestamp of the 2nd one should've been returned");
 			}
@@ -856,7 +856,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				var timestamps = logFile.GetColumn(new LogLineIndex[] {42}, LogFileColumns.TimeStamp);
+				var timestamps = logFile.GetColumn(new LogLineIndex[] {42}, LogFileColumns.Timestamp);
 				timestamps.Should().NotBeNull();
 				timestamps.Should().Equal(new object[] { null }, "because accessing non-existant indices should return null values");
 			}

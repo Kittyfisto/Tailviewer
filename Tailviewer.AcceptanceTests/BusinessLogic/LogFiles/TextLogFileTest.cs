@@ -255,13 +255,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 11, 59, 30),
 				new DateTime(2017, 12, 3, 12, 00, 00)
 			});
 
-			_file.GetColumn(new LogFileSection(1, 1), LogFileColumns.TimeStamp)
+			_file.GetColumn(new LogFileSection(1, 1), LogFileColumns.Timestamp)
 			     .Should().Equal(new DateTime(2017, 12, 3, 12, 00, 00));
 		}
 
@@ -275,17 +275,17 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetColumn(new LogLineIndex[] {0,  1}, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] {0,  1}, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 11, 59, 30),
 				new DateTime(2017, 12, 3, 12, 00, 00)
 			});
-			_file.GetColumn(new LogLineIndex[] { 1, 0 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] { 1, 0 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 12, 00, 00),
 				new DateTime(2017, 12, 3, 11, 59, 30)
 			});
-			_file.GetColumn(new LogLineIndex[] { 1 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] { 1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 12, 00, 00),
 			});
@@ -301,16 +301,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				null
 			});
-			_file.GetColumn(new LogLineIndex[] { 1, 2 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] { 1, 2 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 12, 00, 00),
 				null
 			});
-			_file.GetColumn(new LogLineIndex[] { 1, 2, 0 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			_file.GetColumn(new LogLineIndex[] { 1, 2, 0 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 12, 00, 00),
 				null,

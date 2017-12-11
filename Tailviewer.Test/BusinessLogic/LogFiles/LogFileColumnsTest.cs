@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
@@ -8,6 +9,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class LogFileColumnsTest
 	{
+		[Test]
+		[Description("Verifies that the Minimum property doesn't regress")]
+		public void TestWellKnownColumns()
+		{
+			LogFileColumns.Minimum.Should().Equal(new object[]
+			{
+				LogFileColumns.RawContent,
+				LogFileColumns.Index,
+				LogFileColumns.OriginalIndex,
+				LogFileColumns.LineNumber,
+				LogFileColumns.OriginalLineNumber,
+				LogFileColumns.LogLevel,
+				LogFileColumns.Timestamp,
+				LogFileColumns.DeltaTime,
+				LogFileColumns.ElapsedTime
+			});
+		}
+
+		[Test]
+		[Description("Verifies that the Level property doesn't regress")]
+		public void TestLevel()
+		{
+			LogFileColumns.LogLevel.Id.Should().Be("log_level");
+			LogFileColumns.LogLevel.DataType.Should().Be<LevelFlags>();
+		}
+
 		[Test]
 		[Description("Verifies that the index property doesn't regress")]
 		public void TestIndex()
@@ -44,8 +71,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the Timestamp property doesn't regress")]
 		public void TestTimestamp()
 		{
-			LogFileColumns.TimeStamp.Id.Should().Be("timestamp");
-			LogFileColumns.TimeStamp.DataType.Should().Be<DateTime?>();
+			LogFileColumns.Timestamp.Id.Should().Be("timestamp");
+			LogFileColumns.Timestamp.DataType.Should().Be<DateTime?>();
 		}
 
 		[Test]

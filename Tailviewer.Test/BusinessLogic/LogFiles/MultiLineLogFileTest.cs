@@ -681,7 +681,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var source = new InMemoryLogFile();
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.TimeStamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] {null}, "because accessing non-existant rows should simply return default values");
 		}
@@ -696,7 +696,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.TimeStamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp });
 		}
@@ -714,7 +714,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.TimeStamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp1, timestamp2 });
 		}
@@ -735,7 +735,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			var timestamps = logFile.GetColumn(new LogFileSection(1, 2), LogFileColumns.TimeStamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(1, 2), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp2, timestamp2 });
 		}
@@ -756,7 +756,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			var timestamps = logFile.GetColumn(new LogFileSection(2, 1), LogFileColumns.TimeStamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(2, 1), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp2 });
 		}

@@ -369,5 +369,56 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[0].RawContent.Should().Be("bar");
 			entries[1].RawContent.Should().Be("some lazy fox");
 		}
+
+		[Test]
+		public void TestGetEntriesMultipleColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.LogLevel, LogFileColumns.Timestamp);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] {LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+
+		[Test]
+		public void TestGetEntriesRandomAccess()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.LogLevel, LogFileColumns.Timestamp);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+
+		[Test]
+		public void TestGetEntriesWithMinimumColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.Minimum);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
 	}
 }

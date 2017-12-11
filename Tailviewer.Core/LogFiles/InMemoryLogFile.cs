@@ -77,30 +77,70 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			if (Equals(column, LogFileColumns.TimeStamp))
+			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
+			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
+			if (Equals(column, LogFileColumns.RawContent))
+			{
+				GetRawContent(section, (string[])(object)buffer);
+			}
+			else if (Equals(column, LogFileColumns.Timestamp))
 			{
 				GetTimestamps(section, (DateTime?[])(object)buffer);
 			}
-			else if (Equals(column, LogFileColumns.RawContent))
+			else if (Equals(column, LogFileColumns.LogLevel))
 			{
-				GetRawContent(section, (string[]) (object) buffer);
+				GetLogLevel(section, (LevelFlags[])(object)buffer);
 			}
 			else
 			{
-				throw new NotImplementedException();
+				throw new NoSuchColumnException(column);
 			}
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			if (Equals(column, LogFileColumns.TimeStamp))
+			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
+			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
+			if (Equals(column, LogFileColumns.RawContent))
 			{
-				GetTimestamps(indices, (DateTime?[]) (object) buffer);
+				GetRawContent(indices, (string[])(object)buffer);
+			}
+			else if (Equals(column, LogFileColumns.Timestamp))
+			{
+				GetTimestamps(indices, (DateTime?[])(object)buffer);
+			}
+			else if (Equals(column, LogFileColumns.LogLevel))
+			{
+				GetLogLevel(indices, (LevelFlags[])(object)buffer);
 			}
 			else
 			{
-				throw new NotImplementedException();
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		private void GetLogLevel(LogFileSection section, LevelFlags[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
+				}
+			}
+		}
+
+		private void GetLogLevel(IReadOnlyList<LogLineIndex> indices, LevelFlags[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
+				}
 			}
 		}
 
@@ -111,7 +151,19 @@ namespace Tailviewer.Core.LogFiles
 				for (int i = 0; i < section.Count; ++i)
 				{
 					var index = section.Index + i;
-					buffer[i] = GetRawContent(index);
+					buffer[i] = TryGetLogLine(index)?.Message;
+				}
+			}
+		}
+
+		private void GetRawContent(IReadOnlyList<LogLineIndex> indices, string[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[i] = TryGetLogLine(index)?.Message;
 				}
 			}
 		}
@@ -123,7 +175,7 @@ namespace Tailviewer.Core.LogFiles
 				for (int i = 0; i < section.Count; ++i)
 				{
 					var index = section.Index + i;
-					buffer[i] = GetTimestamp(index);
+					buffer[i] = TryGetLogLine(index)?.Timestamp;
 				}
 			}
 		}
@@ -135,12 +187,12 @@ namespace Tailviewer.Core.LogFiles
 				for (int i = 0; i < indices.Count; ++i)
 				{
 					var index = indices[i];
-					buffer[i] = GetTimestamp(index);
+					buffer[i] = TryGetLogLine(index)?.Timestamp;
 				}
 			}
 		}
 
-		private string GetRawContent(LogLineIndex index)
+		private LogLine? TryGetLogLine(LogLineIndex index)
 		{
 			if (index < 0 || index >= _lines.Count)
 			{
@@ -150,20 +202,7 @@ namespace Tailviewer.Core.LogFiles
 				return null;
 			}
 
-			return _lines[index.Value].Message;
-		}
-
-		private DateTime? GetTimestamp(LogLineIndex index)
-		{
-			if (index < 0 || index >= _lines.Count)
-			{
-				if (Log.IsDebugEnabled)
-					Log.DebugFormat("{0}: Row {1} doesn't exist", this, index);
-
-				return null;
-			}
-
-			return _lines[index.Value].Timestamp;
+			return _lines[index.Value];
 		}
 
 		/// <inheritdoc />

@@ -119,7 +119,6 @@
     <Compile Include="LogFiles\LogFileProxy.cs" />
     <Compile Include="LogFiles\MergedLogFile.cs" />
     <Compile Include="LogFiles\MultiLineLogFile.cs" />
-    <Compile Include="NoSuchColumnException.cs" />
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />

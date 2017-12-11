@@ -99,6 +99,7 @@
     <Compile Include="IWriter.cs" />
     <Compile Include="AnalyserId.cs" />
     <Compile Include="LogEntryIndex.cs" />
+    <Compile Include="NoSuchColumnException.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WillBeRemoved.cs" />

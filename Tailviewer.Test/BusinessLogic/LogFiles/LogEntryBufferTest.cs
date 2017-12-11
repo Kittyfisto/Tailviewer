@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,7 +10,7 @@ using Tailviewer.Core.LogFiles;
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogEntrySectionBufferTest
+	public sealed class LogEntryBufferTest
 	{
 		[Test]
 		public void TestConstruction1()
@@ -30,6 +31,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestConstruction3([Values(1, 2, 5, 10, 42, 100, 9001)] int count)
+		{
+			var buffer = new LogEntryBuffer(count, new List<ILogFileColumn> {LogFileColumns.RawContent, LogFileColumns.DeltaTime});
+			buffer.Columns.Should().Equal(new object[] {LogFileColumns.RawContent, LogFileColumns.DeltaTime });
+			buffer.Count.Should().Be(count);
+			buffer.Should().HaveCount(count);
+		}
+
+		[Test]
 		public void TestGetEntryByIndex1([Values(-1, 0, 1)] int invalidIndex)
 		{
 			var buffer = new LogEntryBuffer(0);
@@ -42,9 +52,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFrom()
 		{
-			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.Timestamp);
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
-			buffer.CopyFrom(LogFileColumns.TimeStamp, new DateTime?[] {timestamp});
+			buffer.CopyFrom(LogFileColumns.Timestamp, new DateTime?[] {timestamp});
 			buffer[0].Timestamp.Should().Be(timestamp, "Because we've just copied this timestamp to the buffer");
 		}
 
@@ -52,10 +62,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the sourceIndex parameter is honored")]
 		public void TestCopyFromPartial1()
 		{
-			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.Timestamp);
 			var unusedTimestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			var timestamp = new DateTime(2017, 12, 11, 21, 43, 0);
-			buffer.CopyFrom(LogFileColumns.TimeStamp, 0, new DateTime?[] { unusedTimestamp, timestamp }, 1, 1);
+			buffer.CopyFrom(LogFileColumns.Timestamp, 0, new DateTime?[] { unusedTimestamp, timestamp }, 1, 1);
 			buffer[0].Timestamp.Should().Be(timestamp, "Because we've just copied this timestamp to the buffer");
 		}
 
@@ -63,10 +73,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the sourceIndex parameter is honored")]
 		public void TestCopyFromPartial2()
 		{
-			var buffer = new LogEntryBuffer(1, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(1, LogFileColumns.Timestamp);
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
 			var unusedTimestamp = new DateTime(2017, 12, 11, 21, 44, 0);
-			buffer.CopyFrom(LogFileColumns.TimeStamp, 0, new DateTime?[] { timestamp, unusedTimestamp }, 0, 1);
+			buffer.CopyFrom(LogFileColumns.Timestamp, 0, new DateTime?[] { timestamp, unusedTimestamp }, 0, 1);
 			buffer[0].Timestamp.Should().Be(timestamp, "Because we've just copied this timestamp to the buffer");
 		}
 
@@ -74,10 +84,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the destIndex parameter is honored")]
 		public void TestCopyFromPartial3()
 		{
-			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.Timestamp);
 
 			var timestamp = new DateTime(2017, 12, 11, 21, 41, 0);
-			buffer.CopyFrom(LogFileColumns.TimeStamp, 1, new DateTime?[] { timestamp }, 0, 1);
+			buffer.CopyFrom(LogFileColumns.Timestamp, 1, new DateTime?[] { timestamp }, 0, 1);
 			buffer[0].Timestamp.Should().BeNull("because we didn't copy any data for this timestamp");
 			buffer[1].Timestamp.Should().Be(timestamp, "Because we've just copied this timestamp to the buffer");
 		}
@@ -85,7 +95,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromNullColumn()
 		{
-			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.Timestamp);
 			new Action(() => buffer.CopyFrom(null, 0, new string[0], 0, 0))
 				.ShouldThrow<ArgumentNullException>();
 		}
@@ -93,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCopyFromUnknownColumn()
 		{
-			var buffer = new LogEntryBuffer(2, LogFileColumns.TimeStamp);
+			var buffer = new LogEntryBuffer(2, LogFileColumns.Timestamp);
 			new Action(() => buffer.CopyFrom(LogFileColumns.RawContent, 0, new string[0], 0, 0))
 				.ShouldThrow<NoSuchColumnException>();
 		}
@@ -103,9 +113,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = new LogEntryBuffer(2,
 			                                       LogFileColumns.Index,
-			                                       LogFileColumns.TimeStamp);
+			                                       LogFileColumns.Timestamp);
 			buffer.CopyFrom(LogFileColumns.Index, new LogEntryIndex[] {1, 42});
-			buffer.CopyFrom(LogFileColumns.TimeStamp, new DateTime?[] {DateTime.MinValue, DateTime.MaxValue});
+			buffer.CopyFrom(LogFileColumns.Timestamp, new DateTime?[] {DateTime.MinValue, DateTime.MaxValue});
 
 			buffer[0].Index.Should().Be(1);
 			buffer[0].Timestamp.Should().Be(DateTime.MinValue);
@@ -136,6 +146,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			buffer.CopyFrom(LogFileColumns.RawContent, new [] {"foo", "bar"});
 			buffer[0].RawContent.Should().Be("foo");
 			buffer[1].RawContent.Should().Be("bar");
+		}
+
+		[Test]
+		public void TestAccessUnavailableColumn()
+		{
+			var buffer = new LogEntryBuffer(1);
+			new Action(() => { var unused = buffer[0].RawContent; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].Index; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].OriginalIndex; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].LineNumber; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].OriginalLineNumber; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].Timestamp; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].ElapsedTime; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].DeltaTime; }).ShouldThrow<NoSuchColumnException>();
 		}
 	}
 }

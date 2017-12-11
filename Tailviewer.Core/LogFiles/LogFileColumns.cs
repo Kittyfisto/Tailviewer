@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -9,6 +11,28 @@ namespace Tailviewer.Core.LogFiles
 	/// </summary>
 	public static class LogFileColumns
 	{
+		/// <summary>
+		///     The minimum list of columns which every log file must provide.
+		///     If a log file cannot provide contents for a certain column, then it should be filled
+		///     with default values for that columns <see cref="ILogFileColumn.DataType" />.
+		/// </summary>
+		/// <remarks>
+		///     A log file can supply any number of additional <see cref="CustomLogFileColumn{T}" />s.
+		///     This list simply marks those columns which MUST be there.
+		/// </remarks>
+		/// <remarks>
+		///     This list is subject to change over the years...
+		/// </remarks>
+		public static readonly IReadOnlyList<ILogFileColumn> Minimum;
+
+		/// <summary>
+		///     The raw content of the entry as it was extracted from the data source.
+		/// </summary>
+		/// <remarks>
+		///     Might not be readable by a humand, depending on the data source.
+		/// </remarks>
+		public static readonly ILogFileColumn<string> RawContent;
+
 		/// <summary>
 		///     The index of the log entry, from 0 to the number of log entries.
 		/// </summary>
@@ -32,13 +56,14 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileColumn<int> OriginalLineNumber;
 
 		/// <summary>
+		///     The log level of the entry (debug, info, warning, etc...)
 		/// </summary>
-		public static readonly ILogFileColumn<string> RawContent;
+		public static readonly ILogFileColumn<LevelFlags> LogLevel;
 
 		/// <summary>
-		///     The amount of time between this and the last log entry.
+		///     The absolute timestamp of when the log entry was produced.
 		/// </summary>
-		public static readonly ILogFileColumn<TimeSpan?> DeltaTime;
+		public static readonly ILogFileColumn<DateTime?> Timestamp;
 
 		/// <summary>
 		///     The amount of time elapsed between the first and this log entry.
@@ -46,20 +71,23 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileColumn<TimeSpan?> ElapsedTime;
 
 		/// <summary>
-		///     The absolute timestamp of when the log entry was produced.
+		///     The amount of time between this and the previous log entry.
 		/// </summary>
-		public static readonly ILogFileColumn<DateTime?> TimeStamp;
+		public static readonly ILogFileColumn<TimeSpan?> DeltaTime;
 
 		static LogFileColumns()
 		{
+			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
 			Index = new WellKnownLogFileColumn<LogEntryIndex>("index", "Index");
 			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index", "Original Index");
 			LineNumber = new WellKnownLogFileColumn<int>("line_number", "Line Number");
 			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number", "Original Line Number");
-			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
-			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
+			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level", "Level");
+			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp", "Timestamp");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");
-			TimeStamp = new WellKnownLogFileColumn<DateTime?>("timestamp", "Timestamp");
+			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
+
+			Minimum = new ILogFileColumn[0];
 		}
 	}
 }

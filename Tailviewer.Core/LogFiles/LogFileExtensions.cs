@@ -77,6 +77,21 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		///     Retrieves all entries for the given <paramref name="columns" /> of the given <paramref name="section" />
+		///     from this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection section, IEnumerable<ILogFileColumn> columns)
+		{
+			var buffer = new LogEntryBuffer(section.Count, columns);
+			GetEntries(logFile, section, buffer);
+			return buffer;
+		}
+
+		/// <summary>
 		///     Retrieves all entries with the given <paramref name="indices"/> from this log file and copies
 		///     them into the given <paramref name="buffer"/>.
 		/// </summary>
@@ -101,6 +116,21 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="columns"></param>
 		/// <returns></returns>
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, params ILogFileColumn[] columns)
+		{
+			var buffer = new LogEntryBuffer(indices.Count);
+			logFile.GetEntries(indices, buffer);
+			return buffer;
+		}
+
+		/// <summary>
+		///     Retrieves all entries with the given <paramref name="columns" /> of the given <paramref name="indices" />
+		///     from this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="indices"></param>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, IEnumerable<ILogFileColumn> columns)
 		{
 			var buffer = new LogEntryBuffer(indices.Count);
 			logFile.GetEntries(indices, buffer);
