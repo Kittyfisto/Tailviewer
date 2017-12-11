@@ -7,7 +7,7 @@ namespace Tailviewer
 	///     Thrown when a column which doesn't exist is accessed.
 	/// </summary>
 	public sealed class NoSuchColumnException
-		: Exception
+		: ArgumentException
 	{
 		/// <summary>
 		///     Initializes this object.

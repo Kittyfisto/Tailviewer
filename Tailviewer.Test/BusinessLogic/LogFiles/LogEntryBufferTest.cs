@@ -152,14 +152,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestAccessUnavailableColumn()
 		{
 			var buffer = new LogEntryBuffer(1);
-			new Action(() => { var unused = buffer[0].RawContent; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].Index; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].OriginalIndex; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].LineNumber; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].OriginalLineNumber; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].Timestamp; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].ElapsedTime; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = buffer[0].DeltaTime; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = buffer[0].RawContent; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].Index; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].OriginalIndex; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].LineNumber; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].OriginalLineNumber; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].Timestamp; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].ElapsedTime; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].DeltaTime; }).ShouldThrow<ColumnNotRetrievedException>();
 		}
 	}
 }

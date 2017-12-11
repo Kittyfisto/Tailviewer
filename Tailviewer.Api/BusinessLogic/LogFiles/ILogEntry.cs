@@ -18,13 +18,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <remarks>
 		///     Might not be readable by a humand, depending on the data source.
 		/// </remarks>
-		/// <exception cref="NoSuchColumnException">When the 'raw_content' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		string RawContent { get; }
 
 		/// <summary>
 		///     The index of this log entry, from 0 to the number of log entries.
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'index' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		LogEntryIndex Index { get; }
 
 		/// <summary>
@@ -32,43 +34,50 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Only differs from <see cref="Index" /> when this log entry has been created
 		///     through operations such as filtering, merging, etc...
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'original_index' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		LogEntryIndex OriginalIndex { get; }
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'line_number' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		int LineNumber { get; }
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the original data source..
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'original_line_number' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		int OriginalLineNumber { get; }
 
 		/// <summary>
 		/// The log level of this entry.
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'log_level' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		LevelFlags LogLevel { get; }
 
 		/// <summary>
 		///     The timestamp of this log entry, if available.
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'timestamp' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		DateTime? Timestamp { get; }
 
 		/// <summary>
 		///     The amount of time elapsed between the first and this log entry.
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'elapsed_time' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		TimeSpan? ElapsedTime { get; }
 
 		/// <summary>
 		///     The amount of time between this and the previous log entry.
 		/// </summary>
-		/// <exception cref="NoSuchColumnException">When the 'delta_time' column doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		TimeSpan? DeltaTime { get; }
 
 		/// <summary>
@@ -77,7 +86,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="column"></param>
 		/// <returns></returns>
-		/// <exception cref="NoSuchColumnException">When the given <paramref name="column" /> doesn't exist or hasn't been retrieved</exception>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		T GetColumnValue<T>(ILogFileColumn<T> column);
 	}
 }

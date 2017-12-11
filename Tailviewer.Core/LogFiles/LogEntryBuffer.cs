@@ -156,7 +156,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				IColumnData data;
 				if (!_buffer._dataByColumn.TryGetValue(column, out data))
-					throw new NoSuchColumnException(column);
+					throw new ColumnNotRetrievedException(column);
 
 				return ((ColumnData<T>) data)[_index];
 			}
