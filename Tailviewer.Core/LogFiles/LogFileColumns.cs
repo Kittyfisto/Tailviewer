@@ -87,7 +87,18 @@ namespace Tailviewer.Core.LogFiles
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");
 			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
 
-			Minimum = new ILogFileColumn[0];
+			Minimum = new ILogFileColumn[]
+			{
+				RawContent,
+				Index,
+				OriginalIndex,
+				LineNumber,
+				OriginalLineNumber,
+				LogLevel,
+				Timestamp,
+				ElapsedTime,
+				DeltaTime
+			};
 		}
 	}
 }

@@ -83,6 +83,16 @@ namespace Tailviewer.Core.LogFiles
 			{
 				GetRawContent(section, (string[])(object)buffer);
 			}
+			else if (Equals(column, LogFileColumns.Index) ||
+			         Equals(column, LogFileColumns.OriginalIndex))
+			{
+				GetIndices(section, (LogEntryIndex[]) (object) buffer);
+			}
+			else if (Equals(column, LogFileColumns.LineNumber) ||
+			         Equals(column, LogFileColumns.OriginalLineNumber))
+			{
+				GetLineNumbers(section, (int[])(object)buffer);
+			}
 			else if (Equals(column, LogFileColumns.Timestamp))
 			{
 				GetTimestamps(section, (DateTime?[])(object)buffer);
@@ -117,6 +127,30 @@ namespace Tailviewer.Core.LogFiles
 			else
 			{
 				throw new NoSuchColumnException(column);
+			}
+		}
+
+		private void GetIndices(LogFileSection section, LogEntryIndex[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = TryGetLogLine(index)?.LogEntryIndex ?? LogEntryIndex.Invalid;
+				}
+			}
+		}
+
+		private void GetLineNumbers(LogFileSection section, int[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = (int) (index + 1);
+				}
 			}
 		}
 

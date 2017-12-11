@@ -22,8 +22,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				LogFileColumns.OriginalLineNumber,
 				LogFileColumns.LogLevel,
 				LogFileColumns.Timestamp,
-				LogFileColumns.DeltaTime,
-				LogFileColumns.ElapsedTime
+				LogFileColumns.ElapsedTime,
+				LogFileColumns.DeltaTime
 			});
 		}
 
