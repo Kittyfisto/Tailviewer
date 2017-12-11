@@ -11,14 +11,14 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 	///     A "canvas" which draws <see cref="LogLine.OriginalLineIndex"/> in the same vertical alignment as <see cref="TextCanvas" />
 	///     draws the <see cref="LogLine.Message" />.
 	/// </summary>
-	public sealed class LineNumberCanvas
+	public sealed class LineNumberColumn
 		: FrameworkElement
 	{
 		private readonly List<LineNumber> _lineNumbers;
 		private double _lineNumberWidth;
 		private double _yOffset;
 
-		public LineNumberCanvas()
+		public LineNumberColumn()
 		{
 			_lineNumbers = new List<LineNumber>();
 

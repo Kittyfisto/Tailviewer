@@ -11,16 +11,18 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 	///     A "canvas" which draws the elapsed time to the previous log entry in the same vertical alignment as <see cref="TextCanvas" />
 	///     draws the <see cref="LogLine.Message" />.
 	/// </summary>
-	public sealed class LogEntryElapsedCanvas
+	public sealed class LogEntryDeltaTimeColumn
 		: FrameworkElement
 	{
 		private readonly List<DeltaTimeEntry> _deltas;
-		private double _lineNumberWidth;
+		private readonly double _lineNumberWidth;
 		private double _yOffset;
 
-		public LogEntryElapsedCanvas()
+		public LogEntryDeltaTimeColumn()
 		{
 			_deltas = new List<DeltaTimeEntry>();
+			ClipToBounds = true;
+			Width = _lineNumberWidth = 50;
 		}
 
 		protected override void OnRender(DrawingContext drawingContext)
@@ -38,8 +40,6 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 
 		public void UpdateLines(ILogFile logFile, LogFileSection visibleSection, double yOffset)
 		{
-			Width = 20 + TextHelper.LineNumberSpacing;
-
 			_yOffset = yOffset;
 
 			_deltas.Clear();

@@ -6,22 +6,21 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
-namespace Tailviewer.Test.Ui.Controls.LogView
+namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class LineNumberCanvasTest
+	public sealed class LineNumberColumnTest
 	{
-		private LineNumberCanvas _canvas;
+		private LineNumberColumn _column;
 		private InMemoryLogFile _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			_canvas = new LineNumberCanvas();
+			_column = new LineNumberColumn();
 
 			_logFile = new InMemoryLogFile();
 		}
@@ -32,8 +31,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			const int count = 10;
 			AddLines(count);
 
-			_canvas.UpdateLineNumbers(_logFile, new LogFileSection(0, count), 0);
-			var numbers = _canvas.LineNumbers;
+			_column.UpdateLineNumbers(_logFile, new LogFileSection(0, count), 0);
+			var numbers = _column.LineNumbers;
 			numbers.Should().NotBeNull();
 			numbers.Should().HaveCount(count);
 			numbers.Should().Equal(Enumerable.Range(0, count).Select(i => new LineNumber(i)));
@@ -55,9 +54,9 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 					indices[2] = new LogLineIndex(255);
 					indices[3] = new LogLineIndex(512);
 				});
-			_canvas.UpdateLineNumbers(logFile.Object, new LogFileSection(0, 4), 0);
-			_canvas.Width.Should().BeApproximately(24.8, 0.1, "because the canvas should reserve space for the original line count, which is 4 digits");
-			_canvas.LineNumbers.Should().Equal(new LineNumber(42),
+			_column.UpdateLineNumbers(logFile.Object, new LogFileSection(0, 4), 0);
+			_column.Width.Should().BeApproximately(24.8, 0.1, "because the canvas should reserve space for the original line count, which is 4 digits");
+			_column.LineNumbers.Should().Equal(new LineNumber(42),
 				new LineNumber(101),
 				new LineNumber(255),
 				new LineNumber(512));
