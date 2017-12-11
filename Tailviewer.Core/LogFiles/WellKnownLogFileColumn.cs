@@ -12,24 +12,25 @@ namespace Tailviewer.Core.LogFiles
 		: ILogFileColumn<T>
 	{
 		private readonly string _name;
+		private readonly string _id;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="name"></param>
-		public WellKnownLogFileColumn(object id, string name)
+		public WellKnownLogFileColumn(string id, string name)
 		{
 			if (id == null)
 				throw new ArgumentNullException(nameof(id));
 			if (name == null)
 				throw new ArgumentNullException(nameof(name));
 
-			Id = id;
+			_id = id;
 			_name = name;
 		}
 
 		/// <inheritdoc />
-		public object Id { get; }
+		public string Id => _id;
 
 		/// <inheritdoc />
 		public string Name => _name;
@@ -40,7 +41,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return Id.ToString();
+			return _id;
 		}
 	}
 }

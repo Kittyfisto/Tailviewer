@@ -12,14 +12,14 @@ namespace Tailviewer.Core.LogFiles
 		: ILogFileColumn<T>
 	{
 		private readonly string _name;
-		private readonly object _id;
+		private readonly string _id;
 
 		/// <summary>
-		/// Initializes this object.
+		///     Initializes this object.
 		/// </summary>
 		/// <param name="id">Identifies this column amongst all other columns: Two columns are equal if their id is</param>
 		/// <param name="name"></param>
-		public CustomLogFileColumn(object id, string name)
+		public CustomLogFileColumn(string id, string name)
 		{
 			if (id == null)
 				throw new ArgumentNullException(nameof(id));
@@ -31,7 +31,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object Id => _id;
+		public string Id => _id;
 
 		/// <inheritdoc />
 		public string Name => _name;

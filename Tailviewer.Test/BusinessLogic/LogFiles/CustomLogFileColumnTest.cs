@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	public sealed class CustomLogFileColumnTest
 	{
 		[Test]
-		public void TestConstruction1([Values(1, 42, "foo")] object id)
+		public void TestConstruction1([Values("stuff", "foo")] string id)
 		{
 			var column = new CustomLogFileColumn<DateTime>(id, "StartTime");
 			column.Id.Should().Be(id);
