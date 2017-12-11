@@ -292,6 +292,33 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that indexing invalid rows is allowed and returns the default value for that particular index")]
+		public void TestGetColumnTimestamp3()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(2);
+			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			{
+				null
+			});
+			_file.GetColumn(new LogLineIndex[] { 1, 2 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+				null
+			});
+			_file.GetColumn(new LogLineIndex[] { 1, 2, 0 }, LogFileColumns.TimeStamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+				null,
+				new DateTime(2017, 12, 3, 11, 59, 30)
+			});
+		}
+
+		[Test]
 		public void TestGetColumnDeltaTime1()
 		{
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");

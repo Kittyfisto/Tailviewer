@@ -108,13 +108,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			_source.GetColumn(section, column, buffer);
 		}
 
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			_source.GetColumn(indices, column, buffer);
 		}
 
 		/// <inheritdoc />

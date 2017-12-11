@@ -83,7 +83,35 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			if (column == LogFileColumns.TimeStamp)
+			{
+				GetTimestamps(indices, (DateTime?[])(object)buffer);
+			}
+		}
+
+		private void GetTimestamps(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
+		{
+			lock (_lines)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[i] = GetTimestamp(index);
+				}
+			}
+		}
+
+		private DateTime? GetTimestamp(LogLineIndex index)
+		{
+			if (index < 0 || index >= _lines.Count)
+			{
+				if (Log.IsDebugEnabled)
+					Log.DebugFormat("{0}: Row {1} doesn't exist", this, index);
+
+				return null;
+			}
+
+			return _lines[index.Value].Timestamp;
 		}
 
 		/// <inheritdoc />

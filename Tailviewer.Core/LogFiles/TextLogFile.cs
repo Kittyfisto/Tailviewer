@@ -212,8 +212,15 @@ namespace Tailviewer.Core.LogFiles
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var index = indices[i];
-				var entry = _entries[index.Value];
-				buffer[i] = entry.Timestamp;
+				if (index >= 0 && index < _entries.Count)
+				{
+					var entry = _entries[index.Value];
+					buffer[i] = entry.Timestamp;
+				}
+				else
+				{
+					buffer[i] = null;
+				}
 			}
 		}
 

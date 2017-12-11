@@ -665,25 +665,106 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetOriginalIndicesFrom5()
 		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
+			var filter = new NoFilter();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
+					.ShouldThrow<ArgumentNullException>();
+			}
 		}
 
 		[Test]
 		public void TestGetOriginalIndicesFrom6()
 		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
+			var filter = new NoFilter();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
+					.ShouldThrow<ArgumentNullException>();
+			}
 		}
 
 		[Test]
 		public void TestGetOriginalIndicesFrom7()
 		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
+			var filter = new NoFilter();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			{
+				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
+					.ShouldThrow<ArgumentOutOfRangeException>();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
+		public void TestGetDeltaTime1()
+		{
+			var filter = new NoFilter();
+			var source = new InMemoryLogFile();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			{
+				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.DeltaTime);
+				deltas.Should().NotBeNull();
+				deltas.Should().HaveCount(1);
+				deltas[0].Should().BeNull();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the first entry doesn't have delta time")]
+		public void TestGetDeltaTime2()
+		{
+			var filter = new NoFilter();
+			var source = new InMemoryLogFile();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			{
+				source.AddEntry("", LevelFlags.None, DateTime.MinValue);
+
+				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.DeltaTime);
+				deltas.Should().NotBeNull();
+				deltas.Should().HaveCount(1);
+				deltas[0].Should().BeNull();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that the log file can return the time between two consecutive non-filtered events")]
+		public void TestGetDeltaTime3()
+		{
+			var filter = new NoFilter();
+			var source = new InMemoryLogFile();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			{
+				source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 11, 19, 34, 0));
+				source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 11, 19, 35, 0));
+				_taskScheduler.RunOnce();
+
+				var deltas = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime);
+				deltas.Should().NotBeNull();
+				deltas.Should().HaveCount(2);
+				deltas[0].Should().BeNull();
+				deltas[1].Should().Be(TimeSpan.FromMinutes(1));
+			}
+		}
+
+		[Test]
+		public void TestGetDeltaTime4()
+		{
+			var filter = new LevelFilter(LevelFlags.Info);
+			var source = new InMemoryLogFile();
+			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
+			{
+				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 34, 0));
+				source.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 11, 19, 35, 0));
+				source.AddEntry("", LevelFlags.Info, new DateTime(2017, 12, 11, 19, 36, 0));
+				_taskScheduler.RunOnce();
+
+				var deltas = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime);
+				deltas.Should().NotBeNull();
+				deltas.Should().HaveCount(2);
+				deltas[0].Should().BeNull();
+				deltas[1].Should().Be(TimeSpan.FromMinutes(2), "because the delta time should be calculated based on events which match the filter");
+			}
 		}
 	}
 }

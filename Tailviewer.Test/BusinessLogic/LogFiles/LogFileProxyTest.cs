@@ -418,8 +418,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[100];
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);
-			new Action(() => logFile.GetColumn(section, LogFileColumns.RawContent, buffer))
-				.ShouldThrow<IndexOutOfRangeException>();
+			logFile.GetColumn(section, LogFileColumns.RawContent, buffer);
+			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
+		}
+
+		[Test]
+		public void TestGetColumn3()
+		{
+			var indices = new LogLineIndex[] {1, 2};
+			var buffer = new string[2];
+			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero);
+			logFile.GetColumn(indices, LogFileColumns.RawContent, buffer);
+			buffer.Should().OnlyContain(x => ReferenceEquals(x, null));
 		}
 
 		[Test]

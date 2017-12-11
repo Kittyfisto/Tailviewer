@@ -267,14 +267,28 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				throw new IndexOutOfRangeException();
+				for (int i = 0; i < section.Count; ++i)
+				{
+					buffer[i] = default(T);
+				}
 			}
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			throw new NotImplementedException();
+			ILogFile logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetColumn(indices, column, buffer);
+			}
+			else
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					buffer[i] = default(T);
+				}
+			}
 		}
 
 		/// <inheritdoc />
