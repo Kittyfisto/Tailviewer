@@ -77,11 +77,11 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
 		{
-			if (column == LogFileColumns.TimeStamp)
+			if (Equals(column, LogFileColumns.TimeStamp))
 			{
 				GetTimestamps(section, (DateTime?[])(object)buffer);
 			}
-			else if (column == LogFileColumns.RawContent)
+			else if (Equals(column, LogFileColumns.RawContent))
 			{
 				GetRawContent(section, (string[]) (object) buffer);
 			}
@@ -94,7 +94,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
 		{
-			if (column == LogFileColumns.TimeStamp)
+			if (Equals(column, LogFileColumns.TimeStamp))
 			{
 				GetTimestamps(indices, (DateTime?[]) (object) buffer);
 			}
