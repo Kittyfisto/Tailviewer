@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
@@ -14,7 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestIndex()
 		{
 			LogFileColumns.Index.Id.Should().Be("index");
-			LogFileColumns.Index.DataType.Should().Be<LogLineIndex>();
+			LogFileColumns.Index.DataType.Should().Be<LogEntryIndex>();
 		}
 
 		[Test]
@@ -22,7 +21,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalIndex()
 		{
 			LogFileColumns.OriginalIndex.Id.Should().Be("original_index");
-			LogFileColumns.OriginalIndex.DataType.Should().Be<LogLineIndex>();
+			LogFileColumns.OriginalIndex.DataType.Should().Be<LogEntryIndex>();
+		}
+
+		[Test]
+		[Description("Verifies that the LineNumber property doesn't regress")]
+		public void TestLineNumber()
+		{
+			LogFileColumns.LineNumber.Id.Should().Be("line_number");
+			LogFileColumns.LineNumber.DataType.Should().Be<int>();
+		}
+
+		[Test]
+		[Description("Verifies that the OriginalLineNumber property doesn't regress")]
+		public void TestOriginalLineNumber()
+		{
+			LogFileColumns.OriginalLineNumber.Id.Should().Be("original_line_number");
+			LogFileColumns.OriginalLineNumber.DataType.Should().Be<int>();
 		}
 
 		[Test]

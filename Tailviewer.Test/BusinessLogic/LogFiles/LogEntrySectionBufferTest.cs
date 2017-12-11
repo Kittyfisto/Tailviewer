@@ -2,7 +2,6 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
@@ -105,7 +104,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = new LogEntrySectionBuffer(new LogFileSection(0, 2),
 			                                       LogFileColumns.Index,
 			                                       LogFileColumns.TimeStamp);
-			buffer.CopyFrom(LogFileColumns.Index, new LogLineIndex[] {1, 42});
+			buffer.CopyFrom(LogFileColumns.Index, new LogEntryIndex[] {1, 42});
 			buffer.CopyFrom(LogFileColumns.TimeStamp, new DateTime?[] {DateTime.MinValue, DateTime.MaxValue});
 
 			buffer[0].Index.Should().Be(1);
@@ -120,7 +119,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			const int count = 1000;
 			var buffer = new LogEntrySectionBuffer(new LogFileSection(0, count), LogFileColumns.OriginalIndex);
-			buffer.CopyFrom(LogFileColumns.OriginalIndex, Enumerable.Range(0, count).Select(i => (LogLineIndex)i).ToArray());
+			buffer.CopyFrom(LogFileColumns.OriginalIndex, Enumerable.Range(0, count).Select(i => (LogEntryIndex)i).ToArray());
 			for (int i = 0; i < count; ++i)
 			{
 				buffer[i].OriginalIndex.Should().Be(i);

@@ -13,22 +13,24 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     The index of the log entry, from 0 to the number of log entries.
 		/// </summary>
-		/// <remarks>
-		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
-		///     has been removed.
-		/// </remarks>
-		public static readonly ILogFileColumn<LogLineIndex> Index;
+		public static readonly ILogFileColumn<LogEntryIndex> Index;
 
 		/// <summary>
 		///     The index of the log entry another one was created from.
 		///     Only differs from <see cref="Index" /> when the log entry has been created
 		///     through operations such as filtering, merging, etc...
 		/// </summary>
-		/// <remarks>
-		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
-		///     has been removed.
-		/// </remarks>
-		public static readonly ILogFileColumn<LogLineIndex> OriginalIndex;
+		public static readonly ILogFileColumn<LogEntryIndex> OriginalIndex;
+
+		/// <summary>
+		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
+		/// </summary>
+		public static readonly ILogFileColumn<int> LineNumber;
+
+		/// <summary>
+		///     The (first) line number of the log entry, from 1 to the number of lines in the original data source..
+		/// </summary>
+		public static readonly ILogFileColumn<int> OriginalLineNumber;
 
 		/// <summary>
 		/// </summary>
@@ -51,8 +53,10 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileColumns()
 		{
-			Index = new WellKnownLogFileColumn<LogLineIndex>("index", "Index");
-			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index", "Original Index");
+			Index = new WellKnownLogFileColumn<LogEntryIndex>("index", "Index");
+			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index", "Original Index");
+			LineNumber = new WellKnownLogFileColumn<int>("line_number", "Line Number");
+			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number", "Original Line Number");
 			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
 			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");

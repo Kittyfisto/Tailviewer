@@ -101,9 +101,9 @@ namespace Tailviewer.Core.LogFiles
 				_index = index;
 			}
 
-			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
+			public LogEntryIndex Index => GetColumnValue(LogFileColumns.Index);
 
-			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+			public LogEntryIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
 
 			public DateTime? Timestamp => GetColumnValue(LogFileColumns.TimeStamp);
 

@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
 		///     has been removed.
 		/// </remarks>
-		LogLineIndex Index { get; }
+		LogEntryIndex Index { get; }
 
 		/// <summary>
 		///     The index of the log entry this one was created from.
@@ -30,7 +30,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Change property to <see cref="LogEntryIndex" /> once <see cref="LogLineIndex" />
 		///     has been removed.
 		/// </remarks>
-		LogLineIndex OriginalIndex { get; }
+		LogEntryIndex OriginalIndex { get; }
 
 		/// <summary>
 		///     The timestamp of this log entry, if available.
