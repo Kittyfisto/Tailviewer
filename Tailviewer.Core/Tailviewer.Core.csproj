@@ -109,6 +109,7 @@
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
+    <Compile Include="LogFiles\LogEntrySectionBuffer.cs" />
     <Compile Include="LogFiles\LogFileColumn.cs" />
     <Compile Include="LogFiles\LogFileColumns.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
