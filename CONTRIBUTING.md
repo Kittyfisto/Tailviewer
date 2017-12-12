@@ -12,7 +12,7 @@ Please try to follow these guidelines when contributing to this project:
 - Keep your pull requests as **small** as possible: I don't want to review changes to hundreds of files
 - Pull requests shouldn't tackle multiple things at the same time: Don't mix new feature X with refactoring of Y
 - Pull requests must build on AppVeyor before I accept them
-- A pull request should not break an existing feature
+- A pull request should not break existing features
 - Big features **should** be delivered in multiple pull requests (see above)
 - Bugfixes require tests which reproduce the bug (unless infeasible)
 - New classes / methods require tests
