@@ -91,6 +91,28 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public void FillDefault(int destinationIndex, int length)
+		{
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.FillDefault(destinationIndex, length);
+			}
+		}
+
+		/// <inheritdoc />
+		public void FillDefault(ILogFileColumn column, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			IColumnData columnData;
+			if (!_dataByColumn.TryGetValue(column, out columnData))
+				throw new NoSuchColumnException(column);
+
+			columnData.FillDefault(destinationIndex, length);
+		}
+
+		/// <inheritdoc />
 		public IEnumerator<ILogEntry> GetEnumerator()
 		{
 			for (var i = 0; i < _length; ++i)
@@ -177,6 +199,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section);
 			void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
+			void FillDefault(int destinationIndex, int length);
 		}
 
 		sealed class ColumnData<T>
@@ -214,7 +237,12 @@ namespace Tailviewer.Core.LogFiles
 				if (destinationIndex != 0)
 					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
 
-				source.GetColumn(indices, _column, _data);
+				source.GetColumn(indices, _column, _data, destinationIndex);
+			}
+
+			public void FillDefault(int destinationIndex, int length)
+			{
+				_data.Fill(default(T), destinationIndex, length);
 			}
 		}
 	}

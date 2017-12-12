@@ -20,6 +20,22 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="logFile"></param>
 		/// <param name="section"></param>
 		/// <param name="column"></param>
+		/// <param name="buffer"></param>
+		public static void GetColumn<T>(this ILogFile logFile,
+		                                LogFileSection section,
+		                                ILogFileColumn<T> column,
+		                                T[] buffer)
+		{
+			logFile.GetColumn(section, column, buffer, 0);
+		}
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
 		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection section, ILogFileColumn<T> column)
@@ -34,14 +50,30 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="logFile"></param>
-		/// <param name="section"></param>
+		/// <param name="indices"></param>
+		/// <param name="column"></param>
+		/// <param name="buffer"></param>
+		public static void GetColumn<T>(this ILogFile logFile,
+										IReadOnlyList<LogLineIndex> indices,
+										ILogFileColumn<T> column,
+		                                T[] buffer)
+		{
+			logFile.GetColumn(indices, column, buffer, 0);
+		}
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="indices"></param>
 		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
-		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> section, ILogFileColumn<T> column)
+		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column)
 		{
-			var cells = new T[section.Count];
-			logFile.GetColumn(section, column, cells);
+			var cells = new T[indices.Count];
+			logFile.GetColumn(indices, column, cells);
 			return cells;
 		}
 
@@ -55,10 +87,23 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="logFile"></param>
 		/// <param name="section"></param>
 		/// <param name="buffer"></param>
-		public static void GetEntries(this ILogFile logFile, LogFileSection section, ILogEntries buffer)
+		/// <param name="destinationIndex"></param>
+		public static void GetEntries(this ILogFile logFile, LogFileSection section, ILogEntries buffer, int destinationIndex)
 		{
 			foreach (var column in buffer.Columns)
-				buffer.CopyFrom(column, destinationIndex: 0, source: logFile, section: section);
+				buffer.CopyFrom(column, destinationIndex, logFile, section);
+		}
+
+		/// <summary>
+		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
+		///     them into the given <paramref name="buffer" />.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="section"></param>
+		/// <param name="buffer"></param>
+		public static void GetEntries(this ILogFile logFile, LogFileSection section, ILogEntries buffer)
+		{
+			GetEntries(logFile, section, buffer, 0);
 		}
 
 		/// <summary>

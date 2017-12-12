@@ -86,6 +86,7 @@
     <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
     <Compile Include="Analysis\WidgetTemplate.cs" />
+    <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Drive.cs" />

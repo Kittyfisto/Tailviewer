@@ -258,12 +258,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(section, column, buffer);
+				logFile.GetColumn(section, column, buffer, destinationIndex);
 			}
 			else
 			{
@@ -275,18 +275,49 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(indices, column, buffer);
+				logFile.GetColumn(indices, column, buffer, destinationIndex);
 			}
 			else
 			{
-				for (int i = 0; i < indices.Count; ++i)
+				buffer.Fill(default(T), 0, indices.Count);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			ILogFile logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetEntries(section, buffer, destinationIndex);
+			}
+			else
+			{
+				foreach (var column in buffer.Columns)
 				{
-					buffer[i] = default(T);
+					buffer.FillDefault(column, destinationIndex, section.Count);
+				}
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			ILogFile logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetEntries(indices, buffer, destinationIndex);
+			}
+			else
+			{
+				foreach (var column in buffer.Columns)
+				{
+					buffer.FillDefault(column, destinationIndex, indices.Count);
 				}
 			}
 		}

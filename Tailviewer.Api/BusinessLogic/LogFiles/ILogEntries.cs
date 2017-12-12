@@ -36,5 +36,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="source"></param>
 		/// <param name="indices"></param>
 		void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
+
+		/// <summary>
+		///    Fills the given region of all columns with default values for every column's data type.
+		/// </summary>
+		/// <param name="destinationIndex"></param>
+		/// <param name="length"></param>
+		void FillDefault(int destinationIndex, int length);
+
+		/// <summary>
+		///    Fills the given region of the given column with default values for that column's data type.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="destinationIndex"></param>
+		/// <param name="length"></param>
+		void FillDefault(ILogFileColumn column, int destinationIndex, int length);
 	}
 }

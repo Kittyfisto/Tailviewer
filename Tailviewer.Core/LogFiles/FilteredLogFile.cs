@@ -120,11 +120,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			if (column == LogFileColumns.DeltaTime)
+			if (Equals(column, LogFileColumns.DeltaTime))
 			{
-				GetDeltaTime(section, (TimeSpan?[])(object)buffer);
+				GetDeltaTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
 			}
 			else
 			{
@@ -142,11 +142,44 @@ namespace Tailviewer.Core.LogFiles
 					}
 				}
 
-				_source.GetColumn(actualIndices, column, buffer);
+				_source.GetColumn(actualIndices, column, buffer, destinationIndex);
 			}
 		}
 
-		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer)
+		/// <inheritdoc />
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+			}
+			else
+			{
+				var actualIndices = new LogLineIndex[indices.Count];
+				lock (_indices)
+				{
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						actualIndices[i] = ToSourceIndex(indices[i].Value);
+					}
+				}
+				_source.GetColumn(actualIndices, column, buffer, destinationIndex);
+			}
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
 		{
 			var actualIndices = new LogLineIndex[section.Count + 1];
 
@@ -174,32 +207,11 @@ namespace Tailviewer.Core.LogFiles
 				var previousTimestamp = timestamps[i - 1];
 				var currentTimestamp = timestamps[i];
 				var delta = currentTimestamp - previousTimestamp;
-				buffer[i - 1] = delta;
+				buffer[destinationIndex + i - 1] = delta;
 			}
 		}
 
-		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
-		{
-			if (column == LogFileColumns.DeltaTime)
-			{
-				GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
-			}
-			else
-			{
-				var actualIndices = new LogLineIndex[indices.Count];
-				lock (_indices)
-				{
-					for (int i = 0; i < indices.Count; ++i)
-					{
-						actualIndices[i] = ToSourceIndex(indices[i].Value);
-					}
-				}
-				_source.GetColumn(actualIndices, column, buffer);
-			}
-		}
-
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
 		{
 			// The easiest way to serve random access to this column is to simply retrieve
 			// the timestamp for every requested index as well as for the preceeding index.
@@ -219,7 +231,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];
 				var currentTimestamp = timestamps[i * 2 + 1];
-				buffer[i] = currentTimestamp - previousTimestamp;
+				buffer[destinationIndex + i] = currentTimestamp - previousTimestamp;
 			}
 		}
 

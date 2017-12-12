@@ -146,7 +146,7 @@ namespace Tailviewer.Core.LogFiles
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
@@ -159,15 +159,15 @@ namespace Tailviewer.Core.LogFiles
 				var retrievedCount = Math.Min(desiredCount, leftCount);
 				var inBoundsSection = new LogFileSection(section.Index, retrievedCount);
 
-				if (column == LogFileColumns.Timestamp)
+				if (Equals(column, LogFileColumns.Timestamp))
 				{
 					GetTimestamp(inBoundsSection, (DateTime?[]) (object) buffer);
 				}
-				else if (column == LogFileColumns.DeltaTime)
+				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
 					GetDeltaTime(inBoundsSection, (TimeSpan?[])(object)buffer);
 				}
-				else if(column == LogFileColumns.RawContent)
+				else if(Equals(column, LogFileColumns.RawContent))
 				{
 					throw new NotImplementedException();
 				}
@@ -184,19 +184,19 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				if (column == LogFileColumns.Timestamp)
+				if (Equals(column, LogFileColumns.Timestamp))
 				{
 					GetTimestamp(indices, (DateTime?[])(object)buffer);
 				}
-				else if (column == LogFileColumns.DeltaTime)
+				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
 					GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
 				}
-				else if (column == LogFileColumns.RawContent)
+				else if (Equals(column, LogFileColumns.RawContent))
 				{
 					throw new NotImplementedException();
 				}
@@ -205,6 +205,18 @@ namespace Tailviewer.Core.LogFiles
 					throw new NoSuchColumnException(column);
 				}
 			}
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
 		}
 
 		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)

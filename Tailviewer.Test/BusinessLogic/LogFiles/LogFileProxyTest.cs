@@ -405,10 +405,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[100];
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			logFile.GetColumn(section, LogFileColumns.RawContent, buffer);
+			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, 42);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
 			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
-			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer))),
+			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
+			                                 It.Is<int>(y => y == 42)),
 			                Times.Once);
 		}
 

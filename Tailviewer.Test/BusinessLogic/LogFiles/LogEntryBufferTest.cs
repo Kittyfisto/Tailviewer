@@ -4,7 +4,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
@@ -160,6 +159,153 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => { var unused = buffer[0].Timestamp; }).ShouldThrow<ColumnNotRetrievedException>();
 			new Action(() => { var unused = buffer[0].ElapsedTime; }).ShouldThrow<ColumnNotRetrievedException>();
 			new Action(() => { var unused = buffer[0].DeltaTime; }).ShouldThrow<ColumnNotRetrievedException>();
+		}
+
+		[Test]
+		[Description("Verifies that an entire column can be filled with default values")]
+		public void TestFillDefault1([Range(0, 10)] int length)
+		{
+			var buffer = new LogEntryBuffer(length, LogFileColumns.RawContent);
+			var data = Enumerable.Range(0, length).Select(unused => "Foo").ToArray();
+			buffer.CopyFrom(LogFileColumns.RawContent, data);
+
+			for(int i = 0; i < length; ++i)
+			{
+				buffer[i].RawContent.Should().Be("Foo");
+			}
+
+			buffer.FillDefault(LogFileColumns.RawContent, 0, length);
+
+			for (int i = 0; i < length; ++i)
+			{
+				buffer[i].RawContent.Should().BeNull();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that an entire column can be filled with default values")]
+		public void TestFillDefault2([Range(0, 10)] int length)
+		{
+			var buffer = new LogEntryBuffer(length, LogFileColumns.Timestamp);
+			var data = Enumerable.Range(0, length).Select(unused => (DateTime?)new DateTime(2017, 12, 12, 18, 58, 0)).ToArray();
+			buffer.CopyFrom(LogFileColumns.Timestamp, data);
+
+			for (int i = 0; i < length; ++i)
+			{
+				buffer[i].Timestamp.Should().Be(new DateTime(2017, 12, 12, 18, 58, 0));
+			}
+
+			buffer.FillDefault(LogFileColumns.Timestamp, 0, length);
+
+			for (int i = 0; i < length; ++i)
+			{
+				buffer[i].Timestamp.Should().BeNull();
+			}
+		}
+
+		[Test]
+		[Description("Verifies that a column can be partially filled with default values")]
+		public void TestFillDefault3()
+		{
+			var buffer = new LogEntryBuffer(4, LogFileColumns.DeltaTime);
+			var data = new TimeSpan?[]
+			{
+				TimeSpan.FromMilliseconds(1),
+				TimeSpan.FromMilliseconds(5),
+				TimeSpan.FromSeconds(3),
+				TimeSpan.FromSeconds(10)
+			};
+			buffer.CopyFrom(LogFileColumns.DeltaTime, data);
+			buffer.FillDefault(LogFileColumns.DeltaTime, 1, 2);
+
+			buffer[0].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+			buffer[1].DeltaTime.Should().Be(null);
+			buffer[2].DeltaTime.Should().Be(null);
+			buffer[3].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+		}
+
+		[Test]
+		[Description("Verifies that all columns can be filled with default values")]
+		public void TestFillAllColumns1()
+		{
+			var buffer = new LogEntryBuffer(4, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var deltas = new TimeSpan?[]
+			{
+				TimeSpan.FromMilliseconds(1),
+				TimeSpan.FromMilliseconds(5),
+				TimeSpan.FromSeconds(3),
+				TimeSpan.FromSeconds(10)
+			};
+			buffer.CopyFrom(LogFileColumns.DeltaTime, deltas);
+			var timestamps = new DateTime?[]
+			{
+				new DateTime(2017, 12, 12, 19, 24, 0),
+				new DateTime(2017, 12, 12, 19, 25, 0),
+				new DateTime(2017, 12, 12, 19, 26, 0),
+				new DateTime(2017, 12, 12, 19, 27, 0)
+			};
+			buffer.CopyFrom(LogFileColumns.Timestamp, timestamps);
+
+			buffer[0].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+			buffer[0].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 24, 0));
+			buffer[1].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(5));
+			buffer[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 25, 0));
+			buffer[2].DeltaTime.Should().Be(TimeSpan.FromSeconds(3));
+			buffer[2].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 26, 0));
+			buffer[3].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+			buffer[3].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 27, 0));
+
+			buffer.FillDefault(0, 4);
+			buffer[0].DeltaTime.Should().BeNull();
+			buffer[0].Timestamp.Should().BeNull();
+			buffer[1].DeltaTime.Should().BeNull();
+			buffer[1].Timestamp.Should().BeNull();
+			buffer[2].DeltaTime.Should().BeNull();
+			buffer[2].Timestamp.Should().BeNull();
+			buffer[3].DeltaTime.Should().BeNull();
+			buffer[3].Timestamp.Should().BeNull();
+		}
+
+		[Test]
+		[Description("Verifies that all columns can be partially filled with default values")]
+		public void TestFillAllColumns2()
+		{
+			var buffer = new LogEntryBuffer(4, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var deltas = new TimeSpan?[]
+			{
+				TimeSpan.FromMilliseconds(1),
+				TimeSpan.FromMilliseconds(5),
+				TimeSpan.FromSeconds(3),
+				TimeSpan.FromSeconds(10)
+			};
+			buffer.CopyFrom(LogFileColumns.DeltaTime, deltas);
+			var timestamps = new DateTime?[]
+			{
+				new DateTime(2017, 12, 12, 19, 24, 0),
+				new DateTime(2017, 12, 12, 19, 25, 0),
+				new DateTime(2017, 12, 12, 19, 26, 0),
+				new DateTime(2017, 12, 12, 19, 27, 0)
+			};
+			buffer.CopyFrom(LogFileColumns.Timestamp, timestamps);
+
+			buffer[0].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+			buffer[0].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 24, 0));
+			buffer[1].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(5));
+			buffer[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 25, 0));
+			buffer[2].DeltaTime.Should().Be(TimeSpan.FromSeconds(3));
+			buffer[2].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 26, 0));
+			buffer[3].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+			buffer[3].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 27, 0));
+
+			buffer.FillDefault(1, 2);
+			buffer[0].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+			buffer[0].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 24, 0));
+			buffer[1].DeltaTime.Should().BeNull();
+			buffer[1].Timestamp.Should().BeNull();
+			buffer[2].DeltaTime.Should().BeNull();
+			buffer[2].Timestamp.Should().BeNull();
+			buffer[3].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+			buffer[3].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 27, 0));
 		}
 	}
 }
