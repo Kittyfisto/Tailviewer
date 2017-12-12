@@ -236,11 +236,50 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
 			try
 			{
-				_logFile.GetColumn(section, column, buffer);
+				_logFile.GetColumn(section, column, buffer, destinationIndex);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			try
+			{
+				_logFile.GetColumn(indices, column, buffer, destinationIndex);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			try
+			{
+				_logFile.GetEntries(section, buffer, destinationIndex);
+			}
+			catch (Exception e)
+			{
+				BlameExceptionOnPlugin(e);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			try
+			{
+				_logFile.GetEntries(indices, buffer, destinationIndex);
 			}
 			catch (Exception e)
 			{

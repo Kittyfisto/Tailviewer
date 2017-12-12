@@ -106,7 +106,25 @@ namespace Tailviewer.Core.LogFiles
 		public override int OriginalCount => _source.OriginalCount;
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			_source.GetColumn(section, column, buffer);
+		}
+
+		/// <inheritdoc />
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			_source.GetColumn(indices, column, buffer);
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}

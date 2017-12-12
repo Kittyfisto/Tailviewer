@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 					Id = DataSourceId.CreateNew(),
 					MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode
 				};
-			_merged = new MergedDataSource(_taskScheduler, _settings) {IsSingleLine = true};
+			_merged = new MergedDataSource(_taskScheduler, _settings, TimeSpan.Zero) {IsSingleLine = true};
 		}
 
 		private MergedDataSource _merged;
@@ -107,6 +107,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		[Repeat(100)]
 		[Description("Verifies that creating a data-source without assinging a GUID is not allowed")]
 		public void TestCtor2()
 		{

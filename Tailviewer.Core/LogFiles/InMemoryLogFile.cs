@@ -75,15 +75,194 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
+			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
+			if (Equals(column, LogFileColumns.RawContent))
+			{
+				GetRawContent(section, (string[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.Index) ||
+			         Equals(column, LogFileColumns.OriginalIndex))
+			{
+				GetIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LineNumber) ||
+			         Equals(column, LogFileColumns.OriginalLineNumber))
+			{
+				GetLineNumbers(section, (int[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.Timestamp))
+			{
+				GetTimestamps(section, (DateTime?[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LogLevel))
+			{
+				GetLogLevel(section, (LevelFlags[])(object)buffer, destinationIndex);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
+			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
+			if (Equals(column, LogFileColumns.RawContent))
+			{
+				GetRawContent(indices, (string[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.Timestamp))
+			{
+				GetTimestamps(indices, (DateTime?[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LogLevel))
+			{
+				GetLogLevel(indices, (LevelFlags[])(object)buffer, destinationIndex);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				foreach (var column in buffer.Columns)
+					buffer.CopyFrom(column, destinationIndex, this, section);
+			}
+		}
+
+		/// <inheritdoc />
+		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				foreach (var column in buffer.Columns)
+					buffer.CopyFrom(column, destinationIndex, this, indices);
+			}
+		}
+
+		private void GetIndices(LogFileSection section, LogEntryIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[i] = TryGetLogLine(index)?.LogEntryIndex ?? LogEntryIndex.Invalid;
+				}
+			}
+		}
+
+		private void GetLineNumbers(LogFileSection section, int[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[destinationIndex + i] = (int) (index + 1);
+				}
+			}
+		}
+
+		private void GetLogLevel(LogFileSection section, LevelFlags[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[destinationIndex + i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
+				}
+			}
+		}
+
+		private void GetLogLevel(IReadOnlyList<LogLineIndex> indices, LevelFlags[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[destinationIndex + i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
+				}
+			}
+		}
+
+		private void GetRawContent(LogFileSection section, string[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[destinationIndex + i] = TryGetLogLine(index)?.Message;
+				}
+			}
+		}
+
+		private void GetRawContent(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[destinationIndex + i] = TryGetLogLine(index)?.Message;
+				}
+			}
+		}
+
+		private void GetTimestamps(LogFileSection section, DateTime?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					buffer[destinationIndex + i] = TryGetLogLine(index)?.Timestamp;
+				}
+			}
+		}
+
+		private void GetTimestamps(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[destinationIndex+i] = TryGetLogLine(index)?.Timestamp;
+				}
+			}
+		}
+
+		private LogLine? TryGetLogLine(LogLineIndex index)
+		{
+			if (index < 0 || index >= _lines.Count)
+			{
+				if (Log.IsDebugEnabled)
+					Log.DebugFormat("{0}: Row {1} doesn't exist", this, index);
+
+				return null;
+			}
+
+			return _lines[index.Value];
 		}
 
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			lock (_lines)
+			lock (_syncRoot)
 			{
 				_lines.CopyTo((int) section.Index, dest, 0, section.Count);
 			}
@@ -92,7 +271,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
-			lock (_lines)
+			lock (_syncRoot)
 			{
 				if (originalLineIndex >= _lines.Count)
 				{
@@ -106,7 +285,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
 		{
-			lock (_lines)
+			lock (_syncRoot)
 			{
 				if (index >= _lines.Count)
 				{
@@ -125,7 +304,7 @@ namespace Tailviewer.Core.LogFiles
 			if (originalIndices.Length < section.Count)
 				throw new ArgumentOutOfRangeException(nameof(originalIndices));
 
-			lock (_lines)
+			lock (_syncRoot)
 			{
 				for (int i = 0; i < section.Count; ++i)
 				{
@@ -157,7 +336,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
-			lock (_lines)
+			lock (_syncRoot)
 			{
 				return _lines[index];
 			}
@@ -220,20 +399,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="level"></param>
-		public void AddEntry(string message, LevelFlags level)
+		/// <param name="rawContent"></param>
+		public void AddEntry(string rawContent)
 		{
-			AddEntry(message, level, null);
+			AddEntry(rawContent, LevelFlags.None);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="message"></param>
+		/// <param name="rawContent"></param>
+		/// <param name="level"></param>
+		public void AddEntry(string rawContent, LevelFlags level)
+		{
+			AddEntry(rawContent, level, null);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="rawContent"></param>
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
-		public void AddEntry(string message, LevelFlags level, DateTime? timestamp)
+		public void AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
 			lock (_syncRoot)
 			{
@@ -249,8 +437,8 @@ namespace Tailviewer.Core.LogFiles
 					StartTimestamp = timestamp;
 				}
 
-				_lines.Add(new LogLine(_lines.Count, logEntryIndex, message, level, timestamp));
-				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, message.Length);
+				_lines.Add(new LogLine(_lines.Count, logEntryIndex, rawContent, level, timestamp));
+				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, rawContent.Length);
 				Touch();
 
 				_listeners.OnRead(_lines.Count);

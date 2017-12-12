@@ -674,5 +674,91 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
 				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
+
+		[Test]
+		[Description("Verifies that accessing non-existing rows is tolerated")]
+		public void TestGetTimestamp1()
+		{
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] {null}, "because accessing non-existant rows should simply return default values");
+		}
+
+		[Test]
+		public void TestGetTimestamp2()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp = DateTime.UtcNow;
+			source.AddEntry("", LevelFlags.None, timestamp);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp });
+		}
+
+		[Test]
+		public void TestGetTimestamp3()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp1);
+
+			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp2);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp1, timestamp2 });
+		}
+
+		[Test]
+		[Ignore("Not yet implemented, maybe never will due to https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		[Description("Verifies that every line of a log entry provides access to the timestamp")]
+		public void TestGetTimestamp4()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp1);
+
+			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp2);
+			source.AddEntry("", LevelFlags.None);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+
+			var timestamps = logFile.GetColumn(new LogFileSection(1, 2), LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp2, timestamp2 });
+		}
+
+		[Test]
+		[Ignore("Not yet implemented, maybe never will due to https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		[Description("Verifies that every line of a log entry provides access to the timestamp")]
+		public void TestGetTimestamp5()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp1);
+
+			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp2);
+			source.AddEntry("", LevelFlags.None);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+
+			var timestamps = logFile.GetColumn(new LogFileSection(2, 1), LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp2 });
+		}
 	}
 }

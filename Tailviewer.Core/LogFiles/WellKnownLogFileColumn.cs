@@ -4,19 +4,21 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
+	///     A column which is well-known by Tailviewer, i.e. one that can be interpreted
+	///     because its meaning is understood (such as Timestamp, etc...).
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public sealed class LogFileColumn<T>
+	internal sealed class WellKnownLogFileColumn<T>
 		: ILogFileColumn<T>
 	{
-		private readonly object _id;
 		private readonly string _name;
+		private readonly string _id;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="name"></param>
-		public LogFileColumn(object id, string name)
+		public WellKnownLogFileColumn(string id, string name)
 		{
 			if (id == null)
 				throw new ArgumentNullException(nameof(id));
@@ -28,9 +30,18 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object Id => _id;
+		public string Id => _id;
 
 		/// <inheritdoc />
 		public string Name => _name;
+
+		/// <inheritdoc />
+		public Type DataType => typeof(T);
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return _id;
+		}
 	}
 }

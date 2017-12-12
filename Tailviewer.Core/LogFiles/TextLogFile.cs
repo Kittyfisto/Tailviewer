@@ -146,16 +146,125 @@ namespace Tailviewer.Core.LogFiles
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer)
+		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			if (column == LogFileColumns.RawContent)
+			lock (_syncRoot)
 			{
-				throw new NotImplementedException();
+				// This method should simply ignore out-of-bounds access and instead
+				// fill the array with default(T). The reason being the non-synchronized access
+				// to ever changing log files where exceptions upon out-of-bounds access are
+				// super impractical.
+				var desiredCount = section.Count;
+				var leftCount = Math.Max(0, _entries.Count - section.Index);
+				var retrievedCount = Math.Min(desiredCount, leftCount);
+				var inBoundsSection = new LogFileSection(section.Index, retrievedCount);
+
+				if (Equals(column, LogFileColumns.Timestamp))
+				{
+					GetTimestamp(inBoundsSection, (DateTime?[]) (object) buffer);
+				}
+				else if (Equals(column, LogFileColumns.DeltaTime))
+				{
+					GetDeltaTime(inBoundsSection, (TimeSpan?[])(object)buffer);
+				}
+				else if(Equals(column, LogFileColumns.RawContent))
+				{
+					throw new NotImplementedException();
+				}
+				else 
+				{
+					throw new NoSuchColumnException(column);
+				}
+
+				for (int i = retrievedCount; i < section.Count; ++i)
+				{
+					buffer[i] = default(T);
+				}
 			}
+		}
+
+		/// <inheritdoc />
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				if (Equals(column, LogFileColumns.Timestamp))
+				{
+					GetTimestamp(indices, (DateTime?[])(object)buffer);
+				}
+				else if (Equals(column, LogFileColumns.DeltaTime))
+				{
+					GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
+				}
+				else if (Equals(column, LogFileColumns.RawContent))
+				{
+					throw new NotImplementedException();
+				}
+				else
+				{
+					throw new NoSuchColumnException(column);
+				}
+			}
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
+		{
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var index = indices[i];
+				if (index >= 0 && index < _entries.Count)
+				{
+					var entry = _entries[index.Value];
+					buffer[i] = entry.Timestamp;
+				}
+				else
+				{
+					buffer[i] = null;
+				}
+			}
+		}
+
+		private void GetTimestamp(LogFileSection section, DateTime?[] buffer)
+		{
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var index = section.Index.Value + i;
+				buffer[i] = _entries[index].Timestamp;
+			}
+		}
+
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer)
+		{
+			DateTime? previousTimestamp;
+			if (section.Index > 0 && _entries.Count > 0)
+				previousTimestamp = _entries[section.Index - 1].Timestamp;
 			else
+				previousTimestamp = null;
+
+			for (int i = 0; i < section.Count; ++i)
 			{
-				throw new NoSuchColumnException(column);
+				var index = section.Index.Value + i;
+				var timestamp = _entries[index].Timestamp;
+				buffer[i] = timestamp - previousTimestamp;
+				previousTimestamp = timestamp;
 			}
+		}
+
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

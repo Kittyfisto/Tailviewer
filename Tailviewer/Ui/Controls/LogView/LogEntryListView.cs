@@ -17,6 +17,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -64,10 +66,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
 		private readonly DataSourceCanvas _dataSourceCanvas;
-		private readonly LogEntryElapsedCanvas _elapsedCanvas;
+		private readonly LogEntryDeltaTimeColumn _deltaTimeColumn;
 		private readonly FlatScrollBar _horizontalScrollBar;
 
-		private readonly LineNumberCanvas _lineNumberCanvas;
+		private readonly LineNumberColumn _lineNumberColumn;
 		private readonly DispatcherTimer _timer;
 		private readonly FlatScrollBar _verticalScrollBar;
 
@@ -115,19 +117,19 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
-			_lineNumberCanvas = new LineNumberCanvas();
-			_lineNumberCanvas.SetValue(RowProperty, value: 0);
-			_lineNumberCanvas.SetValue(ColumnProperty, value: 0);
-			_lineNumberCanvas.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
+			_lineNumberColumn = new LineNumberColumn();
+			_lineNumberColumn.SetValue(RowProperty, value: 0);
+			_lineNumberColumn.SetValue(ColumnProperty, value: 0);
+			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
 			_dataSourceCanvas = new DataSourceCanvas();
 			_dataSourceCanvas.SetValue(RowProperty, value: 0);
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_elapsedCanvas = new LogEntryElapsedCanvas();
-			_elapsedCanvas.SetValue(RowProperty, value: 0);
-			_elapsedCanvas.SetValue(ColumnProperty, value: 2);
+			_deltaTimeColumn = new LogEntryDeltaTimeColumn();
+			_deltaTimeColumn.SetValue(RowProperty, value: 0);
+			_deltaTimeColumn.SetValue(ColumnProperty, value: 2);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
 			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
@@ -150,9 +152,9 @@ namespace Tailviewer.Ui.Controls.LogView
 			separator.SetValue(ColumnProperty, value: 3);
 			separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			Children.Add(_lineNumberCanvas);
+			Children.Add(_lineNumberColumn);
 			Children.Add(_dataSourceCanvas);
-			Children.Add(_elapsedCanvas);
+			Children.Add(_deltaTimeColumn);
 			Children.Add(separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
@@ -309,7 +311,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnShowLineNumbersChanged(bool showLineNumbers)
 		{
-			_lineNumberCanvas.Visibility = showLineNumbers
+			_lineNumberColumn.Visibility = showLineNumbers
 				? Visibility.Visible
 				: Visibility.Collapsed;
 		}
@@ -377,13 +379,13 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnVisibleLinesChanged()
 		{
-			_lineNumberCanvas.UpdateLineNumbers(LogFile,
+			_lineNumberColumn.UpdateLineNumbers(LogFile,
 			                                    PartTextCanvas.CurrentlyVisibleSection,
 			                                    PartTextCanvas.YOffset);
 			_dataSourceCanvas.UpdateDataSources(DataSource,
 			                                    PartTextCanvas.CurrentlyVisibleSection,
 			                                    PartTextCanvas.YOffset);
-			_elapsedCanvas.UpdateLines(LogFile,
+			_deltaTimeColumn.UpdateLines(LogFile,
 			                           PartTextCanvas.CurrentlyVisibleSection,
 			                           PartTextCanvas.YOffset);
 		}

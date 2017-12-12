@@ -1,3 +1,5 @@
+using System;
+
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
@@ -7,12 +9,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Id of this column, two columns are the same if they have the same id.
 		/// </summary>
-		object Id { get; }
+		string Id { get; }
 
 		/// <summary>
 		///     Human readable name of this column.
 		/// </summary>
 		string Name { get; }
+
+		/// <summary>
+		///     The type of the data provided by this column.
+		/// </summary>
+		Type DataType { get; }
 	}
 
 	/// <summary>

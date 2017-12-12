@@ -9,6 +9,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	///     Represents a single line (terminated by \n or \r\n) of the data source (log file).
 	/// </summary>
+	[WillBeRemoved("Will be removed sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct LogLine : IEquatable<LogLine>
 	{

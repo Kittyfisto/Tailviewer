@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
 
-namespace Tailviewer.Ui.Controls.LogView
+namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 {
 	public struct LineNumber
 	{

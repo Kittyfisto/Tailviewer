@@ -86,6 +86,7 @@
     <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\LogAnalyser.cs" />
     <Compile Include="Analysis\WidgetTemplate.cs" />
+    <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Drive.cs" />
@@ -106,10 +107,12 @@
     <Compile Include="LogDataAccessQueue.cs" />
     <Compile Include="LogDataCache.cs" />
     <Compile Include="LogFiles\AbstractLogFile.cs" />
+    <Compile Include="LogFiles\CustomLogFileColumn.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
-    <Compile Include="LogFiles\LogFileColumn.cs" />
+    <Compile Include="LogFiles\LogEntryBuffer.cs" />
+    <Compile Include="LogFiles\WellKnownLogFileColumn.cs" />
     <Compile Include="LogFiles\LogFileColumns.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
     <Compile Include="LogFiles\LogFileListenerCollection.cs" />
@@ -117,7 +120,6 @@
     <Compile Include="LogFiles\LogFileProxy.cs" />
     <Compile Include="LogFiles\MergedLogFile.cs" />
     <Compile Include="LogFiles\MultiLineLogFile.cs" />
-    <Compile Include="NoSuchColumnException.cs" />
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />

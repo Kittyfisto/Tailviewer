@@ -115,7 +115,16 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int Count { get; }
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer);
+		public abstract void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+
+		/// <inheritdoc />
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+
+		/// <inheritdoc />
+		public abstract void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex);
+
+		/// <inheritdoc />
+		public abstract void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex);
 
 		/// <inheritdoc />
 		public abstract void GetSection(LogFileSection section, LogLine[] dest);

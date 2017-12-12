@@ -337,5 +337,89 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
 				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
+
+		[Test]
+		public void TestGetEntriesEmpty()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.GetEntries(new LogFileSection()).Should().BeEmpty("because the log file is empty");
+		}
+
+		[Test]
+		public void TestGetEntriesRawContent1()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("foobar");
+			var entries = logFile.GetEntries(new LogFileSection(0, 1), LogFileColumns.RawContent);
+			entries.Count.Should().Be(1);
+			entries.Columns.Should().Equal(new object[] {LogFileColumns.RawContent}, "because we've only retrieved that column");
+			entries[0].RawContent.Should().Be("foobar");
+		}
+
+		[Test]
+		public void TestGetEntriesRawContent2()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("foo");
+			logFile.AddEntry("bar");
+			logFile.AddEntry("some lazy fox");
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.RawContent);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.RawContent }, "because we've only retrieved that column");
+			entries[0].RawContent.Should().Be("bar");
+			entries[1].RawContent.Should().Be("some lazy fox");
+		}
+
+		[Test]
+		public void TestGetEntriesMultipleColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.LogLevel, LogFileColumns.Timestamp);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] {LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+
+		[Test]
+		public void TestGetEntriesRandomAccess()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.LogLevel, LogFileColumns.Timestamp);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+
+		[Test]
+		[Ignore("elapsed time and delta time not implemented yet...")]
+		public void TestGetEntriesWithMinimumColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.Minimum);
+			entries.Count.Should().Be(2);
+			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(null);
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
 	}
 }

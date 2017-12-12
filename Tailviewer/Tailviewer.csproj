@@ -180,7 +180,8 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
-    <Compile Include="Ui\Controls\LogView\LogEntryElapsedCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeEntry.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\LogEntryDeltaTimeColumn.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -261,8 +262,8 @@
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumber.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumberCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumber.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberColumn.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
     <Compile Include="Ui\Controls\LogView\TextHelper.cs" />

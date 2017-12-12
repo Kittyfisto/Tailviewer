@@ -245,5 +245,119 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.None));
 			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.None));
 		}
+
+		[Test]
+		public void TestGetColumnTimestamp1()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(2);
+			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 11, 59, 30),
+				new DateTime(2017, 12, 3, 12, 00, 00)
+			});
+
+			_file.GetColumn(new LogFileSection(1, 1), LogFileColumns.Timestamp)
+			     .Should().Equal(new DateTime(2017, 12, 3, 12, 00, 00));
+		}
+
+		[Test]
+		[Description("Verifies that columns can be retrieved by indices")]
+		public void TestGetColumnTimestamp2()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(2);
+			_file.GetColumn(new LogLineIndex[] {0,  1}, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 11, 59, 30),
+				new DateTime(2017, 12, 3, 12, 00, 00)
+			});
+			_file.GetColumn(new LogLineIndex[] { 1, 0 }, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+				new DateTime(2017, 12, 3, 11, 59, 30)
+			});
+			_file.GetColumn(new LogLineIndex[] { 1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+			});
+		}
+
+		[Test]
+		[Description("Verifies that indexing invalid rows is allowed and returns the default value for that particular index")]
+		public void TestGetColumnTimestamp3()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(2);
+			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				null
+			});
+			_file.GetColumn(new LogLineIndex[] { 1, 2 }, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+				null
+			});
+			_file.GetColumn(new LogLineIndex[] { 1, 2, 0 }, LogFileColumns.Timestamp).Should().Equal(new object[]
+			{
+				new DateTime(2017, 12, 3, 12, 00, 00),
+				null,
+				new DateTime(2017, 12, 3, 11, 59, 30)
+			});
+		}
+
+		[Test]
+		public void TestGetColumnDeltaTime1()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.Count.Should().Be(2);
+			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime).Should().Equal(new object[]
+			{
+				null,
+				TimeSpan.FromSeconds(30)
+			});
+
+			_file.GetColumn(new LogFileSection(1, 1), LogFileColumns.DeltaTime)
+			     .Should().Equal(new object[] {TimeSpan.FromSeconds(30)});
+		}
+
+		[Test]
+		[Description("Verifies that out-of-bounds access is tolerated")]
+		public void TestGetColumnDeltaTime2()
+		{
+			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
+			_streamWriter.Flush();
+			_scheduler.RunOnce();
+
+			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime).Should().Equal(new object[]
+			{
+				null,
+				null
+			});
+			_file.GetColumn(new LogFileSection(1, 5), LogFileColumns.DeltaTime).Should().Equal(new object[]
+			{
+				null,
+				null,
+				null,
+				null,
+				null
+			});
+		}
 	}
 }

@@ -6,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
@@ -140,7 +139,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					}
 
 					filtered.Property(x => x.Count).ShouldEventually().Be(0, TimeSpan.FromSeconds(5));
-					filtered.EndOfSourceReached.Should().BeTrue();
+					filtered.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
 					sections.Should().EndWith(LogFileSection.Reset);
 				}
 			}

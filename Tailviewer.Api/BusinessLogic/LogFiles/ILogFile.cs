@@ -99,7 +99,36 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="section"></param>
 		/// <param name="column"></param>
 		/// <param name="buffer"></param>
-		void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer);
+		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="indices"></param>
+		/// <param name="column"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+
+		/// <summary>
+		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
+		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		/// </summary>
+		/// <param name="section"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex);
+
+		/// <summary>
+		///     Retrieves all entries from the given <paramref name="indices" /> from this log file and copies
+		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		/// </summary>
+		/// <param name="indices"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex);
 
 		/// <summary>
 		///     Retrieves a list of log lines from this log file.
@@ -109,6 +138,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="section"></param>
 		/// <param name="dest"></param>
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		void GetSection(LogFileSection section, LogLine[] dest);
 
 		/// <summary>
@@ -120,6 +150,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="index"></param>
 		/// <returns></returns>
 		[Pure]
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		LogLine GetLine(int index);
 
 		/// <summary>
