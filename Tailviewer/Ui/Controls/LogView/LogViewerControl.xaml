@@ -96,7 +96,7 @@
                                     Padding="4"
                                     x:Name="PART_ShowDeltaTime"
                                     VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.ShowDeltaTime, Mode=TwoWay}"
+                                    IsChecked="{Binding DataSource.ShowDeltaTimes, Mode=TwoWay}"
                                     ToolTip="Show the amount of time elapsed since the previous entry"
                                     Content="Time delta" />
 
