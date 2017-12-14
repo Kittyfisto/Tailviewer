@@ -142,7 +142,129 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(section, (TimeSpan?[]) (object) buffer, destinationIndex);
+			}
+			else
+			{
+				// We want to minimize the amount of GetColumn calls to our source files.
+				// The best we can achieve is up to one call per source, which is what the following
+				// code achieves:
+				// At first, we want to build the list of indices we need to retrieve per source
+				var indices = GetOriginalLogLineIndices<T>(section);
+				// Then we want to retrieve the column values per source
+				GetSourceColumnValues(column, indices);
+				// And finally we want to copy those column values back to the destination
+				// buffer IN THEIR CORRECT ORDER.
+				CopyColumnValuesToBuffer(indices, buffer, destinationIndex);
+			}
+		}
+
+		#region Retrieving Column Values from source files
+
+		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(LogFileSection section)
+		{
+			var indices = new Dictionary<int, Stuff<T>>();
+
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					if (index >= 0 && index < _indices.Count)
+					{
+						var sourceIndex = _indices[index.Value];
+						Stuff<T> stuff;
+						if (!indices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							indices.Add(sourceIndex.LogFileIndex, stuff);
+						}
+						stuff.Add(i, sourceIndex.SourceLineIndex);
+					}
+				}
+			}
+
+			return indices;
+		}
+
+		private void GetSourceColumnValues<T>(ILogFileColumn<T> column, Dictionary<int, Stuff<T>> originalBuffers)
+		{
+			foreach (var pair in originalBuffers)
+			{
+				var sourceLogFileIndex = pair.Key;
+				var stuff = pair.Value;
+				var sourceColumnValues = stuff.Buffer;
+
+				var sourceLogFile = _sources[sourceLogFileIndex];
+				sourceLogFile.GetColumn(stuff.OriginalLogLineIndices, column, sourceColumnValues, 0);
+			}
+		}
+
+		private void CopyColumnValuesToBuffer<T>(Dictionary<int, Stuff<T>> indices, T[] buffer, int destinationIndex)
+		{
+			foreach (var pair in indices)
+			{
+				var stuff = pair.Value;
+				var sourceColumnValues = stuff.Buffer;
+
+				for (int i = 0; i < stuff.DestinationIndices.Count; ++i)
+				{
+					var destIndex = destinationIndex + stuff.DestinationIndices[i];
+					buffer[destIndex] = sourceColumnValues[i];
+				}
+			}
+		}
+
+		sealed class Stuff<T>
+		{
+			private readonly List<LogLineIndex> _originalLogLineIndices;
+			private readonly List<int> _destinationIndices;
+
+			public IReadOnlyList<int> DestinationIndices => _destinationIndices;
+
+			private T[] _buffer;
+
+			public Stuff()
+			{
+				_destinationIndices = new List<int>();
+				_originalLogLineIndices = new List<LogLineIndex>();
+			}
+
+			public IReadOnlyList<LogLineIndex> OriginalLogLineIndices => _originalLogLineIndices;
+
+			public T[] Buffer
+			{
+				get
+				{
+					if (_buffer == null)
+					{
+						_buffer = new T[_originalLogLineIndices.Count];
+					}
+					return _buffer;
+				}
+			}
+
+			public void Add(int destIndex, LogLineIndex index)
+			{
+				_destinationIndices.Add(destIndex);
+				_originalLogLineIndices.Add(index);
+			}
+		}
+
+		#endregion
+
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
+		{
+			var timestamps = new DateTime?[section.Count + 1];
+			GetColumn(new LogFileSection(section.Index - 1, section.Count + 1), LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var previous = timestamps[i];
+				var current = timestamps[i + 1];
+				buffer[destinationIndex + i] = current - previous;
+			}
 		}
 
 		/// <inheritdoc />
