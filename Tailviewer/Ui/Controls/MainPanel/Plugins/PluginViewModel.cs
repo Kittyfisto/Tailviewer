@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows.Media;
-using Metrolib;
 using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Plugins
@@ -9,7 +8,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 	public sealed class PluginViewModel
 	{
 		private readonly IPluginDescription _description;
-		private readonly DelegateCommand _deleteCommand;
+		//private readonly DelegateCommand _deleteCommand;
 
 		public PluginViewModel(IPluginDescription description)
 		{
@@ -30,6 +29,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		public string Description => _description.Description ?? _description.Error;
 		public Uri Website => _description.Website;
 		public ImageSource Icon => _description.Icon;
-		public ICommand DeleteCommand => _deleteCommand;
+		public ICommand DeleteCommand => null;
 	}
 }

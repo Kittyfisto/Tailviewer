@@ -68,46 +68,78 @@
             <controls:FlatToggleButton
                 Margin="0,0,8,8"
                 Padding="4"
-                x:Name="PART_ShowLineNumbers"
+                x:Name="PART_View"
                 VerticalAlignment="Stretch"
-                ToolTip="Show/hide line numbers"
-                IsChecked="{Binding ShowLineNumbers, Mode=TwoWay, ElementName=This}"
-                Content="Line Numbers" />
+                ToolTip="Change the way the log file is displayed"
+                Content="View"
+                DataContext="{Binding Path=., ElementName=This}">
+                <controls:FlatToggleButton.ContextMenu>
+                    <controls:FlatContextMenu AnchorAlignment="Center"
+                                              HorizontalOffset="-60"
+                                              Placement="Bottom"
+                                              IsFirstItemHovered="True"
+                                              VerticalOffset="-2">
+                        <controls:MenuItemContentControl Padding="0">
+                            <StackPanel Margin="8">
 
-            <logView:DataSourceDisplayModeToggleButton 
-                x:Name="PART_MergedDataSourceDisplayMode"
-                DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-                Visibility="{Binding DataSource, ElementName=This, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
-                VerticalAlignment="Stretch"
-                Margin="0,0,8,8"
-                Padding="4" />
+                                <controls:FlatToggleButton
+                                    Margin="0,0,0,8"
+                                    Padding="4"
+                                    x:Name="PART_ShowLineNumbers"
+                                    VerticalAlignment="Stretch"
+                                    ToolTip="Show/hide line numbers"
+                                    IsChecked="{Binding ShowLineNumbers, Mode=TwoWay}"
+                                    Content="Line Numbers" />
 
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                x:Name="PART_ColorByLevel"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay, ElementName=This}"
-                ToolTip="Color log messages by their log level"
-                Content="Color by level" />
+                                <controls:FlatToggleButton
+                                    Margin="0,0,0,8"
+                                    Padding="4"
+                                    x:Name="PART_ShowDeltaTime"
+                                    VerticalAlignment="Stretch"
+                                    IsChecked="{Binding DataSource.ShowDeltaTime, Mode=TwoWay}"
+                                    ToolTip="Show the amount of time elapsed since the previous entry"
+                                    Content="Time delta" />
 
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                x:Name="PART_HideEmptyLines"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay, ElementName=This}"
-                ToolTip="Hide lines which are completely empty"
-                Content="Hide empty lines" />
+                                <logView:DataSourceDisplayModeToggleButton 
+                                    x:Name="PART_MergedDataSourceDisplayMode"
+                                    DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay}"
+                                    Visibility="{Binding DataSource, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
+                                    VerticalAlignment="Stretch"
+                                    Margin="0,0,0,8"
+                                    Padding="4" />
 
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                x:Name="PART_SingleLine"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay, ElementName=This}"
-                ToolTip="Treat every single line as a separate log entry"
-                Content="Single line" />
+                                <controls:FlatToggleButton
+                                    Margin="0,0,0,8"
+                                    Padding="4"
+                                    x:Name="PART_ColorByLevel"
+                                    VerticalAlignment="Stretch"
+                                    IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay}"
+                                    ToolTip="Color log messages by their log level"
+                                    Content="Color by level" />
+
+                                <controls:FlatToggleButton
+                                    Margin="0,0,0,8"
+                                    Padding="4"
+                                    x:Name="PART_HideEmptyLines"
+                                    VerticalAlignment="Stretch"
+                                    IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay}"
+                                    ToolTip="Hide lines which are completely empty"
+                                    Content="Hide empty lines" />
+
+                                <controls:FlatToggleButton
+                                    Margin="0"
+                                    Padding="4"
+                                    x:Name="PART_SingleLine"
+                                    VerticalAlignment="Stretch"
+                                    IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay}"
+                                    ToolTip="Treat every single line as a separate log entry"
+                                    Content="Single line" />
+
+                            </StackPanel>
+                        </controls:MenuItemContentControl>
+                    </controls:FlatContextMenu>
+                </controls:FlatToggleButton.ContextMenu>
+            </controls:FlatToggleButton>
 
             <controls:FlatToggleButton
                 Margin="0,0,0,8"
@@ -190,6 +222,7 @@
             Search="{Binding Search, ElementName=This}"
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+            ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
             MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
             Settings="{Binding Settings, ElementName=This}"

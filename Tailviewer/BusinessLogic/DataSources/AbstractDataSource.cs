@@ -182,6 +182,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			set { _settings.ShowLineNumbers = value; }
 		}
 
+		public bool ShowDeltaTimes
+		{
+			get { return _settings.ShowDeltaTimes; }
+			set { _settings.ShowDeltaTimes = value; }
+		}
+
 		public HashSet<LogLineIndex> SelectedLogLines
 		{
 			get { return _settings.SelectedLogLines; }

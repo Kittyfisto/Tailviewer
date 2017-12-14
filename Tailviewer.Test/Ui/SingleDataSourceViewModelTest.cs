@@ -7,7 +7,6 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -54,6 +53,47 @@ namespace Tailviewer.Test.Ui
 				var model = new SingleDataSourceViewModel(source);
 				model.FileName.Should().Be("foo.txt");
 				model.SearchTerm.Should().Be("foobar");
+			}
+		}
+
+		[Test]
+		public void TestCtor3([Values(true, false)] bool showDeltaTimes)
+		{
+			using (var source = new SingleDataSource(_scheduler, new DataSource
+			{
+				Id = DataSourceId.CreateNew(),
+				File = @"C:\temp\foo.txt",
+				ShowDeltaTimes = showDeltaTimes
+			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			{
+				var model = new SingleDataSourceViewModel(source);
+				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			}
+		}
+
+		[Test]
+		public void TestChangeShowDeltaTimes([Values(true, false)] bool showDeltaTimes)
+		{
+			using (var source = new SingleDataSource(_scheduler, new DataSource
+			{
+				Id = DataSourceId.CreateNew(),
+				File = @"C:\temp\foo.txt",
+				ShowDeltaTimes = showDeltaTimes
+			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			{
+				var model = new SingleDataSourceViewModel(source);
+
+				var changes = new List<string>();
+				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+
+				model.ShowDeltaTimes = !showDeltaTimes;
+				changes.Should().Equal(new object[] {"ShowDeltaTimes"}, "because the property should've changed once");
+
+				model.ShowDeltaTimes = !showDeltaTimes;
+				changes.Should().Equal(new object[] { "ShowDeltaTimes" }, "because the property didn't change");
+
+				model.ShowDeltaTimes = showDeltaTimes;
+				changes.Should().Equal(new object[] { "ShowDeltaTimes", "ShowDeltaTimes" }, "because the property changed a 2nd time");
 			}
 		}
 

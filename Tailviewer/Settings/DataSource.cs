@@ -25,6 +25,7 @@ namespace Tailviewer.Settings
 		public string File;
 		public bool FollowTail;
 		public bool ShowLineNumbers;
+		public bool ShowDeltaTimes;
 		public bool IsExpanded;
 
 		/// <summary>

@@ -48,6 +48,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(LogEntryListView),
 				new PropertyMetadata(defaultValue: true, propertyChangedCallback: OnShowLineNumbersChanged));
 
+		public static readonly DependencyProperty ShowDeltaTimesProperty =
+			DependencyProperty.Register("ShowDeltaTimes", typeof(bool), typeof(LogEntryListView),
+			                            new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnShowDeltaTimesChanged));
+
 		public static readonly DependencyProperty CurrentLineProperty =
 			DependencyProperty.Register("CurrentLine", typeof(LogLineIndex), typeof(LogEntryListView),
 				new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
@@ -66,7 +70,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
 		private readonly DataSourceCanvas _dataSourceCanvas;
-		private readonly LogEntryDeltaTimeColumn _deltaTimeColumn;
+		private readonly LogEntryDeltaTimeColumn _deltaTimesColumn;
 		private readonly FlatScrollBar _horizontalScrollBar;
 
 		private readonly LineNumberColumn _lineNumberColumn;
@@ -127,9 +131,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_deltaTimeColumn = new LogEntryDeltaTimeColumn();
-			_deltaTimeColumn.SetValue(RowProperty, value: 0);
-			_deltaTimeColumn.SetValue(ColumnProperty, value: 2);
+			_deltaTimesColumn = new LogEntryDeltaTimeColumn();
+			_deltaTimesColumn.Visibility = Visibility.Collapsed;
+			_deltaTimesColumn.SetValue(RowProperty, value: 0);
+			_deltaTimesColumn.SetValue(ColumnProperty, value: 2);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
 			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
@@ -154,7 +159,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			Children.Add(_lineNumberColumn);
 			Children.Add(_dataSourceCanvas);
-			Children.Add(_deltaTimeColumn);
+			Children.Add(_deltaTimesColumn);
 			Children.Add(separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
@@ -191,6 +196,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (bool) GetValue(ShowLineNumbersProperty); }
 			set { SetValue(ShowLineNumbersProperty, value); }
+		}
+
+		public bool ShowDeltaTimes
+		{
+			get { return (bool)GetValue(ShowDeltaTimesProperty); }
+			set { SetValue(ShowDeltaTimesProperty, value); }
 		}
 
 		public bool FollowTail
@@ -316,6 +327,19 @@ namespace Tailviewer.Ui.Controls.LogView
 				: Visibility.Collapsed;
 		}
 
+		private static void OnShowDeltaTimesChanged(DependencyObject dependencyObject,
+		                                             DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView)dependencyObject).OnShowDeltaTimesChanged((bool)args.NewValue);
+		}
+
+		private void OnShowDeltaTimesChanged(bool showLineNumbers)
+		{
+			_deltaTimesColumn.Visibility = showLineNumbers
+				? Visibility.Visible
+				: Visibility.Collapsed;
+		}
+
 		private void OnCurrentLineChanged(LogLineIndex index)
 		{
 			var current = PartTextCanvas.CurrentlyVisibleSection;
@@ -385,7 +409,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_dataSourceCanvas.UpdateDataSources(DataSource,
 			                                    PartTextCanvas.CurrentlyVisibleSection,
 			                                    PartTextCanvas.YOffset);
-			_deltaTimeColumn.UpdateLines(LogFile,
+			_deltaTimesColumn.UpdateLines(LogFile,
 			                           PartTextCanvas.CurrentlyVisibleSection,
 			                           PartTextCanvas.YOffset);
 		}
