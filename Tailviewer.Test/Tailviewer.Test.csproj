@@ -189,6 +189,7 @@
     <Compile Include="Ui\Controls\LogView\DataSourceCanvasTest.cs" />
     <Compile Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButtonTest.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeEntryTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\LogEntryDeltaTimeColumnTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberColumnTest.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
