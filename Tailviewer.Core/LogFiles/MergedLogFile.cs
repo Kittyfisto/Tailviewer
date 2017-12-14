@@ -152,12 +152,27 @@ namespace Tailviewer.Core.LogFiles
 				// The best we can achieve is up to one call per source, which is what the following
 				// code achieves:
 				// At first, we want to build the list of indices we need to retrieve per source
-				var indices = GetOriginalLogLineIndices<T>(section);
+				var sourceIndices = GetOriginalLogLineIndices<T>(section);
 				// Then we want to retrieve the column values per source
-				GetSourceColumnValues(column, indices);
+				GetSourceColumnValues(column, sourceIndices);
 				// And finally we want to copy those column values back to the destination
 				// buffer IN THEIR CORRECT ORDER.
-				CopyColumnValuesToBuffer(indices, buffer, destinationIndex);
+				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
+			}
+		}
+
+		/// <inheritdoc />
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		{
+			if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+			}
+			else
+			{
+				var sourceIndices = GetOriginalLogLineIndices<T>(indices);
+				GetSourceColumnValues(column, sourceIndices);
+				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
 			}
 		}
 
@@ -165,7 +180,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(LogFileSection section)
 		{
-			var indices = new Dictionary<int, Stuff<T>>();
+			var sourceIndices = new Dictionary<int, Stuff<T>>();
 
 			lock (_syncRoot)
 			{
@@ -176,17 +191,43 @@ namespace Tailviewer.Core.LogFiles
 					{
 						var sourceIndex = _indices[index.Value];
 						Stuff<T> stuff;
-						if (!indices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
 						{
 							stuff = new Stuff<T>();
-							indices.Add(sourceIndex.LogFileIndex, stuff);
+							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
 						}
 						stuff.Add(i, sourceIndex.SourceLineIndex);
 					}
 				}
 			}
 
-			return indices;
+			return sourceIndices;
+		}
+
+		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(IReadOnlyList<LogLineIndex> indices)
+		{
+			var sourceIndices = new Dictionary<int, Stuff<T>>();
+
+			lock (_syncRoot)
+			{
+				for(int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						var sourceIndex = _indices[index.Value];
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
+						}
+						stuff.Add(i, sourceIndex.SourceLineIndex);
+					}
+				}
+			}
+
+			return sourceIndices;
 		}
 
 		private void GetSourceColumnValues<T>(ILogFileColumn<T> column, Dictionary<int, Stuff<T>> originalBuffers)
@@ -253,8 +294,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		#endregion
-
 		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
 		{
 			var timestamps = new DateTime?[section.Count + 1];
@@ -267,11 +306,25 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			var timestamps = new DateTime?[indices.Count * 2];
+			var timestampIndices = new LogLineIndex[indices.Count * 2];
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				timestampIndices[i * 2 + 0] = indices[i] - 1;
+				timestampIndices[i * 2 + 1] = indices[i];
+			}
+			GetColumn(timestampIndices, LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var previous = timestamps[i * 2 + 0];
+				var current = timestamps[i * 2 + 1];
+				buffer[destinationIndex + i] = current - previous;
+			}
 		}
+
+		#endregion
 
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)

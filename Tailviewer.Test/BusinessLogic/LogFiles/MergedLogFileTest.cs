@@ -501,7 +501,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetTimestampsOneSource([Range(0, 3)] int offset)
+		[Description("Verifies that a continuous section of values can be retrieved for one column")]
+		public void TestGetTimestampsOneSource1([Range(0, 3)] int offset)
 		{
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
@@ -530,6 +531,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that column values can be retrieved by indices")]
+		public void TestGetTimestampsOneSource2([Range(0, 3)] int offset)
+		{
+			var source = new InMemoryLogFile();
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
+
+			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
+			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 29, 1));
+			int count = source.Count;
+			_taskScheduler.Run(2);
+
+			var buffer = new DateTime?[offset + count];
+			for (int i = 0; i < offset + count; ++i)
+			{
+				buffer[i] = DateTime.MinValue;
+			}
+
+			logFile.GetColumn(new LogLineIndex[] {2, 1}, LogFileColumns.Timestamp, buffer, offset);
+
+			for (int i = 0; i < offset; ++i)
+			{
+				buffer[i].Should().Be(DateTime.MinValue, "because we've specified an offset and thus values before that offset shouldn't have been touched");
+			}
+			buffer[offset + 0].Should().Be(source.GetLine(2).Timestamp);
+			buffer[offset + 1].Should().Be(source.GetLine(1).Timestamp);
+		}
+
+		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetDeltaTimesEmpty([Range(0, 5)] int count,
 										   [Range(0, 3)] int offset)
@@ -555,7 +585,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetDeltaTimesOneSource()
+		public void TestGetDeltaTimesOneSource1()
 		{
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
@@ -569,6 +599,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				null,
 				TimeSpan.FromSeconds(83)
+			});
+		}
+
+		[Test]
+		public void TestGetDeltaTimesOneSource2()
+		{
+			var source = new InMemoryLogFile();
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
+
+			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
+			_taskScheduler.Run(2);
+
+			var deltaTimes = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.DeltaTime);
+			deltaTimes.Should().Equal(new object[]
+			{
+				TimeSpan.FromSeconds(83),
+				null
 			});
 		}
 	}
