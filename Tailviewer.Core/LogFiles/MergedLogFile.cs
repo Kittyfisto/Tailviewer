@@ -258,6 +258,11 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		///     Keeps track of which indices of a source log file are being requested,
+		///     as well as their index into a destination buffer.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
 		sealed class Stuff<T>
 		{
 			private readonly List<LogLineIndex> _originalLogLineIndices;
@@ -294,6 +299,16 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		///     Retrieves values for the "delta_time" column for the given rows denoted by <paramref name="section"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="section">The section of rows to retrieve</param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
 		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
 		{
 			var timestamps = new DateTime?[section.Count + 1];
@@ -306,8 +321,21 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		///     Retrieves values for the "delta_time" column for the given rows denoted by <paramref name="indices"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="indices">The indices of the rows to retrieve</param>
+		/// <param name="buffer">The buffer into which the values of the time delta column have to be written</param>
+		/// <param name="destinationIndex">The index of the first value into <paramref name="buffer"/> where values have to be written</param>
 		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
 		{
+			// The easiest way to compute the time delta for (very possibly non-consecutive rows)
+			// is to retrieve the timestamp for every desired row and its previous one, hence
+			// we have to retrieve twice as many timestamps.
 			var timestamps = new DateTime?[indices.Count * 2];
 			var timestampIndices = new LogLineIndex[indices.Count * 2];
 			for (int i = 0; i < indices.Count; ++i)
