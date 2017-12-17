@@ -40,6 +40,9 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 
 		public void UpdateLines(ILogFile logFile, LogFileSection visibleSection, double yOffset)
 		{
+			if (Visibility != Visibility.Visible) //< We shouldn't waste CPU cycles when we're hidden from view...
+				return;
+
 			_yOffset = yOffset;
 
 			_deltas.Clear();

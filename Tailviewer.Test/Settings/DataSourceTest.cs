@@ -15,7 +15,7 @@ namespace Tailviewer.Test.Settings
 	public sealed class DataSourceTest
 	{
 		[Test]
-		public void TestCtor()
+		public void TestConstruction()
 		{
 			var dataSource = new DataSource();
 			dataSource.ColorByLevel.Should().BeTrue();
@@ -37,6 +37,7 @@ namespace Tailviewer.Test.Settings
 			dataSource.FollowTail.Should().BeFalse();
 
 			dataSource.ShowLineNumbers.Should().BeTrue();
+			dataSource.ShowDeltaTimes.Should().BeFalse("because delta times shouldn't be visible by default");
 
 			dataSource.IsExpanded.Should().BeTrue();
 

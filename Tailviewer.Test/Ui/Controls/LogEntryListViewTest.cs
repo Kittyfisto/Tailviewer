@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 using WpfUnit;
 
 namespace Tailviewer.Test.Ui.Controls
@@ -24,6 +26,7 @@ namespace Tailviewer.Test.Ui.Controls
 		private List<ILogFileListener> _listeners;
 		private TestKeyboard _keyboard;
 		private TestMouse _mouse;
+		private LogEntryDeltaTimeColumn _deltaTimesColumn;
 
 		[SetUp]
 		public void SetUp()
@@ -58,6 +61,8 @@ namespace Tailviewer.Test.Ui.Controls
 					        listener.OnLogFileModified(_logFile.Object,
 					                                   new LogFileSection(0, _lines.Count));
 				        });
+
+			_deltaTimesColumn = (LogEntryDeltaTimeColumn)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}
 
 		[Test]
@@ -204,6 +209,19 @@ namespace Tailviewer.Test.Ui.Controls
 				_lines.Add(new LogLine(i, i, "Foobar", LevelFlags.Info));
 			}
 			_listeners[0].OnLogFileModified(_logFile.Object, new LogFileSection(0, _lines.Count));
+		}
+
+		[Test]
+		public void TestToggleShowDeltaTimes()
+		{
+			_control.ShowDeltaTimes.Should().BeFalse("because the delta times shoudn't be shown by default");
+			_deltaTimesColumn.Visibility.Should().Be(Visibility.Collapsed, "because the column should be hidden from view");
+
+			_control.ShowDeltaTimes = true;
+			_deltaTimesColumn.Visibility.Should().Be(Visibility.Visible, "because the we've just configured this column to be visible");
+
+			_control.ShowDeltaTimes = false;
+			_deltaTimesColumn.Visibility.Should().Be(Visibility.Collapsed, "because the we've just hidden this column again");
 		}
 
 		[Test]

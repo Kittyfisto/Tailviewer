@@ -301,6 +301,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ShowDeltaTimes
+		{
+			get { return _dataSource.ShowDeltaTimes; }
+			set
+			{
+				if (value == ShowDeltaTimes)
+					return;
+
+				_dataSource.ShowDeltaTimes = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public bool ColorByLevel
 		{
 			get { return _dataSource.ColorByLevel; }

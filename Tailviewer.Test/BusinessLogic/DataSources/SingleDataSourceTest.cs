@@ -73,6 +73,37 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		public void TestConstruction3([Values(true, false)] bool showDeltaTimes)
+		{
+			var settings = new DataSource(@"E:\somelogfile.txt")
+			{
+				Id = DataSourceId.CreateNew(),
+				ShowDeltaTimes = showDeltaTimes
+			};
+			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			{
+				source.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			}
+		}
+
+		[Test]
+		public void TestChangeShowDeltaTimes([Values(true, false)] bool showDeltaTimes)
+		{
+			var settings = new DataSource(@"E:\somelogfile.txt")
+			{
+				Id = DataSourceId.CreateNew(),
+			};
+			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			{
+				source.ShowDeltaTimes = showDeltaTimes;
+				settings.ShowDeltaTimes.Should().Be(showDeltaTimes);
+
+				source.ShowDeltaTimes = !showDeltaTimes;
+				settings.ShowDeltaTimes.Should().Be(!showDeltaTimes);
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the data source disposes of all of its resources")]
 		public void TestDispose1()
 		{

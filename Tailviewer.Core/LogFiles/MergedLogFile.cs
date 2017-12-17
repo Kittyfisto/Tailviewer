@@ -142,14 +142,217 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(section, (TimeSpan?[]) (object) buffer, destinationIndex);
+			}
+			else
+			{
+				// We want to minimize the amount of GetColumn calls to our source files.
+				// The best we can achieve is up to one call per source, which is what the following
+				// code achieves:
+				// At first, we want to build the list of indices we need to retrieve per source
+				var sourceIndices = GetOriginalLogLineIndices<T>(section);
+				// Then we want to retrieve the column values per source
+				GetSourceColumnValues(column, sourceIndices);
+				// And finally we want to copy those column values back to the destination
+				// buffer IN THEIR CORRECT ORDER.
+				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
+			}
 		}
 
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+			}
+			else
+			{
+				var sourceIndices = GetOriginalLogLineIndices<T>(indices);
+				GetSourceColumnValues(column, sourceIndices);
+				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
+			}
 		}
+
+		#region Retrieving Column Values from source files
+
+		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(LogFileSection section)
+		{
+			var sourceIndices = new Dictionary<int, Stuff<T>>();
+
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					if (index >= 0 && index < _indices.Count)
+					{
+						var sourceIndex = _indices[index.Value];
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
+						}
+						stuff.Add(i, sourceIndex.SourceLineIndex);
+					}
+				}
+			}
+
+			return sourceIndices;
+		}
+
+		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(IReadOnlyList<LogLineIndex> indices)
+		{
+			var sourceIndices = new Dictionary<int, Stuff<T>>();
+
+			lock (_syncRoot)
+			{
+				for(int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						var sourceIndex = _indices[index.Value];
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
+						}
+						stuff.Add(i, sourceIndex.SourceLineIndex);
+					}
+				}
+			}
+
+			return sourceIndices;
+		}
+
+		private void GetSourceColumnValues<T>(ILogFileColumn<T> column, Dictionary<int, Stuff<T>> originalBuffers)
+		{
+			foreach (var pair in originalBuffers)
+			{
+				var sourceLogFileIndex = pair.Key;
+				var stuff = pair.Value;
+				var sourceColumnValues = stuff.Buffer;
+
+				var sourceLogFile = _sources[sourceLogFileIndex];
+				sourceLogFile.GetColumn(stuff.OriginalLogLineIndices, column, sourceColumnValues, 0);
+			}
+		}
+
+		private void CopyColumnValuesToBuffer<T>(Dictionary<int, Stuff<T>> indices, T[] buffer, int destinationIndex)
+		{
+			foreach (var pair in indices)
+			{
+				var stuff = pair.Value;
+				var sourceColumnValues = stuff.Buffer;
+
+				for (int i = 0; i < stuff.DestinationIndices.Count; ++i)
+				{
+					var destIndex = destinationIndex + stuff.DestinationIndices[i];
+					buffer[destIndex] = sourceColumnValues[i];
+				}
+			}
+		}
+
+		/// <summary>
+		///     Keeps track of which indices of a source log file are being requested,
+		///     as well as their index into a destination buffer.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		sealed class Stuff<T>
+		{
+			private readonly List<LogLineIndex> _originalLogLineIndices;
+			private readonly List<int> _destinationIndices;
+
+			public IReadOnlyList<int> DestinationIndices => _destinationIndices;
+
+			private T[] _buffer;
+
+			public Stuff()
+			{
+				_destinationIndices = new List<int>();
+				_originalLogLineIndices = new List<LogLineIndex>();
+			}
+
+			public IReadOnlyList<LogLineIndex> OriginalLogLineIndices => _originalLogLineIndices;
+
+			public T[] Buffer
+			{
+				get
+				{
+					if (_buffer == null)
+					{
+						_buffer = new T[_originalLogLineIndices.Count];
+					}
+					return _buffer;
+				}
+			}
+
+			public void Add(int destIndex, LogLineIndex index)
+			{
+				_destinationIndices.Add(destIndex);
+				_originalLogLineIndices.Add(index);
+			}
+		}
+
+		/// <summary>
+		///     Retrieves values for the "delta_time" column for the given rows denoted by <paramref name="section"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="section">The section of rows to retrieve</param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
+		{
+			var timestamps = new DateTime?[section.Count + 1];
+			GetColumn(new LogFileSection(section.Index - 1, section.Count + 1), LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var previous = timestamps[i];
+				var current = timestamps[i + 1];
+				buffer[destinationIndex + i] = current - previous;
+			}
+		}
+
+		/// <summary>
+		///     Retrieves values for the "delta_time" column for the given rows denoted by <paramref name="indices"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="indices">The indices of the rows to retrieve</param>
+		/// <param name="buffer">The buffer into which the values of the time delta column have to be written</param>
+		/// <param name="destinationIndex">The index of the first value into <paramref name="buffer"/> where values have to be written</param>
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		{
+			// The easiest way to compute the time delta for (very possibly non-consecutive rows)
+			// is to retrieve the timestamp for every desired row and its previous one, hence
+			// we have to retrieve twice as many timestamps.
+			var timestamps = new DateTime?[indices.Count * 2];
+			var timestampIndices = new LogLineIndex[indices.Count * 2];
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				timestampIndices[i * 2 + 0] = indices[i] - 1;
+				timestampIndices[i * 2 + 1] = indices[i];
+			}
+			GetColumn(timestampIndices, LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var previous = timestamps[i * 2 + 0];
+				var current = timestamps[i * 2 + 1];
+				buffer[destinationIndex + i] = current - previous;
+			}
+		}
+
+		#endregion
 
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)

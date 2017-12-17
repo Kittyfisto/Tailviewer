@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -182,6 +183,18 @@ namespace Tailviewer.Core.LogFiles
 
 				return ((ColumnData<T>) data)[_index];
 			}
+
+			public override string ToString()
+			{
+				var stringBuilder = new StringBuilder();
+				foreach (var columnData in _buffer._dataByColumn.Values)
+				{
+					if (stringBuilder.Length > 0)
+						stringBuilder.Append("|");
+					stringBuilder.Append(columnData[_index]);
+				}
+				return stringBuilder.ToString();
+			}
 		}
 
 		private static IColumnData CreateColumnData(ILogFileColumn column, int length)
@@ -197,6 +210,7 @@ namespace Tailviewer.Core.LogFiles
 
 		interface IColumnData
 		{
+			object this[int index] { get; }
 			void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section);
 			void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
 			void FillDefault(int destinationIndex, int length);
@@ -223,6 +237,8 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			public T this[int index] => _data[index];
+
+			object IColumnData.this[int index] => _data[index];
 
 			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)
 			{
