@@ -81,9 +81,13 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private void GoToLineOnLineNumberChosen(LogLineIndex logLineIndex)
 		{
 			Log.DebugFormat("Going to line {0}", logLineIndex);
-			var dataSource = _currentDataSourceLogView.DataSource;
-			dataSource.SelectedLogLines = new HashSet<LogLineIndex> {logLineIndex};
-			dataSource.RequestBringIntoView(logLineIndex);
+			var dataSourceViewModel = _currentDataSourceLogView.DataSource;
+			var dataSource = dataSourceViewModel.DataSource;
+			var logFile = dataSource.FilteredLogFile;
+			var originalIndex = logFile.GetLogLineIndexOfOriginalLineIndex(logLineIndex);
+
+			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { originalIndex };
+			dataSourceViewModel.RequestBringIntoView(originalIndex);
 		}
 
 		private void QuickNavigationOnDataSourceChosen(IDataSource dataSource)

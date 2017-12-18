@@ -171,6 +171,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="originalLineIndex"></param>
 		/// <returns></returns>
+		[Pure]
 		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
 
 		/// <summary>
@@ -182,6 +183,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="index"></param>
 		/// <returns></returns>
+		[Pure]
 		LogLineIndex GetOriginalIndexFrom(LogLineIndex index);
 
 		/// <summary>
