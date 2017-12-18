@@ -52,7 +52,7 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 		private static string ToString(IFormatProvider provider, int rawValue, string suffix)
 		{
 			var sign = GetSign(rawValue);
-			return string.Format(provider, "{0}{1}{2}", sign, rawValue, suffix);
+			return string.Format(provider, "{0}{1} {2}", sign, rawValue, suffix);
 		}
 
 		[Pure]
