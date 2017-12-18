@@ -454,5 +454,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			return new LogFileProxy(_scheduler, TimeSpan.Zero);
 		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

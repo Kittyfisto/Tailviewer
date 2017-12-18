@@ -12,8 +12,80 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	{
 		protected abstract ILogFile CreateEmpty();
 
+		/// <summary>
+		///     Creates a new log file with the given content.
+		/// </summary>
+		/// <param name="content"></param>
+		/// <returns></returns>
+		protected abstract ILogFile CreateFromContent(IReadOnlyLogEntries content);
 
 		#region Well Known Columns
+
+		#region Elapsed Time
+
+		[Test]
+		[Ignore("Not yet implemented")]
+		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
+		public void TestGetElapsedTimesEmptyBySection([Range(from: 0, to: 5)] int count,
+		                                              [Range(from: 0, to: 3)] int offset)
+		{
+			var logFile = CreateEmpty();
+
+			var buffer = new TimeSpan?[offset + count];
+			for (int i = 0; i < offset + count; ++i)
+			{
+				buffer[i] = TimeSpan.FromDays(1);
+			}
+
+			logFile.GetColumn(new LogFileSection(0, count), LogFileColumns.ElapsedTime, buffer, offset);
+
+			for (int i = 0; i < offset; ++i)
+			{
+				buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
+			}
+			for (int i = 0; i < count; ++i)
+			{
+				buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
+			}
+		}
+
+		[Test]
+		[Ignore("Not yet implemented")]
+		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
+		public void TestGetElapsedTimesEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
+		                                              [Range(0, 3)] int count,
+		                                              [Range(0, 3)] int offset)
+		{
+			var logFile = CreateEmpty();
+
+			var buffer = new TimeSpan?[offset + count];
+			for (int i = 0; i < offset + count; ++i)
+			{
+				buffer[i] = TimeSpan.FromDays(1);
+			}
+
+			var indices = Enumerable.Range(invalidIndex, count).Select(x => (LogLineIndex)x).ToArray();
+			logFile.GetColumn(indices, LogFileColumns.ElapsedTime, buffer, offset);
+
+			for (int i = 0; i < offset; ++i)
+			{
+				buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
+			}
+			for (int i = 0; i < count; ++i)
+			{
+				buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
+			}
+		}
+
+		[Test]
+		[Ignore("Not yet implemented")]
+		public void TestGetElapsedTimesBySection()
+		{
+			var content = new LogEntryBuffer(5, LogFileColumns.Timestamp);
+			var logFile = CreateFromContent(content);
+		}
+
+		#endregion
 
 		#region Delta Time
 

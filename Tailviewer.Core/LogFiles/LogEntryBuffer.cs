@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     A fixed-size buffer which provides read/write access to <see cref="ILogEntry" />s.
+	///     A fixed-size buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s.
 	/// </summary>
 	public sealed class LogEntryBuffer
 		: ILogEntries
@@ -114,7 +114,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IEnumerator<ILogEntry> GetEnumerator()
+		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
 		{
 			for (var i = 0; i < _length; ++i)
 				yield return new LogEntryAccessor(this, i);
@@ -129,7 +129,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _length;
 
 		/// <inheritdoc />
-		public ILogEntry this[int index]
+		public IReadOnlyLogEntry this[int index]
 		{
 			get
 			{
@@ -143,7 +143,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		private sealed class LogEntryAccessor
-			: ILogEntry
+			: IReadOnlyLogEntry
 		{
 			private readonly LogEntryBuffer _buffer;
 			private readonly int _index;
@@ -183,6 +183,8 @@ namespace Tailviewer.Core.LogFiles
 
 				return ((ColumnData<T>) data)[_index];
 			}
+
+			public IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
 
 			public override string ToString()
 			{

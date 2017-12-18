@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -10,7 +11,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     With its introduction, <see cref="LogLineIndex" /> can be removed and be replaced
 	///     with <see cref="LogEntryIndex" />.
 	/// </remarks>
-	public interface ILogEntry
+	public interface IReadOnlyLogEntry
 	{
 		/// <summary>
 		///     The raw content of this log entry.
@@ -89,5 +90,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		T GetColumnValue<T>(ILogFileColumn<T> column);
+
+		/// <summary>
+		///     The columns offered by this log entry.
+		/// </summary>
+		IReadOnlyList<ILogFileColumn> Columns { get; }
 	}
 }

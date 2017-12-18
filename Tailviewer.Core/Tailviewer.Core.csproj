@@ -112,6 +112,8 @@
     <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogEntryBuffer.cs" />
+    <Compile Include="LogFiles\LogEntryList.cs" />
+    <Compile Include="LogFiles\ReadOnlyLogEntry.cs" />
     <Compile Include="LogFiles\WellKnownLogFileColumn.cs" />
     <Compile Include="LogFiles\LogFileColumns.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />

@@ -427,5 +427,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			return new InMemoryLogFile();
 		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

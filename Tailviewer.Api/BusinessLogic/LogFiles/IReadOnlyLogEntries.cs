@@ -9,7 +9,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     The order/nature of these entries is undefined.
 	/// </remarks>
 	public interface IReadOnlyLogEntries
-		: IReadOnlyList<ILogEntry>
+		: IReadOnlyList<IReadOnlyLogEntry>
 	{
 		/// <summary>
 		///     The list of columns to store in this buffer.

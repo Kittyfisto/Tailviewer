@@ -830,5 +830,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			return new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -600,5 +600,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			return new MergedLogFile(_taskScheduler, TimeSpan.Zero);
 		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
