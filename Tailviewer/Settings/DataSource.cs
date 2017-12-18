@@ -99,6 +99,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("file", File);
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeBool("showlinenumbers", ShowLineNumbers);
+			writer.WriteAttributeBool("showdeltatimes", ShowDeltaTimes);
 			writer.WriteAttributeString("searchterm", SearchTerm);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
@@ -141,6 +142,10 @@ namespace Tailviewer.Settings
 
 					case "showlinenumbers":
 						ShowLineNumbers = reader.ReadContentAsBool();
+						break;
+
+					case "showdeltatimes":
+						ShowDeltaTimes = reader.ReadContentAsBool();
 						break;
 
 					case "stringfilter":
@@ -273,6 +278,7 @@ namespace Tailviewer.Settings
 				ParentId = ParentId,
 				SearchTerm = SearchTerm,
 				ShowLineNumbers = ShowLineNumbers,
+				ShowDeltaTimes = ShowDeltaTimes,
 				VisibleLogLine = VisibleLogLine,
 				IsExpanded = IsExpanded,
 				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode,
