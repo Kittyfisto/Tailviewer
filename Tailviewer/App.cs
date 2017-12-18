@@ -17,7 +17,6 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Events.BusinessLogic;
 using Tailviewer.QuickInfo.BusinessLogic;

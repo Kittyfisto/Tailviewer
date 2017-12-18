@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Searches

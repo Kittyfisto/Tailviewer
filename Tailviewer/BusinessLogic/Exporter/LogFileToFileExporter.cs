@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {
