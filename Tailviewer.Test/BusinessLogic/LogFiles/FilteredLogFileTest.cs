@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class FilteredLogFileTest
+		: AbstractLogFileTest
 	{
 		[SetUp]
 		public void SetUp()
@@ -700,23 +701,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Delta Time
 
 		[Test]
-		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
-		public void TestGetDeltaTime1()
-		{
-			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.DeltaTime);
-				deltas.Should().NotBeNull();
-				deltas.Should().HaveCount(1);
-				deltas[0].Should().BeNull();
-			}
-		}
-
-		[Test]
 		[Description("Verifies that the first entry doesn't have delta time")]
-		public void TestGetDeltaTime2()
+		public void TestGetDeltaTime1()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -733,7 +719,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that the log file can return the time between two consecutive non-filtered events")]
-		public void TestGetDeltaTime3()
+		public void TestGetDeltaTime2()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -752,7 +738,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetDeltaTime4()
+		public void TestGetDeltaTime3()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			var source = new InMemoryLogFile();
@@ -773,7 +759,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that accessing the delta time column by random indices works")]
-		public void TestGetDeltaTime5()
+		public void TestGetDeltaTime4()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			var source = new InMemoryLogFile();
@@ -798,22 +784,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Timestamp
 
 		[Test]
-		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
 		public void TestGetTimestamp1()
-		{
-			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
-				timestamps.Should().NotBeNull();
-				timestamps.Should().HaveCount(1);
-				timestamps[0].Should().BeNull();
-			}
-		}
-
-		[Test]
-		public void TestGetTimestamp2()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -830,7 +801,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetTimestamp3()
+		public void TestGetTimestamp2()
 		{
 			var filter = new LevelFilter(LevelFlags.Error);
 			var source = new InMemoryLogFile();
@@ -849,21 +820,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
-		[Test]
-		public void TestGetTimestamp4()
+		#endregion
+
+		#endregion
+
+		protected override ILogFile CreateEmpty()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var timestamps = logFile.GetColumn(new LogLineIndex[] {42}, LogFileColumns.Timestamp);
-				timestamps.Should().NotBeNull();
-				timestamps.Should().Equal(new object[] { null }, "because accessing non-existant indices should return null values");
-			}
+			return new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 		}
-
-		#endregion
-
-		#endregion
 	}
 }

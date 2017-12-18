@@ -27,9 +27,6 @@ namespace Tailviewer.BusinessLogic
 		/// <param name="value"></param>
 		public LogLineIndex(int value)
 		{
-			if (value < -1)
-				throw new ArgumentOutOfRangeException(nameof(value));
-
 			Value = value;
 		}
 
@@ -52,6 +49,9 @@ namespace Tailviewer.BusinessLogic
 		/// <inheritdoc />
 		public bool Equals(LogLineIndex other)
 		{
+			if (Value < 0 && other.Value < 0)
+				return true;
+
 			return Value == other.Value;
 		}
 

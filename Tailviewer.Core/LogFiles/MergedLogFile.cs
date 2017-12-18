@@ -184,6 +184,9 @@ namespace Tailviewer.Core.LogFiles
 
 			lock (_syncRoot)
 			{
+				// Do NOT call any virtual methods
+				// Do NOT block for any amount of time
+
 				for (int i = 0; i < section.Count; ++i)
 				{
 					var index = section.Index + i;
@@ -198,6 +201,17 @@ namespace Tailviewer.Core.LogFiles
 						}
 						stuff.Add(i, sourceIndex.SourceLineIndex);
 					}
+					else
+					{
+						const int invalidIndex = -1;
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(invalidIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(invalidIndex, stuff);
+						}
+						stuff.Add(i, invalidIndex);
+					}
 				}
 			}
 
@@ -210,7 +224,10 @@ namespace Tailviewer.Core.LogFiles
 
 			lock (_syncRoot)
 			{
-				for(int i = 0; i < indices.Count; ++i)
+				// Do NOT call any virtual methods
+				// Do NOT block for any amount of time
+
+				for (int i = 0; i < indices.Count; ++i)
 				{
 					var index = indices[i];
 					if (index >= 0 && index < _indices.Count)
@@ -224,6 +241,17 @@ namespace Tailviewer.Core.LogFiles
 						}
 						stuff.Add(i, sourceIndex.SourceLineIndex);
 					}
+					else
+					{
+						const int invalidIndex = -1;
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(invalidIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(invalidIndex, stuff);
+						}
+						stuff.Add(i, invalidIndex);
+					}
 				}
 			}
 
@@ -236,10 +264,21 @@ namespace Tailviewer.Core.LogFiles
 			{
 				var sourceLogFileIndex = pair.Key;
 				var stuff = pair.Value;
-				var sourceColumnValues = stuff.Buffer;
+				var indices = stuff.OriginalLogLineIndices;
+				var columnBuffer = stuff.Buffer;
 
-				var sourceLogFile = _sources[sourceLogFileIndex];
-				sourceLogFile.GetColumn(stuff.OriginalLogLineIndices, column, sourceColumnValues, 0);
+				if (sourceLogFileIndex >= 0 &&
+				    sourceLogFileIndex < _sources.Count)
+				{
+					var sourceLogFile = _sources[sourceLogFileIndex];
+					sourceLogFile.GetColumn(indices, column, columnBuffer, 0);
+				}
+				else
+				{
+					// Someone should be on the naughty list for trying to access a portion
+					// which cannot be accessed! Anyhow, we fill the buffer with default values.
+					columnBuffer.Fill(default(T), 0, indices.Count);
+				}
 			}
 		}
 

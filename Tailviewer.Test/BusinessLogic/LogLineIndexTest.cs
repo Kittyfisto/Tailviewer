@@ -9,10 +9,24 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class LogLineIndexTest
 	{
 		[Test]
-		public void TestToString()
+		public void TestConstruction([Range(-5, -1)] int value)
+		{
+			var index = new LogLineIndex(value);
+			index.IsInvalid.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestToString1()
 		{
 			LogLineIndex.Invalid.ToString().Should().Be("Invalid");
 			new LogLineIndex(5).ToString().Should().Be("#5");
+		}
+
+		[Test]
+		public void TestToString2([Range(-3, -1)] int value)
+		{
+			var index = new LogLineIndex(value);
+			index.ToString().Should().Be("Invalid");
 		}
 
 		[Test]
@@ -23,12 +37,21 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestEquality()
+		public void TestEquality1()
 		{
 			LogLineIndex.Invalid.Should().Be(LogLineIndex.Invalid);
 			LogLineIndex.Invalid.Equals(LogLineIndex.Invalid).Should().BeTrue();
 			(LogLineIndex.Invalid == LogLineIndex.Invalid).Should().BeTrue();
 			(LogLineIndex.Invalid != LogLineIndex.Invalid).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestEquality2()
+		{
+			new LogLineIndex(-1).Equals(new LogLineIndex(-2))
+				.Should().BeTrue("because both indices address an invalid portion of a log file and thus should be counted to be equal");
+			(new LogLineIndex(-1) == new LogLineIndex(-2))
+			                    .Should().BeTrue("because both indices address an invalid portion of a log file and thus should be counted to be equal");
 		}
 
 		[Test]

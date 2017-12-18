@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MergedLogFileTest
+		: AbstractLogFileTest
 	{
 		private ManualTaskScheduler _taskScheduler;
 
@@ -560,31 +561,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
-		public void TestGetDeltaTimesEmpty([Range(0, 5)] int count,
-										   [Range(0, 3)] int offset)
-		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, new InMemoryLogFile());
-
-			var buffer = new TimeSpan?[offset + count];
-			for (int i = 0; i < offset + count; ++i)
-			{
-				buffer[i] = TimeSpan.FromDays(1);
-			}
-
-			logFile.GetColumn(new LogFileSection(0, count), LogFileColumns.DeltaTime, buffer, offset);
-
-			for (int i = 0; i < offset; ++i)
-			{
-				buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
-			}
-			for (int i = 0; i < count; ++i)
-			{
-				buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
-			}
-		}
-
-		[Test]
 		public void TestGetDeltaTimesOneSource1()
 		{
 			var source = new InMemoryLogFile();
@@ -618,6 +594,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				TimeSpan.FromSeconds(83),
 				null
 			});
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			return new MergedLogFile(_taskScheduler, TimeSpan.Zero);
 		}
 	}
 }
