@@ -267,10 +267,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					buffer[i] = default(T);
-				}
+				buffer.Fill(default(T), destinationIndex, section.Count);
 			}
 		}
 
@@ -284,7 +281,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				buffer.Fill(default(T), 0, indices.Count);
+				buffer.Fill(default(T), destinationIndex, indices.Count);
 			}
 		}
 

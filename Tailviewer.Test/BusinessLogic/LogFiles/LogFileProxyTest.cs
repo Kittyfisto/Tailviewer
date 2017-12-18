@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogFileProxyTest
+		: AbstractLogFileTest
 	{
 		private Mock<ILogFile> _logFile;
 		private LogFileListenerCollection _listeners;
@@ -447,6 +448,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Setup(x => x.Progress).Returns(0.5);
 			logFile.InnerLogFile = _logFile.Object;
 			logFile.Progress.Should().Be(0.5);
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			return new LogFileProxy(_scheduler, TimeSpan.Zero);
 		}
 	}
 }
