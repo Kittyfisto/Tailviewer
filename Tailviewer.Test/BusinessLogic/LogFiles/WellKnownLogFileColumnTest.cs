@@ -10,17 +10,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction()
 		{
-			var column = new WellKnownLogFileColumn<double?>("foo", "bar");
+			var column = new WellKnownLogFileColumn<double?>("foo");
 			column.Id.Should().Be("foo");
-			column.Name.Should().Be("bar");
 			column.DataType.Should().Be<double?>();
 		}
 
 		[Test]
 		public void TestEquality()
 		{
-			var column = new WellKnownLogFileColumn<double?>("foo", "bar");
-			var otherColumn = new CustomLogFileColumn<double?>("foo", "bar");
+			var column = new WellKnownLogFileColumn<double?>("foo");
+			var otherColumn = new CustomLogFileColumn<double?>("foo");
 			column.Equals(otherColumn).Should().BeFalse("because a well known column can never equal a custom column");
 		}
 	}

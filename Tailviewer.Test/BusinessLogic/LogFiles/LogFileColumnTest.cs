@@ -8,10 +8,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	public sealed class LogFileColumnTest
 	{
 		[Test]
-		public void TestToString()
+		public void TestToString1()
 		{
-			var column = new WellKnownLogFileColumn<string>("foobar", "Foobar");
-			column.ToString().Should().Be("foobar");
+			var column = new WellKnownLogFileColumn<string>("foobar");
+			column.ToString().Should().Be("foobar: String");
 		}
 	}
 }

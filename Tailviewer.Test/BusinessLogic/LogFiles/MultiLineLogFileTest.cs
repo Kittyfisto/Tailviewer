@@ -760,5 +760,37 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			timestamps.Should().NotBeNull();
 			timestamps.Should().Equal(new object[] { timestamp2 });
 		}
+
+		[Test]
+		public void TestGetEntriesBySection()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var section = new LogFileSection(42, 5);
+			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var destinationIndex = 2;
+
+			logFile.GetEntries(section, buffer, destinationIndex);
+
+			_source.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
+			                                 It.Is<ILogEntries>(y => y == buffer),
+			                                 It.Is<int>(y => y == destinationIndex)),
+			               Times.Once);
+		}
+
+		[Test]
+		public void TestGetEntriesByIndices()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var indices = new LogLineIndex[] { 0, 2, 5 };
+			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var destinationIndex = 2;
+
+			logFile.GetEntries(indices, buffer, destinationIndex);
+
+			_source.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
+			                                 It.Is<ILogEntries>(y => y == buffer),
+			                                 It.Is<int>(y => y == destinationIndex)),
+			               Times.Once);
+		}
 	}
 }

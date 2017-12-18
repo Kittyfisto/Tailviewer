@@ -12,11 +12,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		string Id { get; }
 
 		/// <summary>
-		///     Human readable name of this column.
-		/// </summary>
-		string Name { get; }
-
-		/// <summary>
 		///     The type of the data provided by this column.
 		/// </summary>
 		Type DataType { get; }

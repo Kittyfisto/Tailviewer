@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class InMemoryLogFileTest
+		: AbstractLogFileTest
 	{
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _modifications;
@@ -420,6 +421,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
 			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			return new InMemoryLogFile();
 		}
 	}
 }

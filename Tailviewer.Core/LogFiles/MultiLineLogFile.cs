@@ -120,13 +120,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			_source.GetEntries(section, buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			_source.GetEntries(indices, buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />

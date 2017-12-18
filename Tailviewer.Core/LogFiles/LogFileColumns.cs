@@ -77,15 +77,15 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileColumns()
 		{
-			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
-			Index = new WellKnownLogFileColumn<LogEntryIndex>("index", "Index");
-			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index", "Original Index");
-			LineNumber = new WellKnownLogFileColumn<int>("line_number", "Line Number");
-			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number", "Original Line Number");
-			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level", "Level");
-			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp", "Timestamp");
-			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");
-			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
+			RawContent = new WellKnownLogFileColumn<string>("raw_content");
+			Index = new WellKnownLogFileColumn<LogEntryIndex>("index");
+			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index");
+			LineNumber = new WellKnownLogFileColumn<int>("line_number");
+			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
+			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");
+			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
+			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");
+			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time");
 
 			Minimum = new ILogFileColumn[]
 			{

@@ -101,6 +101,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				GetLogLevel(section, (LevelFlags[])(object)buffer, destinationIndex);
 			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
+			}
 			else
 			{
 				throw new NoSuchColumnException(column);
@@ -123,6 +127,10 @@ namespace Tailviewer.Core.LogFiles
 			else if (Equals(column, LogFileColumns.LogLevel))
 			{
 				GetLogLevel(indices, (LevelFlags[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
+			{
+				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
 			}
 			else
 			{
@@ -242,6 +250,36 @@ namespace Tailviewer.Core.LogFiles
 				{
 					var index = indices[i];
 					buffer[destinationIndex+i] = TryGetLogLine(index)?.Timestamp;
+				}
+			}
+		}
+
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var index = section.Index + i;
+					var previous = TryGetLogLine(index - 1)?.Timestamp;
+					var current = TryGetLogLine(index - 1)?.Timestamp;
+
+					buffer[destinationIndex + i] = current - previous;
+				}
+			}
+		}
+
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					var previous = TryGetLogLine(index - 1)?.Timestamp;
+					var current = TryGetLogLine(index - 1)?.Timestamp;
+
+					buffer[destinationIndex + i] = current - previous;
 				}
 			}
 		}
