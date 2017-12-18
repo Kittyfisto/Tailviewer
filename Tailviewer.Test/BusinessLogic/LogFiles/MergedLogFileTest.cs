@@ -284,8 +284,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			data.Should().Equal(new LogLine(new LogLineSourceId(1), source1[0]));
 
 			int count = changes.Count;
-			changes.ElementAt(count - 2).Should().Be(LogFileSection.Reset);
-			changes.ElementAt(count - 1).Should().Be(new LogFileSection(0, 1));
+			changes.ElementAt(count - 2).Should().Equal(LogFileSection.Reset);
+			changes.ElementAt(count - 1).Should().Equal(new LogFileSection(0, 1));
 		}
 
 		[Test]

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -9,6 +11,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	public struct LogFileSection
 		: IEquatable<LogFileSection>
+		, IReadOnlyList<LogLineIndex>
 	{
 		/// <summary>
 		/// This value is used to represent a section which does not exist.
@@ -120,6 +123,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IEnumerator<LogLineIndex> GetEnumerator()
+		{
+			return new LogFileSectionEnumerator(Index, Count);
+		}
+
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			if (Index == LogLineIndex.Invalid && Count == 0)
@@ -163,6 +172,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
 		/// <summary>
 		///     Compares the two given sections for equality.
 		/// </summary>
@@ -183,6 +197,64 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public static bool operator !=(LogFileSection left, LogFileSection right)
 		{
 			return !left.Equals(right);
+		}
+
+		sealed class LogFileSectionEnumerator
+			: IEnumerator<LogLineIndex>
+		{
+			private readonly LogLineIndex _start;
+			private readonly int _count;
+			private int _i;
+
+			public LogFileSectionEnumerator(LogLineIndex start, int count)
+			{
+				_start = start;
+				_count = count;
+				Reset();
+			}
+
+			public void Dispose()
+			{}
+
+			public bool MoveNext()
+			{
+				if (++_i >= _count)
+					return false;
+
+				return true;
+			}
+
+			public void Reset()
+			{
+				_i = -1;
+			}
+
+			public LogLineIndex Current
+			{
+				get
+				{
+					if (_i < 0 || _i >= _count)
+						throw new InvalidOperationException();
+
+					return _start + _i;
+				}
+			}
+
+			object IEnumerator.Current => Current;
+		}
+
+		int IReadOnlyCollection<LogLineIndex>.Count => Count;
+
+		/// <inheritdoc />
+		public LogLineIndex this[int index]
+		{
+			get
+			{
+				if (index < 0 || index >= Count)
+					throw new IndexOutOfRangeException();
+
+				return Index + index;
+			}
 		}
 	}
 }

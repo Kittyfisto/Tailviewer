@@ -121,6 +121,7 @@
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />

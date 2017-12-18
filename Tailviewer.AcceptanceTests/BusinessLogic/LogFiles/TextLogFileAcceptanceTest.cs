@@ -413,7 +413,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				file.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(20));
 				file.Count.Should().Be(165342);
 
-				sections[0].Should().Be(LogFileSection.Reset);
+				sections[0].Should().Equal(LogFileSection.Reset);
 				for (int i = 1; i < sections.Count; ++i)
 				{
 					LogFileSection change = sections[i];
