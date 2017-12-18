@@ -27,6 +27,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int MaximumBatchSize = 10000;
 
+		private readonly object _syncRoot;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -60,6 +61,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			//_allModifications = new List<LogFileSection>();
+			_syncRoot = new object();
 			_indices = new List<LogEntryInfo>();
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 			
@@ -108,13 +110,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			_source.GetColumn(section, column, buffer);
+			if (Equals(column, LogFileColumns.Timestamp))
+			{
+				var firstLineIndices = GetFirstLineIndices(section);
+				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);
+			}
+			else
+			{
+				_source.GetColumn(section, column, buffer);
+			}
 		}
 
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			_source.GetColumn(indices, column, buffer);
+			if (Equals(column, LogFileColumns.Timestamp))
+			{
+				var firstLineIndices = GetFirstLineIndices(indices);
+				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);
+			}
+			else
+			{
+				_source.GetColumn(indices, column, buffer);
+			}
 		}
 
 		/// <inheritdoc />
@@ -133,7 +151,7 @@ namespace Tailviewer.Core.LogFiles
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			_source.GetSection(section, dest);
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				for (var i = 0; i < section.Count; ++i)
 					dest[i] = PatchNoLock(dest[i]);
@@ -146,7 +164,7 @@ namespace Tailviewer.Core.LogFiles
 			var actualLine = _source.GetLine(index);
 			LogLine line;
 
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				line = PatchNoLock(actualLine);
 			}
@@ -216,7 +234,7 @@ namespace Tailviewer.Core.LogFiles
 				_source.GetSection(new LogFileSection(_currentSourceIndex, remaining), buffer);
 				LogLineIndex? resetIndex = null;
 
-				lock (_indices)
+				lock (_syncRoot)
 				{
 					for (var i = 0; i < remaining; ++i)
 					{
@@ -275,6 +293,32 @@ namespace Tailviewer.Core.LogFiles
 			return _maximumWaitTime;
 		}
 
+		private IReadOnlyList<LogLineIndex> GetFirstLineIndices(IReadOnlyList<LogLineIndex> indices)
+		{
+			lock (_syncRoot)
+			{
+				var firstLineIndices = new List<LogLineIndex>(indices.Count);
+				foreach (var index in indices)
+				{
+					var entryInfo = TryGetLogEntryInfo(index);
+					if (entryInfo != null)
+						firstLineIndices.Add(entryInfo.Value.FirstLineIndex);
+					else
+						firstLineIndices.Add(LogLineIndex.Invalid);
+				}
+				return firstLineIndices;
+			}
+		}
+
+		private LogEntryInfo? TryGetLogEntryInfo(LogLineIndex logLineIndex)
+		{
+			if (logLineIndex >= 0 && logLineIndex < _indices.Count)
+			{
+				return _indices[(int) logLineIndex];
+			}
+			return null;
+		}
+
 		private void Invalidate(LogFileSection section)
 		{
 			var firstInvalidIndex = LogLineIndex.Min(_fullSourceSection.LastIndex, section.Index);
@@ -299,7 +343,7 @@ namespace Tailviewer.Core.LogFiles
 				_currentSourceIndex = 0;
 			}
 
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				var toRemove = _indices.Count - lastInvalidIndex;
 				if (toRemove > 0)
@@ -327,7 +371,7 @@ namespace Tailviewer.Core.LogFiles
 			_fullSourceSection = new LogFileSection(0, 0);
 			_currentSourceIndex = 0;
 			_currentLogEntry = new LogEntryInfo(-1, 0);
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				_indices.Clear();
 			}

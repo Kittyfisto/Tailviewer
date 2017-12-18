@@ -695,6 +695,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.None, timestamp);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
 			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
@@ -713,6 +714,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
 			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
@@ -741,9 +743,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented, maybe never will due to https://github.com/Kittyfisto/Tailviewer/issues/140")]
 		[Description("Verifies that every line of a log entry provides access to the timestamp")]
-		public void TestGetTimestamp5()
+		public void TestGetTimestampBySection()
 		{
 			var source = new InMemoryLogFile();
 
@@ -755,10 +756,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.None);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogFileSection(2, 1), LogFileColumns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 3), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
-			timestamps.Should().Equal(new object[] { timestamp2 });
+			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
+		}
+
+		[Test]
+		[Description("Verifies that every line of a log entry provides access to the timestamp")]
+		public void TestGetTimestampByIndices()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp1);
+
+			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp2);
+			source.AddEntry("", LevelFlags.None);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+
+			var timestamps = logFile.GetColumn(new LogLineIndex[] {0, 1, 2}, LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
 		}
 
 		[Test]
