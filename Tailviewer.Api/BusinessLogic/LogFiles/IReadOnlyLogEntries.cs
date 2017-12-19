@@ -6,7 +6,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Provides read-only access to a list of log entries.
 	/// </summary>
 	/// <remarks>
-	///     The order/nature of these entries is undefined.
+	///     The order/nature of these entries is undefined as well as their source.
 	/// </remarks>
 	public interface IReadOnlyLogEntries
 		: IReadOnlyList<IReadOnlyLogEntry>
@@ -38,6 +38,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex"></param>
 		/// <param name="length"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length);
+		void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length);
 	}
 }

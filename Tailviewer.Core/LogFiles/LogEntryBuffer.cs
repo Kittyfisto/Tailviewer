@@ -68,7 +68,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -358,14 +358,14 @@ namespace Tailviewer.Core.LogFiles
 				Array.Copy(_data, sourceIndex, destination, destinationIndex, length);
 			}
 
-			public void CopyTo(IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
 			{
 				for (int i = 0; i < length; ++i)
 				{
 					var sourceIndex = sourceIndices[i];
 					if (sourceIndex >= 0 && sourceIndex < _data.Length)
 					{
-						destination[destinationIndex + i] = _data[(int) sourceIndex];
+						destination[destinationIndex + i] = _data[sourceIndex];
 					}
 					else
 					{

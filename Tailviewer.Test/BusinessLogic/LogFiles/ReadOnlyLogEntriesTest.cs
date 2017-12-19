@@ -57,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyToByIndicesUnknownColumn()
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
-			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, new LogLineIndex[0], new TimeSpan?[0], 0, 0))
+			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, new int[0], new TimeSpan?[0], 0, 0))
 				.ShouldThrow<NoSuchColumnException>();
 		}
 
@@ -73,7 +73,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyToByIndicesNullColumn()
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
-			new Action(() => buffer.CopyTo(null, new LogLineIndex[0], new TimeSpan?[0], 0, 0))
+			new Action(() => buffer.CopyTo(null, new int[0], new TimeSpan?[0], 0, 0))
 				.ShouldThrow<ArgumentNullException>();
 		}
 
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyToByIndicesNullDestination()
 		{
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new LogLineIndex[0], null, 0, 0))
+			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new int[0], null, 0, 0))
 				.ShouldThrow<ArgumentNullException>();
 		}
 
@@ -140,7 +140,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			var destination = new[] {"foo"};
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new LogLineIndex[] {-1}, destination, 0, 1))
+			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] {-1}, destination, 0, 1))
 				.ShouldNotThrow();
 			destination[0].Should().BeNull();
 		}
@@ -152,7 +152,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent}, new[] {"bar"});
 			var buffer = Create(entry);
 			var destination = new[] { "foo", "stuff" };
-			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new LogLineIndex[] { -1, 0 }, destination, 0, 2))
+			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] { -1, 0 }, destination, 0, 2))
 				.ShouldNotThrow();
 			destination[0].Should().BeNull();
 			destination[1].Should().Be("bar");
@@ -209,7 +209,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				dest[i] = TimeSpan.FromTicks(42);
 			}
 
-			var sourceIndices = new LogLineIndex[]
+			var sourceIndices = new[]
 			{
 				4, 1, 2, 3
 			};
