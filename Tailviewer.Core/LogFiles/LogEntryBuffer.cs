@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -184,7 +183,8 @@ namespace Tailviewer.Core.LogFiles
 		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index] => this[index];
 
 		private sealed class LogEntryAccessor
-			: ILogEntry
+			: AbstractReadOnlyLogEntry
+			, ILogEntry
 		{
 			private readonly LogEntryBuffer _buffer;
 			private readonly int _index;
@@ -198,45 +198,51 @@ namespace Tailviewer.Core.LogFiles
 				_index = index;
 			}
 
-			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
+			public override T GetValue<T>(ILogFileColumn<T> column)
+			{
+				T value;
+				if (!TryGetValue(column, out value))
+					throw new ColumnNotRetrievedException(column);
 
-			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
+				return value;
+			}
 
-			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
-
-			public LogEntryIndex LogEntryIndex => GetColumnValue(LogFileColumns.LogEntryIndex);
-
-			public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
-
-			public int OriginalLineNumber => GetColumnValue(LogFileColumns.OriginalLineNumber);
-
-			public LevelFlags LogLevel => GetColumnValue(LogFileColumns.LogLevel);
-
-			public DateTime? Timestamp => GetColumnValue(LogFileColumns.Timestamp);
-
-			public TimeSpan? ElapsedTime => GetColumnValue(LogFileColumns.ElapsedTime);
-
-			public TimeSpan? DeltaTime => GetColumnValue(LogFileColumns.DeltaTime);
-
-			public T GetColumnValue<T>(ILogFileColumn<T> column)
+			public override bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
 			{
 				IColumnData data;
 				if (!_buffer._dataByColumn.TryGetValue(column, out data))
-					throw new ColumnNotRetrievedException(column);
+				{
+					value = column.DefaultValue;
+					return false;
+				}
 
-				return ((ColumnData<T>) data)[_index];
+				value = ((ColumnData<T>)data)[_index];
+				return true;
 			}
 
-			public object GetColumnValue(ILogFileColumn column)
+			public override object GetValue(ILogFileColumn column)
+			{
+				object value;
+				if (!TryGetValue(column, out value))
+					throw new ColumnNotRetrievedException(column);
+
+				return value;
+			}
+
+			public override bool TryGetValue(ILogFileColumn column, out object value)
 			{
 				IColumnData data;
 				if (!_buffer._dataByColumn.TryGetValue(column, out data))
-					throw new ColumnNotRetrievedException(column);
+				{
+					value = column.DefaultValue;
+					return false;
+				}
 
-				return data[_index];
+				value = data[_index];
+				return true;
 			}
 
-			public IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
+			public override IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
 
 			public void SetColumnValue(ILogFileColumn column, object value)
 			{
@@ -254,18 +260,6 @@ namespace Tailviewer.Core.LogFiles
 					throw new ColumnNotRetrievedException(column);
 
 				((ColumnData<T>)data)[_index] = value;
-			}
-
-			public override string ToString()
-			{
-				var stringBuilder = new StringBuilder();
-				foreach (var columnData in _buffer._dataByColumn.Values)
-				{
-					if (stringBuilder.Length > 0)
-						stringBuilder.Append("|");
-					stringBuilder.Append(columnData[_index]);
-				}
-				return stringBuilder.ToString();
 			}
 		}
 

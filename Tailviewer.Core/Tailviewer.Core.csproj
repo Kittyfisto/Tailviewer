@@ -107,6 +107,7 @@
     <Compile Include="LogDataAccessQueue.cs" />
     <Compile Include="LogDataCache.cs" />
     <Compile Include="LogFiles\AbstractLogFile.cs" />
+    <Compile Include="LogFiles\AbstractReadOnlyLogEntry.cs" />
     <Compile Include="LogFiles\CustomLogFileColumn.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\IMergedLogFile.cs" />

@@ -1,12 +1,14 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogEntry2Test
+		: AbstractReadOnlyLogEntryTest
 	{
 		[Test]
 		public void TestConstruction()
@@ -23,6 +25,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => { var unused = entry.OriginalLineNumber; }).ShouldThrow<NoSuchColumnException>();
 			new Action(() => { var unused = entry.RawContent; }).ShouldThrow<NoSuchColumnException>();
 			new Action(() => { var unused = entry.Timestamp; }).ShouldThrow<NoSuchColumnException>();
+		}
+
+		protected override IReadOnlyLogEntry CreateEmpty()
+		{
+			return new LogEntry2();
 		}
 	}
 }

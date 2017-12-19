@@ -24,7 +24,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Elapsed Time
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetElapsedTimesEmptyBySection([Range(from: 0, to: 5)] int count,
 		                                              [Range(from: 0, to: 3)] int offset)
@@ -50,7 +49,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetElapsedTimesEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
 		                                              [Range(0, 3)] int count,
@@ -78,11 +76,28 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
+		[Ignore("Still not implemented")]
 		public void TestGetElapsedTimesBySection()
 		{
 			var content = new LogEntryBuffer(5, LogFileColumns.Timestamp);
+			content.CopyFrom(LogFileColumns.Timestamp, new DateTime?[]
+			{
+				new DateTime(2017, 12, 19, 15, 49, 0),
+				new DateTime(2017, 12, 19, 15, 49, 2),
+				new DateTime(2017, 12, 19, 15, 49, 4),
+				new DateTime(2017, 12, 19, 15, 49, 8),
+				new DateTime(2017, 12, 19, 15, 49, 16)
+			});
 			var logFile = CreateFromContent(content);
+			var values = logFile.GetColumn(new LogFileSection(0, 5), LogFileColumns.ElapsedTime);
+			values.Should().Equal(new object[]
+			{
+				null,
+				TimeSpan.FromSeconds(2),
+				TimeSpan.FromSeconds(2),
+				TimeSpan.FromSeconds(4),
+				TimeSpan.FromSeconds(8)
+			});
 		}
 
 		#endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -116,6 +117,22 @@ namespace Tailviewer.Core.LogFiles
 				ElapsedTime,
 				DeltaTime
 			};
+		}
+
+		/// <summary>
+		///     Creates a list of columns which consists of the <see cref="Minimum" /> set of columns
+		///     as well as the given ones. Duplicate columns will only appear once.
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyList<ILogFileColumn> CombineWithMinimum(IEnumerable<ILogFileColumn> columns)
+		{
+			var actualColumns = new List<ILogFileColumn>(Minimum);
+			foreach (var column in columns)
+				if (!actualColumns.Contains(column))
+					actualColumns.Add(column);
+			return actualColumns;
 		}
 	}
 }

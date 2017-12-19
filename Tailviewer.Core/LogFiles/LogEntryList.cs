@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -245,6 +244,65 @@ namespace Tailviewer.Core.LogFiles
 			_count = 0;
 		}
 
+		private sealed class LogEntryAccessor
+			: AbstractReadOnlyLogEntry
+		{
+			private readonly int _index;
+			private readonly LogEntryList _list;
+
+			public LogEntryAccessor(LogEntryList list, int index)
+			{
+				_list = list;
+				_index = index;
+			}
+
+			public override T GetValue<T>(ILogFileColumn<T> column)
+			{
+				T data;
+				if (!TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data;
+			}
+
+			public override bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+			{
+				IColumnData data;
+				if (!_list._dataByColumn.TryGetValue(column, out data))
+				{
+					value = column.DefaultValue;
+					return false;
+				}
+
+				value = ((ColumnData<T>)data)[_index];
+				return true;
+			}
+
+			public override object GetValue(ILogFileColumn column)
+			{
+				object data;
+				if (!TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data;
+			}
+
+			public override bool TryGetValue(ILogFileColumn column, out object value)
+			{
+				IColumnData data;
+				if (!_list._dataByColumn.TryGetValue(column, out data))
+				{
+					value = column.DefaultValue;
+					return false;
+				}
+
+				value = data[_index];
+				return true;
+			}
+
+			public override IReadOnlyList<ILogFileColumn> Columns => _list._columns;
+		}
+
 		private interface IColumnData
 		{
 			void Clear();
@@ -281,8 +339,10 @@ namespace Tailviewer.Core.LogFiles
 
 			public void Add(IReadOnlyLogEntry logEntry)
 			{
-				var value = logEntry.GetColumnValue(_column);
-				_data.Add(value);
+				T value;
+				_data.Add(logEntry.TryGetValue(_column, out value)
+					? value
+					: _column.DefaultValue);
 			}
 
 			public void RemoveAt(int index)
@@ -297,7 +357,7 @@ namespace Tailviewer.Core.LogFiles
 
 			public void Insert(int index, IReadOnlyLogEntry logEntry)
 			{
-				var value = logEntry.GetColumnValue(_column);
+				var value = logEntry.GetValue(_column);
 				_data.Insert(index, value);
 			}
 
@@ -363,59 +423,6 @@ namespace Tailviewer.Core.LogFiles
 					}
 				}
 			}
-		}
-
-		private sealed class LogEntryAccessor
-			: IReadOnlyLogEntry
-		{
-			private readonly int _index;
-			private readonly LogEntryList _list;
-
-			public LogEntryAccessor(LogEntryList list, int index)
-			{
-				_list = list;
-				_index = index;
-			}
-
-			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
-
-			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
-
-			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
-
-			public LogEntryIndex LogEntryIndex => GetColumnValue(LogFileColumns.LogEntryIndex);
-
-			public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
-
-			public int OriginalLineNumber => GetColumnValue(LogFileColumns.OriginalLineNumber);
-
-			public LevelFlags LogLevel => GetColumnValue(LogFileColumns.LogLevel);
-
-			public DateTime? Timestamp => GetColumnValue(LogFileColumns.Timestamp);
-
-			public TimeSpan? ElapsedTime => GetColumnValue(LogFileColumns.ElapsedTime);
-
-			public TimeSpan? DeltaTime => GetColumnValue(LogFileColumns.DeltaTime);
-
-			public T GetColumnValue<T>(ILogFileColumn<T> column)
-			{
-				IColumnData data;
-				if (!_list._dataByColumn.TryGetValue(column, out data))
-					throw new ColumnNotRetrievedException(column);
-
-				return ((ColumnData<T>) data)[_index];
-			}
-
-			public object GetColumnValue(ILogFileColumn column)
-			{
-				IColumnData data;
-				if (!_list._dataByColumn.TryGetValue(column, out data))
-					throw new ColumnNotRetrievedException(column);
-
-				return data[_index];
-			}
-
-			public IReadOnlyList<ILogFileColumn> Columns => _list._columns;
 		}
 	}
 }

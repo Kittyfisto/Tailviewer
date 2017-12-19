@@ -100,7 +100,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		T GetColumnValue<T>(ILogFileColumn<T> column);
+		T GetValue<T>(ILogFileColumn<T> column);
+
+		/// <summary>
+		///    Tries to lookup the value of this log entry for the given column.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		bool TryGetValue<T>(ILogFileColumn<T> column, out T value);
 
 		/// <summary>
 		///     Returns the value of this log entry for the given column.
@@ -109,7 +117,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		object GetColumnValue(ILogFileColumn column);
+		object GetValue(ILogFileColumn column);
+
+		/// <summary>
+		///    Tries to lookup the value of this log entry for the given column.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		bool TryGetValue(ILogFileColumn column, out object value);
 
 		/// <summary>
 		///     The columns offered by this log entry.

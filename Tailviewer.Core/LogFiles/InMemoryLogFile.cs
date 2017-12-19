@@ -35,7 +35,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="columns"></param>
 		public InMemoryLogFile(params ILogFileColumn[] columns)
-			: this((IEnumerable<ILogFileColumn>) columns)
+			: this((IEnumerable < ILogFileColumn > )columns)
 		{}
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(columns));
 
 			_syncRoot = new object();
-			_logEntries = new LogEntryList(columns);
+			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
 		}
 

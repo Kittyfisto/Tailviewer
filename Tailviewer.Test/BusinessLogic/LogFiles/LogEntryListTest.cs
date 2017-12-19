@@ -128,6 +128,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that adding a log entry which doesn't contain all columns is allowed - all other columns in that row will be filled with that columns default value")]
+		public void TestAddPartialEntry()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, "Foobar");
+			entries.Add(logEntry);
+
+			logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.Timestamp, new DateTime(2017, 12, 19, 16, 08, 0));
+			entries.Add(logEntry);
+
+			entries[0].RawContent.Should().Be("Foobar");
+			entries[0].Timestamp.Should().BeNull();
+
+			entries[1].RawContent.Should().BeNull();
+			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 19, 16, 08, 0));
+		}
+
+		[Test]
 		public void TestAddManyEntries()
 		{
 			const int count = 101;

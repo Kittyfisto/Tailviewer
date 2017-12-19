@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction2()
 		{
 			var logFile = new InMemoryLogFile(LogFileColumns.ElapsedTime);
-			logFile.Columns.Should().Equal(LogFileColumns.ElapsedTime);
+			logFile.Columns.Should().Equal(LogFileColumns.Minimum, "because a log file should never offer less columns than the minimum set");
 		}
 
 		[Test]
@@ -452,7 +452,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			throw new NotImplementedException();
+			var logFile = new InMemoryLogFile(content.Columns);
+			logFile.AddRange(content);
+			return logFile;
 		}
 	}
 }
