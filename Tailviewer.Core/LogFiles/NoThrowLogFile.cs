@@ -210,6 +210,23 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IReadOnlyList<ILogFileColumn> Columns
+		{
+			get
+			{
+				try
+				{
+					return _logFile.Columns;
+				}
+				catch (Exception e)
+				{
+					BlameExceptionOnPlugin(e);
+					return new ILogFileColumn[0];
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			try

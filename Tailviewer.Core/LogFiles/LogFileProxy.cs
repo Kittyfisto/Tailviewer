@@ -236,6 +236,19 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IReadOnlyList<ILogFileColumn> Columns
+		{
+			get
+			{
+				ILogFile logFile = _innerLogFile;
+				if (logFile != null)
+					return logFile.Columns;
+
+				return new ILogFileColumn[0];
+			}
+		}
+
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);

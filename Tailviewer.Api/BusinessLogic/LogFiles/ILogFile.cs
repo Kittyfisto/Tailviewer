@@ -74,6 +74,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		int MaxCharactersPerLine { get; }
 
 		/// <summary>
+		///     The columns offered by this log file.
+		/// </summary>
+		IReadOnlyList<ILogFileColumn> Columns { get; }
+
+		/// <summary>
 		///     Adds a new listener to this log file.
 		///     The listener will be synchronized to the current state of this log file and then be notified
 		///     of any further changes.

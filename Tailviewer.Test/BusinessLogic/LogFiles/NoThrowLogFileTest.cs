@@ -263,5 +263,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			                                 It.Is<int>(y => y == 101)),
 			                Times.Once);
 		}
+
+		[Test]
+		public void TestGetColumns1()
+		{
+			_logFile.Setup(x => x.Columns).Returns(new[] {LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime});
+			_proxy.Columns.Should().Equal(LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime);
+			_logFile.Verify(x => x.Columns, Times.Once);
+		}
+
+		[Test]
+		public void TestGetColumns2()
+		{
+			_logFile.Setup(x => x.Columns).Throws<NullReferenceException>();
+			_proxy.Columns.Should().BeEmpty();
+			_logFile.Verify(x => x.Columns, Times.Once);
+		}
 	}
 }

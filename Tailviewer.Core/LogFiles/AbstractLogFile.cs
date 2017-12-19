@@ -60,6 +60,9 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed { get; private set; }
 
 		/// <inheritdoc />
+		public abstract IReadOnlyList<ILogFileColumn> Columns { get; }
+
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			Listeners.AddListener(listener, maximumWaitTime, maximumLineCount);

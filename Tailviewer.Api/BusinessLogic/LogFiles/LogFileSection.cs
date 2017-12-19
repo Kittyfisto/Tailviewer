@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -47,11 +48,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="index"></param>
 		/// <param name="count"></param>
 		/// <returns></returns>
+		[DebuggerStepThrough]
 		public static LogFileSection Invalidate(LogLineIndex index, int count)
 		{
 			return new LogFileSection(index, count, true);
 		}
 
+		[DebuggerStepThrough]
 		private LogFileSection(LogLineIndex index, int count, bool isInvalidate)
 		{
 			if (count < 0)
@@ -68,6 +71,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="count"></param>
+		[DebuggerStepThrough]
 		public LogFileSection(LogLineIndex index, int count)
 		{
 			if (count < 0)

@@ -313,6 +313,9 @@ namespace Tailviewer.Core.LogFiles
 
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
 			{
+				if (length <= 0)
+					return;
+
 				// As usual, we allow access to invalid regions and return the default value
 				// for that column.
 				if (sourceIndex < 0)
@@ -323,14 +326,26 @@ namespace Tailviewer.Core.LogFiles
 					sourceIndex = 0;
 				}
 
-				var tooMany = sourceIndex + length - _data.Count;
-				if (tooMany > 0)
+				if (length > 0 && sourceIndex + length > _data.Count)
 				{
+					int tooMany;
+					if (sourceIndex < _data.Count)
+					{
+						tooMany = sourceIndex + length - _data.Count;
+					}
+					else
+					{
+						tooMany = length;
+					}
+
 					destination.Fill(_column.DefaultValue, destinationIndex + length - tooMany, tooMany);
 					length -= tooMany;
 				}
 
-				_data.CopyTo(sourceIndex, destination, destinationIndex, length);
+				if (length > 0)
+				{
+					_data.CopyTo(sourceIndex, destination, destinationIndex, length);
+				}
 			}
 
 			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)

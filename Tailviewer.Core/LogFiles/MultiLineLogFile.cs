@@ -74,6 +74,12 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
+		public override IReadOnlyList<ILogFileColumn> Columns
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <inheritdoc />
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />

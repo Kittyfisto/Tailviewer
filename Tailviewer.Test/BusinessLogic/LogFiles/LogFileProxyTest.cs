@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Metrolib;
@@ -457,7 +458,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			throw new NotImplementedException();
+			var source = new InMemoryLogFile(content.First().Columns);
+			source.AddRange(content);
+			var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, source);
+			return proxy;
 		}
 	}
 }

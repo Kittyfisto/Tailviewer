@@ -34,6 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction1()
 		{
 			var logFile = new InMemoryLogFile();
+			logFile.Columns.Should().Equal(LogFileColumns.Minimum);
 			logFile.Size.Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
@@ -41,6 +42,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Error.Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
+		}
+
+		[Test]
+		public void TestConstruction2()
+		{
+			var logFile = new InMemoryLogFile(LogFileColumns.ElapsedTime);
+			logFile.Columns.Should().Equal(LogFileColumns.ElapsedTime);
 		}
 
 		[Test]
@@ -97,6 +105,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					LogFileSection.Reset,
 					new LogFileSection(0, 1)
 				});
+		}
+
+		[Test]
+		public void TestAddEntry6()
+		{
+			var logFile = new InMemoryLogFile(LogFileColumns.LogLevel);
+
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.LogLevel, LevelFlags.Error);
+			logFile.Add(logEntry);
+
+			var buffer = new LogEntryBuffer(1, LogFileColumns.LogLevel);
+			logFile.GetEntries(new LogFileSection(0, 1), buffer);
+			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}
 
 		[Test]
