@@ -34,10 +34,13 @@ namespace Tailviewer.Core.LogFiles
 		public string RawContent => GetColumnValue(LogFileColumns.RawContent);
 
 		/// <inheritdoc />
-		public LogEntryIndex Index => GetColumnValue(LogFileColumns.Index);
+		public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
 
 		/// <inheritdoc />
-		public LogEntryIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+		public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+
+		/// <inheritdoc />
+		public LogEntryIndex LogEntryIndex => GetColumnValue(LogFileColumns.LogEntryIndex);
 
 		/// <inheritdoc />
 		public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
@@ -60,11 +63,17 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public T GetColumnValue<T>(ILogFileColumn<T> column)
 		{
+			return (T) GetColumnValue((ILogFileColumn) column);
+		}
+
+		/// <inheritdoc />
+		public object GetColumnValue(ILogFileColumn column)
+		{
 			object value;
 			if (!_values.TryGetValue(column, out value))
 				throw new NoSuchColumnException(column);
 
-			return (T) value;
+			return value;
 		}
 
 		/// <inheritdoc />

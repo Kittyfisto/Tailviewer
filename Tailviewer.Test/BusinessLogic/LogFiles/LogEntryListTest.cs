@@ -1,21 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogEntryListTest
+		: ReadOnlyLogEntriesTest
 	{
-		[Test]
-		public void TestConstruction1()
-		{
-			var entries = new LogEntryList();
-			entries.Count.Should().Be(0);
-			entries.Columns.Should().BeEmpty();
-		}
-
 		[Test]
 		public void TestConstruction2()
 		{
@@ -137,7 +134,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var entries = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent);
 			for (int i = 0; i < count; ++i)
 			{
-				entries.Add(new LogEntryIndex(i), i.ToString());
+				entries.Add(new LogLineIndex(i), i.ToString());
 				entries.Count.Should().Be(i + 1);
 			}
 
@@ -354,24 +351,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
-		[Test]
-		public void TestReuseEnumerator()
+		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
 		{
-			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add("Foo");
+			return new LogEntryList(columns);
+		}
 
-			using (var enumerator = entries.GetEnumerator())
+		protected override IReadOnlyLogEntries Create(IEnumerable<IReadOnlyLogEntry> entries)
+		{
+			if (entries.Any())
 			{
-				enumerator.MoveNext().Should().BeTrue();
-				enumerator.Current.RawContent.Should().Be("Foo");
-				enumerator.MoveNext().Should().BeFalse();
-
-				enumerator.Reset();
-				enumerator.MoveNext().Should().BeTrue();
-				enumerator.Current.RawContent.Should().Be("Foo");
-				enumerator.MoveNext().Should().BeFalse();
+				var list =  new LogEntryList(entries.First().Columns);
+				foreach (var entry in entries)
+				{
+					list.Add(entry);
+				}
+				return list;
 			}
-			
+
+			return CreateEmpty(new ILogFileColumn[0]);
 		}
 	}
 }

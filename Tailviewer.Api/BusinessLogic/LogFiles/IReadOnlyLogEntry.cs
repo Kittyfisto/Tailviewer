@@ -28,7 +28,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		LogEntryIndex Index { get; }
+		LogLineIndex Index { get; }
 
 		/// <summary>
 		///     The index of the log entry this one was created from.
@@ -37,7 +37,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		LogEntryIndex OriginalIndex { get; }
+		LogLineIndex OriginalIndex { get; }
+
+		/// <summary>
+		///     The index of this log entry, from 0 to the number of log entries.
+		/// </summary>
+		/// <remarks>
+		///     TODO: Remove this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		[WillBeRemoved("This property will be be removed once multiline log entry handlign is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		LogEntryIndex LogEntryIndex { get; }
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
@@ -90,6 +101,15 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
 		T GetColumnValue<T>(ILogFileColumn<T> column);
+
+		/// <summary>
+		///     Returns the value of this log entry for the given column.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		object GetColumnValue(ILogFileColumn column);
 
 		/// <summary>
 		///     The columns offered by this log entry.

@@ -45,7 +45,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
 		{
-			return new Enumerator(this);
+			return new ReadOnlyLogEntriesEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -70,6 +70,46 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumn> Columns => _columns;
+
+		/// <inheritdoc />
+		public void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+
+			IColumnData data;
+			if (_dataByColumn.TryGetValue(column, out data))
+			{
+				((ColumnData<T>)data).CopyTo(sourceIndex, destination, destinationIndex, length);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+
+			IColumnData data;
+			if (_dataByColumn.TryGetValue(column, out data))
+			{
+				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex, length);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
 
 		[Pure]
 		private static IColumnData CreateColumnData(ILogFileColumn column)
@@ -205,51 +245,6 @@ namespace Tailviewer.Core.LogFiles
 			_count = 0;
 		}
 
-		sealed class Enumerator
-			: IEnumerator<IReadOnlyLogEntry>
-		{
-			private readonly LogEntryList _list;
-			private int _index;
-
-			public Enumerator(LogEntryList list)
-			{
-				if (list == null)
-					throw new ArgumentNullException(nameof(list));
-
-				_list = list;
-				Reset();
-			}
-
-			public void Dispose()
-			{}
-
-			public bool MoveNext()
-			{
-				if (++_index >= _list._count)
-					return false;
-
-				return true;
-			}
-
-			public void Reset()
-			{
-				_index = -1;
-			}
-
-			public IReadOnlyLogEntry Current
-			{
-				get
-				{
-					if (_index < 0 || _index >= _list._count)
-						throw new InvalidOperationException();
-
-					return _list[_index];
-				}
-			}
-
-			object IEnumerator.Current => Current;
-		}
-
 		private interface IColumnData
 		{
 			void Clear();
@@ -259,60 +254,99 @@ namespace Tailviewer.Core.LogFiles
 			void Insert(int index, IReadOnlyLogEntry logEntry);
 			void RemoveRange(int index, int count);
 			void InsertEmpty(int index);
+
+			object this[int index] { get; }
 		}
 
 		private sealed class ColumnData<T>
 			: IColumnData
 		{
 			private readonly ILogFileColumn<T> _column;
-			private readonly List<T> _values;
+			private readonly List<T> _data;
 
 			public ColumnData(ILogFileColumn<T> column)
 			{
-				if (column == null)
-					throw new ArgumentNullException(nameof(column));
-
 				_column = column;
-				_values = new List<T>();
+				_data = new List<T>();
 			}
 
-			public T this[int index] => _values[index];
+			object IColumnData.this[int index] => _data[index];
+
+			public T this[int index] => _data[index];
 
 			public void Clear()
 			{
-				_values.Clear();
+				_data.Clear();
 			}
 
 			public void Add(IReadOnlyLogEntry logEntry)
 			{
 				var value = logEntry.GetColumnValue(_column);
-				_values.Add(value);
+				_data.Add(value);
 			}
 
 			public void RemoveAt(int index)
 			{
-				_values.RemoveAt(index);
+				_data.RemoveAt(index);
 			}
 
 			public void AddEmpty()
 			{
-				_values.Add(default(T));
+				_data.Add(default(T));
 			}
 
 			public void Insert(int index, IReadOnlyLogEntry logEntry)
 			{
 				var value = logEntry.GetColumnValue(_column);
-				_values.Insert(index, value);
+				_data.Insert(index, value);
 			}
 
 			public void RemoveRange(int index, int count)
 			{
-				_values.RemoveRange(index, count);
+				_data.RemoveRange(index, count);
 			}
 
 			public void InsertEmpty(int index)
 			{
-				_values.Insert(index, default(T));
+				_data.Insert(index, default(T));
+			}
+
+			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
+			{
+				// As usual, we allow access to invalid regions and return the default value
+				// for that column.
+				if (sourceIndex < 0)
+				{
+					destination.Fill(default(T), destinationIndex, -sourceIndex);
+					length += sourceIndex;
+					destinationIndex -= sourceIndex;
+					sourceIndex = 0;
+				}
+
+				var tooMany = sourceIndex + length - _data.Count;
+				if (tooMany > 0)
+				{
+					destination.Fill(default(T), destinationIndex + length - tooMany, tooMany);
+					length -= tooMany;
+				}
+
+				_data.CopyTo(sourceIndex, destination, destinationIndex, length);
+			}
+
+			public void CopyTo(IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+			{
+				for (int i = 0; i < length; ++i)
+				{
+					var sourceIndex = sourceIndices[i];
+					if (sourceIndex >= 0 && sourceIndex < _data.Count)
+					{
+						destination[destinationIndex + i] = _data[(int)sourceIndex];
+					}
+					else
+					{
+						destination[destinationIndex + i] = default(T);
+					}
+				}
 			}
 		}
 
@@ -324,18 +358,17 @@ namespace Tailviewer.Core.LogFiles
 
 			public LogEntryAccessor(LogEntryList list, int index)
 			{
-				if (list == null)
-					throw new ArgumentNullException(nameof(list));
-
 				_list = list;
 				_index = index;
 			}
 
 			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
 
-			public LogEntryIndex Index => GetColumnValue(LogFileColumns.Index);
+			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
 
-			public LogEntryIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+
+			public LogEntryIndex LogEntryIndex => GetColumnValue(LogFileColumns.LogEntryIndex);
 
 			public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
 
@@ -356,6 +389,15 @@ namespace Tailviewer.Core.LogFiles
 					throw new ColumnNotRetrievedException(column);
 
 				return ((ColumnData<T>) data)[_index];
+			}
+
+			public object GetColumnValue(ILogFileColumn column)
+			{
+				IColumnData data;
+				if (!_list._dataByColumn.TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data[_index];
 			}
 
 			public IReadOnlyList<ILogFileColumn> Columns => _list._columns;

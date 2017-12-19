@@ -49,6 +49,46 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
+		public void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+
+			IColumnData columnData;
+			if (_dataByColumn.TryGetValue(column, out columnData))
+			{
+				((ColumnData<T>)columnData).CopyTo(sourceIndex, destination, destinationIndex, length);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+
+			IColumnData columnData;
+			if (_dataByColumn.TryGetValue(column, out columnData))
+			{
+				((ColumnData<T>)columnData).CopyTo(sourceIndices, destination, destinationIndex, length);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
 		public void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
 		{
 			if (column == null)
@@ -116,8 +156,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
 		{
-			for (var i = 0; i < _length; ++i)
-				yield return new LogEntryAccessor(this, i);
+			return new ReadOnlyLogEntriesEnumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -129,7 +168,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _length;
 
 		/// <inheritdoc />
-		public IReadOnlyLogEntry this[int index]
+		public ILogEntry this[int index]
 		{
 			get
 			{
@@ -142,8 +181,10 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index] => this[index];
+
 		private sealed class LogEntryAccessor
-			: IReadOnlyLogEntry
+			: ILogEntry
 		{
 			private readonly LogEntryBuffer _buffer;
 			private readonly int _index;
@@ -159,9 +200,11 @@ namespace Tailviewer.Core.LogFiles
 
 			public string RawContent => GetColumnValue(LogFileColumns.RawContent);
 
-			public LogEntryIndex Index => GetColumnValue(LogFileColumns.Index);
+			public LogLineIndex Index => GetColumnValue(LogFileColumns.Index);
 
-			public LogEntryIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+			public LogLineIndex OriginalIndex => GetColumnValue(LogFileColumns.OriginalIndex);
+
+			public LogEntryIndex LogEntryIndex => GetColumnValue(LogFileColumns.LogEntryIndex);
 
 			public int LineNumber => GetColumnValue(LogFileColumns.LineNumber);
 
@@ -184,7 +227,34 @@ namespace Tailviewer.Core.LogFiles
 				return ((ColumnData<T>) data)[_index];
 			}
 
+			public object GetColumnValue(ILogFileColumn column)
+			{
+				IColumnData data;
+				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data[_index];
+			}
+
 			public IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
+
+			public void SetColumnValue(ILogFileColumn column, object value)
+			{
+				IColumnData data;
+				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				data[_index] = value;
+			}
+
+			public void SetColumnValue<T>(ILogFileColumn<T> column, T value)
+			{
+				IColumnData data;
+				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				((ColumnData<T>)data)[_index] = value;
+			}
 
 			public override string ToString()
 			{
@@ -212,7 +282,7 @@ namespace Tailviewer.Core.LogFiles
 
 		interface IColumnData
 		{
-			object this[int index] { get; }
+			object this[int index] { get; set; }
 			void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section);
 			void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
 			void FillDefault(int destinationIndex, int length);
@@ -238,9 +308,17 @@ namespace Tailviewer.Core.LogFiles
 				Array.Copy(source, sourceIndex, _data, destIndex, length);
 			}
 
-			public T this[int index] => _data[index];
+			public T this[int index]
+			{
+				get { return _data[index]; }
+				set { _data[index] = value; }
+			}
 
-			object IColumnData.this[int index] => _data[index];
+			object IColumnData.this[int index]
+			{
+				get { return _data[index]; }
+				set { _data[index] = (T) value; }
+			}
 
 			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)
 			{
@@ -256,6 +334,44 @@ namespace Tailviewer.Core.LogFiles
 					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
 
 				source.GetColumn(indices, _column, _data, destinationIndex);
+			}
+
+			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
+			{
+				// As usual, we allow access to invalid regions and return the default value
+				// for that column.
+				if (sourceIndex < 0)
+				{
+					destination.Fill(default(T), destinationIndex, -sourceIndex);
+					length += sourceIndex;
+					destinationIndex -= sourceIndex;
+					sourceIndex = 0;
+				}
+
+				var tooMany = sourceIndex + length - _data.Length;
+				if (tooMany > 0)
+				{
+					destination.Fill(default(T), destinationIndex + length - tooMany, tooMany);
+					length -= tooMany;
+				}
+
+				Array.Copy(_data, sourceIndex, destination, destinationIndex, length);
+			}
+
+			public void CopyTo(IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex, int length)
+			{
+				for (int i = 0; i < length; ++i)
+				{
+					var sourceIndex = sourceIndices[i];
+					if (sourceIndex >= 0 && sourceIndex < _data.Length)
+					{
+						destination[destinationIndex + i] = _data[(int) sourceIndex];
+					}
+					else
+					{
+						destination[destinationIndex + i] = default(T);
+					}
+				}
 			}
 
 			public void FillDefault(int destinationIndex, int length)

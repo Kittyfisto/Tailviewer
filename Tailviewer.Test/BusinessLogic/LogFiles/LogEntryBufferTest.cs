@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -10,16 +11,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class LogEntryBufferTest
+		: ReadOnlyLogEntriesTest
 	{
-		[Test]
-		public void TestConstruction1()
-		{
-			var buffer = new LogEntryBuffer(0);
-			buffer.Columns.Should().BeEmpty();
-			buffer.Count.Should().Be(0);
-			buffer.Should().BeEmpty();
-		}
-
 		[Test]
 		public void TestConstruction2([Values(1, 2, 5, 10, 42, 100, 9001)] int count)
 		{
@@ -113,7 +106,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = new LogEntryBuffer(2,
 			                                       LogFileColumns.Index,
 			                                       LogFileColumns.Timestamp);
-			buffer.CopyFrom(LogFileColumns.Index, new LogEntryIndex[] {1, 42});
+			buffer.CopyFrom(LogFileColumns.Index, new LogLineIndex[] {1, 42});
 			buffer.CopyFrom(LogFileColumns.Timestamp, new DateTime?[] {DateTime.MinValue, DateTime.MaxValue});
 
 			buffer[0].Index.Should().Be(1);
@@ -128,7 +121,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			const int count = 1000;
 			var buffer = new LogEntryBuffer(count, LogFileColumns.OriginalIndex);
-			buffer.CopyFrom(LogFileColumns.OriginalIndex, Enumerable.Range(0, count).Select(i => (LogEntryIndex)i).ToArray());
+			buffer.CopyFrom(LogFileColumns.OriginalIndex, Enumerable.Range(0, count).Select(i => (LogLineIndex)i).ToArray());
 			for (int i = 0; i < count; ++i)
 			{
 				buffer[i].OriginalIndex.Should().Be(i);
@@ -306,6 +299,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			buffer[2].Timestamp.Should().BeNull();
 			buffer[3].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
 			buffer[3].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 27, 0));
+		}
+
+		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
+		{
+			return new LogEntryBuffer(0, columns);
+		}
+
+		protected override IReadOnlyLogEntries Create(IEnumerable<IReadOnlyLogEntry> entries)
+		{
+			if (entries.Any())
+			{
+				var list = new LogEntryBuffer(entries.Count(), entries.First().Columns);
+				int i = 0;
+				foreach (var entry in entries)
+				{
+					foreach (var column in entry.Columns)
+					{
+						var value = entry.GetColumnValue(column);
+						list[i].SetColumnValue(column, value);
+					}
+				}
+				return list;
+			}
+
+			return CreateEmpty(new ILogFileColumn[0]);
 		}
 	}
 }

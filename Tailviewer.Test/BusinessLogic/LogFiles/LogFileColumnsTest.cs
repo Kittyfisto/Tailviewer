@@ -18,6 +18,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				LogFileColumns.RawContent,
 				LogFileColumns.Index,
 				LogFileColumns.OriginalIndex,
+				LogFileColumns.LogEntryIndex,
 				LogFileColumns.LineNumber,
 				LogFileColumns.OriginalLineNumber,
 				LogFileColumns.LogLevel,
@@ -40,7 +41,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestIndex()
 		{
 			LogFileColumns.Index.Id.Should().Be("index");
-			LogFileColumns.Index.DataType.Should().Be<LogEntryIndex>();
+			LogFileColumns.Index.DataType.Should().Be<LogLineIndex>();
 		}
 
 		[Test]
@@ -48,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalIndex()
 		{
 			LogFileColumns.OriginalIndex.Id.Should().Be("original_index");
-			LogFileColumns.OriginalIndex.DataType.Should().Be<LogEntryIndex>();
+			LogFileColumns.OriginalIndex.DataType.Should().Be<LogLineIndex>();
 		}
 
 		[Test]

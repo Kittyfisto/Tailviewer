@@ -36,14 +36,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     The index of the log entry, from 0 to the number of log entries.
 		/// </summary>
-		public static readonly ILogFileColumn<LogEntryIndex> Index;
+		/// <remarks>
+		///     TODO: Change this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		public static readonly ILogFileColumn<LogLineIndex> Index;
 
 		/// <summary>
 		///     The index of the log entry another one was created from.
 		///     Only differs from <see cref="Index" /> when the log entry has been created
 		///     through operations such as filtering, merging, etc...
 		/// </summary>
-		public static readonly ILogFileColumn<LogEntryIndex> OriginalIndex;
+		/// <remarks>
+		///     TODO: Change this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		public static readonly ILogFileColumn<LogLineIndex> OriginalIndex;
+
+		/// <summary>
+		///     The index of this log entry, from 0 to the number of log entries.
+		/// </summary>
+		/// <remarks>
+		///     TODO: Remove this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		[WillBeRemoved("This property will be be removed once multiline log entry handlign is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		public static readonly ILogFileColumn<LogEntryIndex> LogEntryIndex;
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
@@ -78,8 +93,9 @@ namespace Tailviewer.Core.LogFiles
 		static LogFileColumns()
 		{
 			RawContent = new WellKnownLogFileColumn<string>("raw_content");
-			Index = new WellKnownLogFileColumn<LogEntryIndex>("index");
-			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index");
+			Index = new WellKnownLogFileColumn<LogLineIndex>("index");
+			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index");
+			LogEntryIndex = new WellKnownLogFileColumn<LogEntryIndex>("log_entry_index");
 			LineNumber = new WellKnownLogFileColumn<int>("line_number");
 			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
 			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");
@@ -92,6 +108,7 @@ namespace Tailviewer.Core.LogFiles
 				RawContent,
 				Index,
 				OriginalIndex,
+				LogEntryIndex,
 				LineNumber,
 				OriginalLineNumber,
 				LogLevel,

@@ -71,6 +71,7 @@
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalysisResult.cs" />
     <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryId.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntries.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileColumn.cs" />
