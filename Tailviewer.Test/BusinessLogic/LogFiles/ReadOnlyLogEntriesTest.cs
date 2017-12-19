@@ -244,5 +244,70 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				enumerator.MoveNext().Should().BeFalse();
 			}
 		}
+
+		[Test]
+		public void TestAccessAllColumnsByLogEntry()
+		{
+			var columns = new List<ILogFileColumn>();
+			var values = new List<object>();
+
+			columns.Add(LogFileColumns.RawContent);
+			values.Add("Foo");
+
+			columns.Add(LogFileColumns.DeltaTime);
+			values.Add(TimeSpan.FromSeconds(10));
+
+			columns.Add(LogFileColumns.ElapsedTime);
+			values.Add(TimeSpan.FromDays(44));
+
+			columns.Add(LogFileColumns.Index);
+			values.Add(new LogLineIndex(10));
+
+			columns.Add(LogFileColumns.OriginalIndex);
+			values.Add(new LogLineIndex(9001));
+
+			columns.Add(LogFileColumns.LineNumber);
+			values.Add(5);
+
+			columns.Add(LogFileColumns.OriginalLineNumber);
+			values.Add(7);
+
+			columns.Add(LogFileColumns.LogEntryIndex);
+			values.Add(new LogEntryIndex(1));
+
+			columns.Add(LogFileColumns.Timestamp);
+			values.Add(new DateTime(2017, 12, 19, 12, 45, 33));
+
+			columns.Add(LogFileColumns.LogLevel);
+			values.Add(LevelFlags.Error);
+
+			var entry = ReadOnlyLogEntry.Create(columns, values);
+			var logEntries = Create(entry);
+			var actualEntry = logEntries.First();
+			actualEntry.RawContent.Should().Be("Foo");
+			actualEntry.DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+			actualEntry.ElapsedTime.Should().Be(TimeSpan.FromDays(44));
+			actualEntry.Index.Should().Be(10);
+			actualEntry.OriginalIndex.Should().Be(9001);
+			actualEntry.LineNumber.Should().Be(5);
+			actualEntry.OriginalLineNumber.Should().Be(7);
+			actualEntry.LogEntryIndex.Should().Be(1);
+			actualEntry.Timestamp.Should().Be(new DateTime(2017, 12, 19, 12, 45, 33));
+			actualEntry.LogLevel.Should().Be(LevelFlags.Error);
+		}
+
+		[Test]
+		public void TestAccessNotRetrievedColumn()
+		{
+			var entry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.RawContent},
+			                                    new[] {"Foo"});
+			var entries = Create(entry);
+			var actualEntry = entries.First();
+			actualEntry.RawContent.Should().Be("Foo");
+			new Action(() =>
+			{
+				var unused = actualEntry.Timestamp;
+			}).ShouldThrow<ColumnNotRetrievedException>();
+		}
 	}
 }
