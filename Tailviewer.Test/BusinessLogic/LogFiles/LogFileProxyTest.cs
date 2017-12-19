@@ -41,7 +41,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestCtor1()
+		public void TestEmptyConstruction()
 		{
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
 			{
@@ -51,9 +51,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.Size.Should().Be(Size.Zero);
 				proxy.StartTimestamp.Should().NotHaveValue();
 				proxy.Count.Should().Be(0);
+				proxy.Columns.Should().Equal(LogFileColumns.Minimum);
 
 				new Action(() => proxy.GetLine(0)).ShouldThrow<IndexOutOfRangeException>();
 				new Action(() => proxy.GetSection(new LogFileSection(0, 1))).ShouldThrow<IndexOutOfRangeException>();
+			}
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			_logFile.Setup(x => x.Columns).Returns(new[] { LogFileColumns.RawContent });
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			{
+				proxy.Columns.Should().Equal(LogFileColumns.RawContent);
 			}
 		}
 

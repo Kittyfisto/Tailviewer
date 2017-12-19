@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Metrolib;
@@ -14,6 +15,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <remarks>
 	///     Should only be used for log files which's content actually fits into memory.
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class InMemoryLogFile
 		: ILogFile
 	{

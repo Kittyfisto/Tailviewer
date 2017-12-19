@@ -244,7 +244,7 @@ namespace Tailviewer.Core.LogFiles
 				if (logFile != null)
 					return logFile.Columns;
 
-				return new ILogFileColumn[0];
+				return LogFileColumns.Minimum;
 			}
 		}
 
