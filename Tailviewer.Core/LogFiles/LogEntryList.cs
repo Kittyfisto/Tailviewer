@@ -292,7 +292,7 @@ namespace Tailviewer.Core.LogFiles
 
 			public void AddEmpty()
 			{
-				_data.Add(default(T));
+				_data.Add(_column.DefaultValue);
 			}
 
 			public void Insert(int index, IReadOnlyLogEntry logEntry)
@@ -308,7 +308,7 @@ namespace Tailviewer.Core.LogFiles
 
 			public void InsertEmpty(int index)
 			{
-				_data.Insert(index, default(T));
+				_data.Insert(index, _column.DefaultValue);
 			}
 
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
@@ -317,7 +317,7 @@ namespace Tailviewer.Core.LogFiles
 				// for that column.
 				if (sourceIndex < 0)
 				{
-					destination.Fill(default(T), destinationIndex, -sourceIndex);
+					destination.Fill(_column.DefaultValue, destinationIndex, -sourceIndex);
 					length += sourceIndex;
 					destinationIndex -= sourceIndex;
 					sourceIndex = 0;
@@ -326,7 +326,7 @@ namespace Tailviewer.Core.LogFiles
 				var tooMany = sourceIndex + length - _data.Count;
 				if (tooMany > 0)
 				{
-					destination.Fill(default(T), destinationIndex + length - tooMany, tooMany);
+					destination.Fill(_column.DefaultValue, destinationIndex + length - tooMany, tooMany);
 					length -= tooMany;
 				}
 
@@ -344,7 +344,7 @@ namespace Tailviewer.Core.LogFiles
 					}
 					else
 					{
-						destination[destinationIndex + i] = default(T);
+						destination[destinationIndex + i] = _column.DefaultValue;
 					}
 				}
 			}

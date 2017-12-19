@@ -342,7 +342,7 @@ namespace Tailviewer.Core.LogFiles
 				// for that column.
 				if (sourceIndex < 0)
 				{
-					destination.Fill(default(T), destinationIndex, -sourceIndex);
+					destination.Fill(_column.DefaultValue, destinationIndex, -sourceIndex);
 					length += sourceIndex;
 					destinationIndex -= sourceIndex;
 					sourceIndex = 0;
@@ -351,7 +351,7 @@ namespace Tailviewer.Core.LogFiles
 				var tooMany = sourceIndex + length - _data.Length;
 				if (tooMany > 0)
 				{
-					destination.Fill(default(T), destinationIndex + length - tooMany, tooMany);
+					destination.Fill(_column.DefaultValue, destinationIndex + length - tooMany, tooMany);
 					length -= tooMany;
 				}
 
@@ -369,14 +369,14 @@ namespace Tailviewer.Core.LogFiles
 					}
 					else
 					{
-						destination[destinationIndex + i] = default(T);
+						destination[destinationIndex + i] = _column.DefaultValue;
 					}
 				}
 			}
 
 			public void FillDefault(int destinationIndex, int length)
 			{
-				_data.Fill(default(T), destinationIndex, length);
+				_data.Fill(_column.DefaultValue, destinationIndex, length);
 			}
 		}
 	}

@@ -277,7 +277,7 @@ namespace Tailviewer.Core.LogFiles
 				{
 					// Someone should be on the naughty list for trying to access a portion
 					// which cannot be accessed! Anyhow, we fill the buffer with default values.
-					columnBuffer.Fill(default(T), 0, indices.Count);
+					columnBuffer.Fill(column.DefaultValue, 0, indices.Count);
 				}
 			}
 		}

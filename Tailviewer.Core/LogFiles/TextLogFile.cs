@@ -176,10 +176,7 @@ namespace Tailviewer.Core.LogFiles
 					throw new NoSuchColumnException(column);
 				}
 
-				for (int i = retrievedCount; i < section.Count; ++i)
-				{
-					buffer[i] = default(T);
-				}
+				buffer.Fill(column.DefaultValue, retrievedCount, section.Count - retrievedCount);
 			}
 		}
 

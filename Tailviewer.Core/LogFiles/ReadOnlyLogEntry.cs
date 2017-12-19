@@ -96,7 +96,9 @@ namespace Tailviewer.Core.LogFiles
 			if (values == null)
 				throw new ArgumentNullException(nameof(values));
 			if (columns.Count != values.Count)
-				throw new ArgumentOutOfRangeException();
+				throw new
+					ArgumentOutOfRangeException(string.Format("Expected number of columns '{0}' to match number of values '{1}'",
+					                                          columns.Count, values.Count));
 
 			var valuesPerColumn = new Dictionary<ILogFileColumn, object>(columns.Count);
 			for (var i = 0; i < columns.Count; ++i)
@@ -111,6 +113,35 @@ namespace Tailviewer.Core.LogFiles
 				valuesPerColumn.Add(columns[i], values[i]);
 			}
 			return new ReadOnlyLogEntry(valuesPerColumn);
+		}
+
+		/// <summary>
+		///     Creates a new log entry which only contains values for the given <paramref name="columns" />.
+		///     Values of other columns are ignored.
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		[Pure]
+		public static IReadOnlyLogEntry Create(IReadOnlyList<ILogFileColumn> columns,
+		                                       IReadOnlyDictionary<ILogFileColumn, object> values)
+		{
+			var actualValues = new List<object>();
+			foreach (var column in columns)
+			{
+				object value;
+				if (values.TryGetValue(column, out value))
+				{
+					actualValues.Add(value);
+				}
+				else
+				{
+					actualValues.Add(column.DefaultValue);
+				}
+			}
+
+			return Create(columns, actualValues);
 		}
 	}
 }

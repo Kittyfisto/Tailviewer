@@ -32,6 +32,11 @@ namespace Tailviewer.Core.LogFiles
 		public Type DataType => typeof(T);
 
 		/// <inheritdoc />
+		public T DefaultValue => default(T);
+
+		object ILogFileColumn.DefaultValue => DefaultValue;
+
+		/// <inheritdoc />
 		public override bool Equals(object obj)
 		{
 			var other = obj as CustomLogFileColumn<T>;

@@ -31,6 +31,11 @@ namespace Tailviewer.Core.LogFiles
 		public Type DataType => typeof(T);
 
 		/// <inheritdoc />
+		public T DefaultValue => default(T);
+
+		object ILogFileColumn.DefaultValue => DefaultValue;
+
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			return string.Format("{0}: {1}", _id, typeof(T).Name);
