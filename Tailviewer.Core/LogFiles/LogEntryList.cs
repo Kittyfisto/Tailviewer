@@ -45,7 +45,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
 		{
-			throw new NotImplementedException();
+			return new Enumerator(this);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -141,13 +141,27 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="values"></param>
+		public void Insert(int index, params object[] values)
+		{
+			Insert(index, ReadOnlyLogEntry.Create(_columns, values));
+		}
+
+		/// <summary>
 		///     Inserts a completely empty row to this list.
 		///     Every cell will be filled with that column's default value.
 		/// </summary>
 		/// <param name="index"></param>
 		public void InsertEmpty(int index)
 		{
-			throw new NotImplementedException();
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.InsertEmpty(index);
+			}
+			++_count;
 		}
 
 		/// <summary>
@@ -191,6 +205,51 @@ namespace Tailviewer.Core.LogFiles
 			_count = 0;
 		}
 
+		sealed class Enumerator
+			: IEnumerator<IReadOnlyLogEntry>
+		{
+			private readonly LogEntryList _list;
+			private int _index;
+
+			public Enumerator(LogEntryList list)
+			{
+				if (list == null)
+					throw new ArgumentNullException(nameof(list));
+
+				_list = list;
+				Reset();
+			}
+
+			public void Dispose()
+			{}
+
+			public bool MoveNext()
+			{
+				if (++_index >= _list._count)
+					return false;
+
+				return true;
+			}
+
+			public void Reset()
+			{
+				_index = -1;
+			}
+
+			public IReadOnlyLogEntry Current
+			{
+				get
+				{
+					if (_index < 0 || _index >= _list._count)
+						throw new InvalidOperationException();
+
+					return _list[_index];
+				}
+			}
+
+			object IEnumerator.Current => Current;
+		}
+
 		private interface IColumnData
 		{
 			void Clear();
@@ -199,6 +258,7 @@ namespace Tailviewer.Core.LogFiles
 			void AddEmpty();
 			void Insert(int index, IReadOnlyLogEntry logEntry);
 			void RemoveRange(int index, int count);
+			void InsertEmpty(int index);
 		}
 
 		private sealed class ColumnData<T>
@@ -248,6 +308,11 @@ namespace Tailviewer.Core.LogFiles
 			public void RemoveRange(int index, int count)
 			{
 				_values.RemoveRange(index, count);
+			}
+
+			public void InsertEmpty(int index)
+			{
+				_values.Insert(index, default(T));
 			}
 		}
 

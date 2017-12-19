@@ -51,6 +51,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestClearMany()
+		{
+			var entries = new LogEntryList(LogFileColumns.LineNumber);
+			entries.Add(42);
+			entries.Add(9001);
+			entries.Count.Should().Be(2);
+
+			entries.Clear();
+			entries.Count.Should().Be(0);
+
+			entries.AddEmpty();
+			entries.AddEmpty();
+			entries.Count.Should().Be(2);
+			entries[0].LineNumber.Should().Be(0);
+			entries[1].LineNumber.Should().Be(0);
+		}
+
+		[Test]
 		public void TestAccessInvalidIndex([Range(-1, 1)] int invalidIndex)
 		{
 			var entries = new LogEntryList(LogFileColumns.LineNumber);
@@ -182,6 +200,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestInsertMany()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Insert(0, "r");
+			entries.Insert(0, "a");
+			entries.Insert(0, "b");
+			entries.Insert(0, "o");
+			entries.Insert(0, "o");
+			entries.Insert(0, "f");
+
+			entries.Count.Should().Be(6);
+			entries[0].RawContent.Should().Be("f");
+			entries[1].RawContent.Should().Be("o");
+			entries[2].RawContent.Should().Be("o");
+			entries[3].RawContent.Should().Be("b");
+			entries[4].RawContent.Should().Be("a");
+			entries[5].RawContent.Should().Be("r");
+		}
+
+		[Test]
 		public void TestInsertInvalidIndex([Values(-2, -1, 1, 42)] int invalidIndex)
 		{
 			var entries = new LogEntryList(LogFileColumns.ElapsedTime);
@@ -190,6 +228,41 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			                                       new object[] {TimeSpan.FromHours(22)});
 			new Action(() => entries.Insert(invalidIndex, logEntry))
 				.ShouldThrow<ArgumentOutOfRangeException>();
+			entries.Count.Should().Be(0);
+		}
+
+		[Test]
+		public void TestInsertEmpty1()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add("Foo");
+			entries.Count.Should().Be(1);
+
+			entries.InsertEmpty(1);
+			entries.Count.Should().Be(2);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[1].RawContent.Should().BeNull();
+		}
+
+		[Test]
+		public void TestInsertEmpty2()
+		{
+			var entries = new LogEntryList(LogFileColumns.DeltaTime);
+			entries.Add(TimeSpan.FromSeconds(10));
+			entries.Count.Should().Be(1);
+
+			entries.InsertEmpty(1);
+			entries.Count.Should().Be(2);
+			entries[0].DeltaTime.Should().Be(TimeSpan.FromSeconds(10));
+			entries[1].DeltaTime.Should().BeNull();
+		}
+
+		[Test]
+		public void TestInsertEmptyInvalidIndex([Values(-2, -1, 1, 42)] int invalidIndex)
+		{
+			var entries = new LogEntryList(LogFileColumns.DeltaTime);
+			entries.Count.Should().Be(0);
+			new Action(() => entries.InsertEmpty(invalidIndex)).ShouldThrow<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(0);
 		}
 
@@ -241,6 +314,64 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[3].RawContent.Should().Be("b");
 			entries[4].RawContent.Should().Be("a");
 			entries[5].RawContent.Should().Be("r");
+		}
+
+		[Test]
+		public void TestEnumerateEmpty()
+		{
+			var entries = new LogEntryList();
+			entries.Should().Equal(new object[0]);
+		}
+
+		[Test]
+		public void TestAccessCurrentWithoutMove()
+		{
+			var entries = new LogEntryList();
+			using (var enumerator = entries.GetEnumerator())
+			{
+				new Action(() =>
+				{
+					var unused = enumerator.Current;
+				}).ShouldThrow<InvalidOperationException>();
+			}
+		}
+
+		[Test]
+		public void TestEnumerateItems([Range(1, 10)] int count)
+		{
+			var entries = new LogEntryList(LogFileColumns.LineNumber);
+			for (int i = 0; i < count; ++i)
+			{
+				entries.Add(42+i);
+			}
+
+			int n = 0;
+			foreach (var logEntry in entries)
+			{
+				logEntry.LineNumber.Should().Be(42 + n);
+
+				++n;
+			}
+		}
+
+		[Test]
+		public void TestReuseEnumerator()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add("Foo");
+
+			using (var enumerator = entries.GetEnumerator())
+			{
+				enumerator.MoveNext().Should().BeTrue();
+				enumerator.Current.RawContent.Should().Be("Foo");
+				enumerator.MoveNext().Should().BeFalse();
+
+				enumerator.Reset();
+				enumerator.MoveNext().Should().BeTrue();
+				enumerator.Current.RawContent.Should().Be("Foo");
+				enumerator.MoveNext().Should().BeFalse();
+			}
+			
 		}
 	}
 }
