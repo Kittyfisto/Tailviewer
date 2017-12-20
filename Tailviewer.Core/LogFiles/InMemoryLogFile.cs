@@ -321,45 +321,11 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="timestamp"></param>
 		public void AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
-			lock (_syncRoot)
-			{
-				LogEntryIndex logEntryIndex;
-				TimeSpan? elapsed, deltaTime;
-				if (_logEntries.Count > 0)
-				{
-					var first = _logEntries[0];
-					var last = _logEntries[_logEntries.Count - 1];
-
-					logEntryIndex = last.LogEntryIndex + 1;
-					elapsed = timestamp - first.Timestamp;
-					deltaTime = timestamp - last.Timestamp;
-				}
-				else
-				{
-					logEntryIndex = 0;
-					elapsed = null;
-					deltaTime = null;
-
-					StartTimestamp = timestamp;
-				}
-
-				var logEntry = new LogEntry2();
-				logEntry.Add(LogFileColumns.Index, _logEntries.Count);
-				logEntry.Add(LogFileColumns.OriginalIndex, _logEntries.Count);
-				logEntry.Add(LogFileColumns.LineNumber, _logEntries.Count + 1);
-				logEntry.Add(LogFileColumns.OriginalLineNumber, _logEntries.Count + 1);
-				logEntry.Add(LogFileColumns.LogEntryIndex, logEntryIndex);
-				logEntry.Add(LogFileColumns.RawContent, rawContent);
-				logEntry.Add(LogFileColumns.LogLevel, level);
-				logEntry.Add(LogFileColumns.Timestamp, timestamp);
-				logEntry.Add(LogFileColumns.ElapsedTime, elapsed);
-				logEntry.Add(LogFileColumns.DeltaTime, deltaTime);
-				_logEntries.Add(logEntry);
-				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, rawContent.Length);
-				Touch();
-
-				_listeners.OnRead(_logEntries.Count);
-			}
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			logEntry.Add(LogFileColumns.LogLevel, level);
+			logEntry.Add(LogFileColumns.Timestamp, timestamp);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -433,7 +399,53 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				_logEntries.Add(entry);
+				DateTime? timestamp;
+				entry.TryGetValue(LogFileColumns.Timestamp, out timestamp);
+				LogEntryIndex logEntryIndex;
+				TimeSpan? elapsed, deltaTime;
+				if (_logEntries.Count > 0)
+				{
+					var last = _logEntries[_logEntries.Count - 1];
+
+					logEntryIndex = last.LogEntryIndex + 1;
+					elapsed = timestamp - StartTimestamp;
+					deltaTime = timestamp - last.Timestamp;
+				}
+				else
+				{
+					logEntryIndex = 0;
+					elapsed = null;
+					deltaTime = null;
+				}
+
+				if (StartTimestamp == null)
+					StartTimestamp = timestamp;
+
+				// The user supplies us with a list of properties to add, however we will
+				// never allow the user to supply us things like index or line number.
+				// Therefore we create a log entry which we actually want to add...
+				var finalLogEntry = new LogEntry2(Columns);
+
+				foreach (var column in Columns)
+				{
+					object value;
+					if (entry.TryGetValue(column, out value))
+					{
+						finalLogEntry.SetValue(column, value);
+					}
+				}
+
+				finalLogEntry.Index = _logEntries.Count;
+				finalLogEntry.OriginalIndex = _logEntries.Count;
+				finalLogEntry.LineNumber = _logEntries.Count + 1;
+				finalLogEntry.OriginalLineNumber = _logEntries.Count + 1;
+				finalLogEntry.LogEntryIndex = logEntryIndex;
+				finalLogEntry.Timestamp = timestamp;
+				finalLogEntry.ElapsedTime = elapsed;
+				finalLogEntry.DeltaTime = deltaTime;
+
+				_logEntries.Add(finalLogEntry);
+				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, finalLogEntry.RawContent?.Length ?? 0);
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
 			}

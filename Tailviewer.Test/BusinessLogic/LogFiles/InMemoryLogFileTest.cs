@@ -58,6 +58,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.Count.Should().Be(1);
 			logFile.MaxCharactersPerLine.Should().Be(13);
+			logFile.StartTimestamp.Should().BeNull();
 		}
 
 		[Test]
@@ -69,6 +70,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(2);
 			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0)));
 			logFile.GetLine(1).Should().Be(new LogLine(1, 1, " World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2)));
+			logFile.StartTimestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
 		}
 
 		[Test]
@@ -428,7 +430,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("elapsed time and delta time not implemented yet...")]
 		public void TestGetEntriesWithMinimumColumns()
 		{
 			var logFile = new InMemoryLogFile();
@@ -438,11 +439,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.Minimum);
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries.Columns.Should().Equal(LogFileColumns.Minimum);
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
 			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+		
+		[Test]
+		public void TestGetEntriesWithElapsedTimeColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 20, 17, 01, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(0, 5), LogFileColumns.ElapsedTime);
+			entries.Count.Should().Be(5);
+			entries.Columns.Should().Equal(LogFileColumns.ElapsedTime);
+			entries[0].ElapsedTime.Should().Be(null);
+			entries[1].ElapsedTime.Should().Be(null);
+			entries[2].ElapsedTime.Should().Be(null);
+			entries[3].ElapsedTime.Should().Be(TimeSpan.FromMinutes(1));
+			entries[4].ElapsedTime.Should().Be(TimeSpan.FromDays(8)+TimeSpan.FromHours(16)+TimeSpan.FromMinutes(50));
 		}
 
 		protected override ILogFile CreateEmpty()

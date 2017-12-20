@@ -29,6 +29,13 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		public LogEntry2(params ILogFileColumn[] columns)
+			: this((IEnumerable<ILogFileColumn>)columns)
+		{}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public LogEntry2(IEnumerable<ILogFileColumn> columns)
 			: this()
 		{
 			foreach (var column in columns)

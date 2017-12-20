@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -34,6 +35,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var entry = new LogEntry2(LogFileColumns.RawContent, LogFileColumns.DeltaTime);
 			entry.RawContent.Should().Be(LogFileColumns.RawContent.DefaultValue);
 			entry.DeltaTime.Should().Be(LogFileColumns.DeltaTime.DefaultValue);
+		}
+
+		[Test]
+		public void TestConstruction3()
+		{
+			var entry = new LogEntry2(new List<ILogFileColumn> { LogFileColumns.Timestamp, LogFileColumns.LineNumber});
+			entry.Timestamp.Should().Be(LogFileColumns.Timestamp.DefaultValue);
+			entry.LineNumber.Should().Be(LogFileColumns.LineNumber.DefaultValue);
 		}
 
 		[Test]
