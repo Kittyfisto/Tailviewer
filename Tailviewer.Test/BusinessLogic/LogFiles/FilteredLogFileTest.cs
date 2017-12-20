@@ -698,6 +698,92 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		#region Well Known Columns
 
+		#region Line Number
+
+		[Test]
+		public void TestGetLineNumbersBySection()
+		{
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
+		}
+
+		[Test]
+		public void TestGetLineNumbersByIndices1()
+		{
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+		}
+
+		#endregion
+
+		#region Original Line Number
+
+		[Test]
+		public void TestGetOriginalLineNumbersBySection()
+		{
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(4);
+		}
+
+		[Test]
+		public void TestGetOriginalLineNumbersByIndices()
+		{
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(4);
+			lineNumbers[1].Should().Be(2);
+
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(4);
+		}
+
+		#endregion
+
 		#region Delta Time
 
 		[Test]

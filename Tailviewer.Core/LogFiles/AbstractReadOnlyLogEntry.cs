@@ -63,9 +63,14 @@ namespace Tailviewer.Core.LogFiles
 			var stringBuilder = new StringBuilder();
 			foreach (var column in Columns)
 			{
-				if (stringBuilder.Length > 0)
-					stringBuilder.Append("|");
-				stringBuilder.Append(GetValue(column));
+				object value;
+				if (TryGetValue(column, out value))
+				{
+					if (stringBuilder.Length > 0)
+						stringBuilder.Append(", ");
+
+					stringBuilder.AppendFormat("{0}: {1}", column.Id, value);
+				}
 			}
 			return stringBuilder.ToString();
 		}

@@ -10,6 +10,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Basically a handle to a specific portion of the logfile.
 	///     Call <see cref="ILogFile.GetSection" /> to actually obtain the data for that portion.
 	/// </summary>
+	/// <remarks>
+	/// TODO: Rename to LogFileRange
+	/// </remarks>
 	public struct LogFileSection
 		: IEquatable<LogFileSection>
 		, IReadOnlyList<LogLineIndex>

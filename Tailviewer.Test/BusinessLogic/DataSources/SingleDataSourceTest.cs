@@ -85,13 +85,44 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				source.ShowDeltaTimes.Should().Be(showDeltaTimes);
 			}
 		}
+		
+		[Test]
+		public void TestConstruction4([Values(true, false)] bool showElapsedTime)
+		{
+			var settings = new DataSource(@"E:\somelogfile.txt")
+			{
+				Id = DataSourceId.CreateNew(),
+				ShowElapsedTime = showElapsedTime
+			};
+			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			{
+				source.ShowElapsedTime.Should().Be(showElapsedTime);
+			}
+		}
+
+		[Test]
+		public void TestChangeShowElapsedTime([Values(true, false)] bool showElapsedTime)
+		{
+			var settings = new DataSource(@"E:\somelogfile.txt")
+			{
+				Id = DataSourceId.CreateNew()
+			};
+			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			{
+				source.ShowElapsedTime = showElapsedTime;
+				settings.ShowElapsedTime.Should().Be(showElapsedTime);
+
+				source.ShowElapsedTime = !showElapsedTime;
+				settings.ShowElapsedTime.Should().Be(!showElapsedTime);
+			}
+		}
 
 		[Test]
 		public void TestChangeShowDeltaTimes([Values(true, false)] bool showDeltaTimes)
 		{
 			var settings = new DataSource(@"E:\somelogfile.txt")
 			{
-				Id = DataSourceId.CreateNew(),
+				Id = DataSourceId.CreateNew()
 			};
 			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{

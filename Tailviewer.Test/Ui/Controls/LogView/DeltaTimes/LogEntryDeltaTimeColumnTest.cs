@@ -13,13 +13,13 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 	[RequiresThread(ApartmentState.STA)]
 	public sealed class LogEntryDeltaTimeColumnTest
 	{
-		private LogEntryDeltaTimeColumn _column;
+		private DeltaTimeColumnPresenter _column;
 		private Mock<ILogFile> _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			_column = new LogEntryDeltaTimeColumn();
+			_column = new DeltaTimeColumnPresenter();
 			_logFile = new Mock<ILogFile>();
 		}
 
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 		{
 			_column.Visibility = visibility;
 
-			_column.UpdateLines(_logFile.Object, new LogFileSection(0, 1), 0);
+			_column.FetchValues(_logFile.Object, new LogFileSection(0, 1), 0);
 			_logFile.Verify(x => x.GetColumn(It.IsAny<LogFileSection>(),
 			                                 It.IsAny<ILogFileColumn<TimeSpan?>>(),
 			                                 It.IsAny<TimeSpan?[]>(),

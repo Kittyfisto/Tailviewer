@@ -100,6 +100,15 @@
                                     ToolTip="Show the amount of time elapsed since the previous entry"
                                     Content="Time delta" />
 
+                                <controls:FlatToggleButton
+                                    Margin="0,0,0,8"
+                                    Padding="4"
+                                    x:Name="PART_ShowElapsedTime"
+                                    VerticalAlignment="Stretch"
+                                    IsChecked="{Binding DataSource.ShowElapsedTime, Mode=TwoWay}"
+                                    ToolTip="Show the amount of time elapsed since the first entry"
+                                    Content="Elapsed time" />
+
                                 <logView:DataSourceDisplayModeToggleButton 
                                     x:Name="PART_MergedDataSourceDisplayMode"
                                     DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay}"
@@ -223,6 +232,7 @@
             CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
             ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
             ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+            ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
             ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
             MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
             Settings="{Binding Settings, ElementName=This}"

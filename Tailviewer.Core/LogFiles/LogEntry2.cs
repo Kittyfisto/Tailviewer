@@ -5,19 +5,18 @@ using Tailviewer.Core.LogTables;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	/// 
+	///     An <see cref="ILogEntry" /> implementation which shouldn't be used to store data.
 	/// </summary>
 	/// <remarks>
-	/// TODO: Rename to LogEntry once <see cref="LogEntry"/> is removed.
+	///     TODO: Rename to LogEntry once <see cref="LogEntry" /> is removed.
 	/// </remarks>
 	public sealed class LogEntry2
 		: AbstractLogEntry
 	{
-		private readonly Dictionary<ILogFileColumn, object> _values;
 		private readonly List<ILogFileColumn> _columns;
+		private readonly Dictionary<ILogFileColumn, object> _values;
 
 		/// <summary>
-		/// 
 		/// </summary>
 		public LogEntry2()
 		{
@@ -26,23 +25,22 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		/// 
 		/// </summary>
 		public LogEntry2(params ILogFileColumn[] columns)
-			: this((IEnumerable<ILogFileColumn>)columns)
-		{}
+			: this((IEnumerable<ILogFileColumn>) columns)
+		{
+		}
 
 		/// <summary>
-		/// 
 		/// </summary>
 		public LogEntry2(IEnumerable<ILogFileColumn> columns)
 			: this()
 		{
-			foreach (var column in columns)
-			{
-				Add(column);
-			}
+			foreach (var column in columns) Add(column);
 		}
+
+		/// <inheritdoc />
+		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <summary>
 		///     Adds a new column to this log entry.
@@ -107,9 +105,6 @@ namespace Tailviewer.Core.LogFiles
 
 			return true;
 		}
-
-		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
 		public override void SetValue(ILogFileColumn column, object value)

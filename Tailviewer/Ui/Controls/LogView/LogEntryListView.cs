@@ -18,6 +18,7 @@ using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
+using Tailviewer.Ui.Controls.LogView.ElapsedTime;
 using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -52,6 +53,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ShowDeltaTimes", typeof(bool), typeof(LogEntryListView),
 			                            new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnShowDeltaTimesChanged));
 
+		public static readonly DependencyProperty ShowElapsedTimeProperty =
+			DependencyProperty.Register("ShowElapsedTime", typeof(bool), typeof(LogEntryListView),
+			                            new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnShowElapsedTimeChanged));
+
 		public static readonly DependencyProperty CurrentLineProperty =
 			DependencyProperty.Register("CurrentLine", typeof(LogLineIndex), typeof(LogEntryListView),
 				new PropertyMetadata(default(LogLineIndex), OnCurrentLineChanged));
@@ -70,10 +75,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
 		private readonly DataSourceCanvas _dataSourceCanvas;
-		private readonly LogEntryDeltaTimeColumn _deltaTimesColumn;
+		private readonly DeltaTimeColumnPresenter _deltaTimesColumn;
+		private readonly ElapsedTimeColumnPresenter _elapsedTimeColumn;
 		private readonly FlatScrollBar _horizontalScrollBar;
 
-		private readonly LineNumberColumn _lineNumberColumn;
+		private readonly OriginalLineNumberColumnPresenter _lineNumberColumn;
 		private readonly DispatcherTimer _timer;
 		private readonly FlatScrollBar _verticalScrollBar;
 
@@ -92,6 +98,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
+			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Star) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Star) });
@@ -105,7 +112,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, value: 0);
-			_verticalScrollBar.SetValue(ColumnProperty, value: 5);
+			_verticalScrollBar.SetValue(ColumnProperty, value: 6);
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
@@ -117,11 +124,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			};
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
-			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 5);
+			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 6);
 			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
 			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
 
-			_lineNumberColumn = new LineNumberColumn();
+			_lineNumberColumn = new OriginalLineNumberColumnPresenter();
 			_lineNumberColumn.SetValue(RowProperty, value: 0);
 			_lineNumberColumn.SetValue(ColumnProperty, value: 0);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
@@ -131,15 +138,21 @@ namespace Tailviewer.Ui.Controls.LogView
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_deltaTimesColumn = new LogEntryDeltaTimeColumn();
+			_deltaTimesColumn = new DeltaTimeColumnPresenter();
 			_deltaTimesColumn.Visibility = Visibility.Collapsed;
 			_deltaTimesColumn.SetValue(RowProperty, value: 0);
 			_deltaTimesColumn.SetValue(ColumnProperty, value: 2);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
+			_elapsedTimeColumn = new ElapsedTimeColumnPresenter();
+			_elapsedTimeColumn.Visibility = Visibility.Collapsed;
+			_elapsedTimeColumn.SetValue(RowProperty, value: 0);
+			_elapsedTimeColumn.SetValue(ColumnProperty, value: 3);
+			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
+
 			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
 			PartTextCanvas.SetValue(RowProperty, value: 0);
-			PartTextCanvas.SetValue(ColumnProperty, value: 4);
+			PartTextCanvas.SetValue(ColumnProperty, value: 5);
 			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
 			PartTextCanvas.MouseWheelUp += TextCanvasOnMouseWheelUp;
 			PartTextCanvas.SizeChanged += TextCanvasOnSizeChanged;
@@ -154,7 +167,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				Width = 2
 			};
 			separator.SetValue(RowProperty, value: 0);
-			separator.SetValue(ColumnProperty, value: 3);
+			separator.SetValue(ColumnProperty, value: 4);
 			separator.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
 			Children.Add(_lineNumberColumn);
@@ -202,6 +215,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (bool)GetValue(ShowDeltaTimesProperty); }
 			set { SetValue(ShowDeltaTimesProperty, value); }
+		}
+		
+		public bool ShowElapsedTime
+		{
+			get { return (bool)GetValue(ShowElapsedTimeProperty); }
+			set { SetValue(ShowElapsedTimeProperty, value); }
 		}
 
 		public bool FollowTail
@@ -326,6 +345,19 @@ namespace Tailviewer.Ui.Controls.LogView
 				? Visibility.Visible
 				: Visibility.Collapsed;
 		}
+		
+		private static void OnShowElapsedTimeChanged(DependencyObject dependencyObject,
+		                                            DependencyPropertyChangedEventArgs args)
+		{
+			((LogEntryListView)dependencyObject).OnShowElapsedTimeChanged((bool)args.NewValue);
+		}
+
+		private void OnShowElapsedTimeChanged(bool showLineNumbers)
+		{
+			_elapsedTimeColumn.Visibility = showLineNumbers
+				? Visibility.Visible
+				: Visibility.Collapsed;
+		}
 
 		private static void OnShowDeltaTimesChanged(DependencyObject dependencyObject,
 		                                             DependencyPropertyChangedEventArgs args)
@@ -403,15 +435,19 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnVisibleLinesChanged()
 		{
-			_lineNumberColumn.UpdateLineNumbers(LogFile,
-			                                    PartTextCanvas.CurrentlyVisibleSection,
-			                                    PartTextCanvas.YOffset);
+			_lineNumberColumn.FetchValues(LogFile,
+			                               PartTextCanvas.CurrentlyVisibleSection,
+			                               PartTextCanvas.YOffset);
+			_deltaTimesColumn.FetchValues(LogFile,
+			                               PartTextCanvas.CurrentlyVisibleSection,
+			                               PartTextCanvas.YOffset);
+			_elapsedTimeColumn.FetchValues(LogFile,
+			                                PartTextCanvas.CurrentlyVisibleSection,
+			                                PartTextCanvas.YOffset);
+
 			_dataSourceCanvas.UpdateDataSources(DataSource,
 			                                    PartTextCanvas.CurrentlyVisibleSection,
 			                                    PartTextCanvas.YOffset);
-			_deltaTimesColumn.UpdateLines(LogFile,
-			                           PartTextCanvas.CurrentlyVisibleSection,
-			                           PartTextCanvas.YOffset);
 		}
 
 		private void TextCanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)

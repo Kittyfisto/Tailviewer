@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui.Controls
 		private List<ILogFileListener> _listeners;
 		private TestKeyboard _keyboard;
 		private TestMouse _mouse;
-		private LogEntryDeltaTimeColumn _deltaTimesColumn;
+		private DeltaTimeColumnPresenter _deltaTimesColumn;
 
 		[SetUp]
 		public void SetUp()
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.Ui.Controls
 					                                   new LogFileSection(0, _lines.Count));
 				        });
 
-			_deltaTimesColumn = (LogEntryDeltaTimeColumn)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
+			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}
 
 		[Test]

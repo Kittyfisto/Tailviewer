@@ -300,7 +300,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="rawContent"></param>
 		public void AddEntry(string rawContent)
 		{
-			AddEntry(rawContent, LevelFlags.None);
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -310,7 +312,10 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="level"></param>
 		public void AddEntry(string rawContent, LevelFlags level)
 		{
-			AddEntry(rawContent, level, null);
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			logEntry.Add(LogFileColumns.LogLevel, level);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -387,7 +392,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			for (int i = 0; i < count; ++i)
 			{
-				AddEntry(string.Empty, LevelFlags.None);
+				Add(new LogEntry2());
 			}
 		}
 

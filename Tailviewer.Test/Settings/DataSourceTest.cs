@@ -38,6 +38,7 @@ namespace Tailviewer.Test.Settings
 
 			dataSource.ShowLineNumbers.Should().BeTrue();
 			dataSource.ShowDeltaTimes.Should().BeFalse("because delta times shouldn't be visible by default");
+			dataSource.ShowElapsedTime.Should().BeFalse("because the elapsed time shouldn't be visible by default");
 
 			dataSource.IsExpanded.Should().BeTrue();
 
@@ -49,13 +50,14 @@ namespace Tailviewer.Test.Settings
 
 		[Test]
 		public void TestClone([ValueSource(nameof(Bool))] bool hideEmptyLines,
-			[ValueSource(nameof(Bool))] bool showLineNumbers,
-			[ValueSource(nameof(Bool))] bool showDeltaTimes,
-			[ValueSource(nameof(Bool))] bool colorByLevel,
-			[ValueSource(nameof(Bool))] bool followTail,
-			[ValueSource(nameof(Bool))] bool isSingleLine,
-			[ValueSource(nameof(Bool))] bool isExpanded,
-			[ValueSource(nameof(DisplayModes))] DataSourceDisplayMode displayMode)
+		                      [ValueSource(nameof(Bool))] bool showLineNumbers,
+		                      [ValueSource(nameof(Bool))] bool showDeltaTimes,
+		                      [ValueSource(nameof(Bool))] bool showElapsedTime,
+		                      [ValueSource(nameof(Bool))] bool colorByLevel,
+		                      [ValueSource(nameof(Bool))] bool followTail,
+		                      [ValueSource(nameof(Bool))] bool isSingleLine,
+		                      [ValueSource(nameof(Bool))] bool isExpanded,
+		                      [ValueSource(nameof(DisplayModes))] DataSourceDisplayMode displayMode)
 		{
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
@@ -70,6 +72,7 @@ namespace Tailviewer.Test.Settings
 				Id = id,
 				ShowLineNumbers = showLineNumbers,
 				ShowDeltaTimes = showDeltaTimes,
+				ShowElapsedTime = showElapsedTime,
 				HorizontalOffset = 101,
 				ColorByLevel = colorByLevel,
 				FollowTail = followTail,
@@ -98,6 +101,7 @@ namespace Tailviewer.Test.Settings
 			cloned.Id.Should().Be(id);
 			cloned.ShowLineNumbers.Should().Be(showLineNumbers);
 			cloned.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			cloned.ShowElapsedTime.Should().Be(showElapsedTime);
 			cloned.HorizontalOffset.Should().Be(101);
 			cloned.ColorByLevel.Should().Be(colorByLevel);
 			cloned.FollowTail.Should().Be(followTail);
@@ -118,6 +122,7 @@ namespace Tailviewer.Test.Settings
 		public void TestSaveRestore([ValueSource(nameof(Bool))] bool hideEmptyLines,
 		                            [ValueSource(nameof(Bool))] bool showLineNumbers,
 		                            [ValueSource(nameof(Bool))] bool showDeltaTimes,
+		                            [ValueSource(nameof(Bool))] bool showElapsedTime,
 		                            [ValueSource(nameof(Bool))] bool colorByLevel,
 		                            [ValueSource(nameof(Bool))] bool followTail,
 		                            [ValueSource(nameof(Bool))] bool isSingleLine,
@@ -144,6 +149,7 @@ namespace Tailviewer.Test.Settings
 						Id = id,
 						ShowLineNumbers = showLineNumbers,
 						ShowDeltaTimes = showDeltaTimes,
+						ShowElapsedTime = showElapsedTime,
 						HorizontalOffset = 101,
 						ColorByLevel = colorByLevel,
 						FollowTail = followTail,
@@ -181,6 +187,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.Id.Should().Be(id);
 					dataSource.ShowLineNumbers.Should().Be(showLineNumbers);
 					dataSource.ShowDeltaTimes.Should().Be(showDeltaTimes);
+					dataSource.ShowElapsedTime.Should().Be(showElapsedTime);
 					dataSource.HorizontalOffset.Should().Be(101);
 					dataSource.ColorByLevel.Should().Be(colorByLevel);
 					dataSource.FollowTail.Should().Be(followTail);

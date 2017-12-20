@@ -3,6 +3,7 @@ using System;
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
+	///     Describes a column of a log file.
 	/// </summary>
 	public interface ILogFileColumn
 	{
@@ -24,6 +25,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	}
 
 	/// <summary>
+	///     Describes a column of a log file.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public interface ILogFileColumn<out T>

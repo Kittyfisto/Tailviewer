@@ -314,6 +314,19 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ShowElapsedTime
+		{
+			get { return _dataSource.ShowElapsedTime; }
+			set
+			{
+				if (value == ShowElapsedTime)
+					return;
+
+				_dataSource.ShowElapsedTime = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public bool ColorByLevel
 		{
 			get { return _dataSource.ColorByLevel; }

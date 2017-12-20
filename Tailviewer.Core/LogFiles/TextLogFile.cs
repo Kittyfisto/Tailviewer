@@ -199,6 +199,11 @@ namespace Tailviewer.Core.LogFiles
 				{
 					GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
 				}
+				else if (Equals(column, LogFileColumns.LineNumber) ||
+				         Equals(column, LogFileColumns.OriginalLineNumber))
+				{
+					GetLineNumber(indices, (int[])(object)buffer, destinationIndex);
+				}
 				else if (Equals(column, LogFileColumns.RawContent))
 				{
 					throw new NotImplementedException();
@@ -218,54 +223,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
-		{
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				var index = indices[i];
-				if (index >= 0 && index < _entries.Count)
-				{
-					var entry = _entries[index.Value];
-					buffer[i] = entry.Timestamp;
-				}
-				else
-				{
-					buffer[i] = null;
-				}
-			}
-		}
-
-		private void GetTimestamp(LogFileSection section, DateTime?[] buffer)
-		{
-			for (int i = 0; i < section.Count; ++i)
-			{
-				var index = section.Index.Value + i;
-				buffer[i] = _entries[index].Timestamp;
-			}
-		}
-
-		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer)
-		{
-			DateTime? previousTimestamp;
-			if (section.Index > 0 && _entries.Count > 0)
-				previousTimestamp = _entries[section.Index - 1].Timestamp;
-			else
-				previousTimestamp = null;
-
-			for (int i = 0; i < section.Count; ++i)
-			{
-				var index = section.Index.Value + i;
-				var timestamp = _entries[index].Timestamp;
-				buffer[i] = timestamp - previousTimestamp;
-				previousTimestamp = timestamp;
-			}
-		}
-
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
 		{
 			throw new NotImplementedException();
 		}
@@ -428,6 +385,64 @@ namespace Tailviewer.Core.LogFiles
 				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
+		}
+		
+		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
+		{
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var index = indices[i];
+				if (index >= 0 && index < _entries.Count)
+				{
+					var entry = _entries[index.Value];
+					buffer[i] = entry.Timestamp;
+				}
+				else
+				{
+					buffer[i] = null;
+				}
+			}
+		}
+
+		private void GetTimestamp(LogFileSection section, DateTime?[] buffer)
+		{
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var index = section.Index.Value + i;
+				buffer[i] = _entries[index].Timestamp;
+			}
+		}
+
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer)
+		{
+			DateTime? previousTimestamp;
+			if (section.Index > 0 && _entries.Count > 0)
+				previousTimestamp = _entries[section.Index - 1].Timestamp;
+			else
+				previousTimestamp = null;
+
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var index = section.Index.Value + i;
+				var timestamp = _entries[index].Timestamp;
+				buffer[i] = timestamp - previousTimestamp;
+				previousTimestamp = timestamp;
+			}
+		}
+
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		{
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var index = indices[i];
+				var lineNumber = (int) (index + 1);
+				buffer[destinationIndex + i] = lineNumber;
+			}
 		}
 
 		private void SetDoesNotExist()
