@@ -69,7 +69,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetIndexEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                       [Range(from: 0, to: 3)] int count,
+		                                       [Range(from: 0, to: 2)] int count,
 		                                       [Range(from: 0, to: 2)] int offset,
 		                                       [Range(from: 0, to: 2)] int surplus)
 		{
@@ -135,7 +135,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetOriginalIndexEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                               [Range(from: 0, to: 3)] int count,
+		                                               [Range(from: 0, to: 2)] int count,
 		                                               [Range(from: 0, to: 2)] int offset,
 		                                               [Range(from: 0, to: 2)] int surplus)
 		{
@@ -201,7 +201,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetLineNumberEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                            [Range(from: 0, to: 3)] int count,
+		                                            [Range(from: 0, to: 2)] int count,
 		                                            [Range(from: 0, to: 2)] int offset,
 		                                            [Range(from: 0, to: 2)] int surplus)
 		{
@@ -267,7 +267,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetOriginalLineNumberEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                                    [Range(from: 0, to: 3)] int count,
+		                                                    [Range(from: 0, to: 2)] int count,
 		                                                    [Range(from: 0, to: 2)] int offset,
 		                                                    [Range(from: 0, to: 2)] int surplus)
 		{
@@ -333,7 +333,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetLogLevelEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                          [Range(from: 0, to: 3)] int count,
+		                                          [Range(from: 0, to: 2)] int count,
 		                                          [Range(from: 0, to: 2)] int offset,
 		                                          [Range(from: 0, to: 2)] int surplus)
 		{
@@ -399,7 +399,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetElapsedTimesEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                              [Range(from: 0, to: 3)] int count,
+		                                              [Range(from: 0, to: 2)] int count,
 		                                              [Range(from: 0, to: 2)] int offset,
 		                                              [Range(from: 0, to: 2)] int surplus)
 		{
@@ -490,7 +490,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetDeltaTimesEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                            [Range(from: 0, to: 3)] int count,
+		                                            [Range(from: 0, to: 2)] int count,
 		                                            [Range(from: 0, to: 2)] int offset,
 		                                            [Range(from: 0, to: 2)] int surplus)
 		{
@@ -526,7 +526,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
 		public void TestGetTimestampEmptyBySection([Values(-1, 0, 1)] int invalidStartIndex,
-		                                           [Range(from: 0, to: 3)] int count,
+		                                           [Range(from: 0, to: 2)] int count,
 		                                           [Range(from: 0, to: 2)] int offset,
 		                                           [Range(from: 0, to: 2)] int surplus)
 		{
@@ -560,7 +560,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		public void TestGetTimestampEmptyByIndices([Values(-42, -1, 0, 1, 42)] int invalidIndex,
-		                                           [Range(from: 0, to: 3)] int count,
+		                                           [Range(from: 0, to: 2)] int count,
 		                                           [Range(from: 0, to: 2)] int offset,
 		                                           [Range(from: 0, to: 2)] int surplus)
 		{
