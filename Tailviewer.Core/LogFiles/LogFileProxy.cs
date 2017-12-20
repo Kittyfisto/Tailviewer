@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -18,6 +19,7 @@ namespace Tailviewer.Core.LogFiles
 	///     Exists so that specialized <see cref="ILogFile" /> implementations don't need to be concerned about re-use
 	///     or certain changes (i.e. <see cref="FilteredLogFile" /> doesn't need to implement the change of a filter).
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class LogFileProxy
 		: ILogFile
 		, ILogFileListener

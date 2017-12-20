@@ -11,6 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class NoThrowLogFileTest
+		: AbstractLogFileTest
 	{
 		private Mock<ILogFile> _logFile;
 		private string _pluginName;
@@ -278,6 +279,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Setup(x => x.Columns).Throws<NullReferenceException>();
 			_proxy.Columns.Should().BeEmpty();
 			_logFile.Verify(x => x.Columns, Times.Once);
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			var source = new InMemoryLogFile();
+			return new NoThrowLogFile(source, "");
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var source = new InMemoryLogFile(content);
+			return new NoThrowLogFile(source, "");
 		}
 	}
 }

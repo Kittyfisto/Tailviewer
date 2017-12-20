@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Metrolib;
@@ -14,6 +15,7 @@ namespace Tailviewer.Core.LogFiles
 	///     rely on that to never happen. This implementation guarantuees the nothrow contract and also
 	///     writes warnings to the log file.
 	/// </summary>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class NoThrowLogFile
 		: ILogFile
 	{

@@ -14,6 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MultiLineLogFileTest
+		: AbstractLogFileTest
 	{
 		[SetUp]
 		public void Setup()
@@ -814,6 +815,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			                                 It.Is<ILogEntries>(y => y == buffer),
 			                                 It.Is<int>(y => y == destinationIndex)),
 			               Times.Once);
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			var source = new InMemoryLogFile();
+			return new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var source = new InMemoryLogFile(content);
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+			return logFile;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace Tailviewer.Core.LogFiles
 	///     Two lines are defined to belong together if the first line contains a log
 	///     level and the next one does not.
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class MultiLineLogFile
 		: AbstractLogFile
 			, ILogFileListener
@@ -74,10 +76,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override IReadOnlyList<ILogFileColumn> Columns => _source.Columns;
 
 		/// <inheritdoc />
 		public override ErrorFlags Error => _error;
@@ -123,7 +122,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				_source.GetColumn(section, column, buffer);
+				_source.GetColumn(section, column, buffer, destinationIndex);
 			}
 		}
 
@@ -137,7 +136,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				_source.GetColumn(indices, column, buffer);
+				_source.GetColumn(indices, column, buffer, destinationIndex);
 			}
 		}
 
