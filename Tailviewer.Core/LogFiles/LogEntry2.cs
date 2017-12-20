@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogTables;
 
@@ -12,8 +11,7 @@ namespace Tailviewer.Core.LogFiles
 	/// TODO: Rename to LogEntry once <see cref="LogEntry"/> is removed.
 	/// </remarks>
 	public sealed class LogEntry2
-		: AbstractReadOnlyLogEntry
-		, ILogEntry
+		: AbstractLogEntry
 	{
 		private readonly Dictionary<ILogFileColumn, object> _values;
 		private readonly List<ILogFileColumn> _columns;
@@ -25,6 +23,28 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_values = new Dictionary<ILogFileColumn, object>();
 			_columns = new List<ILogFileColumn>();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public LogEntry2(params ILogFileColumn[] columns)
+			: this()
+		{
+			foreach (var column in columns)
+			{
+				Add(column);
+			}
+		}
+
+		/// <summary>
+		///     Adds a new column to this log entry.
+		/// </summary>
+		/// <param name="column"></param>
+		public void Add(ILogFileColumn column)
+		{
+			_values.Add(column, column.DefaultValue);
+			_columns.Add(column);
 		}
 
 		/// <summary>
@@ -85,15 +105,21 @@ namespace Tailviewer.Core.LogFiles
 		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
-		public void SetColumnValue(ILogFileColumn column, object value)
+		public override void SetValue(ILogFileColumn column, object value)
 		{
-			throw new NotImplementedException();
+			if (!_columns.Contains(column))
+				throw new NoSuchColumnException(column);
+
+			_values[column] = value;
 		}
 
 		/// <inheritdoc />
-		public void SetColumnValue<T>(ILogFileColumn<T> column, T value)
+		public override void SetValue<T>(ILogFileColumn<T> column, T value)
 		{
-			throw new NotImplementedException();
+			if (!_columns.Contains(column))
+				throw new NoSuchColumnException(column);
+
+			_values[column] = value;
 		}
 	}
 }

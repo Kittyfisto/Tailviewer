@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace Tailviewer.Core.LogFiles
 	///     <see cref="LogLine" />s which have no <see cref="LogLine.Timestamp" /> set (or who's parent doesn't)
 	///     are discarded from this representation.
 	/// </summary>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class MergedLogFile
 		: AbstractLogFile
 		, IMergedLogFile
@@ -130,10 +132,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
 		public override double Progress => _progress.RelativeValue;
@@ -496,7 +495,7 @@ namespace Tailviewer.Core.LogFiles
 							lock (_syncRoot)
 							{
 								_indices.Insert(insertionIndex, index);
-								_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message.Length);
+								_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message?.Length ?? 0);
 							}
 
 							Listeners.OnRead(_indices.Count);

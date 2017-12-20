@@ -833,8 +833,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			var source = new InMemoryLogFile(content.Columns);
-			source.AddRange(content);
+			var source = new InMemoryLogFile(content);
 			var filter = new NoFilter();
 			var filtered = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();

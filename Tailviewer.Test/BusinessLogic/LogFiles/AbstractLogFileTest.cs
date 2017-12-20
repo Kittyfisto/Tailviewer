@@ -19,6 +19,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		/// <returns></returns>
 		protected abstract ILogFile CreateFromContent(IReadOnlyLogEntries content);
 
+		[Test]
+		public void TestDebuggerVisualization1()
+		{
+			var content = new LogEntryBuffer(2, LogFileColumns.Minimum);
+			content[0].Timestamp = new DateTime(2017, 12, 20, 13, 22, 0);
+			content[1].Timestamp = new DateTime(2017, 12, 20, 13, 23, 0);
+			var logFile = CreateFromContent(content);
+			var visualizer = new LogFileView(logFile);
+			var items = visualizer.Items;
+			items.Should().NotBeNull();
+			items.Should().HaveCount(2);
+		}
+
 		#region Well Known Columns
 
 		#region Elapsed Time

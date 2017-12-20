@@ -183,8 +183,7 @@ namespace Tailviewer.Core.LogFiles
 		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index] => this[index];
 
 		private sealed class LogEntryAccessor
-			: AbstractReadOnlyLogEntry
-			, ILogEntry
+			: AbstractLogEntry
 		{
 			private readonly LogEntryBuffer _buffer;
 			private readonly int _index;
@@ -244,7 +243,7 @@ namespace Tailviewer.Core.LogFiles
 
 			public override IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
 
-			public void SetColumnValue(ILogFileColumn column, object value)
+			public override void SetValue(ILogFileColumn column, object value)
 			{
 				IColumnData data;
 				if (!_buffer._dataByColumn.TryGetValue(column, out data))
@@ -253,7 +252,7 @@ namespace Tailviewer.Core.LogFiles
 				data[_index] = value;
 			}
 
-			public void SetColumnValue<T>(ILogFileColumn<T> column, T value)
+			public override void SetValue<T>(ILogFileColumn<T> column, T value)
 			{
 				IColumnData data;
 				if (!_buffer._dataByColumn.TryGetValue(column, out data))

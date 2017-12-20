@@ -317,7 +317,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					foreach (var column in entry.Columns)
 					{
 						var value = entry.GetValue(column);
-						list[i].SetColumnValue(column, value);
+						list[i].SetValue(column, value);
 					}
 				}
 				return list;

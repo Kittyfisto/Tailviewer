@@ -54,6 +54,16 @@ namespace Tailviewer.Core.LogFiles
 			_listeners = new LogFileListenerCollection(this);
 		}
 
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="content"></param>
+		public InMemoryLogFile(IReadOnlyLogEntries content)
+			: this(content.Columns)
+		{
+			AddRange(content);
+		}
+
 		/// <inheritdoc />
 		public void Dispose()
 		{

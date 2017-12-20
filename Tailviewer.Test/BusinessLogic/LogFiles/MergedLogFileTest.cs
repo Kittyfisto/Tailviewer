@@ -603,7 +603,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			throw new NotImplementedException();
+			var source = new InMemoryLogFile(content);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
+			_taskScheduler.RunOnce();
+			return merged;
 		}
 	}
 }

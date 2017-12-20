@@ -452,8 +452,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			var logFile = new InMemoryLogFile(content.Columns);
-			logFile.AddRange(content);
+			var logFile = new InMemoryLogFile(content);
 			return logFile;
 		}
 	}

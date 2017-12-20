@@ -13,6 +13,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     A <see cref="ILogFile" /> implementation which offers a filtered view onto a log file.
 	/// </summary>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class FilteredLogFile
 		: AbstractLogFile
 		, ILogFileListener
@@ -114,10 +115,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -555,7 +553,7 @@ namespace Tailviewer.Core.LogFiles
 						{
 							_indices.Add(line.LineIndex);
 							_logEntryIndices[line.LineIndex] = _currentLogEntryIndex;
-							_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message.Length);
+							_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message?.Length ?? 0);
 						}
 						++_currentLogEntryIndex;
 					}
