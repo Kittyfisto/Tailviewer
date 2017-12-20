@@ -94,9 +94,9 @@ namespace Tailviewer.Core.LogFiles
 		static LogFileColumns()
 		{
 			RawContent = new WellKnownLogFileColumn<string>("raw_content");
-			Index = new WellKnownLogFileColumn<LogLineIndex>("index");
-			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index");
-			LogEntryIndex = new WellKnownLogFileColumn<LogEntryIndex>("log_entry_index");
+			Index = new WellKnownLogFileColumn<LogLineIndex>("index", LogLineIndex.Invalid);
+			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index", LogLineIndex.Invalid);
+			LogEntryIndex = new WellKnownLogFileColumn<LogEntryIndex>("log_entry_index", Tailviewer.LogEntryIndex.Invalid);
 			LineNumber = new WellKnownLogFileColumn<int>("line_number");
 			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
 			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");

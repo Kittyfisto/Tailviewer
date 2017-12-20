@@ -42,6 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			LogFileColumns.Index.Id.Should().Be("index");
 			LogFileColumns.Index.DataType.Should().Be<LogLineIndex>();
+			LogFileColumns.Index.DefaultValue.Should().Be(LogLineIndex.Invalid);
 		}
 
 		[Test]
@@ -50,6 +51,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			LogFileColumns.OriginalIndex.Id.Should().Be("original_index");
 			LogFileColumns.OriginalIndex.DataType.Should().Be<LogLineIndex>();
+			LogFileColumns.OriginalIndex.DefaultValue.Should().Be(LogLineIndex.Invalid);
+		}
+
+		[Test]
+		[Description("Verifies that the log entry index property doesn't regress")]
+		public void TestLogEntryIndex()
+		{
+			LogFileColumns.LogEntryIndex.Id.Should().Be("log_entry_index");
+			LogFileColumns.LogEntryIndex.DataType.Should().Be<LogEntryIndex>();
+			LogFileColumns.LogEntryIndex.DefaultValue.Should().Be(LogEntryIndex.Invalid);
 		}
 
 		[Test]

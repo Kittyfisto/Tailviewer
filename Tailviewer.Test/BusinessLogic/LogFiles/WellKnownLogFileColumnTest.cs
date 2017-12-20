@@ -9,6 +9,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	public sealed class WellKnownLogFileColumnTest
 	{
 		[Test]
+		public void TestCustomDefaultValue()
+		{
+			var column = new WellKnownLogFileColumn<double>("foo", 42);
+			column.DefaultValue.Should().Be(42.0);
+			((ILogFileColumn) column).DefaultValue.Should().Be(42.0);
+		}
+
+		[Test]
 		public void TestConstructionNullable()
 		{
 			var column = new WellKnownLogFileColumn<double?>("foo");
