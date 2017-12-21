@@ -32,6 +32,38 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			items.Should().HaveCount(2);
 		}
 
+		[Test]
+		public void TestStartEndTimestampEmptyLogFile()
+		{
+			var logFile = CreateEmpty();
+			logFile.StartTimestamp.Should().BeNull();
+			logFile.EndTimestamp.Should().BeNull();
+		}
+
+		[Test]
+		public void TestStartEndTimestamp1()
+		{
+			var content = new LogEntryList(LogFileColumns.Timestamp);
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
+			var logFile = CreateFromContent(content);
+			logFile.StartTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.EndTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+		}
+
+		[Test]
+		public void TestStartEndTimestamp2()
+		{
+			var content = new LogEntryList(LogFileColumns.Timestamp);
+			content.Add(ReadOnlyLogEntry.Empty);
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 12, 0)});
+			content.Add(ReadOnlyLogEntry.Empty);
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
+			content.Add(ReadOnlyLogEntry.Empty);
+			var logFile = CreateFromContent(content);
+			logFile.StartTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
+			logFile.EndTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
+		}
+
 		#region Well Known Columns
 
 		[Test]

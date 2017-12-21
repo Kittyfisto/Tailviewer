@@ -71,6 +71,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public DateTime? StartTimestamp { get; private set; }
+		
+		/// <inheritdoc />
+		public DateTime? EndTimestamp { get; private set; }
 
 		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
@@ -327,6 +330,7 @@ namespace Tailviewer.Core.LogFiles
 
 					StartTimestamp = timestamp;
 				}
+				EndTimestamp = timestamp;
 
 				foreach (var line in lines)
 				{
@@ -390,6 +394,8 @@ namespace Tailviewer.Core.LogFiles
 
 				if (StartTimestamp == null)
 					StartTimestamp = timestamp;
+				if (timestamp != null)
+					EndTimestamp = timestamp;
 
 				// The user supplies us with a list of properties to add, however we will
 				// never allow the user to supply us things like index or line number.

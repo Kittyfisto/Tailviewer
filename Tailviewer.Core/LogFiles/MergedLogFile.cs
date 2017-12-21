@@ -37,6 +37,7 @@ namespace Tailviewer.Core.LogFiles
 		private Percentage _progress;
 
 		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
 		private int _totalLineCount;
 
 		/// <summary>
@@ -103,6 +104,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
+
+		/// <inheritdoc />
+		public override DateTime? EndTimestamp => _endTimestamp;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -572,6 +576,7 @@ namespace Tailviewer.Core.LogFiles
 			var fileSize = Size.Zero;
 			var lastModified = DateTime.MinValue;
 			DateTime? startTimestamp = null;
+			DateTime? endTimestamp = null;
 			for (int n = 0; n < _sources.Count; ++n)
 			{
 				var source = _sources[n];
@@ -583,10 +588,14 @@ namespace Tailviewer.Core.LogFiles
 				var start = source.StartTimestamp;
 				if (start != null && (start < startTimestamp || startTimestamp == null))
 					startTimestamp = start;
+				var end = source.EndTimestamp;
+				if (end != null && (end > endTimestamp || endTimestamp == null))
+					endTimestamp = end;
 			}
 			_fileSize = fileSize;
 			_lastModified = lastModified;
 			_startTimestamp = startTimestamp;
+			_endTimestamp = endTimestamp;
 			_progress = Percentage.Of(_indices.Count, _totalLineCount);
 		}
 

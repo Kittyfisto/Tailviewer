@@ -31,6 +31,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly object _syncRoot;
 		private ErrorFlags _error;
 		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -108,7 +109,9 @@ namespace Tailviewer.Core.LogFiles
 			return _fileName;
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<LogLine> Entries => _entries;
 
 		/// <inheritdoc />
@@ -126,6 +129,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
+		
+		/// <inheritdoc />
+		public override DateTime? EndTimestamp => _endTimestamp;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -507,6 +513,7 @@ namespace Tailviewer.Core.LogFiles
 
 			numberOfLinesRead = 0;
 			_startTimestamp = null;
+			_endTimestamp = null;
 			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
@@ -517,6 +524,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (_startTimestamp == null)
 				_startTimestamp = timestamp;
+			_endTimestamp = timestamp;
 
 			lock (_syncRoot)
 			{

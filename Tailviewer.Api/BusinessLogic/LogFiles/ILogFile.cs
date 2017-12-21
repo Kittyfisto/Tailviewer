@@ -25,6 +25,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		DateTime? StartTimestamp { get; }
 
 		/// <summary>
+		///     The last identified timestamp of the data source, if any, null otherwise.
+		/// </summary>
+		DateTime? EndTimestamp { get; }
+
+		/// <summary>
 		///     The timestamp (in local time) the data source has last been modified.
 		///     A modification is meant to be the addition and/or removal of at least one log line.
 		/// </summary>

@@ -15,6 +15,13 @@ namespace Tailviewer.Core.LogFiles
 	public sealed class ReadOnlyLogEntry
 		: AbstractReadOnlyLogEntry
 	{
+		private static readonly IReadOnlyLogEntry _empty;
+
+		static ReadOnlyLogEntry()
+		{
+			_empty = new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>());
+		}
+
 		private readonly IReadOnlyDictionary<ILogFileColumn, object> _values;
 
 		/// <summary>
@@ -73,6 +80,11 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumn> Columns => _values.Keys.ToList();
+
+		/// <summary>
+		///     A completely empty log entry.
+		/// </summary>
+		public static IReadOnlyLogEntry Empty => _empty;
 
 		/// <summary>
 		/// </summary>

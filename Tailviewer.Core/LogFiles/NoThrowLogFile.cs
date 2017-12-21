@@ -76,6 +76,23 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public DateTime? EndTimestamp
+		{
+			get
+			{
+				try
+				{
+					return _logFile.EndTimestamp;
+				}
+				catch (Exception e)
+				{
+					BlameExceptionOnPlugin(e);
+					return null;
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public DateTime LastModified
 		{
 			get

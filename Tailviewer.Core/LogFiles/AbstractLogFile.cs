@@ -106,6 +106,9 @@ namespace Tailviewer.Core.LogFiles
 		public abstract DateTime? StartTimestamp { get; }
 
 		/// <inheritdoc />
+		public abstract DateTime? EndTimestamp { get; }
+
+		/// <inheritdoc />
 		public abstract DateTime LastModified { get; }
 
 		/// <inheritdoc />

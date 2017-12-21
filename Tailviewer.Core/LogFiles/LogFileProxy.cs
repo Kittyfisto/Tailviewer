@@ -154,6 +154,9 @@ namespace Tailviewer.Core.LogFiles
 		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
 
 		/// <inheritdoc />
+		public DateTime? EndTimestamp => _innerLogFile?.EndTimestamp;
+
+		/// <inheritdoc />
 		public DateTime LastModified => _innerLogFile?.LastModified ?? DateTime.MinValue;
 
 		/// <inheritdoc />

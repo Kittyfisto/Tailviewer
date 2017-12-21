@@ -43,6 +43,7 @@ namespace Tailviewer.Core.LogFiles
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
 		private LevelFlags _currentLogEntryLevel;
 
 		private DateTime _created;
@@ -83,6 +84,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
+		
+		/// <inheritdoc />
+		public override DateTime? EndTimestamp => _endTimestamp;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -295,6 +299,7 @@ namespace Tailviewer.Core.LogFiles
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 			_error = _source.Error;
 			_startTimestamp = _source.StartTimestamp;
+			_endTimestamp = _source.EndTimestamp;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;
 			_fileSize = _source.Size;
