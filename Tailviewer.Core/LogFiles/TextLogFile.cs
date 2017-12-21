@@ -524,7 +524,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (_startTimestamp == null)
 				_startTimestamp = timestamp;
-			_endTimestamp = timestamp;
+			if (timestamp != null)
+				_endTimestamp = timestamp;
 
 			lock (_syncRoot)
 			{
