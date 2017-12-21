@@ -173,6 +173,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Indices
 
 		/// <summary>
+		///     Performs a reverse lookup and returns the index o fthe log entry
+		///     which has the given original index.
 		/// </summary>
 		/// <param name="originalLineIndex"></param>
 		/// <returns></returns>

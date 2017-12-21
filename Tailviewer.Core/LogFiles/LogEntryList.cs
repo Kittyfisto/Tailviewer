@@ -309,19 +309,6 @@ namespace Tailviewer.Core.LogFiles
 			public override IReadOnlyList<ILogFileColumn> Columns => _list._columns;
 		}
 
-		private interface IColumnData
-		{
-			void Clear();
-			void Add(IReadOnlyLogEntry logEntry);
-			void RemoveAt(int index);
-			void AddEmpty();
-			void Insert(int index, IReadOnlyLogEntry logEntry);
-			void RemoveRange(int index, int count);
-			void InsertEmpty(int index);
-
-			object this[int index] { get; }
-		}
-
 		private sealed class ColumnData<T>
 			: IColumnData
 		{

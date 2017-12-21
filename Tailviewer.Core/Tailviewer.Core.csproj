@@ -111,6 +111,7 @@
     <Compile Include="LogFiles\AbstractReadOnlyLogEntry.cs" />
     <Compile Include="LogFiles\CustomLogFileColumn.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
+    <Compile Include="LogFiles\IColumnData.cs" />
     <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogEntry2.cs" />
