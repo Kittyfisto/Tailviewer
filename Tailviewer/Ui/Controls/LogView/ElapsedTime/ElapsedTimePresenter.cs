@@ -11,6 +11,8 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 	{
 		private readonly TimeSpan? _value;
 
+		public const int CharacterWidth = 11;
+
 		public ElapsedTimePresenter(TimeSpan? value)
 		{
 			_value = value;
@@ -18,7 +20,12 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 
 		public override string ToString(IFormatProvider provider)
 		{
-			return DeltaTimePresenter.Format(_value, provider);
+			if (_value != null)
+			{
+				return _value.Value.ToString(@"dd\.hh\:mm\:ss", provider);
+			}
+
+			return string.Empty;
 		}
 
 		protected override FormattedText CreateFormattedText(string text, CultureInfo culture)

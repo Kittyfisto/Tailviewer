@@ -14,7 +14,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 
 		protected override void UpdateWidth(ILogFile logFile)
 		{
-			
+			Width = TextHelper.EstimateWidthUpperLimit(ElapsedTimePresenter.CharacterWidth);
 		}
 
 		protected override AbstractLogEntryValuePresenter CreatePresenter(TimeSpan? value)

@@ -173,6 +173,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			Children.Add(_lineNumberColumn);
 			Children.Add(_dataSourceCanvas);
 			Children.Add(_deltaTimesColumn);
+			Children.Add(_elapsedTimeColumn);
 			Children.Add(separator);
 			Children.Add(PartTextCanvas);
 			Children.Add(_verticalScrollBar);
