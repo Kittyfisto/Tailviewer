@@ -85,22 +85,13 @@ namespace Tailviewer.Core.LogFiles
 		public override DateTime? EndTimestamp => _source.EndTimestamp;
 
 		/// <inheritdoc />
-		public override DateTime LastModified
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override DateTime LastModified => _source.LastModified;
 
 		/// <inheritdoc />
-		public override DateTime Created
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override DateTime Created => _source.Created;
 
 		/// <inheritdoc />
-		public override Size Size
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public override Size Size => _source.Size;
 
 		/// <inheritdoc />
 		public override int Count

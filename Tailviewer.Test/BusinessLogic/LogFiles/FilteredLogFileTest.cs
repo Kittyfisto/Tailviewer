@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
+using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -137,6 +138,48 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				section[0].LogEntryIndex.Should().Be(0);
 				section[0].Message.Should().Be("Hello world!");
 				section[0].Level.Should().Be(LevelFlags.None);
+			}
+		}
+
+		[Test]
+		public void TestCreated()
+		{
+			var created = new DateTime(2017, 12, 21, 20, 51, 0);
+			_logFile.Setup(x => x.Created).Returns(created);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.Created.Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
+			}
+		}
+
+		[Test]
+		public void TestLastModified()
+		{
+			var lastModified = new DateTime(2017, 12, 21, 20, 52, 0);
+			_logFile.Setup(x => x.LastModified).Returns(lastModified);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.LastModified.Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
+			}
+		}
+
+		[Test]
+		public void TestSize()
+		{
+			var size = Size.FromGigabytes(5);
+			_logFile.Setup(x => x.Size).Returns(size);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.Size.Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
 			}
 		}
 
