@@ -8,7 +8,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class DeltaTimeEntryTest
+	public sealed class DeltaTimePresenterTest
 	{
 		[Test]
 		public void TestMagnitudeDays1()

@@ -1,31 +1,46 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 
 namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 {
 	public sealed class ElapsedTimePresenter
 		: AbstractLogEntryValuePresenter
 	{
-		private readonly TimeSpan? _value;
-
 		public const int CharacterWidth = 11;
+		private readonly TimeSpan? _value;
 
 		public ElapsedTimePresenter(TimeSpan? value)
 		{
 			_value = value;
 		}
 
-		public override string ToString(IFormatProvider provider)
+		[Pure]
+		public static string ToString(TimeSpan? value, IFormatProvider provider)
 		{
-			if (_value != null)
+			if (value != null)
 			{
-				return _value.Value.ToString(@"dd\.hh\:mm\:ss", provider);
+				return ToString(value.Value, provider);
 			}
 
 			return string.Empty;
+		}
+
+		public static string ToString(TimeSpan value, IFormatProvider provider)
+		{
+			if (value >= TimeSpan.FromDays(1))
+			{
+				return string.Format("{0:%d}d {0:hh\\:mm\\:ss\\.fff}", value);
+			}
+
+			return value.ToString(@"hh\:mm\:ss\.fff", provider);
+		}
+
+		public override string ToString(IFormatProvider provider)
+		{
+			return ToString(_value, provider);
 		}
 
 		protected override FormattedText CreateFormattedText(string text, CultureInfo culture)

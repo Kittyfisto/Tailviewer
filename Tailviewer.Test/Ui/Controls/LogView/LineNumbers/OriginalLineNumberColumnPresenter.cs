@@ -12,15 +12,15 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class LineNumberColumnTest
+	public sealed class OriginalLineNumberColumnPresenter
 	{
-		private OriginalLineNumberColumnPresenter _column;
+		private Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter _column;
 		private InMemoryLogFile _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			_column = new OriginalLineNumberColumnPresenter();
+			_column = new Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter();
 
 			_logFile = new InMemoryLogFile();
 		}

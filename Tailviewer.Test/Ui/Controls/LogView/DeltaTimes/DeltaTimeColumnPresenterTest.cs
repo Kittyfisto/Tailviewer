@@ -4,14 +4,13 @@ using System.Windows;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class LogEntryDeltaTimeColumnTest
+	public sealed class DeltaTimeColumnPresenterTest
 	{
 		private DeltaTimeColumnPresenter _column;
 		private Mock<ILogFile> _logFile;

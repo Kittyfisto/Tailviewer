@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -14,7 +15,10 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 
 		protected override void UpdateWidth(ILogFile logFile)
 		{
-			Width = TextHelper.EstimateWidthUpperLimit(ElapsedTimePresenter.CharacterWidth);
+			var culture = CultureInfo.CurrentCulture;
+			var maximum = ElapsedTimePresenter.ToString(logFile.EndTimestamp - logFile.StartTimestamp, culture);
+			var maximumWidth = TextHelper.EstimateWidthUpperLimit(maximum);
+			Width = maximumWidth;
 		}
 
 		protected override AbstractLogEntryValuePresenter CreatePresenter(TimeSpan? value)
