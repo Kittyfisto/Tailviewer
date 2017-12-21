@@ -381,18 +381,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			var logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				return logFile.GetOriginalIndexFrom(index);
-			}
-
-			return LogLineIndex.Invalid;
-		}
-
-		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			ILogFile logFile = _innerLogFile;

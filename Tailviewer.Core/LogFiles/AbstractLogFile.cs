@@ -140,12 +140,6 @@ namespace Tailviewer.Core.LogFiles
 			return originalLineIndex;
 		}
 
-		/// <inheritdoc />
-		public virtual LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			return index;
-		}
-
 		#endregion
 
 		/// <inheritdoc />

@@ -384,20 +384,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			try
-			{
-				return _logFile.GetOriginalIndexFrom(index);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-				return new LogLineIndex();
-			}
-		}
-
 		private void BlameExceptionOnPlugin(Exception exception)
 		{
 			Log.WarnFormat("Plugin {0} threw an exception: {1}", _pluginName, exception);

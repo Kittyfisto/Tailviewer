@@ -281,22 +281,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndexFrom1()
-		{
-			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFrom(1).Should().Be(new LogLineIndex(1));
-			logFile.Clear();
-			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
-			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
-		}
-
-		[Test]
 		public void TestGetEntriesEmpty()
 		{
 			var logFile = new InMemoryLogFile();

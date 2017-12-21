@@ -115,7 +115,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
-				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
@@ -576,24 +575,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(1)).Should().Be(new LogLineIndex(0));
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(2)).Should().Be(LogLineIndex.Invalid);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(3)).Should().Be(new LogLineIndex(1));
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndexFrom1()
-		{
-			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
-				_taskScheduler.RunOnce();
-
-				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(new LogLineIndex(1));
-				file.GetOriginalIndexFrom(new LogLineIndex(1)).Should().Be(new LogLineIndex(3));
 			}
 		}
 

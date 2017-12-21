@@ -179,18 +179,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		[Pure]
 		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
 
-		/// <summary>
-		///     Returns the original log line index for the given index.
-		/// </summary>
-		/// <remarks>
-		///     Returns the same index as given unless this log file filters or reorders
-		///     log lines.
-		/// </remarks>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		[Pure]
-		LogLineIndex GetOriginalIndexFrom(LogLineIndex index);
-
 		#endregion
 	}
 }

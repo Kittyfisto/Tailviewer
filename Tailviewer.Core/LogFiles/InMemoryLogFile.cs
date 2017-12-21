@@ -197,20 +197,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			lock (_syncRoot)
-			{
-				if (index >= _logEntries.Count)
-				{
-					return LogLineIndex.Invalid;
-				}
-
-				return index;
-			}
-		}
-
-		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			lock (_syncRoot)

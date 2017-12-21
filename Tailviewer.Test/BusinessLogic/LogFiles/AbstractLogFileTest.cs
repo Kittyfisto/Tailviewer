@@ -249,7 +249,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				buffer[i].Should().Be(9001, "because we've specified a count and thus values after shouldn't have been touched");
 			}
 		}
-		
+
 		[Test]
 		public void TestGetOriginalIndicesBySection()
 		{

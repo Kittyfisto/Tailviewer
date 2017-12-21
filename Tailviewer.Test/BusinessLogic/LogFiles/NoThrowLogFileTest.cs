@@ -173,15 +173,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndexFrom()
-		{
-			_logFile.Setup(x => x.GetOriginalIndexFrom(It.IsAny<LogLineIndex>())).Throws<SystemException>();
-			var index = new LogLineIndex(42);
-			new Action(() => _proxy.GetOriginalIndexFrom(index)).ShouldNotThrow();
-			_logFile.Verify(x => x.GetOriginalIndexFrom(It.Is<LogLineIndex>(y => y == index)), Times.Once);
-		}
-
-		[Test]
 		public void TestGetColumn1()
 		{
 			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();

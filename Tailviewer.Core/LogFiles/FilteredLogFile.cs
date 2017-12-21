@@ -329,20 +329,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			lock (_indices)
-			{
-				if (index < 0)
-					return LogLineIndex.Invalid;
-				if (index >= _indices.Count)
-					return LogLineIndex.Invalid;
-
-				return _indices[(int)index];
-			}
-		}
-
-		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
 			lock (_indices)
