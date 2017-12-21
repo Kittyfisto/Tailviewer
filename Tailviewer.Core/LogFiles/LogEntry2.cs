@@ -109,18 +109,12 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void SetValue(ILogFileColumn column, object value)
 		{
-			if (!_columns.Contains(column))
-				throw new NoSuchColumnException(column);
-
 			_values[column] = value;
 		}
 
 		/// <inheritdoc />
 		public override void SetValue<T>(ILogFileColumn<T> column, T value)
 		{
-			if (!_columns.Contains(column))
-				throw new NoSuchColumnException(column);
-
 			_values[column] = value;
 		}
 	}

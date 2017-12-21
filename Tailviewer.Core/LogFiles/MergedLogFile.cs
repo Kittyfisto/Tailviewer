@@ -147,9 +147,28 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + section.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(section, (TimeSpan?[]) (object) buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.Index) ||
+			         Equals(column, LogFileColumns.OriginalIndex))
+			{
+				GetIndices(section, (LogLineIndex[]) (object) buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LineNumber) ||
+			         Equals(column, LogFileColumns.OriginalLineNumber))
+			{
+				GetLineNumbers(section, (int[]) (object) buffer, destinationIndex);
 			}
 			else
 			{
@@ -169,9 +188,30 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + indices.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.Index) ||
+			         Equals(column, LogFileColumns.OriginalIndex))
+			{
+				GetIndices(indices, (LogLineIndex[]) (object) buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LineNumber) ||
+			         Equals(column, LogFileColumns.OriginalLineNumber))
+			{
+				GetLineNumbers(indices, (int[]) (object) buffer, destinationIndex);
 			}
 			else
 			{
@@ -182,46 +222,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		#region Retrieving Column Values from source files
-
-		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(LogFileSection section)
-		{
-			var sourceIndices = new Dictionary<int, Stuff<T>>();
-
-			lock (_syncRoot)
-			{
-				// Do NOT call any virtual methods
-				// Do NOT block for any amount of time
-
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					if (index >= 0 && index < _indices.Count)
-					{
-						var sourceIndex = _indices[index.Value];
-						Stuff<T> stuff;
-						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
-						{
-							stuff = new Stuff<T>();
-							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
-						}
-						stuff.Add(i, sourceIndex.SourceLineIndex);
-					}
-					else
-					{
-						const int invalidIndex = -1;
-						Stuff<T> stuff;
-						if (!sourceIndices.TryGetValue(invalidIndex, out stuff))
-						{
-							stuff = new Stuff<T>();
-							sourceIndices.Add(invalidIndex, stuff);
-						}
-						stuff.Add(i, invalidIndex);
-					}
-				}
-			}
-
-			return sourceIndices;
-		}
 
 		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(IReadOnlyList<LogLineIndex> indices)
 		{
@@ -340,6 +340,56 @@ namespace Tailviewer.Core.LogFiles
 			{
 				_destinationIndices.Add(destIndex);
 				_originalLogLineIndices.Add(index);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="indices"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		private void GetIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = index;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="indices"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		private void GetLineNumbers(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = (int) (index + 1);
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+					}
+				}
 			}
 		}
 

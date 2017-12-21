@@ -34,6 +34,92 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		#region Well Known Columns
 
+		[Test]
+		public void TestGetNullColumn()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogFileSection(0, 0), null, new int[0], 0)).ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetColumnNullIndices()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(null, LogFileColumns.Index, new LogLineIndex[0], 0)).ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetColumnNullBuffer1()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogFileSection(), LogFileColumns.Index, null, 0)).ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetColumnNullBuffer2()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogLineIndex[0], LogFileColumns.Index, null, 0)).ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestGetColumnBufferTooSmall1()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[9])).ShouldThrow<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
+		}
+
+		[Test]
+		public void TestGetColumnBufferTooSmall2()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogLineIndex[10],
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[9])).ShouldThrow<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
+		}
+
+		[Test]
+		public void TestGetColumnDestinationIndexTooSmall1()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[10],
+			                                   -1)).ShouldThrow<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
+		}
+
+		[Test]
+		public void TestGetColumnDestinationIndexTooSmall2()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogLineIndex[10],
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[10],
+			                                   -1)).ShouldThrow<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
+		}
+
+		[Test]
+		public void TestGetColumnDestinationIndexTooBig1()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[15],
+			                                   6)).ShouldThrow<ArgumentException>("because the given length and offset are greater than the buffer length");
+		}
+
+		[Test]
+		public void TestGetColumnDestinationIndexTooBig2()
+		{
+			var logFile = CreateEmpty();
+			new Action(() => logFile.GetColumn(new LogLineIndex[10],
+			                                   LogFileColumns.OriginalLineNumber,
+			                                   new int[15],
+			                                   6)).ShouldThrow<ArgumentException>("because the given length and offset are greater than the buffer length");
+		}
+
 		#region Index
 
 		[Test]
@@ -162,6 +248,50 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				buffer[i].Should().Be(9001, "because we've specified a count and thus values after shouldn't have been touched");
 			}
+		}
+		
+		[Test]
+		public void TestGetOriginalIndicesBySection()
+		{
+			var content = new LogEntryList(LogFileColumns.Timestamp);
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
+			var logFile = CreateFromContent(content);
+
+			var indices = new LogLineIndex[5];
+			indices[0] = new LogLineIndex(42);
+			indices[4] = new LogLineIndex(9001);
+
+			logFile.GetColumn(new LogFileSection(1, 3), LogFileColumns.OriginalIndex, indices, 1);
+			indices[0].Should().Be(42, "because the original value shouldn't have been written over");
+			indices[1].Should().Be(1);
+			indices[2].Should().Be(2);
+			indices[3].Should().Be(3);
+			indices[4].Should().Be(9001, "because the original value shouldn't have been written over");
+		}
+
+		[Test]
+		public void TestGetOriginalIndicesByIndices()
+		{
+			var content = new LogEntryList(LogFileColumns.Timestamp);
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
+			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
+			var logFile = CreateFromContent(content);
+
+			var indices = new LogLineIndex[5];
+			indices[0] = new LogLineIndex(42);
+			indices[4] = new LogLineIndex(9001);
+
+			logFile.GetColumn(new LogLineIndex[] {3,1,2}, LogFileColumns.OriginalIndex, indices, 1);
+			indices[0].Should().Be(42, "because the original value shouldn't have been written over");
+			indices[1].Should().Be(3);
+			indices[2].Should().Be(1);
+			indices[3].Should().Be(2);
+			indices[4].Should().Be(9001, "because the original value shouldn't have been written over");
 		}
 
 		#endregion

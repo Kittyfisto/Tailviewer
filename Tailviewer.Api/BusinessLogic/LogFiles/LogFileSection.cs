@@ -11,7 +11,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Call <see cref="ILogFile.GetSection" /> to actually obtain the data for that portion.
 	/// </summary>
 	/// <remarks>
-	/// TODO: Rename to LogFileRange
+	/// TODO: Rename to LogEntryRange as it will soon describe a range of log entries, see #140
 	/// </remarks>
 	public struct LogFileSection
 		: IEquatable<LogFileSection>

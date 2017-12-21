@@ -77,6 +77,10 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(column));
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + length > destination.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			IColumnData data;
 			if (_dataByColumn.TryGetValue(column, out data))
@@ -90,7 +94,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -98,11 +102,13 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(sourceIndices));
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
+			if (destinationIndex + sourceIndices.Count > destination.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			IColumnData data;
 			if (_dataByColumn.TryGetValue(column, out data))
 			{
-				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex, length);
+				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex);
 			}
 			else
 			{
@@ -408,9 +414,9 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
+			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 			{
-				for (int i = 0; i < length; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
 					var sourceIndex = sourceIndices[i];
 					if (sourceIndex >= 0 && sourceIndex < _data.Count)

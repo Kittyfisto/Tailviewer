@@ -597,28 +597,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
-		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(), null))
-					.ShouldThrow<ArgumentNullException>("because no array was given");
-			}
-		}
+		#region Well Known Columns
 
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(1, 3), new LogLineIndex[2]))
-					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
-			}
-		}
-
+		#region Original Index
+		
 		[Test]
 		public void TestGetOriginalIndicesFrom3()
 		{
@@ -632,8 +614,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
-				var originalIndices = new LogLineIndex[2];
-				file.GetOriginalIndicesFrom(new LogFileSection(0, 2), originalIndices);
+				var originalIndices = file.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
 			}
 		}
@@ -653,50 +634,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
 				_taskScheduler.RunOnce();
 
-				var indices = new[]
-				{
-					new LogLineIndex(0), new LogLineIndex(2)
-				};
-				var originalIndices = new LogLineIndex[2];
-				file.GetOriginalIndicesFrom(indices, originalIndices);
+				var originalIndices = file.GetColumn(new LogLineIndex[] {0, 2}, LogFileColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(5));
 			}
 		}
 
-		[Test]
-		public void TestGetOriginalIndicesFrom5()
-		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-					.ShouldThrow<ArgumentNullException>();
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom6()
-		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-					.ShouldThrow<ArgumentNullException>();
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom7()
-		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-					.ShouldThrow<ArgumentOutOfRangeException>();
-			}
-		}
-
-		#region Well Known Columns
+		#endregion
 
 		#region Line Number
 

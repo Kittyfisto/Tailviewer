@@ -146,37 +146,6 @@ namespace Tailviewer.Core.LogFiles
 			return index;
 		}
 
-		/// <inheritdoc />
-		public virtual void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (section.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			for (int i = 0; i < section.Count; ++i)
-			{
-				originalIndices[i] = section.Index + i;
-			}
-		}
-		
-		/// <inheritdoc />
-		public virtual void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			// TODO: This implementation should actually behave differently, but I don't know which behaviour I actually want
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				originalIndices[i] = indices[i];
-			}
-		}
-
 		#endregion
 
 		/// <inheritdoc />

@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogLevel()
 		{
-			var entry = new LogEntry2(LogFileColumns.LogLevel);
+			var entry = new LogEntry2();
 			entry.LogLevel = LevelFlags.Fatal;
 			entry.LogLevel.Should().Be(LevelFlags.Fatal);
 			entry.GetValue(LogFileColumns.LogLevel).Should().Be(LevelFlags.Fatal);
@@ -57,7 +57,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogEntryIndex()
 		{
-			var entry = new LogEntry2(LogFileColumns.LogEntryIndex);
+			var entry = new LogEntry2();
 			entry.LogEntryIndex = 42;
 			entry.LogEntryIndex.Should().Be(42);
 			entry.GetValue(LogFileColumns.LogEntryIndex).Should().Be(42);
@@ -66,7 +66,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetDeltaTime()
 		{
-			var entry = new LogEntry2(LogFileColumns.DeltaTime);
+			var entry = new LogEntry2();
 			entry.DeltaTime = TimeSpan.FromSeconds(23);
 			entry.DeltaTime.Should().Be(TimeSpan.FromSeconds(23));
 			entry.GetValue(LogFileColumns.DeltaTime).Should().Be(TimeSpan.FromSeconds(23));
@@ -75,7 +75,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetElapsedTime()
 		{
-			var entry = new LogEntry2(LogFileColumns.ElapsedTime);
+			var entry = new LogEntry2();
 			entry.ElapsedTime = TimeSpan.FromSeconds(23);
 			entry.ElapsedTime.Should().Be(TimeSpan.FromSeconds(23));
 			entry.GetValue(LogFileColumns.ElapsedTime).Should().Be(TimeSpan.FromSeconds(23));
@@ -84,7 +84,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetTimestamp()
 		{
-			var entry = new LogEntry2(LogFileColumns.Timestamp);
+			var entry = new LogEntry2();
 			entry.Timestamp = new DateTime(2017, 12, 20, 13, 33, 0);
 			entry.Timestamp.Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
 			entry.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetRawContent()
 		{
-			var entry = new LogEntry2(LogFileColumns.RawContent);
+			var entry = new LogEntry2();
 			entry.RawContent = "The last Jedi";
 			entry.RawContent.Should().Be("The last Jedi");
 			entry.GetValue(LogFileColumns.RawContent).Should().Be("The last Jedi");
@@ -102,7 +102,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetIndex()
 		{
-			var entry = new LogEntry2(LogFileColumns.Index);
+			var entry = new LogEntry2();
 			entry.Index = 9001;
 			entry.Index.Should().Be(9001);
 			entry.GetValue(LogFileColumns.Index).Should().Be(9001);
@@ -111,7 +111,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalIndex()
 		{
-			var entry = new LogEntry2(LogFileColumns.OriginalIndex);
+			var entry = new LogEntry2();
 			entry.OriginalIndex = 8999;
 			entry.OriginalIndex.Should().Be(8999);
 			entry.GetValue(LogFileColumns.OriginalIndex).Should().Be(8999);
@@ -120,7 +120,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLineNumber()
 		{
-			var entry = new LogEntry2(LogFileColumns.LineNumber);
+			var entry = new LogEntry2();
 			entry.LineNumber = 42;
 			entry.LineNumber.Should().Be(42);
 			entry.GetValue(LogFileColumns.LineNumber).Should().Be(42);
@@ -129,7 +129,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalLineNumber()
 		{
-			var entry = new LogEntry2(LogFileColumns.OriginalLineNumber);
+			var entry = new LogEntry2();
 			entry.OriginalLineNumber = 1337;
 			entry.OriginalLineNumber.Should().Be(1337);
 			entry.GetValue(LogFileColumns.OriginalLineNumber).Should().Be(1337);

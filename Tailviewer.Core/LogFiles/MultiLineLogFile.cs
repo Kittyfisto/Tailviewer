@@ -115,6 +115,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + section.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			if (Equals(column, LogFileColumns.Timestamp))
 			{
 				var firstLineIndices = GetFirstLineIndices(section);
@@ -129,6 +138,17 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + indices.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			if (Equals(column, LogFileColumns.Timestamp))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);

@@ -325,97 +325,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
-			{
-				new Action(() => proxy.GetOriginalIndicesFrom(new LogFileSection(), null))
-					.ShouldThrow<ArgumentNullException>();
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
-			{
-				new Action(() => proxy.GetOriginalIndicesFrom(new LogFileSection(1, 4), new LogLineIndex[3]))
-					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom3()
-		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero))
-			{
-				var indices = new LogLineIndex[3];
-				proxy.GetOriginalIndicesFrom(new LogFileSection(1, 3), indices);
-				indices.Should().Equal(LogLineIndex.Invalid, LogLineIndex.Invalid, LogLineIndex.Invalid);
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom4()
-		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
-			{
-				_logFile.Setup(x => x.GetOriginalIndicesFrom(It.Is<LogFileSection>(
-						y => y == new LogFileSection(1, 3)), It.IsAny<LogLineIndex[]>()))
-					.Callback((LogFileSection section, LogLineIndex[] ind) =>
-					{
-						ind[0] = new LogLineIndex(0);
-						ind[1] = new LogLineIndex(1);
-						ind[2] = new LogLineIndex(2);
-					});
-
-				var indices = new LogLineIndex[3];
-				proxy.GetOriginalIndicesFrom(new LogFileSection(1, 3), indices);
-				indices.Should().Equal(new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2));
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom5()
-		{
-			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			var indices = new LogLineIndex[5];
-			var originalIndices = new LogLineIndex[5];
-			logFile.GetOriginalIndicesFrom(indices, originalIndices);
-
-			_logFile.Verify(x => x.GetOriginalIndicesFrom(It.Is<IReadOnlyList<LogLineIndex>>(y => y.Count == 5),
-				It.Is<LogLineIndex[]>(y => y.Length == 5)), Times.Once);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom6()
-		{
-			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom7()
-		{
-			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom8()
-		{
-			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
-		}
-
-		[Test]
 		public void TestGetColumn1()
 		{
 			var section = new LogFileSection(42, 100);
-			var buffer = new string[100];
+			var buffer = new string[142];
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
 			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, 42);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),

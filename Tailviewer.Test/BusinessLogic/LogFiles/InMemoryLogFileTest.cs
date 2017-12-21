@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -295,72 +294,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Clear();
 			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
 			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			var indices = new LogLineIndex[4];
-
-			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndicesFrom(new LogFileSection(0, 4), indices);
-			indices.Should().Equal(Enumerable.Range(0, 4).Select(i => LogLineIndex.Invalid));
-
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.AddEntry("", LevelFlags.All);
-
-			logFile.GetOriginalIndicesFrom(new LogFileSection(1, 3), indices);
-			indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), LogLineIndex.Invalid, LogLineIndex.Invalid);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(), null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom3()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(1, 4), new LogLineIndex[3]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom4()
-		{
-			var logFile = new InMemoryLogFile();
-			var originalIndices = new LogLineIndex[3];
-			logFile.GetOriginalIndicesFrom(new LogLineIndex[] {1, 2, 3}, originalIndices);
-			originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3));
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom5()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom6()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom7()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
 		}
 
 		[Test]

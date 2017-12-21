@@ -182,34 +182,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			_logFile.Setup(x => x.GetOriginalIndicesFrom(It.IsAny<LogFileSection>(), It.IsAny<LogLineIndex[]>())).Throws<SystemException>();
-			var section = new LogFileSection(9001, 42);
-			var indices = new LogLineIndex[42];
-			new Action(() => _proxy.GetOriginalIndicesFrom(section, indices)).ShouldNotThrow();
-			_logFile.Verify(x => x.GetOriginalIndicesFrom(It.Is<LogFileSection>(y => y == section),
-				It.Is<LogLineIndex[]>(y => y == indices)), Times.Once);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			_logFile.Setup(x => x.GetOriginalIndicesFrom(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<LogLineIndex[]>())).Throws<SystemException>();
-			var src = new LogLineIndex[42];
-			var dest = new LogLineIndex[42];
-			new Action(() => _proxy.GetOriginalIndicesFrom(src, dest)).ShouldNotThrow();
-			_logFile.Verify(x => x.GetOriginalIndicesFrom(It.Is<IReadOnlyList<LogLineIndex>>(y => y == src),
-				It.Is<LogLineIndex[]>(y => y == dest)), Times.Once);
-		}
-
-		[Test]
 		public void TestGetColumn1()
 		{
 			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
-			var buffer = new string[100];
+			var buffer = new string[9101];
 			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, 9001)).ShouldNotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
@@ -225,7 +203,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] {1, 2, 3};
-			var buffer = new string[100];
+			var buffer = new string[201];
 			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101)).ShouldNotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),

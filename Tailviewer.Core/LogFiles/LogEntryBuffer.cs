@@ -67,7 +67,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -79,7 +79,7 @@ namespace Tailviewer.Core.LogFiles
 			IColumnData columnData;
 			if (_dataByColumn.TryGetValue(column, out columnData))
 			{
-				((ColumnData<T>)columnData).CopyTo(sourceIndices, destination, destinationIndex, length);
+				((ColumnData<T>)columnData).CopyTo(sourceIndices, destination, destinationIndex);
 			}
 			else
 			{
@@ -351,9 +351,9 @@ namespace Tailviewer.Core.LogFiles
 				Array.Copy(_data, sourceIndex, destination, destinationIndex, length);
 			}
 
-			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length)
+			public void CopyTo(IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 			{
-				for (int i = 0; i < length; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
 					var sourceIndex = sourceIndices[i];
 					if (sourceIndex >= 0 && sourceIndex < _data.Length)

@@ -199,6 +199,11 @@ namespace Tailviewer.Core.LogFiles
 				{
 					GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
 				}
+				else if (Equals(column, LogFileColumns.Index) ||
+				         Equals(column, LogFileColumns.OriginalIndex))
+				{
+					GetIndex(indices, (LogLineIndex[])(object)buffer, destinationIndex);
+				}
 				else if (Equals(column, LogFileColumns.LineNumber) ||
 				         Equals(column, LogFileColumns.OriginalLineNumber))
 				{
@@ -386,7 +391,7 @@ namespace Tailviewer.Core.LogFiles
 
 			return TimeSpan.FromMilliseconds(100);
 		}
-		
+
 		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
 		{
 			for (int i = 0; i < indices.Count; ++i)
@@ -435,13 +440,42 @@ namespace Tailviewer.Core.LogFiles
 			throw new NotImplementedException();
 		}
 
+		private void GetIndex(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _entries.Count)
+					{
+						buffer[destinationIndex + i] = index;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
 		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
 		{
-			for (int i = 0; i < indices.Count; ++i)
+			lock (_syncRoot)
 			{
-				var index = indices[i];
-				var lineNumber = (int) (index + 1);
-				buffer[destinationIndex + i] = lineNumber;
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _entries.Count)
+					{
+						var lineNumber = (int) (index + 1);
+						buffer[destinationIndex + i] = lineNumber;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+					}
+				}
 			}
 		}
 

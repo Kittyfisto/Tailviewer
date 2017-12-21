@@ -114,13 +114,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
 			_logEntries.CopyTo(column, (int)section.Index, buffer, destinationIndex, section.Count);
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			_logEntries.CopyTo(column, new Int32View(indices), buffer, destinationIndex, indices.Count);
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+			_logEntries.CopyTo(column, new Int32View(indices), buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />
@@ -191,43 +207,6 @@ namespace Tailviewer.Core.LogFiles
 				}
 
 				return index;
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (originalIndices.Length < section.Count)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					if (index >= _logEntries.Count)
-						originalIndices[i] = LogLineIndex.Invalid;
-					else
-						originalIndices[i] = index;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException();
-
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				originalIndices[i] = indices[i];
 			}
 		}
 

@@ -36,8 +36,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="sourceIndices"></param>
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
-		/// <param name="length"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex, int length);
+		void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex);
 	}
 }

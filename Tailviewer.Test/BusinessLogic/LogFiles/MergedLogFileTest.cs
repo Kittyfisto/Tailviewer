@@ -477,29 +477,105 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			GC.KeepAlive(logFile);
 		}
 
+		#region Well Known Columns
+
+		#region Original Index
+
 		[Test]
-		public void TestGetOriginalIndicesFrom5()
+		public void TestGetOriginalIndicesBySection2()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Index);
+			lineNumbers[0].Should().Be(0);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalIndex);
+			lineNumbers[0].Should().Be(0);
+			lineNumbers[1].Should().Be(1);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom6()
+		public void TestGetOriginalIndexByIndices()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.Index);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(0);
+
+			lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalIndex);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(0);
+		}
+
+		#endregion
+
+		#region Line Number / Original Line Number
+
+		[Test]
+		public void TestGetLineNumbersBySection()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
+
+			lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom7()
+		public void TestGetLineNumbersByIndices()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
 		}
+
+		#endregion
+
+		#region Timestamp
 
 		[Test]
 		[Description("Verifies that a continuous section of values can be retrieved for one column")]
@@ -560,6 +636,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			buffer[offset + 1].Should().Be(source.GetLine(1).Timestamp);
 		}
 
+		#endregion
+
+		#region Delta Time
+
 		[Test]
 		public void TestGetDeltaTimesOneSource1()
 		{
@@ -595,6 +675,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				null
 			});
 		}
+
+		#endregion
+
+		#endregion
 
 		protected override ILogFile CreateEmpty()
 		{
