@@ -25,6 +25,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		DateTime? StartTimestamp { get; }
 
 		/// <summary>
+		///     The last identified timestamp of the data source, if any, null otherwise.
+		/// </summary>
+		DateTime? EndTimestamp { get; }
+
+		/// <summary>
 		///     The timestamp (in local time) the data source has last been modified.
 		///     A modification is meant to be the addition and/or removal of at least one log line.
 		/// </summary>
@@ -72,6 +77,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
 		int MaxCharactersPerLine { get; }
+
+		/// <summary>
+		///     The columns offered by this log file.
+		/// </summary>
+		IReadOnlyList<ILogFileColumn> Columns { get; }
 
 		/// <summary>
 		///     Adds a new listener to this log file.
@@ -168,36 +178,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Indices
 
 		/// <summary>
+		///     Performs a reverse lookup and returns the index o fthe log entry
+		///     which has the given original index.
 		/// </summary>
 		/// <param name="originalLineIndex"></param>
 		/// <returns></returns>
+		[Pure]
 		LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex);
-
-		/// <summary>
-		///     Returns the original log line index for the given index.
-		/// </summary>
-		/// <remarks>
-		///     Returns the same index as given unless this log file filters or reorders
-		///     log lines.
-		/// </remarks>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		LogLineIndex GetOriginalIndexFrom(LogLineIndex index);
-
-		/// <summary>
-		///     Copies the original indices of the given log file section into the given array.
-		///     The array <paramref name="originalIndices" /> must be at least as big as <see cref="LogFileSection.Count" />.
-		/// </summary>
-		/// <param name="section"></param>
-		/// <param name="originalIndices"></param>
-		void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices);
-
-		/// <summary>
-		///     Copies the original indices of the given log list of indices
-		/// </summary>
-		/// <param name="indices"></param>
-		/// <param name="originalIndices"></param>
-		void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices);
 
 		#endregion
 	}

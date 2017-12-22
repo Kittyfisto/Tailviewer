@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -36,14 +37,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     The index of the log entry, from 0 to the number of log entries.
 		/// </summary>
-		public static readonly ILogFileColumn<LogEntryIndex> Index;
+		/// <remarks>
+		///     TODO: Change this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		public static readonly ILogFileColumn<LogLineIndex> Index;
 
 		/// <summary>
 		///     The index of the log entry another one was created from.
 		///     Only differs from <see cref="Index" /> when the log entry has been created
 		///     through operations such as filtering, merging, etc...
 		/// </summary>
-		public static readonly ILogFileColumn<LogEntryIndex> OriginalIndex;
+		/// <remarks>
+		///     TODO: Change this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		public static readonly ILogFileColumn<LogLineIndex> OriginalIndex;
+
+		/// <summary>
+		///     The index of this log entry, from 0 to the number of log entries.
+		/// </summary>
+		/// <remarks>
+		///     TODO: Remove this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		[WillBeRemoved("This property will be be removed once multiline log entry handlign is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		public static readonly ILogFileColumn<LogEntryIndex> LogEntryIndex;
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
@@ -77,21 +93,23 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileColumns()
 		{
-			RawContent = new WellKnownLogFileColumn<string>("raw_content", "Raw Content");
-			Index = new WellKnownLogFileColumn<LogEntryIndex>("index", "Index");
-			OriginalIndex = new WellKnownLogFileColumn<LogEntryIndex>("original_index", "Original Index");
-			LineNumber = new WellKnownLogFileColumn<int>("line_number", "Line Number");
-			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number", "Original Line Number");
-			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level", "Level");
-			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp", "Timestamp");
-			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time", "Elapsed Time");
-			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time", "Delta Time");
+			RawContent = new WellKnownLogFileColumn<string>("raw_content");
+			Index = new WellKnownLogFileColumn<LogLineIndex>("index", LogLineIndex.Invalid);
+			OriginalIndex = new WellKnownLogFileColumn<LogLineIndex>("original_index", LogLineIndex.Invalid);
+			LogEntryIndex = new WellKnownLogFileColumn<LogEntryIndex>("log_entry_index", Tailviewer.LogEntryIndex.Invalid);
+			LineNumber = new WellKnownLogFileColumn<int>("line_number");
+			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
+			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");
+			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
+			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");
+			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time");
 
 			Minimum = new ILogFileColumn[]
 			{
 				RawContent,
 				Index,
 				OriginalIndex,
+				LogEntryIndex,
 				LineNumber,
 				OriginalLineNumber,
 				LogLevel,
@@ -99,6 +117,22 @@ namespace Tailviewer.Core.LogFiles
 				ElapsedTime,
 				DeltaTime
 			};
+		}
+
+		/// <summary>
+		///     Creates a list of columns which consists of the <see cref="Minimum" /> set of columns
+		///     as well as the given ones. Duplicate columns will only appear once.
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyList<ILogFileColumn> CombineWithMinimum(IEnumerable<ILogFileColumn> columns)
+		{
+			var actualColumns = new List<ILogFileColumn>(Minimum);
+			foreach (var column in columns)
+				if (!actualColumns.Contains(column))
+					actualColumns.Add(column);
+			return actualColumns;
 		}
 	}
 }

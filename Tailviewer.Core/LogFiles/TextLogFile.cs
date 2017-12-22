@@ -31,6 +31,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly object _syncRoot;
 		private ErrorFlags _error;
 		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -108,7 +109,9 @@ namespace Tailviewer.Core.LogFiles
 			return _fileName;
 		}
 
-		/// <inheritdoc />
+		/// <summary>
+		/// 
+		/// </summary>
 		public IEnumerable<LogLine> Entries => _entries;
 
 		/// <inheritdoc />
@@ -126,6 +129,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
+		
+		/// <inheritdoc />
+		public override DateTime? EndTimestamp => _endTimestamp;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -143,6 +149,12 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
+		public override IReadOnlyList<ILogFileColumn> Columns
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <inheritdoc />
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
@@ -150,22 +162,17 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				// This method should simply ignore out-of-bounds access and instead
-				// fill the array with default(T). The reason being the non-synchronized access
-				// to ever changing log files where exceptions upon out-of-bounds access are
-				// super impractical.
-				var desiredCount = section.Count;
-				var leftCount = Math.Max(0, _entries.Count - section.Index);
-				var retrievedCount = Math.Min(desiredCount, leftCount);
-				var inBoundsSection = new LogFileSection(section.Index, retrievedCount);
-
 				if (Equals(column, LogFileColumns.Timestamp))
 				{
-					GetTimestamp(inBoundsSection, (DateTime?[]) (object) buffer);
+					GetTimestamp(section, (DateTime?[]) (object) buffer, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
-					GetDeltaTime(inBoundsSection, (TimeSpan?[])(object)buffer);
+					GetDeltaTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.ElapsedTime))
+				{
+					GetElapsedTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
 				}
 				else if(Equals(column, LogFileColumns.RawContent))
 				{
@@ -175,11 +182,6 @@ namespace Tailviewer.Core.LogFiles
 				{
 					throw new NoSuchColumnException(column);
 				}
-
-				for (int i = retrievedCount; i < section.Count; ++i)
-				{
-					buffer[i] = default(T);
-				}
 			}
 		}
 
@@ -188,13 +190,27 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				if (Equals(column, LogFileColumns.Timestamp))
+				if (Equals(column, LogFileColumns.Index) ||
+				         Equals(column, LogFileColumns.OriginalIndex))
 				{
-					GetTimestamp(indices, (DateTime?[])(object)buffer);
+					GetIndex(indices, (LogLineIndex[])(object)buffer, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.LineNumber) ||
+				         Equals(column, LogFileColumns.OriginalLineNumber))
+				{
+					GetLineNumber(indices, (int[])(object)buffer, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.Timestamp))
+				{
+					GetTimestamp(indices, (DateTime?[])(object)buffer, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
-					GetDeltaTime(indices, (TimeSpan?[])(object)buffer);
+					GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.ElapsedTime))
+				{
+					GetElapsedTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.RawContent))
 				{
@@ -215,54 +231,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer)
-		{
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				var index = indices[i];
-				if (index >= 0 && index < _entries.Count)
-				{
-					var entry = _entries[index.Value];
-					buffer[i] = entry.Timestamp;
-				}
-				else
-				{
-					buffer[i] = null;
-				}
-			}
-		}
-
-		private void GetTimestamp(LogFileSection section, DateTime?[] buffer)
-		{
-			for (int i = 0; i < section.Count; ++i)
-			{
-				var index = section.Index.Value + i;
-				buffer[i] = _entries[index].Timestamp;
-			}
-		}
-
-		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer)
-		{
-			DateTime? previousTimestamp;
-			if (section.Index > 0 && _entries.Count > 0)
-				previousTimestamp = _entries[section.Index - 1].Timestamp;
-			else
-				previousTimestamp = null;
-
-			for (int i = 0; i < section.Count; ++i)
-			{
-				var index = section.Index.Value + i;
-				var timestamp = _entries[index].Timestamp;
-				buffer[i] = timestamp - previousTimestamp;
-				previousTimestamp = timestamp;
-			}
-		}
-
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer)
 		{
 			throw new NotImplementedException();
 		}
@@ -427,6 +395,100 @@ namespace Tailviewer.Core.LogFiles
 			return TimeSpan.FromMilliseconds(100);
 		}
 
+		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					buffer[destinationIndex + i] = GetTimestamp(index);
+				}
+			}
+		}
+
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					var value = GetTimestamp(index);
+					var previousValue = GetTimestamp(index - 1);
+					buffer[destinationIndex + i] = value - previousValue;
+				}
+			}
+		}
+
+		private void GetIndex(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _entries.Count)
+					{
+						buffer[destinationIndex + i] = index;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _entries.Count)
+					{
+						buffer[destinationIndex + i] = _entries[(int) index].Timestamp - _startTimestamp;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.ElapsedTime.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _entries.Count)
+					{
+						var lineNumber = (int) (index + 1);
+						buffer[destinationIndex + i] = lineNumber;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private DateTime? GetTimestamp(LogLineIndex index)
+		{
+			if (index >= 0 && index < _entries.Count)
+			{
+				return _entries[(int) index].Timestamp;
+			}
+
+			return null;
+		}
+
 		private void SetDoesNotExist()
 		{
 			OnReset(null, out _numberOfLinesRead, out _lastPosition);
@@ -451,6 +513,7 @@ namespace Tailviewer.Core.LogFiles
 
 			numberOfLinesRead = 0;
 			_startTimestamp = null;
+			_endTimestamp = null;
 			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
@@ -461,6 +524,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (_startTimestamp == null)
 				_startTimestamp = timestamp;
+			if (timestamp != null)
+				_endTimestamp = timestamp;
 
 			lock (_syncRoot)
 			{

@@ -14,6 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MultiLineLogFileTest
+		: AbstractLogFileTest
 	{
 		[SetUp]
 		public void Setup()
@@ -652,30 +653,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom5()
-		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom6()
-		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom7()
-		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
-		}
-
-		[Test]
 		[Description("Verifies that accessing non-existing rows is tolerated")]
 		public void TestGetTimestamp1()
 		{
@@ -695,6 +672,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.None, timestamp);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
 			var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
@@ -713,6 +691,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.Debug, timestamp2);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
 			var timestamps = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
@@ -741,9 +720,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented, maybe never will due to https://github.com/Kittyfisto/Tailviewer/issues/140")]
 		[Description("Verifies that every line of a log entry provides access to the timestamp")]
-		public void TestGetTimestamp5()
+		public void TestGetTimestampBySection()
 		{
 			var source = new InMemoryLogFile();
 
@@ -755,10 +733,78 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source.AddEntry("", LevelFlags.None);
 
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
 
-			var timestamps = logFile.GetColumn(new LogFileSection(2, 1), LogFileColumns.Timestamp);
+			var timestamps = logFile.GetColumn(new LogFileSection(0, 3), LogFileColumns.Timestamp);
 			timestamps.Should().NotBeNull();
-			timestamps.Should().Equal(new object[] { timestamp2 });
+			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
+		}
+
+		[Test]
+		[Description("Verifies that every line of a log entry provides access to the timestamp")]
+		public void TestGetTimestampByIndices()
+		{
+			var source = new InMemoryLogFile();
+
+			var timestamp1 = new DateTime(2017, 12, 11, 20, 33, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp1);
+
+			var timestamp2 = new DateTime(2017, 12, 11, 20, 34, 0);
+			source.AddEntry("", LevelFlags.Debug, timestamp2);
+			source.AddEntry("", LevelFlags.None);
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+
+			var timestamps = logFile.GetColumn(new LogLineIndex[] {0, 1, 2}, LogFileColumns.Timestamp);
+			timestamps.Should().NotBeNull();
+			timestamps.Should().Equal(new object[] { timestamp1, timestamp2, timestamp2 });
+		}
+
+		[Test]
+		public void TestGetEntriesBySection()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var section = new LogFileSection(42, 5);
+			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var destinationIndex = 2;
+
+			logFile.GetEntries(section, buffer, destinationIndex);
+
+			_source.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
+			                                 It.Is<ILogEntries>(y => y == buffer),
+			                                 It.Is<int>(y => y == destinationIndex)),
+			               Times.Once);
+		}
+
+		[Test]
+		public void TestGetEntriesByIndices()
+		{
+			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var indices = new LogLineIndex[] { 0, 2, 5 };
+			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var destinationIndex = 2;
+
+			logFile.GetEntries(indices, buffer, destinationIndex);
+
+			_source.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
+			                                 It.Is<ILogEntries>(y => y == buffer),
+			                                 It.Is<int>(y => y == destinationIndex)),
+			               Times.Once);
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			var source = new InMemoryLogFile();
+			return new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var source = new InMemoryLogFile(content);
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+			return logFile;
 		}
 	}
 }

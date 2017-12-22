@@ -50,7 +50,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			new Action(() => _control.OnSizeChanged()).ShouldNotThrow();
 
-			_control.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 0));
+			_control.CurrentlyVisibleSection.Should().Equal(new LogFileSection(0, 0));
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.CurrentLine = 600;
 
 			var section = _control.CalculateVisibleSection();
-			section.Should().Be(new LogFileSection(0, 1), "because the control should clamp the visible section until something better becomes available");
+			section.Should().Equal(new LogFileSection(0, 1), "because the control should clamp the visible section until something better becomes available");
 		}
 
 		[Test]

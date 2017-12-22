@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -13,6 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class InMemoryLogFileTest
+		: AbstractLogFileTest
 	{
 		private Mock<ILogFileListener> _listener;
 		private List<LogFileSection> _modifications;
@@ -33,6 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction1()
 		{
 			var logFile = new InMemoryLogFile();
+			logFile.Columns.Should().Equal(LogFileColumns.Minimum);
 			logFile.Size.Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
@@ -43,12 +44,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestConstruction2()
+		{
+			var logFile = new InMemoryLogFile(LogFileColumns.ElapsedTime);
+			logFile.Columns.Should().Equal(LogFileColumns.Minimum, "because a log file should never offer less columns than the minimum set");
+		}
+
+		[Test]
 		public void TestAddEntry1()
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.Count.Should().Be(1);
 			logFile.MaxCharactersPerLine.Should().Be(13);
+			logFile.StartTimestamp.Should().BeNull();
 		}
 
 		[Test]
@@ -60,6 +69,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(2);
 			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0)));
 			logFile.GetLine(1).Should().Be(new LogLine(1, 1, " World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2)));
+			logFile.StartTimestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
 		}
 
 		[Test]
@@ -96,6 +106,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					LogFileSection.Reset,
 					new LogFileSection(0, 1)
 				});
+		}
+
+		[Test]
+		public void TestAddEntry6()
+		{
+			var logFile = new InMemoryLogFile(LogFileColumns.LogLevel);
+
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.LogLevel, LevelFlags.Error);
+			logFile.Add(logEntry);
+
+			var buffer = new LogEntryBuffer(1, LogFileColumns.LogLevel);
+			logFile.GetEntries(new LogFileSection(0, 1), buffer);
+			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}
 
 		[Test]
@@ -257,88 +281,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetOriginalIndexFrom1()
-		{
-			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.GetOriginalIndexFrom(0).Should().Be(new LogLineIndex(0));
-			logFile.GetOriginalIndexFrom(1).Should().Be(new LogLineIndex(1));
-			logFile.Clear();
-			logFile.GetOriginalIndexFrom(0).Should().Be(LogLineIndex.Invalid);
-			logFile.GetOriginalIndexFrom(1).Should().Be(LogLineIndex.Invalid);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			var indices = new LogLineIndex[4];
-
-			var logFile = new InMemoryLogFile();
-			logFile.GetOriginalIndicesFrom(new LogFileSection(0, 4), indices);
-			indices.Should().Equal(Enumerable.Range(0, 4).Select(i => LogLineIndex.Invalid));
-
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.AddEntry("", LevelFlags.All);
-			logFile.AddEntry("", LevelFlags.All);
-
-			logFile.GetOriginalIndicesFrom(new LogFileSection(1, 3), indices);
-			indices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), LogLineIndex.Invalid, LogLineIndex.Invalid);
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(), null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom3()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogFileSection(1, 4), new LogLineIndex[3]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom4()
-		{
-			var logFile = new InMemoryLogFile();
-			var originalIndices = new LogLineIndex[3];
-			logFile.GetOriginalIndicesFrom(new LogLineIndex[] {1, 2, 3}, originalIndices);
-			originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3));
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom5()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom6()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom7()
-		{
-			var logFile = new InMemoryLogFile();
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
-		}
-
-		[Test]
 		public void TestGetEntriesEmpty()
 		{
 			var logFile = new InMemoryLogFile();
@@ -405,7 +347,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("elapsed time and delta time not implemented yet...")]
 		public void TestGetEntriesWithMinimumColumns()
 		{
 			var logFile = new InMemoryLogFile();
@@ -415,11 +356,42 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.Minimum);
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries.Columns.Should().Equal(LogFileColumns.Minimum);
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
 			entries[1].Timestamp.Should().Be(new DateTime(2017, 12, 12, 00, 12, 0));
+		}
+		
+		[Test]
+		public void TestGetEntriesWithElapsedTimeColumns()
+		{
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Debug, new DateTime(2017, 12, 12, 00, 11, 0));
+			logFile.AddEntry("", LevelFlags.Info);
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
+			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 20, 17, 01, 0));
+
+			var entries = logFile.GetEntries(new LogFileSection(0, 5), LogFileColumns.ElapsedTime);
+			entries.Count.Should().Be(5);
+			entries.Columns.Should().Equal(LogFileColumns.ElapsedTime);
+			entries[0].ElapsedTime.Should().Be(null);
+			entries[1].ElapsedTime.Should().Be(null);
+			entries[2].ElapsedTime.Should().Be(null);
+			entries[3].ElapsedTime.Should().Be(TimeSpan.FromMinutes(1));
+			entries[4].ElapsedTime.Should().Be(TimeSpan.FromDays(8)+TimeSpan.FromHours(16)+TimeSpan.FromMinutes(50));
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			return new InMemoryLogFile();
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var logFile = new InMemoryLogFile(content);
+			return logFile;
 		}
 	}
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -7,8 +10,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Basically a handle to a specific portion of the logfile.
 	///     Call <see cref="ILogFile.GetSection" /> to actually obtain the data for that portion.
 	/// </summary>
+	/// <remarks>
+	/// TODO: Rename to LogEntryRange as it will soon describe a range of log entries, see #140
+	/// </remarks>
 	public struct LogFileSection
 		: IEquatable<LogFileSection>
+		, IReadOnlyList<LogLineIndex>
 	{
 		/// <summary>
 		/// This value is used to represent a section which does not exist.
@@ -44,11 +51,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="index"></param>
 		/// <param name="count"></param>
 		/// <returns></returns>
+		[DebuggerStepThrough]
 		public static LogFileSection Invalidate(LogLineIndex index, int count)
 		{
 			return new LogFileSection(index, count, true);
 		}
 
+		[DebuggerStepThrough]
 		private LogFileSection(LogLineIndex index, int count, bool isInvalidate)
 		{
 			if (count < 0)
@@ -65,6 +74,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="count"></param>
+		[DebuggerStepThrough]
 		public LogFileSection(LogLineIndex index, int count)
 		{
 			if (count < 0)
@@ -120,6 +130,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IEnumerator<LogLineIndex> GetEnumerator()
+		{
+			return new LogFileSectionEnumerator(Index, Count);
+		}
+
+		/// <inheritdoc />
 		public override string ToString()
 		{
 			if (Index == LogLineIndex.Invalid && Count == 0)
@@ -163,6 +179,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			}
 		}
 
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
 		/// <summary>
 		///     Compares the two given sections for equality.
 		/// </summary>
@@ -183,6 +204,64 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public static bool operator !=(LogFileSection left, LogFileSection right)
 		{
 			return !left.Equals(right);
+		}
+
+		sealed class LogFileSectionEnumerator
+			: IEnumerator<LogLineIndex>
+		{
+			private readonly LogLineIndex _start;
+			private readonly int _count;
+			private int _i;
+
+			public LogFileSectionEnumerator(LogLineIndex start, int count)
+			{
+				_start = start;
+				_count = count;
+				Reset();
+			}
+
+			public void Dispose()
+			{}
+
+			public bool MoveNext()
+			{
+				if (++_i >= _count)
+					return false;
+
+				return true;
+			}
+
+			public void Reset()
+			{
+				_i = -1;
+			}
+
+			public LogLineIndex Current
+			{
+				get
+				{
+					if (_i < 0 || _i >= _count)
+						throw new InvalidOperationException();
+
+					return _start + _i;
+				}
+			}
+
+			object IEnumerator.Current => Current;
+		}
+
+		int IReadOnlyCollection<LogLineIndex>.Count => Count;
+
+		/// <inheritdoc />
+		public LogLineIndex this[int index]
+		{
+			get
+			{
+				if (index < 0 || index >= Count)
+					throw new IndexOutOfRangeException();
+
+				return Index + index;
+			}
 		}
 	}
 }

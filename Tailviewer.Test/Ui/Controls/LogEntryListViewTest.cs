@@ -26,7 +26,7 @@ namespace Tailviewer.Test.Ui.Controls
 		private List<ILogFileListener> _listeners;
 		private TestKeyboard _keyboard;
 		private TestMouse _mouse;
-		private LogEntryDeltaTimeColumn _deltaTimesColumn;
+		private DeltaTimeColumnPresenter _deltaTimesColumn;
 
 		[SetUp]
 		public void SetUp()
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.Ui.Controls
 					                                   new LogFileSection(0, _lines.Count));
 				        });
 
-			_deltaTimesColumn = (LogEntryDeltaTimeColumn)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
+			_deltaTimesColumn = (DeltaTimeColumnPresenter)typeof(LogEntryListView).GetField("_deltaTimesColumn", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_control);
 		}
 
 		[Test]
@@ -475,7 +475,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] {new LogLineIndex(199)});
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(150, 50));
 			_control.FollowTail.Should().BeTrue("because scrolling down to the last line shall automatically enable follow tail");
 		}
 
@@ -492,12 +492,12 @@ namespace Tailviewer.Test.Ui.Controls
 			_keyboard.Press(Key.LeftCtrl);
 			_keyboard.Click(_control.PartTextCanvas, Key.End);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(199) });
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(150, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(150, 50));
 			_control.FollowTail.Should().BeTrue();
 
 			_keyboard.Click(_control.PartTextCanvas, Key.Home);
 			_control.SelectedIndices.Should().Equal(new object[] { new LogLineIndex(0) });
-			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Be(new LogFileSection(0, 50));
+			_control.PartTextCanvas.CurrentlyVisibleSection.Should().Equal(new LogFileSection(0, 50));
 			_control.FollowTail.Should().BeFalse();
 		}
 	}

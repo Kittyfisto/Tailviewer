@@ -51,5 +51,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex"></param>
 		/// <param name="length"></param>
 		void FillDefault(ILogFileColumn column, int destinationIndex, int length);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		new ILogEntry this[int index] { get; }
 	}
 }

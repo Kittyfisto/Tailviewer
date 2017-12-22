@@ -12,15 +12,15 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class LineNumberColumnTest
+	public sealed class OriginalLineNumberColumnPresenter
 	{
-		private LineNumberColumn _column;
+		private Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter _column;
 		private InMemoryLogFile _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			_column = new LineNumberColumn();
+			_column = new Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter();
 
 			_logFile = new InMemoryLogFile();
 		}
@@ -31,11 +31,11 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			const int count = 10;
 			AddLines(count);
 
-			_column.UpdateLineNumbers(_logFile, new LogFileSection(0, count), 0);
+			_column.FetchValues(_logFile, new LogFileSection(0, count), 0);
 			var numbers = _column.LineNumbers;
 			numbers.Should().NotBeNull();
 			numbers.Should().HaveCount(count);
-			numbers.Should().Equal(Enumerable.Range(0, count).Select(i => new LineNumber(i)));
+			numbers.Should().Equal(Enumerable.Range(0, count).Select(i => new LineNumberPresenter(i+1)));
 		}
 
 		[Test]
@@ -45,21 +45,23 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(4);
 			logFile.Setup(x => x.OriginalCount).Returns(1000);
-			logFile.Setup(x => x.GetOriginalIndicesFrom(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-					It.IsAny<LogLineIndex[]>()))
-				.Callback((LogFileSection section, LogLineIndex[] indices) =>
+			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
+			                               It.Is<ILogFileColumn<int>>(y => y == LogFileColumns.OriginalLineNumber),
+										   It.IsAny<int[]>(),
+			                               It.IsAny<int>()))
+				.Callback((LogFileSection section, ILogFileColumn<int> unused, int[] indices, int unused2) =>
 				{
-					indices[0] = new LogLineIndex(42);
-					indices[1] = new LogLineIndex(101);
-					indices[2] = new LogLineIndex(255);
-					indices[3] = new LogLineIndex(512);
+					indices[0] = 42;
+					indices[1] = 101;
+					indices[2] = 255;
+					indices[3] = 512;
 				});
-			_column.UpdateLineNumbers(logFile.Object, new LogFileSection(0, 4), 0);
+			_column.FetchValues(logFile.Object, new LogFileSection(0, 4), 0);
 			_column.Width.Should().BeApproximately(24.8, 0.1, "because the canvas should reserve space for the original line count, which is 4 digits");
-			_column.LineNumbers.Should().Equal(new LineNumber(42),
-				new LineNumber(101),
-				new LineNumber(255),
-				new LineNumber(512));
+			_column.LineNumbers.Should().Equal(new LineNumberPresenter(42),
+				new LineNumberPresenter(101),
+				new LineNumberPresenter(255),
+				new LineNumberPresenter(512));
 		}
 
 		private void AddLines(int count)

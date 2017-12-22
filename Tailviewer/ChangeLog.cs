@@ -54,7 +54,8 @@ namespace Tailviewer
 			var features = new[]
 			{
 				"Navigate to data source (CTRL+T)",
-				"Go to line (CTRL+G)"
+				"Go to line (CTRL+G)",
+				"Added \"delta times\" column"
 			};
 			var bugfixes = new[]
 			{

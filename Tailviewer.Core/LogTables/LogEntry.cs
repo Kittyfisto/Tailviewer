@@ -13,6 +13,7 @@ namespace Tailviewer.Core.LogTables
 	/// <remarks>
 	///     A row consists of a list of fields where each field represents the cell at the n-th row and m-th column.
 	/// </remarks>
+	[WillBeRemoved]
 	public struct LogEntry
 		: IEquatable<LogEntry>
 	{

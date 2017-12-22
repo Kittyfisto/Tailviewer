@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace Tailviewer.Core.LogFiles
 	///     Two lines are defined to belong together if the first line contains a log
 	///     level and the next one does not.
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class MultiLineLogFile
 		: AbstractLogFile
 			, ILogFileListener
@@ -27,6 +29,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int MaximumBatchSize = 10000;
 
+		private readonly object _syncRoot;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -40,6 +43,7 @@ namespace Tailviewer.Core.LogFiles
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
 		private LevelFlags _currentLogEntryLevel;
 
 		private DateTime _created;
@@ -60,6 +64,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			//_allModifications = new List<LogFileSection>();
+			_syncRoot = new object();
 			_indices = new List<LogEntryInfo>();
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 			
@@ -72,10 +77,16 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
+		public override IReadOnlyList<ILogFileColumn> Columns => _source.Columns;
+
+		/// <inheritdoc />
 		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override DateTime? StartTimestamp => _startTimestamp;
+		
+		/// <inheritdoc />
+		public override DateTime? EndTimestamp => _endTimestamp;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -108,32 +119,68 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			_source.GetColumn(section, column, buffer);
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + section.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
+			if (Equals(column, LogFileColumns.Timestamp))
+			{
+				var firstLineIndices = GetFirstLineIndices(section);
+				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);
+			}
+			else
+			{
+				_source.GetColumn(section, column, buffer, destinationIndex);
+			}
 		}
 
 		/// <inheritdoc />
 		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			_source.GetColumn(indices, column, buffer);
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + indices.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
+			if (Equals(column, LogFileColumns.Timestamp))
+			{
+				var firstLineIndices = GetFirstLineIndices(indices);
+				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);
+			}
+			else
+			{
+				_source.GetColumn(indices, column, buffer, destinationIndex);
+			}
 		}
 
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			_source.GetEntries(section, buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			_source.GetEntries(indices, buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			_source.GetSection(section, dest);
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				for (var i = 0; i < section.Count; ++i)
 					dest[i] = PatchNoLock(dest[i]);
@@ -146,7 +193,7 @@ namespace Tailviewer.Core.LogFiles
 			var actualLine = _source.GetLine(index);
 			LogLine line;
 
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				line = PatchNoLock(actualLine);
 			}
@@ -216,7 +263,7 @@ namespace Tailviewer.Core.LogFiles
 				_source.GetSection(new LogFileSection(_currentSourceIndex, remaining), buffer);
 				LogLineIndex? resetIndex = null;
 
-				lock (_indices)
+				lock (_syncRoot)
 				{
 					for (var i = 0; i < remaining; ++i)
 					{
@@ -252,6 +299,7 @@ namespace Tailviewer.Core.LogFiles
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 			_error = _source.Error;
 			_startTimestamp = _source.StartTimestamp;
+			_endTimestamp = _source.EndTimestamp;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;
 			_fileSize = _source.Size;
@@ -273,6 +321,32 @@ namespace Tailviewer.Core.LogFiles
 				return TimeSpan.Zero;
 
 			return _maximumWaitTime;
+		}
+
+		private IReadOnlyList<LogLineIndex> GetFirstLineIndices(IReadOnlyList<LogLineIndex> indices)
+		{
+			lock (_syncRoot)
+			{
+				var firstLineIndices = new List<LogLineIndex>(indices.Count);
+				foreach (var index in indices)
+				{
+					var entryInfo = TryGetLogEntryInfo(index);
+					if (entryInfo != null)
+						firstLineIndices.Add(entryInfo.Value.FirstLineIndex);
+					else
+						firstLineIndices.Add(LogLineIndex.Invalid);
+				}
+				return firstLineIndices;
+			}
+		}
+
+		private LogEntryInfo? TryGetLogEntryInfo(LogLineIndex logLineIndex)
+		{
+			if (logLineIndex >= 0 && logLineIndex < _indices.Count)
+			{
+				return _indices[(int) logLineIndex];
+			}
+			return null;
 		}
 
 		private void Invalidate(LogFileSection section)
@@ -299,7 +373,7 @@ namespace Tailviewer.Core.LogFiles
 				_currentSourceIndex = 0;
 			}
 
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				var toRemove = _indices.Count - lastInvalidIndex;
 				if (toRemove > 0)
@@ -327,7 +401,7 @@ namespace Tailviewer.Core.LogFiles
 			_fullSourceSection = new LogFileSection(0, 0);
 			_currentSourceIndex = 0;
 			_currentLogEntry = new LogEntryInfo(-1, 0);
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				_indices.Clear();
 			}

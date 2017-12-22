@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Tailviewer.Core.Settings;
-using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls
 {

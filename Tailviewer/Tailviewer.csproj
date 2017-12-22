@@ -187,8 +187,12 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
-    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeEntry.cs" />
-    <Compile Include="Ui\Controls\LogView\DeltaTimes\LogEntryDeltaTimeColumn.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -269,8 +273,8 @@
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumber.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberColumn.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
     <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
@@ -609,6 +613,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
+    <Folder Include="Ui\Controls\LogView\DataSource\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

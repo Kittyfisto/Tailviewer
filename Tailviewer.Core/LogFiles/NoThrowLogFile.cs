@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Metrolib;
@@ -14,6 +15,7 @@ namespace Tailviewer.Core.LogFiles
 	///     rely on that to never happen. This implementation guarantuees the nothrow contract and also
 	///     writes warnings to the log file.
 	/// </summary>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class NoThrowLogFile
 		: ILogFile
 	{
@@ -64,6 +66,23 @@ namespace Tailviewer.Core.LogFiles
 				try
 				{
 					return _logFile.StartTimestamp;
+				}
+				catch (Exception e)
+				{
+					BlameExceptionOnPlugin(e);
+					return null;
+				}
+			}
+		}
+
+		/// <inheritdoc />
+		public DateTime? EndTimestamp
+		{
+			get
+			{
+				try
+				{
+					return _logFile.EndTimestamp;
 				}
 				catch (Exception e)
 				{
@@ -210,6 +229,23 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IReadOnlyList<ILogFileColumn> Columns
+		{
+			get
+			{
+				try
+				{
+					return _logFile.Columns;
+				}
+				catch (Exception e)
+				{
+					BlameExceptionOnPlugin(e);
+					return new ILogFileColumn[0];
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			try
@@ -238,6 +274,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + section.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			try
 			{
 				_logFile.GetColumn(section, column, buffer, destinationIndex);
@@ -251,6 +296,17 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + indices.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			try
 			{
 				_logFile.GetColumn(indices, column, buffer, destinationIndex);
@@ -342,46 +398,6 @@ namespace Tailviewer.Core.LogFiles
 			{
 				BlameExceptionOnPlugin(e);
 				return new LogLineIndex();
-			}
-		}
-
-		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			try
-			{
-				return _logFile.GetOriginalIndexFrom(index);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-				return new LogLineIndex();
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			try
-			{
-				_logFile.GetOriginalIndicesFrom(section, originalIndices);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			try
-			{
-				_logFile.GetOriginalIndicesFrom(indices, originalIndices);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
 			}
 		}
 

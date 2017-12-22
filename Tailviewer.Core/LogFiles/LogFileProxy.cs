@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -18,6 +19,7 @@ namespace Tailviewer.Core.LogFiles
 	///     Exists so that specialized <see cref="ILogFile" /> implementations don't need to be concerned about re-use
 	///     or certain changes (i.e. <see cref="FilteredLogFile" /> doesn't need to implement the change of a filter).
 	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class LogFileProxy
 		: ILogFile
 		, ILogFileListener
@@ -152,6 +154,9 @@ namespace Tailviewer.Core.LogFiles
 		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
 
 		/// <inheritdoc />
+		public DateTime? EndTimestamp => _innerLogFile?.EndTimestamp;
+
+		/// <inheritdoc />
 		public DateTime LastModified => _innerLogFile?.LastModified ?? DateTime.MinValue;
 
 		/// <inheritdoc />
@@ -236,6 +241,19 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IReadOnlyList<ILogFileColumn> Columns
+		{
+			get
+			{
+				ILogFile logFile = _innerLogFile;
+				if (logFile != null)
+					return logFile.Columns;
+
+				return LogFileColumns.Minimum;
+			}
+		}
+
+		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
@@ -260,6 +278,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + section.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
@@ -267,16 +294,24 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					buffer[i] = default(T);
-				}
+				buffer.Fill(column.DefaultValue, destinationIndex, section.Count);
 			}
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+			if (destinationIndex + indices.Count > buffer.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
@@ -284,7 +319,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				buffer.Fill(default(T), 0, indices.Count);
+				buffer.Fill(column.DefaultValue, destinationIndex, indices.Count);
 			}
 		}
 
@@ -346,62 +381,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			return LogLineIndex.Invalid;
-		}
-
-		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			var logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				return logFile.GetOriginalIndexFrom(index);
-			}
-
-			return LogLineIndex.Invalid;
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (section.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			var logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				logFile.GetOriginalIndicesFrom(section, originalIndices);
-			}
-			else
-			{
-				for(int i = 0; i < section.Count; ++i)
-					originalIndices[i] = LogLineIndex.Invalid;
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException();
-
-			var logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				logFile.GetOriginalIndicesFrom(indices, originalIndices);
-			}
-			else
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					originalIndices[i] = LogLineIndex.Invalid;
-				}
-			}
 		}
 
 		/// <inheritdoc />

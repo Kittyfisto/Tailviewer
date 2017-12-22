@@ -14,7 +14,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="column"></param>
 		public NoSuchColumnException(ILogFileColumn column)
-			: base(string.Format("There is no column with the id '{0}'", column.Id))
+			: base(string.Format("No such column: '{0}'", column.Id))
 		{
 		}
 	}

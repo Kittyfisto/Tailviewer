@@ -13,6 +13,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class MergedLogFileTest
+		: AbstractLogFileTest
 	{
 		private ManualTaskScheduler _taskScheduler;
 
@@ -283,8 +284,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			data.Should().Equal(new LogLine(new LogLineSourceId(1), source1[0]));
 
 			int count = changes.Count;
-			changes.ElementAt(count - 2).Should().Be(LogFileSection.Reset);
-			changes.ElementAt(count - 1).Should().Be(new LogFileSection(0, 1));
+			changes.ElementAt(count - 2).Should().Equal(LogFileSection.Reset);
+			changes.ElementAt(count - 1).Should().Equal(new LogFileSection(0, 1));
 		}
 
 		[Test]
@@ -476,29 +477,105 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			GC.KeepAlive(logFile);
 		}
 
+		#region Well Known Columns
+
+		#region Original Index
+
 		[Test]
-		public void TestGetOriginalIndicesFrom5()
+		public void TestGetOriginalIndicesBySection2()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-				.ShouldThrow<ArgumentNullException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Index);
+			lineNumbers[0].Should().Be(0);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalIndex);
+			lineNumbers[0].Should().Be(0);
+			lineNumbers[1].Should().Be(1);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom6()
+		public void TestGetOriginalIndexByIndices()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-				.ShouldThrow<ArgumentNullException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.Index);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(0);
+
+			lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalIndex);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(0);
+		}
+
+		#endregion
+
+		#region Line Number / Original Line Number
+
+		[Test]
+		public void TestGetLineNumbersBySection()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
+
+			lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom7()
+		public void TestGetLineNumbersByIndices()
 		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromSeconds(1), new InMemoryLogFile());
-			new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-				.ShouldThrow<ArgumentOutOfRangeException>();
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+
+			var source2 = new InMemoryLogFile();
+			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(2);
+
+			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
 		}
+
+		#endregion
+
+		#region Timestamp
 
 		[Test]
 		[Description("Verifies that a continuous section of values can be retrieved for one column")]
@@ -559,30 +636,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			buffer[offset + 1].Should().Be(source.GetLine(1).Timestamp);
 		}
 
-		[Test]
-		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
-		public void TestGetDeltaTimesEmpty([Range(0, 5)] int count,
-										   [Range(0, 3)] int offset)
-		{
-			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, new InMemoryLogFile());
+		#endregion
 
-			var buffer = new TimeSpan?[offset + count];
-			for (int i = 0; i < offset + count; ++i)
-			{
-				buffer[i] = TimeSpan.FromDays(1);
-			}
-
-			logFile.GetColumn(new LogFileSection(0, count), LogFileColumns.DeltaTime, buffer, offset);
-
-			for (int i = 0; i < offset; ++i)
-			{
-				buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
-			}
-			for (int i = 0; i < count; ++i)
-			{
-				buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
-			}
-		}
+		#region Delta Time
 
 		[Test]
 		public void TestGetDeltaTimesOneSource1()
@@ -618,6 +674,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				TimeSpan.FromSeconds(83),
 				null
 			});
+		}
+
+		#endregion
+
+		#endregion
+
+		protected override ILogFile CreateEmpty()
+		{
+			return new MergedLogFile(_taskScheduler, TimeSpan.Zero);
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var source = new InMemoryLogFile(content);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
+			_taskScheduler.RunOnce();
+			return merged;
 		}
 	}
 }

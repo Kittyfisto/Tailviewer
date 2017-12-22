@@ -26,6 +26,7 @@ namespace Tailviewer.Settings
 		public bool FollowTail;
 		public bool ShowLineNumbers;
 		public bool ShowDeltaTimes;
+		public bool ShowElapsedTime;
 		public bool IsExpanded;
 
 		/// <summary>
@@ -99,6 +100,8 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("file", File);
 			writer.WriteAttributeBool("followtail", FollowTail);
 			writer.WriteAttributeBool("showlinenumbers", ShowLineNumbers);
+			writer.WriteAttributeBool("showdeltatimes", ShowDeltaTimes);
+			writer.WriteAttributeBool("showelapsedtime", ShowElapsedTime);
 			writer.WriteAttributeString("searchterm", SearchTerm);
 			writer.WriteAttributeEnum("levelfilter", LevelFilter);
 			writer.WriteAttributeBool("colorbylevel", ColorByLevel);
@@ -141,6 +144,14 @@ namespace Tailviewer.Settings
 
 					case "showlinenumbers":
 						ShowLineNumbers = reader.ReadContentAsBool();
+						break;
+
+					case "showdeltatimes":
+						ShowDeltaTimes = reader.ReadContentAsBool();
+						break;
+
+					case "showelapsedtime":
+						ShowElapsedTime = reader.ReadContentAsBool();
 						break;
 
 					case "stringfilter":
@@ -273,6 +284,8 @@ namespace Tailviewer.Settings
 				ParentId = ParentId,
 				SearchTerm = SearchTerm,
 				ShowLineNumbers = ShowLineNumbers,
+				ShowDeltaTimes = ShowDeltaTimes,
+				ShowElapsedTime = ShowElapsedTime,
 				VisibleLogLine = VisibleLogLine,
 				IsExpanded = IsExpanded,
 				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode,

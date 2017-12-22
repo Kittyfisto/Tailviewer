@@ -72,6 +72,9 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column)
 		{
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+
 			var cells = new T[indices.Count];
 			logFile.GetColumn(indices, column, cells);
 			return cells;

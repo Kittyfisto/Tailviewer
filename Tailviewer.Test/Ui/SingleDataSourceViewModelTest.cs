@@ -29,11 +29,11 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestCtor1()
+		public void TestConstruction1()
 		{
 			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
-			{
-				Id = DataSourceId.CreateNew()
+				{
+					Id = DataSourceId.CreateNew()
 			};
 			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestCtor2()
+		public void TestConstruction2()
 		{
 			using (
 				var source = new SingleDataSource(_scheduler,
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
-		public void TestCtor3([Values(true, false)] bool showDeltaTimes)
+		public void TestConstruction3([Values(true, false)] bool showDeltaTimes)
 		{
 			using (var source = new SingleDataSource(_scheduler, new DataSource
 			{
@@ -74,6 +74,47 @@ namespace Tailviewer.Test.Ui
 			{
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
+			}
+		}
+
+		[Test]
+		public void TestConstruction4([Values(true, false)] bool showElapsedTime)
+		{
+			using (var source = new SingleDataSource(_scheduler, new DataSource
+			{
+				Id = DataSourceId.CreateNew(),
+				File = @"C:\temp\foo.txt",
+				ShowElapsedTime = showElapsedTime
+			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			{
+				var model = new SingleDataSourceViewModel(source);
+				model.ShowElapsedTime.Should().Be(showElapsedTime);
+			}
+		}
+
+		[Test]
+		public void TestChangeShowElapsedTime([Values(true, false)] bool showElapsedTime)
+		{
+			using (var source = new SingleDataSource(_scheduler, new DataSource
+			{
+				Id = DataSourceId.CreateNew(),
+				File = @"C:\temp\foo.txt",
+				ShowElapsedTime = showElapsedTime
+			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			{
+				var model = new SingleDataSourceViewModel(source);
+
+				var changes = new List<string>();
+				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+
+				model.ShowElapsedTime = !showElapsedTime;
+				changes.Should().Equal(new object[] {"ShowElapsedTime"}, "because the property should've changed once");
+
+				model.ShowElapsedTime = !showElapsedTime;
+				changes.Should().Equal(new object[] { "ShowElapsedTime" }, "because the property didn't change");
+
+				model.ShowElapsedTime = showElapsedTime;
+				changes.Should().Equal(new object[] { "ShowElapsedTime", "ShowElapsedTime" }, "because the property changed a 2nd time");
 			}
 		}
 
@@ -151,8 +192,8 @@ namespace Tailviewer.Test.Ui
 		public void TestSetQuickFilterChain1()
 		{
 			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
-			{
-				Id = DataSourceId.CreateNew()
+				{
+					Id = DataSourceId.CreateNew()
 			};
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{

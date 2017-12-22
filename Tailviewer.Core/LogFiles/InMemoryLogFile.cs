@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using log4net;
 using Metrolib;
@@ -9,13 +10,17 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     TODO: Use this implementation is tests, where applicable (should reduce number of mocks...).
+	///     A <see cref="ILogFile"/> implementation which buffers the entire contents in memory.
 	/// </summary>
+	/// <remarks>
+	///     Should only be used for log files which's content actually fits into memory.
+	/// </remarks>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class InMemoryLogFile
 		: ILogFile
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private readonly List<LogLine> _lines;
+		private readonly LogEntryList _logEntries;
 		private readonly LogFileListenerCollection _listeners;
 
 		private readonly object _syncRoot;
@@ -24,10 +29,39 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogFile()
+			: this(LogFileColumns.Minimum)
+		{ }
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="columns"></param>
+		public InMemoryLogFile(params ILogFileColumn[] columns)
+			: this((IEnumerable < ILogFileColumn > )columns)
+		{}
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="columns"></param>
+		public InMemoryLogFile(IEnumerable<ILogFileColumn> columns)
 		{
+			if (columns == null)
+				throw new ArgumentNullException(nameof(columns));
+
 			_syncRoot = new object();
-			_lines = new List<LogLine>();
+			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
+		}
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="content"></param>
+		public InMemoryLogFile(IReadOnlyLogEntries content)
+			: this(content.Columns)
+		{
+			AddRange(content);
 		}
 
 		/// <inheritdoc />
@@ -37,6 +71,9 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public DateTime? StartTimestamp { get; private set; }
+		
+		/// <inheritdoc />
+		public DateTime? EndTimestamp { get; private set; }
 
 		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
@@ -54,13 +91,16 @@ namespace Tailviewer.Core.LogFiles
 		public bool EndOfSourceReached => true;
 
 		/// <inheritdoc />
-		public int Count => _lines.Count;
+		public int Count => _logEntries.Count;
 
 		/// <inheritdoc />
 		public int OriginalCount => Count;
 
 		/// <inheritdoc />
 		public int MaxCharactersPerLine { get; private set; }
+
+		/// <inheritdoc />
+		public IReadOnlyList<ILogFileColumn> Columns => _logEntries.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -77,57 +117,29 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
-			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
-			if (Equals(column, LogFileColumns.RawContent))
-			{
-				GetRawContent(section, (string[])(object)buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.Index) ||
-			         Equals(column, LogFileColumns.OriginalIndex))
-			{
-				GetIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.LineNumber) ||
-			         Equals(column, LogFileColumns.OriginalLineNumber))
-			{
-				GetLineNumbers(section, (int[])(object)buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.Timestamp))
-			{
-				GetTimestamps(section, (DateTime?[])(object)buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.LogLevel))
-			{
-				GetLogLevel(section, (LevelFlags[])(object)buffer, destinationIndex);
-			}
-			else
-			{
-				throw new NoSuchColumnException(column);
-			}
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+			_logEntries.CopyTo(column, (int)section.Index, buffer, destinationIndex, section.Count);
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			// TODO: Once LogLine has been removed, then this entire piece of code can be removed
-			//       as InMemoryLogFile can simply use an ILogEntries implementation for storage...
-			if (Equals(column, LogFileColumns.RawContent))
-			{
-				GetRawContent(indices, (string[])(object)buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.Timestamp))
-			{
-				GetTimestamps(indices, (DateTime?[])(object)buffer, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.LogLevel))
-			{
-				GetLogLevel(indices, (LevelFlags[])(object)buffer, destinationIndex);
-			}
-			else
-			{
-				throw new NoSuchColumnException(column);
-			}
+			if (indices == null)
+				throw new ArgumentNullException(nameof(indices));
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (buffer == null)
+				throw new ArgumentNullException(nameof(buffer));
+			if (destinationIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+			_logEntries.CopyTo(column, new Int32View(indices), buffer, destinationIndex);
 		}
 
 		/// <inheritdoc />
@@ -150,122 +162,27 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private void GetIndices(LogFileSection section, LogEntryIndex[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					buffer[i] = TryGetLogLine(index)?.LogEntryIndex ?? LogEntryIndex.Invalid;
-				}
-			}
-		}
-
-		private void GetLineNumbers(LogFileSection section, int[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					buffer[destinationIndex + i] = (int) (index + 1);
-				}
-			}
-		}
-
-		private void GetLogLevel(LogFileSection section, LevelFlags[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					buffer[destinationIndex + i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
-				}
-			}
-		}
-
-		private void GetLogLevel(IReadOnlyList<LogLineIndex> indices, LevelFlags[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					buffer[destinationIndex + i] = TryGetLogLine(index)?.Level ?? LevelFlags.None;
-				}
-			}
-		}
-
-		private void GetRawContent(LogFileSection section, string[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					buffer[destinationIndex + i] = TryGetLogLine(index)?.Message;
-				}
-			}
-		}
-
-		private void GetRawContent(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					buffer[destinationIndex + i] = TryGetLogLine(index)?.Message;
-				}
-			}
-		}
-
-		private void GetTimestamps(LogFileSection section, DateTime?[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					buffer[destinationIndex + i] = TryGetLogLine(index)?.Timestamp;
-				}
-			}
-		}
-
-		private void GetTimestamps(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					buffer[destinationIndex+i] = TryGetLogLine(index)?.Timestamp;
-				}
-			}
-		}
-
-		private LogLine? TryGetLogLine(LogLineIndex index)
-		{
-			if (index < 0 || index >= _lines.Count)
-			{
-				if (Log.IsDebugEnabled)
-					Log.DebugFormat("{0}: Row {1} doesn't exist", this, index);
-
-				return null;
-			}
-
-			return _lines[index.Value];
-		}
-
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
 			lock (_syncRoot)
 			{
-				_lines.CopyTo((int) section.Index, dest, 0, section.Count);
+				for (int i = 0; i < section.Count; ++i)
+				{
+					var line = CreateLogLine(_logEntries[(int)(section.Index + i)]);
+					dest[i] = line;
+				}
 			}
+		}
+
+		private LogLine CreateLogLine(IReadOnlyLogEntry logEntry)
+		{
+			return new LogLine((int)logEntry.Index,
+							   (int)logEntry.OriginalIndex,
+							   (int)logEntry.LogEntryIndex,
+							   logEntry.RawContent,
+							   logEntry.LogLevel,
+							   logEntry.Timestamp);
 		}
 
 		/// <inheritdoc />
@@ -273,7 +190,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				if (originalLineIndex >= _lines.Count)
+				if (originalLineIndex >= _logEntries.Count)
 				{
 					return LogLineIndex.Invalid;
 				}
@@ -283,62 +200,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public LogLineIndex GetOriginalIndexFrom(LogLineIndex index)
-		{
-			lock (_syncRoot)
-			{
-				if (index >= _lines.Count)
-				{
-					return LogLineIndex.Invalid;
-				}
-
-				return index;
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(LogFileSection section, LogLineIndex[] originalIndices)
-		{
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (originalIndices.Length < section.Count)
-				throw new ArgumentOutOfRangeException(nameof(originalIndices));
-
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					if (index >= _lines.Count)
-						originalIndices[i] = LogLineIndex.Invalid;
-					else
-						originalIndices[i] = index;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetOriginalIndicesFrom(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] originalIndices)
-		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
-			if (originalIndices == null)
-				throw new ArgumentNullException(nameof(originalIndices));
-			if (indices.Count > originalIndices.Length)
-				throw new ArgumentOutOfRangeException();
-
-			for (int i = 0; i < indices.Count; ++i)
-			{
-				originalIndices[i] = indices[i];
-			}
-		}
-
-		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
 			lock (_syncRoot)
 			{
-				return _lines[index];
+				return CreateLogLine(_logEntries[index]);
 			}
 		}
 
@@ -352,9 +218,9 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				if (_lines.Count > 0)
+				if (_logEntries.Count > 0)
 				{
-					_lines.Clear();
+					_logEntries.Clear();
 					MaxCharactersPerLine = 0;
 					StartTimestamp = null;
 					Touch();
@@ -378,15 +244,15 @@ namespace Tailviewer.Core.LogFiles
 					return;
 				}
 
-				if (index > _lines.Count)
+				if (index > _logEntries.Count)
 				{
-					Log.WarnFormat("Invalid index '{0}', Count is '{1}'", index, _lines.Count);
+					Log.WarnFormat("Invalid index '{0}', Count is '{1}'", index, _logEntries.Count);
 					return;
 				}
 
-				var available = _lines.Count - index;
-				_lines.RemoveRange((int) index, available);
-				_listeners.Invalidate((int) index, available);
+				var available = _logEntries.Count - index;
+				_logEntries.RemoveRange((int)index, available);
+				_listeners.Invalidate((int)index, available);
 				Touch();
 			}
 		}
@@ -402,7 +268,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="rawContent"></param>
 		public void AddEntry(string rawContent)
 		{
-			AddEntry(rawContent, LevelFlags.None);
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -412,7 +280,10 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="level"></param>
 		public void AddEntry(string rawContent, LevelFlags level)
 		{
-			AddEntry(rawContent, level, null);
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			logEntry.Add(LogFileColumns.LogLevel, level);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -423,26 +294,11 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="timestamp"></param>
 		public void AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
-			lock (_syncRoot)
-			{
-				int logEntryIndex;
-				if (_lines.Count > 0)
-				{
-					var last = _lines[_lines.Count - 1];
-					logEntryIndex = last.LogEntryIndex + 1;
-				}
-				else
-				{
-					logEntryIndex = 0;
-					StartTimestamp = timestamp;
-				}
-
-				_lines.Add(new LogLine(_lines.Count, logEntryIndex, rawContent, level, timestamp));
-				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, rawContent.Length);
-				Touch();
-
-				_listeners.OnRead(_lines.Count);
-			}
+			var logEntry = new LogEntry2();
+			logEntry.Add(LogFileColumns.RawContent, rawContent);
+			logEntry.Add(LogFileColumns.LogLevel, level);
+			logEntry.Add(LogFileColumns.Timestamp, timestamp);
+			Add(logEntry);
 		}
 
 		/// <summary>
@@ -455,26 +311,45 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				int logEntryIndex;
-				if (_lines.Count > 0)
+				LogEntryIndex logEntryIndex;
+				TimeSpan? elapsed, deltaTime;
+				if (_logEntries.Count > 0)
 				{
-					var last = _lines[_lines.Count - 1];
+					var first = _logEntries[0];
+					var last = _logEntries[_logEntries.Count - 1];
+
 					logEntryIndex = last.LogEntryIndex + 1;
+					elapsed = timestamp - first.Timestamp;
+					deltaTime = timestamp - last.Timestamp;
 				}
 				else
 				{
 					logEntryIndex = 0;
+					elapsed = null;
+					deltaTime = null;
+
 					StartTimestamp = timestamp;
 				}
+				EndTimestamp = timestamp;
 
 				foreach (var line in lines)
 				{
-					_lines.Add(new LogLine(_lines.Count, logEntryIndex, line, level, timestamp));
+					var logEntry = new LogEntry2();
+					logEntry.Add(LogFileColumns.Index, _logEntries.Count);
+					logEntry.Add(LogFileColumns.OriginalIndex, _logEntries.Count);
+					logEntry.Add(LogFileColumns.LineNumber, _logEntries.Count + 1);
+					logEntry.Add(LogFileColumns.OriginalLineNumber, _logEntries.Count + 1);
+					logEntry.Add(LogFileColumns.LogEntryIndex, logEntryIndex);
+					logEntry.Add(LogFileColumns.RawContent, line);
+					logEntry.Add(LogFileColumns.LogLevel, level);
+					logEntry.Add(LogFileColumns.Timestamp, timestamp);
+					logEntry.Add(LogFileColumns.ElapsedTime, elapsed);
+					logEntry.Add(LogFileColumns.DeltaTime, deltaTime);
+					_logEntries.Add(logEntry);
 					MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, line.Length);
 				}
 				Touch();
-
-				_listeners.OnRead(_lines.Count);
+				_listeners.OnRead(_logEntries.Count);
 			}
 		}
 
@@ -486,7 +361,82 @@ namespace Tailviewer.Core.LogFiles
 		{
 			for (int i = 0; i < count; ++i)
 			{
-				AddEntry(string.Empty, LevelFlags.None);
+				Add(new LogEntry2());
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
+		public void Add(IReadOnlyLogEntry entry)
+		{
+			lock (_syncRoot)
+			{
+				DateTime? timestamp;
+				entry.TryGetValue(LogFileColumns.Timestamp, out timestamp);
+				LogEntryIndex logEntryIndex;
+				TimeSpan? elapsed, deltaTime;
+				if (_logEntries.Count > 0)
+				{
+					var last = _logEntries[_logEntries.Count - 1];
+
+					logEntryIndex = last.LogEntryIndex + 1;
+					elapsed = timestamp - StartTimestamp;
+					deltaTime = timestamp - last.Timestamp;
+				}
+				else
+				{
+					logEntryIndex = 0;
+					elapsed = null;
+					deltaTime = null;
+				}
+
+				if (StartTimestamp == null)
+					StartTimestamp = timestamp;
+				if (timestamp != null)
+					EndTimestamp = timestamp;
+
+				// The user supplies us with a list of properties to add, however we will
+				// never allow the user to supply us things like index or line number.
+				// Therefore we create a log entry which we actually want to add...
+				var finalLogEntry = new LogEntry2(Columns);
+
+				foreach (var column in Columns)
+				{
+					object value;
+					if (entry.TryGetValue(column, out value))
+					{
+						finalLogEntry.SetValue(column, value);
+					}
+				}
+
+				finalLogEntry.Index = _logEntries.Count;
+				finalLogEntry.OriginalIndex = _logEntries.Count;
+				finalLogEntry.LineNumber = _logEntries.Count + 1;
+				finalLogEntry.OriginalLineNumber = _logEntries.Count + 1;
+				finalLogEntry.LogEntryIndex = logEntryIndex;
+				finalLogEntry.Timestamp = timestamp;
+				finalLogEntry.ElapsedTime = elapsed;
+				finalLogEntry.DeltaTime = deltaTime;
+
+				_logEntries.Add(finalLogEntry);
+				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, finalLogEntry.RawContent?.Length ?? 0);
+				Touch();
+				_listeners.OnRead(_logEntries.Count);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entries"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void AddRange(IEnumerable<IReadOnlyLogEntry> entries)
+		{
+			foreach (var entry in entries)
+			{
+				Add(entry);
 			}
 		}
 	}

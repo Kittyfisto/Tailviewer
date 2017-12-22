@@ -3,6 +3,7 @@ using System;
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
+	///     Describes a column of a log file.
 	/// </summary>
 	public interface ILogFileColumn
 	{
@@ -12,21 +13,28 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		string Id { get; }
 
 		/// <summary>
-		///     Human readable name of this column.
-		/// </summary>
-		string Name { get; }
-
-		/// <summary>
 		///     The type of the data provided by this column.
 		/// </summary>
 		Type DataType { get; }
+
+		/// <summary>
+		///     The value used when an invalid row is accessed or
+		///     when no value is available.
+		/// </summary>
+		object DefaultValue { get; }
 	}
 
 	/// <summary>
+	///     Describes a column of a log file.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public interface ILogFileColumn<T>
+	public interface ILogFileColumn<out T>
 		: ILogFileColumn
 	{
+		/// <summary>
+		///     The value used when an invalid row is accessed or
+		///     when no value is available.
+		/// </summary>
+		new T DefaultValue { get; }
 	}
 }

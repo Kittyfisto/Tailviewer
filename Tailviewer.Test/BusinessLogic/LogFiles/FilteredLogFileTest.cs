@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
+using Metrolib;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -13,6 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class FilteredLogFileTest
+		: AbstractLogFileTest
 	{
 		[SetUp]
 		public void SetUp()
@@ -114,7 +116,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
-				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
@@ -137,6 +138,48 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				section[0].LogEntryIndex.Should().Be(0);
 				section[0].Message.Should().Be("Hello world!");
 				section[0].Level.Should().Be(LevelFlags.None);
+			}
+		}
+
+		[Test]
+		public void TestCreated()
+		{
+			var created = new DateTime(2017, 12, 21, 20, 51, 0);
+			_logFile.Setup(x => x.Created).Returns(created);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.Created.Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
+			}
+		}
+
+		[Test]
+		public void TestLastModified()
+		{
+			var lastModified = new DateTime(2017, 12, 21, 20, 52, 0);
+			_logFile.Setup(x => x.LastModified).Returns(lastModified);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.LastModified.Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
+			}
+		}
+
+		[Test]
+		public void TestSize()
+		{
+			var size = Size.FromGigabytes(5);
+			_logFile.Setup(x => x.Size).Returns(size);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				_taskScheduler.RunOnce();
+				file.Size.Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
 			}
 		}
 
@@ -578,46 +621,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
-		[Test]
-		public void TestGetOriginalIndexFrom1()
-		{
-			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
-				_taskScheduler.RunOnce();
+		#region Well Known Columns
 
-				file.GetOriginalIndexFrom(new LogLineIndex(0)).Should().Be(new LogLineIndex(1));
-				file.GetOriginalIndexFrom(new LogLineIndex(1)).Should().Be(new LogLineIndex(3));
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom1()
-		{
-			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(), null))
-					.ShouldThrow<ArgumentNullException>("because no array was given");
-			}
-		}
-
-		[Test]
-		public void TestGetOriginalIndicesFrom2()
-		{
-			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => file.GetOriginalIndicesFrom(new LogFileSection(1, 3), new LogLineIndex[2]))
-					.ShouldThrow<ArgumentOutOfRangeException>("because the given array is too small");
-			}
-		}
-
+		#region Original Index
+		
 		[Test]
 		public void TestGetOriginalIndicesFrom3()
 		{
@@ -631,8 +638,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
-				var originalIndices = new LogLineIndex[2];
-				file.GetOriginalIndicesFrom(new LogFileSection(0, 2), originalIndices);
+				var originalIndices = file.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(3));
 			}
 		}
@@ -652,71 +658,104 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
 				_taskScheduler.RunOnce();
 
-				var indices = new[]
-				{
-					new LogLineIndex(0), new LogLineIndex(2)
-				};
-				var originalIndices = new LogLineIndex[2];
-				file.GetOriginalIndicesFrom(indices, originalIndices);
+				var originalIndices = file.GetColumn(new LogLineIndex[] {0, 2}, LogFileColumns.OriginalIndex);
 				originalIndices.Should().Equal(new LogLineIndex(1), new LogLineIndex(5));
 			}
 		}
 
+		#endregion
+
+		#region Line Number
+
 		[Test]
-		public void TestGetOriginalIndicesFrom5()
+		public void TestGetLineNumbersBySection()
 		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(null, new LogLineIndex[0]))
-					.ShouldThrow<ArgumentNullException>();
-			}
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(1);
+			lineNumbers[1].Should().Be(2);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom6()
+		public void TestGetLineNumbersByIndices1()
 		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[1], null))
-					.ShouldThrow<ArgumentNullException>();
-			}
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(1);
+
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogFileColumns.LineNumber);
+			lineNumbers[0].Should().Be(2);
+		}
+
+		#endregion
+
+		#region Original Line Number
+
+		[Test]
+		public void TestGetOriginalLineNumbersBySection()
+		{
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(2);
+			lineNumbers[1].Should().Be(4);
 		}
 
 		[Test]
-		public void TestGetOriginalIndicesFrom7()
+		public void TestGetOriginalLineNumbersByIndices()
 		{
-			var filter = new NoFilter();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
-			{
-				new Action(() => logFile.GetOriginalIndicesFrom(new LogLineIndex[5], new LogLineIndex[4]))
-					.ShouldThrow<ArgumentOutOfRangeException>();
-			}
+			var filter = new SubstringFilter("B", true);
+			var source = new InMemoryLogFile();
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+
+			filteredLogFile.Count.Should().Be(2);
+			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(4);
+			lineNumbers[1].Should().Be(2);
+
+			lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1}, LogFileColumns.OriginalLineNumber);
+			lineNumbers[0].Should().Be(4);
 		}
 
-		#region Well Known Columns
+		#endregion
 
 		#region Delta Time
 
 		[Test]
-		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
-		public void TestGetDeltaTime1()
-		{
-			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.DeltaTime);
-				deltas.Should().NotBeNull();
-				deltas.Should().HaveCount(1);
-				deltas[0].Should().BeNull();
-			}
-		}
-
-		[Test]
 		[Description("Verifies that the first entry doesn't have delta time")]
-		public void TestGetDeltaTime2()
+		public void TestGetDeltaTime1()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -733,7 +772,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that the log file can return the time between two consecutive non-filtered events")]
-		public void TestGetDeltaTime3()
+		public void TestGetDeltaTime2()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -752,7 +791,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetDeltaTime4()
+		public void TestGetDeltaTime3()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			var source = new InMemoryLogFile();
@@ -773,7 +812,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that accessing the delta time column by random indices works")]
-		public void TestGetDeltaTime5()
+		public void TestGetDeltaTime4()
 		{
 			var filter = new LevelFilter(LevelFlags.Info);
 			var source = new InMemoryLogFile();
@@ -798,22 +837,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Timestamp
 
 		[Test]
-		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
 		public void TestGetTimestamp1()
-		{
-			var filter = new NoFilter();
-			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);
-				timestamps.Should().NotBeNull();
-				timestamps.Should().HaveCount(1);
-				timestamps[0].Should().BeNull();
-			}
-		}
-
-		[Test]
-		public void TestGetTimestamp2()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
@@ -830,7 +854,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetTimestamp3()
+		public void TestGetTimestamp2()
 		{
 			var filter = new LevelFilter(LevelFlags.Error);
 			var source = new InMemoryLogFile();
@@ -849,21 +873,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
-		[Test]
-		public void TestGetTimestamp4()
+		#endregion
+
+		#endregion
+
+		protected override ILogFile CreateEmpty()
 		{
 			var filter = new NoFilter();
 			var source = new InMemoryLogFile();
-			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
-			{
-				var timestamps = logFile.GetColumn(new LogLineIndex[] {42}, LogFileColumns.Timestamp);
-				timestamps.Should().NotBeNull();
-				timestamps.Should().Equal(new object[] { null }, "because accessing non-existant indices should return null values");
-			}
+			return new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 		}
 
-		#endregion
-
-		#endregion
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var source = new InMemoryLogFile(content);
+			var filter = new NoFilter();
+			var filtered = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
+			_taskScheduler.RunOnce();
+			return filtered;
+		}
 	}
 }

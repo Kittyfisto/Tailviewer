@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic;
 
 namespace Tailviewer.Settings
 {

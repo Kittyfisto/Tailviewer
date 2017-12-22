@@ -45,6 +45,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool FollowTail { get; set; }
 		bool ShowLineNumbers { get; set; }
 		bool ShowDeltaTimes { get; set; }
+		bool ShowElapsedTime { get; set; }
 		string SearchTerm { get; set; }
 		LevelFlags LevelFilter { get; set; }
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }

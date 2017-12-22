@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels

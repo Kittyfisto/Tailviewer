@@ -8,7 +8,6 @@ using Tailviewer.Settings;
 using log4net;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {

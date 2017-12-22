@@ -10,6 +10,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Ui.Controls.SidePanel
 {
@@ -187,8 +188,9 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			if (dataSource == null || lines == null)
 				return;
 
-			var originalIndices = new LogLineIndex[lines.Count];
-			dataSource.FilteredLogFile.GetOriginalIndicesFrom(lines.ToList(), originalIndices);
+			var originalIndices = dataSource.FilteredLogFile.GetColumn(lines.ToList(), LogFileColumns.OriginalIndex);
+			//var originalIndices = new LogLineIndex[lines.Count];
+			//dataSource.FilteredLogFile.GetOriginalIndicesFrom(lines.ToList(), originalIndices);
 
 			foreach (var line in originalIndices)
 			{

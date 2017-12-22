@@ -11,37 +11,44 @@ namespace Tailviewer.Core.LogFiles
 	internal sealed class WellKnownLogFileColumn<T>
 		: ILogFileColumn<T>
 	{
-		private readonly string _name;
 		private readonly string _id;
+		private readonly T _defaultValue;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="name"></param>
-		public WellKnownLogFileColumn(string id, string name)
+		public WellKnownLogFileColumn(string id)
+			: this(id, default(T))
+		{}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="defaultValue"></param>
+		public WellKnownLogFileColumn(string id, T defaultValue)
 		{
 			if (id == null)
 				throw new ArgumentNullException(nameof(id));
-			if (name == null)
-				throw new ArgumentNullException(nameof(name));
 
 			_id = id;
-			_name = name;
+			_defaultValue = defaultValue;
 		}
 
 		/// <inheritdoc />
 		public string Id => _id;
 
 		/// <inheritdoc />
-		public string Name => _name;
+		public Type DataType => typeof(T);
 
 		/// <inheritdoc />
-		public Type DataType => typeof(T);
+		public T DefaultValue => _defaultValue;
+
+		object ILogFileColumn.DefaultValue => DefaultValue;
 
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return _id;
+			return string.Format("{0}: {1}", _id, typeof(T).Name);
 		}
 	}
 }
