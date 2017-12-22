@@ -4,6 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
@@ -15,26 +16,28 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class SingleDataSourceViewModelTest
 	{
-		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
+		private ManualTaskScheduler _scheduler;
+		private Mock<IActionCenter> _actionCenter;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_actionCenter = new Mock<IActionCenter>();
 		}
 
 		[Test]
 		public void TestCtor1()
 		{
 			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
-				{
-					Id = DataSourceId.CreateNew()
+			{
+				Id = DataSourceId.CreateNew()
 			};
 			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 				model.Id.Should().Be(settings.Id);
 
@@ -46,11 +49,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor2()
 		{
-			using (var source = new SingleDataSource(_scheduler, new DataSource { Id = DataSourceId.CreateNew(), File = @"C:\temp\foo.txt", SearchTerm = "foobar" }, new Mock<ILogFile>().Object, TimeSpan.Zero))
+			using (
+				var source = new SingleDataSource(_scheduler,
+					new DataSource {Id = DataSourceId.CreateNew(), File = @"C:\temp\foo.txt", SearchTerm = "foobar"},
+					new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
 				source.SearchTerm.Should().Be("foobar");
 
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.FileName.Should().Be("foo.txt");
 				model.SearchTerm.Should().Be("foobar");
 			}
@@ -66,7 +72,7 @@ namespace Tailviewer.Test.Ui
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
 			}
 		}
@@ -81,7 +87,7 @@ namespace Tailviewer.Test.Ui
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -90,10 +96,10 @@ namespace Tailviewer.Test.Ui
 				changes.Should().Equal(new object[] {"ShowDeltaTimes"}, "because the property should've changed once");
 
 				model.ShowDeltaTimes = !showDeltaTimes;
-				changes.Should().Equal(new object[] { "ShowDeltaTimes" }, "because the property didn't change");
+				changes.Should().Equal(new object[] {"ShowDeltaTimes"}, "because the property didn't change");
 
 				model.ShowDeltaTimes = showDeltaTimes;
-				changes.Should().Equal(new object[] { "ShowDeltaTimes", "ShowDeltaTimes" }, "because the property changed a 2nd time");
+				changes.Should().Equal(new object[] {"ShowDeltaTimes", "ShowDeltaTimes"}, "because the property changed a 2nd time");
 			}
 		}
 
@@ -102,7 +108,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 
 			model.DisplayName.Should().Be("foo");
 			new Action(() => model.DisplayName = "bar").ShouldThrow<InvalidOperationException>();
@@ -114,9 +120,10 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") { Id = DataSourceId.CreateNew() }))
+					new SingleDataSource(_logFileFactory, _scheduler,
+						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.RemoveCommand.Should().NotBeNull();
 				model.RemoveCommand.CanExecute(null).Should().BeTrue();
 				new Action(() => model.RemoveCommand.Execute(null)).ShouldNotThrow();
@@ -128,9 +135,10 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") { Id = DataSourceId.CreateNew() }))
+					new SingleDataSource(_logFileFactory, _scheduler,
+						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				var calls = new List<IDataSourceViewModel>();
 				model.Remove += calls.Add;
 				new Action(() => model.RemoveCommand.Execute(null)).ShouldNotThrow();
@@ -143,12 +151,12 @@ namespace Tailviewer.Test.Ui
 		public void TestSetQuickFilterChain1()
 		{
 			var settings = new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test")
-				{
-					Id = DataSourceId.CreateNew()
+			{
+				Id = DataSourceId.CreateNew()
 			};
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new SingleDataSourceViewModel(dataSource);
+				var model = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
 				var chain = new[] {new SubstringFilter("foobar", true)};
 				model.QuickFilterChain = chain;
 				model.QuickFilterChain.Should().BeSameAs(chain);
@@ -162,7 +170,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = new Mock<ISingleDataSource>();
 			dataSource.SetupAllProperties();
 
-			var model = new SingleDataSourceViewModel(dataSource.Object);
+			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			model.CharacterCode = "ZZ";
 			model.CharacterCode.Should().Be("ZZ");
 			dataSource.Object.CharacterCode.Should().Be("ZZ");

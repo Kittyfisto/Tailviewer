@@ -28,7 +28,7 @@ namespace Tailviewer.Core
 				return null;
 
 			foreach (var subPath in GetFolderPaths(path))
-				if (File.Exists(subPath))
+				if (Directory.Exists(subPath))
 					return subPath;
 
 			return null;

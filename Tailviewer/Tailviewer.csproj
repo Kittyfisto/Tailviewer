@@ -91,8 +91,13 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="ArgumentParser.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />

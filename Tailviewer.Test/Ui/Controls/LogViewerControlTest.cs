@@ -8,10 +8,9 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.LogView;
 using Tailviewer.Ui.ViewModels;
-using LogViewerControl = Tailviewer.Ui.Controls.LogView.LogViewerControl;
 
 namespace Tailviewer.Test.Ui.Controls
 {
@@ -19,6 +18,13 @@ namespace Tailviewer.Test.Ui.Controls
 	[Apartment(ApartmentState.STA)]
 	public sealed class LogViewerControlTest
 	{
+		private Mock<IActionCenter> _actionCenter;
+		private LogViewerControl _control;
+		private SingleDataSourceViewModel _dataSource;
+		private ILogFileFactory _logFileFactory;
+		private ManualTaskScheduler _scheduler;
+		private Mock<IApplicationSettings> _settings;
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
@@ -31,23 +37,19 @@ namespace Tailviewer.Test.Ui.Controls
 		public void SetUp()
 		{
 			_settings = new Mock<IApplicationSettings>();
-			_dataSource = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
+			_dataSource =
+				new SingleDataSourceViewModel(
+					new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
+					_actionCenter.Object);
 			_control = new LogViewerControl
-				{
-					DataSource = _dataSource,
-					Width = 1024,
-					Height = 768
-				};
+			{
+				DataSource = _dataSource,
+				Width = 1024,
+				Height = 768
+			};
 
 			DispatcherExtensions.ExecuteAllEvents();
 		}
-
-		private LogViewerControl _control;
-		private SingleDataSourceViewModel _dataSource;
-		private ManualTaskScheduler _scheduler;
-		private Mock<IActionCenter> _actionCenter;
-		private Mock<IApplicationSettings> _settings;
-		private ILogFileFactory _logFileFactory;
 
 		[Test]
 		[Ignore("Doesn't work yet")]
@@ -201,9 +203,9 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogView = newLogView;
 
 			oldLog.Object.VisibleLogLine.Should()
-			      .Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
+				.Be(42, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
 			newLog.Object.VisibleLogLine.Should()
-			      .Be(1, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
+				.Be(1, "Because the control shouldn't have changed the VisibleLogLine of the old logview");
 		}
 
 		[Test]
@@ -245,7 +247,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var logView = new LogViewerViewModel(dataSourceViewModel.Object, _actionCenter.Object, _settings.Object);
 
 			_control.LogView = logView;
-			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(42));
 		}
 
 		[Test]
@@ -270,7 +272,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.SearchBox.Text.Should().Be(string.Empty);
 
 			_control.LogView = logView;
-			_control.SelectedIndices.Should().Equal(new[] {new LogLineIndex(42)});
+			_control.SelectedIndices.Should().Equal(new LogLineIndex(42));
 			_control.SearchBox.Text.Should().Be("Foobar");
 		}
 
@@ -279,7 +281,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_dataSource.SelectedLogLines.Should().BeEmpty();
 			_control.Select(new LogLineIndex(1));
-			_dataSource.SelectedLogLines.Should().Equal(new[] {new LogLineIndex(1)});
+			_dataSource.SelectedLogLines.Should().Equal(new LogLineIndex(1));
 		}
 
 		[Test]
@@ -350,13 +352,16 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestCtor()
 		{
-			var source = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}));
+			var source =
+				new SingleDataSourceViewModel(
+					new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
+					_actionCenter.Object);
 			source.LevelsFilter = LevelFlags.All;
 
 			var control = new LogViewerControl
-				{
-					DataSource = source
-				};
+			{
+				DataSource = source
+			};
 			control.ShowTrace.Should().BeTrue();
 			control.ShowDebug.Should().BeTrue();
 			control.ShowInfo.Should().BeTrue();
@@ -452,31 +457,35 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
+		[Description(
+			"Verifies that when the data source's selected log lines change, then the control synchronizes itself properly")]
 		public void TestChangeSelectedLogLines()
 		{
 			_dataSource.SelectedLogLines = new HashSet<LogLineIndex>
-				{
-					new LogLineIndex(42),
-					new LogLineIndex(108)
-				};
+			{
+				new LogLineIndex(42),
+				new LogLineIndex(108)
+			};
 			_control.SelectedIndices.Should().BeEquivalentTo(new[]
-				{
-					new LogLineIndex(42),
-					new LogLineIndex(108)
-				}, "because the control is expected to listen to changes of the data source");
+			{
+				new LogLineIndex(42),
+				new LogLineIndex(108)
+			}, "because the control is expected to listen to changes of the data source");
 		}
 
 		[Test]
-		[Description("Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
+		[Description(
+			"Verifies that when the data source's visible log line changes, then the control synchronizes itself properly")]
 		public void TestChangeVisibleLogLine()
 		{
 			_dataSource.VisibleLogLine = new LogLineIndex(9001);
-			_control.CurrentLogLine.Should().Be(new LogLineIndex(9001), "because the control is expected to listen to changes of the data source");
+			_control.CurrentLogLine.Should()
+				.Be(new LogLineIndex(9001), "because the control is expected to listen to changes of the data source");
 		}
 
 		[Test]
-		[Description("Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
+		[Description(
+			"Verifies that changes to the MergedDataSourceDisplayMode property are forwarded to the data source view model")]
 		public void TestChangeMergedDataSourceDisplayMode1()
 		{
 			var dataSource = new Mock<IMergedDataSourceViewModel>();
@@ -492,7 +501,9 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Description("Verifies that changes to the MergedDataSourceDisplayMode property are ignored if the view model isn't a merged one")]
+		[Description(
+			"Verifies that changes to the MergedDataSourceDisplayMode property are ignored if the view model isn't a merged one")
+		]
 		public void TestChangeMergedDataSourceDisplayMode2()
 		{
 			var dataSource = new Mock<IDataSourceViewModel>();
@@ -505,15 +516,19 @@ namespace Tailviewer.Test.Ui.Controls
 
 		[Test]
 		[Description("Verifies that the display mode of the new data source is used")]
-		public void TestChangeDataSource([Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
+		public void TestChangeDataSource(
+			[Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
 		{
 			var dataSource = new Mock<IMergedDataSourceViewModel>();
 			dataSource.SetupProperty(x => x.DisplayMode);
 			dataSource.Object.DisplayMode = displayMode;
 
 			_control.DataSource = dataSource.Object;
-			_control.MergedDataSourceDisplayMode.Should().Be(displayMode, "because the view model determines the initial display mode and thus the control should just use that");
-			dataSource.Object.DisplayMode.Should().Be(displayMode, "because the display mode of the view model shouldn't have been changed in the process");
+			_control.MergedDataSourceDisplayMode.Should()
+				.Be(displayMode,
+					"because the view model determines the initial display mode and thus the control should just use that");
+			dataSource.Object.DisplayMode.Should()
+				.Be(displayMode, "because the display mode of the view model shouldn't have been changed in the process");
 		}
 
 		[Test]
