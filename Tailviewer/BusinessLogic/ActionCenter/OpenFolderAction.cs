@@ -29,22 +29,22 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 
 			_task = Task.Run(() =>
 			{
-				if (!FileEx.Exists(path, TimeSpan.FromSeconds(2)))
+				if (!FileEx.Exists(path, TimeSpan.FromSeconds(1)))
 				{
 					FullFoldername = FileEx.FindClosestExistingFolder(path);
-					_fileExplorer.OpenFolder(FullFoldername, this);
+					_fileExplorer.OpenFolder(FullFoldername);
 				}
 				else
 				{
 					FullFoldername = path;
-					_fileExplorer.SelectFile(path, this);
+					_fileExplorer.SelectFile(path);
 				}
 			})
 				.ContinueWith(OnFolderOpened);
 		}
 
 		public string Title => "Opening Folder In Explorer";
-		public bool ForceShow => true;
+		public bool ForceShow { get; set; }
 		public Percentage Progress { get; private set; }
 		public Exception Exception { get; private set; }
 		public string FullFoldername { get; set; }
@@ -62,24 +62,11 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 			_task = null;
 			if (task.IsFaulted)
 			{
-				Exception = TranslateException(task.Exception?.InnerException);
+				Exception = task.Exception?.InnerException;
+				ForceShow = true;
 				Log.ErrorFormat("Error while opening folder: {0}", Exception);
 			}
 			Progress = Percentage.HundredPercent;
-		}
-
-		private Exception TranslateException(Exception exception)
-		{
-			var dir = exception as DirectoryNotFoundException;
-			if (dir != null)
-			{
-				var message = string.Format(
-					"Unable to find directory '{0}'.",
-					FullFoldername);
-				return new OpenFolderException(message, exception);
-			}
-
-			return exception;
 		}
 	}
 }

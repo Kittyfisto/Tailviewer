@@ -87,7 +87,7 @@ namespace Tailviewer.Test.Ui
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowElapsedTime.Should().Be(showElapsedTime);
 			}
 		}
@@ -102,7 +102,7 @@ namespace Tailviewer.Test.Ui
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source);
+				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);

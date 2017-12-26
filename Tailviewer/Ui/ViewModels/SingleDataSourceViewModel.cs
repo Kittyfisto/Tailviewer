@@ -107,7 +107,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OpenInExplorer()
 		{
-			var action = new OpenFolderAction(FileName, new FileExplorer());
+			var action = new OpenFolderAction(FullName, new FileExplorer());
 			_actionCenter.Add(action);
 		}
 
