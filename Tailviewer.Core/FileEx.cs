@@ -22,11 +22,6 @@ namespace Tailviewer.Core
 		/// <returns></returns>
 		public static string FindClosestExistingFolder(string path)
 		{
-			string absolutePath;
-			var drive = GetDriveLetterFromPath(path, out absolutePath);
-			if (drive == null)
-				return null;
-
 			foreach (var subPath in GetFolderPaths(path))
 				if (Directory.Exists(subPath))
 					return subPath;
@@ -51,7 +46,7 @@ namespace Tailviewer.Core
 			while ((index = path.LastIndexOf(value: '\\', startIndex: index, count: count)) != -1)
 			{
 				var subPath = path.Substring(startIndex: 0, length: index + 1);
-				if (ret.Count > 1 || !string.Equals(path, subPath))
+				if (!string.Equals(@"\\", subPath) && (ret.Count > 1 || !string.Equals(path, subPath)))
 					ret.Add(subPath);
 
 				index -= 1;
@@ -75,12 +70,24 @@ namespace Tailviewer.Core
 				return null;
 			}
 
-			if (Path.IsPathRooted(path))
+			string root = Path.GetPathRoot(path);
+			if (root.StartsWith(@"\\"))
+			{
+				// handles UNS directories
 				absolutePath = path;
-			else
+				return null;
+			}
+			else if (root.StartsWith("\\"))
+			{
+				// handles directories off current drive root
 				absolutePath = Path.Combine(Directory.GetCurrentDirectory(), path);
-
-			var drive = path[index: 0];
+				return absolutePath[0];
+			}
+			else
+			{
+				absolutePath = path;
+			}
+			var drive = absolutePath[0];
 			return drive;
 		}
 
@@ -88,9 +95,6 @@ namespace Tailviewer.Core
 		///     Tests if the given file/directory path exists and is currently reachable.
 		///     Does not block (much) longer than the given timeout.
 		/// </summary>
-		/// <remarks>
-		///     TODO: This method should accept paths such as \\servername\foobar as well.
-		/// </remarks>
 		/// <param name="path"></param>
 		/// <param name="timeout"></param>
 		/// <returns></returns>
@@ -98,10 +102,11 @@ namespace Tailviewer.Core
 		{
 			string absolutePath;
 			var drive = GetDriveLetterFromPath(path, out absolutePath);
-			if (drive == null)
+
+			if (absolutePath == null)
 				return false;
 
-			if (!Drive.IsReachable(drive.Value, timeout))
+			if (drive != null && !Drive.IsReachable(drive.Value, timeout))
 				return false;
 
 			// Theoretically, we could end up blocking the full 60 seconds
