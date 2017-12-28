@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
-using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 
 namespace Tailviewer.Test.Ui
@@ -20,11 +17,18 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class QuickFiltersViewModelTest
 	{
+		private ILogFileFactory _logFileFactory;
+		private QuickFilters _quickFilters;
+		private ManualTaskScheduler _scheduler;
+		private ApplicationSettings _settings;
+		private Mock<IActionCenter> _actionCenter;
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_actionCenter = new Mock<IActionCenter>();
 		}
 
 		[SetUp]
@@ -34,18 +38,14 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 		}
 
-		private QuickFilters _quickFilters;
-		private ApplicationSettings _settings;
-		private ManualTaskScheduler _scheduler;
-		private ILogFileFactory _logFileFactory;
-
 		[Test]
 		public void TestAdd()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") {Id = DataSourceId.CreateNew()});
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
-			QuickFilterViewModel filter = model.AddQuickFilter();
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("sw") {Id = DataSourceId.CreateNew()});
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
+			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
 		}
 
@@ -53,11 +53,12 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeCurrentDataSource()
 		{
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("sw") { Id = DataSourceId.CreateNew() });
-			QuickFilterViewModel filter = model.AddQuickFilter();
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("sw") {Id = DataSourceId.CreateNew()});
+			var filter = model.AddQuickFilter();
 			filter.CurrentDataSource.Should().BeNull();
 
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
 			filter.CurrentDataSource.Should().BeSameAs(dataSource);
 
 			model.CurrentDataSource = null;
@@ -67,12 +68,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeFilterType1()
 		{
-			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			model.CurrentDataSource =
-				new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler, new DataSource("adw") { Id = DataSourceId.CreateNew() }));
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
+			{
+				CurrentDataSource = new SingleDataSourceViewModel(new SingleDataSource(_logFileFactory, _scheduler,
+					new DataSource("adw") {Id = DataSourceId.CreateNew()}), _actionCenter.Object)
+			};
 
-			int numFilterChanges = 0;
-			QuickFilterViewModel filter = model.AddQuickFilter();
+			var numFilterChanges = 0;
+			var filter = model.AddQuickFilter();
 			filter.MatchType.Should().Be(FilterMatchType.SubstringFilter);
 			filter.Value = "Foobar";
 			filter.IsActive = true;
@@ -96,7 +99,7 @@ namespace Tailviewer.Test.Ui
 			_quickFilters.Add().Value = "bar";
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			List<QuickFilterViewModel> filters = model.QuickFilters.ToList();
+			var filters = model.QuickFilters.ToList();
 			filters.Count.Should().Be(2);
 			filters[0].Value.Should().Be("foo");
 			filters[1].Value.Should().Be("bar");
@@ -105,14 +108,15 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCtor2()
 		{
-			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
+			var filter1 = _quickFilters.Add();
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			int changed = 0;
+			var changed = 0;
 			model.OnFiltersChanged += () => ++changed;
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
 			changed.Should().Be(1, "Because changing the current data source MUST apply ");
 		}
 
@@ -120,15 +124,18 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that removing an active quick-filter causes the OnFiltersChanged event to be fired")]
 		public void TestRemove1()
 		{
-			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
+			var filter1 = _quickFilters.Add();
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
-			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
+			{
+				CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object)
+			};
 			var filter1Model = model.QuickFilters.First();
 
-			int changed = 0;
+			var changed = 0;
 			model.OnFiltersChanged += () => ++changed;
 
 			filter1Model.RemoveCommand.Execute(null);
@@ -140,16 +147,19 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that removing an inactive quick-filter does NOT cause the OnFiltersChanged event to be fired")]
 		public void TestRemove2()
 		{
-			QuickFilter filter1 = _quickFilters.Add();
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
+			var filter1 = _quickFilters.Add();
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("daw") {Id = DataSourceId.CreateNew()});
 			dataSource.ActivateQuickFilter(filter1.Id);
 
-			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters)
+			{
+				CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object)
+			};
 			var filter1Model = model.QuickFilters.First();
 			filter1Model.IsActive = false;
 
-			int changed = 0;
+			var changed = 0;
 			model.OnFiltersChanged += () => ++changed;
 
 			filter1Model.RemoveCommand.Execute(null);
@@ -164,8 +174,9 @@ namespace Tailviewer.Test.Ui
 			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
 			model.QuickInfo.Should().BeNull();
 
-			var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource("daw") { Id = DataSourceId.CreateNew() });
-			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource);
+			var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				new DataSource("daw") {Id = DataSourceId.CreateNew()});
+			model.CurrentDataSource = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
 			model.QuickFilters.ElementAt(0).IsActive = true;
 			model.QuickInfo.Should().Be("1 active");
 

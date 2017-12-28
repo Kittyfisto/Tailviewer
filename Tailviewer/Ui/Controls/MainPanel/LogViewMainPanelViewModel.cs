@@ -49,10 +49,10 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			if (actionCenter == null)
 				throw new ArgumentNullException(nameof(actionCenter));
 
-			_actionCenter = actionCenter;
 			_applicationSettings = applicationSettings;
+			_actionCenter = actionCenter;
 
-			_dataSources = new DataSourcesViewModel(applicationSettings, dataSources);
+			_dataSources = new DataSourcesViewModel(applicationSettings, dataSources, _actionCenter);
 			_dataSources.PropertyChanged += DataSourcesOnPropertyChanged;
 			_quickFilters = new QuickFiltersSidePanelViewModel(applicationSettings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;

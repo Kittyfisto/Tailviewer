@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -22,15 +23,19 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		private readonly List<IDataSourceViewModel> _allDataSourceViewModels;
 		private readonly IDataSources _dataSources;
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
+		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _settings;
 		private readonly ICommand _addDataSourceCommand;
 		private IDataSourceViewModel _selectedItem;
 
-		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources)
+
+		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources, IActionCenter actionCenter)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
+			if (actionCenter == null) throw  new ArgumentNullException(nameof(actionCenter));
 
+			_actionCenter = actionCenter;
 			_settings = settings;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
@@ -186,7 +191,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			var single = dataSource as ISingleDataSource;
 			if (single != null)
 			{
-				viewModel = new SingleDataSourceViewModel(single);
+				viewModel = new SingleDataSourceViewModel(single, _actionCenter);
 			}
 			else
 			{

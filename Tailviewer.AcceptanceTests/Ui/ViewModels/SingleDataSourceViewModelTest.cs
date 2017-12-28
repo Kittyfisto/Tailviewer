@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -29,7 +31,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			using (var logFile = new TextLogFile(_taskScheduler, TextLogFileAcceptanceTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(dataSource);
+				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 

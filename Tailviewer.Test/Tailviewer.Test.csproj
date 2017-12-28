@@ -95,6 +95,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderActionTest.cs" />
     <Compile Include="BusinessLogic\AnalysisStorageTest.cs" />
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisConfigurationTest.cs" />
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisTest.cs" />
