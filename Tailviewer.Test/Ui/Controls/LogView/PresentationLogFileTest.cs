@@ -50,5 +50,49 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			index.MaximumWidth.Should().BeApproximately(46, 1);
 			index.LineCount.Should().Be(2);
 		}
+
+		[Test]
+		public void TestAddSeveralEntries()
+		{
+			var logFile = new InMemoryLogFile();
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+
+			logFile.Add(new LogEntry2 {RawContent = "Foo"});
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(19.8, 0.1);
+			index.LineCount.Should().Be(1);
+
+			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
+			index.LineCount.Should().Be(3);
+
+			logFile.Add(new LogEntry2 {RawContent = "Bar"});
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
+			index.LineCount.Should().Be(4);
+		}
+
+		[Test]
+		public void TestPartialInvalidate()
+		{
+			var logFile = new InMemoryLogFile();
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+
+			logFile.Add(new LogEntry2 {RawContent = "Foo"});
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(19.8, 0.1);
+			index.LineCount.Should().Be(1);
+
+			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
+			index.LineCount.Should().Be(3);
+
+			logFile.RemoveFrom(1);
+			_scheduler.RunOnce();
+			index.MaximumWidth.Should().BeApproximately(19.8, 0.1);
+			index.LineCount.Should().Be(1);
+		}
 	}
 }
