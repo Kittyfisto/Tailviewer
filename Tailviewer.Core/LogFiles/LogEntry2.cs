@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogTables;
 
@@ -109,13 +111,24 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void SetValue(ILogFileColumn column, object value)
 		{
-			_values[column] = value;
+			if (!LogFileColumn.IsAssignableFrom(column, value))
+				throw new ArgumentException();
+
+			if (!_columns.Contains(column))
+			{
+				_columns.Add(column);
+				_values.Add(column, value);
+			}
+			else
+			{
+				_values[column] = value;
+			}
 		}
 
 		/// <inheritdoc />
 		public override void SetValue<T>(ILogFileColumn<T> column, T value)
 		{
-			_values[column] = value;
+			SetValue((ILogFileColumn)column, (object)value);
 		}
 	}
 }

@@ -49,8 +49,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetLogLevel()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.LogLevel = LevelFlags.Fatal;
 			entry.LogLevel.Should().Be(LevelFlags.Fatal);
+			entry.Columns.Should().Equal(LogFileColumns.LogLevel);
 			entry.GetValue(LogFileColumns.LogLevel).Should().Be(LevelFlags.Fatal);
 		}
 
@@ -58,8 +61,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetLogEntryIndex()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.LogEntryIndex = 42;
 			entry.LogEntryIndex.Should().Be(42);
+			entry.Columns.Should().Equal(LogFileColumns.LogEntryIndex);
 			entry.GetValue(LogFileColumns.LogEntryIndex).Should().Be(42);
 		}
 
@@ -67,8 +73,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetDeltaTime()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.DeltaTime = TimeSpan.FromSeconds(23);
 			entry.DeltaTime.Should().Be(TimeSpan.FromSeconds(23));
+			entry.Columns.Should().Equal(LogFileColumns.DeltaTime);
 			entry.GetValue(LogFileColumns.DeltaTime).Should().Be(TimeSpan.FromSeconds(23));
 		}
 
@@ -76,8 +85,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetElapsedTime()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.ElapsedTime = TimeSpan.FromSeconds(23);
 			entry.ElapsedTime.Should().Be(TimeSpan.FromSeconds(23));
+			entry.Columns.Should().Equal(LogFileColumns.ElapsedTime);
 			entry.GetValue(LogFileColumns.ElapsedTime).Should().Be(TimeSpan.FromSeconds(23));
 		}
 
@@ -85,8 +97,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetTimestamp()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.Timestamp = new DateTime(2017, 12, 20, 13, 33, 0);
 			entry.Timestamp.Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
+			entry.Columns.Should().Equal(LogFileColumns.Timestamp);
 			entry.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2017, 12, 20, 13, 33, 0));
 		}
 
@@ -94,8 +109,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetRawContent()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.RawContent = "The last Jedi";
 			entry.RawContent.Should().Be("The last Jedi");
+			entry.Columns.Should().Equal(LogFileColumns.RawContent);
 			entry.GetValue(LogFileColumns.RawContent).Should().Be("The last Jedi");
 		}
 
@@ -103,8 +121,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetIndex()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.Index = 9001;
 			entry.Index.Should().Be(9001);
+			entry.Columns.Should().Equal(LogFileColumns.Index);
 			entry.GetValue(LogFileColumns.Index).Should().Be(9001);
 		}
 
@@ -112,8 +133,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetOriginalIndex()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.OriginalIndex = 8999;
 			entry.OriginalIndex.Should().Be(8999);
+			entry.Columns.Should().Equal(LogFileColumns.OriginalIndex);
 			entry.GetValue(LogFileColumns.OriginalIndex).Should().Be(8999);
 		}
 
@@ -121,8 +145,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetLineNumber()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.LineNumber = 42;
 			entry.LineNumber.Should().Be(42);
+			entry.Columns.Should().Equal(LogFileColumns.LineNumber);
 			entry.GetValue(LogFileColumns.LineNumber).Should().Be(42);
 		}
 
@@ -130,9 +157,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetOriginalLineNumber()
 		{
 			var entry = new LogEntry2();
+			entry.Columns.Should().BeEmpty();
+
 			entry.OriginalLineNumber = 1337;
 			entry.OriginalLineNumber.Should().Be(1337);
+			entry.Columns.Should().Equal(LogFileColumns.OriginalLineNumber);
 			entry.GetValue(LogFileColumns.OriginalLineNumber).Should().Be(1337);
+		}
+
+		[Test]
+		public void TestSetValueWrongType()
+		{
+			var entry = new LogEntry2();
+			new Action(() => entry.SetValue(LogFileColumns.RawContent, 42)).ShouldThrow<ArgumentException>();
+			entry.Columns.Should().BeEmpty();
+			new Action(() => entry.GetValue(LogFileColumns.RawContent)).ShouldThrow<ArgumentException>();
 		}
 
 		protected override IReadOnlyLogEntry CreateEmpty()
