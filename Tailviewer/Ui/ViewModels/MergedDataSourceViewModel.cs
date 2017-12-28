@@ -42,7 +42,8 @@ namespace Tailviewer.Ui.ViewModels
 			var dataSources = _dataSource.OriginalSources.GroupBy(GetDirectory);
 			foreach (var grouping in dataSources)
 			{
-				SingleDataSourceViewModel.OpenInExplorer(grouping.First());
+				//SingleDataSourceViewModel.OpenInExplorer(grouping.First());
+				//SingleDataSourceViewModel.OpenInExplorer();
 			}
 		}
 

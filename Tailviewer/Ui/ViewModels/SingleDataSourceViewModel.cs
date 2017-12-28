@@ -1,29 +1,35 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.FileExplorer;
 
 namespace Tailviewer.Ui.ViewModels
 {
 	/// <summary>
-	///     Represents a data source and is capable
+	///     Represents a data source and is capable of opening the source folder in explorer
 	/// </summary>
 	public sealed class SingleDataSourceViewModel
 		: AbstractDataSourceViewModel
 		, ISingleDataSourceViewModel
 	{
+		private readonly IActionCenter _actionCenter;
 		private readonly ISingleDataSource _dataSource;
 		private readonly string _fileName;
 		private readonly string _folder;
 		private readonly ICommand _openInExplorerCommand;
 		private bool _displayNoTimestampCount;
 
-		public SingleDataSourceViewModel(ISingleDataSource dataSource)
-			: base(dataSource)
+		public SingleDataSourceViewModel(ISingleDataSource dataSource,
+							IActionCenter actionCenter)
+								: base(dataSource)
 		{
+			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
+
+			_actionCenter = actionCenter;
 			_dataSource = dataSource;
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_folder = Path.GetDirectoryName(dataSource.FullFileName);
@@ -101,13 +107,9 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OpenInExplorer()
 		{
-			OpenInExplorer(_dataSource);
+			var action = new OpenFolderAction(FullName, new FileExplorer());
+			_actionCenter.Add(action);
 		}
 
-		public static void OpenInExplorer(IDataSource dataSource)
-		{
-			string argument = string.Format(@"/select, {0}", dataSource.FullFileName);
-			Process.Start("explorer.exe", argument);
-		}
 	}
 }
