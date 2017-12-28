@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
@@ -109,6 +110,59 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			LogFileColumns.RawContent.Id.Should().Be("raw_content");
 			LogFileColumns.RawContent.DataType.Should().Be<string>();
+		}
+
+		[Test]
+		[Description("Verifies that the RawContentMaxPresentationWidth property doesn't regress")]
+		public void TestRawContentMaxPresentationWidth()
+		{
+			LogFileColumns.RawContentMaxPresentationWidth.Id.Should().Be("raw_content_max_presentation_width");
+			LogFileColumns.RawContentMaxPresentationWidth.DataType.Should().Be<float>();
+		}
+
+		[Test]
+		[Description("Verifies that the PresentationStartingLineNumber property doesn't regress")]
+		public void TestPresentationStartingLineNumber()
+		{
+			LogFileColumns.PresentationStartingLineNumber.Id.Should().Be("presentation_line_number");
+			LogFileColumns.PresentationStartingLineNumber.DataType.Should().Be<int>();
+		}
+
+		[Test]
+		[Description("Verifies that the PresentationLineCount property doesn't regress")]
+		public void TestPresentationLineCount()
+		{
+			LogFileColumns.PresentationLineCount.Id.Should().Be("presentation_line_count");
+			LogFileColumns.PresentationLineCount.DataType.Should().Be<int>();
+		}
+
+		[Test]
+		public void TestCombine1()
+		{
+			LogFileColumns.Combine(new ILogFileColumn[0], LogFileColumns.OriginalLineNumber)
+			              .Should().Equal(LogFileColumns.OriginalLineNumber);
+		}
+
+		[Test]
+		public void TestCombine2()
+		{
+			LogFileColumns.Combine(new ILogFileColumn[]
+			              {
+				              LogFileColumns.PresentationLineCount
+			              }, LogFileColumns.OriginalLineNumber)
+			              .Should().Equal(LogFileColumns.PresentationLineCount, LogFileColumns.OriginalLineNumber);
+		}
+
+		[Test]
+		[Description("Verifies that Combine doesn't introduce the same column twice")]
+		public void TestCombine3()
+		{
+			LogFileColumns.Combine(new ILogFileColumn[]
+			              {
+				              LogFileColumns.RawContent,
+							  LogFileColumns.RawContentMaxPresentationWidth
+			              }, LogFileColumns.RawContentMaxPresentationWidth)
+			              .Should().Equal(LogFileColumns.RawContent, LogFileColumns.RawContentMaxPresentationWidth);
 		}
 	}
 }

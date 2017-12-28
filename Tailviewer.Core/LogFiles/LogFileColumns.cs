@@ -58,12 +58,16 @@ namespace Tailviewer.Core.LogFiles
 		/// <remarks>
 		///     TODO: Remove this property to <see cref="LogEntryIndex" /> once #140 is done.
 		/// </remarks>
-		[WillBeRemoved("This property will be be removed once multiline log entry handlign is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		[WillBeRemoved("This property will be be removed once multiline log entry handling is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
 		public static readonly ILogFileColumn<LogEntryIndex> LogEntryIndex;
 
 		/// <summary>
 		///     The (first) line number of the log entry, from 1 to the number of lines in the data source..
 		/// </summary>
+		/// <remarks>
+		///     TODO: Remove this property to <see cref="LogEntryIndex" /> once #140 is done.
+		/// </remarks>
+		[WillBeRemoved("This property will be removed once multiline log entry handling is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
 		public static readonly ILogFileColumn<int> LineNumber;
 
 		/// <summary>
@@ -91,6 +95,25 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		public static readonly ILogFileColumn<TimeSpan?> DeltaTime;
 
+		#region Presentation
+
+		/// <summary>
+		///     The maximum width (in pixels) of the <see cref="RawContent"/> column content.
+		/// </summary>
+		public static readonly ILogFileColumn<float> RawContentMaxPresentationWidth;
+
+		/// <summary>
+		/// The line number of the first line of a log entry's presentation.
+		/// </summary>
+		public static readonly ILogFileColumn<int> PresentationStartingLineNumber;
+
+		/// <summary>
+		/// The number of lines in a log entry's presentation.
+		/// </summary>
+		public static readonly ILogFileColumn<int> PresentationLineCount;
+
+		#endregion
+
 		static LogFileColumns()
 		{
 			RawContent = new WellKnownLogFileColumn<string>("raw_content");
@@ -103,6 +126,10 @@ namespace Tailviewer.Core.LogFiles
 			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");
 			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time");
+
+			RawContentMaxPresentationWidth = new WellKnownLogFileColumn<float>("raw_content_max_presentation_width");
+			PresentationStartingLineNumber = new WellKnownLogFileColumn<int>("presentation_line_number");
+			PresentationLineCount = new WellKnownLogFileColumn<int>("presentation_line_count");
 
 			Minimum = new ILogFileColumn[]
 			{
@@ -133,6 +160,38 @@ namespace Tailviewer.Core.LogFiles
 				if (!actualColumns.Contains(column))
 					actualColumns.Add(column);
 			return actualColumns;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="additionalColumns"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFileColumn> Combine(IEnumerable<ILogFileColumn> columns,
+		                                                    IEnumerable<ILogFileColumn> additionalColumns)
+		{
+			var allColumns = new List<ILogFileColumn>(columns);
+			foreach (var column in additionalColumns)
+			{
+				if (!allColumns.Contains(column))
+				{
+					allColumns.Add(column);
+				}
+			}
+			return allColumns;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="additionalColumns"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFileColumn> Combine(IEnumerable<ILogFileColumn> columns,
+		                                                    params ILogFileColumn[] additionalColumns)
+		{
+			return Combine(columns, (IEnumerable<ILogFileColumn>) additionalColumns);
 		}
 	}
 }
