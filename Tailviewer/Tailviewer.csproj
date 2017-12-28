@@ -188,6 +188,7 @@
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LogFilePresentationIndex.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />

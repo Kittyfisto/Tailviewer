@@ -6,6 +6,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
+
+
 	/// <summary>
 	///     A variable-length buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s:
 	///     New rows can be added, existing rows modified and removed.

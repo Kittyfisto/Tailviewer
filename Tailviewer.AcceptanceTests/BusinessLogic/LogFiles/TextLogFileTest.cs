@@ -9,11 +9,13 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Test.BusinessLogic.LogFiles;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class TextLogFileTest
+		: AbstractLogFileTest
 	{
 		private ManualTaskScheduler _scheduler;
 		private string _fname;
@@ -358,6 +360,31 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				null,
 				null
 			});
+		}
+
+		protected override ILogFile CreateEmpty()
+		{
+			var logFile = new TextLogFile(_scheduler, "fawwaaw");
+			_scheduler.RunOnce();
+			return logFile;
+		}
+
+		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
+		{
+			var fname = Path.GetTempFileName();
+			using (var stream = File.OpenWrite(fname))
+			using(var writer = new StreamWriter(stream))
+			{
+				foreach (var logEntry in content)
+				{
+					writer.Write(logEntry.ToString());
+					writer.WriteLine();
+				}
+			}
+
+			var logFile = new TextLogFile(_scheduler, fname);
+			_scheduler.RunOnce();
+			return logFile;
 		}
 	}
 }
