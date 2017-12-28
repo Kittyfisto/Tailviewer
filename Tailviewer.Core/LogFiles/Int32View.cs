@@ -7,16 +7,21 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     Treats a <see cref="IReadOnlyList{LogLineIndex}" /> as an <see cref="IReadOnlyList{Int32}" />.
 	/// </summary>
-	internal sealed class Int32View
+	public sealed class Int32View
 		: IReadOnlyList<int>
 	{
 		private readonly IReadOnlyList<LogLineIndex> _source;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="source"></param>
 		public Int32View(IReadOnlyList<LogLineIndex> source)
 		{
 			_source = source;
 		}
 
+		/// <inheritdoc />
 		public IEnumerator<int> GetEnumerator()
 		{
 			return new Enumerator(_source.GetEnumerator());
@@ -27,8 +32,10 @@ namespace Tailviewer.Core.LogFiles
 			return GetEnumerator();
 		}
 
+		/// <inheritdoc />
 		public int Count => _source.Count;
 
+		/// <inheritdoc />
 		public int this[int index] => (int) _source[index];
 
 		private sealed class Enumerator

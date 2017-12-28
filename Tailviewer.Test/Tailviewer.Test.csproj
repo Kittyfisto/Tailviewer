@@ -203,6 +203,7 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\LogView\PresentationLogFileTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />

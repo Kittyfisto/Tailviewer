@@ -76,6 +76,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		int MaxCharactersPerLine { get; }
 
 		/// <summary>

@@ -9,6 +9,7 @@ namespace Tailviewer.Ui.Controls.LogView
 	///     Responsible for displaying a single value of a log entry.
 	/// </summary>
 	public abstract class AbstractLogEntryValuePresenter
+		: ILogEntryValuePresenter
 	{
 		private FormattedText _formattedText;
 		private double _width;
