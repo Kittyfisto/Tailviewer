@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 		///     The approximate size of the data source.
 		///     Is only needed to be displayed to the user.
 		/// </summary>
-		public static readonly ILogFilePropertyDescriptor<Size> Size;
+		public static readonly ILogFilePropertyDescriptor<Size?> Size;
 
 		/// <summary>
 		///     The error, if any, which describes why this log file is empty.
@@ -57,7 +57,7 @@ namespace Tailviewer.Core.LogFiles
 			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTimestamp");
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
-			Size = new WellKnownLogFilePropertyDescriptor<Size>("Size");
+			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
 
 			Minimum = new ILogFilePropertyDescriptor[]

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -22,7 +23,7 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		/// </summary>
-		//[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public LogFileProperty[] Properties
 		{
 			get
@@ -38,7 +39,6 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// 
 		/// </summary>
-		//[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public IReadOnlyLogEntry[] LogEntries
 		{
 			get

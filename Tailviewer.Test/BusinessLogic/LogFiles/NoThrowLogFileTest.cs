@@ -53,17 +53,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestSize()
-		{
-			_logFile.Setup(x => x.Size).Throws<SystemException>();
-			new Action(() =>
-			{
-				var unused = _proxy.Size;
-			}).ShouldNotThrow();
-			_logFile.Verify(x => x.Size, Times.Once);
-		}
-
-		[Test]
 		public void TestExists()
 		{
 			_logFile.Setup(x => x.Error).Throws<SystemException>();

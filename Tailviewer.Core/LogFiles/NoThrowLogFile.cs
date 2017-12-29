@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -88,23 +87,6 @@ namespace Tailviewer.Core.LogFiles
 				{
 					BlameExceptionOnPlugin(e);
 					return DateTime.MinValue;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public Size Size
-		{
-			get
-			{
-				try
-				{
-					return _logFile.Size;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return Size.Zero;
 				}
 			}
 		}

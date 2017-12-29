@@ -206,18 +206,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.Size.Should().Be(Size.Zero, "because the source doesn't exist (yet)");
+			logFile.GetValue(LogFileProperties.Size).Should().BeNull("because the source doesn't exist (yet)");
 
 			var size = Size.FromGigabytes(42);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.Size).Returns(size);
-			logFile.Size.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
+			_source.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(size);
+			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			       .Callback((ILogFileProperties properties) =>
+			       {
+					   properties.SetValue(LogFileProperties.Size, size);
+			       });
+
+			logFile.GetValue(LogFileProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.Size.Should().Be(Size.Zero, "because the change shouldn't have been applied yet");
+			logFile.GetValue(LogFileProperties.Size).Should().BeNull("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.Size.Should().Be(size, "because the change should have been applied by now");
+			logFile.GetValue(LogFileProperties.Size).Should().Be(size, "because the change should have been applied by now");
 		}
 
 		[Test]

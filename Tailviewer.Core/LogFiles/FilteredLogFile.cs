@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
@@ -83,9 +82,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime Created => _source.Created;
-
-		/// <inheritdoc />
-		public override Size Size => _source.Size;
 
 		/// <inheritdoc />
 		public override int Count

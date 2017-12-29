@@ -6,7 +6,6 @@ using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -38,7 +37,6 @@ namespace Tailviewer.Core.LogFiles
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 		private ErrorFlags _error;
-		private Size _fileSize;
 
 		private LogFileSection _fullSourceSection;
 		private DateTime _lastModified;
@@ -114,9 +112,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override DateTime Created => _created;
-
-		/// <inheritdoc />
-		public override Size Size => _fileSize;
 
 		/// <inheritdoc />
 		public override int Count => (int) _currentSourceIndex;
@@ -324,7 +319,6 @@ namespace Tailviewer.Core.LogFiles
 			_error = _source.Error;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;
-			_fileSize = _source.Size;
 
 			if (_indices.Count != _currentSourceIndex)
 			{

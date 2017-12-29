@@ -264,7 +264,7 @@ namespace Tailviewer.Ui.ViewModels
 					NoEntriesExplanation = string.Format("Unable to access \"{0}\"", Path.GetFileName(dataSource.FullFileName));
 					NoEntriesSubtext = "The file may be opened exclusively by another process or you are not authorized to view it";
 				}
-				else if (source.Size == Size.Zero)
+				else if (source.GetValue(LogFileProperties.Size) == Size.Zero)
 				{
 					NoEntriesExplanation = "The data source is empty";
 					NoEntriesSubtext = null;

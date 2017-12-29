@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using Metrolib;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -34,12 +33,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Is set to <see cref="DateTime.MinValue" /> when the data source doesn't exist.
 		/// </remarks>
 		DateTime Created { get; }
-
-		/// <summary>
-		///     The approximate size of the data source.
-		///     Is only needed to be displayed to the user.
-		/// </summary>
-		Size Size { get; }
 
 		/// <summary>
 		///     The error, if any, which describes why this log file is empty.

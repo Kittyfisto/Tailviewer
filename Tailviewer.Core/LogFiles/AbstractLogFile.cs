@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -119,9 +118,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public abstract DateTime Created { get; }
-
-		/// <inheritdoc />
-		public abstract Size Size { get; }
 
 		/// <inheritdoc />
 		public abstract int Count { get; }

@@ -54,7 +54,6 @@ namespace Tailviewer.Core.LogFiles
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
 		private long _lastPosition;
-		private long? _fileSize;
 		private bool _loggedTimestampWarning;
 
 		#endregion
@@ -113,19 +112,6 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		public IEnumerable<LogLine> Entries => _entries;
-
-		/// <inheritdoc />
-		public override Size Size
-		{
-			get
-			{
-				var size = _fileSize;
-				if (size == null)
-					return Size.Zero;
-
-				return Size.FromBytes(size.Value);
-			}
-		}
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -328,12 +314,12 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				var fileSize = _fileSize;
+				var fileSize = _properties.GetValue(LogFileProperties.Size);
 				var position = _lastPosition;
 				if (fileSize == null)
 					return 1; //< We've fully read the non-existant file...
 
-				var progress = (double) fileSize.Value / position;
+				var progress = (double) fileSize.Value.Bytes / position;
 				// Since we've performed two reads, it's possible that they have inconsistent values
 				// and therefore we should perform a sanity check on the resulting progress value
 				// so it stays within the expected boundaries. (It's just not worth a lock)
@@ -357,7 +343,7 @@ namespace Tailviewer.Core.LogFiles
 					var info = new FileInfo(_fileName);
 					_lastModified = info.LastWriteTime;
 					_created = info.CreationTime;
-					_fileSize = info.Length;
+					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -597,8 +583,8 @@ namespace Tailviewer.Core.LogFiles
 		private void SetDoesNotExist()
 		{
 			OnReset(null, out _numberOfLinesRead, out _lastPosition);
-			_fileSize = null;
 			_created = DateTime.MinValue;
+			_properties.SetValue(LogFileProperties.Size, null);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 

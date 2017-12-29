@@ -173,13 +173,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSize()
 		{
 			var size = Size.FromGigabytes(5);
-			_logFile.Setup(x => x.Size).Returns(size);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(size);
 
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.Size.Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
+				file.GetValue(LogFileProperties.Size).Should().Be(size, "because the size of the source should be forwarded since that is of interest to the user");
 			}
 		}
 

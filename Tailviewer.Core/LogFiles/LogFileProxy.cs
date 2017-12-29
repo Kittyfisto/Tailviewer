@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -155,19 +154,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public DateTime Created => _innerLogFile?.Created ?? DateTime.MinValue;
-
-		/// <inheritdoc />
-		public Size Size
-		{
-			get
-			{
-				ILogFile logFile = _innerLogFile;
-				if (logFile != null)
-					return logFile.Size;
-
-				return Size.Zero;
-			}
-		}
 
 		/// <inheritdoc />
 		public ErrorFlags Error

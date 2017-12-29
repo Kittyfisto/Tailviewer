@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
@@ -250,8 +249,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { throw new NotImplementedException(); }
 		}
-
-		public override Size Size => _source.Size;
 
 		public override int Count => _source.Count;
 
