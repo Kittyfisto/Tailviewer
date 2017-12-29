@@ -6,15 +6,17 @@ using Metrolib;
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
-	///     The interface to represent a continuous stream of <see cref="LogLine" />s from
+	///     The interface to represent a list of <see cref="IReadOnlyLogEntry" />s from
 	///     some data source. Such a data source may be a file on disk, a SQL database or whatever.
+	///     On top of that, it also provides a list of <see cref="ILogFilePropertyDescriptor" />s which describe the data source.
 	/// </summary>
 	/// <remarks>
 	///     This interface is meant to provide access to the wrapped data source in a coherent way and to notify
 	///     the application of changes to the data source, if necessary.
 	/// </remarks>
 	/// <remarks>
-	///     TODO: Create separate (simplier) interface for log file sources (to be used by plugins) so they don't have to implement that many methods...
+	///     TODO: Create separate (simplier) interface for log file sources (to be used by plugins) so they don't have to
+	///     implement that many methods...
 	/// </remarks>
 	public interface ILogFile
 		: IDisposable
@@ -100,6 +102,41 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </summary>
 		/// <param name="listener"></param>
 		void RemoveListener(ILogFileListener listener);
+
+		#region Properties
+
+		/// <summary>
+		///     The properties offered by this log file.
+		/// </summary>
+		IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
+
+		/// <summary>
+		///     Retrieves the value for the given property.
+		/// </summary>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
+		bool TryGetValue(ILogFilePropertyDescriptor property, out object value);
+
+		/// <summary>
+		///     Retrieves the value for the given property.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="property"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
+		bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value);
+
+		/// <summary>
+		///     Retrieves the values for the given properties and stores them in the given buffer.
+		/// </summary>
+		/// <param name="properties"></param>
+		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
+		void GetValues(ILogFileProperties properties);
+
+		#endregion
 
 		#region Data Retrieval
 

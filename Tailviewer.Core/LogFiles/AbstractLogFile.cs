@@ -75,6 +75,30 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <inheritdoc />
+		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void GetValues(ILogFileProperties properties)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc />
 		public void Dispose()
 		{
 			try

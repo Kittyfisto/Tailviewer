@@ -21,6 +21,7 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly LogEntryList _logEntries;
+		private readonly ILogFileProperties _propertyBuffer;
 		private readonly LogFileListenerCollection _listeners;
 
 		private readonly object _syncRoot;
@@ -43,6 +44,16 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
+		/// <param name="content"></param>
+		public InMemoryLogFile(IReadOnlyLogEntries content)
+			: this(content.Columns)
+		{
+			AddRange(content);
+		}
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
 		/// <param name="columns"></param>
 		public InMemoryLogFile(IEnumerable<ILogFileColumn> columns)
 		{
@@ -52,16 +63,7 @@ namespace Tailviewer.Core.LogFiles
 			_syncRoot = new object();
 			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
-		}
-
-		/// <summary>
-		///     Initializes this object.
-		/// </summary>
-		/// <param name="content"></param>
-		public InMemoryLogFile(IReadOnlyLogEntries content)
-			: this(content.Columns)
-		{
-			AddRange(content);
+			_propertyBuffer = new LogFilePropertyBuffer(LogFileProperties.Minimum);
 		}
 
 		/// <inheritdoc />
@@ -113,6 +115,31 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_listeners.RemoveListener(listener);
 		}
+
+		#region Properties
+
+		/// <inheritdoc />
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _propertyBuffer.Properties;
+
+		/// <inheritdoc />
+		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		{
+			return _propertyBuffer.TryGetValue(property, out value);
+		}
+
+		/// <inheritdoc />
+		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		{
+			return _propertyBuffer.TryGetValue(property, out value);
+		}
+
+		/// <inheritdoc />
+		public void GetValues(ILogFileProperties properties)
+		{
+			_propertyBuffer.GetValues(properties);
+		}
+
+		#endregion
 
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)

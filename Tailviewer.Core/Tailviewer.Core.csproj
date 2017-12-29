@@ -119,6 +119,12 @@
     <Compile Include="LogFiles\LogEntryList.cs" />
     <Compile Include="LogFiles\Int32View.cs" />
     <Compile Include="LogFiles\LogFileColumn.cs" />
+    <Compile Include="LogFiles\LogFileProperties.cs" />
+    <Compile Include="LogFiles\LogFilePropertiesExtensions.cs" />
+    <Compile Include="LogFiles\LogFilePropertiesView.cs" />
+    <Compile Include="LogFiles\LogFileProperty.cs" />
+    <Compile Include="LogFiles\LogFilePropertyBuffer.cs" />
+    <Compile Include="LogFiles\LogFilePropertyList.cs" />
     <Compile Include="LogFiles\LogFileView.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntriesEnumerator.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntry.cs" />
@@ -133,6 +139,7 @@
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />
+    <Compile Include="LogFiles\WellKnownLogFilePropertyDescriptor.cs" />
     <Compile Include="LogLineMatch.cs" />
     <Compile Include="LogTables\ColumnType.cs" />
     <Compile Include="LogTables\IColumnHeader.cs" />

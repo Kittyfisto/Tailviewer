@@ -275,6 +275,31 @@ namespace Tailviewer.Core.LogFiles
 			_listeners.RemoveListener(listener);
 		}
 
+		#region Properties
+
+		/// <inheritdoc />
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _innerLogFile.Properties;
+
+		/// <inheritdoc />
+		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		{
+			return _innerLogFile.TryGetValue(property, out value);
+		}
+
+		/// <inheritdoc />
+		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		{
+			return _innerLogFile.TryGetValue(property, out value);
+		}
+
+		/// <inheritdoc />
+		public void GetValues(ILogFileProperties properties)
+		{
+			_innerLogFile.GetValues(properties);
+		}
+
+		#endregion
+
 		/// <inheritdoc />
 		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{

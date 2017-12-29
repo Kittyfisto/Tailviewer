@@ -7,6 +7,9 @@ namespace Tailviewer.BusinessLogic
 	///     The various error flags a log file may set to indicate as to why a data source doesn't
 	///     display any data.
 	/// </summary>
+	/// <remarks>
+	///     TODO: Rename to EmptyReason
+	/// </remarks>
 	[Flags]
 	public enum ErrorFlags : uint
 	{

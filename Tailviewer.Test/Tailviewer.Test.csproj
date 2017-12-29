@@ -114,6 +114,7 @@
     <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
     <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
@@ -127,6 +128,8 @@
     <Compile Include="BusinessLogic\LogFiles\LogEntryListTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFilePropertyBufferTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
