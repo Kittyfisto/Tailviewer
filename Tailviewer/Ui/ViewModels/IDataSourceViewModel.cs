@@ -52,7 +52,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		int FatalCount { get; }
 
-		Size FileSize { get; }
+		Size? FileSize { get; }
 		bool IsVisible { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }
 		double HorizontalOffset { get; set; }

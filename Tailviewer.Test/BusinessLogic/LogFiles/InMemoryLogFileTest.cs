@@ -36,7 +36,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Columns.Should().Equal(LogFileColumns.Minimum);
 			logFile.GetValue(LogFileProperties.Size).Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
-			logFile.LastModified.Should().Be(DateTime.MinValue);
+			logFile.GetValue(LogFileProperties.LastModified).Should().BeNull();
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
@@ -213,7 +213,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Clear();
 			logFile.GetValue(LogFileProperties.Size).Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
-			logFile.LastModified.Should().Be(DateTime.MinValue);
+			logFile.GetValue(LogFileProperties.LastModified).Should().BeNull();
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);

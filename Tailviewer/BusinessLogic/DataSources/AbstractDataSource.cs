@@ -216,7 +216,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public int TotalCount => _counter.Total.LogLineCount;
 
-		public Size FileSize => UnfilteredLogFile.GetValue(LogFileProperties.Size) ?? Size.Zero;
+		public Size? FileSize => UnfilteredLogFile.GetValue(LogFileProperties.Size);
 
 		public bool ColorByLevel
 		{

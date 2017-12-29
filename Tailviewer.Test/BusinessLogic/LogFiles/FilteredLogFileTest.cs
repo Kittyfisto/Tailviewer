@@ -145,13 +145,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCreated()
 		{
 			var created = new DateTime(2017, 12, 21, 20, 51, 0);
-			_logFile.Setup(x => x.Created).Returns(created);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.Created)).Returns(created);
 
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.Created.Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
+				file.GetValue(LogFileProperties.Created).Should().Be(created, "because the creation date of the source should be forwarded since that is of interest to the user");
 			}
 		}
 

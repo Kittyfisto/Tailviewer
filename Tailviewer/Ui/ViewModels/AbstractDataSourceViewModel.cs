@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 		private int _debugCount;
 		private int _errorCount;
 		private int _fatalCount;
-		private Size _fileSize;
+		private Size? _fileSize;
 		private int _infoCount;
 		private bool _isGrouped;
 		private bool _isVisible;
@@ -215,7 +215,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public Size FileSize
+		public Size? FileSize
 		{
 			get { return _fileSize; }
 			protected set

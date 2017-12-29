@@ -66,7 +66,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.GetValue(LogFileProperties.LastModified).Should().Be(info.LastWriteTime);
-			_file.Created.Should().Be(info.CreationTime);
+			_file.GetValue(LogFileProperties.Created).Should().Be(info.CreationTime);
 		}
 
 		[Test]
@@ -127,7 +127,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file = new TextLogFile(_scheduler, _fname);
 			_scheduler.RunOnce();
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
-			_file.Created.Should().NotBe(DateTime.MinValue);
+			_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
 
 			_streamWriter?.Dispose();
 			_stream?.Dispose();
@@ -135,7 +135,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
-			_file.Created.Should().Be(DateTime.MinValue);
+			_file.GetValue(LogFileProperties.Created).Should().BeNull();
 		}
 
 		[Test]
@@ -150,8 +150,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				_scheduler.RunOnce();
 
 				_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
-				_file.Created.Should().NotBe(DateTime.MinValue);
-				_file.Created.Should().Be(new FileInfo(_fname).CreationTime);
+				_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
+				_file.GetValue(LogFileProperties.Created).Should().Be(new FileInfo(_fname).CreationTime);
 			}
 		}
 

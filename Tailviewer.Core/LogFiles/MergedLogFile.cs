@@ -91,9 +91,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override DateTime Created => DateTime.MinValue;
-
-		/// <inheritdoc />
 		public override int Count
 		{
 			get

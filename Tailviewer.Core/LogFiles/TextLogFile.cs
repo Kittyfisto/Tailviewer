@@ -47,7 +47,6 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly string _fileName;
 		private readonly string _fullFilename;
-		private DateTime _created;
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
@@ -110,9 +109,6 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		public IEnumerable<LogLine> Entries => _entries;
-
-		/// <inheritdoc />
-		public override DateTime Created => _created;
 
 		/// <inheritdoc />
 		public override int Count => _entries.Count;
@@ -334,7 +330,7 @@ namespace Tailviewer.Core.LogFiles
 				{
 					var info = new FileInfo(_fileName);
 					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
-					_created = info.CreationTime;
+					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
 					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
 
 					using (var stream = new FileStream(_fileName,
@@ -575,7 +571,7 @@ namespace Tailviewer.Core.LogFiles
 		private void SetDoesNotExist()
 		{
 			OnReset(null, out _numberOfLinesRead, out _lastPosition);
-			_created = DateTime.MinValue;
+			_properties.SetValue(LogFileProperties.Created, null);
 			_properties.SetValue(LogFileProperties.Size, null);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}

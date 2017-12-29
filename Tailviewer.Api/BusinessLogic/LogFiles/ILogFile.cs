@@ -21,14 +21,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: IDisposable
 	{
 		/// <summary>
-		///     The timestamp (in local time) the data source has been created.
-		/// </summary>
-		/// <remarks>
-		///     Is set to <see cref="DateTime.MinValue" /> when the data source doesn't exist.
-		/// </remarks>
-		DateTime Created { get; }
-
-		/// <summary>
 		///     Whether or not this log file has reached the end of its data source.
 		/// </summary>
 		bool EndOfSourceReached { get; }

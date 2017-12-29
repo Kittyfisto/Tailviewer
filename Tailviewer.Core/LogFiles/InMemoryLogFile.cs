@@ -74,12 +74,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public DateTime LastModified { get; private set; }
-
-		/// <inheritdoc />
-		public DateTime Created => DateTime.MinValue;
-
-		/// <inheritdoc />
 		public bool EndOfSourceReached => true;
 
 		/// <inheritdoc />
@@ -293,7 +287,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Touch()
 		{
-			LastModified = DateTime.Now;
+			_properties.SetValue(LogFileProperties.LastModified, DateTime.Now);
 		}
 
 		/// <summary>

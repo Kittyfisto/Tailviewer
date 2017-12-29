@@ -41,8 +41,6 @@ namespace Tailviewer.Core.LogFiles
 		private int _maxCharactersPerLine;
 		private LevelFlags _currentLogEntryLevel;
 
-		private DateTime _created;
-
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
@@ -102,9 +100,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_properties.GetValues(properties);
 		}
-
-		/// <inheritdoc />
-		public override DateTime Created => _created;
 
 		/// <inheritdoc />
 		public override int Count => (int) _currentSourceIndex;
@@ -308,7 +303,6 @@ namespace Tailviewer.Core.LogFiles
 			_source.GetValues(_properties);
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
-			_created = _source.Created;
 
 			if (_indices.Count != _currentSourceIndex)
 			{

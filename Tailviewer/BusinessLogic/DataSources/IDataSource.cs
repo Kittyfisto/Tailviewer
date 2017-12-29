@@ -53,7 +53,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		double HorizontalOffset { get; set; }
 		DataSource Settings { get; }
 		int TotalCount { get; }
-		Size FileSize { get; }
+		Size? FileSize { get; }
 		bool ColorByLevel { get; set; }
 		bool HideEmptyLines { get; set; }
 		bool IsSingleLine { get; set; }

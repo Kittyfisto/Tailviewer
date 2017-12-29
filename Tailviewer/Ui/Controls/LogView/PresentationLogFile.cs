@@ -333,8 +333,6 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override DateTime Created => _source.Created;
-
 		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
 
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
