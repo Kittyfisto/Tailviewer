@@ -92,23 +92,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public ErrorFlags Error
-		{
-			get
-			{
-				try
-				{
-					return _logFile.Error;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return ErrorFlags.None;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public bool EndOfSourceReached
 		{
 			get

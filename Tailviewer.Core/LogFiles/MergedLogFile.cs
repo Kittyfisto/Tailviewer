@@ -85,16 +85,6 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFile> Sources => _sources;
 
-		/// <summary>
-		/// </summary>
-		/// <remarks>
-		///     This should return false in order to show a detailed error
-		///     message as to why a view is empty, however I'm not sure if stating
-		///     "All data sources do not exist" is such an improvement over
-		///     "The data source is empty".
-		/// </remarks>
-		public override ErrorFlags Error => ErrorFlags.None;
-
 		/// <inheritdoc />
 		public override bool EndOfSourceReached
 		{
@@ -691,7 +681,7 @@ namespace Tailviewer.Core.LogFiles
 		private void Clear(ILogFile logFile)
 		{
 			var numRemoved = 0;
-			lock (_indices)
+			lock (_syncRoot)
 			{
 				for (var i = _indices.Count - 1; i >= 0; --i)
 				{

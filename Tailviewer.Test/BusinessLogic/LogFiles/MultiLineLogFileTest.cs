@@ -140,20 +140,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the Exists flag is changed once a modification is applied")]
 		public void TestOneModification3()
 		{
-			_source.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
+			_source.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source doesn't exist (yet)");
 
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.Error).Returns(ErrorFlags.None);
-			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			_source.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			       .Callback((ILogFileProperties properties) =>
+			       {
+				       properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
+			       });
+
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.Error.Should().Be(ErrorFlags.None, "because the change should have been applied by now");
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the change should have been applied by now");
 		}
 
 		[Test]

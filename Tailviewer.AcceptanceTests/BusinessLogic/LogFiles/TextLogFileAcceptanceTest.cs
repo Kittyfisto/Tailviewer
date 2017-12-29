@@ -148,9 +148,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				new Action(() => logFile = new TextLogFile(_scheduler, "dadwdawdw")).ShouldNotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
-				logFile.Property(x => x.Error).ShouldEventually().Be(ErrorFlags.SourceDoesNotExist, TimeSpan.FromSeconds(5));
+				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldEventually().Be(ErrorFlags.SourceDoesNotExist, TimeSpan.FromSeconds(5));
 
-				logFile.Error.Should().Be(ErrorFlags.SourceDoesNotExist, "Because the specified file doesn't exist");
+				logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "Because the specified file doesn't exist");
 			}
 			finally
 			{
@@ -168,9 +168,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				new Action(() => logFile = new TextLogFile(_scheduler, File2Lines)).ShouldNotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
-				logFile.Property(x => x.Error).ShouldEventually().Be(ErrorFlags.None, TimeSpan.FromSeconds(5));
+				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldEventually().Be(ErrorFlags.None, TimeSpan.FromSeconds(5));
 
-				logFile.Error.Should().Be(ErrorFlags.None, "Because the specified file does exist");
+				logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None, "Because the specified file does exist");
 			}
 			finally
 			{
@@ -289,12 +289,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				new Action(() => logFile = new TextLogFile(_scheduler, fileName)).ShouldNotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
-				logFile.Property(x => x.Error).ShouldEventually().Be(ErrorFlags.SourceDoesNotExist, TimeSpan.FromSeconds(5),
+				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldEventually().Be(ErrorFlags.SourceDoesNotExist, TimeSpan.FromSeconds(5),
 				                                                           "Because the specified file doesn't exist");
 
 				File.WriteAllText(fileName, "Hello World!");
 
-				logFile.Property(x => x.Error).ShouldEventually().Be(ErrorFlags.None, TimeSpan.FromSeconds(5),
+				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldEventually().Be(ErrorFlags.None, TimeSpan.FromSeconds(5),
 				                                                          "Because the file has been created now");
 				logFile.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5),
 																		  "Because one line was written to the file");

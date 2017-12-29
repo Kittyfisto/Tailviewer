@@ -34,11 +34,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.Columns.Should().Equal(LogFileColumns.Minimum);
-			logFile.Size.Should().Be(Size.Zero);
+			logFile.GetValue(LogFileProperties.Size).Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
-			logFile.StartTimestamp.Should().BeNull();
-			logFile.Error.Should().Be(ErrorFlags.None);
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
 		}
@@ -57,7 +58,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.Count.Should().Be(1);
 			logFile.MaxCharactersPerLine.Should().Be(13);
-			logFile.StartTimestamp.Should().BeNull();
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
 		}
 
 		[Test]
@@ -69,7 +70,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(2);
 			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0)));
 			logFile.GetLine(1).Should().Be(new LogLine(1, 1, " World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2)));
-			logFile.StartTimestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
 		}
 
 		[Test]
@@ -210,11 +211,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.Clear();
-			logFile.Size.Should().Be(Size.Zero);
+			logFile.GetValue(LogFileProperties.Size).Should().Be(Size.Zero);
 			logFile.MaxCharactersPerLine.Should().Be(0);
 			logFile.LastModified.Should().Be(DateTime.MinValue);
-			logFile.StartTimestamp.Should().BeNull();
-			logFile.Error.Should().Be(ErrorFlags.None);
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
 		}

@@ -254,12 +254,13 @@ namespace Tailviewer.Ui.ViewModels
 			if (filtered.Count == 0)
 			{
 				IEnumerable<ILogEntryFilter> chain = dataSource.QuickFilterChain;
-				if ((source.Error & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
+				var emptyReason = source.GetValue(LogFileProperties.EmptyReason);
+				if ((emptyReason & ErrorFlags.SourceDoesNotExist) == ErrorFlags.SourceDoesNotExist)
 				{
 					NoEntriesExplanation = string.Format("Can't find \"{0}\"", Path.GetFileName(dataSource.FullFileName));
 					NoEntriesSubtext = string.Format("It was last seen at {0}", Path.GetDirectoryName(dataSource.FullFileName));
 				}
-				else if ((source.Error & ErrorFlags.SourceCannotBeAccessed) == ErrorFlags.SourceCannotBeAccessed)
+				else if ((emptyReason & ErrorFlags.SourceCannotBeAccessed) == ErrorFlags.SourceCannotBeAccessed)
 				{
 					NoEntriesExplanation = string.Format("Unable to access \"{0}\"", Path.GetFileName(dataSource.FullFileName));
 					NoEntriesSubtext = "The file may be opened exclusively by another process or you are not authorized to view it";

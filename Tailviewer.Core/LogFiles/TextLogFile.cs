@@ -30,7 +30,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private readonly ILogFileProperties _properties;
-		private ErrorFlags _error;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -155,9 +154,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_properties.GetValues(properties);
 		}
-
-		/// <inheritdoc />
-		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
@@ -356,7 +352,7 @@ namespace Tailviewer.Core.LogFiles
 						// not allowed to access the file (in which case a different
 						// error must be set).
 
-						_error = ErrorFlags.None;
+						_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
 						if (stream.Length >= _lastPosition)
 						{
 							stream.Position = _lastPosition;
@@ -590,7 +586,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private void SetError(ErrorFlags error)
 		{
-			_error = error;
+			_properties.SetValue(LogFileProperties.EmptyReason, error);
 			SetEndOfSourceReached();
 		}
 

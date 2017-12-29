@@ -126,7 +126,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_file = new TextLogFile(_scheduler, _fname);
 			_scheduler.RunOnce();
-			_file.Error.Should().Be(ErrorFlags.None);
+			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			_file.Created.Should().NotBe(DateTime.MinValue);
 
 			_streamWriter?.Dispose();
@@ -134,7 +134,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			File.Delete(_fname);
 			_scheduler.RunOnce();
 
-			_file.Error.Should().Be(ErrorFlags.SourceDoesNotExist);
+			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 			_file.Created.Should().Be(DateTime.MinValue);
 		}
 
@@ -149,7 +149,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				_file = new TextLogFile(_scheduler, _fname);
 				_scheduler.RunOnce();
 
-				_file.Error.Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 				_file.Created.Should().NotBe(DateTime.MinValue);
 				_file.Created.Should().Be(new FileInfo(_fname).CreationTime);
 			}

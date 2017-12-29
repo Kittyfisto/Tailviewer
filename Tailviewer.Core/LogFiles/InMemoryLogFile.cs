@@ -63,7 +63,9 @@ namespace Tailviewer.Core.LogFiles
 			_syncRoot = new object();
 			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
+
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties.SetValue(LogFileProperties.Size, Size.Zero);
 		}
 
 		/// <inheritdoc />
@@ -72,22 +74,10 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public DateTime? StartTimestamp => _properties.GetValue(LogFileProperties.StartTimestamp);
-
-		/// <inheritdoc />
-		public DateTime? EndTimestamp => _properties.GetValue(LogFileProperties.EndTimestamp);
-
-		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
 
 		/// <inheritdoc />
 		public DateTime Created => DateTime.MinValue;
-
-		/// <inheritdoc />
-		public Size Size { get; set; }
-
-		/// <inheritdoc />
-		public ErrorFlags Error => ErrorFlags.None;
 
 		/// <inheritdoc />
 		public bool EndOfSourceReached => true;
@@ -141,6 +131,17 @@ namespace Tailviewer.Core.LogFiles
 		public void GetValues(ILogFileProperties properties)
 		{
 			_properties.GetValues(properties);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="propertyDescriptor"></param>
+		/// <param name="value"></param>
+		public void SetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor, T value)
+		{
+			_properties.SetValue(propertyDescriptor, value);
 		}
 
 		#endregion
@@ -255,6 +256,7 @@ namespace Tailviewer.Core.LogFiles
 					MaxCharactersPerLine = 0;
 					_properties.SetValue(LogFileProperties.StartTimestamp, null);
 					_properties.SetValue(LogFileProperties.EndTimestamp, null);
+					_properties.SetValue(LogFileProperties.Size, Size.Zero);
 					Touch();
 
 					_listeners.Reset();
@@ -414,7 +416,7 @@ namespace Tailviewer.Core.LogFiles
 					var last = _logEntries[_logEntries.Count - 1];
 
 					logEntryIndex = last.LogEntryIndex + 1;
-					elapsed = timestamp - StartTimestamp;
+					elapsed = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
 					deltaTime = timestamp - last.Timestamp;
 				}
 				else
@@ -424,7 +426,7 @@ namespace Tailviewer.Core.LogFiles
 					deltaTime = null;
 				}
 
-				if (StartTimestamp == null)
+				if (_properties.GetValue(LogFileProperties.StartTimestamp) == null)
 					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 				if (timestamp != null)
 					_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);

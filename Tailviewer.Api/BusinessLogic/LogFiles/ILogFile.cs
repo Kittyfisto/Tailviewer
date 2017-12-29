@@ -35,11 +35,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		DateTime Created { get; }
 
 		/// <summary>
-		///     The error, if any, which describes why this log file is empty.
-		/// </summary>
-		ErrorFlags Error { get; }
-
-		/// <summary>
 		///     Whether or not this log file has reached the end of its data source.
 		/// </summary>
 		bool EndOfSourceReached { get; }

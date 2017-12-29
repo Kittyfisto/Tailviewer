@@ -46,7 +46,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				proxy.InnerLogFile.Should().BeNull();
 				proxy.MaxCharactersPerLine.Should().Be(0);
-				proxy.Error.Should().Be(ErrorFlags.SourceDoesNotExist);
+				proxy.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 				proxy.GetValue(LogFileProperties.Size).Should().BeNull();
 				proxy.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue();
 				proxy.GetValue(LogFileProperties.EndTimestamp).Should().NotHaveValue();
@@ -117,10 +117,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
-				proxy.Error.Should().Be(ErrorFlags.None);
-				_logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceCannotBeAccessed);
-				proxy.Error.Should().Be(ErrorFlags.SourceCannotBeAccessed);
+				_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+				proxy.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
+				_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceCannotBeAccessed);
+				proxy.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 			}
 		}
 

@@ -34,7 +34,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
@@ -54,7 +54,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceDoesNotExist);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns((Size?)null);
 			var filteredLogFile = new Mock<ILogFile>();
 			ILogFileListener listener = null;
@@ -71,7 +71,7 @@ namespace Tailviewer.Test.Ui
 			model.NoEntriesExplanation.Should().Be("Can't find \"somefile.log\"");
 			model.NoEntriesSubtext.Should().Be("It was last seen at E:\\Tailviewer");
 
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(Size.Zero);
 			listener.OnLogFileModified(logFile.Object, new LogFileSection(0, 0));
 			model.Update();
@@ -85,7 +85,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.SourceCannotBeAccessed);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceCannotBeAccessed);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.FullFileName).Returns(@"E:\Tailviewer\somefile.log");
@@ -104,7 +104,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(Size.Zero);
 			var filteredLogFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
@@ -145,7 +145,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -167,7 +167,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();
@@ -190,7 +190,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var dataSource = new Mock<ISingleDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Error).Returns(ErrorFlags.None);
+			logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
 			logFile.Setup(x => x.Count).Returns(1);
 			logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(Size.FromBytes(1));
 			var filteredLogFile = new Mock<ILogFile>();

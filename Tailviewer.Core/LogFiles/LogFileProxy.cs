@@ -156,19 +156,6 @@ namespace Tailviewer.Core.LogFiles
 		public DateTime Created => _innerLogFile?.Created ?? DateTime.MinValue;
 
 		/// <inheritdoc />
-		public ErrorFlags Error
-		{
-			get
-			{
-				ILogFile logFile = _innerLogFile;
-				if (logFile != null)
-					return logFile.Error;
-
-				return ErrorFlags.SourceDoesNotExist;
-			}
-		}
-
-		/// <inheritdoc />
 		public bool EndOfSourceReached
 		{
 			get
@@ -267,6 +254,9 @@ namespace Tailviewer.Core.LogFiles
 			if (logFile != null)
 				return logFile.GetValue(propertyDescriptor);
 
+			if (Equals(propertyDescriptor, LogFileProperties.EmptyReason))
+				return ErrorFlags.SourceDoesNotExist;
+
 			return propertyDescriptor.DefaultValue;
 		}
 
@@ -276,6 +266,9 @@ namespace Tailviewer.Core.LogFiles
 			var logFile = _innerLogFile;
 			if (logFile != null)
 				return logFile.GetValue(propertyDescriptor);
+
+			if (Equals(propertyDescriptor, LogFileProperties.EmptyReason))
+				return (T)(object)ErrorFlags.SourceDoesNotExist;
 
 			return propertyDescriptor.DefaultValue;
 		}
@@ -292,7 +285,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				foreach (var descriptor in properties.Properties)
 				{
-					properties.SetValue(descriptor, descriptor.DefaultValue);
+					if (Equals(descriptor, LogFileProperties.EmptyReason))
+						properties.SetValue(descriptor, ErrorFlags.SourceDoesNotExist);
+					else
+						properties.SetValue(descriptor, descriptor.DefaultValue);
 				}
 			}
 		}

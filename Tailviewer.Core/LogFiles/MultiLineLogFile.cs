@@ -36,7 +36,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ILogFileProperties _properties;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
-		private ErrorFlags _error;
 
 		private LogFileSection _fullSourceSection;
 		private DateTime _lastModified;
@@ -65,6 +64,7 @@ namespace Tailviewer.Core.LogFiles
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
 			_properties = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
+			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 
@@ -103,9 +103,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_properties.GetValues(properties);
 		}
-
-		/// <inheritdoc />
-		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -268,7 +265,6 @@ namespace Tailviewer.Core.LogFiles
 				{
 					_fullSourceSection = LogFileSection.MinimumBoundingLine(_fullSourceSection, section);
 				}
-				//_allModifications.Add(section);
 				performedWork = true;
 			}
 
@@ -316,7 +312,6 @@ namespace Tailviewer.Core.LogFiles
 			_source.GetValues(_properties);
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
-			_error = _source.Error;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;
 

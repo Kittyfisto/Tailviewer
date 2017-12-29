@@ -75,9 +75,6 @@ namespace Tailviewer.Core.LogFiles
 		public override int OriginalCount => _source.Count;
 
 		/// <inheritdoc />
-		public override ErrorFlags Error => _source.Error;
-
-		/// <inheritdoc />
 		public override DateTime LastModified => _source.LastModified;
 
 		/// <inheritdoc />

@@ -55,12 +55,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestExists()
 		{
-			_logFile.Setup(x => x.Error).Throws<SystemException>();
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.Error;
+				var unused = _proxy.GetValue(LogFileProperties.EmptyReason);
 			}).ShouldNotThrow();
-			_logFile.Verify(x => x.Error, Times.Once);
+			_logFile.Verify(x => x.GetValue(LogFileProperties.EmptyReason), Times.Once);
 		}
 
 		[Test]

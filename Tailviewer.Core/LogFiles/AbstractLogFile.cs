@@ -108,9 +108,6 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int MaxCharactersPerLine { get; }
 
 		/// <inheritdoc />
-		public abstract ErrorFlags Error { get; }
-
-		/// <inheritdoc />
 		public virtual bool EndOfSourceReached => _endOfSourceReached;
 
 		/// <inheritdoc />

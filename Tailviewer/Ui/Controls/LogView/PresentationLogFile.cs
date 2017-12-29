@@ -333,8 +333,6 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override ErrorFlags Error => _source.Error;
-
 		public override DateTime LastModified => _source.LastModified;
 
 		public override DateTime Created => _source.Created;
