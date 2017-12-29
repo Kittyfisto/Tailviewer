@@ -75,28 +75,16 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public abstract IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
-		{
-			throw new NotImplementedException();
-		}
+		public abstract object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
-		{
-			throw new NotImplementedException();
-		}
+		public abstract T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
-		{
-			throw new NotImplementedException();
-		}
+		public abstract void GetValues(ILogFileProperties properties);
 
 		/// <inheritdoc />
 		public void Dispose()
@@ -125,12 +113,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public virtual bool EndOfSourceReached => _endOfSourceReached;
-
-		/// <inheritdoc />
-		public abstract DateTime? StartTimestamp { get; }
-
-		/// <inheritdoc />
-		public abstract DateTime? EndTimestamp { get; }
 
 		/// <inheritdoc />
 		public abstract DateTime LastModified { get; }

@@ -41,7 +41,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
 				{
 					filtered.Property(x => x.Count).ShouldEventually().Be(5, TimeSpan.FromSeconds(5));
-					filtered.StartTimestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+					filtered.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 					LogLine[] section = filtered.GetSection(new LogFileSection(0, 5));
 					section.Should().Equal(new[]

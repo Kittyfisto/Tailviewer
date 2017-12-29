@@ -14,12 +14,12 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     The first identified timestamp of the data source, if any, null otherwise.
 		/// </summary>
-		public static readonly ILogFilePropertyDescriptor<DateTime?> StartTime;
+		public static readonly ILogFilePropertyDescriptor<DateTime?> StartTimestamp;
 
 		/// <summary>
 		///     The last identified timestamp of the data source, if any, null otherwise.
 		/// </summary>
-		public static readonly ILogFilePropertyDescriptor<DateTime?> EndTime;
+		public static readonly ILogFilePropertyDescriptor<DateTime?> EndTimestamp;
 
 		/// <summary>
 		///     The timestamp (in local time) the data source has last been modified.
@@ -53,8 +53,8 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileProperties()
 		{
-			StartTime = new WellKnownLogFilePropertyDescriptor<DateTime?>("StartTime");
-			EndTime = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTime");
+			StartTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("StartTimestamp");
+			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTimestamp");
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
 			Size = new WellKnownLogFilePropertyDescriptor<Size>("Size");
@@ -62,13 +62,62 @@ namespace Tailviewer.Core.LogFiles
 
 			Minimum = new ILogFilePropertyDescriptor[]
 			{
-				StartTime,
-				EndTime,
+				StartTimestamp,
+				EndTimestamp,
 				LastModified,
 				Created,
 				Size,
 				EmptyReason
 			};
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="additionalProperties"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFilePropertyDescriptor> CombineWithMinimum(IEnumerable<ILogFilePropertyDescriptor> additionalProperties)
+		{
+			return Combine(Minimum, additionalProperties);
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="additionalProperties"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFilePropertyDescriptor> CombineWithMinimum(params ILogFilePropertyDescriptor[] additionalProperties)
+		{
+			return Combine(Minimum, additionalProperties);
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="properties"></param>
+		/// <param name="additionalProperties"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFilePropertyDescriptor> Combine(IEnumerable<ILogFilePropertyDescriptor> properties,
+		                                                                IEnumerable<ILogFilePropertyDescriptor>
+			                                                                additionalProperties)
+		{
+			var allProperties = new List<ILogFilePropertyDescriptor>(properties);
+			if (additionalProperties != null)
+			{
+				foreach (var property in additionalProperties)
+					if (!allProperties.Contains(property))
+						allProperties.Add(property);
+			}
+			return allProperties;
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="properties"></param>
+		/// <param name="additionalProperties"></param>
+		/// <returns></returns>
+		public static IReadOnlyList<ILogFilePropertyDescriptor> Combine(IEnumerable<ILogFilePropertyDescriptor> properties,
+		                                                                params ILogFilePropertyDescriptor[]
+			                                                                additionalProperties)
+		{
+			return Combine(properties, (IEnumerable<ILogFilePropertyDescriptor>) additionalProperties);
 		}
 	}
 }

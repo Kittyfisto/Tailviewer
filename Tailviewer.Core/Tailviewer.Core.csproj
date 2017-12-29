@@ -120,10 +120,8 @@
     <Compile Include="LogFiles\Int32View.cs" />
     <Compile Include="LogFiles\LogFileColumn.cs" />
     <Compile Include="LogFiles\LogFileProperties.cs" />
-    <Compile Include="LogFiles\LogFilePropertiesExtensions.cs" />
     <Compile Include="LogFiles\LogFilePropertiesView.cs" />
     <Compile Include="LogFiles\LogFileProperty.cs" />
-    <Compile Include="LogFiles\LogFilePropertyBuffer.cs" />
     <Compile Include="LogFiles\LogFilePropertyList.cs" />
     <Compile Include="LogFiles\LogFileView.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntriesEnumerator.cs" />

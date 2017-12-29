@@ -21,7 +21,7 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly LogEntryList _logEntries;
-		private readonly ILogFileProperties _propertyBuffer;
+		private readonly ILogFileProperties _properties;
 		private readonly LogFileListenerCollection _listeners;
 
 		private readonly object _syncRoot;
@@ -63,7 +63,7 @@ namespace Tailviewer.Core.LogFiles
 			_syncRoot = new object();
 			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
-			_propertyBuffer = new LogFilePropertyBuffer(LogFileProperties.Minimum);
+			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 		}
 
 		/// <inheritdoc />
@@ -72,10 +72,10 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public DateTime? StartTimestamp { get; private set; }
-		
+		public DateTime? StartTimestamp => _properties.GetValue(LogFileProperties.StartTimestamp);
+
 		/// <inheritdoc />
-		public DateTime? EndTimestamp { get; private set; }
+		public DateTime? EndTimestamp => _properties.GetValue(LogFileProperties.EndTimestamp);
 
 		/// <inheritdoc />
 		public DateTime LastModified { get; private set; }
@@ -119,24 +119,28 @@ namespace Tailviewer.Core.LogFiles
 		#region Properties
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _propertyBuffer.Properties;
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _propertyBuffer.TryGetValue(property, out value);
+			object value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _propertyBuffer.TryGetValue(property, out value);
+			T value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
 		}
 
 		/// <inheritdoc />
 		public void GetValues(ILogFileProperties properties)
 		{
-			_propertyBuffer.GetValues(properties);
+			_properties.GetValues(properties);
 		}
 
 		#endregion
@@ -249,7 +253,8 @@ namespace Tailviewer.Core.LogFiles
 				{
 					_logEntries.Clear();
 					MaxCharactersPerLine = 0;
-					StartTimestamp = null;
+					_properties.SetValue(LogFileProperties.StartTimestamp, null);
+					_properties.SetValue(LogFileProperties.EndTimestamp, null);
 					Touch();
 
 					_listeners.Reset();
@@ -355,9 +360,9 @@ namespace Tailviewer.Core.LogFiles
 					elapsed = null;
 					deltaTime = null;
 
-					StartTimestamp = timestamp;
+					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 				}
-				EndTimestamp = timestamp;
+				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
 
 				foreach (var line in lines)
 				{
@@ -420,9 +425,9 @@ namespace Tailviewer.Core.LogFiles
 				}
 
 				if (StartTimestamp == null)
-					StartTimestamp = timestamp;
+					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 				if (timestamp != null)
-					EndTimestamp = timestamp;
+					_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
 
 				// The user supplies us with a list of properties to add, however we will
 				// never allow the user to supply us things like index or line number.

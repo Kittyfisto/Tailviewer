@@ -36,12 +36,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestStartTimestamp()
 		{
-			_logFile.Setup(x => x.StartTimestamp).Throws<SystemException>();
-			new Action(() =>
-			{
-				var unused = _proxy.StartTimestamp;
-			}).ShouldNotThrow();
-			_logFile.Verify(x => x.StartTimestamp, Times.Once);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.StartTimestamp)).Throws<SystemException>();
+			_proxy.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
+			_logFile.Verify(x => x.GetValue(LogFileProperties.StartTimestamp), Times.Once);
 		}
 
 		[Test]

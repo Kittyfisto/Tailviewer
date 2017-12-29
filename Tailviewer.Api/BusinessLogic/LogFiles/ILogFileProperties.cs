@@ -45,6 +45,23 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		bool TryGetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor, out T value);
 
 		/// <summary>
+		///     Retrieves the value of the given property.
+		/// </summary>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		/// <exception cref="NoSuchPropertyException"></exception>
+		object GetValue(ILogFilePropertyDescriptor property);
+
+		/// <summary>
+		///     Retrieves the value of the given property.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="property"></param>
+		/// <returns></returns>
+		/// <exception cref="NoSuchPropertyException"></exception>
+		T GetValue<T>(ILogFilePropertyDescriptor<T> property);
+
+		/// <summary>
 		///     Retrieves a subset of properties from this object and stores them in the given <paramref name="properties" />.
 		/// </summary>
 		/// <remarks>

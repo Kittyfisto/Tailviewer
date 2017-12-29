@@ -29,9 +29,8 @@ namespace Tailviewer.Core.LogFiles
 		private readonly Encoding _encoding;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
+		private readonly ILogFileProperties _properties;
 		private ErrorFlags _error;
-		private DateTime? _startTimestamp;
-		private DateTime? _endTimestamp;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -86,6 +85,7 @@ namespace Tailviewer.Core.LogFiles
 				_translator = new NoThrowLogLineTranslator(translator);
 
 			_entries = new List<LogLine>();
+			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_syncRoot = new object();
 			_encoding = encoding ?? Encoding.UTF8;
 
@@ -128,12 +128,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override DateTime? StartTimestamp => _startTimestamp;
-		
-		/// <inheritdoc />
-		public override DateTime? EndTimestamp => _endTimestamp;
-
-		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
@@ -150,6 +144,31 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+
+		/// <inheritdoc />
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+
+		/// <inheritdoc />
+		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		{
+			object value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
+		/// <inheritdoc />
+		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		{
+			T value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
+		/// <inheritdoc />
+		public override void GetValues(ILogFileProperties properties)
+		{
+			_properties.GetValues(properties);
+		}
 
 		/// <inheritdoc />
 		public override ErrorFlags Error => _error;
@@ -517,12 +536,14 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
+				var startTimestamp = _properties.GetValue(LogFileProperties.StartTimestamp);
+
 				for (int i = 0; i < indices.Count; ++i)
 				{
 					var index = indices[i];
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
-						? line.Value.Timestamp - _startTimestamp
+						? line.Value.Timestamp - startTimestamp
 						: LogFileColumns.ElapsedTime.DefaultValue;
 				}
 			}
@@ -596,8 +617,8 @@ namespace Tailviewer.Core.LogFiles
 				stream.Position = 0;
 
 			numberOfLinesRead = 0;
-			_startTimestamp = null;
-			_endTimestamp = null;
+			_properties.SetValue(LogFileProperties.StartTimestamp, null);
+			_properties.SetValue(LogFileProperties.EndTimestamp, null);
 			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
@@ -606,10 +627,10 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Add(string line, LevelFlags level, int numberOfLinesRead, DateTime? timestamp)
 		{
-			if (_startTimestamp == null)
-				_startTimestamp = timestamp;
+			if (_properties.GetValue(LogFileProperties.StartTimestamp) == null)
+				_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 			if (timestamp != null)
-				_endTimestamp = timestamp;
+				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
 
 			lock (_syncRoot)
 			{

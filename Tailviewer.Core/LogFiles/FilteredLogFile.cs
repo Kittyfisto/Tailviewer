@@ -79,12 +79,6 @@ namespace Tailviewer.Core.LogFiles
 		public override ErrorFlags Error => _source.Error;
 
 		/// <inheritdoc />
-		public override DateTime? StartTimestamp => _source.StartTimestamp;
-
-		/// <inheritdoc />
-		public override DateTime? EndTimestamp => _source.EndTimestamp;
-
-		/// <inheritdoc />
 		public override DateTime LastModified => _source.LastModified;
 
 		/// <inheritdoc />
@@ -110,6 +104,27 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+
+		/// <inheritdoc />
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
+
+		/// <inheritdoc />
+		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		{
+			return _source.GetValue(propertyDescriptor);
+		}
+
+		/// <inheritdoc />
+		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		{
+			return _source.GetValue(propertyDescriptor);
+		}
+
+		/// <inheritdoc />
+		public override void GetValues(ILogFileProperties properties)
+		{
+			_source.GetValues(properties);
+		}
 
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)

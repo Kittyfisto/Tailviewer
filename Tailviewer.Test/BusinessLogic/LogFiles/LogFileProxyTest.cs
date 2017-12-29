@@ -48,7 +48,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.MaxCharactersPerLine.Should().Be(0);
 				proxy.Error.Should().Be(ErrorFlags.SourceDoesNotExist);
 				proxy.Size.Should().Be(Size.Zero);
-				proxy.StartTimestamp.Should().NotHaveValue();
+				proxy.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue();
+				proxy.GetValue(LogFileProperties.EndTimestamp).Should().NotHaveValue();
 				proxy.Count.Should().Be(0);
 				proxy.Columns.Should().Equal(LogFileColumns.Minimum);
 
@@ -152,10 +153,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.StartTimestamp).Returns(new DateTime(2016, 10, 7, 14, 46, 00));
-				proxy.StartTimestamp.Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
-				_logFile.Setup(x => x.StartTimestamp).Returns((DateTime?)null);
-				proxy.StartTimestamp.Should().NotHaveValue();
+				_logFile.Setup(x => x.GetValue(LogFileProperties.StartTimestamp)).Returns(new DateTime(2016, 10, 7, 14, 46, 00));
+				proxy.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2016, 10, 7, 14, 46, 00));
+				_logFile.Setup(x => x.GetValue(LogFileProperties.StartTimestamp)).Returns((DateTime?)null);
+				proxy.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue();
 			}
 		}
 

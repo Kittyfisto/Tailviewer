@@ -34,6 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
+		private readonly ILogFileProperties _properties;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 		private ErrorFlags _error;
@@ -42,12 +43,9 @@ namespace Tailviewer.Core.LogFiles
 		private LogFileSection _fullSourceSection;
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
-		private DateTime? _startTimestamp;
-		private DateTime? _endTimestamp;
 		private LevelFlags _currentLogEntryLevel;
 
 		private DateTime _created;
-		//private readonly List<LogFileSection> _allModifications;
 
 		/// <summary>
 		///     Initializes this object.
@@ -63,11 +61,15 @@ namespace Tailviewer.Core.LogFiles
 
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
-			//_allModifications = new List<LogFileSection>();
 			_syncRoot = new object();
 			_indices = new List<LogEntryInfo>();
+
+			// The log file we were given might offer even more properties than the minimum set and we
+			// want to expose those as well.
+			_properties = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
+
 			_currentLogEntry = new LogEntryInfo(-1, 0);
-			
+
 			_source = source;
 			_source.AddListener(this, maximumWaitTime, MaximumBatchSize);
 			StartTask();
@@ -80,13 +82,32 @@ namespace Tailviewer.Core.LogFiles
 		public override IReadOnlyList<ILogFileColumn> Columns => _source.Columns;
 
 		/// <inheritdoc />
-		public override ErrorFlags Error => _error;
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override DateTime? StartTimestamp => _startTimestamp;
-		
+		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		{
+			object value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
 		/// <inheritdoc />
-		public override DateTime? EndTimestamp => _endTimestamp;
+		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		{
+			T value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
+		/// <inheritdoc />
+		public override void GetValues(ILogFileProperties properties)
+		{
+			_properties.GetValues(properties);
+		}
+
+		/// <inheritdoc />
+		public override ErrorFlags Error => _error;
 
 		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
@@ -296,10 +317,11 @@ namespace Tailviewer.Core.LogFiles
 				_currentSourceIndex += remaining;
 			}
 
+			// Now we can perform a block-copy of all properties.
+			_source.GetValues(_properties);
+
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 			_error = _source.Error;
-			_startTimestamp = _source.StartTimestamp;
-			_endTimestamp = _source.EndTimestamp;
 			_lastModified = _source.LastModified;
 			_created = _source.Created;
 			_fileSize = _source.Size;
@@ -309,7 +331,7 @@ namespace Tailviewer.Core.LogFiles
 				Log.ErrorFormat("Inconsistency detected: We have {0} indices for {1} lines", _indices.Count,
 					_currentSourceIndex);
 			}
-			
+
 			Listeners.OnRead((int)_currentSourceIndex);
 
 			if (_source.EndOfSourceReached && _fullSourceSection.IsEndOfSection(_currentSourceIndex))

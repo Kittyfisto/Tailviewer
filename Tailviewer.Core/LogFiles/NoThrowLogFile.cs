@@ -59,40 +59,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public DateTime? StartTimestamp
-		{
-			get
-			{
-				try
-				{
-					return _logFile.StartTimestamp;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return null;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public DateTime? EndTimestamp
-		{
-			get
-			{
-				try
-				{
-					return _logFile.EndTimestamp;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return null;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public DateTime LastModified
 		{
 			get
@@ -289,32 +255,30 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.TryGetValue(property, out value);
+				return _logFile.GetValue(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
 				BlameExceptionOnPlugin(e);
-				value = property.DefaultValue;
-				return false;
+				return propertyDescriptor.DefaultValue;
 			}
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.TryGetValue(property, out value);
+				return _logFile.GetValue(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
 				BlameExceptionOnPlugin(e);
-				value = property.DefaultValue;
-				return false;
+				return propertyDescriptor.DefaultValue;
 			}
 		}
 

@@ -80,10 +80,36 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that the non-generic overload works as well")]
+		public void TestSetValue2()
+		{
+			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)));
+			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 2, 0));
+			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2017, 12, 29, 13, 2, 0));
+		}
+
+		[Test]
+		public void TestSetValue3()
+		{
+			var properties = Create();
+			new Action(() => properties.SetValue(null, new DateTime(2017, 12, 29, 13, 2, 0)))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
+		[Description("Verifies that the non-generic overload throws")]
+		public void TestSetValue4()
+		{
+			var properties = Create();
+			new Action(() => properties.SetValue((ILogFilePropertyDescriptor) null, new DateTime(2017, 12, 29, 13, 2, 0)))
+				.ShouldThrow<ArgumentNullException>();
+		}
+
+		[Test]
 		public void TestGetValues1()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTime, new DateTime(2017, 12, 29, 13, 3, 0)));
+			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 			new Action(() => properties.GetValues(null)).ShouldThrow<ArgumentNullException>();
 		}
 
@@ -92,9 +118,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetValues2()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                    new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTime, new DateTime(2017, 12, 29, 13, 3, 0)));
+			                    new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
-			var buffer = new LogFilePropertyBuffer();
+			var buffer = new LogFilePropertyList();
 			properties.GetValues(buffer);
 			buffer.Properties.Should().BeEmpty();
 		}
@@ -104,11 +130,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetValues3()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTime, new DateTime(2017, 12, 29, 13, 3, 0)));
+			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
-			var buffer = new LogFilePropertyBuffer(LogFileProperties.StartTime);
+			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp);
 			properties.GetValues(buffer);
-			buffer.GetValue(LogFileProperties.StartTime).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
+			buffer.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
 		}
 
 		[Test]
@@ -116,11 +142,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetValues4()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTime, new DateTime(2017, 12, 29, 13, 3, 0)));
+			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
-			var buffer = new LogFilePropertyBuffer(LogFileProperties.StartTime, LogFileProperties.EmptyReason);
+			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp, LogFileProperties.EmptyReason);
 			properties.GetValues(buffer);
-			buffer.GetValue(LogFileProperties.StartTime).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
+			buffer.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
 			buffer.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
 		}
 	}

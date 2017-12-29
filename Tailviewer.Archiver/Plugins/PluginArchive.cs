@@ -42,7 +42,10 @@ namespace Tailviewer.Archiver.Plugins
 		/// <remarks>
 		///     Version 2: Changed TextLogFile ctor, older plugins won't load anymore
 		/// </remarks>
-		public const int CurrentPluginArchiveVersion = 2;
+		/// <remarks>
+		///     Version 3: ILogFile interface has been mostly rewritten to support custom columns and properties
+		/// </remarks>
+		public const int CurrentPluginArchiveVersion = 3;
 
 		/// <summary>
 		///     The currently minimum plugin-archive-version supported by this software.

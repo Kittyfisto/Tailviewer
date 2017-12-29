@@ -30,14 +30,13 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly IReadOnlyList<ILogFile> _sources;
+		private readonly ILogFileProperties _properties;
 		private readonly object _syncRoot;
 		private Size _fileSize;
 		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private Percentage _progress;
 
-		private DateTime? _startTimestamp;
-		private DateTime? _endTimestamp;
 		private int _totalLineCount;
 
 		/// <summary>
@@ -71,6 +70,7 @@ namespace Tailviewer.Core.LogFiles
 			_logFileIndices = logFileIndices;
 			_syncRoot = new object();
 			_maximumWaitTime = maximumWaitTime;
+			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 
 			byte idx = 0;
 			foreach (var logFile in _sources)
@@ -103,12 +103,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override DateTime? StartTimestamp => _startTimestamp;
-
-		/// <inheritdoc />
-		public override DateTime? EndTimestamp => _endTimestamp;
-
-		/// <inheritdoc />
 		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
@@ -137,6 +131,31 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+
+		/// <inheritdoc />
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+
+		/// <inheritdoc />
+		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		{
+			object value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
+		/// <inheritdoc />
+		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		{
+			T value;
+			_properties.TryGetValue(propertyDescriptor, out value);
+			return value;
+		}
+
+		/// <inheritdoc />
+		public override void GetValues(ILogFileProperties properties)
+		{
+			_properties.GetValues(properties);
+		}
 
 		/// <inheritdoc />
 		public override double Progress => _progress.RelativeValue;
@@ -585,17 +604,17 @@ namespace Tailviewer.Core.LogFiles
 				var last = source.LastModified;
 				if (last > lastModified)
 					lastModified = last;
-				var start = source.StartTimestamp;
+				var start = source.GetValue(LogFileProperties.StartTimestamp);
 				if (start != null && (start < startTimestamp || startTimestamp == null))
 					startTimestamp = start;
-				var end = source.EndTimestamp;
+				var end = source.GetValue(LogFileProperties.EndTimestamp);
 				if (end != null && (end > endTimestamp || endTimestamp == null))
 					endTimestamp = end;
 			}
 			_fileSize = fileSize;
 			_lastModified = lastModified;
-			_startTimestamp = startTimestamp;
-			_endTimestamp = endTimestamp;
+			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
+			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
 			_progress = Percentage.Of(_indices.Count, _totalLineCount);
 		}
 

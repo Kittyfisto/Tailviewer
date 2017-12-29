@@ -162,18 +162,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.StartTimestamp.Should().NotHaveValue("because the source doesn't exist (yet)");
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue("because the source doesn't exist (yet)");
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.StartTimestamp).Returns(timestamp);
-			logFile.StartTimestamp.Should().NotHaveValue("because the change shouldn't have been applied yet");
+			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			       .Callback((ILogFileProperties properties) =>
+			       {
+				       properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
+			       });
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
-			logFile.StartTimestamp.Should().NotHaveValue("because the change shouldn't have been applied yet");
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue("because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.StartTimestamp.Should().Be(timestamp, "because the change should have been applied by now");
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(timestamp, "because the change should have been applied by now");
 		}
 
 		[Test]

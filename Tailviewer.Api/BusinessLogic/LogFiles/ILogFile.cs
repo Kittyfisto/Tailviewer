@@ -22,16 +22,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: IDisposable
 	{
 		/// <summary>
-		///     The first identified timestamp of the data source, if any, null otherwise.
-		/// </summary>
-		DateTime? StartTimestamp { get; }
-
-		/// <summary>
-		///     The last identified timestamp of the data source, if any, null otherwise.
-		/// </summary>
-		DateTime? EndTimestamp { get; }
-
-		/// <summary>
 		///     The timestamp (in local time) the data source has last been modified.
 		///     A modification is meant to be the addition and/or removal of at least one log line.
 		/// </summary>
@@ -113,21 +103,25 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Retrieves the value for the given property.
 		/// </summary>
-		/// <param name="property"></param>
-		/// <param name="value"></param>
+		/// <remarks>
+		///     When the property doesn't exist or when the property isn't available, then
+		///     <see cref="ILogFilePropertyDescriptor.DefaultValue" /> is returned instead.
+		/// </remarks>
+		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
-		bool TryGetValue(ILogFilePropertyDescriptor property, out object value);
+		object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves the value for the given property.
 		/// </summary>
+		/// <remarks>
+		///     When the property doesn't exist or when the property isn't available, then
+		///     <see cref="ILogFilePropertyDescriptor{T}.DefaultValue" /> is returned instead.
+		/// </remarks>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="property"></param>
-		/// <param name="value"></param>
+		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
-		bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value);
+		T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves the values for the given properties and stores them in the given buffer.

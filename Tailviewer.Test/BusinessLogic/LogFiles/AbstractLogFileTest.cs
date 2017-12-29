@@ -27,17 +27,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			content[1].Timestamp = new DateTime(2017, 12, 20, 13, 23, 0);
 			var logFile = CreateFromContent(content);
 			var visualizer = new LogFileView(logFile);
-			var items = visualizer.Items;
-			items.Should().NotBeNull();
-			items.Should().HaveCount(2);
+			var logEntries = visualizer.LogEntries;
+			logEntries.Should().NotBeNull();
+			logEntries.Should().HaveCount(2);
 		}
 
 		[Test]
 		public void TestStartEndTimestampEmptyLogFile()
 		{
 			var logFile = CreateEmpty();
-			logFile.StartTimestamp.Should().BeNull();
-			logFile.EndTimestamp.Should().BeNull();
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
 		}
 
 		[Test]
@@ -46,8 +46,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var content = new LogEntryList(LogFileColumns.Timestamp);
 			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
 			var logFile = CreateFromContent(content);
-			logFile.StartTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
-			logFile.EndTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
 		}
 
 		[Test]
@@ -60,8 +60,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			var logFile = CreateFromContent(content);
-			logFile.StartTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
-			logFile.EndTimestamp.Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
+			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
+			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
 		}
 
 		#region Well Known Columns

@@ -34,7 +34,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly LogEntryList _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly object _syncRoot;
-		private readonly ILogFile _logFile;
+		private readonly ILogFile _source;
 
 		private float _maxWidth;
 		private int _lineCount;
@@ -53,7 +53,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				throw new ArgumentNullException(nameof(source));
 
 			_maximumWaitTime = maximumWaitTime;
-			_logFile = source;
+			_source = source;
 
 			_indices = new LogEntryList(IndexedColumns);
 
@@ -61,7 +61,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_syncRoot = new object();
 			
-			_logFile.AddListener(this, _maximumWaitTime, MaximumLineCount);
+			_source.AddListener(this, _maximumWaitTime, MaximumLineCount);
 			StartTask();
 		}
 
@@ -111,7 +111,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			lock (_syncRoot)
 			{
-				if (!ReferenceEquals(logFile, _logFile))
+				if (!ReferenceEquals(logFile, _source))
 				{
 					Log.WarnFormat("Ignoring Clear: It's probably from a previous log file");
 				}
@@ -135,7 +135,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			lock (_syncRoot)
 			{
-				if (!ReferenceEquals(logFile, _logFile))
+				if (!ReferenceEquals(logFile, _source))
 				{
 					Log.WarnFormat("Ignoring invalidation from '{0}' onwards: It's probably from a previous log file",
 					               index);
@@ -172,7 +172,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			lock (_syncRoot)
 			{
-				if (!ReferenceEquals(logFile, _logFile))
+				if (!ReferenceEquals(logFile, _source))
 				{
 					// We've retrieved data from a different log file than we wanted to...
 					Log.WarnFormat("Ignoring add '{0}': It's probably from a previous log file", section);
@@ -251,9 +251,14 @@ namespace Tailviewer.Ui.Controls.LogView
 			get { throw new NotImplementedException(); }
 		}
 
-		public override Size Size => _logFile.Size;
+		public override Size Size => _source.Size;
 
-		public override int Count => _logFile.Count;
+		public override int Count => _source.Count;
+
+		public override void GetValues(ILogFileProperties properties)
+		{
+			throw new NotImplementedException();
+		}
 
 		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
@@ -263,7 +268,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else
 			{
-				_logFile.GetColumn(section, column, buffer, destinationIndex);
+				_source.GetColumn(section, column, buffer, destinationIndex);
 			}
 		}
 
@@ -275,7 +280,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else
 			{
-				_logFile.GetColumn(indices, column, buffer, destinationIndex);
+				_source.GetColumn(indices, column, buffer, destinationIndex);
 			}
 		}
 
@@ -299,7 +304,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override double Progress => _logFile.Progress * MyProgress;
+		public override double Progress => _source.Progress * MyProgress;
 
 		/// <summary>
 		///     TODO: Add better estimation.
@@ -313,7 +318,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			PendingModification pendingModification;
 			while (_pendingModifications.TryDequeue(out pendingModification))
 			{
-				if (pendingModification.LogFile != _logFile)
+				if (pendingModification.LogFile != _source)
 				{
 					Log.WarnFormat("Ignoring log file modification '{0}, {1}': It's probably from a previous log file",
 					               pendingModification.LogFile, pendingModification.Section);
@@ -331,17 +336,24 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override ErrorFlags Error => _logFile.Error;
+		public override ErrorFlags Error => _source.Error;
 
-		public override DateTime? StartTimestamp => _logFile.StartTimestamp;
+		public override DateTime LastModified => _source.LastModified;
 
-		public override DateTime? EndTimestamp => _logFile.EndTimestamp;
+		public override DateTime Created => _source.Created;
 
-		public override DateTime LastModified => _logFile.LastModified;
+		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
 
-		public override DateTime Created => _logFile.Created;
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
 
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Combine(_logFile.Columns, IndexedColumns);
+		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		{
+			return _source.GetValue(propertyDescriptor);
+		}
 
+		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		{
+			return _source.GetValue(propertyDescriptor);
+		}
 	}
 }

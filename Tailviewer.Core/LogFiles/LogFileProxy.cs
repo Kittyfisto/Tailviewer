@@ -151,12 +151,6 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed => _isDisposed;
 
 		/// <inheritdoc />
-		public DateTime? StartTimestamp => _innerLogFile?.StartTimestamp;
-
-		/// <inheritdoc />
-		public DateTime? EndTimestamp => _innerLogFile?.EndTimestamp;
-
-		/// <inheritdoc />
 		public DateTime LastModified => _innerLogFile?.LastModified ?? DateTime.MinValue;
 
 		/// <inheritdoc />
@@ -278,24 +272,43 @@ namespace Tailviewer.Core.LogFiles
 		#region Properties
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _innerLogFile.Properties;
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _innerLogFile?.Properties ?? LogFileProperties.Minimum;
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _innerLogFile.TryGetValue(property, out value);
+			var logFile = _innerLogFile;
+			if (logFile != null)
+				return logFile.GetValue(propertyDescriptor);
+
+			return propertyDescriptor.DefaultValue;
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _innerLogFile.TryGetValue(property, out value);
+			var logFile = _innerLogFile;
+			if (logFile != null)
+				return logFile.GetValue(propertyDescriptor);
+
+			return propertyDescriptor.DefaultValue;
 		}
 
 		/// <inheritdoc />
 		public void GetValues(ILogFileProperties properties)
 		{
-			_innerLogFile.GetValues(properties);
+			var logFile = _innerLogFile;
+			if (logFile != null)
+			{
+				logFile.GetValues(properties);
+			}
+			else
+			{
+				foreach (var descriptor in properties.Properties)
+				{
+					properties.SetValue(descriptor, descriptor.DefaultValue);
+				}
+			}
 		}
 
 		#endregion

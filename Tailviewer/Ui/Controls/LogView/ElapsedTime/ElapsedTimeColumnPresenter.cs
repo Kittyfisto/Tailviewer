@@ -16,7 +16,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 		protected override void UpdateWidth(ILogFile logFile)
 		{
 			var culture = CultureInfo.CurrentCulture;
-			var maximum = ElapsedTimePresenter.ToString(logFile.EndTimestamp - logFile.StartTimestamp, culture);
+			var maximum = ElapsedTimePresenter.ToString(logFile.GetValue(LogFileProperties.EndTimestamp) - logFile.GetValue(LogFileProperties.StartTimestamp), culture);
 			var maximumWidth = TextHelper.EstimateWidthUpperLimit(maximum);
 			Width = maximumWidth;
 		}
