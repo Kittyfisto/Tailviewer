@@ -158,6 +158,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var changes = new List<string>();
 			_dataSource.Setup(x => x.TotalCount).Returns(10);
+			_dataSource.Setup(x => x.LastModified).Returns(DateTime.MinValue);
 			_viewModel.Update();
 
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);

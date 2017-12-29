@@ -38,7 +38,6 @@ namespace Tailviewer.Core.LogFiles
 		private LogLineIndex _currentSourceIndex;
 
 		private LogFileSection _fullSourceSection;
-		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private LevelFlags _currentLogEntryLevel;
 
@@ -103,9 +102,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_properties.GetValues(properties);
 		}
-
-		/// <inheritdoc />
-		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
 		public override DateTime Created => _created;
@@ -312,7 +308,6 @@ namespace Tailviewer.Core.LogFiles
 			_source.GetValues(_properties);
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
-			_lastModified = _source.LastModified;
 			_created = _source.Created;
 
 			if (_indices.Count != _currentSourceIndex)

@@ -98,7 +98,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime LastModified => UnfilteredLogFile.LastModified;
+		public DateTime? LastModified => UnfilteredLogFile.GetValue(LogFileProperties.LastModified);
 
 		public DateTime LastViewed
 		{

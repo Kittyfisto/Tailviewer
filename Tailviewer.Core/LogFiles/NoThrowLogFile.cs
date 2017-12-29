@@ -58,23 +58,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public DateTime LastModified
-		{
-			get
-			{
-				try
-				{
-					return _logFile.LastModified;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return DateTime.MinValue;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public DateTime Created
 		{
 			get

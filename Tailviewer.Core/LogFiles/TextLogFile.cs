@@ -47,7 +47,6 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly string _fileName;
 		private readonly string _fullFilename;
-		private DateTime _lastModified;
 		private DateTime _created;
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
@@ -111,9 +110,6 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		public IEnumerable<LogLine> Entries => _entries;
-
-		/// <inheritdoc />
-		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
 		public override DateTime Created => _created;
@@ -337,7 +333,7 @@ namespace Tailviewer.Core.LogFiles
 				else
 				{
 					var info = new FileInfo(_fileName);
-					_lastModified = info.LastWriteTime;
+					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
 					_created = info.CreationTime;
 					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
 
@@ -624,7 +620,8 @@ namespace Tailviewer.Core.LogFiles
 
 				if (timestamp != null)
 				{
-					var difference = timestamp - _lastModified;
+					var lastModified = _properties.GetValue(LogFileProperties.LastModified);
+					var difference = timestamp - lastModified;
 					if (difference >= TimeSpan.FromSeconds(10))
 					{
 						// I've had this issue occur on one system and I can't really explain it.
@@ -639,12 +636,13 @@ namespace Tailviewer.Core.LogFiles
 						{
 							Log.InfoFormat(
 								"FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
-								_lastModified,
+								lastModified,
 								timestamp
 							);
 							_loggedTimestampWarning = true;
 						}
-						_lastModified = timestamp.Value;
+
+						_properties.SetValue(LogFileProperties.LastModified, timestamp.Value);
 					}
 				}
 			}

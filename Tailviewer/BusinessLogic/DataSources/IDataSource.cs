@@ -38,7 +38,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		ILogFileSearch Search { get; }
 
-		DateTime LastModified { get; }
+		DateTime? LastModified { get; }
 		DateTime LastViewed { get; set; }
 
 		string FullFileName { get; }

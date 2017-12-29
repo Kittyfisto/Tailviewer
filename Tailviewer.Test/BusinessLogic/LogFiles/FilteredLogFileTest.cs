@@ -159,13 +159,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLastModified()
 		{
 			var lastModified = new DateTime(2017, 12, 21, 20, 52, 0);
-			_logFile.Setup(x => x.LastModified).Returns(lastModified);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.LastModified)).Returns(lastModified);
 
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.LastModified.Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
+				file.GetValue(LogFileProperties.LastModified).Should().Be(lastModified, "because the last modification date of the source should be forwarded since that is of interest to the user");
 			}
 		}
 

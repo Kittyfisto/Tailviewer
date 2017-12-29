@@ -25,7 +25,7 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isGrouped;
 		private bool _isVisible;
 		private int _lastSeenLogLine;
-		private TimeSpan _lastWrittenAge;
+		private TimeSpan? _lastWrittenAge;
 		private int _noTimestampCount;
 		private int _otherCount;
 		private IDataSourceViewModel _parent;
@@ -260,7 +260,7 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
-		public TimeSpan LastWrittenAge
+		public TimeSpan? LastWrittenAge
 		{
 			get { return _lastWrittenAge; }
 			private set

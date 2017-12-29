@@ -44,12 +44,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestLastModified()
 		{
-			_logFile.Setup(x => x.LastModified).Throws<SystemException>();
+			_logFile.Setup(x => x.GetValue(LogFileProperties.LastModified)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.LastModified;
+				var unused = _proxy.GetValue(LogFileProperties.LastModified);
 			}).ShouldNotThrow();
-			_logFile.Verify(x => x.LastModified, Times.Once);
+			_logFile.Verify(x => x.GetValue(LogFileProperties.LastModified), Times.Once);
 		}
 
 		[Test]

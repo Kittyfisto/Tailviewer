@@ -150,9 +150,6 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed => _isDisposed;
 
 		/// <inheritdoc />
-		public DateTime LastModified => _innerLogFile?.LastModified ?? DateTime.MinValue;
-
-		/// <inheritdoc />
 		public DateTime Created => _innerLogFile?.Created ?? DateTime.MinValue;
 
 		/// <inheritdoc />

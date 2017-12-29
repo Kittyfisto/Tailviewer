@@ -21,12 +21,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: IDisposable
 	{
 		/// <summary>
-		///     The timestamp (in local time) the data source has last been modified.
-		///     A modification is meant to be the addition and/or removal of at least one log line.
-		/// </summary>
-		DateTime LastModified { get; }
-
-		/// <summary>
 		///     The timestamp (in local time) the data source has been created.
 		/// </summary>
 		/// <remarks>

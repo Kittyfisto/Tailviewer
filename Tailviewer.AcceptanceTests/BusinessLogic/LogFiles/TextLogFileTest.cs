@@ -65,7 +65,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			var info = new FileInfo(_fname);
 			_scheduler.RunOnce();
 
-			_file.LastModified.Should().Be(info.LastWriteTime);
+			_file.GetValue(LogFileProperties.LastModified).Should().Be(info.LastWriteTime);
 			_file.Created.Should().Be(info.CreationTime);
 		}
 

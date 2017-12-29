@@ -111,9 +111,6 @@ namespace Tailviewer.Core.LogFiles
 		public virtual bool EndOfSourceReached => _endOfSourceReached;
 
 		/// <inheritdoc />
-		public abstract DateTime LastModified { get; }
-
-		/// <inheritdoc />
 		public abstract DateTime Created { get; }
 
 		/// <inheritdoc />

@@ -32,7 +32,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly IReadOnlyList<ILogFile> _sources;
 		private readonly ILogFileProperties _properties;
 		private readonly object _syncRoot;
-		private DateTime _lastModified;
 		private int _maxCharactersPerLine;
 		private Percentage _progress;
 
@@ -90,9 +89,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get { return _sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached; }
 		}
-
-		/// <inheritdoc />
-		public override DateTime LastModified => _lastModified;
 
 		/// <inheritdoc />
 		public override DateTime Created => DateTime.MinValue;
@@ -579,7 +575,7 @@ namespace Tailviewer.Core.LogFiles
 		private void UpdateProperties()
 		{
 			Size? size = null;
-			var lastModified = DateTime.MinValue;
+			DateTime? lastModified = null;
 			DateTime? startTimestamp = null;
 			DateTime? endTimestamp = null;
 			for (int n = 0; n < _sources.Count; ++n)
@@ -592,8 +588,8 @@ namespace Tailviewer.Core.LogFiles
 				else if (sourceSize != null)
 					size += sourceSize;
 
-				var last = source.LastModified;
-				if (last > lastModified)
+				var last = source.GetValue(LogFileProperties.LastModified);
+				if (last != null && (last > lastModified || lastModified == null))
 					lastModified = last;
 				var start = source.GetValue(LogFileProperties.StartTimestamp);
 				if (start != null && (start < startTimestamp || startTimestamp == null))
@@ -603,7 +599,7 @@ namespace Tailviewer.Core.LogFiles
 					endTimestamp = end;
 			}
 
-			_lastModified = lastModified;
+			_properties.SetValue(LogFileProperties.LastModified, lastModified);
 			_properties.SetValue(LogFileProperties.Size, size);
 			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
 			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);

@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 
-		TimeSpan LastWrittenAge { get; }
+		TimeSpan? LastWrittenAge { get; }
 
 		ICommand RemoveCommand { get; }
 
