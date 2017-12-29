@@ -34,6 +34,8 @@ namespace Tailviewer.Ui.ViewModels
 		/// </summary>
 		string DataSourceOrigin { get; }
 
+		bool Exists { get; }
+
 		int TotalCount { get; }
 
 		int OtherCount { get; }

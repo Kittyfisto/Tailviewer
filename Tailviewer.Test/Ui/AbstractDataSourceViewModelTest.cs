@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.ViewModels;
 
@@ -41,8 +42,10 @@ namespace Tailviewer.Test.Ui
 		private sealed class DataSourceViewModel
 			: AbstractDataSourceViewModel
 		{
-			public DataSourceViewModel(IDataSource dataSource) : base(dataSource)
+			public DataSourceViewModel(IDataSource dataSource)
+				: base(dataSource)
 			{
+				Update();
 			}
 
 			public override ICommand OpenInExplorerCommand
@@ -95,7 +98,7 @@ namespace Tailviewer.Test.Ui
 			_viewModel.NewLogLineCount.Should()
 			          .Be(0,
 			              "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
-			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge"});
+			changes.Should().Equal("TotalCount", "LastWrittenAge");
 		}
 
 		[Test]
@@ -115,7 +118,7 @@ namespace Tailviewer.Test.Ui
 
 			_viewModel.Update();
 			_viewModel.NewLogLineCount.Should().Be(1);
-			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge", "NewLogLineCount"});
+			changes.Should().Equal("TotalCount", "LastWrittenAge", "NewLogLineCount");
 		}
 
 		[Test]
@@ -136,7 +139,7 @@ namespace Tailviewer.Test.Ui
 			_viewModel.NewLogLineCount.Should()
 			          .Be(0,
 			              "Because even though the number of log lines has changed - it is not reported as new because the last modified timestamp is still in the past");
-			changes.Should().Equal(new[] {"TotalCount", "LastWrittenAge"});
+			changes.Should().Equal("TotalCount", "LastWrittenAge");
 		}
 
 		[Test]
@@ -172,13 +175,47 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		public void TestExists1()
+		{
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_viewModel.Update();
+			_viewModel.Exists.Should().BeTrue();
+		}
+
+		[Test]
+		public void TestExists2([Values(ErrorFlags.SourceCannotBeAccessed, ErrorFlags.SourceDoesNotExist)] ErrorFlags emptyReason)
+		{
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(emptyReason);
+			_viewModel.Update();
+			_viewModel.Exists.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestExists3()
+		{
+			_viewModel.Exists.Should().BeTrue();
+
+			var changes = new List<string>();
+			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
+
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.SourceDoesNotExist);
+			_viewModel.Update();
+			_viewModel.Exists.Should().BeFalse();
+
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
+			_viewModel.Update();
+			_viewModel.Exists.Should().BeTrue();
+			changes.Should().Equal("Exists", "Exists");
+		}
+
+		[Test]
 		public void TestVisibleLogLine()
 		{
 			var changes = new List<string>();
 			_viewModel.PropertyChanged += (unused, args) => changes.Add(args.PropertyName);
 
 			_viewModel.VisibleLogLine = new LogLineIndex(108);
-			changes.Should().Equal(new[] {"VisibleLogLine"});
+			changes.Should().Equal("VisibleLogLine");
 
 			changes.Clear();
 			_viewModel.VisibleLogLine = new LogLineIndex(108);

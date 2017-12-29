@@ -7,6 +7,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -24,6 +25,7 @@ namespace Tailviewer.Ui.ViewModels
 		private int _infoCount;
 		private bool _isGrouped;
 		private bool _isVisible;
+		private bool _exists;
 		private int _lastSeenLogLine;
 		private TimeSpan? _lastWrittenAge;
 		private int _noTimestampCount;
@@ -46,7 +48,6 @@ namespace Tailviewer.Ui.ViewModels
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 			_currentSearchResultIndex = -1;
 
-			Update();
 		}
 
 		public int NewLogLineCount
@@ -97,6 +98,19 @@ namespace Tailviewer.Ui.ViewModels
 		public abstract string DisplayName { get; set; }
 		public abstract bool CanBeRenamed { get; }
 		public abstract string DataSourceOrigin { get; }
+
+		public bool Exists
+		{
+			get { return _exists; }
+			private set
+			{
+				if (value == _exists)
+					return;
+
+				_exists = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public int TotalCount
 		{
@@ -513,6 +527,8 @@ namespace Tailviewer.Ui.ViewModels
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
+			Exists = _dataSource.UnfilteredLogFile?.GetValue(LogFileProperties.EmptyReason)
+			         == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchResultCount = (_dataSource.Search?.Count) ?? 0;

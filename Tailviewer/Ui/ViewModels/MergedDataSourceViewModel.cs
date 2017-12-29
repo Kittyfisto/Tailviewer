@@ -35,6 +35,8 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
+
+			Update();
 		}
 
 		private void OpenInExplorer()

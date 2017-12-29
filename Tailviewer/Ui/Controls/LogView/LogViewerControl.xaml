@@ -19,6 +19,7 @@
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
             <converters1:TimeSpanConverter x:Key="TimeSpanConverter" />
 
+            <converters1:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
             <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
             <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
@@ -251,7 +252,7 @@
 
         <Border Grid.Row="3"
                 Background="#D8D8D8">
-            <Grid>
+            <Grid Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
