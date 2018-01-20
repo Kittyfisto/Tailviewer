@@ -98,6 +98,7 @@
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />

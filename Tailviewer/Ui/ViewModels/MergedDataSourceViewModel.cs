@@ -10,7 +10,9 @@ using log4net;
 using Metrolib;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.FileExplorer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
@@ -28,10 +30,14 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _displayNoTimestampCount;
 		private int _noTimestampSum;
 		private bool _isSelected;
+		private readonly IActionCenter _actionCenter;
 
-		public MergedDataSourceViewModel(MergedDataSource dataSource)
+		public MergedDataSourceViewModel(MergedDataSource dataSource, IActionCenter actionCenter)
 			: base(dataSource)
 		{
+			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));
+
+			_actionCenter = actionCenter;
 			_dataSource = dataSource;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
@@ -39,11 +45,13 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void OpenInExplorer()
 		{
+			
 			var dataSources = _dataSource.OriginalSources.GroupBy(GetDirectory);
 			foreach (var grouping in dataSources)
 			{
-				//SingleDataSourceViewModel.OpenInExplorer(grouping.First());
-				//SingleDataSourceViewModel.OpenInExplorer();
+				var files = grouping.Select(x => x.FullFileName).ToArray();
+				var action = new OpenFolderAction(files, grouping.Key, new FileExplorer());
+				_actionCenter.Add(action);
 			}
 		}
 
