@@ -1,20 +1,20 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Tailviewer.BusinessLogic.FileExplorer
 {
 	internal sealed class FileExplorer : IFileExplorer
 	{
-		public void SelectFile(string path)
+		public void SelectFile( string filePath)
 		{
-			string argument = string.Format(@"/select, {0}", path);
-			Process.Start("explorer.exe", argument);
+			Process.Start("explorer.exe", $@"/select, {filePath}");
 		}
-
-		public void OpenFolder(string path)
+		public void SelectFiles(string folder, params string[] filesToSelect)
 		{
-			string argument = string.Format(@"/open, {0}", path);
-			Process.Start("explorer.exe", argument);
+			NativeMethods.OpenFolderAndSelectFiles(folder, filesToSelect);
+		}
+		public void OpenFolder(string folderPath)
+		{
+			Process.Start("explorer.exe", $@"/open, {folderPath}");
 		}
 	}
 }

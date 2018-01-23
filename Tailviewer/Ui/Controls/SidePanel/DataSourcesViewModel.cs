@@ -198,7 +198,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				var merged = dataSource as MergedDataSource;
 				if (merged != null)
 				{
-					viewModel = new MergedDataSourceViewModel(merged);
+					viewModel = new MergedDataSourceViewModel(merged, _actionCenter);
 				}
 				else
 				{
@@ -461,7 +461,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 						_observable.Remove(dest);
 
 						MergedDataSource mergedDataSource = _dataSources.AddGroup();
-						merged = new MergedDataSourceViewModel(mergedDataSource);
+						merged = new MergedDataSourceViewModel(mergedDataSource, _actionCenter);
 						merged.Remove += OnRemove;
 						merged.AddChild(source);
 						merged.AddChild(dest);
