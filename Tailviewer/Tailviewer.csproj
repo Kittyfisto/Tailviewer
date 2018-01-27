@@ -98,6 +98,7 @@
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
@@ -193,7 +194,7 @@
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
+	<Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />

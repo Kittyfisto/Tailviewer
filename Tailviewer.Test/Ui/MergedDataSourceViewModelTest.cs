@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestConstruction1()
 		{
-			var model = new MergedDataSourceViewModel(_dataSources.AddGroup());
+			var model = new MergedDataSourceViewModel(_dataSources.AddGroup(), _actionCenter.Object);
 			model.IsSelected.Should().BeFalse();
 			model.IsExpanded.Should().BeTrue();
 		}
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			dataSource.DisplayMode = displayMode;
 
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 			model.DisplayMode.Should().Be(displayMode);
 		}
 
@@ -57,7 +57,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			dataSource.DisplayName = "Some group";
 
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 			model.DisplayName.Should().Be("Some group");
 		}
 
@@ -65,7 +65,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDisplayName1()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 			model.CanBeRenamed.Should().BeTrue("because this implementation should support renaming...");
 			model.DisplayName.Should().Be("Merged Data Source");
 
@@ -83,7 +83,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			dataSource.DisplayName = "Some group";
 
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			model.DisplayName = "Foobar";
 			dataSource.DisplayName.Should().Be("Foobar");
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.Ui
 		public void TestExpand()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 			model.IsExpanded = false;
 			model.IsExpanded.Should().BeFalse();
 			dataSource.IsExpanded.Should().BeFalse();
@@ -106,7 +106,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestAddChild1()
 		{
-			var model = new MergedDataSourceViewModel(_dataSources.AddGroup());
+			var model = new MergedDataSourceViewModel(_dataSources.AddGroup(), _actionCenter.Object);
 			SingleDataSource source = _dataSources.AddDataSource("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
 			model.AddChild(sourceViewModel);
@@ -118,7 +118,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAddChild2()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			SingleDataSource source = _dataSources.AddDataSource("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
@@ -132,7 +132,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAddChild3()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			var sources = new List<SingleDataSourceViewModel>();
 			for (int i = 0; i < LogLineSourceId.MaxSources; ++i)
@@ -154,7 +154,7 @@ namespace Tailviewer.Test.Ui
 		public void TestInsertChild1()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			SingleDataSource source = _dataSources.AddDataSource("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
@@ -167,7 +167,7 @@ namespace Tailviewer.Test.Ui
 		public void TestInsertChild2()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"), _actionCenter.Object);
 			model.AddChild(child1);
@@ -189,7 +189,7 @@ namespace Tailviewer.Test.Ui
 		public void TestRemoveChild1()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"), _actionCenter.Object);
 			model.AddChild(child1);
@@ -213,7 +213,7 @@ namespace Tailviewer.Test.Ui
 		public void TestChangeDisplayMode()
 		{
 			var dataSource = _dataSources.AddGroup();
-			var model = new MergedDataSourceViewModel(dataSource);
+			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
 			model.DisplayMode = DataSourceDisplayMode.CharacterCode;
 			dataSource.DisplayMode.Should().Be(DataSourceDisplayMode.CharacterCode);
@@ -221,5 +221,6 @@ namespace Tailviewer.Test.Ui
 			model.DisplayMode = DataSourceDisplayMode.Filename;
 			dataSource.DisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
+
 	}
 }

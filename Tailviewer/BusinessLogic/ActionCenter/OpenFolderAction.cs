@@ -43,6 +43,35 @@ namespace Tailviewer.BusinessLogic.ActionCenter
 				.ContinueWith(OnFolderOpened);
 		}
 
+		public OpenFolderAction(string[] files, string folder, IFileExplorer fileExplorer)
+		{
+			if (files == null)
+				throw new ArgumentNullException(nameof(files));
+
+			if (string.IsNullOrEmpty(folder))
+				throw new ArgumentNullException(nameof(folder));
+
+			if (fileExplorer == null)
+				throw new ArgumentNullException(nameof(fileExplorer));
+
+			_fileExplorer = fileExplorer;
+
+			_task = Task.Run(() =>
+			{
+				if (!Directory.Exists(folder))
+				{
+					FullFoldername = FileEx.FindClosestExistingFolder(folder);
+					_fileExplorer.OpenFolder(FullFoldername);
+				}
+				else
+				{
+					FullFoldername = folder;
+					_fileExplorer.SelectFiles(FullFoldername, files);
+				}
+			})
+				.ContinueWith(OnFolderOpened);
+		}
+
 		public string Title => "Opening Folder In Explorer";
 		public bool ForceShow { get; set; }
 		public Percentage Progress { get; private set; }

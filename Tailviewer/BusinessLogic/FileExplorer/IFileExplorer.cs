@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tailviewer.BusinessLogic.FileExplorer
 {
 	public interface IFileExplorer
 	{
-		void SelectFile(string path);
+		void SelectFiles(string folder, params string[] filesToSelect);
 
-		void OpenFolder(string path);
+		void SelectFile(string filePath);
+
+		void OpenFolder(string folderPath);
 	}
 }
