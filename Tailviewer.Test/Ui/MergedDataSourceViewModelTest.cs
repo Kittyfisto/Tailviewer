@@ -221,5 +221,6 @@ namespace Tailviewer.Test.Ui
 			model.DisplayMode = DataSourceDisplayMode.Filename;
 			dataSource.DisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
+
 	}
 }

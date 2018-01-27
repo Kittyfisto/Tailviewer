@@ -242,4 +242,5 @@ namespace Tailviewer.Ui.ViewModels
 			return builder.ToString();
 		}
 	}
+
 }
