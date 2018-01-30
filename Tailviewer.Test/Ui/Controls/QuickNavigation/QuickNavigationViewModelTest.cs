@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation;
 
 namespace Tailviewer.Test.Ui.Controls.QuickNavigation
@@ -26,7 +28,7 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		public void TestSearch1()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
-			_sources.Add(CreateDataSource("Tailviewer.log"));
+			_sources.Add(CreateSingleDataSource("Tailviewer.log"));
 
 			viewModel.Suggestions.Should().BeNullOrEmpty();
 			viewModel.SearchTerm = "TAIL";
@@ -38,7 +40,7 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		public void TestSearch2()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
-			_sources.Add(CreateDataSource("Tailviewer.log"));
+			_sources.Add(CreateSingleDataSource("Tailviewer.log"));
 
 			viewModel.SearchTerm = "AIL";
 			var suggestion = viewModel.Suggestions[0];
@@ -53,8 +55,8 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		public void TestSearch3()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
-			_sources.Add(CreateDataSource("A"));
-			_sources.Add(CreateDataSource("AA"));
+			_sources.Add(CreateSingleDataSource("A"));
+			_sources.Add(CreateSingleDataSource("AA"));
 
 			viewModel.SearchTerm = "B";
 			viewModel.Suggestions.Should().BeNullOrEmpty();
@@ -66,8 +68,8 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		public void TestSearch4()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
-			_sources.Add(CreateDataSource("A"));
-			_sources.Add(CreateDataSource("AA"));
+			_sources.Add(CreateSingleDataSource("A"));
+			_sources.Add(CreateSingleDataSource("AA"));
 
 			viewModel.SearchTerm = "A";
 			viewModel.Suggestions.Should().HaveCount(2);
@@ -75,11 +77,24 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 		}
 
 		[Test]
+		[Description("Verifies that the merged data source is found")]
+		public void TestSearch5()
+		{
+			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
+			
+			_sources.Add(CreateMergedDataSource("Foobar"));
+			_sources.Add(CreateSingleDataSource("Foo"));
+
+			viewModel.SearchTerm = "Foo";
+			viewModel.Suggestions.Should().HaveCount(2);
+		}
+
+		[Test]
 		public void TestChooseSuggestion()
 		{
 			var viewModel = new QuickNavigationViewModel(_dataSources.Object);
-			_sources.Add(CreateDataSource("A"));
-			_sources.Add(CreateDataSource("AA"));
+			_sources.Add(CreateSingleDataSource("A"));
+			_sources.Add(CreateSingleDataSource("AA"));
 
 			viewModel.SearchTerm = "AA";
 			viewModel.Suggestions.Should().HaveCount(1);
@@ -91,10 +106,18 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 			viewModel.ShouldRaise(nameof(QuickNavigationViewModel.DataSourceChosen));
 		}
 
-		private static IDataSource CreateDataSource(string fileName)
+		private static IDataSource CreateSingleDataSource(string fileName)
 		{
 			var dataSource = new Mock<IDataSource>();
 			dataSource.Setup(x => x.FullFileName).Returns(fileName);
+			return dataSource.Object;
+		}
+
+		private static IDataSource CreateMergedDataSource(string sourceName)
+		{
+			
+			var dataSource = new Mock<IDataSource>();
+			dataSource.Setup(x => x.Settings).Returns(new DataSource {DisplayName = sourceName});
 			return dataSource.Object;
 		}
 	}
