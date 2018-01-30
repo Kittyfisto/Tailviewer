@@ -102,14 +102,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation
 
 		private DataSourceSuggestionViewModel TryCreateMatch(IDataSource dataSource, string searchPattern)
 		{
-			var fileName = dataSource.FullFileName;
-			var idx = fileName.IndexOf(searchPattern, StringComparison.CurrentCultureIgnoreCase);
+			var sourceName = string.IsNullOrEmpty(dataSource.FullFileName)
+				? dataSource.Settings.DisplayName 
+				: dataSource.FullFileName; 
+			var idx = sourceName.IndexOf(searchPattern, StringComparison.CurrentCultureIgnoreCase);
 			if (idx == -1)
 				return null;
 
-			var prefix = fileName.Substring(startIndex: 0, length: idx);
-			var midfix = fileName.Substring(idx, searchPattern.Length);
-			var postfix = fileName.Substring(idx + searchPattern.Length);
+			var prefix = sourceName.Substring(startIndex: 0, length: idx);
+			var midfix = sourceName.Substring(idx, searchPattern.Length);
+			var postfix = sourceName.Substring(idx + searchPattern.Length);
 			return new DataSourceSuggestionViewModel(dataSource, prefix, midfix, postfix);
 		}
 
