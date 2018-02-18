@@ -162,6 +162,7 @@
                             </Grid.RowDefinitions>
                             <metrolib:FlatListView ItemsSource="{Binding TopEntries}"
                                                    SelectedItem="{Binding SelectedTopEntry, Mode=TwoWay}"
+                                                   Background="{StaticResource PrimaryBrush}"
                                                    BorderThickness="0">
                                 <ListView.Resources>
                                     <SolidColorBrush x:Key="BackgroundBrushHovered" Color="{StaticResource PrimaryLight}" />
