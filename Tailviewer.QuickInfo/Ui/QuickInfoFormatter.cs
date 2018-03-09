@@ -54,15 +54,15 @@ namespace Tailviewer.QuickInfo.Ui
 		}
 
 		[Pure]
-		public string Format(Tailviewer.QuickInfo.BusinessLogic.QuickInfo result, string format)
+		public string Format(BusinessLogic.QuickInfo result, string format)
 		{
 			var builder = new StringBuilder(format);
-			builder.Replace("{message}", result.Message ?? "N/A");
-			builder.Replace("{timestamp}", result.Timestamp != null ? result.Timestamp.ToString() : "N/A");
+			builder.Replace("{message}", result?.Message ?? "N/A");
+			builder.Replace("{timestamp}", result?.Timestamp?.ToString() ?? "N/A");
 
 			if (_regex != null)
 			{
-				if (result.Message != null)
+				if (result?.Message != null)
 				{
 					try
 					{

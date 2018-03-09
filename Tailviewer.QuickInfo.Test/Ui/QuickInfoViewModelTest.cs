@@ -51,5 +51,15 @@ namespace Tailviewer.QuickInfo.Test.Ui
 			model.Result = new QuickInfo.BusinessLogic.QuickInfo("Foobar");
 			model.Value.Should().Be("Foobar", "because by default, the entire matched line shall be printed");
 		}
+
+		[Test]
+		public void TestSetNullValue()
+		{
+			_analyserConfig.MatchType = FilterMatchType.SubstringFilter;
+			var model = new QuickInfoViewModel(_id, _viewConfig, _analyserConfig);
+			model.Result = new QuickInfo.BusinessLogic.QuickInfo("Foobar");
+			model.Result = null;
+			model.Value.Should().Be("N/A", "because we haven't forwarded a result just yet");
+		}
 	}
 }
