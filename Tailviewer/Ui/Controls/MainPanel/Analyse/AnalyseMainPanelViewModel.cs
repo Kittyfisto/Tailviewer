@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Input;
@@ -77,12 +78,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public AnalysisViewModel Analysis
 		{
 			get { return _analysis; }
-			private set
+			set
 			{
 				if (value == _analysis)
 					return;
 
+				if (_analysis != null)
+				{
+					_analysis.PropertyChanged -= OnAnalysisPropertyChanged;
+				}
+
 				_analysis = value;
+
+				if (_analysis != null)
+				{
+					_analysis.PropertyChanged += OnAnalysisPropertyChanged;
+				}
+
 				EmitPropertyChanged();
 
 				IsAnalysisSelected = value != null;
@@ -91,6 +103,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_dataSelectionSidePanel.CurrentAnalysis = value;
 
 				UpdateWindowTitle();
+			}
+		}
+
+		private void OnAnalysisPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AnalysisViewModel.Name):
+					UpdateWindowTitle();
+					break;
 			}
 		}
 

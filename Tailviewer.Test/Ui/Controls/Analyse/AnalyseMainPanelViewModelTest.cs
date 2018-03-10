@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
@@ -81,6 +82,27 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			const string reason = "because the widgets side panel should've been selected";
 			viewModel.SelectedSidePanel.Should().NotBeNull(reason);
 			viewModel.SelectedSidePanel.Should().BeOfType<WidgetsSidePanel>(reason);
+		}
+
+		[Test]
+		[Description("Verifies that the window title changes when the current analyses name does")]
+		public void TestChangeName()
+		{
+			var viewModel = new AnalyseMainPanelViewModel(_settings.Object,
+			                                              _dataSources.Object,
+			                                              _dispatcher,
+			                                              _taskScheduler,
+			                                              _analysisStorage.Object);
+			var analysis = new AnalysisViewModel(_dispatcher, new AnalysisViewTemplate(), new Mock<IAnalysis>().Object,
+			                                     new Mock<IAnalysisStorage>().Object)
+			{
+				Name = "Foo"
+			};
+			viewModel.Analysis = analysis;
+			viewModel.WindowTitle.Should().EndWith("Foo");
+
+			analysis.Name = "Foobar";
+			viewModel.WindowTitle.Should().EndWith("Foobar");
 		}
 	}
 }
