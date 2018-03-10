@@ -111,15 +111,25 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private static FontFamily PickFontFamily()
 		{
-			FontFamily consolas =
-				Fonts.SystemFontFamilies.FirstOrDefault(
-					x => string.Equals(x.Source, "Consolas", StringComparison.InvariantCultureIgnoreCase));
+			try
+			{
+				FontFamily consolas =
+					Fonts.SystemFontFamilies.FirstOrDefault(
+					                                        x => string.Equals(x.Source, "Consolas",
+					                                                           StringComparison.InvariantCultureIgnoreCase));
 
-			if (consolas != null)
-				return consolas;
+				if (consolas != null)
+					return consolas;
+			}
+			catch (Exception e)
+			{
+				// This crash only occured on one system and vanished after about 3 days so
+				// I really do not know why the SystemFontFamilies property would throw...
+				// See https://github.com/Kittyfisto/Tailviewer/issues/161
+				Log.ErrorFormat("Caught exception while trying to find proper font: {0}", e);
+			}
 
 			Log.InfoFormat("Consolas is not installed, chosing Inconsolata instead");
-
 			return new FontFamily(new Uri("pack://application:,,,/Tailviewer;Component/Resources/Fonts/"),
 			                      "./#Inconsolata");
 		}
