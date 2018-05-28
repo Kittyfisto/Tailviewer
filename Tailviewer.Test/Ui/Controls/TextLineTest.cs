@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -274,7 +275,17 @@ namespace Tailviewer.Test.Ui.Controls
 				var unused = textLine.Segments;
 			}).ShouldNotThrow();
 			var segments = textLine.Segments;
-			segments.Should().HaveCount(1);
+			segments.Should().BeEmpty();
+		}
+
+		[Test]
+		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/165")]
+		public void TestLongLogLine()
+		{
+			var message = new StringBuilder();
+			message.Append('a', 10000);
+			var textLine = new TextLine(new LogLine(1, message.ToString(), LevelFlags.None, null), _hovered, _selected, true);
+			textLine.Segments.Count.Should().BeGreaterThan(1, "because this very long line should've been split up into multiple messages");
 		}
 	}
 }

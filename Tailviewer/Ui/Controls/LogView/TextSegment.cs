@@ -15,7 +15,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			                         TextHelper.FontSize,
 			                         foregroundBrush);
 			FormattedText.LineHeight = TextHelper.LineHeight;
-			Width = TextHelper.EstimateWidthUpperLimit(value);
+			//Width = TextHelper.EstimateWidthUpperLimit(value);
+			Width = FormattedText.WidthIncludingTrailingWhitespace;
 			IsRegular = isRegular;
 		}
 

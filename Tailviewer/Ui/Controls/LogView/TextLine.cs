@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
@@ -171,7 +172,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public bool IsSelected => _selectedIndices.Contains(_logLine.LineIndex);
 
-		public IEnumerable<TextSegment> Segments
+		public IReadOnlyList<TextSegment> Segments
 		{
 			get
 			{
@@ -210,30 +211,45 @@ namespace Tailviewer.Ui.Controls.LogView
 							if (match.Index > lastIndex)
 							{
 								substring = message.Substring(lastIndex, match.Index - lastIndex);
-								_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+								AddSegmentsFrom(substring, regularForegroundBrush, isRegular: true);
 							}
 
 							substring = message.Substring(match.Index, match.Count);
-							_segments.Add(new TextSegment(substring, highlightedBrush, isRegular: false));
+							AddSegmentsFrom(substring, highlightedBrush, isRegular: false);
 							lastIndex = match.Index + match.Count;
 						}
 
 						if (lastIndex <= message.Length - 1)
 						{
 							substring = message.Substring(lastIndex);
-							_segments.Add(new TextSegment(substring, regularForegroundBrush, isRegular: true));
+							AddSegmentsFrom(substring, regularForegroundBrush, isRegular: true);
 						}
 					}
 					catch (Exception)
 					{
-						_segments.Add(new TextSegment(message, regularForegroundBrush, isRegular: true));
+						_segments.Clear();
+						AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 					}
 				}
 				else
 				{
-					_segments.Add(new TextSegment(message, regularForegroundBrush, isRegular: true));
+					AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 				}
 				_lastForegroundBrush = regularForegroundBrush;
+			}
+		}
+
+		private void AddSegmentsFrom(string message, Brush brush, bool isRegular)
+		{
+			const int maxCharactersPerSegment = 512;
+			int segmentCount = (int) Math.Ceiling(1.0 * message.Length / maxCharactersPerSegment);
+			for (int i = 0; i < segmentCount; ++i)
+			{
+				var start = i * maxCharactersPerSegment;
+				var remaining = message.Length - start;
+				var length = Math.Min(remaining, maxCharactersPerSegment);
+				var segment = message.Substring(i * maxCharactersPerSegment, length);
+				_segments.Add(new TextSegment(segment, brush, isRegular));
 			}
 		}
 
@@ -251,30 +267,32 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			for (int i = 0; i < _segments.Count; ++i)
 			{
-				Brush brush;
 				TextSegment segment = _segments[i];
-				if (segment.IsRegular)
+				if (IsVisible(actualWidth, x, segment.Width))
 				{
-					brush = regularBackgroundBrush;
-				}
-				else
-				{
-					brush = IsSelected
-						? TextHelper.HighlightedSelectedBackgroundBrush
-						: TextHelper.HighlightedBackgroundBrush;
-				}
+					Brush brush;
+					if (segment.IsRegular)
+					{
+						brush = regularBackgroundBrush;
+					}
+					else
+					{
+						brush = IsSelected
+							? TextHelper.HighlightedSelectedBackgroundBrush
+							: TextHelper.HighlightedBackgroundBrush;
+					}
 
-				if (brush != null)
-				{
-					var rect = new Rect(x, y,
-						                segment.Width,
-						                TextHelper.LineHeight);
-					drawingContext.DrawRectangle(brush, null, rect);
+					if (brush != null)
+					{
+						var rect = new Rect(x, y,
+						                    segment.Width,
+						                    TextHelper.LineHeight);
+						drawingContext.DrawRectangle(brush, null, rect);
+					}
+
+					var topLeft = new Point(x, y);
+					drawingContext.DrawText(segment.FormattedText, topLeft);
 				}
-
-				var topLeft = new Point(x, y);
-				drawingContext.DrawText(segment.FormattedText, topLeft);
-
 				x += segment.Width;
 			}
 
@@ -285,6 +303,19 @@ namespace Tailviewer.Ui.Controls.LogView
 				                    TextHelper.LineHeight);
 				drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
 			}
+		}
+
+		[Pure]
+		public static bool IsVisible(double actualWidth, double x, double segmentWidth)
+		{
+			const int visibleXMin = 0;
+			var visibleXMax = actualWidth;
+
+			var xMin = x;
+			var xMax = xMin + segmentWidth;
+
+			var isVisible = !(xMax < visibleXMin || xMin > visibleXMax);
+			return isVisible;
 		}
 	}
 }
