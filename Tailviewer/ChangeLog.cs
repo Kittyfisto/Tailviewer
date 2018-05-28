@@ -47,6 +47,26 @@ namespace Tailviewer
 			AddV062();
 			AddV070();
 			AddV071();
+			AddV072();
+		}
+
+		private static void AddV072()
+		{
+			var features = new string[]
+			{
+			};
+			var bugfixes = new[]
+			{
+				"Fixed rendering very long lines",
+				"Fixed crash starting Tailviewer",
+				"Merged data source appear in data source quick chooser (ctrl+t)"
+			};
+			var misc = new string[]
+			{};
+			var releaseDate = new DateTime(2018, 06, 17);
+			var version = new Version(0, 7, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV071()
