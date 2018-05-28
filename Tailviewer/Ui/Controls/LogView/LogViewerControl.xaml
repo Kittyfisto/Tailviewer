@@ -282,7 +282,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Progress: "
                                VerticalAlignment="Center" />
-                    <metrolib:FlatProgressBar Grid.Column="1"
+                    <controls:FlatProgressBar Grid.Column="1"
                                               Minimum="0"
                                               Maximum="1"
                                               Height="14"

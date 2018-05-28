@@ -77,7 +77,7 @@
                     -->
                 </Grid>
 
-                <metrolib:FlatProgressBar Grid.Row="1"
+                <controls:FlatProgressBar Grid.Row="1"
                                           Value="{Binding Analysis.Progress, Mode=OneWay}"
                                           Minimum="0"
                                           Maximum="1" />

@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib">
+                    xmlns:textBlocks="clr-namespace:Metrolib.Controls.TextBlocks;assembly=Metrolib"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
@@ -43,7 +44,7 @@
             <!--
             -->
 
-            <metrolib:FlatProgressBar Grid.Row="1"
+            <controls:FlatProgressBar Grid.Row="1"
                                       Minimum="0"
                                       Maximum="1"
                                       Value="{Binding Progress.Percent, Mode=OneWay}"

@@ -56,13 +56,13 @@
                 </Grid>
             </Grid>
 
-            <controls:RemoveButton x:Name="PART_RemoveDataSource"
-                                   VerticalAlignment="Stretch"
-                                   HorizontalAlignment="Right"
-                                   Command="{Binding RemoveCommand}"
-                                   ToolTip="Remove this merged data source"
-                                   Grid.Column="1"
-                                   HorizontalContentAlignment="Right" />
+            <controls:CloseButton x:Name="PART_RemoveDataSource"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Right"
+                                  Command="{Binding RemoveCommand}"
+                                  ToolTip="Remove this merged data source"
+                                  Grid.Column="1"
+                                  HorizontalContentAlignment="Right" />
 
         </Grid>
     </HierarchicalDataTemplate>

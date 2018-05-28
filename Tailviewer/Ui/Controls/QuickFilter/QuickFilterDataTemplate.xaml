@@ -51,7 +51,7 @@
                     VerticalAlignment="Stretch"
                     IsChecked="{Binding IsEditing, Mode=TwoWay}" />
 
-                <controls:RemoveButton
+                <controls:CloseButton
                     x:Name="PART_RemoveButton"
                     Grid.Column="3"
                     VerticalAlignment="Stretch"

@@ -3,7 +3,6 @@
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets"
-                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
                     xmlns:analysis="clr-namespace:Tailviewer.Ui.Analysis;assembly=Tailviewer.Api">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
@@ -40,7 +39,7 @@
                                                             Padding="2"
                                                             VerticalAlignment="Center" />
 
-                                <metrolib:CircularProgressBar Visibility="{Binding IsAnalysisFinished, Converter={StaticResource BoolTrueToHiddenConverter}}"
+                                <controls:CircularProgressBar Visibility="{Binding IsAnalysisFinished, Converter={StaticResource BoolTrueToHiddenConverter}}"
                                                               Grid.Column="2"
                                                               Width="30"
                                                               Height="30"
@@ -56,7 +55,7 @@
                                                            Opacity="0"
                                                            Width="30" />
                                 
-                                <controls:DeleteButton Command="{Binding DeleteCommand}"
+                                <controls:CloseButton Command="{Binding DeleteCommand}"
                                                        x:Name="DeleteWidgetButton"
                                                        Grid.Column="4"
                                                        Opacity="0"

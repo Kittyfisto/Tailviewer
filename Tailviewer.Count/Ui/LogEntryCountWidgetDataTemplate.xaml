@@ -15,7 +15,7 @@
                                     FilterText="{Binding Value, Mode=TwoWay}"
                                     Watermark="Enter filter string" />
 
-            <controls:DeleteButton Command="{Binding RemoveCommand}"
+            <controls:CloseButton Command="{Binding RemoveCommand}"
                                    Grid.Column="1" />
         </Grid>
     </DataTemplate>

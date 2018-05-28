@@ -73,8 +73,8 @@
                                         <local:LinkRun Text="{Binding Name, Mode=OneWay}"
                                                         NavigateCommand="{Binding NavigateCommand}" />
                                     </TextBlock>
-                                    <controls:RemoveButton Command="{Binding RemoveCommand}"
-                                                           Grid.Column="2" />
+                                    <controls:CloseButton Command="{Binding RemoveCommand}"
+                                                          Grid.Column="2" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

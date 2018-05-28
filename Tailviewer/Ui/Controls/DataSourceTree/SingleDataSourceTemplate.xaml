@@ -81,11 +81,11 @@
                 </Grid>
             </Grid>
 
-            <controls:RemoveButton VerticalAlignment="Stretch"
-                                   HorizontalAlignment="Right"
-                                   Command="{Binding RemoveCommand}"
-                                   ToolTip="Close this file"
-                                   Grid.Column="2" />
+            <controls:CloseButton VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Right"
+                                  Command="{Binding RemoveCommand}"
+                                  ToolTip="Close this file"
+                                  Grid.Column="2" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>
