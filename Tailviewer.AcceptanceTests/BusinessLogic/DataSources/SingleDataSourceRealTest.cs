@@ -43,7 +43,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
 			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
@@ -57,7 +57,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
 			// TODO: Find the bug in the EndOfSourceReached implementation!!!!
 			Thread.Sleep(1000);
@@ -74,7 +74,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
 			_dataSource.FilteredLogFile.Count.Should().Be(5);
 		}
@@ -83,7 +83,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue(TimeSpan.FromSeconds(5));
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
 			_dataSource.TotalCount.Should().Be(165342);
 			_dataSource.DebugCount.Should().Be(165337);

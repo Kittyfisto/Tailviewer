@@ -72,9 +72,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Extensions, Version=1.1.25.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.25\lib\net45\System.Extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -194,7 +193,7 @@
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
-	<Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />

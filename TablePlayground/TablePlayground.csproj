@@ -44,9 +44,8 @@
       <HintPath>..\packages\Metrolib.0.2.2.40\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Threading.Extensions, Version=1.0.14.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.0.14\lib\net45\System.Threading.Extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />

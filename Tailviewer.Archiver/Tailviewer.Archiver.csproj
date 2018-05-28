@@ -55,16 +55,15 @@
       <HintPath>..\packages\Metrolib.0.3.0.68\lib\net45\Metrolib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PE">
-      <HintPath>..\packages\PE.0.1.9\lib\net45\PE.dll</HintPath>
+    <Reference Include="PE, Version=0.1.10.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\PE.0.1.10\lib\net45\PE.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Extensions, Version=1.1.25.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.25\lib\net45\System.Extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -145,6 +144,7 @@
     <Content Include="..\bin\ImageProcessor.dll">
       <Link>Resources\ImageProcessor.dll</Link>
     </Content>
+    <Content Include="Readme.txt" />
     <EmbeddedResource Include="..\bin\System.Extensions.dll">
       <Link>Resources\System.Extensions.dll</Link>
     </EmbeddedResource>
@@ -152,7 +152,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy ..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll ..\bin\
-copy ..\packages\PE.0.1.9\lib\net45\PE.dll ..\bin\</PreBuildEvent>
+copy ..\packages\PE.0.1.10\lib\net45\PE.dll ..\bin\</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

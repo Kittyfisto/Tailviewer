@@ -113,8 +113,8 @@ namespace Tailviewer.Ui.ViewModels
 			_rawEntry = new LogViewMainPanelEntry();
 			_topEntries = new IMainPanelEntry[]
 			{
-				_rawEntry
-				//_analyseEntry
+				_rawEntry,
+				_analyseEntry
 			};
 
 			_settingsEntry = new SettingsMainPanelEntry();

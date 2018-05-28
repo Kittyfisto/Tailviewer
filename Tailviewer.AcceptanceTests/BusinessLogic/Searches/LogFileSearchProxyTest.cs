@@ -71,7 +71,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 			using (var proxy = new LogFileSearchProxy(_scheduler, _logFile.Object, TimeSpan.Zero))
 			{
 				proxy.SearchTerm = "foobar";
-				proxy.Property(x => x.Count).ShouldEventually().Be(1, TimeSpan.FromSeconds(5000000), "because we should be able to search through the file in a few seconds");
+				proxy.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(20)).Be(1, "because we should be able to search through the file in a few seconds");
 
 				proxy.Matches.Should().Equal(new[]
 					{
@@ -92,8 +92,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 				AddEntry("Hello World!");
 				AddEntry("Foobar");
 
-				proxy.Property(x => x.Count).ShouldEventually().Be(1,
-					TimeSpan.FromSeconds(5), "because we should be able to search through the file in a few seconds");
+				proxy.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "because we should be able to search through the file in a few seconds");
 
 				proxy.Matches.Should().Equal(new[]
 					{

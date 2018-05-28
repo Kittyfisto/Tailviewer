@@ -69,8 +69,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				multi0.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 				multi1.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
-				merged.Property(x => x.Count).ShouldEventually().Be(8, TimeSpan.FromSeconds(5),
-																	"Because the merged file should've been finished");
+				merged.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(8, "Because the merged file should've been finished");
 				merged.Property(x => x.GetValue(LogFileProperties.Size)).ShouldEventually().Be(source0.GetValue(LogFileProperties.Size) + source1.GetValue(LogFileProperties.Size));
 				merged.Property(x => x.GetValue(LogFileProperties.StartTimestamp)).ShouldEventually().Be(source1.GetValue(LogFileProperties.StartTimestamp));
 
@@ -96,8 +95,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive2))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source0, source1))
 			{
-				merged.Property(x => x.Count).ShouldEventually().Be(19, TimeSpan.FromSeconds(5),
-				                                                    "Because the merged file should've been finished");
+				merged.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(19, "Because the merged file should've been finished");
 				merged.Property(x => x.GetValue(LogFileProperties.Size)).ShouldEventually().Be(source0.GetValue(LogFileProperties.Size) + source1.GetValue(LogFileProperties.Size));
 				merged.Property(x => x.GetValue(LogFileProperties.StartTimestamp)).ShouldEventually().Be(source0.GetValue(LogFileProperties.StartTimestamp));
 
