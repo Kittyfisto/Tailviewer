@@ -4,7 +4,6 @@
              xmlns:converters="clr-namespace:Tailviewer.Ui.Converters"
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
-             xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
              xmlns:converters1="clr-namespace:Metrolib.Converters;assembly=Metrolib"
              x:Name="This"
              Background="White">
@@ -17,7 +16,13 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
-            <converters1:TimeSpanConverter x:Key="TimeSpanConverter" />
+            <converters1:TimeSpanConverter x:Key="TimeSpanConverter">
+                <converters1:TimeSpanConverter.IgnoredUnits>
+                    <x:Array Type="{x:Type converters1:Unit}">
+                        <converters1:Unit>Millisecond</converters1:Unit>
+                    </x:Array>
+                </converters1:TimeSpanConverter.IgnoredUnits>
+            </converters1:TimeSpanConverter>
 
             <converters1:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
