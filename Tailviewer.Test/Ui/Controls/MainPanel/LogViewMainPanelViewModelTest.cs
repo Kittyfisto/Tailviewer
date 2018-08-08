@@ -167,6 +167,32 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			model.WindowTitleSuffix.Should().Be("My custom name");
 		}
 
+		[Test]
+		public void TestGoToNextDataSource1()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			model.CurrentDataSource.Should().BeNull();
+			new Action(() => model.GoToNextDataSource()).ShouldNotThrow();
+			model.CurrentDataSource.Should().BeNull();
+		}
+
+		[Test]
+		public void TestGoToPreviousDataSource1()
+		{
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			model.CurrentDataSource.Should().BeNull();
+			new Action(() => model.GoToPreviousDataSource()).ShouldNotThrow();
+			model.CurrentDataSource.Should().BeNull();
+		}
+
+		private Mock<IDataSourceViewModel> CreateDataSourceViewModel()
+		{
+			var dataSource = CreateDataSource();
+			var viewModel = new Mock<IDataSourceViewModel>();
+			viewModel.Setup(x => x.DataSource).Returns(dataSource.Object);
+			return viewModel;
+		}
+
 		private Mock<IDataSource> CreateDataSource()
 		{
 			var dataSource = new Mock<IDataSource>();

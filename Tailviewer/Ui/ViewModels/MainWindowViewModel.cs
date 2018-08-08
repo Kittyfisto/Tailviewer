@@ -66,6 +66,8 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IEnumerable<IPluginDescription> _plugins;
 		private readonly DelegateCommand2 _showQuickNavigationCommand;
 		private readonly DelegateCommand2 _showGoToLineCommand;
+		private readonly ICommand _goToPreviousDataSourceCommand;
+		private readonly ICommand _goToNextDataSourceCommand;
 
 		public MainWindowViewModel(IApplicationSettings settings,
 		                           DataSources dataSources,
@@ -108,6 +110,8 @@ namespace Tailviewer.Ui.ViewModels
 			_showLogCommand = new DelegateCommand(ShowLog);
 			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
 			_showQuickNavigationCommand = new DelegateCommand2(ShowQuickNavigation);
+			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
+			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
 			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
@@ -141,6 +145,22 @@ namespace Tailviewer.Ui.ViewModels
 			else
 			{
 				SelectedTopEntry = _rawEntry;
+			}
+		}
+
+		private void GoToNextDataSource()
+		{
+			if (SelectedMainPanel == _logViewPanel)
+			{
+				_logViewPanel.GoToNextDataSource();
+			}
+		}
+
+		private void GoToPreviousDataSource()
+		{
+			if (SelectedMainPanel == _logViewPanel)
+			{
+				_logViewPanel.GoToPreviousDataSource();
 			}
 		}
 
@@ -184,6 +204,8 @@ namespace Tailviewer.Ui.ViewModels
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
 		public ICommand ShowLogCommand => _showLogCommand;
 		public ICommand ShowQuickNavigationCommand => _showQuickNavigationCommand;
+		public ICommand GoToNextDataSourceCommand => _goToNextDataSourceCommand;
+		public ICommand GoToPreviousDataSourceCommand => _goToPreviousDataSourceCommand;
 		public ICommand ShowGoToLineCommand => _showGoToLineCommand;
 
 		private void LogViewPanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)

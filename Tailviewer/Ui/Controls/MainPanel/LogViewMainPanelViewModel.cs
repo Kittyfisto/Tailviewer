@@ -339,5 +339,41 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		{
 			SelectedSidePanel = _quickFilters;
 		}
+
+		public void GoToPreviousDataSource()
+		{
+			var dataSources = _dataSources.DataSources;
+			if (dataSources.Count == 0)
+				return;
+
+			var idx = dataSources.IndexOf(_dataSources.SelectedItem);
+			if (idx == -1)
+				return;
+
+			var nextIndex = idx - 1;
+			if (nextIndex < 0)
+				nextIndex = dataSources.Count - 1;
+
+			var next = dataSources[nextIndex];
+			_dataSources.SelectedItem = next;
+		}
+
+		public void GoToNextDataSource()
+		{
+			var dataSources = _dataSources.DataSources;
+			if (dataSources.Count == 0)
+				return;
+
+			var idx = dataSources.IndexOf(_dataSources.SelectedItem);
+			if (idx == -1)
+				return;
+
+			var nextIndex = idx + 1;
+			if (nextIndex >= dataSources.Count)
+				nextIndex = 0;
+
+			var next = dataSources[nextIndex];
+			_dataSources.SelectedItem = next;
+		}
 	}
 }

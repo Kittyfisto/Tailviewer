@@ -28,6 +28,10 @@
                     Command="{Binding NewQuickFilterCommand, ElementName=This}"/>
         <KeyBinding Gesture="Ctrl+T"
                     Command="{Binding ShowQuickNavigationCommand}"/>
+        <KeyBinding Gesture="Ctrl+Tab"
+                    Command="{Binding GoToNextDataSourceCommand}"/>
+        <KeyBinding Gesture="Ctrl+Shift+Tab"
+                    Command="{Binding GoToPreviousDataSourceCommand}"/>
         <KeyBinding Gesture="Ctrl+G"
                     Command="{Binding ShowGoToLineCommand}"/>
     </Window.InputBindings>

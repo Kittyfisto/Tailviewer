@@ -114,7 +114,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			}
 		}
 
-		public IEnumerable<IDataSourceViewModel> DataSources => _allDataSourceViewModels;
+		public IReadOnlyList<IDataSourceViewModel> DataSources => _allDataSourceViewModels;
 		public ObservableCollection<IDataSourceViewModel> Observable => _observable;
 
 		public override void Update()
