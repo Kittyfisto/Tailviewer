@@ -11,7 +11,8 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 	public sealed class FilterExpressionTest
 	{
 		[Test]
-		public void TestFuck()
+		[Ignore("Not yet implemented")]
+		public void Test()
 		{
 			var expression = FilterExpression.Parse("$line > 5000");
 			expression.PassesFilter(new LogLine(5000, 5000, LogLineSourceId.Default, "Stuff", LevelFlags.All,
