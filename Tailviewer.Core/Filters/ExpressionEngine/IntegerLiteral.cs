@@ -5,7 +5,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class IntegerLiteral
-		: Literal
+		: IExpression<long>
 	{
 		private readonly long _value;
 
@@ -16,11 +16,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public override Type ResultType => typeof(long);
+		public Type ResultType => typeof(long);
 
-		public override object Evaluate(IReadOnlyList<LogLine> logEntry)
+		public long Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			return _value;
+		}
+
+		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		{
+			return Evaluate(logEntry);
 		}
 
 		#endregion

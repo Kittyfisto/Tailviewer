@@ -83,13 +83,15 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />
     <Compile Include="Filters\ExpressionEngine\ExpressionParser.cs" />
+    <Compile Include="Filters\ExpressionEngine\GreaterOrEqualsExpression.cs" />
+    <Compile Include="Filters\ExpressionEngine\GreaterThanExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\IExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\IInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\IntegerLiteral.cs" />
     <Compile Include="Filters\ExpressionEngine\Interval.cs" />
     <Compile Include="Filters\ExpressionEngine\LessOrEqualsExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\LessThanExpression.cs" />
-    <Compile Include="Filters\ExpressionEngine\LineExpression.cs" />
+    <Compile Include="Filters\ExpressionEngine\LineNumberExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\Literal.cs" />
     <Compile Include="Filters\ExpressionEngine\NotExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\MessageExpression.cs" />

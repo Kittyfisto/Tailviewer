@@ -21,6 +21,8 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.Contains, BinaryOperation.Contains},
 				{TokenType.LessThan, BinaryOperation.LessThan},
 				{TokenType.LessOrEquals, BinaryOperation.LessOrEquals},
+				{TokenType.GreaterThan, BinaryOperation.GreaterThan},
+				{TokenType.GreaterOrEquals, BinaryOperation.GreaterOrEquals},
 				{TokenType.Is, BinaryOperation.ContainsTimestamp}
 			};
 			UnaryOperations = new Dictionary<TokenType, UnaryOperation>
@@ -217,8 +219,8 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				case MessageExpression.Value:
 					return new MessageExpression();
 
-				case LineExpression.Value:
-					return new LineExpression();
+				case LineNumberExpression.Value:
+					return new LineNumberExpression();
 
 				case TimestampExpression.Value:
 					return new TimestampExpression();

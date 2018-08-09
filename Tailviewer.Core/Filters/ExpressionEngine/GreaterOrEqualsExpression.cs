@@ -4,25 +4,27 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
-	internal sealed class LessOrEqualsExpression
+	internal sealed class GreaterOrEqualsExpression
 		: IExpression<bool>
 	{
 		private readonly IExpression<long> _lhs;
 		private readonly IExpression<long> _rhs;
 
-		public LessOrEqualsExpression(IExpression<long> lhs, IExpression<long> rhs)
+		public GreaterOrEqualsExpression(IExpression<long> lhs, IExpression<long> rhs)
 		{
 			_lhs = lhs;
 			_rhs = rhs;
 		}
 
-		#region Overrides of BinaryNumericExpression
+		#region Implementation of IExpression
+
+		public Type ResultType => typeof(long);
 
 		public bool Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			var lhs = _lhs.Evaluate(logEntry);
 			var rhs = _rhs.Evaluate(logEntry);
-			return lhs <= rhs;
+			return lhs >= rhs;
 		}
 
 		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
@@ -30,13 +32,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			return Evaluate(logEntry);
 		}
 
-		public Type ResultType => typeof(bool);
-
 		#endregion
 
 		#region Equality members
 
-		private bool Equals(LessOrEqualsExpression other)
+		private bool Equals(GreaterOrEqualsExpression other)
 		{
 			return _lhs.Equals(other._lhs) && _rhs.Equals(other._rhs);
 		}
@@ -45,7 +45,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj is LessOrEqualsExpression && Equals((LessOrEqualsExpression) obj);
+			return obj is GreaterOrEqualsExpression && Equals((GreaterOrEqualsExpression) obj);
 		}
 
 		public override int GetHashCode()
@@ -60,7 +60,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public override string ToString()
 		{
-			return string.Format("{0} {1} {2}", _lhs, Tokenizer.ToString(TokenType.LessOrEquals), _rhs);
+			return string.Format("{0} {1} {2}", _lhs, Tokenizer.ToString(TokenType.GreaterOrEquals), _rhs);
 		}
 
 		#endregion

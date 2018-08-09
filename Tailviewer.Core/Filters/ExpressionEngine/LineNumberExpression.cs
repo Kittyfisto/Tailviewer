@@ -8,29 +8,38 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 	/// Retrieves the line number of the log entry in question (the first line in case
 	/// of a multi-line log entry).
 	/// </summary>
-	internal sealed class LineExpression
-		: IExpression
+	internal sealed class LineNumberExpression
+		: IExpression<long>
 	{
-		public const string Value = "line";
+		public const string Value = "linenumber";
 
 		#region Implementation of IExpression
 
 		public Type ResultType => typeof(long);
 
-		public object Evaluate(IReadOnlyList<LogLine> logEntry)
+		public long Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
-			using (var it = logEntry.GetEnumerator())
-			{
-				if (!it.MoveNext())
-					return null;
+			return logEntry[0].LineIndex + 1;
+		}
 
-				return it.Current.LineIndex;
-			}
+		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		{
+			return Evaluate(logEntry);
 		}
 
 		#endregion
 
 		#region Overrides of Object
+
+		public override bool Equals(object obj)
+		{
+			return obj is LineNumberExpression;
+		}
+
+		public override int GetHashCode()
+		{
+			return 104;
+		}
 
 		public override string ToString()
 		{

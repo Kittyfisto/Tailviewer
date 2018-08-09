@@ -67,10 +67,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 					return new OrExpression((IExpression<bool>) lhs, (IExpression<bool>) rhs);
 
 				case BinaryOperation.LessThan:
-					return new LessThanExpression(lhs, rhs);
+					return new LessThanExpression((IExpression<long>) lhs, (IExpression<long>) rhs);
 
 				case BinaryOperation.LessOrEquals:
-					return new LessOrEqualsExpression(lhs, rhs);
+					return new LessOrEqualsExpression((IExpression<long>) lhs, (IExpression<long>) rhs);
+
+				case BinaryOperation.GreaterThan:
+					return new GreaterThanExpression((IExpression<long>) lhs, (IExpression<long>) rhs);
+
+				case BinaryOperation.GreaterOrEquals:
+					return new GreaterOrEqualsExpression((IExpression<long>) lhs, (IExpression<long>) rhs);
 
 				case BinaryOperation.Contains:
 					return new ContainsStringExpression(lhs, rhs);

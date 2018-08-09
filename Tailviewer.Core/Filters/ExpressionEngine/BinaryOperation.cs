@@ -7,6 +7,8 @@
 		Contains,
 		ContainsTimestamp,
 		LessThan,
-		LessOrEquals
+		LessOrEquals,
+		GreaterThan,
+		GreaterOrEquals
 	}
 }

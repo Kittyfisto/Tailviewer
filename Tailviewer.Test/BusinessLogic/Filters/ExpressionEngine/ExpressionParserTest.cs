@@ -56,6 +56,12 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		}
 
 		[Test]
+		public void TestParseLineNumber()
+		{
+			Parse("$linenumber").Should().Be(new LineNumberExpression());
+		}
+
+		[Test]
 		public void TestParseTimestamp()
 		{
 			Parse("$timestamp").Should().Be(new TimestampExpression());
@@ -84,6 +90,18 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		public void TestParse5LessOrEquals42()
 		{
 			Parse("5 <= 42").Should().Be(new LessOrEqualsExpression(new IntegerLiteral(5), new IntegerLiteral(42)));
+		}
+
+		[Test]
+		public void TestParse1GreaterThan2()
+		{
+			Parse("1 > 2").Should().Be(new GreaterThanExpression(new IntegerLiteral(1), new IntegerLiteral(2)));
+		}
+
+		[Test]
+		public void TestParse5GreaterOrEquals42()
+		{
+			Parse("5 >= 42").Should().Be(new GreaterOrEqualsExpression(new IntegerLiteral(5), new IntegerLiteral(42)));
 		}
 	}
 }
