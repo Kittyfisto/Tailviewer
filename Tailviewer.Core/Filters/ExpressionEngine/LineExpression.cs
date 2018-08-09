@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
@@ -14,7 +15,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public object Evaluate(IEnumerable<LogLine> logEntry)
+		public Type ResultType => typeof(long);
+
+		public object Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			using (var it = logEntry.GetEnumerator())
 			{

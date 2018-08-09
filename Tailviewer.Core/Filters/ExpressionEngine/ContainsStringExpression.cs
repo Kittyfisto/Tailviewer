@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
-	internal sealed class ContainsExpression
+	internal sealed class ContainsStringExpression
 		: IExpression
 	{
 		private readonly IExpression _lhs;
@@ -14,14 +15,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		/// </summary>
 		/// <param name="lhs"></param>
 		/// <param name="rhs"></param>
-		public ContainsExpression(IExpression lhs, IExpression rhs)
+		public ContainsStringExpression(IExpression lhs, IExpression rhs)
 		{
 			_lhs = lhs;
 			_rhs = rhs;
 		}
 
+		public Type ResultType => typeof(bool);
+
 		/// <inheritdoc />
-		public object Evaluate(IEnumerable<LogLine> logEntry)
+		public object Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			var lhs = _lhs.Evaluate(logEntry)?.ToString();
 			var rhs = _rhs.Evaluate(logEntry)?.ToString();

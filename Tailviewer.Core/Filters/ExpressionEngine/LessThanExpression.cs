@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.Core.Filters.ExpressionEngine
+﻿using System;
+
+namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class LessThanExpression
 		: BinaryNumericExpression
@@ -12,6 +14,8 @@
 		{
 			return lhs < rhs;
 		}
+
+		public override Type ResultType => typeof(bool);
 
 		protected override TokenType TokenType => TokenType.LessThan;
 

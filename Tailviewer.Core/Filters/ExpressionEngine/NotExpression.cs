@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class NotExpression
-		: IExpression
+		: IExpression<bool>
 	{
-		private readonly IExpression _expression;
+		private readonly IExpression<bool> _expression;
 
-		public NotExpression(IExpression expression)
+		public NotExpression(IExpression<bool> expression)
 		{
 			_expression = expression;
 		}
@@ -35,10 +36,17 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			return _expression.GetHashCode();
 		}
 
-		public object Evaluate(IEnumerable<LogLine> logEntry)
+		public Type ResultType => typeof(bool);
+
+		public bool Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
-			var result = _expression.Evaluate(logEntry) as bool?;
+			var result = _expression.Evaluate(logEntry);
 			return !result;
+		}
+
+		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		{
+			return Evaluate(logEntry);
 		}
 	}
 }

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class IntegerLiteral
-		: IExpression
+		: Literal
 	{
 		private readonly long _value;
 
@@ -15,7 +16,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public object Evaluate(IEnumerable<LogLine> logEntry)
+		public override Type ResultType => typeof(long);
+
+		public override object Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			return _value;
 		}

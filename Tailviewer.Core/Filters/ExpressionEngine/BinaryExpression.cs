@@ -21,7 +21,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public abstract object Evaluate(IEnumerable<LogLine> logEntry);
+		public abstract Type ResultType { get; }
+
+		public abstract object Evaluate(IReadOnlyList<LogLine> logEntry);
 
 		#endregion
 
@@ -58,6 +60,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			switch (operation)
 			{
+				case BinaryOperation.And:
+					return new AndExpression((IExpression<bool>) lhs, (IExpression<bool>) rhs);
+
+				case BinaryOperation.Or:
+					return new OrExpression((IExpression<bool>) lhs, (IExpression<bool>) rhs);
+
 				case BinaryOperation.LessThan:
 					return new LessThanExpression(lhs, rhs);
 
@@ -65,7 +73,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 					return new LessOrEqualsExpression(lhs, rhs);
 
 				case BinaryOperation.Contains:
-					return new ContainsExpression(lhs, rhs);
+					return new ContainsStringExpression(lhs, rhs);
+
+				case BinaryOperation.ContainsTimestamp:
+					return new ContainsTimestampExpression((IExpression<DateTime?>) lhs,
+					                                       (IExpression<IInterval<DateTime?>>) rhs);
 
 				default:
 					throw new NotImplementedException(string.Format("Operation not implemented: {0}", operation));

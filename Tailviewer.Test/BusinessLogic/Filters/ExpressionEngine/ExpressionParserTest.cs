@@ -16,25 +16,56 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		[Test]
 		public void TestParseTrue()
 		{
-			Parse("true").Should().Be(new TrueExpression());
+			Parse("true").Should().Be(new BoolLiteral(true));
 		}
 
 		[Test]
 		public void TestParseFalse()
 		{
-			Parse("false").Should().Be(new FalseExpression());
+			Parse("false").Should().Be(new BoolLiteral(false));
 		}
 
 		[Test]
 		public void TestParseNotTrue()
 		{
-			Parse("!true").Should().Be(new NotExpression(new TrueExpression()));
+			Parse("!true").Should().Be(new NotExpression(new BoolLiteral(true)));
 		}
 
 		[Test]
 		public void TestParseNotFalse()
 		{
-			Parse("!false").Should().Be(new NotExpression(new FalseExpression()));
+			Parse("!false").Should().Be(new NotExpression(new BoolLiteral(false)));
+		}
+
+		[Test]
+		public void TestParseTrueAndFalse()
+		{
+			Parse("true and false").Should().Be(new AndExpression(new BoolLiteral(true), new BoolLiteral(false)));
+		}
+
+		[Test]
+		public void TestParseFalseOrTrue()
+		{
+			Parse("false or true").Should().Be(new OrExpression(new BoolLiteral(false), new BoolLiteral(true)));
+		}
+
+		[Test]
+		public void TestParseToday()
+		{
+			Parse("today").Should().Be(new DateTimeIntervalLiteral(DateTimeInterval.Today));
+		}
+
+		[Test]
+		public void TestParseTimestamp()
+		{
+			Parse("$timestamp").Should().Be(new TimestampExpression());
+		}
+
+		[Test]
+		public void TestParseTimestampIsToday()
+		{
+			Parse("$timestamp is today")
+				.Should().Be(new ContainsTimestampExpression(new TimestampExpression(), new DateTimeIntervalLiteral(DateTimeInterval.Today)));
 		}
 
 		[Test]

@@ -16,9 +16,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			BinaryOperations = new Dictionary<TokenType, BinaryOperation>
 			{
+				{TokenType.And, BinaryOperation.And},
+				{TokenType.Or, BinaryOperation.Or},
 				{TokenType.Contains, BinaryOperation.Contains},
 				{TokenType.LessThan, BinaryOperation.LessThan},
-				{TokenType.LessOrEquals, BinaryOperation.LessOrEquals}
+				{TokenType.LessOrEquals, BinaryOperation.LessOrEquals},
+				{TokenType.Is, BinaryOperation.ContainsTimestamp}
 			};
 			UnaryOperations = new Dictionary<TokenType, UnaryOperation>
 			{
@@ -175,13 +178,13 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			if (Matches(tokens, TokenType.True))
 			{
-				tokens[0] = new TokenOrExpression(new TrueExpression());
+				tokens[0] = new TokenOrExpression(new BoolLiteral(true));
 				return true;
 			}
 
 			if (Matches(tokens, TokenType.False))
 			{
-				tokens[0] = new TokenOrExpression(new FalseExpression());
+				tokens[0] = new TokenOrExpression(new BoolLiteral(false));
 				return true;
 			}
 
@@ -199,7 +202,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			if (Matches(tokens, TokenType.Dollar, TokenType.Literal))
 			{
 				TokenOrExpression name = tokens[1];
-				tokens.RemoveRange(0, 4);
+				tokens.RemoveRange(0, 2);
 				tokens.Insert(0, new TokenOrExpression(CreateVariableExpression(name.Token.Value)));
 				return true;
 			}
@@ -216,6 +219,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 				case LineExpression.Value:
 					return new LineExpression();
+
+				case TimestampExpression.Value:
+					return new TimestampExpression();
 
 				default:
 					throw new ParseException(string.Format("Unknown variable: {0}", name));
@@ -261,7 +267,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				switch (operation)
 				{
 					case UnaryOperation.Not:
-						expression = new NotExpression(rightHandSide);
+						expression = new NotExpression((IExpression<bool>) rightHandSide);
 						break;
 
 					default:

@@ -13,7 +13,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public override object Evaluate(IEnumerable<LogLine> logEntry)
+		public override object Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			var lhs = Lhs.Evaluate(logEntry);
 			var rhs = Rhs.Evaluate(logEntry);

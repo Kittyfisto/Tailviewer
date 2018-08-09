@@ -11,17 +11,20 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 	{
 		#region Implementation of IExpression
 
-		public abstract object Evaluate(IEnumerable<LogLine> logEntry);
+		public abstract Type ResultType { get; }
+
+		public abstract object Evaluate(IReadOnlyList<LogLine> logEntry);
 
 		#endregion
 
 		[Pure]
 		public static IExpression Create(string value)
 		{
+			if (DateTimeIntervalLiteral.TryParse(value, out var dateTimeLiteral))
+				return new DateTimeIntervalLiteral(dateTimeLiteral);
+
 			if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue))
-			{
 				return new IntegerLiteral(integerValue);
-			}
 
 			throw new NotImplementedException();
 		}

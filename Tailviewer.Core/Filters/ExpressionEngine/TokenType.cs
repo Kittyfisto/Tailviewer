@@ -19,6 +19,7 @@
 		And,
 		Or,
 		Contains,
+		Is,
 		#endregion
 
 		#region Unary Operators

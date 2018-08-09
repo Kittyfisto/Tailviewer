@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -11,7 +12,9 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#region Implementation of IExpression
 
-		public object Evaluate(IEnumerable<LogLine> logEntry)
+		public Type ResultType => typeof(string);
+
+		public object Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			var builder = new StringBuilder();
 			foreach(var line in logEntry)

@@ -23,6 +23,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.And, "and"},
 				{TokenType.Or, "or"},
 				{TokenType.Contains, "contains"},
+				{TokenType.Is, "is"},
 				{TokenType.Quotation, "'"},
 				{TokenType.Dollar, "$"},
 				{TokenType.True, "true"},
