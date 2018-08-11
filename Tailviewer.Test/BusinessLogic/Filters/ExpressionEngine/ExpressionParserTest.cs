@@ -70,7 +70,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		[Test]
 		public void TestParseStringLiteralWithBackSlash()
 		{
-			Parse("\"Some \\ Stuff\"").Should().Be(new StringLiteral("Some \ Stuff"));
+			Parse("\"Some \\ Stuff\"").Should().Be(new StringLiteral("Some \\ Stuff"));
 		}
 
 		[Test]

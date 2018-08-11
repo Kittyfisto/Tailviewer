@@ -251,7 +251,6 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
-    <Compile Include="Ui\Controls\QuickFiltersDataTemplate.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
@@ -289,6 +288,9 @@
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\SidePanelControl.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeChooserControl.xaml.cs">
+      <DependentUpon>TimeChooserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\VersionConverter.cs" />
@@ -528,6 +530,10 @@
     <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\TimeChooserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

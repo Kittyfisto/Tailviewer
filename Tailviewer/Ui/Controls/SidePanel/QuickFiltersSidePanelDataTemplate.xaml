@@ -18,6 +18,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
@@ -44,10 +45,12 @@
 
                 </Grid>
 
+                <sidePanel:TimeChooserControl Grid.Row="1" />
+
                 <controls:FlatScrollViewer
                     ScrollBarThickness="7"
                     Margin="0,8,0,0"
-                    Grid.Row="1">
+                    Grid.Row="2">
                     <ItemsControl
                         ItemsSource="{Binding QuickFilters}" />
                 </controls:FlatScrollViewer>
