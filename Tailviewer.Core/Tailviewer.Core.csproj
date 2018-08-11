@@ -44,8 +44,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,7 +77,6 @@
     <Compile Include="FileEx.cs" />
     <Compile Include="Filters\ExpressionEngine\AndExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\BinaryExpression.cs" />
-    <Compile Include="Filters\ExpressionEngine\BinaryNumericExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\BinaryOperation.cs" />
     <Compile Include="Filters\ExpressionEngine\ContainsStringExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
@@ -91,15 +90,15 @@
     <Compile Include="Filters\ExpressionEngine\Interval.cs" />
     <Compile Include="Filters\ExpressionEngine\LessOrEqualsExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\LessThanExpression.cs" />
-    <Compile Include="Filters\ExpressionEngine\LineNumberExpression.cs" />
+    <Compile Include="Filters\ExpressionEngine\LineNumberVariable.cs" />
     <Compile Include="Filters\ExpressionEngine\Literal.cs" />
     <Compile Include="Filters\ExpressionEngine\NotExpression.cs" />
-    <Compile Include="Filters\ExpressionEngine\MessageExpression.cs" />
+    <Compile Include="Filters\ExpressionEngine\MessageVariable.cs" />
     <Compile Include="Filters\ExpressionEngine\OrExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\ContainsTimestampExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\ParseException.cs" />
     <Compile Include="Filters\ExpressionEngine\StringLiteral.cs" />
-    <Compile Include="Filters\ExpressionEngine\TimestampExpression.cs" />
+    <Compile Include="Filters\ExpressionEngine\TimestampVariable.cs" />
     <Compile Include="Filters\ExpressionEngine\Token.cs" />
     <Compile Include="Filters\ExpressionEngine\Tokenizer.cs" />
     <Compile Include="Filters\ExpressionEngine\TokenOrExpression.cs" />

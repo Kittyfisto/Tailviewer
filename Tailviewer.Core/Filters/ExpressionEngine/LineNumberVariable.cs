@@ -4,24 +4,22 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
-	internal sealed class TimestampExpression
-		: IExpression<DateTime?>
+	/// <summary>
+	/// Retrieves the line number of the log entry in question (the first line in case
+	/// of a multi-line log entry).
+	/// </summary>
+	internal sealed class LineNumberVariable
+		: IExpression<long>
 	{
-		public const string Value = "timestamp";
+		public const string Value = "linenumber";
 
 		#region Implementation of IExpression
 
-		public Type ResultType => typeof(DateTime);
+		public Type ResultType => typeof(long);
 
-		public DateTime? Evaluate(IReadOnlyList<LogLine> logEntry)
+		public long Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
-			using (var it = logEntry.GetEnumerator())
-			{
-				if (!it.MoveNext())
-					return null;
-
-				return it.Current.Timestamp;
-			}
+			return logEntry[0].LineIndex + 1;
 		}
 
 		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
@@ -35,12 +33,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public override bool Equals(object obj)
 		{
-			return obj is TimestampExpression;
+			return obj is LineNumberVariable;
 		}
 
 		public override int GetHashCode()
 		{
-			return 103;
+			return 104;
 		}
 
 		public override string ToString()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
@@ -7,14 +8,14 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class ExpressionParser
 	{
-		private static readonly IReadOnlyDictionary<TokenType, BinaryOperation> BinaryOperations;
-		private static readonly IReadOnlyDictionary<TokenType, UnaryOperation> UnaryOperations;
+		public static readonly IReadOnlyBimap<TokenType, BinaryOperation> BinaryOperations;
+		public static readonly IReadOnlyBimap<TokenType, UnaryOperation> UnaryOperations;
 
 		private readonly Tokenizer _tokenizer;
 
 		static ExpressionParser()
 		{
-			BinaryOperations = new Dictionary<TokenType, BinaryOperation>
+			BinaryOperations = new Bimap<TokenType, BinaryOperation>
 			{
 				{TokenType.And, BinaryOperation.And},
 				{TokenType.Or, BinaryOperation.Or},
@@ -25,7 +26,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.GreaterOrEquals, BinaryOperation.GreaterOrEquals},
 				{TokenType.Is, BinaryOperation.ContainsTimestamp}
 			};
-			UnaryOperations = new Dictionary<TokenType, UnaryOperation>
+			UnaryOperations = new Bimap<TokenType, UnaryOperation>
 			{
 				{TokenType.Not, UnaryOperation.Not}
 			};
@@ -78,15 +79,8 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 					}
 					else if (token.Type == TokenType.Quotation)
 					{
-						// Consume everything until the quote closes again...
-						var content = new StringBuilder();
-						while (iterator.MoveNext() &&
-						       iterator.Current.Type != TokenType.Quotation)
-						{
-							content.Append(token);
-						}
-
-						stack.Add(new TokenOrExpression(new StringLiteral(content.ToString())));
+						var stringTokens = FindTokensInString(iterator);
+						stack.Add(new TokenOrExpression(StringLiteral.Create(stringTokens)));
 					}
 					else
 					{
@@ -199,6 +193,25 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			return false;
 		}
 
+		[Pure]
+		private static List<Token> FindTokensInString(IEnumerator<Token> tokenIterator)
+		{
+			var stringTokens = new List<Token>();
+			Token? last = null;
+			while (tokenIterator.MoveNext())
+			{
+				var token = tokenIterator.Current;
+				if (token.Type == TokenType.Quotation &&
+				    (last == null || last.Value.Type != TokenType.BackwardSlash))
+				{
+					break;
+				}
+				stringTokens.Add(token);
+			}
+
+			return stringTokens;
+		}
+
 		private bool TryParseVariableReference(List<TokenOrExpression> tokens)
 		{
 			if (Matches(tokens, TokenType.Dollar, TokenType.Literal))
@@ -216,14 +229,14 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		{
 			switch (name.ToLower())
 			{
-				case MessageExpression.Value:
-					return new MessageExpression();
+				case MessageVariable.Value:
+					return new MessageVariable();
 
-				case LineNumberExpression.Value:
-					return new LineNumberExpression();
+				case LineNumberVariable.Value:
+					return new LineNumberVariable();
 
-				case TimestampExpression.Value:
-					return new TimestampExpression();
+				case TimestampVariable.Value:
+					return new TimestampVariable();
 
 				default:
 					throw new ParseException(string.Format("Unknown variable: {0}", name));
@@ -300,12 +313,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		private static bool IsBinaryOperator(TokenType type, out BinaryOperation operation)
 		{
-			return BinaryOperations.TryGetValue(type, out operation);
+			return BinaryOperations.Forward.TryGetValue(type, out operation);
 		}
 
 		private static bool IsUnaryOperator(TokenType type, out UnaryOperation operation)
 		{
-			return UnaryOperations.TryGetValue(type, out operation);
+			return UnaryOperations.Forward.TryGetValue(type, out operation);
 		}
 
 		[Pure]

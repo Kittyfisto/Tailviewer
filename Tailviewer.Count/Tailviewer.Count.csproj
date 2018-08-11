@@ -52,8 +52,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

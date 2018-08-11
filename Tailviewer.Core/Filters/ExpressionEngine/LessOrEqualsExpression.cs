@@ -16,6 +16,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			_rhs = rhs;
 		}
 
+		public static IExpression Create(IExpression<long> lhs, IExpression<long> rhs)
+		{
+			return new LessOrEqualsExpression(lhs, rhs);
+		}
+
 		#region Overrides of BinaryNumericExpression
 
 		public bool Evaluate(IReadOnlyList<LogLine> logEntry)

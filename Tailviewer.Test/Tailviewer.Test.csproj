@@ -74,8 +74,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Extensions, Version=1.1.35.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Extensions.1.1.35\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -103,8 +103,10 @@
     <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\AndFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserErrorTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\FilterExpressionTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\TokenizerTest.cs" />
     <Compile Include="BusinessLogic\Filters\FilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\LevelFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />

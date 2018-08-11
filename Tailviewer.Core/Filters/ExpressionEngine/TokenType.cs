@@ -27,6 +27,7 @@
 		#endregion
 
 		Quotation,
+		BackwardSlash,
 		Dollar,
 		Literal,
 		True,

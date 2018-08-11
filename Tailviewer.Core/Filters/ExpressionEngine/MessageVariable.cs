@@ -5,8 +5,8 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
-	internal sealed class MessageExpression
-		: IExpression
+	internal sealed class MessageVariable
+		: IExpression<string>
 	{
 		public const string Value = "message";
 
@@ -14,19 +14,34 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(string);
 
-		public object Evaluate(IReadOnlyList<LogLine> logEntry)
+		public string Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			var builder = new StringBuilder();
 			foreach(var line in logEntry)
 			{
 				builder.AppendLine(line.Message);
 			}
-			return builder;
+			return builder.ToString();
+		}
+
+		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		{
+			return Evaluate(logEntry);
 		}
 
 		#endregion
 
 		#region Overrides of Object
+
+		public override bool Equals(object obj)
+		{
+			return obj is MessageVariable;
+		}
+
+		public override int GetHashCode()
+		{
+			return 105;
+		}
 
 		public override string ToString()
 		{

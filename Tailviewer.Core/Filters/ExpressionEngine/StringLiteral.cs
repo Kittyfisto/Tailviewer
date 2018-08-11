@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
 	internal sealed class StringLiteral
-		: IExpression
+		: IExpression<string>
 	{
 		private readonly string _value;
 
@@ -18,9 +20,14 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(string);
 
-		public object Evaluate(IReadOnlyList<LogLine> logEntry)
+		public string Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
 			return _value;
+		}
+
+		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		{
+			return Evaluate(logEntry);
 		}
 
 		#endregion
@@ -48,5 +55,16 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		}
 
 		#endregion
+
+		[Pure]
+		public static IExpression<string> Create(IReadOnlyList<Token> tokens)
+		{
+			var builder = new StringBuilder();
+			foreach(var token in tokens)
+			{
+				builder.Append(token.Value);
+			}
+			return new StringLiteral(builder.ToString());
+		}
 	}
 }

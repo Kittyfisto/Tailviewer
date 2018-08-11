@@ -58,20 +58,51 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		[Test]
 		public void TestParseLineNumber()
 		{
-			Parse("$linenumber").Should().Be(new LineNumberExpression());
+			Parse("$linenumber").Should().Be(new LineNumberVariable());
+		}
+
+		[Test]
+		public void TestParseStringLiteral()
+		{
+			Parse("\"relentless chapter 3\"").Should().Be(new StringLiteral("relentless chapter 3"));
+		}
+
+		[Test]
+		public void TestParseStringLiteralWithBackSlash()
+		{
+			Parse("\"Some \\ Stuff\"").Should().Be(new StringLiteral("Some \ Stuff"));
+		}
+
+		[Test]
+		[Ignore("Not yet implementedS")]
+		public void TestParseStringLiteralWithQuotes()
+		{
+			Parse("\"Some \\\" Stuff\"").Should().Be(new StringLiteral("Some \" Stuff"));
+		}
+
+		[Test]
+		public void TestParseMessage()
+		{
+			Parse("$message").Should().Be(new MessageVariable());
+		}
+
+		[Test]
+		public void TestParseMessageContainsFoobar()
+		{
+			Parse("$message contains \"foobar\"").Should().Be(new ContainsStringExpression(new MessageVariable(), new StringLiteral("foobar")));
 		}
 
 		[Test]
 		public void TestParseTimestamp()
 		{
-			Parse("$timestamp").Should().Be(new TimestampExpression());
+			Parse("$timestamp").Should().Be(new TimestampVariable());
 		}
 
 		[Test]
 		public void TestParseTimestampIsToday()
 		{
 			Parse("$timestamp is today")
-				.Should().Be(new ContainsTimestampExpression(new TimestampExpression(), new DateTimeIntervalLiteral(DateTimeInterval.Today)));
+				.Should().Be(new ContainsTimestampExpression(new TimestampVariable(), new DateTimeIntervalLiteral(DateTimeInterval.Today)));
 		}
 
 		[Test]

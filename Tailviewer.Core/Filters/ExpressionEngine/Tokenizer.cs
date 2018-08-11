@@ -24,7 +24,8 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 				{TokenType.Or, "or"},
 				{TokenType.Contains, "contains"},
 				{TokenType.Is, "is"},
-				{TokenType.Quotation, "'"},
+				{TokenType.Quotation, "\""},
+				{TokenType.BackwardSlash, "\\"},
 				{TokenType.Dollar, "$"},
 				{TokenType.True, "true"},
 				{TokenType.False, "false"}

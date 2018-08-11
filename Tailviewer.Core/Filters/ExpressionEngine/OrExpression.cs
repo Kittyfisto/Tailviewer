@@ -16,6 +16,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			_rhs = rhs;
 		}
 
+		public static OrExpression Create(IExpression<bool> lhs, IExpression<bool> rhs)
+		{
+			return new OrExpression(lhs, rhs);
+		}
+
 		#region Overrides of BinaryExpression
 
 		public Type ResultType => typeof(bool);

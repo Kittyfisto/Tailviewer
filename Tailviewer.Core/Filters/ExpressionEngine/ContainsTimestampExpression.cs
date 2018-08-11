@@ -16,6 +16,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			_rhs = rhs;
 		}
 
+		public static IExpression Create(IExpression<DateTime?> lhs, IExpression<IInterval<DateTime?>> rhs)
+		{
+			return new ContainsTimestampExpression(lhs, rhs);
+		}
+
 		#region Overrides of BinaryExpression
 
 		public Type ResultType => typeof(bool);

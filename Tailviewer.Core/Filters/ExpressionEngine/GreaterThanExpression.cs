@@ -16,6 +16,11 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			_rhs = rhs;
 		}
 
+		public static IExpression Create(IExpression<long> lhs, IExpression<long> rhs)
+		{
+			return new GreaterThanExpression(lhs, rhs);
+		}
+
 		#region Implementation of IExpression
 
 		public Type ResultType => typeof(long);
