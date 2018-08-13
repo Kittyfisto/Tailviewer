@@ -80,6 +80,7 @@
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="Drive.cs" />
     <Compile Include="FileEx.cs" />
     <Compile Include="Filters\ExpressionEngine\AndExpression.cs" />
@@ -87,6 +88,8 @@
     <Compile Include="Filters\ExpressionEngine\BinaryOperation.cs" />
     <Compile Include="Filters\ExpressionEngine\ContainsStringExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
+    <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
+    <Compile Include="Settings\SpecialDateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />
     <Compile Include="Filters\ExpressionEngine\ExpressionParser.cs" />
     <Compile Include="Filters\ExpressionEngine\GreaterOrEqualsExpression.cs" />
@@ -204,7 +207,6 @@
     <Compile Include="Settings\QuickFilterActionType.cs" />
     <Compile Include="Settings\FilterMatchType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
-    <Compile Include="Settings\SpecialTimeRange.cs" />
     <Compile Include="Settings\TimeFilter.cs" />
     <Compile Include="StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />

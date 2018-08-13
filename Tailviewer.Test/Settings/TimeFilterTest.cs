@@ -12,21 +12,21 @@ namespace Tailviewer.Test.Settings
 	[TestFixture]
 	public sealed class TimeFilterTest
 	{
-		public static IEnumerable<SpecialTimeRange?> Ranges
+		public static IEnumerable<SpecialDateTimeInterval?> Ranges
 		{
 			get
 			{
-				return new SpecialTimeRange?[]
+				return new SpecialDateTimeInterval?[]
 				{
 					null,
-					SpecialTimeRange.Last24Hours,
-					SpecialTimeRange.Last30Days,
-					SpecialTimeRange.Last7Days,
-					SpecialTimeRange.Last365Days,
-					SpecialTimeRange.ThisMonth,
-					SpecialTimeRange.ThisWeek,
-					SpecialTimeRange.ThisYear,
-					SpecialTimeRange.Today
+					SpecialDateTimeInterval.Last24Hours,
+					SpecialDateTimeInterval.Last30Days,
+					SpecialDateTimeInterval.Last7Days,
+					SpecialDateTimeInterval.Last365Days,
+					SpecialDateTimeInterval.ThisMonth,
+					SpecialDateTimeInterval.ThisWeek,
+					SpecialDateTimeInterval.ThisYear,
+					SpecialDateTimeInterval.Today
 				};
 			}
 		}
@@ -45,7 +45,7 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestClone([ValueSource(nameof(Ranges))] SpecialTimeRange? range,
+		public void TestClone([ValueSource(nameof(Ranges))] SpecialDateTimeInterval? range,
 		                      [ValueSource(nameof(DateTimes))] DateTime? start,
 		                      [ValueSource(nameof(DateTimes))] DateTime? end)
 		{
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestStoreRestore([ValueSource(nameof(Ranges))] SpecialTimeRange? range,
+		public void TestStoreRestore([ValueSource(nameof(Ranges))] SpecialDateTimeInterval? range,
 		                             [ValueSource(nameof(DateTimes))] DateTime? start,
 		                             [ValueSource(nameof(DateTimes))] DateTime? end)
 		{

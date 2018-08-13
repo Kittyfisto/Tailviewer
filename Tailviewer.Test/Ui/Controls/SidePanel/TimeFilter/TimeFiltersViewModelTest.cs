@@ -12,16 +12,16 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 	{
 		private Tailviewer.BusinessLogic.Filters.TimeFilter _timeFilter;
 
-		public static IEnumerable<SpecialTimeRange> Ranges
+		public static IEnumerable<SpecialDateTimeInterval> Ranges
 		{
 			get
 			{
-				return new SpecialTimeRange[]
+				return new SpecialDateTimeInterval[]
 				{
-					SpecialTimeRange.Today,
-					SpecialTimeRange.ThisWeek,
-					SpecialTimeRange.ThisMonth,
-					SpecialTimeRange.ThisYear
+					SpecialDateTimeInterval.Today,
+					SpecialDateTimeInterval.ThisWeek,
+					SpecialDateTimeInterval.ThisMonth,
+					SpecialDateTimeInterval.ThisYear
 				};
 			}
 		}
@@ -42,7 +42,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 		}
 
 		[Test]
-		public void TestConstruction2([ValueSource(nameof(Ranges))] SpecialTimeRange range)
+		public void TestConstruction2([ValueSource(nameof(Ranges))] SpecialDateTimeInterval range)
 		{
 			_timeFilter.Range = range;
 
@@ -54,7 +54,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 		}
 
 		[Test]
-		public void TestChangeSelectedFilter([ValueSource(nameof(Ranges))] SpecialTimeRange range)
+		public void TestChangeSelectedFilter([ValueSource(nameof(Ranges))] SpecialDateTimeInterval range)
 		{
 			var viewModel = new TimeFiltersViewModel(_timeFilter);
 			var tmp = viewModel.AvailableSpecialRanges.First(x => x.Range == range);

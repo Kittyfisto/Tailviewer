@@ -30,14 +30,31 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			var lhs = _lhs.Evaluate(logEntry);
 			var rhs = _rhs.Evaluate(logEntry);
 
-			if (rhs == null)
-				return false;
-
 			if (lhs == null)
 				return false;
 
-			return rhs.Minimum >= lhs &&
-			       rhs.Maximum <= lhs;
+			if (rhs == null)
+				return false;
+
+			var minimum = rhs.Minimum;
+			var maximum = rhs.Maximum;
+
+			if (minimum == null && maximum == null)
+				return false;
+
+			if (minimum != null)
+			{
+				if (lhs < minimum)
+					return false;
+			}
+
+			if (maximum != null)
+			{
+				if (lhs > maximum)
+					return false;
+			}
+
+			return true;
 		}
 
 		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)

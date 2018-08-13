@@ -93,7 +93,7 @@ namespace Tailviewer.Test.Ui
 			var numFilterChanges = 0;
 			model.OnFiltersChanged += () => ++numFilterChanges;
 
-			model.TimeFilters.SelectedTimeRange = new SpecialTimeRangeViewModel(SpecialTimeRange.ThisYear);
+			model.TimeFilters.SelectedTimeRange = new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisYear);
 			numFilterChanges.Should().Be(1, "because we've made a change to the selected time range");
 
 			model.TimeFilters.HasNoTimeRange = true;

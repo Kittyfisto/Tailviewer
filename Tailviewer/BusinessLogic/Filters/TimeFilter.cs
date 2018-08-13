@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.Filters.ExpressionEngine;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters
@@ -17,7 +18,7 @@ namespace Tailviewer.BusinessLogic.Filters
 			_settings = settings;
 		}
 
-		public SpecialTimeRange? Range
+		public SpecialDateTimeInterval? Range
 		{
 			get { return _settings.Range; }
 			set { _settings.Range = value; }

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Filters.ExpressionEngine;
+using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 {
@@ -52,7 +53,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		[Test]
 		public void TestParseToday()
 		{
-			Parse("today").Should().Be(new DateTimeIntervalLiteral(DateTimeInterval.Today));
+			Parse("today").Should().Be(new DateTimeIntervalLiteral(SpecialDateTimeInterval.Today));
 		}
 
 		[Test]
@@ -103,7 +104,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		public void TestParseTimestampIsToday()
 		{
 			Parse("$timestamp is today")
-				.Should().Be(new ContainsTimestampExpression(new TimestampVariable(), new DateTimeIntervalLiteral(DateTimeInterval.Today)));
+				.Should().Be(new ContainsTimestampExpression(new TimestampVariable(), new DateTimeIntervalLiteral(SpecialDateTimeInterval.Today)));
 		}
 
 		[Test]

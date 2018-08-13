@@ -103,6 +103,7 @@
     <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\AndFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\ContainsTimestampExpressionTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserErrorTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserTest.cs" />
     <Compile Include="BusinessLogic\Filters\ExpressionEngine\FilterExpressionTest.cs" />

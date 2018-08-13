@@ -27,14 +27,14 @@ namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter
 			_timeFilter = timeFilter;
 			_availableSpecialRanges = new[]
 			{
-				new SpecialTimeRangeViewModel(SpecialTimeRange.Today),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.ThisWeek),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.ThisMonth),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.ThisYear),
-				/*new SpecialTimeRangeViewModel(SpecialTimeRange.LastDay),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.LastWeek),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.LastMonth),
-				new SpecialTimeRangeViewModel(SpecialTimeRange.LastYear)*/
+				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.Today),
+				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisWeek),
+				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisMonth),
+				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisYear),
+				/*new SpecialTimeRangeViewModel(DateTimeInterval.LastDay),
+				new SpecialTimeRangeViewModel(DateTimeInterval.LastWeek),
+				new SpecialTimeRangeViewModel(DateTimeInterval.LastMonth),
+				new SpecialTimeRangeViewModel(DateTimeInterval.LastYear)*/
 			};
 
 			HasNoTimeRange = true;

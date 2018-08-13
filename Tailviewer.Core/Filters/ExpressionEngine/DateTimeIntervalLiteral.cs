@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
@@ -9,21 +10,25 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		: IExpression<IInterval<DateTime?>>
 	{
 		private static readonly TimeSpan AlmostADay = TimeSpan.FromDays(1) - TimeSpan.FromTicks(1);
-		private static readonly IReadOnlyDictionary<string, DateTimeInterval> SpecialValues;
-		private static readonly IReadOnlyDictionary<DateTimeInterval, string> Strings;
+		private static readonly TimeSpan AlmostAWeek = TimeSpan.FromDays(7) - TimeSpan.FromTicks(1);
+		private static readonly TimeSpan AlmostAMonth = TimeSpan.FromDays(30) - TimeSpan.FromTicks(1);
+		private static readonly TimeSpan AlmostAYear = TimeSpan.FromDays(365) - TimeSpan.FromTicks(1);
+
+		private static readonly IReadOnlyDictionary<string, SpecialDateTimeInterval> SpecialValues;
+		private static readonly IReadOnlyDictionary<SpecialDateTimeInterval, string> Strings;
 
 		static DateTimeIntervalLiteral()
 		{
-			SpecialValues = new Dictionary<string, DateTimeInterval>
+			SpecialValues = new Dictionary<string, SpecialDateTimeInterval>
 			{
-				{"today", DateTimeInterval.Today}
+				{"today", SpecialDateTimeInterval.Today}
 			};
 			Strings = SpecialValues.ToDictionary(pair => pair.Value, pair => pair.Key);
 		}
 
-		private readonly DateTimeInterval _interval;
+		private readonly SpecialDateTimeInterval _interval;
 
-		public DateTimeIntervalLiteral(DateTimeInterval interval)
+		public DateTimeIntervalLiteral(SpecialDateTimeInterval interval)
 		{
 			_interval = interval;
 		}
@@ -34,11 +39,23 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public IInterval<DateTime?> Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
-			var today = DateTime.Today;
 			switch (_interval)
 			{
-				case DateTimeInterval.Today:
+				case SpecialDateTimeInterval.Today:
+					var today = DateTime.Today;
 					return new Interval<DateTime?>(today, today + AlmostADay);
+
+				case SpecialDateTimeInterval.ThisWeek:
+					var startOfWeek = DateTime.Now.StartOfWeek();
+					return new Interval<DateTime?>(startOfWeek, startOfWeek + AlmostAWeek);
+
+				case SpecialDateTimeInterval.ThisMonth:
+					var startOfMonth = DateTime.Now.StartOfMonth();
+					return new Interval<DateTime?>(startOfMonth, startOfMonth + AlmostAMonth);
+
+				case SpecialDateTimeInterval.ThisYear:
+					var startOfYear = DateTime.Now.StartOfYear();
+					return new Interval<DateTime?>(startOfYear, startOfYear + AlmostAYear);
 
 				default: throw new NotImplementedException();
 			}
@@ -82,7 +99,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		#endregion
 
-		public static bool TryParse(string value, out DateTimeInterval interval)
+		public static bool TryParse(string value, out SpecialDateTimeInterval interval)
 		{
 			if (SpecialValues.TryGetValue(value, out interval))
 				return true;

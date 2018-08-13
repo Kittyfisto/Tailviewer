@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Settings
 					MatchType = FilterMatchType.WildcardFilter
 				},
 			};
-			filters.TimeFilter.Range = SpecialTimeRange.Today;
+			filters.TimeFilter.Range = SpecialDateTimeInterval.Today;
 			var clone = filters.Clone();
 			clone.Should().NotBeNull();
 			clone.Should().NotBeSameAs(filters);
@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Settings
 			clone[0].Should().NotBeSameAs(filters[0]);
 			clone[0].MatchType.Should().Be(filters[0].MatchType);
 			clone.TimeFilter.Should().NotBeNull();
-			clone.TimeFilter.Range.Should().Be(SpecialTimeRange.Today);
+			clone.TimeFilter.Range.Should().Be(SpecialDateTimeInterval.Today);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace Tailviewer.Test.Settings
 					writer.WriteStartElement("Test");
 					var settings = new QuickFilters
 					{
-						TimeFilter = {Range = SpecialTimeRange.ThisWeek}
+						TimeFilter = {Range = SpecialDateTimeInterval.ThisWeek}
 					};
 					settings.Add(new QuickFilter{Value = "42"});
 					settings.Save(writer);
@@ -70,7 +70,7 @@ namespace Tailviewer.Test.Settings
 
 					var settings = new QuickFilters();
 					settings.Restore(reader);
-					settings.TimeFilter.Range.Should().Be(SpecialTimeRange.ThisWeek);
+					settings.TimeFilter.Range.Should().Be(SpecialDateTimeInterval.ThisWeek);
 					settings.Should().HaveCount(1);
 					settings[0].Value.Should().Be("42");
 				}

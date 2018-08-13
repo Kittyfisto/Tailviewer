@@ -31,7 +31,7 @@ namespace Tailviewer.Core.Settings
 		///     Even when this is set to a non-null value, both <see cref="Start" /> and <see cref="End" />
 		///     are expected to NOT be changed so we do not lose the user's most recent settings!
 		/// </remarks>
-		public SpecialTimeRange? Range;
+		public SpecialDateTimeInterval? Range;
 
 		/// <summary>
 		/// </summary>
@@ -72,7 +72,7 @@ namespace Tailviewer.Core.Settings
 				switch (reader.Name)
 				{
 					case "range":
-						if (Enum.TryParse(reader.Value, ignoreCase: true, result: out SpecialTimeRange range))
+						if (Enum.TryParse(reader.Value, ignoreCase: true, result: out SpecialDateTimeInterval range))
 							Range = range;
 						break;
 
@@ -120,13 +120,8 @@ namespace Tailviewer.Core.Settings
 
 		private IExpression<IInterval<DateTime?>> TryCreateInterval()
 		{
-			switch (Range)
-			{
-				case SpecialTimeRange.Today:
-					return new DateTimeIntervalLiteral(DateTimeInterval.Today);
-
-				// TODO: Add other values...
-			}
+			if (Range != null)
+				return new DateTimeIntervalLiteral(Range.Value);
 
 			// TODO: Check start / end
 			return null;

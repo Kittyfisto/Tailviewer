@@ -3,7 +3,7 @@
 	/// <summary>
 	/// 
 	/// </summary>
-	public enum SpecialTimeRange
+	public enum SpecialDateTimeInterval
 	{
 		/// <summary>
 		/// 
@@ -44,5 +44,5 @@
 		/// 
 		/// </summary>
 		Last365Days
-	};
+	}
 }

@@ -10,14 +10,14 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class QuickFiltersTest
 	{
-		public static IEnumerable<SpecialTimeRange?> Ranges
+		public static IEnumerable<SpecialDateTimeInterval?> Ranges
 		{
 			get
 			{
-				return new SpecialTimeRange?[]
+				return new SpecialDateTimeInterval?[]
 				{
 					null,
-					SpecialTimeRange.Today
+					SpecialDateTimeInterval.Today
 				};
 			}
 		}
@@ -70,7 +70,7 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestChangeTimeFilter([ValueSource(nameof(Ranges))] SpecialTimeRange? range,
+		public void TestChangeTimeFilter([ValueSource(nameof(Ranges))] SpecialDateTimeInterval? range,
 		                                 [ValueSource(nameof(DateTimes))] DateTime? start,
 		                                 [ValueSource(nameof(DateTimes))] DateTime? end)
 		{
