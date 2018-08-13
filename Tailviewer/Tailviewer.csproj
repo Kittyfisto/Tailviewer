@@ -63,8 +63,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.114, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.114\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.115, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.115\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
@@ -97,6 +97,7 @@
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
+    <Compile Include="BusinessLogic\Filters\TimeFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
@@ -288,9 +289,12 @@
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\SidePanelControl.cs" />
-    <Compile Include="Ui\Controls\SidePanel\TimeChooserControl.xaml.cs">
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\IChoseTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\SpecialTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml.cs">
       <DependentUpon>TimeChooserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModel.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\VersionConverter.cs" />
@@ -531,7 +535,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\TimeChooserControl.xaml">
+    <Page Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

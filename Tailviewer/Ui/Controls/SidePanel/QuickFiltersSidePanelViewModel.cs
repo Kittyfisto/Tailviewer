@@ -9,6 +9,7 @@ using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.QuickFilter;
+using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.SidePanel
@@ -25,6 +26,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		private readonly QuickFiltersViewModel _filters;
 		private readonly IApplicationSettings _settings;
 		private IDataSourceViewModel _currentDataSource;
+		private readonly TimeFiltersViewModel _timeFilters;
 
 		public QuickFiltersSidePanelViewModel(IApplicationSettings settings, IQuickFilters quickFilters)
 		{
@@ -37,11 +39,16 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			_filters.OnFilterRemoved += QuickFiltersOnOnFilterRemoved;
 			_filters.OnFiltersChanged += OnOnFiltersChanged;
 
+			_timeFilters = new TimeFiltersViewModel(quickFilters.TimeFilter);
+			_timeFilters.OnFiltersChanged += OnOnFiltersChanged;
+
 			UpdateTooltip();
 			PropertyChanged += OnPropertyChanged;
 		}
 
 		public ICommand AddCommand => _filters.AddCommand;
+
+		public TimeFiltersViewModel TimeFilters => _timeFilters;
 
 		public IEnumerable<QuickFilterViewModel> QuickFilters => _filters.QuickFilters;
 
@@ -110,7 +117,15 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 		public IEnumerable<ILogEntryFilter> CreateFilterChain()
 		{
-			return _filters.CreateFilterChain();
+			var quickFilter = _filters.CreateFilterChain();
+			var timeFilter = _timeFilters.CreateFilter();
+			if (timeFilter == null)
+				return quickFilter;
+			if (quickFilter == null)
+				quickFilter = new List<ILogEntryFilter>();
+
+			quickFilter.Add(timeFilter);
+			return quickFilter;
 		}
 
 		public override void Update()

@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel">
+                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
+                    xmlns:timeFilter="clr-namespace:Tailviewer.Ui.Controls.SidePanel.TimeFilter">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -17,6 +18,7 @@
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
@@ -45,12 +47,17 @@
 
                 </Grid>
 
-                <sidePanel:TimeChooserControl Grid.Row="1" />
+                <timeFilter:TimeChooserControl Grid.Row="1"
+                                               DataContext="{Binding TimeFilters}"/>
+
+                <Rectangle Grid.Row="2"
+                           Height="1"
+                           Fill="LightGray"/>
 
                 <controls:FlatScrollViewer
                     ScrollBarThickness="7"
                     Margin="0,8,0,0"
-                    Grid.Row="2">
+                    Grid.Row="3">
                     <ItemsControl
                         ItemsSource="{Binding QuickFilters}" />
                 </controls:FlatScrollViewer>

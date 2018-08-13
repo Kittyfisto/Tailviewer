@@ -37,7 +37,8 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource>());
 
 			_quickFilters = new Mock<IQuickFilters>();
-			_quickFilters.Setup(x => x.Add()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
+			_quickFilters.Setup(x => x.AddQuickFilter()).Returns(new QuickFilter(new Core.Settings.QuickFilter()));
+			_quickFilters.Setup(x => x.TimeFilter).Returns(new TimeFilter(new Core.Settings.TimeFilter()));
 
 			_settings = new Mock<IApplicationSettings>();
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);

@@ -5,10 +5,12 @@ using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Filters
 {
-	public sealed class QuickFilters : IQuickFilters
+	public sealed class QuickFilters
+		: IQuickFilters
 	{
 		private readonly List<QuickFilter> _quickFilters;
 		private readonly Core.Settings.QuickFilters _settings;
+		private readonly TimeFilter _timeFilter;
 		private readonly object _syncRoot;
 
 		public QuickFilters(Core.Settings.QuickFilters settings)
@@ -22,6 +24,7 @@ namespace Tailviewer.BusinessLogic.Filters
 			{
 				_quickFilters.Add(new QuickFilter(setting));
 			}
+			_timeFilter = new TimeFilter(settings.TimeFilter);
 		}
 
 		public IEnumerable<QuickFilter> Filters
@@ -35,11 +38,13 @@ namespace Tailviewer.BusinessLogic.Filters
 			}
 		}
 
+		public TimeFilter TimeFilter => _timeFilter;
+
 		/// <summary>
 		///     Adds a new quickfilter.
 		/// </summary>
 		/// <returns></returns>
-		public QuickFilter Add()
+		public QuickFilter AddQuickFilter()
 		{
 			lock (_syncRoot)
 			{

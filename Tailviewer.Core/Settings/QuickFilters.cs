@@ -10,12 +10,27 @@ namespace Tailviewer.Core.Settings
 	/// </summary>
 	public sealed class QuickFilters
 		: List<QuickFilter>
-			, ICloneable
+		, ICloneable
 	{
+		private TimeFilter _timeFilter;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public QuickFilters()
+		{
+			_timeFilter = new TimeFilter();
+		}
+
 		object ICloneable.Clone()
 		{
 			return Clone();
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public TimeFilter TimeFilter => _timeFilter;
 
 		/// <summary>
 		///     Restores the values of this object from the given xml document.
@@ -32,6 +47,10 @@ namespace Tailviewer.Core.Settings
 						var quickfilter = new QuickFilter();
 						if (quickfilter.Restore(subtree))
 							quickfilters.Add(quickfilter);
+						break;
+
+					case "timefilter":
+						_timeFilter.Restore(subtree);
 						break;
 				}
 
@@ -51,6 +70,10 @@ namespace Tailviewer.Core.Settings
 				dataSource.Save(writer);
 				writer.WriteEndElement();
 			}
+
+			writer.WriteStartElement("timefilter");
+			_timeFilter.Save(writer);
+			writer.WriteEndElement();
 		}
 
 		/// <summary>
@@ -61,6 +84,7 @@ namespace Tailviewer.Core.Settings
 		{
 			var filters = new QuickFilters();
 			filters.AddRange(this.Select(x => x.Clone()));
+			filters._timeFilter = _timeFilter.Clone();
 			return filters;
 		}
 

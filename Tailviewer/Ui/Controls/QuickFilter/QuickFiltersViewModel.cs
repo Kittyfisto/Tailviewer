@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
@@ -20,6 +22,8 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 	public sealed class QuickFiltersViewModel
 		: INotifyPropertyChanged
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly IQuickFilters _quickFilters;
 		private readonly ObservableCollection<QuickFilterViewModel> _viewModels;
 		private IDataSource _currentDataSource;
@@ -85,7 +89,7 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 
 		public QuickFilterViewModel AddQuickFilter()
 		{
-			var quickFilter = _quickFilters.Add();
+			var quickFilter = _quickFilters.AddQuickFilter();
 			var viewModel = CreateAndAddViewModel(quickFilter);
 			OnFilterAdded?.Invoke();
 			return viewModel;
@@ -102,7 +106,7 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 			return viewModel;
 		}
 
-		public IEnumerable<ILogEntryFilter> CreateFilterChain()
+		public List<ILogEntryFilter> CreateFilterChain()
 		{
 			var filters = new List<ILogEntryFilter>(_viewModels.Count);
 			// ReSharper disable LoopCanBeConvertedToQuery
@@ -114,8 +118,9 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 				{
 					filter = quickFilter.CreateFilter();
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
+					Log.DebugFormat("Caught exception while creating quick filter: {0}", e);
 				}
 
 				if (filter != null)

@@ -13,7 +13,11 @@ namespace Tailviewer.Core.Filters
 	{
 		private readonly IExpression _expression;
 
-		private FilterExpression(IExpression expression)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="expression"></param>
+		public FilterExpression(IExpression expression)
 		{
 			_expression = expression;
 		}

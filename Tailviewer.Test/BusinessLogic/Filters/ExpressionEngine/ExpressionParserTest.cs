@@ -68,13 +68,14 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		}
 
 		[Test]
+		[Ignore("Not yet implemented")]
 		public void TestParseStringLiteralWithBackSlash()
 		{
 			Parse("\"Some \\ Stuff\"").Should().Be(new StringLiteral("Some \\ Stuff"));
 		}
 
 		[Test]
-		[Ignore("Not yet implementedS")]
+		[Ignore("Not yet implemented")]
 		public void TestParseStringLiteralWithQuotes()
 		{
 			Parse("\"Some \\\" Stuff\"").Should().Be(new StringLiteral("Some \" Stuff"));
