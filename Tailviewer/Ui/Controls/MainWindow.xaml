@@ -253,7 +253,7 @@
 
                     <sidePanel:SidePanelControl
                         Grid.Column="2"
-                        MaxWidth="400"
+                        MaxWidth="600"
                         SidePanels="{Binding SelectedMainPanel.SidePanels}"
                         SelectedPanel="{Binding SelectedMainPanel.SelectedSidePanel, Mode=TwoWay}"/>
                 </Grid>

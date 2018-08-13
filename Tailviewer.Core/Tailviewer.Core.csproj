@@ -208,6 +208,7 @@
     <Compile Include="Settings\FilterMatchType.cs" />
     <Compile Include="Settings\QuickFilters.cs" />
     <Compile Include="Settings\TimeFilter.cs" />
+    <Compile Include="Settings\TimeFilterMode.cs" />
     <Compile Include="StreamReaderEx.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="TypeFactory.cs" />

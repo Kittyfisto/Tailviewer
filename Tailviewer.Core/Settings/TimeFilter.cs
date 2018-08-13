@@ -15,27 +15,22 @@ namespace Tailviewer.Core.Settings
 		: ICloneable
 	{
 		/// <summary>
+		/// 
 		/// </summary>
-		public DateTime? End;
+		public TimeFilterMode Mode;
 
 		/// <summary>
 		///     One of the pre-defined special ranges (such as today).
 		/// </summary>
-		/// <remarks>
-		///     In case this is set to a non-null value, then both <see cref="Start" />
-		///     and <see cref="End" /> can be ignored: Instead the actual range must be evaluated
-		///     and changed whenever applicable (i.e. filtering by Today must be re-evaluated on/after
-		///     midnight, etc...
-		/// </remarks>
-		/// <remarks>
-		///     Even when this is set to a non-null value, both <see cref="Start" /> and <see cref="End" />
-		///     are expected to NOT be changed so we do not lose the user's most recent settings!
-		/// </remarks>
-		public SpecialDateTimeInterval? Range;
+		public SpecialDateTimeInterval SpecialInterval;
 
 		/// <summary>
 		/// </summary>
-		public DateTime? Start;
+		public DateTime? Maximum;
+
+		/// <summary>
+		/// </summary>
+		public DateTime? Minimum;
 
 		/// <summary>
 		/// 
@@ -46,9 +41,10 @@ namespace Tailviewer.Core.Settings
 		{
 			return new TimeFilter
 			{
-				Range = Range,
-				Start = Start,
-				End = End
+				Mode = Mode,
+				SpecialInterval = SpecialInterval,
+				Minimum = Minimum,
+				Maximum = Maximum
 			};
 		}
 
@@ -71,17 +67,22 @@ namespace Tailviewer.Core.Settings
 
 				switch (reader.Name)
 				{
+					case "mode":
+						if (Enum.TryParse(reader.Value, ignoreCase: true, result: out TimeFilterMode mode))
+							Mode = mode;
+						break;
+
 					case "range":
 						if (Enum.TryParse(reader.Value, ignoreCase: true, result: out SpecialDateTimeInterval range))
-							Range = range;
+							SpecialInterval = range;
 						break;
 
 					case "start":
-						Start = reader.ReadContentAsDateTime2();
+						Minimum = reader.ReadContentAsDateTime2();
 						break;
 
 					case "end":
-						End = reader.ReadContentAsDateTime2();
+						Maximum = reader.ReadContentAsDateTime2();
 						break;
 				}
 			}
@@ -95,11 +96,12 @@ namespace Tailviewer.Core.Settings
 		/// <param name="writer"></param>
 		public void Save(XmlWriter writer)
 		{
-			writer.WriteAttributeString("range", Range?.ToString() ?? string.Empty);
-			if (Start != null)
-				writer.WriteAttributeDateTime("start", Start.Value);
-			if (End != null)
-				writer.WriteAttributeDateTime("end", End.Value);
+			writer.WriteAttributeString("mode", Mode.ToString());
+			writer.WriteAttributeString("range", SpecialInterval.ToString());
+			if (Minimum != null)
+				writer.WriteAttributeDateTime("start", Minimum.Value);
+			if (Maximum != null)
+				writer.WriteAttributeDateTime("end", Maximum.Value);
 		}
 
 		/// <summary>
@@ -120,11 +122,20 @@ namespace Tailviewer.Core.Settings
 
 		private IExpression<IInterval<DateTime?>> TryCreateInterval()
 		{
-			if (Range != null)
-				return new DateTimeIntervalLiteral(Range.Value);
+			switch (Mode)
+			{
+				case TimeFilterMode.Everything:
+					return null;
 
-			// TODO: Check start / end
-			return null;
+				case TimeFilterMode.SpecialInterval:
+					return new DateTimeIntervalLiteral(SpecialInterval);
+
+				case TimeFilterMode.Interval:
+					return new DateTimeInterval(Minimum, Maximum);
+
+				default:
+					return null;
+			}
 		}
 	}
 }

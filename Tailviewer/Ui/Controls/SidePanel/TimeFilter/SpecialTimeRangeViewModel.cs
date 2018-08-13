@@ -7,9 +7,9 @@ namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter
 		: IChoseTimeRangeViewModel
 	{
 		private static readonly IReadOnlyDictionary<SpecialDateTimeInterval, string> Titles;
-		private readonly SpecialDateTimeInterval _range;
+		private readonly SpecialDateTimeInterval _interval;
 
-		public SpecialDateTimeInterval Range => _range;
+		public SpecialDateTimeInterval Interval => _interval;
 
 		private readonly string _title;
 
@@ -30,10 +30,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter
 			};
 		}
 
-		public SpecialTimeRangeViewModel(SpecialDateTimeInterval range)
+		public SpecialTimeRangeViewModel(SpecialDateTimeInterval interval)
 		{
-			_range = range;
-			Titles.TryGetValue(range, out _title);
+			_interval = interval;
+			Titles.TryGetValue(interval, out _title);
 		}
 	}
 }

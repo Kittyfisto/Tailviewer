@@ -17,9 +17,9 @@ namespace Tailviewer.Test.Settings
 			var filters = new QuickFilters();
 			filters.Should().BeEmpty();
 			filters.TimeFilter.Should().NotBeNull();
-			filters.TimeFilter.Range.Should().BeNull();
-			filters.TimeFilter.Start.Should().BeNull();
-			filters.TimeFilter.End.Should().BeNull();
+			filters.TimeFilter.Mode.Should().Be(TimeFilterMode.Everything);
+			filters.TimeFilter.Minimum.Should().BeNull();
+			filters.TimeFilter.Maximum.Should().BeNull();
 		}
 
 		[Test]
@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Settings
 					MatchType = FilterMatchType.WildcardFilter
 				},
 			};
-			filters.TimeFilter.Range = SpecialDateTimeInterval.Today;
+			filters.TimeFilter.SpecialInterval = SpecialDateTimeInterval.Today;
 			var clone = filters.Clone();
 			clone.Should().NotBeNull();
 			clone.Should().NotBeSameAs(filters);
@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Settings
 			clone[0].Should().NotBeSameAs(filters[0]);
 			clone[0].MatchType.Should().Be(filters[0].MatchType);
 			clone.TimeFilter.Should().NotBeNull();
-			clone.TimeFilter.Range.Should().Be(SpecialDateTimeInterval.Today);
+			clone.TimeFilter.SpecialInterval.Should().Be(SpecialDateTimeInterval.Today);
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace Tailviewer.Test.Settings
 					writer.WriteStartElement("Test");
 					var settings = new QuickFilters
 					{
-						TimeFilter = {Range = SpecialDateTimeInterval.ThisWeek}
+						TimeFilter = {SpecialInterval = SpecialDateTimeInterval.ThisWeek}
 					};
 					settings.Add(new QuickFilter{Value = "42"});
 					settings.Save(writer);
@@ -70,7 +70,7 @@ namespace Tailviewer.Test.Settings
 
 					var settings = new QuickFilters();
 					settings.Restore(reader);
-					settings.TimeFilter.Range.Should().Be(SpecialDateTimeInterval.ThisWeek);
+					settings.TimeFilter.SpecialInterval.Should().Be(SpecialDateTimeInterval.ThisWeek);
 					settings.Should().HaveCount(1);
 					settings[0].Value.Should().Be("42");
 				}

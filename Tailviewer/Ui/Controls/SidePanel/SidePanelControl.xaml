@@ -20,7 +20,7 @@
                                 <ContentPresenter x:Name="PART_Content"
                                                   Content="{TemplateBinding DisplayedPanel}"
                                                   HorizontalAlignment="Right"
-                                                  Width="240">
+                                                  Width="300">
                                     <ContentPresenter.LayoutTransform>
                                         <ScaleTransform ScaleX="0" />
                                     </ContentPresenter.LayoutTransform>

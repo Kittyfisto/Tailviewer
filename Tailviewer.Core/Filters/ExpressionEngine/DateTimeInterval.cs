@@ -7,13 +7,13 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 	internal sealed class DateTimeInterval
 		: IExpression<IInterval<DateTime?>>
 	{
-		private readonly DateTime? _start;
-		private readonly DateTime? _end;
+		private readonly DateTime? _minimum;
+		private readonly DateTime? _maximum;
 
-		public DateTimeInterval(DateTime? start, DateTime? end)
+		public DateTimeInterval(DateTime? minimum, DateTime? maximum)
 		{
-			_start = start;
-			_end = end;
+			_minimum = minimum;
+			_maximum = maximum;
 		}
 
 		#region Implementation of IExpression
@@ -22,7 +22,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public IInterval<DateTime?> Evaluate(IReadOnlyList<LogLine> logEntry)
 		{
-			return new Interval<DateTime?>(_start, _end);
+			return new Interval<DateTime?>(_minimum, _maximum);
 		}
 
 		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)

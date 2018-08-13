@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.Filters.ExpressionEngine;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters
@@ -18,22 +17,28 @@ namespace Tailviewer.BusinessLogic.Filters
 			_settings = settings;
 		}
 
-		public SpecialDateTimeInterval? Range
+		public TimeFilterMode Mode
 		{
-			get { return _settings.Range; }
-			set { _settings.Range = value; }
+			get { return _settings.Mode; }
+			set { _settings.Mode = value; }
 		}
 
-		public DateTime? Start
+		public SpecialDateTimeInterval SpecialInterval
 		{
-			get { return _settings.Start; }
-			set { _settings.Start = value; }
+			get { return _settings.SpecialInterval; }
+			set { _settings.SpecialInterval = value; }
 		}
 
-		public DateTime? End
+		public DateTime? Minimum
 		{
-			get { return _settings.End; }
-			set { _settings.End = value; }
+			get { return _settings.Minimum; }
+			set { _settings.Minimum = value; }
+		}
+
+		public DateTime? Maximum
+		{
+			get { return _settings.Maximum; }
+			set { _settings.Maximum = value; }
 		}
 
 		[Pure]

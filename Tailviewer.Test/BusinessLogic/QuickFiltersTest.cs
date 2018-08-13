@@ -10,14 +10,14 @@ namespace Tailviewer.Test.BusinessLogic
 	[TestFixture]
 	public sealed class QuickFiltersTest
 	{
-		public static IEnumerable<SpecialDateTimeInterval?> Ranges
+		public static IEnumerable<SpecialDateTimeInterval> Ranges
 		{
 			get
 			{
-				return new SpecialDateTimeInterval?[]
+				return new[]
 				{
-					null,
-					SpecialDateTimeInterval.Today
+					SpecialDateTimeInterval.Today,
+					SpecialDateTimeInterval.ThisWeek
 				};
 			}
 		}
@@ -70,18 +70,18 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestChangeTimeFilter([ValueSource(nameof(Ranges))] SpecialDateTimeInterval? range,
-		                                 [ValueSource(nameof(DateTimes))] DateTime? start,
-		                                 [ValueSource(nameof(DateTimes))] DateTime? end)
+		public void TestChangeTimeFilter([ValueSource(nameof(Ranges))] SpecialDateTimeInterval range,
+		                                 [ValueSource(nameof(DateTimes))] DateTime? minimum,
+		                                 [ValueSource(nameof(DateTimes))] DateTime? maximum)
 		{
-			_settings.TimeFilter.Range.Should().BeNull();
-
 			var quickFilters = new Tailviewer.BusinessLogic.Filters.QuickFilters(_settings);
-			quickFilters.TimeFilter.Range = range;
-			quickFilters.TimeFilter.Start = start;
-			quickFilters.TimeFilter.End = end;
+			quickFilters.TimeFilter.SpecialInterval = range;
+			quickFilters.TimeFilter.Minimum = minimum;
+			quickFilters.TimeFilter.Maximum = maximum;
 
-			_settings.TimeFilter.Range.Should().Be(range);
+			_settings.TimeFilter.SpecialInterval.Should().Be(range);
+			_settings.TimeFilter.Minimum.Should().Be(minimum);
+			_settings.TimeFilter.Maximum.Should().Be(maximum);
 		}
 	}
 }

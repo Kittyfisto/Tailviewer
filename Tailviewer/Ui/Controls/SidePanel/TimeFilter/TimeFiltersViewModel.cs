@@ -1,6 +1,7 @@
 ﻿	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.CompilerServices;
 	using Tailviewer.Core.Filters;
@@ -30,99 +31,135 @@ namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter
 				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.Today),
 				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisWeek),
 				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisMonth),
-				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisYear),
+				new SpecialTimeRangeViewModel(SpecialDateTimeInterval.ThisYear)
 				/*new SpecialTimeRangeViewModel(DateTimeInterval.LastDay),
 				new SpecialTimeRangeViewModel(DateTimeInterval.LastWeek),
 				new SpecialTimeRangeViewModel(DateTimeInterval.LastMonth),
 				new SpecialTimeRangeViewModel(DateTimeInterval.LastYear)*/
 			};
 
-			HasNoTimeRange = true;
+			SelectEverything = timeFilter.Mode == TimeFilterMode.Everything;
+			SelectByInterval = timeFilter.Mode == TimeFilterMode.Interval;
+			SelectBySpecialInterval = timeFilter.Mode == TimeFilterMode.SpecialInterval;
 
-			SelectedTimeRange = _availableSpecialRanges.FirstOrDefault(x => x.Range == timeFilter.Range);
+			SelectedSpecialInterval = _availableSpecialRanges.FirstOrDefault(x => x.Interval == timeFilter.SpecialInterval);
+			Minimum = timeFilter.Minimum;
+			Maximum = timeFilter.Maximum;
 		}
 
-		private IChoseTimeRangeViewModel _selectedTimeRange;
-		private bool _hasNoTimeRange;
-		private string _selectedTimeRangeTitle;
+		private SpecialTimeRangeViewModel _selectedSpecialInterval;
+		private bool _selectEverything;
+		private string _description;
+		private bool _selectByInterval;
+		private bool _selectBySpecialInterval;
 
-		public bool HasNoTimeRange
+		public bool SelectEverything
 		{
-			get { return _hasNoTimeRange; }
+			get { return _selectEverything; }
 			set
 			{
-				if (value == _hasNoTimeRange)
+				if (value == _selectEverything)
 					return;
-				_hasNoTimeRange = value;
+				_selectEverything = value;
 				EmitPropertyChanged();
 
 				if (value)
-					SelectedTimeRange = null;
-				UpdateTitle();
+					SetFilterMode(TimeFilterMode.Everything);
 			}
 		}
 
-		public string SelectedTimeRangeTitle
+		public bool SelectBySpecialInterval
 		{
-			get { return _selectedTimeRangeTitle; }
-			private set
-			{
-				if (value == _selectedTimeRangeTitle)
-					return;
-
-				_selectedTimeRangeTitle = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		public IChoseTimeRangeViewModel SelectedTimeRange
-		{
-			get => _selectedTimeRange;
+			get { return _selectBySpecialInterval; }
 			set
 			{
-				if (Equals(value, _selectedTimeRange))
+				if (value == _selectBySpecialInterval)
 					return;
-
-				_selectedTimeRange = value;
+				_selectBySpecialInterval = value;
 				EmitPropertyChanged();
 
-				HasNoTimeRange = value == null;
+				if (value)
+					SetFilterMode(TimeFilterMode.SpecialInterval);
+			}
+		}
+
+		public bool SelectByInterval
+		{
+			get { return _selectByInterval; }
+			set
+			{
+				if (value == _selectByInterval)
+					return;
+				_selectByInterval = value;
+				EmitPropertyChanged();
+
+				if (value)
+				{
+					SetFilterMode(TimeFilterMode.Interval);
+				}
+			}
+		}
+
+		public string Description
+		{
+			get { return _description; }
+			private set
+			{
+				if (value == _description)
+					return;
+
+				_description = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public SpecialTimeRangeViewModel SelectedSpecialInterval
+		{
+			get => _selectedSpecialInterval;
+			set
+			{
+				if (Equals(value, _selectedSpecialInterval))
+					return;
+
+				_selectedSpecialInterval = value;
+				EmitPropertyChanged();
+
+				if (value != null)
+					_timeFilter.SpecialInterval = value.Interval;
+
 				UpdateTitle();
-				UpdateFilter(value);
+				OnFiltersChanged?.Invoke();
 			}
 		}
 
-		private void UpdateFilter(IChoseTimeRangeViewModel value)
+		public DateTime? Minimum
 		{
-			if (value is SpecialTimeRangeViewModel model)
+			get => _timeFilter.Minimum;
+			set
 			{
-				_timeFilter.Range = model.Range;
-			}
-			else
-			{
-				_timeFilter.Range = null;
-			}
+				if (value == _timeFilter.Minimum)
+					return;
 
-			OnFiltersChanged?.Invoke();
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void UpdateTitle()
-		{
-			if (_selectedTimeRange == null)
-			{
-				SelectedTimeRangeTitle = "Select: Everything";
-			}
-			else
-			{
-				SelectedTimeRangeTitle = string.Format("Select: {0}", _selectedTimeRange.Title);
+				_timeFilter.Minimum = value;
+				EmitPropertyChanged();
+				UpdateTitle();
+				OnFiltersChanged?.Invoke();
 			}
 		}
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		public DateTime? Maximum
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			get => _timeFilter.Maximum;
+			set
+			{
+				if (value == _timeFilter.Maximum)
+					return;
+
+				_timeFilter.Maximum = value;
+				EmitPropertyChanged();
+				UpdateTitle();
+				OnFiltersChanged?.Invoke();
+			}
 		}
 
 		public ILogEntryFilter CreateFilter()
@@ -131,5 +168,59 @@ namespace Tailviewer.Ui.Controls.SidePanel.TimeFilter
 		}
 
 		public event Action OnFiltersChanged;
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		private void UpdateTitle()
+		{
+			Description = BuildDescription();
+		}
+
+		[Pure]
+		private string BuildDescription()
+		{
+			if (SelectEverything)
+			{
+				return "Select: Everything";
+			}
+
+			if (SelectBySpecialInterval)
+			{
+				return string.Format("Select: {0}", _selectedSpecialInterval?.Title);
+			}
+
+			if (Minimum != null)
+			{
+				if (Maximum != null)
+					return string.Format("Select from {0} to {1}", Minimum, Maximum);
+
+				return string.Format("Select from {0}", Minimum);
+			}
+
+			if (Maximum != null)
+			{
+				return string.Format("Select until {0}", Maximum);
+			}
+
+			return "Select from - to -";
+		}
+
+		private void SetFilterMode(TimeFilterMode mode)
+		{
+			SelectEverything = mode == TimeFilterMode.Everything;
+			SelectByInterval = mode == TimeFilterMode.Interval;
+			SelectBySpecialInterval = mode == TimeFilterMode.SpecialInterval;
+
+			_timeFilter.Mode = mode;
+
+			UpdateTitle();
+
+			OnFiltersChanged?.Invoke();
+		}
+
+		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }
