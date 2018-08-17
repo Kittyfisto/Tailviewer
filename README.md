@@ -31,7 +31,7 @@ Tailviewer supports live filtering on medium to large (< 1Gb) log files.
 
 ## Installation
 
-Simply download the latest released version from https://kittyfisto.github.io/Tailviewer/.  
+Simply download the latest **stable** version from https://kittyfisto.github.io/Tailviewer/.  
 You could also try out the latest "nightly" build from here: https://ci.appveyor.com/project/Kittyfisto/sharptail
 
 ## Developing plugins
