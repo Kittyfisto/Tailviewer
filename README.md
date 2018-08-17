@@ -14,9 +14,25 @@ Tailviewer supports live filtering on medium to large (< 1Gb) log files.
 
 ![Live filtering](/Screenshot2.png?raw=true)
 
+## Features
+
+- Multiline log entries
+- Searching
+- Filtering (substring, wildcard & regexp)
+- Filter by timestamp range
+- Filtering by log level (fatal, error, warning, info and debug)
+- Highlighting by log level
+- Merging multiple files (by timestamp)
+- Bookmarks
+- Additional columns:
+   - Elapsed time between log entries
+   - Elapsed time since first log entry
+- Plugin system to support custom/proprietary formats (submitting an issue/mr is also an option, if I have the time)
+
 ## Installation
 
-Simply download the latest version from https://kittyfisto.github.io/Tailviewer/.
+Simply download the latest released version from https://kittyfisto.github.io/Tailviewer/.  
+You could also try out the latest "nightly" build from here: https://ci.appveyor.com/project/Kittyfisto/sharptail
 
 ## Developing plugins
 
