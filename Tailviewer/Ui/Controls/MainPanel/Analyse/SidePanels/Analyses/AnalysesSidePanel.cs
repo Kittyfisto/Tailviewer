@@ -213,9 +213,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 				{
 					if (_analysisStorage.TryGetTemplateFor(id, out var configuration))
 					{
-						viewModel = new AnalysisViewModel(_dispatcher, configuration.ViewTemplate, analysis, _analysisStorage);
-						_activeById.Add(id, viewModel);
-						_active.Add(viewModel);
+						CreateAnalysis(configuration.ViewTemplate, analysis);
 					}
 					else
 					{
@@ -233,14 +231,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			var viewTemplate = new AnalysisViewTemplate();
 			var template = new AnalysisTemplate();
 			var analysis = _analysisStorage.CreateAnalysis(template, viewTemplate);
-			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
 
-			_active.Add(viewModel);
-			_activeById.Add(viewModel.Id, viewModel);
+			var viewModel = CreateAnalysis(viewTemplate, analysis);
 
-			viewModel.OnRemove += AnalysisOnOnRemove;
 			Update();
 
+			return viewModel;
+		}
+
+		private AnalysisViewModel CreateAnalysis(AnalysisViewTemplate viewTemplate, IAnalysis analysis)
+		{
+			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
+			_active.Add(viewModel);
+			_activeById.Add(viewModel.Id, viewModel);
+			viewModel.OnRemove += AnalysisOnOnRemove;
 			return viewModel;
 		}
 

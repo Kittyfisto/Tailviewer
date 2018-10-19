@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:analyses="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses">
+                    xmlns:analyses="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/Analyses/ActiveAnalysisDataTemplate.xaml" />
@@ -25,8 +26,8 @@
                            Foreground="DarkGray"
                            FontSize="14"
                            VerticalAlignment="Center" />
-                <ItemsControl ItemsSource="{Binding Active}"
-                              ItemTemplate="{StaticResource ActiveAnalysisDataTemplate}"/>
+                <controls:FlatTreeView ItemsSource="{Binding Active}"
+                                       ItemTemplate="{StaticResource ActiveAnalysisDataTemplate}"/>
                 <TextBlock Text="You haven't started any analysis yet"
                     Visibility="{Binding HasActiveAnalyses, Converter={StaticResource BoolTrueToCollapsedConverter}}" />
             </StackPanel>

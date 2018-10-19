@@ -12,8 +12,8 @@
             </Grid.ColumnDefinitions>
             <controls:EditableTextBlock Text="{Binding Name}"
                                         VerticalAlignment="Center" />
-            <controls:RemoveButton Grid.Column="1"
-                                   Command="{Binding RemoveCommand}" />
+            <controls:TrashButton Grid.Column="1"
+                                  Command="{Binding RemoveCommand}" />
         </Grid>
     </DataTemplate>
 
