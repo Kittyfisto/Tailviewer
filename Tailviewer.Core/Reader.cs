@@ -11,6 +11,8 @@ using Tailviewer.BusinessLogic.Analysis;
 namespace Tailviewer.Core
 {
 	/// <summary>
+	/// Responsible for reading an object graph from a stream which has previously been persisted using
+	/// a <see cref="Writer"/>.
 	/// </summary>
 	public sealed class Reader
 		: IReader

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IAnalysisStorage
 		, IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
 		private readonly SnapshotsWatchdog _snapshots;
 		private readonly object _syncRoot;
@@ -48,6 +51,67 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_templates = new List<ActiveAnalysisConfiguration>();
 			_analyses = new Dictionary<AnalysisId, ActiveAnalysis>();
 			_lastSavedAnalyses = new Dictionary<AnalysisId, ActiveAnalysisConfiguration>();
+
+			// TODO: Maybe don't block in the ctor in the future?
+			// If we do that, the public interface will have to be changed
+			RestoreSavedAnalysesAsync().Wait();
+		}
+
+		private async Task RestoreSavedAnalysesAsync()
+		{
+			try
+			{
+				var files = await EnumerateAnalysesAsync();
+				foreach (var filePath in files)
+				{
+					using (var stream = await _filesystem.OpenRead(filePath))
+					{
+						var configuration = ReadAnalysis(stream);
+						if (configuration != null)
+						{
+							var analysis = new ActiveAnalysis(configuration.Template,
+							                                  _taskScheduler,
+							                                  _logAnalyserEngine,
+							                                  TimeSpan.FromMilliseconds(100));
+
+							try
+							{
+								lock (_syncRoot)
+								{
+									_templates.Add(configuration);
+									_lastSavedAnalyses.Add(analysis.Id, configuration);
+
+									_analyses.Add(analysis.Id, analysis);
+								}
+							}
+							catch (Exception)
+							{
+								analysis.Dispose(); //< ActiveAnalysis actually spawns new analyses on the engine so we should cancel those in case an exception si thrown here...
+								throw;
+							}
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while trying to restore existing analyses: {0}", e);
+			}
+		}
+
+		[Pure]
+		private async Task<IReadOnlyList<string>> EnumerateAnalysesAsync()
+		{
+			try
+			{
+				var filter = string.Format("*.{0}", Constants.AnalysisExtension);
+				return await _filesystem.EnumerateFiles(Constants.AnalysisDirectory, filter);
+			}
+			catch (IOException e)
+			{
+				Log.WarnFormat("Unable to restore analyses: {0}", e);
+				return new string[0];
+			}
 		}
 
 		public void Dispose()
@@ -66,6 +130,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
+		public IEnumerable<IAnalysis> Analyses
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _analyses.Values.ToList();
+				}
+			}
+		}
+
 		public bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis)
 		{
 			lock (_syncRoot)
@@ -80,6 +155,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			analysis = null;
 			return false;
+		}
+
+		public bool TryGetTemplateFor(AnalysisId analysisId, out ActiveAnalysisConfiguration configuration)
+		{
+			lock (_syncRoot)
+			{
+				return _lastSavedAnalyses.TryGetValue(analysisId, out configuration);
+			}
 		}
 
 		public IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate)
@@ -127,8 +210,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			lock (_syncRoot)
 			{
 				_templates.RemoveAll(x => x.Id == id);
-				ActiveAnalysis analysis;
-				if (_analyses.TryGetValue(id, out analysis))
+				if (_analyses.TryGetValue(id, out var analysis))
 				{
 					analysis.Dispose();
 					_analyses.Remove(id);
@@ -157,6 +239,19 @@ namespace Tailviewer.BusinessLogic.Analysis
 					writer.WriteAttribute("Analysis", analysis);
 				}
 			}
+		}
+
+		public ActiveAnalysisConfiguration ReadAnalysis(Stream stream)
+		{
+			// TODO: This type factory will probably have to be injected into this class in the future
+			var types = new Dictionary<string, Type>
+			{
+				{typeof(ActiveAnalysisConfiguration).FullName, typeof(ActiveAnalysisConfiguration)}
+			};
+			var typeFactory = new TypeFactory(types);
+			var reader = new Reader(stream, typeFactory);
+			reader.TryReadAttribute("Analysis", out ActiveAnalysisConfiguration analysis);
+			return analysis;
 		}
 
 		/// <inheritdoc />

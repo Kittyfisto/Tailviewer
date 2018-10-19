@@ -16,6 +16,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		IEnumerable<ActiveAnalysisConfiguration> AnalysisTemplates { get; }
 
 		/// <summary>
+		/// 
+		/// </summary>
+		IEnumerable<IAnalysis> Analyses { get; }
+
+		/// <summary>
 		///     Saves the given active analysis to disk.
 		/// </summary>
 		/// <param name="configuration"></param>
@@ -28,6 +33,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <param name="analysis"></param>
 		/// <returns></returns>
 		bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="analysisId"></param>
+		/// <param name="configuration"></param>
+		/// <returns></returns>
+		bool TryGetTemplateFor(AnalysisId analysisId, out ActiveAnalysisConfiguration configuration);
 
 		/// <summary>
 		///     Creates a new analysis from the given template.

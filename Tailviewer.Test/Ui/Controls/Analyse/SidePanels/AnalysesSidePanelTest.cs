@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		{
 			_sidePanel.HasActiveAnalyses.Should().BeFalse();
 			_sidePanel.Active.Should().BeEmpty();
-			_sidePanel.CreateNew();
+			_sidePanel.CreateNewAnalysis();
 			_sidePanel.HasActiveAnalyses.Should().BeTrue();
 			_sidePanel.Active.Should().HaveCount(1);
 		}
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestRemoveAnalysis1()
 		{
-			var viewModel = _sidePanel.CreateNew();
+			var viewModel = _sidePanel.CreateNewAnalysis();
 			_sidePanel.Active.Should().HaveCount(1);
 
 			viewModel.RemoveCommand.Execute(null);
@@ -59,7 +59,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestRemoveAnalysis2()
 		{
-			var viewModel = _sidePanel.CreateNew();
+			var viewModel = _sidePanel.CreateNewAnalysis();
 			_sidePanel.Active.Should().HaveCount(1);
 
 			_analysisStorage.Verify(x => x.Remove(It.IsAny<AnalysisId>()), Times.Never);

@@ -64,7 +64,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void CreateAnalysis()
 		{
-			var viewModel = _analysesSidePanel.CreateNew();
+			var viewModel = _analysesSidePanel.CreateNewAnalysis();
 			viewModel.OnRemove += AnalysisViewModelOnOnRemove;
 			Analysis = viewModel;
 		}

@@ -205,18 +205,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		public override void Update()
 		{
-			foreach (var config in _analysisStorage.AnalysisTemplates)
+			foreach (var analysis in _analysisStorage.Analyses)
 			{
-				var id = config.Id;
+				var id = analysis.Id;
 				AnalysisViewModel viewModel;
 				if (!_activeById.TryGetValue(id, out viewModel))
 				{
-					IAnalysis analysis;
-					if (_analysisStorage.TryGetAnalysisFor(id, out analysis))
+					if (_analysisStorage.TryGetTemplateFor(id, out var configuration))
 					{
-						viewModel = new AnalysisViewModel(_dispatcher, config.ViewTemplate, analysis, _analysisStorage);
+						viewModel = new AnalysisViewModel(_dispatcher, configuration.ViewTemplate, analysis, _analysisStorage);
 						_activeById.Add(id, viewModel);
 						_active.Add(viewModel);
+					}
+					else
+					{
+						Log.WarnFormat("Expected to find configuration for analysis with id '{0}', but didn't!", id);
 					}
 				}
 			}
@@ -225,7 +228,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			UpdateQuickInfo();
 		}
 
-		public AnalysisViewModel CreateNew()
+		public AnalysisViewModel CreateNewAnalysis()
 		{
 			var viewTemplate = new AnalysisViewTemplate();
 			var template = new AnalysisTemplate();

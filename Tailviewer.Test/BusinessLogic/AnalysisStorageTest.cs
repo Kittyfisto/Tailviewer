@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -12,7 +13,6 @@ namespace Tailviewer.Test.BusinessLogic
 	public sealed class AnalysisStorageTest
 	{
 		private ManualTaskScheduler _taskScheduler;
-		private AnalysisStorage _storage;
 		private InMemoryFilesystem _filesystem;
 		private Mock<ILogAnalyserEngine> _logAnalyserEngine;
 
@@ -26,24 +26,31 @@ namespace Tailviewer.Test.BusinessLogic
 			_filesystem.AddRoot(root);
 
 			_logAnalyserEngine = new Mock<ILogAnalyserEngine>();
-			_storage = new AnalysisStorage(_taskScheduler,
-				_filesystem,
-				_logAnalyserEngine.Object);
 		}
 
 		[Test]
 		public void TestCreateAnalysis1()
 		{
-			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			var storage = new AnalysisStorage(_taskScheduler,
+			                               _filesystem,
+			                               _logAnalyserEngine.Object);
+			storage.Analyses.Should().BeEmpty();
+
+			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			analysis.Should().NotBeNull();
 			analysis.Should().BeOfType<ActiveAnalysis>();
+
+			storage.Analyses.Should().BeEquivalentTo(new object[] {analysis});
 		}
 
 		[Test]
 		[Description("Verifies that creating a new analysis immediately writes it to disk")]
 		public void TestCreateAnalysis2()
 		{
-			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			var storage = new AnalysisStorage(_taskScheduler,
+			                                   _filesystem,
+			                                   _logAnalyserEngine.Object);
+			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 
 			var id = analysis.Id;
 			var filename = Path.Combine(Constants.AnalysisDirectory, string.Format("{0}.{1}", id, Constants.AnalysisExtension));
@@ -53,25 +60,31 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestRemove1()
 		{
-			_storage.AnalysisTemplates.Should().BeEmpty();
-			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
-			_storage.AnalysisTemplates.Should().HaveCount(1);
+			var storage = new AnalysisStorage(_taskScheduler,
+			                                   _filesystem,
+			                                   _logAnalyserEngine.Object);
+			storage.AnalysisTemplates.Should().BeEmpty();
+			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			storage.AnalysisTemplates.Should().HaveCount(1);
 			IAnalysis unused;
-			_storage.TryGetAnalysisFor(analysis.Id, out unused).Should().BeTrue();
+			storage.TryGetAnalysisFor(analysis.Id, out unused).Should().BeTrue();
 
-			_storage.Remove(analysis.Id);
-			_storage.AnalysisTemplates.Should().BeEmpty("because the only analysis should've been removed");
-			_storage.TryGetAnalysisFor(analysis.Id, out unused).Should().BeFalse("because the only analysis should've been removed");
+			storage.Remove(analysis.Id);
+			storage.AnalysisTemplates.Should().BeEmpty("because the only analysis should've been removed");
+			storage.TryGetAnalysisFor(analysis.Id, out unused).Should().BeFalse("because the only analysis should've been removed");
 		}
 
 		[Test]
 		[Description("Verifies that the running analysis is disposed of when it's removed")]
 		public void TestRemove2()
 		{
-			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			var storage = new AnalysisStorage(_taskScheduler,
+			                                   _filesystem,
+			                                   _logAnalyserEngine.Object);
+			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
 
-			_storage.Remove(analysis.Id);
+			storage.Remove(analysis.Id);
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeTrue("because the storage created the analysis so it should dispose of it as well");
 		}
 
@@ -79,21 +92,49 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that the analysis is also removed from disk")]
 		public void TestRemove3()
 		{
-			var analysis = _storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+			var storage = new AnalysisStorage(_taskScheduler,
+			                                   _filesystem,
+			                                   _logAnalyserEngine.Object);
+			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
 
 			var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
 			file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
 
-			_storage.Remove(analysis.Id);
+			storage.Remove(analysis.Id);
 			file.Exists.Result.Should().BeFalse("because Remove should've also removed the analysis from disk");
 		}
 
 		[Test]
-		[Description("")]
-		public void TestSaveAnalysis1()
+		public void TestRestoreSavedAnalysis()
 		{
-			
+			{
+				var storage = new AnalysisStorage(_taskScheduler,
+				                                  _filesystem,
+				                                  _logAnalyserEngine.Object);
+				var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+
+				var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
+				file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
+			}
+
+			{
+				var storage = new AnalysisStorage(_taskScheduler,
+				                                  _filesystem,
+				                                  _logAnalyserEngine.Object);
+				storage.Analyses.Should().HaveCount(1);
+				storage.AnalysisTemplates.Should().HaveCount(1);
+
+				var analysis = storage.Analyses.First();
+				analysis.Should().NotBeNull();
+				storage.TryGetAnalysisFor(analysis.Id, out var actualAnalysis).Should().BeTrue();
+				actualAnalysis.Should().BeSameAs(analysis);
+
+				storage.TryGetTemplateFor(analysis.Id, out var configuration).Should().BeTrue();
+				configuration.Should().NotBeNull();
+				configuration.Template.Should().NotBeNull();
+				configuration.ViewTemplate.Should().NotBeNull();
+			}
 		}
 	}
 }

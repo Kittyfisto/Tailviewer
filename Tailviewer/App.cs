@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -17,6 +18,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Events.BusinessLogic;
 using Tailviewer.QuickInfo.BusinessLogic;
@@ -74,17 +76,18 @@ namespace Tailviewer
 			{
 				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>();
 				var filesystem = new Filesystem(serialTaskScheduler);
+				var plugins = LoadPlugins();
 
 				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 				using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler))
-				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine))
-				//using (var analyses = new Analyses(taskScheduler, filesystem, logAnalyserEngine))
+				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(plugins)))
 				{
-					logAnalyserEngine.RegisterFactory(new LogEntryCountAnalyserPlugin());
-					logAnalyserEngine.RegisterFactory(new QuickInfoAnalyserPlugin());
-					logAnalyserEngine.RegisterFactory(new EventsLogAnalyserPlugin());
+					foreach (var plugin in plugins)
+					{
+						logAnalyserEngine.RegisterFactory(plugin);
+					}
 
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)
@@ -141,6 +144,36 @@ namespace Tailviewer
 					return application.Run();
 				}
 			}
+		}
+
+		private static ITypeFactory CreateTypeFactory(IEnumerable<ILogAnalyserPlugin> plugins)
+		{
+			var factory = new TypeFactory();
+			foreach (var plugin in plugins)
+			{
+				foreach (var pair in plugin.SerializableTypes)
+				{
+					try
+					{
+						factory.Add(pair.Key, pair.Value);
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Caught unexpected exception: {0}", e);
+					}
+				}
+			}
+			return factory;
+		}
+
+		private static IReadOnlyList<ILogAnalyserPlugin> LoadPlugins()
+		{
+			return new ILogAnalyserPlugin[]
+			{
+				new LogEntryCountAnalyserPlugin(),
+				new QuickInfoAnalyserPlugin(),
+				new EventsLogAnalyserPlugin()
+			};
 		}
 
 		private static void LogEnvironment()

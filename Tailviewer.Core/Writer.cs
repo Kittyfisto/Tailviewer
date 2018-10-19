@@ -11,6 +11,8 @@ using Tailviewer.BusinessLogic.Analysis;
 namespace Tailviewer.Core
 {
 	/// <summary>
+	/// Responsible for serializing an object graph in a stream.
+	/// The resulting stream contains an xml document which can be read again using a <see cref="Reader"/>.
 	/// </summary>
 	public sealed class Writer
 		: IWriter
