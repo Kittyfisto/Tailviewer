@@ -76,6 +76,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 		}
 
 		public IEnumerable<AnalysisViewModel> Active => _active;
+		private AnalysisViewModel _selectedAnalysis;
+
+		public AnalysisViewModel SelectedAnalysis
+		{
+			get => _selectedAnalysis;
+			set
+			{
+				if (value == _selectedAnalysis)
+					return;
+
+				_selectedAnalysis = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public IEnumerable<AnalysisTemplateViewModel> Available => _available;
 		public IEnumerable<AnalysisSnapshotItemViewModel> Snapshots => _availableSnapshots;
 
@@ -208,12 +223,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			foreach (var analysis in _analysisStorage.Analyses)
 			{
 				var id = analysis.Id;
-				AnalysisViewModel viewModel;
-				if (!_activeById.TryGetValue(id, out viewModel))
+				if (!_activeById.ContainsKey(id))
 				{
 					if (_analysisStorage.TryGetTemplateFor(id, out var configuration))
 					{
-						CreateAnalysis(configuration.ViewTemplate, analysis);
+						CreateAnalysisViewModel(configuration.ViewTemplate, analysis);
 					}
 					else
 					{
@@ -232,19 +246,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			var template = new AnalysisTemplate();
 			var analysis = _analysisStorage.CreateAnalysis(template, viewTemplate);
 
-			var viewModel = CreateAnalysis(viewTemplate, analysis);
+			var viewModel = CreateAnalysisViewModel(viewTemplate, analysis);
 
 			Update();
 
 			return viewModel;
 		}
 
-		private AnalysisViewModel CreateAnalysis(AnalysisViewTemplate viewTemplate, IAnalysis analysis)
+		private AnalysisViewModel CreateAnalysisViewModel(AnalysisViewTemplate viewTemplate, IAnalysis analysis)
 		{
 			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
 			_active.Add(viewModel);
 			_activeById.Add(viewModel.Id, viewModel);
 			viewModel.OnRemove += AnalysisOnOnRemove;
+
+			if (SelectedAnalysis == null)
+				SelectedAnalysis = viewModel;
+
 			return viewModel;
 		}
 

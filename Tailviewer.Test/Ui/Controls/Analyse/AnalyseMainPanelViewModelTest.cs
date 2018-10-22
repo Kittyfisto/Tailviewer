@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -9,6 +10,7 @@ using Tailviewer.Core.Analysis;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses;
 
 namespace Tailviewer.Test.Ui.Controls.Analyse
 {
@@ -33,6 +35,15 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_dispatcher = new ManualDispatcher();
 			_taskScheduler = new ManualTaskScheduler();
 			_analysisStorage = new Mock<IAnalysisStorage>();
+			_analysisStorage
+				.Setup(x => x.CreateAnalysis(It.IsAny<AnalysisTemplate>(), It.IsAny<AnalysisViewTemplate>()))
+				.Returns(() =>
+				{
+					var analysis = new Mock<IAnalysis>();
+					var id = AnalysisId.CreateNew();
+					analysis.Setup(x => x.Id).Returns(id);
+					return analysis.Object;
+				});
 		}
 
 		[Test]
@@ -98,11 +109,34 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			{
 				Name = "Foo"
 			};
-			viewModel.Analysis = analysis;
+			viewModel.SelectedAnalysis = analysis;
 			viewModel.WindowTitle.Should().EndWith("Foo");
 
 			analysis.Name = "Foobar";
 			viewModel.WindowTitle.Should().EndWith("Foobar");
+		}
+
+		[Test]
+		[Description("Verifies that wif the selected analysis is changed via the side panel, then so does the property on the main panel")]
+		public void TestSelectAnalysis()
+		{
+			var viewModel = new AnalyseMainPanelViewModel(_settings.Object,
+			                                              _dataSources.Object,
+			                                              _dispatcher,
+			                                              _taskScheduler,
+			                                              _analysisStorage.Object);
+			var analysisSidePanel = viewModel.SidePanels.OfType<AnalysesSidePanel>().First();
+
+			viewModel.CreateAnalysisCommand.Execute(null);
+			viewModel.CreateAnalysisCommand.Execute(null);
+			analysisSidePanel.SelectedAnalysis = null;
+			viewModel.SelectedAnalysis.Should().BeNull();
+
+			foreach (var analysis in analysisSidePanel.Active)
+			{
+				analysisSidePanel.SelectedAnalysis = analysis;
+				viewModel.SelectedAnalysis.Should().BeSameAs(analysis);
+			}
 		}
 	}
 }

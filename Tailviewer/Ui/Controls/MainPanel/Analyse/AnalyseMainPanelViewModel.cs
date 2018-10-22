@@ -28,7 +28,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly WidgetsSidePanel _widgetsSidePanel;
 		private readonly IDispatcher _dispatcher;
 
-		private AnalysisViewModel _analysis;
+		private AnalysisViewModel _selectedAnalysis;
 
 		private bool _isAnalysisSelected;
 		private string _windowTitle;
@@ -58,41 +58,52 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_widgetsSidePanel = new WidgetsSidePanel()
 			};
 			_createAnalysisCommand = new DelegateCommand(CreateAnalysis);
+			_analysesSidePanel.PropertyChanged += AnalysesSidePanelOnPropertyChanged;
 
 			SelectedSidePanel = _sidePanels.FirstOrDefault(x => x.Id == applicationSettings.MainWindow?.SelectedSidePanel);
+		}
+
+		private void AnalysesSidePanelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			switch (e.PropertyName)
+			{
+				case nameof(AnalysesSidePanel.SelectedAnalysis):
+					SelectedAnalysis = _analysesSidePanel.SelectedAnalysis;
+					break;
+			}
 		}
 
 		private void CreateAnalysis()
 		{
 			var viewModel = _analysesSidePanel.CreateNewAnalysis();
 			viewModel.OnRemove += AnalysisViewModelOnOnRemove;
-			Analysis = viewModel;
+			SelectedAnalysis = viewModel;
 		}
 
 		private void AnalysisViewModelOnOnRemove(AnalysisViewModel analysis)
 		{
-			if (analysis == Analysis)
-				Analysis = null;
+			if (analysis == SelectedAnalysis)
+				SelectedAnalysis = null;
 		}
 
-		public AnalysisViewModel Analysis
+		public AnalysisViewModel SelectedAnalysis
 		{
-			get { return _analysis; }
+			get { return _selectedAnalysis; }
 			set
 			{
-				if (value == _analysis)
+				if (value == _selectedAnalysis)
 					return;
 
-				if (_analysis != null)
+				if (_selectedAnalysis != null)
 				{
-					_analysis.PropertyChanged -= OnAnalysisPropertyChanged;
+					_selectedAnalysis.PropertyChanged -= OnSelectedAnalysisPropertyChanged;
 				}
 
-				_analysis = value;
+				_selectedAnalysis = value;
 
-				if (_analysis != null)
+				if (_selectedAnalysis != null)
 				{
-					_analysis.PropertyChanged += OnAnalysisPropertyChanged;
+					_selectedAnalysis.PropertyChanged += OnSelectedAnalysisPropertyChanged;
 				}
 
 				EmitPropertyChanged();
@@ -106,7 +117,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private void OnAnalysisPropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void OnSelectedAnalysisPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
@@ -118,10 +129,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void UpdateWindowTitle()
 		{
-			if (_analysis != null)
+			if (_selectedAnalysis != null)
 			{
-				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, _analysis.Name);
-				WindowTitleSuffix = _analysis.Name;
+				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, _selectedAnalysis.Name);
+				WindowTitleSuffix = _selectedAnalysis.Name;
 			}
 			else
 			{
@@ -175,7 +186,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public override void Update()
 		{
-			_analysis?.Update();
+			_selectedAnalysis?.Update();
 			SelectedSidePanel?.Update();
 		}
 	}

@@ -108,11 +108,13 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestRestoreSavedAnalysis()
 		{
+			AnalysisId id;
 			{
 				var storage = new AnalysisStorage(_taskScheduler,
 				                                  _filesystem,
 				                                  _logAnalyserEngine.Object);
 				var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
+				id = analysis.Id;
 
 				var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
 				file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
@@ -127,6 +129,7 @@ namespace Tailviewer.Test.BusinessLogic
 
 				var analysis = storage.Analyses.First();
 				analysis.Should().NotBeNull();
+				analysis.Id.Should().Be(id);
 				storage.TryGetAnalysisFor(analysis.Id, out var actualAnalysis).Should().BeTrue();
 				actualAnalysis.Should().BeSameAs(analysis);
 

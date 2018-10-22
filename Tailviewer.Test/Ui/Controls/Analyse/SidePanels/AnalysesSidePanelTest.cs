@@ -101,5 +101,19 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 			_analysisStorage.Verify(x => x.Remove(It.Is<AnalysisId>(y => y == viewModel.Id)), Times.Once,
 			                        "because the view model is responsible for removing the analysis (so it doesn't continue to run in the background)");
 		}
+
+		[Test]
+		public void TestUpdateSelectAnalysis()
+		{
+			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object);
+			sidePanel.SelectedAnalysis.Should().BeNull();
+
+			sidePanel.Update();
+			sidePanel.SelectedAnalysis.Should().BeNull();
+
+			AddAnalysis();
+			sidePanel.Update();
+			sidePanel.SelectedAnalysis.Should().NotBeNull("because now that an analysis has become available, it should be selected as well!");
+		}
 	}
 }

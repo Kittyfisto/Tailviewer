@@ -13,6 +13,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 	{
 		AnalysisId Id { get; }
 		IEnumerable<IAnalysisPageViewModel> Pages { get; }
+		bool IsSelected { get; set; }
 		string Name { get; set; }
 		ICommand AddPageCommand { get; }
 		double Progress { get; }

@@ -195,6 +195,7 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -399,6 +400,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageHeaderDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -20,7 +20,7 @@
     <DataTemplate DataType="{x:Type analyse:AnalyseMainPanelViewModel}">
 
         <Grid>
-            <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToVisibleConverter}}"
+            <Grid Visibility="{Binding SelectedAnalysis, Converter={StaticResource NullToVisibleConverter}}"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -42,7 +42,7 @@
 
             </Grid>
 
-            <Grid Visibility="{Binding Analysis, Converter={StaticResource NullToCollapsedConverter}}">
+            <Grid Visibility="{Binding SelectedAnalysis, Converter={StaticResource NullToCollapsedConverter}}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -78,18 +78,18 @@
                 </Grid>
 
                 <controls:FlatProgressBar Grid.Row="1"
-                                          Value="{Binding Analysis.Progress, Mode=OneWay}"
+                                          Value="{Binding SelectedAnalysis.Progress, Mode=OneWay}"
                                           Minimum="0"
                                           Maximum="1" />
 
                 <Grid Grid.Row="3">
-                    <TabControl ItemsSource="{Binding Analysis.Pages}"
-                                SelectedItem="{Binding Analysis.SelectedPage}"
+                    <TabControl ItemsSource="{Binding SelectedAnalysis.Pages}"
+                                SelectedItem="{Binding SelectedAnalysis.SelectedPage}"
                                 ItemTemplate="{StaticResource AnalysisPageHeaderDataTemplate}"
                                 Foreground="#333333"
                                 ContentTemplate="{StaticResource AnalysisPageContentDataTemplate}" />
 
-                    <controls:AddButton Command="{Binding Analysis.AddPageCommand}"
+                    <controls:AddButton Command="{Binding SelectedAnalysis.AddPageCommand}"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Right"
                                         ToolTip="Add empty page"

@@ -69,7 +69,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 						var configuration = ReadAnalysis(stream);
 						if (configuration != null)
 						{
-							var analysis = new ActiveAnalysis(configuration.Template,
+							var analysis = new ActiveAnalysis(configuration.Id,
+							                                  configuration.Template,
 							                                  _taskScheduler,
 							                                  _logAnalyserEngine,
 							                                  TimeSpan.FromMilliseconds(100));
@@ -169,14 +170,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			ActiveAnalysisConfiguration configuration;
 
-			var analysis = new ActiveAnalysis(template,
-				_taskScheduler,
-				_logAnalyserEngine,
-				TimeSpan.FromMilliseconds(100));
+			var id = AnalysisId.CreateNew();
+			var analysis = new ActiveAnalysis(id,
+			                                  template,
+			                                  _taskScheduler,
+			                                  _logAnalyserEngine,
+			                                  TimeSpan.FromMilliseconds(100));
 
 			try
 			{
-				configuration = new ActiveAnalysisConfiguration(analysis.Id, template, viewTemplate);
+				configuration = new ActiveAnalysisConfiguration(id, template, viewTemplate);
 				lock (_syncRoot)
 				{
 					_templates.Add(configuration);
@@ -217,6 +220,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 					var filename = GetFilename(id);
 					_filesystem.DeleteFile(filename);
+				}
+				else
+				{
+					Log.WarnFormat("Unable to remove analysis with id '{0}', it doesn't match any of the existing {1} analyses",
+					               id,
+					               _analyses.Count);
 				}
 			}
 		}

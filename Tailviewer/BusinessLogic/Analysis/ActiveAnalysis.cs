@@ -23,7 +23,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly AnalysisId _id;
 		private bool _isDiposed;
 
-		public ActiveAnalysis(AnalysisTemplate template,
+		public ActiveAnalysis(
+			AnalysisId id,
+			AnalysisTemplate template,
 			ITaskScheduler taskScheduler,
 			ILogAnalyserEngine logAnalyserEngine,
 			TimeSpan maximumWaitTime)
@@ -35,7 +37,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			if (logAnalyserEngine == null)
 				throw new ArgumentNullException(nameof(logAnalyserEngine));
 
-			_id = AnalysisId.CreateNew();
+			_id = id;
 			_template = template;
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;

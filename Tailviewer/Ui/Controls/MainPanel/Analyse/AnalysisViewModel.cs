@@ -94,6 +94,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			OnRemove?.Invoke(this);
 		}
 
+		private bool _isSelected;
+
+		public bool IsSelected
+		{
+			get => _isSelected;
+			set
+			{
+				if (value == _isSelected)
+					return;
+
+				_isSelected = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public AnalysisId Id => _analyser.Id;
 
 		public IEnumerable<IAnalysisPageViewModel> Pages => _pages;

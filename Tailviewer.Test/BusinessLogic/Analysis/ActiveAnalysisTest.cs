@@ -33,7 +33,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAdd1()
 		{
-			var group = new ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAddRemove1()
 		{
-			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var analyser = group.Add(new LogAnalyserFactoryId("foobar"), null);
@@ -62,7 +62,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestDispose()
 		{
-			var group = new Tailviewer.BusinessLogic.Analysis.ActiveAnalysis(_template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			group.Dispose();
 
 			_taskScheduler.PeriodicTaskCount.Should()
