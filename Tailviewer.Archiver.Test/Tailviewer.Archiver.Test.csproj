@@ -55,6 +55,7 @@
     <Compile Include="PluginArchiveLoaderTest.cs" />
     <Compile Include="PluginArchiveTest.cs" />
     <Compile Include="PluginAssemblyLoaderTest.cs" />
+    <Compile Include="PluginDescriptionTest.cs" />
     <Compile Include="PluginPackerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

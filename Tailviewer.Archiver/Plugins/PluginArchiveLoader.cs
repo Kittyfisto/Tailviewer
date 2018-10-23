@@ -93,12 +93,10 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public T Load<T>(IPluginDescription description) where T : class, IPlugin
 		{
-			IPluginArchive archive;
-			if (!_archivesByPlugin.TryGetValue(description, out archive))
+			if (!_archivesByPlugin.TryGetValue(description, out var archive))
 				throw new ArgumentException();
 
-			string interfaceImplementation;
-			if (!description.Plugins.TryGetValue(typeof(T), out interfaceImplementation))
+			if (!description.Plugins.TryGetValue(typeof(T), out var interfaceImplementation))
 				throw new NotImplementedException();
 
 			var plugin = archive.LoadPlugin();
@@ -132,7 +130,6 @@ namespace Tailviewer.Archiver.Plugins
 			return ret;
 		}
 
-		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(string pluginPath)
 		{
 			try
@@ -146,9 +143,7 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				Log.ErrorFormat("Unable to load '{0}': {1}", pluginPath, e);
 
-				string id;
-				Version version;
-				ExtractIdAndVersion(pluginPath, out id, out version);
+				ExtractIdAndVersion(pluginPath, out var id, out var version);
 				var description = new PluginDescription
 				{
 					Id = id,
@@ -180,7 +175,6 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		/// <inheritdoc />
 		public IPluginDescription ReflectPlugin(Stream stream, bool leaveOpen = false)
 		{
 			var archive = PluginArchive.OpenRead(stream, leaveOpen);
@@ -194,8 +188,7 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			var archiveIndex = archive.Index;
 
-			Uri website;
-			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out website);
+			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out var website);
 
 			var plugins = new Dictionary<Type, string>();
 			foreach (var pair in archiveIndex.ImplementedPluginInterfaces)

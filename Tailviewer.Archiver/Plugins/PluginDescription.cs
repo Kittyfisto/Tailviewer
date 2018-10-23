@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Windows.Media;
 
 namespace Tailviewer.Archiver.Plugins
@@ -55,5 +56,42 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<Type, string> Plugins { get; set; }
+
+		#region Overrides of Object
+
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+
+			if (Name != null)
+			{
+				if (builder.Length != 0)
+					builder.Append(", ");
+				builder.AppendFormat("Name: {0}", Name);
+			}
+
+			if (Version != null)
+			{
+				if (builder.Length != 0)
+					builder.Append(", ");
+				builder.AppendFormat("Version: {0}", Version);
+			}
+
+			if (Author != null)
+			{
+				if (builder.Length != 0)
+					builder.Append(", ");
+				builder.AppendFormat("Author: {0}", Author);
+			}
+
+			if (builder.Length == 0)
+			{
+				builder.Append("<Unknown>");
+			}
+
+			return builder.ToString();
+		}
+
+		#endregion
 	}
 }

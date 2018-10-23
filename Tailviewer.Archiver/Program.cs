@@ -2,7 +2,6 @@
 using System.IO;
 using CommandLine;
 using Tailviewer.Archiver.Applications;
-using Tailviewer.Archiver.Plugins;
 
 namespace Tailviewer.Archiver
 {
