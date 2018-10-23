@@ -23,9 +23,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <summary>
 		///     Saves the given active analysis to disk.
 		/// </summary>
-		/// <param name="configuration"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
-		Task Save(ActiveAnalysisConfiguration configuration);
+		Task Save(AnalysisId id);
 
 		/// <summary>
 		/// </summary>

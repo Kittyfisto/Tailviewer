@@ -17,6 +17,11 @@ namespace Tailviewer.Core.Analysis
 			, ICloneable
 	{
 		/// <summary>
+		///     The name of this template, usually defined by a meat bag.
+		/// </summary>
+		string Name { get; set; }
+
+		/// <summary>
 		///     The pages that are part of this template.
 		/// </summary>
 		IEnumerable<IPageTemplate> Pages { get; }

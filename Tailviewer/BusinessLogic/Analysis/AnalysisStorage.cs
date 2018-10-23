@@ -142,6 +142,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
+		/// <inheritdoc />
+		public Task Save(AnalysisId id)
+		{
+			ActiveAnalysisConfiguration config;
+			if (!TryGetTemplateFor(id, out config))
+				return Task.FromResult(42);
+
+			return Save(config);
+		}
+
 		public bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis)
 		{
 			lock (_syncRoot)
@@ -205,6 +215,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			// We don't know if the directory exists, so we'll just create
 			// it beforehand...
 			_filesystem.CreateDirectory(directory);
+			// TODO: Clone the analysis
 			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
 		}
 

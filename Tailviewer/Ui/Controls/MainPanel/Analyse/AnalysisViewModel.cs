@@ -29,7 +29,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly DelegateCommand2 _captureSnapshotCommand;
 		private AnalysisPageViewModel _selectedPage;
 
-		private string _name;
 		private double _progress;
 		private Task _saveSnapshotTask;
 
@@ -58,7 +57,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			{
 				CanBeExecuted = true
 			};
-			_name = "Unsaved analysis";
 
 			AddPage();
 			_selectedPage = _pages.FirstOrDefault();
@@ -128,14 +126,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public string Name
 		{
-			get { return _name; }
+			get { return _viewTemplate.Name; }
 			set
 			{
-				if (value == _name)
+				if (value == _viewTemplate.Name)
 					return;
 
-				_name = value;
+				_viewTemplate.Name = value;
 				EmitPropertyChanged();
+
+				_analysisStorage.Save(Id);
 			}
 		}
 

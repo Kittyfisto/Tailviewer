@@ -18,12 +18,14 @@ namespace Tailviewer.Core.Analysis
 		: IAnalysisViewTemplate
 	{
 		private readonly List<PageTemplate> _pages;
+		private string _name;
 
 		/// <summary>
 		///     Initializes this template.
 		/// </summary>
 		public AnalysisViewTemplate()
 		{
+			_name = "<Unnamed>";
 			_pages = new List<PageTemplate>();
 		}
 
@@ -32,20 +34,27 @@ namespace Tailviewer.Core.Analysis
 			_pages = new List<PageTemplate>(pages);
 		}
 
-		/// <summary>
-		///     The pages that are part of this template.
-		/// </summary>
+		/// <inheritdoc />
+		public string Name
+		{
+			get => _name;
+			set => _name = value;
+		}
+
+		/// <inheritdoc />
 		public IEnumerable<IPageTemplate> Pages => _pages;
 
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
+			writer.WriteAttribute("Name", _name);
 			writer.WriteAttribute("Pages", _pages);
 		}
 
 		/// <inheritdoc />
 		public void Deserialize(IReader reader)
 		{
+			reader.TryReadAttribute("Name", out _name);
 			reader.TryReadAttribute("Pages", _pages);
 		}
 

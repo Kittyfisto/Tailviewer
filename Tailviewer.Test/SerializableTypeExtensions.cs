@@ -28,7 +28,8 @@ namespace Tailviewer.Test
 				types.Add(typeof(T).FullName, typeof(T));
 				foreach (var additional in additionalTypes)
 				{
-					types.Add(additional.FullName, additional);
+					if (!types.ContainsKey(additional.FullName))
+						types.Add(additional.FullName, additional);
 				}
 
 				stream.Position = 0;
