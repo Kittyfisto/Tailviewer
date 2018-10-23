@@ -35,16 +35,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _name;
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
+		private readonly IAnalysisStorage _analysisStorage;
+		private readonly AnalysisId _id;
 
-		public AnalysisPageViewModel(PageTemplate template, IAnalysis analyser)
+		public AnalysisPageViewModel(AnalysisId id, PageTemplate template, IAnalysis analyser, IAnalysisStorage analysisStorage)
 		{
-			if (template == null)
-				throw new ArgumentNullException(nameof(template));
-			if (analyser == null)
-				throw new ArgumentNullException(nameof(analyser));
-
-			_template = template;
-			_analyser = analyser;
+			_id = id;
+			_template = template ?? throw new ArgumentNullException(nameof(template));
+			_analyser = analyser ?? throw new ArgumentNullException(nameof(analyser));
+			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
 			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
 			_widgets = new List<IWidgetViewModel>();
@@ -137,6 +136,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 			_analysersPerWidget.Add(widget, analyser);
 			_template.Add(widgetTemplate);
+			_analysisStorage.Save(_id);
 
 			Add(widget);
 		}
@@ -191,6 +191,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
 			_template.Remove(widget.Template);
+			_analysisStorage.Save(_id);
 
 			IDataSourceAnalyser analyser;
 			if (_analysersPerWidget.TryGetValue(widget, out analyser))

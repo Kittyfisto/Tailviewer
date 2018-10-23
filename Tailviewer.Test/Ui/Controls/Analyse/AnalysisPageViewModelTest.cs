@@ -16,18 +16,22 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 	{
 		private Mock<IAnalysis> _analyser;
 		private PageTemplate _template;
+		private Mock<IAnalysisStorage> _analysisStorage;
+		private AnalysisId _id;
 
 		[SetUp]
 		public void Setup()
 		{
+			_id = AnalysisId.CreateNew();
 			_template = new PageTemplate();
 			_analyser = new Mock<IAnalysis>();
+			_analysisStorage = new Mock<IAnalysisStorage>();
 		}
 
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisPageViewModel(_template, _analyser.Object);
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
@@ -38,7 +42,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Description("Verifies that if a layout requests that a widget be added, the page does so")]
 		public void TestRequestAddWidget1()
 		{
-			var model = new AnalysisPageViewModel(_template, _analyser.Object);
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWidgetLayoutViewModel) model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
@@ -55,7 +59,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRequestAddWidget2()
 		{
-			var model = new AnalysisPageViewModel(_template, _analyser.Object);
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
 
 			var factory = new Mock<IWidgetPlugin>();
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
@@ -76,7 +80,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRequestAddWidget3()
 		{
-			var model = new AnalysisPageViewModel(_template, _analyser.Object);
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
@@ -94,9 +98,29 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		}
 
 		[Test]
-		public void TestRemoveWidget()
+		[Description("Verifies that once a widget is added, the analysis is saved once more")]
+		public void TestRequestAddWidget4()
 		{
-			var model = new AnalysisPageViewModel(_template, _analyser.Object);
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
+			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+
+			var widget = new Mock<IWidgetViewModel>().Object;
+			var factory = new Mock<IWidgetPlugin>();
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			       .Returns(widget);
+
+
+			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
+
+			layout.RaiseRequestAdd(factory.Object);
+			_analysisStorage.Verify(x => x.Save(_id), Times.Once,
+			                        "because the page should've saved the analysis now that a widget's been added");
+		}
+
+		[Test]
+		public void TestRemoveWidget1()
+		{
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>();
@@ -111,6 +135,28 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			layout.Widgets.Should().BeEmpty();
 			_analyser.Verify(x => x.Remove(It.IsAny<IDataSourceAnalyser>()), Times.Once,
 				"because the analyser created with that widget should've been removed again");
+		}
+
+		[Test]
+		public void TestRemoveWidget2()
+		{
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object);
+			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+
+			var widget = new Mock<IWidgetViewModel>();
+			var factory = new Mock<IWidgetPlugin>();
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			       .Returns(widget.Object);
+
+			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
+
+			layout.RaiseRequestAdd(factory.Object);
+			_analysisStorage.Verify(x => x.Save(_id), Times.Once);
+
+			layout.Widgets.Should().Contain(widget.Object);
+			widget.Raise(x => x.OnDelete += null, widget.Object);
+			_analysisStorage.Verify(x => x.Save(_id), Times.Exactly(2),
+			                        "because the page should've saved the analysis now that a widget's been removed");
 		}
 	}
 }

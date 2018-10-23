@@ -178,7 +178,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void AddPage()
 		{
 			var template = new PageTemplate();
-			var page = new AnalysisPageViewModel(template, _analyser);
+			var page = new AnalysisPageViewModel(Id, template, _analyser, _analysisStorage);
 			page.OnDelete += PageOnOnDelete;
 
 			_pages.Add(page);
