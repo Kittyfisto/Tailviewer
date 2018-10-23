@@ -8,12 +8,21 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 	///     The configuration of a single quick info.
 	/// </summary>
 	public sealed class QuickInfoConfiguration
-		: ICloneable
+		: ISerializableType
+		, ICloneable
 	{
 		public QuickInfoConfiguration()
 		{
 			MatchType = FilterMatchType.RegexpFilter;
 		}
+
+		public QuickInfoConfiguration(Guid id)
+			: this()
+		{
+			_id = id;
+		}
+
+		public Guid Id => _id;
 
 		/// <summary>
 		///     The filter used to find matching lines.
@@ -21,6 +30,7 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 		public string FilterValue;
 
 		public FilterMatchType MatchType;
+		private Guid _id;
 
 		object ICloneable.Clone()
 		{
@@ -36,5 +46,24 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 				MatchType = MatchType
 			};
 		}
+
+		#region Implementation of ISerializableType
+
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("Id", _id);
+			writer.WriteAttribute("FilterValue", FilterValue);
+			writer.WriteAttribute("MatchType", MatchType.ToString());
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			reader.TryReadAttribute("Id", out _id);
+			reader.TryReadAttribute("FilterValue", out FilterValue);
+			if (reader.TryReadAttribute("MatchType", out string matchType))
+				Enum.TryParse(matchType, out MatchType);
+		}
+
+		#endregion
 	}
 }

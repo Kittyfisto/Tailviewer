@@ -4,13 +4,23 @@ using Tailviewer.Core.Settings;
 namespace Tailviewer.QuickInfo.Ui
 {
 	public sealed class QuickInfoViewConfiguration
-		: ICloneable
+		: ISerializableType
+		, ICloneable
 	{
 		public QuickInfoViewConfiguration()
 		{
+			_id = Guid.Empty;
 			Name = "New Quick Info";
 			Format = "{message}";
 		}
+
+		public QuickInfoViewConfiguration(Guid id)
+			: this()
+		{
+			_id = id;
+		}
+
+		public Guid Id => _id;
 
 		public string Name;
 
@@ -25,6 +35,8 @@ namespace Tailviewer.QuickInfo.Ui
 		/// </remarks>
 		public string Format;
 
+		private Guid _id;
+
 		public QuickInfoViewConfiguration Clone()
 		{
 			return new QuickInfoViewConfiguration
@@ -38,5 +50,23 @@ namespace Tailviewer.QuickInfo.Ui
 		{
 			return Clone();
 		}
+
+		#region Implementation of ISerializableType
+
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("Id", _id);
+			writer.WriteAttribute("Name", Name);
+			writer.WriteAttribute("Format", Format);
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			reader.TryReadAttribute("Id", out _id);
+			reader.TryReadAttribute("Name", out Name);
+			reader.TryReadAttribute("Format", out Format);
+		}
+
+		#endregion
 	}
 }

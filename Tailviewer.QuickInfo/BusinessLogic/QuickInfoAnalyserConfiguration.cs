@@ -8,19 +8,23 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 	public sealed class QuickInfoAnalyserConfiguration
 		: ILogAnalyserConfiguration
 	{
-		public Dictionary<Guid, QuickInfoConfiguration> QuickInfos;
+		private readonly Dictionary<Guid, QuickInfoConfiguration> _quickInfos;
 
 		public QuickInfoAnalyserConfiguration()
 		{
-			QuickInfos = new Dictionary<Guid, QuickInfoConfiguration>();
+			_quickInfos = new Dictionary<Guid, QuickInfoConfiguration>();
 		}
+
+		private QuickInfoAnalyserConfiguration(Dictionary<Guid, QuickInfoConfiguration> quickInfos)
+		{
+			_quickInfos = quickInfos;
+		}
+
+		public IEnumerable<QuickInfoConfiguration> QuickInfos => _quickInfos.Values;
 
 		public object Clone()
 		{
-			return new QuickInfoAnalyserConfiguration
-			{
-				QuickInfos = QuickInfos?.ToDictionary(x => x.Key, x => x.Value?.Clone())
-			};
+			return new QuickInfoAnalyserConfiguration(_quickInfos?.ToDictionary(x => x.Key, x => x.Value?.Clone()));
 		}
 
 		public bool IsEquivalent(ILogAnalyserConfiguration other)
@@ -30,12 +34,33 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 
 		public void Serialize(IWriter writer)
 		{
-			throw new NotImplementedException();
+			writer.WriteAttribute("QuickInfos", QuickInfos);
 		}
 
 		public void Deserialize(IReader reader)
 		{
-			throw new NotImplementedException();
+			var tmp = new List<QuickInfoConfiguration>();
+			if (reader.TryReadAttribute("QuickInfos", tmp))
+			{
+				_quickInfos.Clear();
+				foreach (var info in tmp)
+				{
+					if (!_quickInfos.ContainsKey(info.Id))
+					{
+						_quickInfos.Add(info.Id, info);
+					}
+				}
+			}
+		}
+
+		public void Add(QuickInfoConfiguration quickInfoConfiguration)
+		{
+			_quickInfos.Add(quickInfoConfiguration.Id, quickInfoConfiguration);;
+		}
+
+		public void Remove(Guid id)
+		{
+			_quickInfos.Remove(id);
 		}
 	}
 }

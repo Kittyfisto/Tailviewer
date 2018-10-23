@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLogic\QuickInfoAnalyserConfigurationTest.cs" />
     <Compile Include="BusinessLogic\QuickInfoConfigurationTest.cs" />
     <Compile Include="BusinessLogic\QuickInfoFormatterTest.cs" />
     <Compile Include="BusinessLogic\QuickInfoResultTest.cs" />
@@ -71,6 +72,10 @@
     <ProjectReference Include="..\Tailviewer.QuickInfo\Tailviewer.QuickInfo.csproj">
       <Project>{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}</Project>
       <Name>Tailviewer.QuickInfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Test\Tailviewer.Test.csproj">
+      <Project>{284845FB-EFF7-434E-9006-E789AB95F2F2}</Project>
+      <Name>Tailviewer.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

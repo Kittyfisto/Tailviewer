@@ -51,14 +51,14 @@ namespace Tailviewer.QuickInfo.Ui
 		private void AddQuickInfo()
 		{
 			var id = Guid.NewGuid();
-			var viewConfig = new QuickInfoViewConfiguration();
-			var analyserConfig = new QuickInfoConfiguration();
+			var viewConfig = new QuickInfoViewConfiguration(id);
+			var analyserConfig = new QuickInfoConfiguration(id);
 			var viewModel = new QuickInfoViewModel(id, viewConfig, analyserConfig);
 			viewModel.OnRemoved += OnQuickInfoRemoved;
 			viewModel.IsEditing = IsEditing;
 
-			_viewConfiguration.Titles.Add(id, viewConfig);
-			_analyserConfiguration.QuickInfos.Add(id, analyserConfig);
+			_viewConfiguration.Add(viewConfig);
+			_analyserConfiguration.Add(analyserConfig);
 			_quickInfosById.Add(id, viewModel);
 			_quickInfos.Add(viewModel);
 		}
@@ -69,8 +69,8 @@ namespace Tailviewer.QuickInfo.Ui
 			_quickInfosById.Remove(id);
 			_quickInfos.Remove(viewModel);
 
-			_viewConfiguration.Titles.Remove(id);
-			_analyserConfiguration.QuickInfos.Remove(id);
+			_viewConfiguration.Remove(id);
+			_analyserConfiguration.Remove(id);
 			viewModel.OnRemoved -= OnQuickInfoRemoved;
 		}
 

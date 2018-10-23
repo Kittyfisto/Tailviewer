@@ -1,7 +1,11 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.Settings;
 using Tailviewer.QuickInfo.BusinessLogic;
+using Tailviewer.QuickInfo.Ui;
+using Tailviewer.Test;
 
 namespace Tailviewer.QuickInfo.Test.BusinessLogic
 {
@@ -9,7 +13,7 @@ namespace Tailviewer.QuickInfo.Test.BusinessLogic
 	public sealed class QuickInfoConfigurationTest
 	{
 		[Test]
-		public void TestCtor()
+		public void TestConstruction()
 		{
 			var config = new QuickInfoConfiguration();
 			config.FilterValue.Should().BeNull();

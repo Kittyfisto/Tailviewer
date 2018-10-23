@@ -43,12 +43,12 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 			_logFiles = logFiles;
 			try
 			{
-				foreach (var pair in configuration.QuickInfos)
+				foreach (var config in configuration.QuickInfos)
 				{
-					var filter = CreateFilter(pair.Value);
+					var filter = CreateFilter(config);
 					var filteredLogFile = source.AsFiltered(scheduler, filter, logEntryFilter: null);
-					logFiles.Add(filteredLogFile, pair.Key);
-					_lastMatchingLines.Add(pair.Key, value: null);
+					logFiles.Add(filteredLogFile, config.Id);
+					_lastMatchingLines.Add(config.Id, value: null);
 					filteredLogFile.AddListener(this, maximumWaitTime, MaximumLineCount);
 				}
 			}

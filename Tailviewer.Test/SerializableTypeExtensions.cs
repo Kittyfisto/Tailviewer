@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using FluentAssertions;
+using NUnit.Framework;
 using Tailviewer.Core;
 
 namespace Tailviewer.Test
@@ -19,10 +20,8 @@ namespace Tailviewer.Test
 				}
 
 				stream.Position = 0;
-				using (var tmp = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
-				{
-					Console.WriteLine(tmp.ReadToEnd());
-				}
+				var content = Format<T>(stream);
+				TestContext.Progress.WriteLine(content);
 
 				var types = new Dictionary<string, Type>();
 				types.Add(typeof(T).FullName, typeof(T));
@@ -36,8 +35,17 @@ namespace Tailviewer.Test
 				var reader = new Reader(stream, new TypeFactory(types));
 
 				T actualValue;
-				reader.TryReadAttribute("Test", out actualValue).Should().BeTrue();
+				reader.TryReadAttribute("Test", out actualValue).Should().BeTrue("because an object of type '{0}' should be deserializable",
+				                                                                 that.GetType().FullName);
 				return actualValue;
+			}
+		}
+
+		private static string Format<T>(MemoryStream stream) where T : class, ISerializableType
+		{
+			using (var tmp = new StreamReader(stream, Encoding.UTF8, true, 4096, true))
+			{
+				return tmp.ReadToEnd();
 			}
 		}
 	}
