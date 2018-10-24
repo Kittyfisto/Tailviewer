@@ -29,6 +29,19 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
+		public void TestCreateAnalysisFolder()
+		{
+			string analysisFolderPath = Constants.AnalysisDirectory;
+			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeFalse();
+
+			var storage = new AnalysisStorage(_taskScheduler,
+				_filesystem,
+				_logAnalyserEngine.Object);
+
+			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeTrue("because the storage should've created the analysis folder");
+		}
+
+		[Test]
 		public void TestCreateAnalysis1()
 		{
 			var storage = new AnalysisStorage(_taskScheduler,

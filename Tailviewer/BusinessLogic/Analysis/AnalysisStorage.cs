@@ -70,10 +70,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 						if (configuration != null)
 						{
 							var analysis = new ActiveAnalysis(configuration.Id,
-							                                  configuration.Template,
-							                                  _taskScheduler,
-							                                  _logAnalyserEngine,
-							                                  TimeSpan.FromMilliseconds(100));
+								configuration.Template,
+								_taskScheduler,
+								_logAnalyserEngine,
+								TimeSpan.FromMilliseconds(100));
 
 							try
 							{
@@ -87,12 +87,18 @@ namespace Tailviewer.BusinessLogic.Analysis
 							}
 							catch (Exception)
 							{
-								analysis.Dispose(); //< ActiveAnalysis actually spawns new analyses on the engine so we should cancel those in case an exception si thrown here...
+								analysis
+									.Dispose(); //< ActiveAnalysis actually spawns new analyses on the engine so we should cancel those in case an exception si thrown here...
 								throw;
 							}
 						}
 					}
 				}
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Log.DebugFormat("Unable to restore existing analyses: {0}", e);
+				await CreateAnalysisFolderAsync();
 			}
 			catch (Exception e)
 			{
@@ -100,19 +106,23 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		[Pure]
-		private async Task<IReadOnlyList<string>> EnumerateAnalysesAsync()
+		private async Task CreateAnalysisFolderAsync()
 		{
 			try
 			{
-				var filter = string.Format("*.{0}", Constants.AnalysisExtension);
-				return await _filesystem.EnumerateFiles(Constants.AnalysisDirectory, filter);
+				await _filesystem.CreateDirectory(Constants.AnalysisDirectory);
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
-				Log.WarnFormat("Unable to restore analyses: {0}", e);
-				return new string[0];
+				Log.ErrorFormat("Unable to create analysis folder: {0}", e);
 			}
+		}
+
+		[Pure]
+		private async Task<IReadOnlyList<string>> EnumerateAnalysesAsync()
+		{
+			var filter = string.Format("*.{0}", Constants.AnalysisExtension);
+			return await _filesystem.EnumerateFiles(Constants.AnalysisDirectory, filter);
 		}
 
 		public void Dispose()
