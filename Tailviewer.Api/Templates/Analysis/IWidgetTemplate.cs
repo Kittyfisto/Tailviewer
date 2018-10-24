@@ -13,7 +13,7 @@ namespace Tailviewer.Templates.Analysis
 	/// </summary>
 	public interface IWidgetTemplate
 		: ISerializableType
-		, ICloneable
+			, ICloneable
 	{
 		/// <summary>
 		///     The title of the widget.
@@ -21,9 +21,24 @@ namespace Tailviewer.Templates.Analysis
 		string Title { get; set; }
 
 		/// <summary>
+		///     The id of this widget.
+		/// </summary>
+		WidgetId Id { get; }
+
+		/// <summary>
+		///     The id of the analyser instance which is coupled
+		///     with this widget.
+		/// </summary>
+		AnalyserId AnalyserId { get; }
+
+		/// <summary>
+		/// The id of the factory which should be used to instantiate a widget from this template.
+		/// </summary>
+		LogAnalyserFactoryId LogAnalyserFactoryId { get; }
+
+		/// <summary>
 		///     The configuration of the view (widget).
 		/// </summary>
 		IWidgetConfiguration Configuration { get; }
-
 	}
 }

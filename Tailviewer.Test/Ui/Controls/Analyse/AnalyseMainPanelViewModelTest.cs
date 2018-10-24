@@ -4,6 +4,7 @@ using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Analysis;
@@ -23,6 +24,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		private ManualDispatcher _dispatcher;
 		private ManualTaskScheduler _taskScheduler;
 		private Mock<IAnalysisStorage> _analysisStorage;
+		private PluginRegistry _pluginRegistry;
 
 		[SetUp]
 		public void Setup()
@@ -34,6 +36,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_dataSources = new Mock<IDataSources>();
 			_dispatcher = new ManualDispatcher();
 			_taskScheduler = new ManualTaskScheduler();
+			_pluginRegistry = new PluginRegistry();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 			_analysisStorage
 				.Setup(x => x.CreateAnalysis(It.IsAny<AnalysisTemplate>(), It.IsAny<AnalysisViewTemplate>()))
@@ -53,10 +56,11 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_mainWindow.Setup(x => x.SelectedSidePanel).Returns((string)null);
 
 			var viewModel = new AnalyseMainPanelViewModel(_settings.Object,
-				_dataSources.Object,
-				_dispatcher,
-				_taskScheduler,
-				_analysisStorage.Object);
+			                                              _dataSources.Object,
+			                                              _dispatcher,
+			                                              _taskScheduler,
+			                                              _analysisStorage.Object,
+			                                              _pluginRegistry);
 
 			const string reason = "because the settings don't have a panel selected and thus the view model should neither";
 			viewModel.SelectedSidePanel.Should().BeNull(reason);
@@ -69,10 +73,11 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_mainWindow.Setup(x => x.SelectedSidePanel).Returns("foobar");
 
 			var viewModel = new AnalyseMainPanelViewModel(_settings.Object,
-				_dataSources.Object,
-				_dispatcher,
-				_taskScheduler,
-				_analysisStorage.Object);
+			                                              _dataSources.Object,
+			                                              _dispatcher,
+			                                              _taskScheduler,
+			                                              _analysisStorage.Object,
+			                                              _pluginRegistry);
 
 			const string reason = "because there is no such panel and thus no panel should've been selected";
 			viewModel.SelectedSidePanel.Should().BeNull(reason);
@@ -85,10 +90,11 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_mainWindow.Setup(x => x.SelectedSidePanel).Returns(WidgetsSidePanel.PanelId);
 
 			var viewModel = new AnalyseMainPanelViewModel(_settings.Object,
-				_dataSources.Object,
-				_dispatcher,
-				_taskScheduler,
-				_analysisStorage.Object);
+			                                              _dataSources.Object,
+			                                              _dispatcher,
+			                                              _taskScheduler,
+			                                              _analysisStorage.Object,
+			                                              _pluginRegistry);
 
 			const string reason = "because the widgets side panel should've been selected";
 			viewModel.SelectedSidePanel.Should().NotBeNull(reason);
@@ -103,9 +109,13 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			                                              _dataSources.Object,
 			                                              _dispatcher,
 			                                              _taskScheduler,
-			                                              _analysisStorage.Object);
-			var analysis = new AnalysisViewModel(_dispatcher, new AnalysisViewTemplate(), new Mock<IAnalysis>().Object,
-			                                     new Mock<IAnalysisStorage>().Object)
+			                                              _analysisStorage.Object,
+			                                              _pluginRegistry);
+			var analysis = new AnalysisViewModel(_dispatcher,
+			                                     new AnalysisViewTemplate(),
+			                                     new Mock<IAnalysis>().Object,
+			                                     new Mock<IAnalysisStorage>().Object,
+			                                     _pluginRegistry)
 			{
 				Name = "Foo"
 			};
@@ -124,7 +134,8 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			                                              _dataSources.Object,
 			                                              _dispatcher,
 			                                              _taskScheduler,
-			                                              _analysisStorage.Object);
+			                                              _analysisStorage.Object,
+			                                              _pluginRegistry);
 			var analysisSidePanel = viewModel.SidePanels.OfType<AnalysesSidePanel>().First();
 
 			viewModel.CreateAnalysisCommand.Execute(null);

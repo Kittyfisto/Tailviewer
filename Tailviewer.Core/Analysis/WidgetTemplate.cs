@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
@@ -19,38 +20,37 @@ namespace Tailviewer.Core.Analysis
 		private string _title;
 		private AnalyserId _analyserId;
 		private IWidgetConfiguration _configuration;
+		private LogAnalyserFactoryId _logAnalyserFactoryId;
 
-		/// <summary>
-		///     The title of the widget.
-		/// </summary>
+		/// <inheritdoc />
 		public string Title
 		{
 			get { return _title; }
 			set { _title = value; }
 		}
 
-		/// <summary>
-		///     The id of this widget.
-		/// </summary>
+		/// <inheritdoc />
 		public WidgetId Id
 		{
 			get { return _id; }
 			set { _id = value; }
 		}
-
-		/// <summary>
-		///     The id of the analyser instance which is coupled
-		///     with this widget.
-		/// </summary>
+		
+		/// <inheritdoc />
 		public AnalyserId AnalyserId
 		{
 			get { return _analyserId; }
 			set { _analyserId = value; }
 		}
 
-		/// <summary>
-		///     The configuration of the view (widget).
-		/// </summary>
+		/// <inheritdoc />
+		public LogAnalyserFactoryId LogAnalyserFactoryId
+		{
+			get { return _logAnalyserFactoryId; }
+			set { _logAnalyserFactoryId = value; }
+		}
+
+		/// <inheritdoc />
 		public IWidgetConfiguration Configuration
 		{
 			get { return _configuration; }
@@ -64,6 +64,7 @@ namespace Tailviewer.Core.Analysis
 			writer.WriteAttribute("Title", _title);
 			writer.WriteAttribute("Configuration", _configuration);
 			writer.WriteAttribute("AnalyserId", _analyserId);
+			writer.WriteAttribute("FactoryId", _logAnalyserFactoryId);
 		}
 
 		/// <inheritdoc />
@@ -73,6 +74,7 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("Title", out _title);
 			reader.TryReadAttribute("Configuration", out _configuration);
 			reader.TryReadAttribute("AnalyserId", out _analyserId);
+			reader.TryReadAttribute("FactoryId", out _logAnalyserFactoryId);
 		}
 
 		object ICloneable.Clone()
@@ -92,6 +94,7 @@ namespace Tailviewer.Core.Analysis
 				Id = _id,
 				Title = _title,
 				AnalyserId = AnalyserId,
+				LogAnalyserFactoryId = LogAnalyserFactoryId,
 				Configuration = _configuration?.Clone() as IWidgetConfiguration
 			};
 		}

@@ -11,7 +11,6 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.QuickFilter;
@@ -46,7 +45,7 @@ namespace Tailviewer.Test.Ui
 			                                      _scheduler,
 			                                      _analysisStorage.Object,
 			                                      _dispatcher,
-			                                      Enumerable.Empty<IPluginDescription>());
+			                                      new PluginRegistry());
 		}
 
 		[TearDown]
@@ -81,7 +80,7 @@ namespace Tailviewer.Test.Ui
 				_scheduler,
 				_analysisStorage.Object,
 				_dispatcher,
-				Enumerable.Empty<IPluginDescription>());
+				new PluginRegistry());
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
 			_mainWindow.WindowTitleSuffix.Should().Be(@"F:\logs\foo.log");

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
@@ -35,10 +36,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _windowTitleSuffix;
 
 		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
-			IDataSources dataSources,
-			IDispatcher dispatcher,
-			ITaskScheduler taskScheduler,
-			IAnalysisStorage analysisStorage)
+		                                 IDataSources dataSources,
+		                                 IDispatcher dispatcher,
+		                                 ITaskScheduler taskScheduler,
+		                                 IAnalysisStorage analysisStorage,
+		                                 IPluginLoader pluginLoader)
 			: base(applicationSettings)
 		{
 			if (dataSources == null)
@@ -53,9 +55,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_dispatcher = dispatcher;
 			_sidePanels = new ISidePanelViewModel[]
 			{
-				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, analysisStorage),
+				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, analysisStorage, pluginLoader),
 				_dataSelectionSidePanel = new AnalysisDataSelectionSidePanel(applicationSettings, dataSources),
-				_widgetsSidePanel = new WidgetsSidePanel()
+				_widgetsSidePanel = new WidgetsSidePanel(pluginLoader)
 			};
 			_createAnalysisCommand = new DelegateCommand(CreateAnalysis);
 			_analysesSidePanel.PropertyChanged += AnalysesSidePanelOnPropertyChanged;

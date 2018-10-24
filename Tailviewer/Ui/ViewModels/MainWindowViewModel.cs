@@ -77,7 +77,7 @@ namespace Tailviewer.Ui.ViewModels
 		                           ITaskScheduler taskScheduler,
 		                           IAnalysisStorage analysisStorage,
 		                           IDispatcher dispatcher,
-		                           IEnumerable<IPluginDescription> plugins)
+		                           IPluginLoader pluginLoader)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
@@ -86,11 +86,11 @@ namespace Tailviewer.Ui.ViewModels
 
 			_applicationSettings = settings;
 
-			_plugins = plugins;
+			_plugins = pluginLoader.Plugins;
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, dispatcher, taskScheduler, analysisStorage);
+			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, dispatcher, taskScheduler, analysisStorage, pluginLoader);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
