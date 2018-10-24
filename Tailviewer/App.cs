@@ -153,8 +153,18 @@ namespace Tailviewer
 
 		private static IPluginLoader CreatePluginSystem(PluginArchiveLoader pluginScanner)
 		{
+			// Currently, we deploy some well known "plugins" via the installer and they're
+			// not available as *.tvp files just yet (which means the PluginArchiveLoader won't find them).
+			// Therefore we register those at a PluginRegistry.
 			var wellKnownPlugins = LoadWellKnownPlugins();
+
+			// Even though we're dealing with the limitation above, the rest of the application should not need
+			// to care, which is why we make both of those types of plugin accessible from one loader
 			var pluginLoader = new AggregatedPluginLoader(pluginScanner, wellKnownPlugins);
+
+			// Last but not least, the PluginArchiveLoader doesn't cache anything which means
+			// that multiple Load requests would result in the same plugin being loaded many times.
+			// we don't want that (unnecessary work, waste of CPU time, etc..), so that's why there's a cache.
 			var pluginCache = new PluginCache(pluginLoader);
 			return pluginCache;
 		}
