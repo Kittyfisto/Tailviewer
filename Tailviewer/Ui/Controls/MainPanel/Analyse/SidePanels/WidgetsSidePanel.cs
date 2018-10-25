@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using Metrolib;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.Count.Ui;
 using Tailviewer.QuickInfo.Ui;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
+using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
@@ -15,14 +16,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 
 		public static readonly string PanelId = "Analysis.Widgets";
 
-		public WidgetsSidePanel()
+		public WidgetsSidePanel(IPluginLoader pluginLoader)
 		{
-			_widgets = new List<WidgetFactoryViewModel>
+			_widgets = new List<WidgetFactoryViewModel>();
+			foreach(var plugin in pluginLoader.LoadAllOfType<IWidgetPlugin>())
 			{
-				new WidgetFactoryViewModel(new HelpWidgetPlugin()),
-				new WidgetFactoryViewModel(new LogEntryCountWidgetPlugin()),
-				new WidgetFactoryViewModel(new QuickInfoWidgetPlugin())
-			};
+				_widgets.Add(new WidgetFactoryViewModel(plugin));
+			}
 		}
 
 		public IEnumerable<WidgetFactoryViewModel> Widgets => _widgets;

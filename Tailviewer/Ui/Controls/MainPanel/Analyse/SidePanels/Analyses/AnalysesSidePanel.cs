@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Media;
 using log4net;
 using Metrolib;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -29,8 +30,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 		private readonly IDispatcher _dispatcher;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly PathComparer _pathComparer;
+		private readonly IPluginLoader _pluginLoader;
 		private bool _hasActiveAnalyses;
 		private bool _hasAvailableAnalyses;
+		private AnalysisViewModel _selectedAnalysis;
 
 		#region Active Analyses
 
@@ -49,18 +52,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		#endregion
 
-		public AnalysesSidePanel(IDispatcher dispatcher, ITaskScheduler taskScheduler, IAnalysisStorage analysisStorage)
+		public AnalysesSidePanel(IDispatcher dispatcher,
+		                         ITaskScheduler taskScheduler,
+		                         IAnalysisStorage analysisStorage,
+		                         IPluginLoader pluginLoader)
 		{
-			if (dispatcher == null)
-				throw new ArgumentNullException(nameof(dispatcher));
-			if (taskScheduler == null)
-				throw new ArgumentNullException(nameof(taskScheduler));
-			if (analysisStorage == null)
-				throw new ArgumentNullException(nameof(analysisStorage));
-
-			_dispatcher = dispatcher;
-			_taskScheduler = taskScheduler;
-			_analysisStorage = analysisStorage;
+			_dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+			_taskScheduler = taskScheduler ?? throw new ArgumentNullException(nameof(taskScheduler));
+			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
+			_pluginLoader = pluginLoader ?? throw new ArgumentNullException(nameof(pluginLoader));
 			_pathComparer = new PathComparer();
 
 			_activeById = new Dictionary<AnalysisId, AnalysisViewModel>();
@@ -76,7 +76,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 		}
 
 		public IEnumerable<AnalysisViewModel> Active => _active;
-		private AnalysisViewModel _selectedAnalysis;
 
 		public AnalysisViewModel SelectedAnalysis
 		{
@@ -255,7 +254,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		private AnalysisViewModel CreateAnalysisViewModel(AnalysisViewTemplate viewTemplate, IAnalysis analysis)
 		{
-			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage);
+			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage, _pluginLoader);
 			_active.Add(viewModel);
 			_activeById.Add(viewModel.Id, viewModel);
 			viewModel.OnRemove += AnalysisOnOnRemove;

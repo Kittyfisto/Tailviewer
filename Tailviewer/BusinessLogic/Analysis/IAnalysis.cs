@@ -64,5 +64,13 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// </summary>
 		/// <param name="analyser"></param>
 		void Remove(IDataSourceAnalyser analyser);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="analyserId"></param>
+		/// <param name="analyser"></param>
+		/// <returns></returns>
+		bool TryGetAnalyser(AnalyserId analyserId, out IDataSourceAnalyser analyser);
 	}
 }

@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Test.BusinessLogic
@@ -15,6 +16,7 @@ namespace Tailviewer.Test.BusinessLogic
 		private ManualTaskScheduler _taskScheduler;
 		private InMemoryFilesystem _filesystem;
 		private Mock<ILogAnalyserEngine> _logAnalyserEngine;
+		private TypeFactory _typeFactory;
 
 		[SetUp]
 		public void Setup()
@@ -26,6 +28,12 @@ namespace Tailviewer.Test.BusinessLogic
 			_filesystem.AddRoot(root);
 
 			_logAnalyserEngine = new Mock<ILogAnalyserEngine>();
+
+			_typeFactory = new TypeFactory();
+			_typeFactory.Add(typeof(ActiveAnalysisConfiguration));
+			_typeFactory.Add(typeof(AnalyserTemplate));
+			_typeFactory.Add(typeof(PageTemplate));
+			_typeFactory.Add(typeof(WidgetTemplate));
 		}
 
 		[Test]
@@ -35,8 +43,9 @@ namespace Tailviewer.Test.BusinessLogic
 			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeFalse();
 
 			var storage = new AnalysisStorage(_taskScheduler,
-				_filesystem,
-				_logAnalyserEngine.Object);
+			                                  _filesystem,
+			                                  _logAnalyserEngine.Object,
+			                                  _typeFactory);
 
 			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeTrue("because the storage should've created the analysis folder");
 		}
@@ -45,8 +54,9 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestCreateAnalysis1()
 		{
 			var storage = new AnalysisStorage(_taskScheduler,
-			                               _filesystem,
-			                               _logAnalyserEngine.Object);
+			                                  _filesystem,
+			                                  _logAnalyserEngine.Object,
+			                                  _typeFactory);
 			storage.Analyses.Should().BeEmpty();
 
 			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
@@ -62,7 +72,8 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var storage = new AnalysisStorage(_taskScheduler,
 			                                   _filesystem,
-			                                   _logAnalyserEngine.Object);
+			                                   _logAnalyserEngine.Object,
+			                                  _typeFactory);
 			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 
 			var id = analysis.Id;
@@ -75,7 +86,8 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var storage = new AnalysisStorage(_taskScheduler,
 			                                   _filesystem,
-			                                   _logAnalyserEngine.Object);
+			                                   _logAnalyserEngine.Object,
+			                                  _typeFactory);
 			storage.AnalysisTemplates.Should().BeEmpty();
 			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			storage.AnalysisTemplates.Should().HaveCount(1);
@@ -93,7 +105,8 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var storage = new AnalysisStorage(_taskScheduler,
 			                                   _filesystem,
-			                                   _logAnalyserEngine.Object);
+			                                   _logAnalyserEngine.Object,
+			                                  _typeFactory);
 			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
 
@@ -107,7 +120,8 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var storage = new AnalysisStorage(_taskScheduler,
 			                                   _filesystem,
-			                                   _logAnalyserEngine.Object);
+			                                   _logAnalyserEngine.Object,
+			                                  _typeFactory);
 			var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
 
@@ -125,7 +139,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var storage = new AnalysisStorage(_taskScheduler,
 				                                  _filesystem,
-				                                  _logAnalyserEngine.Object);
+				                                  _logAnalyserEngine.Object,
+				                                  _typeFactory);
 				var analysis = storage.CreateAnalysis(new AnalysisTemplate(), new AnalysisViewTemplate());
 				id = analysis.Id;
 
@@ -136,7 +151,8 @@ namespace Tailviewer.Test.BusinessLogic
 			{
 				var storage = new AnalysisStorage(_taskScheduler,
 				                                  _filesystem,
-				                                  _logAnalyserEngine.Object);
+				                                  _logAnalyserEngine.Object,
+				                                  _typeFactory);
 				storage.Analyses.Should().HaveCount(1);
 				storage.AnalysisTemplates.Should().HaveCount(1);
 

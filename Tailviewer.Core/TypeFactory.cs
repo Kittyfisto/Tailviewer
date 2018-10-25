@@ -21,7 +21,7 @@ namespace Tailviewer.Core
 
 		/// <summary>
 		/// Creates an empty factory which cannot create any custom type.
-		/// Call <see cref="Add"/> repeatedly to be able to construct custom types.
+		/// Call Add repeatedly to be able to construct custom types.
 		/// </summary>
 		public TypeFactory()
 		{
@@ -41,6 +41,15 @@ namespace Tailviewer.Core
 			{
 				Add(pair.Key, pair.Value);
 			}
+		}
+
+		/// <summary>
+		/// Registers the given type under its <see cref="Type.FullName"/>.
+		/// </summary>
+		/// <param name="type"></param>
+		public void Add(Type type)
+		{
+			Add(type.FullName, type);
 		}
 
 		/// <summary>

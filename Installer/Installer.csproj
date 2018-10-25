@@ -129,6 +129,9 @@
     <EmbeddedResource Include="..\Tailviewer\Resources\Tailviewer.ico">
       <Link>InstallationFiles\Icons\Tailviewer.ico</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\bin\Tailviewer.exe.config">
+      <Link>InstallationFiles\Tailviewer.exe.config</Link>
+    </EmbeddedResource>
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>

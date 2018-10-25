@@ -3,6 +3,7 @@ using FluentAssertions;
 using Metrolib;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
@@ -17,6 +18,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		private AnalysisViewTemplate _viewTemplate;
 		private Mock<IAnalysisStorage> _analysisStorage;
 		private AnalysisId _id;
+		private PluginRegistry _pluginRegistry;
 
 		[SetUp]
 		public void Setup()
@@ -27,12 +29,13 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_id = AnalysisId.CreateNew();
 			_analyser.Setup(x => x.Id).Returns(_id);
 			_analysisStorage = new Mock<IAnalysisStorage>();
+			_pluginRegistry = new PluginRegistry();
 		}
 
 		[Test]
 		public void TestCtor()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
@@ -43,7 +46,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestChangeName()
 		{
 			_viewTemplate.Name = "Some Name";
-			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Name.Should().Be("Some Name");
 
 			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
@@ -58,7 +61,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage1()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Pages.Should().HaveCount(1);
 			model.AddPageCommand.Execute(null);
 			model.Pages.Should().HaveCount(2);
@@ -69,7 +72,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestAddPage2()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			_viewTemplate.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);
@@ -82,7 +85,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRemovePage1()
 		{
-			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object);
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			_viewTemplate.Pages.Should().HaveCount(1);
 
 			model.AddPageCommand.Execute(null);

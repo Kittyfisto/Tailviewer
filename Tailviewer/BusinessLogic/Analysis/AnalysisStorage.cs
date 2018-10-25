@@ -29,22 +29,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly Dictionary<AnalysisId, ActiveAnalysis> _analyses;
 		private readonly Dictionary<AnalysisId, ActiveAnalysisConfiguration> _lastSavedAnalyses;
 		private readonly IFilesystem _filesystem;
+		private readonly ITypeFactory _typeFactory;
 
 		public AnalysisStorage(ITaskScheduler taskScheduler,
 			IFilesystem filesystem,
 			ILogAnalyserEngine logAnalyserEngine,
-			ITypeFactory typeFactory = null)
+			ITypeFactory typeFactory)
 		{
-			if (taskScheduler == null)
-				throw new ArgumentNullException(nameof(taskScheduler));
-			if (filesystem == null)
-				throw new ArgumentNullException(nameof(filesystem));
-			if (logAnalyserEngine == null)
-				throw new ArgumentNullException(nameof(logAnalyserEngine));
-
-			_taskScheduler = taskScheduler;
-			_logAnalyserEngine = logAnalyserEngine;
-			_filesystem = filesystem;
+			_taskScheduler = taskScheduler ?? throw new ArgumentNullException(nameof(taskScheduler));
+			_logAnalyserEngine = logAnalyserEngine ?? throw new ArgumentNullException(nameof(logAnalyserEngine));
+			_filesystem = filesystem ?? throw new ArgumentNullException(nameof(filesystem));
+			_typeFactory = typeFactory ?? throw new ArgumentNullException(nameof(typeFactory));
 			_syncRoot = new object();
 
 			_snapshots = new SnapshotsWatchdog(taskScheduler, filesystem, typeFactory);
@@ -273,13 +268,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public ActiveAnalysisConfiguration ReadAnalysis(Stream stream)
 		{
-			// TODO: This type factory will probably have to be injected into this class in the future
-			var types = new Dictionary<string, Type>
-			{
-				{typeof(ActiveAnalysisConfiguration).FullName, typeof(ActiveAnalysisConfiguration)}
-			};
-			var typeFactory = new TypeFactory(types);
-			var reader = new Reader(stream, typeFactory);
+			var reader = new Reader(stream, _typeFactory);
 			reader.TryReadAttribute("Analysis", out ActiveAnalysisConfiguration analysis);
 			return analysis;
 		}

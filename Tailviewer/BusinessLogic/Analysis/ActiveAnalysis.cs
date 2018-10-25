@@ -10,7 +10,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 {
 	public sealed class ActiveAnalysis
 		: IAnalysis
-			, IDisposable
+		, IDisposable
 	{
 		private readonly AnalysisTemplate _template;
 		private readonly Dictionary<DataSourceAnalyser, AnalyserTemplate> _analysers;
@@ -153,6 +153,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 					tmp?.Dispose();
 				}
+			}
+		}
+
+		public bool TryGetAnalyser(AnalyserId analyserId, out IDataSourceAnalyser analyser)
+		{
+			lock (_syncRoot)
+			{
+				analyser = _analysers.Keys.FirstOrDefault(x => x.Id == analyserId);
+				return analyser != null;
 			}
 		}
 

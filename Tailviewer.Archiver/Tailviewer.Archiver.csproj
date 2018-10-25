@@ -77,6 +77,7 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PackException.cs" />
     <Compile Include="Plugins\AbstractPluginLoader.cs" />
+    <Compile Include="Plugins\AggregatedPluginLoader.cs" />
     <Compile Include="Plugins\AssemblyDescription.cs" />
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />
@@ -96,11 +97,13 @@
     <Compile Include="Plugins\PluginArchive.cs" />
     <Compile Include="Plugins\PluginArchiveLoader.cs" />
     <Compile Include="Plugins\PluginAssemblyLoader.cs" />
+    <Compile Include="Plugins\PluginCache.cs" />
     <Compile Include="Plugins\PluginDescription.cs" />
     <Compile Include="Plugins\PluginId.cs" />
     <Compile Include="Plugins\PluginInterfaceImplementation.cs" />
     <Compile Include="Plugins\PluginPackageIndex.cs" />
     <Compile Include="Plugins\PluginPacker.cs" />
+    <Compile Include="Plugins\PluginRegistry.cs" />
     <Compile Include="Plugins\PluginStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

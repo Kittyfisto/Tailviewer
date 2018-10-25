@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.QuickInfo.Ui;
 
 namespace Tailviewer.QuickInfo.BusinessLogic
 {
@@ -16,7 +17,8 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 		public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => 
 			new Dictionary<string, Type>
 			{
-				{"Tailviewer.Events.BusinessLogic.QuickInfoAnalyserConfiguration", typeof(QuickInfoAnalyserConfiguration)}
+				{"Tailviewer.QuickInfo.BusinessLogic.QuickInfoAnalyserConfiguration", typeof(QuickInfoAnalyserConfiguration)},
+				{"Tailviewer.QuickInfo.Ui.QuickInfoWidgetConfiguration", typeof(QuickInfoWidgetConfiguration)}
 			};
 
 		public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)

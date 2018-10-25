@@ -33,11 +33,11 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAdd1()
 		{
-			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
-			var analyser = group.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
 
 			_template.Analysers.Should().HaveCount(1);
 			var template = _template.Analysers.First();
@@ -47,23 +47,47 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
-		public void TestAddRemove1()
+		public void TestTryGetAnalyser()
 		{
-			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
-			var analyser = group.Add(new LogAnalyserFactoryId("foobar"), null);
+			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
+			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			activeAnalysis.TryGetAnalyser(analyser.Id, out var actualAnalyser).Should().BeTrue();
+			actualAnalyser.Should().BeSameAs(analyser);
+		}
+
+		[Test]
+		public void TestTryGetNonExistentAnalyser()
+		{
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			_template.Analysers.Should().BeEmpty();
+
+			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
+			activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			activeAnalysis.TryGetAnalyser(AnalyserId.CreateNew(), out var actualAnalyser).Should().BeFalse();
+			actualAnalyser.Should().BeNull();
+		}
+
+		[Test]
+		public void TestAddRemove1()
+		{
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			_template.Analysers.Should().BeEmpty();
+
+			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), null);
 			_template.Analysers.Should().HaveCount(1);
 
-			group.Remove(analyser);
+			activeAnalysis.Remove(analyser);
 			_template.Analysers.Should().BeEmpty();
 		}
 
 		[Test]
 		public void TestDispose()
 		{
-			var group = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
-			group.Dispose();
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			activeAnalysis.Dispose();
 
 			_taskScheduler.PeriodicTaskCount.Should()
 				.Be(0, "because all tasks should've been stopped when the group is disposed of");

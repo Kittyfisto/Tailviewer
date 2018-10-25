@@ -19,9 +19,13 @@ using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Count.BusinessLogic;
+using Tailviewer.Count.Ui;
 using Tailviewer.Events.BusinessLogic;
 using Tailviewer.QuickInfo.BusinessLogic;
+using Tailviewer.QuickInfo.Ui;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -60,8 +64,7 @@ namespace Tailviewer
 			LogEnvironment();
 
 			ApplicationSettings settings = ApplicationSettings.Create();
-			bool neededPatching;
-			settings.Restore(out neededPatching);
+			settings.Restore(out var neededPatching);
 
 			if (neededPatching)
 			{
@@ -72,9 +75,11 @@ namespace Tailviewer
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
-			using (var scanner = new PluginArchiveLoader(Constants.PluginPath))
+			using (var pluginScanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
-				var fileFormatPlugins = scanner.LoadAllOfType<IFileFormatPlugin>();
+				var pluginCache = CreatePluginSystem(pluginScanner);
+
+				var fileFormatPlugins = pluginCache.LoadAllOfType<IFileFormatPlugin>();
 				var filesystem = new Filesystem(serialTaskScheduler);
 				var plugins = LoadPlugins();
 
@@ -126,14 +131,14 @@ namespace Tailviewer
 					var window = new MainWindow(settings)
 					{
 						DataContext = new MainWindowViewModel(settings,
-							dataSources,
-							quickFilters,
-							actionCenter,
-							updater,
-							taskScheduler,
-							analysisStorage,
-							uiDispatcher,
-							scanner.Plugins)
+						                                      dataSources,
+						                                      quickFilters,
+						                                      actionCenter,
+						                                      updater,
+						                                      taskScheduler,
+						                                      analysisStorage,
+						                                      uiDispatcher,
+						                                      pluginCache)
 					};
 
 					settings.MainWindow.RestoreTo(window);
@@ -144,6 +149,34 @@ namespace Tailviewer
 					return application.Run();
 				}
 			}
+		}
+
+		private static IPluginLoader CreatePluginSystem(PluginArchiveLoader pluginScanner)
+		{
+			// Currently, we deploy some well known "plugins" via the installer and they're
+			// not available as *.tvp files just yet (which means the PluginArchiveLoader won't find them).
+			// Therefore we register those at a PluginRegistry.
+			var wellKnownPlugins = LoadWellKnownPlugins();
+
+			// Even though we're dealing with the limitation above, the rest of the application should not need
+			// to care, which is why we make both of those types of plugin accessible from one loader
+			var pluginLoader = new AggregatedPluginLoader(pluginScanner, wellKnownPlugins);
+
+			// Last but not least, the PluginArchiveLoader doesn't cache anything which means
+			// that multiple Load requests would result in the same plugin being loaded many times.
+			// we don't want that (unnecessary work, waste of CPU time, etc..), so that's why there's a cache.
+			var pluginCache = new PluginCache(pluginLoader);
+			return pluginCache;
+		}
+
+		private static IPluginLoader LoadWellKnownPlugins()
+		{
+			var registry = new PluginRegistry();
+			//registry.Register(new EventsLogAnalyserPlugin());
+			registry.Register(new HelpWidgetPlugin());
+			registry.Register(new QuickInfoAnalyserPlugin(), new QuickInfoWidgetPlugin());
+			registry.Register(new LogEntryCountAnalyserPlugin(), new LogEntryCountWidgetPlugin());
+			return registry;
 		}
 
 		private static ITypeFactory CreateTypeFactory(IEnumerable<ILogAnalyserPlugin> plugins)
@@ -163,6 +196,10 @@ namespace Tailviewer
 					}
 				}
 			}
+			factory.Add(typeof(ActiveAnalysisConfiguration));
+			factory.Add(typeof(AnalyserTemplate));
+			factory.Add(typeof(PageTemplate));
+			factory.Add(typeof(WidgetTemplate));
 			return factory;
 		}
 

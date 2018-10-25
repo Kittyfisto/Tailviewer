@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using log4net;
 using Metrolib;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 
@@ -26,7 +29,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly PageTemplate _template;
-		private readonly IAnalysis _analyser;
+		private readonly IAnalysis _analysis;
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<IWidgetViewModel> _widgets;
 		private readonly Dictionary<IWidgetViewModel, IDataSourceAnalyser> _analysersPerWidget;
@@ -38,11 +41,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly IAnalysisStorage _analysisStorage;
 		private readonly AnalysisId _id;
 
-		public AnalysisPageViewModel(AnalysisId id, PageTemplate template, IAnalysis analyser, IAnalysisStorage analysisStorage)
+		public AnalysisPageViewModel(AnalysisId id,
+		                             PageTemplate template,
+		                             IAnalysis analysis,
+		                             IAnalysisStorage analysisStorage,
+		                             IPluginLoader pluginLoader)
 		{
 			_id = id;
 			_template = template ?? throw new ArgumentNullException(nameof(template));
-			_analyser = analyser ?? throw new ArgumentNullException(nameof(analyser));
+			_analysis = analysis ?? throw new ArgumentNullException(nameof(analysis));
 			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
 			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
@@ -50,11 +57,60 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_analysersPerWidget = new Dictionary<IWidgetViewModel, IDataSourceAnalyser>();
 
 			PageLayout = PageLayout.WrapHorizontal;
+
+			var widgetPlugins = LoadRelevantPlugins(pluginLoader);
+			foreach (var widgetTemplate in template.Widgets)
+			{
+				if (_analysis.TryGetAnalyser(widgetTemplate.AnalyserId, out var analyser))
+				{
+					if (widgetPlugins.TryGetValue(widgetTemplate.LogAnalyserFactoryId, out var plugin))
+					{
+						AddExistingWidget(plugin, widgetTemplate, analyser);
+					}
+					else
+					{
+						Log.WarnFormat("Unable to find plugin widget factory '{0}', widget '{1} ({2})' will NOT be displayed",
+						               widgetTemplate.LogAnalyserFactoryId,
+						               widgetTemplate.Title,
+						               widgetTemplate.Id);
+					}
+				}
+				else
+				{
+					Log.WarnFormat("Unable to find analyser '{0}', widget '{1} ({2})' will NOT be displayed",
+					               widgetTemplate.AnalyserId,
+					               widgetTemplate.Title,
+					               widgetTemplate.Id);
+				}
+			}
+		}
+
+		[Pure]
+		private static IReadOnlyDictionary<LogAnalyserFactoryId, IWidgetPlugin> LoadRelevantPlugins(IPluginLoader pluginLoader)
+		{
+			var plugins = pluginLoader.LoadAllOfType<IWidgetPlugin>();
+			var pluginsById = new Dictionary<LogAnalyserFactoryId, IWidgetPlugin>(plugins.Count);
+			foreach (var plugin in plugins)
+			{
+				if (!pluginsById.TryGetValue(plugin.AnalyserId, out var existingPlugin))
+				{
+					pluginsById.Add(plugin.AnalyserId, plugin);
+				}
+				else
+				{
+					Log.WarnFormat("Ignoring plugin {0} with id {1}, there already is another plugin registered with the same id: {2}",
+					               plugin.GetType(),
+					               plugin.AnalyserId,
+					               existingPlugin.GetType());
+				}
+			}
+
+			return pluginsById;
 		}
 
 		public PageLayout PageLayout
 		{
-			get { return _pageLayout; }
+			get => _pageLayout;
 			set
 			{
 				if (value == _pageLayout)
@@ -78,7 +134,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public bool HasWidgets
 		{
-			get { return _hasWidgets; }
+			get => _hasWidgets;
 			private set
 			{
 				if (value == _hasWidgets)
@@ -91,7 +147,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public IWidgetLayoutViewModel Layout
 		{
-			get { return _layout; }
+			get => _layout;
 			private set
 			{
 				if (value == _layout)
@@ -122,21 +178,40 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private void LayoutOnRequestAddWidget(IWidgetPlugin plugin)
 		{
 			var viewConfiguration = CreateViewConfiguration(plugin);
-
 			var configuration = plugin.DefaultAnalyserConfiguration?.Clone() as ILogAnalyserConfiguration;
+			AddNewWidget(plugin, configuration, viewConfiguration);
+		}
+
+		private void AddNewWidget(IWidgetPlugin plugin, ILogAnalyserConfiguration configuration, IWidgetConfiguration viewConfiguration)
+		{
 			var analyser = CreateAnalyser(plugin.AnalyserId, configuration);
 
 			var widgetTemplate = new WidgetTemplate
 			{
 				Id = WidgetId.CreateNew(),
 				AnalyserId = analyser.Id,
+				LogAnalyserFactoryId = plugin.AnalyserId,
 				Configuration = viewConfiguration
 			};
-			var widget = plugin.CreateViewModel(widgetTemplate, analyser);
 
-			_analysersPerWidget.Add(widget, analyser);
 			_template.Add(widgetTemplate);
+			AddExistingWidget(plugin, widgetTemplate, analyser);
+
+			// Now that we've modified the template, we should save the entire analysis
+			// to disk once more.
 			_analysisStorage.Save(_id);
+		}
+
+		/// <summary>
+		/// Adds a widget (which is already part of the template) to this page.
+		/// </summary>
+		/// <param name="plugin"></param>
+		/// <param name="widgetTemplate"></param>
+		/// <param name="analyser"></param>
+		private void AddExistingWidget(IWidgetPlugin plugin, IWidgetTemplate widgetTemplate, IDataSourceAnalyser analyser)
+		{
+			var widget = plugin.CreateViewModel(widgetTemplate, analyser);
+			_analysersPerWidget.Add(widget, analyser);
 
 			Add(widget);
 		}
@@ -160,7 +235,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			{
 				if (factoryId != LogAnalyserFactoryId.Empty)
 				{
-					return _analyser.Add(factoryId, configuration);
+					return _analysis.Add(factoryId, configuration);
 				}
 
 				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", factoryId);
@@ -197,7 +272,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			if (_analysersPerWidget.TryGetValue(widget, out analyser))
 			{
 				_analysersPerWidget.Remove(widget);
-				_analyser.Remove(analyser);
+				_analysis.Remove(analyser);
 			}
 
 			widget.OnDelete -= WidgetOnDelete;
@@ -206,7 +281,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public string Name
 		{
-			get { return _name; }
+			get => _name;
 			set
 			{
 				if (value == _name)
@@ -220,7 +295,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public bool CanBeDeleted
 		{
-			get { return _canBeDeleted; }
+			get => _canBeDeleted;
 			set
 			{
 				_canBeDeleted = value;

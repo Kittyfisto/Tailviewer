@@ -26,19 +26,16 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <summary>
 		/// </summary>
-		public PluginArchiveLoader(string path = null)
+		public PluginArchiveLoader(string path)
 		{
 			_archivesByPlugin = new Dictionary<IPluginDescription, IPluginArchive>();
 			_pluginStati = new Dictionary<PluginId, IPluginStatus>();
 
 			try
 			{
-				if (path != null)
-				{
-					var files = Directory.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension));
-					foreach (var pluginPath in files)
-						ReflectPlugin(pluginPath);
-				}
+				var files = Directory.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension));
+				foreach (var pluginPath in files)
+					ReflectPlugin(pluginPath);
 			}
 			catch (DirectoryNotFoundException e)
 			{
@@ -121,7 +118,7 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <inheritdoc />
-		public IEnumerable<T> LoadAllOfType<T>() where T : class, IPlugin
+		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
 			var ret = new List<T>();
 			foreach (var pluginDescription in Plugins)

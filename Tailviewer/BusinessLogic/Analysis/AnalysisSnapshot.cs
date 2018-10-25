@@ -67,6 +67,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			throw new InvalidOperationException("Removing analysers from a snapshot is not allowed");
 		}
 
+		public bool TryGetAnalyser(AnalyserId analyserId, out IDataSourceAnalyser analyser)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Serialize(IWriter writer)
 		{
 			throw new NotImplementedException();

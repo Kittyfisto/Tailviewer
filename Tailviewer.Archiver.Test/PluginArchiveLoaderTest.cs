@@ -50,7 +50,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestGetPluginStatusForNonPlugin()
 		{
-			using (var loader = new PluginArchiveLoader())
+			using (var loader = new PluginArchiveLoader(null))
 			{
 				var status = loader.GetStatus(null);
 				status.Should().NotBeNull();
@@ -73,7 +73,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				CreatePlugin(stream);
 
-				using (var loader = new PluginArchiveLoader())
+				using (var loader = new PluginArchiveLoader(null))
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					var status = loader.GetStatus(description);
@@ -118,7 +118,7 @@ namespace Tailviewer.Archiver.Test
 
 				stream.Position = 0;
 
-				using (var loader = new PluginArchiveLoader())
+				using (var loader = new PluginArchiveLoader(null))
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					description.Should().NotBeNull();
@@ -136,7 +136,7 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that ReflectPlugin() doesn't throw when a plugin couldn't be loaded and instead returns a descriptor with as much information as can be obtained")]
 		public void TestReflect2()
 		{
-			using (var loader = new PluginArchiveLoader())
+			using (var loader = new PluginArchiveLoader(null))
 			{
 				var description = loader.ReflectPlugin("C:\\BrokenPlugin.1.0.2.4.tvp");
 				description.Should().NotBeNull();
@@ -169,7 +169,7 @@ namespace Tailviewer.Archiver.Test
 
 				stream.Position = 0;
 
-				using (var loader = new PluginArchiveLoader())
+				using (var loader = new PluginArchiveLoader(null))
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					var plugin = loader.Load<IFileFormatPlugin>(description);
@@ -185,7 +185,7 @@ namespace Tailviewer.Archiver.Test
 			var plugin1 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 0));
 			var plugin2 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 1));
 
-			using (var loader = new PluginArchiveLoader())
+			using (var loader = new PluginArchiveLoader(null))
 			{
 				loader.ReflectPlugin(plugin1);
 				loader.ReflectPlugin(plugin2);
@@ -231,7 +231,7 @@ namespace Tailviewer.Archiver.Test
 
 				stream.Position = 0;
 
-				using (var loader = new PluginArchiveLoader())
+				using (var loader = new PluginArchiveLoader(null))
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					var plugins = loader.LoadAllOfType<IFileFormatPlugin>()?.ToList();
