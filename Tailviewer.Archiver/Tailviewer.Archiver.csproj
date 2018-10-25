@@ -49,7 +49,6 @@
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Metrolib, Version=0.3.0.115, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\packages\Metrolib.0.3.0.115\lib\net45\Metrolib.dll</HintPath>
@@ -91,15 +90,18 @@
     <Compile Include="Plugins\IPluginLoader.cs" />
     <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="ListOptions.cs" />
+    <Compile Include="Plugins\IPluginStatus.cs" />
     <Compile Include="Plugins\NativeImageDescription.cs" />
     <Compile Include="Applications\PackOptions.cs" />
     <Compile Include="Plugins\PluginArchive.cs" />
     <Compile Include="Plugins\PluginArchiveLoader.cs" />
     <Compile Include="Plugins\PluginAssemblyLoader.cs" />
     <Compile Include="Plugins\PluginDescription.cs" />
+    <Compile Include="Plugins\PluginId.cs" />
     <Compile Include="Plugins\PluginInterfaceImplementation.cs" />
     <Compile Include="Plugins\PluginPackageIndex.cs" />
     <Compile Include="Plugins\PluginPacker.cs" />
+    <Compile Include="Plugins\PluginStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

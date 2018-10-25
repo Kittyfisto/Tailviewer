@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
@@ -47,13 +48,68 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		public void TestGetPluginStatusForNonPlugin()
+		{
+			using (var loader = new PluginArchiveLoader())
+			{
+				var status = loader.GetStatus(null);
+				status.Should().NotBeNull();
+				status.IsInstalled.Should().BeFalse();
+				status.IsLoaded.Should().BeFalse();
+
+
+				var description = new Mock<IPluginDescription>();
+				status = loader.GetStatus(description.Object);
+				status.Should().NotBeNull();
+				status.IsInstalled.Should().BeFalse();
+				status.IsLoaded.Should().BeFalse();
+			}
+		}
+
+		[Test]
+		public void TestGetPluginStatusForInstalledPlugin()
+		{
+			using (var stream = new MemoryStream())
+			{
+				CreatePlugin(stream);
+
+				using (var loader = new PluginArchiveLoader())
+				{
+					var description = loader.ReflectPlugin(stream, true);
+					var status = loader.GetStatus(description);
+					status.Should().NotBeNull();
+					status.IsInstalled.Should().BeTrue("because we've just installed that plugin");
+					status.IsLoaded.Should().BeFalse("because we haven't tried to load the plugin just yet");
+					status.LoadException.Should().BeNull("because we haven't tried to load the plugin just yet");
+				}
+			}
+		}
+
+
+
+		private static void CreatePlugin(MemoryStream stream)
+		{
+			using (var packer = PluginPacker.Create(stream, true))
+			{
+				var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "My very own plugin", "Simon", "http://google.com",
+					"get of my lawn");
+				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+				builder.Save();
+
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			stream.Position = 0;
+		}
+
+		[Test]
 		public void TestReflect1()
 		{
 			using (var stream = new MemoryStream())
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					var builder = new PluginBuilder("UniquePluginId", "My very own plugin", "Simon", "http://google.com", "get of my lawn");
+					var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "My very own plugin", "Simon", "http://google.com", "get of my lawn");
 					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
@@ -66,7 +122,7 @@ namespace Tailviewer.Archiver.Test
 				{
 					var description = loader.ReflectPlugin(stream, true);
 					description.Should().NotBeNull();
-					description.Id.Should().Be("UniquePluginId");
+					description.Id.Should().Be(new PluginId("Kittyfisto.UniquePluginId"));
 					description.Name.Should().Be("My very own plugin");
 					description.Version.Should().Be(new Version(0, 0, 0), "because the plugin version should default to 0.0.0 when none has been specified");
 					description.Author.Should().Be("Simon");
@@ -87,7 +143,7 @@ namespace Tailviewer.Archiver.Test
 				description.Author.Should().BeNull("because the author cannot be known");
 				description.Description.Should().BeNull("because we couldn't extract a description from the plugin");
 				description.FilePath.Should().Be("C:\\BrokenPlugin.1.0.2.4.tvp");
-				description.Id.Should().Be("BrokenPlugin", "because the id should've been extracted from the path");
+				description.Id.Should().Be(new PluginId("BrokenPlugin"), "because the id should've been extracted from the path");
 				description.Error.Should().NotBeNull("because the plugin couldn't be loaded");
 				description.Plugins.Should().NotBeNull();
 				description.Plugins.Should().BeEmpty();
@@ -104,7 +160,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					var builder = new PluginBuilder("Plugin", "Simon", "none of your business", "get of my lawn");
+					var builder = new PluginBuilder("Kittyfisto", "Simon", "none of your business", "get of my lawn");
 					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 
@@ -126,8 +182,8 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that if the same plugin is available in two versions, then the highest possible version will be available only")]
 		public void TestLoadDifferentVersions()
 		{
-			var plugin1 = CreatePlugin("Foobar", new Version(1, 0));
-			var plugin2 = CreatePlugin("Foobar", new Version(1, 1));
+			var plugin1 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 0));
+			var plugin2 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 1));
 
 			using (var loader = new PluginArchiveLoader())
 			{
@@ -142,12 +198,12 @@ namespace Tailviewer.Archiver.Test
 			}
 		}
 
-		private string CreatePlugin(string id, Version version)
+		private string CreatePlugin(string @namespace, string name, Version version)
 		{
-			var fileName = Path.Combine(_pluginFolder, string.Format("{0}.{1}.dll", id, version));
+			var fileName = Path.Combine(_pluginFolder, string.Format("{0}.{1}.{2}.dll", @namespace, name, version));
 			using (var packer = PluginPacker.Create(fileName))
 			{
-				var builder = new PluginBuilder(id, "dawawdwdaaw") { PluginVersion = version };
+				var builder = new PluginBuilder(@namespace, name, "dawawdwdaaw") { PluginVersion = version };
 				builder.ImplementInterface<IFileFormatPlugin>("dwwwddwawa");
 				builder.Save();
 				packer.AddPluginAssembly(builder.FileName);
@@ -166,7 +222,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					var builder = new PluginBuilder("Plugin", "Simon", "none of your business", "get of my lawn");
+					var builder = new PluginBuilder("Kittyfisto", "SomePlugin", "none of your business", "get of my lawn");
 					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 					builder.Save();
 

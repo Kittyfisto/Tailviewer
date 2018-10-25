@@ -17,7 +17,7 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		///     A unique id for this plugin.
 		/// </summary>
-		string Id { get; }
+		PluginId Id { get; }
 
 		/// <summary>
 		///     The (human-readable) name of the plugin.

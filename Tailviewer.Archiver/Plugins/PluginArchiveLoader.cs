@@ -22,12 +22,14 @@ namespace Tailviewer.Archiver.Plugins
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly Dictionary<IPluginDescription, IPluginArchive> _archivesByPlugin;
+		private readonly Dictionary<PluginId, IPluginStatus> _pluginStati;
 
 		/// <summary>
 		/// </summary>
 		public PluginArchiveLoader(string path = null)
 		{
 			_archivesByPlugin = new Dictionary<IPluginDescription, IPluginArchive>();
+			_pluginStati = new Dictionary<PluginId, IPluginStatus>();
 
 			try
 			{
@@ -55,7 +57,7 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		[Pure]
-		private static IPluginDescription FindUsablePlugin(IGrouping<string, KeyValuePair<IPluginDescription, IPluginArchive>> grouping)
+		private static IPluginDescription FindUsablePlugin(IGrouping<PluginId, KeyValuePair<IPluginDescription, IPluginArchive>> grouping)
 		{
 			var highestUsable = grouping.Where(x => IsUsable(x.Value.Index)).MaxBy(x => x.Key.Version);
 			return highestUsable.Key;
@@ -88,6 +90,19 @@ namespace Tailviewer.Archiver.Plugins
 			foreach (var archive in _archivesByPlugin.Values)
 				archive.Dispose();
 			_archivesByPlugin.Clear();
+		}
+
+		public IPluginStatus GetStatus(IPluginDescription description)
+		{
+			var id = description?.Id;
+			if (id != null && _pluginStati.TryGetValue(id, out var status))
+				return status;
+
+			status = new PluginStatus
+			{
+				IsInstalled = false
+			};
+			return status;
 		}
 
 		/// <inheritdoc />
@@ -135,9 +150,7 @@ namespace Tailviewer.Archiver.Plugins
 			try
 			{
 				var archive = PluginArchive.OpenRead(pluginPath);
-				var description = CreateDescription(archive);
-				_archivesByPlugin.Add(description, archive);
-				return description;
+				return ReflectPlugin(archive);
 			}
 			catch (Exception e)
 			{
@@ -157,20 +170,20 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		private static void ExtractIdAndVersion(string pluginPath, out string id, out Version version)
+		private static void ExtractIdAndVersion(string pluginPath, out PluginId id, out Version version)
 		{
 			var fileName = Path.GetFileNameWithoutExtension(pluginPath);
 			int idx = fileName.IndexOf(".");
 			if (idx != -1)
 			{
-				id = fileName.Substring(0, idx);
+				id = new PluginId(fileName.Substring(0, idx));
 				var tmp = fileName.Substring(idx + 1);
 				if (!Version.TryParse(tmp, out version))
 					version = new Version(0, 0, 0, 0);
 			}
 			else
 			{
-				id = "Unknown";
+				id = new PluginId("Unknown");
 				version = new Version(0, 0, 0, 0);
 			}
 		}
@@ -178,8 +191,21 @@ namespace Tailviewer.Archiver.Plugins
 		public IPluginDescription ReflectPlugin(Stream stream, bool leaveOpen = false)
 		{
 			var archive = PluginArchive.OpenRead(stream, leaveOpen);
+			return ReflectPlugin(archive);
+		}
+
+		private IPluginDescription ReflectPlugin(PluginArchive archive)
+		{
 			var description = CreateDescription(archive);
 			_archivesByPlugin.Add(description, archive);
+
+			if (!_pluginStati.ContainsKey(description.Id))
+			{
+				_pluginStati.Add(description.Id, new PluginStatus
+				{
+					IsInstalled = true
+				});
+			}
 			return description;
 		}
 
@@ -202,7 +228,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			var desc = new PluginDescription
 			{
-				Id = archiveIndex.Id,
+				Id = new PluginId(archiveIndex.Id),
 				Name = archiveIndex.Name,
 				Version = archiveIndex.Version,
 				Icon = LoadIcon(archive.ReadIcon()),

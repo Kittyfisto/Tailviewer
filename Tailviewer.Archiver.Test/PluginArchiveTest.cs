@@ -18,7 +18,7 @@ namespace Tailviewer.Archiver.Test
 			{
 				using (var packer = PluginPacker.Create(stream, true))
 				{
-					var builder = new AbstractPluginTest.PluginBuilder("Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
+					var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
 					builder.ImplementInterface<IFileFormatPlugin>("Foo1.MyAwesomePlugin");
 					builder.Save();
 					packer.AddPluginAssembly(builder.FileName);

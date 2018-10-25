@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
@@ -9,9 +10,17 @@ namespace Tailviewer.Archiver.Plugins
 	public interface IPluginLoader
 	{
 		/// <summary>
-		/// 
+		/// The list of installed plugins.
 		/// </summary>
 		IEnumerable<IPluginDescription> Plugins { get; }
+
+		/// <summary>
+		/// Obtains status information for that particular plugin.
+		/// Includes potential errors, etc...
+		/// </summary>
+		/// <param name="description"></param>
+		/// <returns></returns>
+		IPluginStatus GetStatus(IPluginDescription description);
 
 		/// <summary>
 		///     Actually loads and instantiates an implementation of the given <typeparamref name="T" /> plugin-interface

@@ -15,7 +15,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestReflectPlugin1()
 		{
-			var plugin = "test.dll";
+			var plugin = "Kittyfisto.SomePlugin.dll";
 			if (File.Exists(plugin))
 				File.Delete(plugin);
 
@@ -38,7 +38,7 @@ namespace Tailviewer.Archiver.Test
 			if (File.Exists(plugin))
 				File.Delete(plugin);
 
-			var builder = new PluginBuilder("sql", "sql", "SMI", "none of your business", "go away");
+			var builder = new PluginBuilder("Simon", "sql", "sql", "SMI", "none of your business", "go away");
 			builder.ImplementInterface<IFileFormatPlugin>("sql.LogFilePlugin");
 			builder.Save();
 
@@ -96,7 +96,7 @@ namespace Tailviewer.Archiver.Test
 			if (File.Exists(assemblyFileName))
 				File.Delete(assemblyFileName);
 
-			var builder = new PluginBuilder("Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
+			var builder = new PluginBuilder("Simon", "Foo1", "Foo1", "Simon", "None of your business", "Get of my lawn");
 			builder.ImplementInterface<IFileFormatPlugin>("Foo1.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
@@ -123,7 +123,7 @@ namespace Tailviewer.Archiver.Test
 			if (File.Exists(assemblyFileName))
 				File.Delete(assemblyFileName);
 
-			var builder = new PluginBuilder("Foo2", "Foo2", "Simon", "None of your business", "Get of my lawn");
+			var builder = new PluginBuilder("Simon", "Foo2", "Foo2", "Simon", "None of your business", "Get of my lawn");
 			builder.ImplementInterface<IFileFormatPlugin>("Foo2.MyAwesomePlugin");
 			builder.Save();
 			var description = new PluginDescription
@@ -153,7 +153,7 @@ namespace Tailviewer.Archiver.Test
 				if (File.Exists(assemblyFileName))
 					File.Delete(assemblyFileName);
 
-				var builder = new PluginBuilder("Foo3", "Foo3", "Simon", "None of your business", "Get of my lawn");
+				var builder = new PluginBuilder("Simon", "Foo3", "Foo3", "Simon", "None of your business", "Get of my lawn");
 				builder.ImplementInterface<IFileFormatPlugin>("Foo3.MyAwesomePlugin");
 				builder.Save();
 

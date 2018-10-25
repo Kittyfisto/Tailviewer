@@ -312,7 +312,7 @@ namespace Tailviewer.Archiver.Plugins
 		private void UpdateIndex(IPluginDescription description)
 		{
 			_index.Description = description.Description;
-			_index.Id = description.Id;
+			_index.Id = description.Id.Value;
 			_index.Name = description.Name;
 			_index.Author = description.Author;
 			_index.Website = description.Website != null ? description.Website.ToString() : null;

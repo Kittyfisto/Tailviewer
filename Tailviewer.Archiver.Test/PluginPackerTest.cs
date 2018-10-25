@@ -31,7 +31,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
 				builder.AssemblyVersion = "4.0.3.1";
 				builder.AssemblyFileVersion = "1.2.3.42";
 				builder.AssemblyInformationalVersion = "4.0.0.0-beta";
@@ -122,7 +122,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				var builder = new AbstractPluginTest.PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
 				builder.PluginVersion = new Version(1, 4, 12034);
 				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 				builder.Save();
@@ -134,8 +134,8 @@ namespace Tailviewer.Archiver.Test
 			{
 				var index = reader.Index;
 				index.Version.Should().NotBeNull();
-				index.Id.Should().Be("abcdefg");
-				index.Name.Should().Be("Plugin");
+				index.Id.Should().Be("Kittyfisto.MyPlugin");
+				index.Name.Should().Be("My First Plugin");
 				index.Version.Should().Be(new Version(1, 4, 12034));
 			}
 		}
@@ -145,7 +145,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = PluginPacker.Create(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("abcdefg", "Plugin");
+				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
 				builder.Save();
 				packer.AddPluginAssembly(builder.FileName);
 

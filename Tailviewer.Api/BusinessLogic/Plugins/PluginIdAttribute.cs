@@ -9,6 +9,13 @@ namespace Tailviewer.BusinessLogic.Plugins
 	///     share the same name).
 	///     The id will not be visible to the user.
 	/// </summary>
+	/// <example>
+	///     Suppose you're working for a company named "Strawberry" in a team named "Rocketeers" and
+	///     you're developing a plugin to read your custom log format.
+	///
+	///     A good id would be:
+	///         [PluginId("Strawberry.Rocketeers", "Log")]
+	/// </example>
 	[AttributeUsage(AttributeTargets.Assembly)]
 	public sealed class PluginIdAttribute
 		: Attribute
@@ -16,15 +23,23 @@ namespace Tailviewer.BusinessLogic.Plugins
 		/// <summary>
 		///     Initializes this attribute with the given id.
 		/// </summary>
-		/// <param name="id"></param>
-		public PluginIdAttribute(string id)
+		/// <param name="namespace"></param>
+		/// <param name="name"></param>
+		public PluginIdAttribute(string @namespace, string name)
 		{
-			Id = id;
+			Namespace = @namespace;
+			Name = name;
 		}
 
 		/// <summary>
-		///     The author that will be displayed to users.
+		/// The namespace-part of the plugin id. This could be your online handle,
+		/// the name of your company, etc...
 		/// </summary>
-		public string Id { get; set; }
+		public string Namespace { get; set; }
+
+		/// <summary>
+		/// The name-part of the plugin id.
+		/// </summary>
+		public string Name { get; set; }
 	}
 }

@@ -114,8 +114,11 @@ namespace Tailviewer.Archiver.Plugins
 			if (idAttribute == null)
 				throw new PackException(string.Format("Plugin '{0}' is missing the reqired PluginId attribute, please add it", pluginPath));
 
-			if (string.IsNullOrWhiteSpace(idAttribute.Id))
-				throw new PackException(string.Format("The id of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));
+			if (string.IsNullOrWhiteSpace(idAttribute.Namespace))
+				throw new PackException(string.Format("The PluginId Namespace of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));
+
+			if (string.IsNullOrWhiteSpace(idAttribute.Name))
+				throw new PackException(string.Format("The PluginId Name of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));
 
 			if (authorAttribute == null)
 				Log.WarnFormat("Plugin '{0}' is missing the PluginAuthor attribute, please consider adding it",
@@ -150,7 +153,7 @@ namespace Tailviewer.Archiver.Plugins
 
 			return new PluginDescription
 			{
-				Id = idAttribute.Id,
+				Id = new PluginId(string.Format("{0}.{1}", idAttribute.Namespace, idAttribute.Name)),
 				Name = assembly.GetName().Name,
 				Author = authorAttribute?.Author,
 				Website = websiteAttribute?.Website,

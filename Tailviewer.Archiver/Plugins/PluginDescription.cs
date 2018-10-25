@@ -31,7 +31,7 @@ namespace Tailviewer.Archiver.Plugins
 		public string FilePath { get; set; }
 
 		/// <inheritdoc />
-		public string Id { get; set; }
+		public PluginId Id { get; set; }
 
 		/// <inheritdoc />
 		public string Name { get; set; }

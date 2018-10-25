@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using FluentAssertions;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
@@ -18,7 +19,8 @@ namespace Tailviewer.Archiver.Test
 			private readonly string _fileName;
 
 			public PluginBuilder(
-				string pluginId,
+				string pluginIdNamespace,
+				string pluginIdName,
 				string pluginName,
 				string author = null,
 				string website = null,
@@ -28,8 +30,8 @@ namespace Tailviewer.Archiver.Test
 				_fileName = string.Format("{0}.dll", pluginName);
 				var assemblyName = new AssemblyName(pluginName);
 				var attributes = new List<CustomAttributeBuilder>();
-				if (pluginId != null)
-					attributes.Add(CreateAttribute<PluginIdAttribute>(pluginId));
+				if (pluginIdNamespace != null && pluginIdName != null)
+					attributes.Add(CreateAttribute<PluginIdAttribute>(pluginIdNamespace, pluginIdName));
 				if (author != null)
 					attributes.Add(CreateAttribute<PluginAuthorAttribute>(author));
 				if (website != null)
@@ -197,7 +199,12 @@ namespace Tailviewer.Archiver.Test
 			string description = null)
 		{
 			var pluginName = Path.GetFileNameWithoutExtension(assemblyFileName);
-			var builder = new PluginBuilder(pluginName, pluginName, author, website, description);
+			var idParts = pluginName.Split('.');
+			idParts.Should().HaveCount(2);
+			var @namespace = idParts[0];
+			var name = idParts[1];
+
+			var builder = new PluginBuilder(@namespace, name, pluginName, author, website, description);
 			builder.Save();
 		}
 	}

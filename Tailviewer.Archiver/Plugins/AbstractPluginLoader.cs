@@ -33,6 +33,11 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
+		public IPluginStatus GetStatus(IPluginDescription description)
+		{
+			throw new NotImplementedException();
+		}
+
 		/// <inheritdoc />
 		public abstract T Load<T>(IPluginDescription description) where T : class, IPlugin;
 

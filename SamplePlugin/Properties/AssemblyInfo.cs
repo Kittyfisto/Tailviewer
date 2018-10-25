@@ -37,7 +37,7 @@ using Tailviewer.BusinessLogic.Plugins;
 
 // You want to pick some really unique - otherwise you risk getting your plugin not
 // loaded because Tailviewer will only load one plugin per id (the one with the highest version).
-[assembly: PluginId("Kittyfisto.SamplePlugin")]
+[assembly: PluginId("Kittyfisto", "SamplePlugin")]
 [assembly: PluginDescription("A skeleton plugin implementation")]
 [assembly: PluginAuthor("Simon")]
 [assembly: PluginWebsite("https://github.com/Kittyfisto/Tailviewer")]
