@@ -8,6 +8,7 @@ Plugins...
 
 - Are a zip archive containing a description of the plugin (author, website, version, description and all that jazz)
 - Consist of at least one .NET assembly which is loaded by Tailviewer upon startup
+- Implement at least one of the available `IPlugin` interfaces: `IFileFormatPlugin`, `ILogAnalyserPlugin` or `IWidgetPlugin`
 - Can add support for custom file formats or even more exotic datasources
 - Can add new visualizations to Tailviewer's analysis feature
 - Can add new analyses to Tailviewer's analysis feature
@@ -45,4 +46,62 @@ public class FooLogFile : ILogFile
 }
 ```
 
-A real world example of such a plugin can be found [here](https://github.com/Kittyfisto/Tailviewer.Plugins.SQLite), which shows how to allow Tailviewer to display a table from a SQLite file.
+Implementing `ILogFile` can be quite daunting as you will have to take care of:
+- Notifying Tailviewer (through an `ILogFileListener`) when changes to the data source are performed (for example when an event is appended or the data source is cleared alltogether)
+- Provide read-only access to various subsets of the data source (for example events #100-199)
+
+A real world example of such a plugin can be found [here](https://github.com/Kittyfisto/Tailviewer.Plugins.SQLite), which shows how to allow Tailviewer to display a table from an SQLite file.
+
+## Adding new analyses for a Tailviewer analysis
+
+Adding a new analysis can be done by implementing the `ILogAnalyserPlugin` interface:
+
+```csharp
+public class MyLogAnalyserPlugin : ILogAnalyserPlugin
+{
+   public LogAnalyserFactoryId Id => new LogAnalyserFactoryId("MyLogAnalyserPlugin");
+   public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => new Dictionary<string, Type>{ { "MyLogAnalyserConfiguration", typeof(MyLogAnalyserConfiguration) } };
+   public ILogAnalyser Create(ITaskScheduler scheduler,
+			ILogFile source,
+			ILogAnalyserConfiguration configuration)
+   {
+      return new MyLogAnalyser(scheduler, source, (MyLogAnalyserConfiguration)configuration);
+   }
+}
+```
+
+implementing the `ILogAnalyserConfiguration` interface:
+
+```csharp
+public class MyLogAnalyserConfiguration : ILogAnalyserConfiguration
+{
+	public object Clone()
+	{
+		return new MyLogAnalyserConfiguration();
+	}
+
+	public bool IsEquivalent(ILogAnalyserConfiguration other)
+	{
+		return false;
+	}
+
+	public void Serialize(IWriter writer)
+	{}
+
+	public void Deserialize(IReader reader)
+	{}
+}
+```
+
+and finally implementing the `ILogAnalyser` interface:
+
+```csharp
+class MyLogAnalyser : ILogAnalyser
+{
+...
+}
+```
+
+## Adding new visualizations for a Tailviewer analysis
+
+TODO
