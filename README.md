@@ -40,8 +40,6 @@ Tailviewer can be extended by installing plugins for file formats which aren't n
 
 You can find a more detailed of how to write plugins [here](docs/DevelopingPlugins.md).
 
-A real world example of such a plugin can be found [here](https://github.com/Kittyfisto/Tailviewer.Plugins.SQLite), which shows how to allow Tailviewer to display a table from a SQLite file.
-
 ## Contributing
 
 See [here](CONTRIBUTING.md)
