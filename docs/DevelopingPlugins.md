@@ -32,7 +32,4 @@ See [developing analysis plugins](DevelopingAnalysisPlugins.md).
 
 ## Adding new visualizations for a Tailviewer analysis
 
-Adding a new widget can be done by implementing three core interfaces:
-- `IWidgetPlugin`
-- `IWidgetConfiguration` 
-- `IWidgetViewModel`
+See [developing widget plugins](DevelopingWidgetPlugins.md).
