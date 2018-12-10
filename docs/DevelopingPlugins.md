@@ -54,7 +54,12 @@ A real world example of such a plugin can be found [here](https://github.com/Kit
 
 ## Adding new analyses for a Tailviewer analysis
 
-Adding a new analysis can be done by implementing the `ILogAnalyserPlugin` interface:
+Adding a new analysis can be done by implementing three core interfaces:
+- `ILogAnalyserPlugin`
+- `ILogAnalyserConfiguration` 
+- `ILogAnalyser`
+
+The first serves as a factory to create new analysers for a particular data source and configuration, the second serves as a way for the user to forward a configuration to the analyser (can be skipped if the analysis doesn't have a configuration) and the third does the analysis itself.
 
 ```csharp
 public class MyLogAnalyserPlugin : ILogAnalyserPlugin
@@ -69,8 +74,6 @@ public class MyLogAnalyserPlugin : ILogAnalyserPlugin
    }
 }
 ```
-
-implementing the `ILogAnalyserConfiguration` interface:
 
 ```csharp
 public class MyLogAnalyserConfiguration : ILogAnalyserConfiguration
@@ -92,8 +95,6 @@ public class MyLogAnalyserConfiguration : ILogAnalyserConfiguration
 	{}
 }
 ```
-
-and finally implementing the `ILogAnalyser` interface:
 
 ```csharp
 class MyLogAnalyser : ILogAnalyser
