@@ -6,13 +6,13 @@ You want to develop a file format plugin when you want tailviewer to
 - Display a (most likely proprietary) file which isn't in text form
 - Modify how a particular text file is displayed
 
-## Where is it used?
+## Where?
 
 If you open a particular file with tailviewer (either by opening it directly or by dragging it over tailviewer), then tailviewer will try to 
 find a plugin which supports that file format (determined by its file extension). If no plugin is available,
 tailviewer will interpret the file as a text file.
 
-## Getting started
+## How?
 
 If you want to support a custom file format which isn't supported by Tailviewer natively, then you need to implement the IFileFormatPlugin interface.
 The following is an example implementation to support files with a *.foo extension:
