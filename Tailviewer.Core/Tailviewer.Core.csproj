@@ -89,6 +89,7 @@
     <Compile Include="Filters\ExpressionEngine\ContainsStringExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
+    <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="Settings\SpecialDateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />
     <Compile Include="Filters\ExpressionEngine\ExpressionParser.cs" />

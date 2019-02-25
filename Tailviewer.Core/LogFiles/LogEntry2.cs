@@ -112,7 +112,9 @@ namespace Tailviewer.Core.LogFiles
 		public override void SetValue(ILogFileColumn column, object value)
 		{
 			if (!LogFileColumn.IsAssignableFrom(column, value))
-				throw new ArgumentException();
+				throw new ArgumentException(string.Format("The value '{0}' of type '{1}' cannot be assigned to column '{2}' of type '{3}'",
+				                                          value, value?.GetType(),
+				                                          column, column.DataType));
 
 			if (!_columns.Contains(column))
 			{
