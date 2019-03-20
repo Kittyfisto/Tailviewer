@@ -31,6 +31,25 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
+		public void TestConstructionEmptyTemplate()
+		{
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			activeAnalysis.Analysers.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestConstructionTwoAnalysers()
+		{
+			_template.Add(new AnalyserTemplate());
+			_template.Add(new AnalyserTemplate());
+
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			activeAnalysis.Analysers.Should().HaveCount(2);
+
+			_template.Analysers.Should().HaveCount(2, "because the template may not have been modified by the ctor");
+		}
+
+		[Test]
 		public void TestAdd1()
 		{
 			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);

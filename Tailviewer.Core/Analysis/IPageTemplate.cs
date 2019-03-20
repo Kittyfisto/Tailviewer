@@ -10,8 +10,13 @@ namespace Tailviewer.Core.Analysis
 	/// </summary>
 	public interface IPageTemplate
 		: ISerializableType
-		, ICloneable
+			, ICloneable
 	{
+		/// <summary>
+		///     The human readable title of this page.
+		/// </summary>
+		string Title { get; }
+
 		/// <summary>
 		///     The widgets that are placed on this page.
 		/// </summary>

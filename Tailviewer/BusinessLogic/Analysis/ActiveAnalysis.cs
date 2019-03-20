@@ -46,6 +46,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_logAnalyserEngine = logAnalyserEngine;
 			_analysers = new Dictionary<DataSourceAnalyser, AnalyserTemplate>();
 			_syncRoot = new object();
+
+			foreach (var analysisTemplate in template.Analysers)
+			{
+				// TODO: Solve this conundrum
+				Add((AnalyserTemplate) analysisTemplate);
+			}
 		}
 
 		public AnalysisTemplate Template => _template;
@@ -118,14 +124,21 @@ namespace Tailviewer.BusinessLogic.Analysis
 				Configuration = configuration
 			};
 
+			var analyser = Add(template);
+
+			_template.Add(template);
+
+			return analyser;
+		}
+
+		private IDataSourceAnalyser Add(AnalyserTemplate template)
+		{
 			var analyser = new DataSourceAnalyser(template, _logFile, _logAnalyserEngine);
 			try
 			{
-				analyser.Configuration = configuration;
 				lock (_syncRoot)
 				{
 					_analysers.Add(analyser, template);
-					_template.Add(template);
 				}
 
 				return analyser;
@@ -148,6 +161,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				AnalyserTemplate template;
 				if (tmp != null && _analysers.TryGetValue(tmp, out template))
 				{
+					// TODO: Do we need a lock here?
 					_template.Remove(template);
 					_analysers.Remove(tmp);
 

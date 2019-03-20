@@ -31,6 +31,13 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <inheritdoc />
+		public string Title
+		{
+			get { return _title; }
+			set { _title = value; }
+		}
+
+		/// <inheritdoc />
 		public IEnumerable<IWidgetTemplate> Widgets => _widgets;
 
 		/// <inheritdoc />

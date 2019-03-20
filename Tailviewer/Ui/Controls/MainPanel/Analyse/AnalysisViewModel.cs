@@ -46,14 +46,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_viewTemplate = viewTemplate ?? throw new ArgumentNullException(nameof(viewTemplate));
 			_pluginLoader = pluginLoader ?? throw new ArgumentNullException(nameof(pluginLoader));
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
-			_addPageCommand = new DelegateCommand(AddPage);
+			_addPageCommand = new DelegateCommand(AddNewPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
 			_captureSnapshotCommand = new DelegateCommand2(CaptureSnapshot)
 			{
 				CanBeExecuted = true
 			};
 
-			AddPage();
+			if (viewTemplate.Pages.Any())
+			{
+				foreach (var pageTemplate in viewTemplate.Pages)
+				{
+					// TODO: Solve this conundrum!
+					AddPage((PageTemplate) pageTemplate);
+				}
+			}
+			else
+			{
+				AddNewPage();
+			}
+
 			_selectedPage = _pages.FirstOrDefault();
 		}
 
@@ -128,7 +140,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_viewTemplate.Name = value;
 				EmitPropertyChanged();
 
-				_analysisStorage.Save(Id);
+				_analysisStorage.SaveAsync(Id);
 			}
 		}
 
@@ -168,14 +180,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			Progress = _analyser.Progress.RelativeValue;
 		}
 
-		private void AddPage()
+		private void AddNewPage()
 		{
-			var template = new PageTemplate();
+			var template = new PageTemplate
+			{
+				Title = "New Page"
+			};
+			AddPage(template);
+			_viewTemplate.Add(template);
+		}
+
+		private void AddPage(PageTemplate template)
+		{
 			var page = new AnalysisPageViewModel(Id, template, _analyser, _analysisStorage, _pluginLoader);
 			page.OnDelete += PageOnOnDelete;
 
 			_pages.Add(page);
-			_viewTemplate.Add(template);
 
 			UpdateCanBeDeleted();
 		}

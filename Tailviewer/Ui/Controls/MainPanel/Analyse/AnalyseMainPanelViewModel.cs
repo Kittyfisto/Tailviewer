@@ -189,7 +189,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		public override void Update()
 		{
 			_selectedAnalysis?.Update();
-			SelectedSidePanel?.Update();
+
+			_analysesSidePanel.Update(); //< TODO: Remove this hack! It ensures that we create a view model for the "current" analysis
+			if (SelectedSidePanel != _analysesSidePanel)
+				SelectedSidePanel?.Update();
 		}
 	}
 }

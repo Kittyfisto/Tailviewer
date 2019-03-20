@@ -96,6 +96,7 @@
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
+    <Compile Include="BusinessLogic\DataSourceAnalyserTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
@@ -159,6 +160,8 @@
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
+    <Compile Include="BusinessLogic\TestLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\TestLogAnalyserConfiguration.cs" />
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="DataSourceIdTest.cs" />
     <Compile Include="DefectAttribute.cs" />

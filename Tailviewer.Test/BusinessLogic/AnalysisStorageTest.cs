@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -79,6 +80,37 @@ namespace Tailviewer.Test.BusinessLogic
 			var id = analysis.Id;
 			var filename = Path.Combine(Constants.AnalysisDirectory, string.Format("{0}.{1}", id, Constants.AnalysisExtension));
 			_filesystem.FileExists(filename).Result.Should().BeTrue("because the storage should've created a new file on disk");
+		}
+
+		[Test]
+		[Description("Verifies that creating a new analysis immediately writes it to disk")]
+		public void TestCreateAnalysis3()
+		{
+			var storage = new AnalysisStorage(_taskScheduler,
+			                                  _filesystem,
+			                                  _logAnalyserEngine.Object,
+			                                  _typeFactory);
+			var analysisTemplate = new AnalysisTemplate();
+			var analysisViewTemplate = new AnalysisViewTemplate();
+			var analysis = storage.CreateAnalysis(analysisTemplate, analysisViewTemplate);
+
+			analysisViewTemplate.Add(new PageTemplate{Title = "A great page"});
+
+			var task = storage.SaveAsync(analysis.Id);
+			task.Should().NotBeNull();
+			task.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue("because the modified template should've been saved");
+
+			var anotherStorage = new AnalysisStorage(_taskScheduler,
+			                                  _filesystem,
+			                                  _logAnalyserEngine.Object,
+			                                  _typeFactory);
+			anotherStorage.AnalysisTemplates.Should().HaveCount(1, "because we've created and saved one template");
+			var template = anotherStorage.AnalysisTemplates.First();
+			template.Should().NotBeNull();
+			template.ViewTemplate.Pages.Should().HaveCount(1, "because we've added one page to that template");
+			var pageTemplate = template.ViewTemplate.Pages.First();
+			pageTemplate.Should().NotBeNull();
+			pageTemplate.Title.Should().Be("A great page");
 		}
 
 		[Test]

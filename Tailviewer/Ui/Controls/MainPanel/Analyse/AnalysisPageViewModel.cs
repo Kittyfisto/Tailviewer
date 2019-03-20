@@ -35,7 +35,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly Dictionary<IWidgetViewModel, IDataSourceAnalyser> _analysersPerWidget;
 		private bool _canBeDeleted;
 		private IWidgetLayoutViewModel _layout;
-		private string _name;
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
 		private readonly IAnalysisStorage _analysisStorage;
@@ -51,7 +50,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_template = template ?? throw new ArgumentNullException(nameof(template));
 			_analysis = analysis ?? throw new ArgumentNullException(nameof(analysis));
 			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
-			_name = "New Page";
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
 			_widgets = new List<IWidgetViewModel>();
 			_analysersPerWidget = new Dictionary<IWidgetViewModel, IDataSourceAnalyser>();
@@ -199,7 +197,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 			// Now that we've modified the template, we should save the entire analysis
 			// to disk once more.
-			_analysisStorage.Save(_id);
+			_analysisStorage.SaveAsync(_id);
 		}
 
 		/// <summary>
@@ -266,7 +264,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
 			_template.Remove(widget.Template);
-			_analysisStorage.Save(_id);
+			_analysisStorage.SaveAsync(_id);
 
 			IDataSourceAnalyser analyser;
 			if (_analysersPerWidget.TryGetValue(widget, out analyser))
@@ -281,12 +279,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public string Name
 		{
-			get => _name;
+			get => _template.Title;
 			set
 			{
-				if (value == _name)
+				if (value == _template.Title)
 					return;
-				_name = value;
+
+				_template.Title = value;
 				EmitPropertyChanged();
 			}
 		}

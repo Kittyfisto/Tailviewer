@@ -92,5 +92,18 @@ namespace Tailviewer.Test.Settings.Analysis
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Layout.Should().BeNull();
 		}
+
+		[Test]
+		public void TestSerialize4()
+		{
+			var template = new PageTemplate
+			{
+				Title = "Hello, World!"
+			};
+
+			var actualTemplate = template.Roundtrip(typeof(HorizontalWidgetLayoutTemplate));
+			actualTemplate.Should().NotBeNull();
+			actualTemplate.Title.Should().Be("Hello, World!");
+		}
 	}
 }

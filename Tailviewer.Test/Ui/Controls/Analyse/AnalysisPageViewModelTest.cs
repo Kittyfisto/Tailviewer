@@ -25,7 +25,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void Setup()
 		{
 			_id = AnalysisId.CreateNew();
-			_template = new PageTemplate();
+			_template = new PageTemplate{Title = "A page"};
 			_analyser = new Mock<IAnalysis>();
 
 			_analysisStorage = new Mock<IAnalysisStorage>();
@@ -34,13 +34,15 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		}
 
 		[Test]
-		public void TestConstruction()
+		public void TestConstructionEmptyTemplate()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Name.Should().NotBeEmpty();
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
 			model.Layout.Should().BeOfType<HorizontalWidgetLayoutViewModel>();
+			((HorizontalWidgetLayoutViewModel) model.Layout).Widgets.Should().BeEmpty();
+			model.HasWidgets.Should().BeFalse();
 		}
 
 		[Test]
@@ -69,7 +71,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			layout.Widgets.Should().HaveCount(1);
 
 			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
-			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never,
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never,
 			                        "because we've just create a view model from an existing template and NOT made any changes to said template. Therefore nothing should've been saved to disk");
 		}
 
@@ -145,10 +147,10 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			       .Returns(widget);
 
 
-			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never);
 
 			layout.RaiseRequestAdd(factory.Object);
-			_analysisStorage.Verify(x => x.Save(_id), Times.Once,
+			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Once,
 			                        "because the page should've saved the analysis now that a widget's been added");
 		}
 
@@ -183,14 +185,14 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget.Object);
 
-			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never);
 
 			layout.RaiseRequestAdd(factory.Object);
-			_analysisStorage.Verify(x => x.Save(_id), Times.Once);
+			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Once);
 
 			layout.Widgets.Should().Contain(widget.Object);
 			widget.Raise(x => x.OnDelete += null, widget.Object);
-			_analysisStorage.Verify(x => x.Save(_id), Times.Exactly(2),
+			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Exactly(2),
 			                        "because the page should've saved the analysis now that a widget's been removed");
 		}
 

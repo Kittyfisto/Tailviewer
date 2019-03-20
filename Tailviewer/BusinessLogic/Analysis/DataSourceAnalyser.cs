@@ -35,6 +35,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_template = template;
 			_logFile = logFile;
 			_logAnalyserEngine = logAnalyserEngine;
+			_configuration = template.Configuration;
+			RestartAnalysis();
 		}
 
 		public AnalyserId Id => _template.Id;

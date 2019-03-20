@@ -148,13 +148,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		/// <inheritdoc />
-		public Task Save(AnalysisId id)
+		public Task SaveAsync(AnalysisId id)
 		{
 			ActiveAnalysisConfiguration config;
 			if (!TryGetTemplateFor(id, out config))
+			{
+				Log.WarnFormat("Unable to find configuration with id '{0}', it will not be saved!", id);
 				return Task.FromResult(42);
+			}
 
-			return Save(config);
+			return SaveAsync(config);
 		}
 
 		public bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis)
@@ -183,7 +186,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public IAnalysis CreateAnalysis(AnalysisTemplate template, AnalysisViewTemplate viewTemplate)
 		{
-			ActiveAnalysisConfiguration configuration;
+			ActiveAnalysisConfiguration analysisConfiguration;
 
 			var id = AnalysisId.CreateNew();
 			var analysis = new ActiveAnalysis(id,
@@ -194,11 +197,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			try
 			{
-				configuration = new ActiveAnalysisConfiguration(id, template, viewTemplate);
+				analysisConfiguration = new ActiveAnalysisConfiguration(id, template, viewTemplate);
 				lock (_syncRoot)
 				{
-					_templates.Add(configuration);
+					_templates.Add(analysisConfiguration);
 					_analyses.Add(analysis.Id, analysis);
+					_lastSavedAnalyses.Add(analysis.Id, analysisConfiguration);
 				}
 			}
 			catch (Exception)
@@ -207,21 +211,21 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw;
 			}
 
-			Save(configuration);
+			SaveAsync(analysisConfiguration).Wait();
 
 			return analysis;
 		}
 
-		public Task Save(ActiveAnalysisConfiguration analysis)
+		public Task SaveAsync(ActiveAnalysisConfiguration analysisConfiguration)
 		{
-			var filename = GetFilename(analysis.Id);
+			var filename = GetFilename(analysisConfiguration.Id);
 			var directory = Path.GetDirectoryName(filename);
 
 			// We don't know if the directory exists, so we'll just create
 			// it beforehand...
 			_filesystem.CreateDirectory(directory);
 			// TODO: Clone the analysis
-			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysis), TaskContinuationOptions.AttachedToParent);
+			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysisConfiguration), TaskContinuationOptions.AttachedToParent);
 		}
 
 		public void Remove(AnalysisId id)
@@ -253,7 +257,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return filename;
 		}
 
-		private void WriteAnalysis(Task<Stream> task, ActiveAnalysisConfiguration analysis)
+		private void WriteAnalysis(Task<Stream> task, ActiveAnalysisConfiguration analysisConfiguration)
 		{
 			using (var stream = task.Result)
 			{
@@ -261,7 +265,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				stream.SetLength(0);
 				using (var writer = new Writer(stream))
 				{
-					writer.WriteAttribute("Analysis", analysis);
+					writer.WriteAttribute("Analysis", analysisConfiguration);
 				}
 			}
 		}

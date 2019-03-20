@@ -25,7 +25,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		Task Save(AnalysisId id);
+		Task SaveAsync(AnalysisId id);
 
 		/// <summary>
 		/// </summary>

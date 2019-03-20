@@ -33,13 +33,29 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		}
 
 		[Test]
-		public void TestCtor()
+		public void TestCtorEmptyTemplate()
 		{
 			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Pages.Should().NotBeNull();
 			model.Pages.Should().HaveCount(1);
 			model.Pages.First().Should().NotBeNull();
 			model.Pages.First().DeletePageCommand.CanExecute(null).Should().BeFalse("because the last page may never be deleted");
+			model.Pages.First().Name.Should().Be("New Page");
+		}
+
+		[Test]
+		public void TestCtorTemplateTwoPages()
+		{
+			_viewTemplate.Add(new PageTemplate{Title = "Page A"});
+			_viewTemplate.Add(new PageTemplate{Title = "Page B"});
+
+			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			model.Pages.Should().NotBeNull();
+			model.Pages.Should().HaveCount(2);
+			model.Pages.First().Should().NotBeNull();
+			model.Pages.First().Name.Should().Be("Page A");
+			model.Pages.Last().Should().NotBeNull();
+			model.Pages.Last().Name.Should().Be("Page B");
 		}
 
 		[Test]
@@ -49,13 +65,13 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			var model = new AnalysisViewModel(_dispatcher, _viewTemplate, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
 			model.Name.Should().Be("Some Name");
 
-			_analysisStorage.Verify(x => x.Save(It.IsAny<AnalysisId>()), Times.Never);
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never);
 
 			model.Name = "Foobar";
 			model.Name.Should().Be("Foobar");
 			_viewTemplate.Name.Should().Be("Foobar");
 
-			_analysisStorage.Verify(x => x.Save(_id), Times.Once);
+			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Once);
 		}
 
 		[Test]
