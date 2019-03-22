@@ -95,7 +95,35 @@ namespace Tailviewer.Ui.Controls
 			Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Log.InfoFormat("Ensuring main window is visible because another process asked us to...");
+
+				if (!IsVisible)
+				{
+					Log.DebugFormat("Main window isn't visible anymore, showing it...");
+					Show();
+				}
+
+				if (WindowState == WindowState.Minimized)
+				{
+					Log.DebugFormat("Main window has been minimized to taskbar, restoring it...");
+					WindowState = WindowState.Normal;
+				}
+
+				Log.DebugFormat("Activating window...");
 				Activate();
+
+				// The following is a hack because sometimes Activate() doesn't bring the window
+				// to the front (i.e. Tailviewer stays behind other windows, even though Activate()
+				// is supposed to fix that). Therefore we shortly toggle the Topmost property to
+				// force the window manager to bring Tailviewer on top.
+				if (!Topmost) //< A user can configure tailviewer to naturally be on top => we don't want to mess with her settings!
+				{
+					Topmost = true;
+					Topmost = false;
+				}
+
+				Focus();
+
+				Log.DebugFormat("Bringing window to view (if necessary)");
 				BringIntoView();
 			}));
 		}
