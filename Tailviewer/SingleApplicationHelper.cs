@@ -19,11 +19,36 @@ namespace Tailviewer
 	{
 		/// <summary>
 		///     Tries to acquire an exclude mutex.
-		/// </summary>
+		/// </summary>	
 		/// <returns>The acquired mutex or null if another process holds the mutex</returns>
 		public static IMutex AcquireMutex()
 		{
-			return ExclusiveMutex.TryAcquire();
+			return AcquireMutex(TimeSpan.Zero);
+		}
+
+		/// <summary>
+		///     Tries to acquire an exclude mutex until:
+		/// - an exclusive mutex was acquired
+		/// - the timeout elapsed
+		/// </summary>
+		/// <returns>The acquired mutex or null if another process holds the mutex</returns>
+		public static IMutex AcquireMutex(TimeSpan timeout)
+		{
+			DateTime start = DateTime.Now;
+			TimeSpan elapsed;
+
+			do
+			{
+				var mutex = ExclusiveMutex.TryAcquire();
+				if (mutex != null)
+					return mutex;
+
+				Thread.Sleep(TimeSpan.FromMilliseconds(1));
+
+				elapsed = DateTime.Now - start;
+			} while (elapsed < timeout);
+
+			return null;
 		}
 
 		/// <summary>

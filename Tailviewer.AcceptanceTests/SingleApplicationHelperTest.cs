@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using NUnit.Framework;
 
 namespace Tailviewer.AcceptanceTests
@@ -23,7 +24,7 @@ namespace Tailviewer.AcceptanceTests
 		[Test]
 		public void TestBringToFront()
 		{
-			using (var mutex = SingleApplicationHelper.AcquireMutex())
+			using (var mutex = SingleApplicationHelper.AcquireMutex(TimeSpan.FromSeconds(1)))
 			{
 				var listener = new Mock<SingleApplicationHelper.IMessageListener>();
 				mutex.SetListener(listener.Object);
