@@ -76,6 +76,34 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		}
 
 		[Test]
+		public void TestConstructionFromTemplateWithoutAnalyzer()
+		{
+			_template.Layout = new HorizontalWidgetLayoutTemplate();
+			var plugin = CreateWidgetPlugin();
+			_pluginRegistry.Register(plugin);
+
+			_template.Add(new WidgetTemplate
+			{
+				AnalyserId = AnalyserId.Empty,
+				LogAnalyserFactoryId = plugin.AnalyserId
+			});
+
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			model.Name.Should().NotBeEmpty();
+			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
+
+			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
+			model.Layout.Should().NotBeNull();
+			model.Layout.Should().BeOfType<HorizontalWidgetLayoutViewModel>();
+			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			layout.Widgets.Should().HaveCount(1);
+
+			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never,
+			                        "because we've just create a view model from an existing template and NOT made any changes to said template. Therefore nothing should've been saved to disk");
+		}
+
+		[Test]
 		[Description("Verifies that if a layout requests that a widget be added, the page does so")]
 		public void TestRequestAddWidget1()
 		{
@@ -87,10 +115,10 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget);
 
-			layout.Widgets.Should().NotContain(widget);
+			layout.Widgets.Should().NotContain(x => x.InnerViewModel == widget);
 
 			layout.RaiseRequestAdd(factory.Object);
-			layout.Widgets.Should().Contain(widget);
+			layout.Widgets.Should().Contain(x => x.InnerViewModel == widget);
 		}
 
 		[Test]
@@ -131,7 +159,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.PageLayout = PageLayout.WrapHorizontal;
 
 			model.Layout.Should().NotBeSameAs(layout);
-			((HorizontalWidgetLayoutViewModel)model.Layout).Widgets.Should().Contain(widget);
+			((HorizontalWidgetLayoutViewModel)model.Layout).Widgets.Should().Contain(x => x.InnerViewModel == widget);
 		}
 
 		[Test]
@@ -164,11 +192,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			var factory = new Mock<IWidgetPlugin>();
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget.Object);
-			
-			layout.RaiseRequestAdd(factory.Object);
-			layout.Widgets.Should().Contain(widget.Object);
 
-			widget.Raise(x => x.OnDelete += null, widget.Object);
+			layout.RaiseRequestAdd(factory.Object);
+			var viewModel = layout.Widgets.FirstOrDefault(x => x.InnerViewModel == widget.Object);
+			viewModel.Should().NotBeNull();
+			viewModel.DeleteCommand.Execute(null);
+
 			layout.Widgets.Should().BeEmpty();
 			_analyser.Verify(x => x.Remove(It.IsAny<IDataSourceAnalyser>()), Times.Once,
 				"because the analyser created with that widget should've been removed again");
@@ -190,8 +219,9 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			layout.RaiseRequestAdd(factory.Object);
 			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Once);
 
-			layout.Widgets.Should().Contain(widget.Object);
-			widget.Raise(x => x.OnDelete += null, widget.Object);
+			var viewModel = layout.Widgets.FirstOrDefault(x => x.InnerViewModel == widget.Object);
+			viewModel.Should().NotBeNull();
+			viewModel.DeleteCommand.Execute(null);
 			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Exactly(2),
 			                        "because the page should've saved the analysis now that a widget's been removed");
 		}

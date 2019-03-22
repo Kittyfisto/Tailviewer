@@ -4,25 +4,26 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Tailviewer.Ui.Analysis;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
 	public sealed class HorizontalWidgetLayoutViewModel
 		: IWidgetLayoutViewModel
 	{
-		private readonly ObservableCollection<IWidgetViewModel> _widgets;
+		private readonly ObservableCollection<WidgetViewModelProxy> _widgets;
 
 		public HorizontalWidgetLayoutViewModel()
 		{
-			_widgets = new ObservableCollection<IWidgetViewModel>();
+			_widgets = new ObservableCollection<WidgetViewModelProxy>();
 		}
 
-		public void Add(IWidgetViewModel widget)
+		public void Add(WidgetViewModelProxy widget)
 		{
 			_widgets.Add(widget);
 		}
 
-		public void Remove(IWidgetViewModel widget)
+		public void Remove(WidgetViewModelProxy widget)
 		{
 			_widgets.Remove(widget);
 		}
@@ -34,7 +35,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 
 		public event Action<IWidgetPlugin> RequestAdd;
 
-		public ICollection<IWidgetViewModel> Widgets => _widgets;
+		public ICollection<WidgetViewModelProxy> Widgets => _widgets;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

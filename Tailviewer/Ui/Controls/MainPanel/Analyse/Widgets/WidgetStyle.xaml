@@ -2,8 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
-                    xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets"
-                    xmlns:analysis="clr-namespace:Tailviewer.Ui.Analysis;assembly=Tailviewer.Api">
+                    xmlns:widgets="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets">
 
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
@@ -12,7 +11,7 @@
     <Style x:Key="WidgetStyle" TargetType="ContentPresenter">
         <Setter Property="ContentTemplate">
             <Setter.Value>
-                <DataTemplate DataType="{x:Type analysis:IWidgetViewModel}">
+                <DataTemplate DataType="{x:Type widgets:WidgetViewModelProxy}">
                     <Border widgets:Widget.IsEditing="{Binding IsEditing}"
                             x:Name="Widget"
                             BorderThickness="1"
@@ -63,7 +62,7 @@
                             </Grid>
                             <Rectangle Fill="#333333"
                                        Grid.Row="1" />
-                            <ContentPresenter Content="{Binding}"
+                            <ContentPresenter Content="{Binding Content}"
                                               Margin="4"
                                               Grid.Row="2"/>
                         </Grid>

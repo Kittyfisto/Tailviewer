@@ -15,6 +15,13 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
+		void WriteAttribute(string name, bool value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
 		void WriteAttribute(string name, string value);
 
 		/// <summary>
@@ -104,5 +111,12 @@ namespace Tailviewer
 		/// <param name="name"></param>
 		/// <param name="values"></param>
 		void WriteAttribute(string name, IEnumerable<ISerializableType> values);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttributeEnum<T>(string name, T value);
 	}
 }

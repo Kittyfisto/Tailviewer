@@ -11,6 +11,7 @@ namespace Tailviewer.Core.Settings
 	/// </summary>
 	public sealed class QuickFilter
 		: ICloneable
+		, ISerializableType
 	{
 		/// <summary>
 		///     The id of this quick filter.
@@ -164,6 +165,26 @@ namespace Tailviewer.Core.Settings
 		public ILogEntryFilter CreateFilter()
 		{
 			return Filter.Create(Value, MatchType, IgnoreCase, IsInverted);
+		}
+
+		/// <inheritdoc />
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("Id", Id);
+			writer.WriteAttributeEnum("Type", MatchType);
+			writer.WriteAttribute("Value", Value);
+			writer.WriteAttribute("IgnoreCase", IgnoreCase);
+			writer.WriteAttribute("IsInverted", IsInverted);
+		}
+
+		/// <inheritdoc />
+		public void Deserialize(IReader reader)
+		{
+			reader.TryReadAttribute("Id", out Id);
+			reader.TryReadAttributeEnum("Type", out MatchType);
+			reader.TryReadAttribute("Value", out Value);
+			reader.TryReadAttribute("IgnoreCase", out IgnoreCase);
+			reader.TryReadAttribute("IsInverted", out IsInverted);
 		}
 	}
 }

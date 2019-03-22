@@ -1,3 +1,5 @@
+using System;
+
 namespace Tailviewer
 {
 	/// <summary>
@@ -12,5 +14,12 @@ namespace Tailviewer
 		/// <param name="typeName"></param>
 		/// <returns></returns>
 		ISerializableType TryCreateNew(string typeName);
+
+		/// <summary>
+		///     Tries to lookup the name of the given type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		string TryGetTypeName(Type type);
 	}
 }

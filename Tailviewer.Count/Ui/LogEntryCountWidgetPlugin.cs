@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Templates.Analysis;
@@ -24,6 +25,14 @@ namespace Tailviewer.Count.Ui
 		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
 			return new EntryCountWidgetViewModel(template, dataSourceAnalyser);
+		}
+
+		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		{
+			return new LogEntryCountWidgetControl
+			{
+				DataContext = viewModel
+			};
 		}
 	}
 }

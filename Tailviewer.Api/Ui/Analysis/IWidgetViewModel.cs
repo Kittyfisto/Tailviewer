@@ -39,28 +39,6 @@ namespace Tailviewer.Ui.Analysis
 		string Title { get; set; }
 
 		/// <summary>
-		///     The command to delete this widget.
-		/// </summary>
-		ICommand DeleteCommand { get; }
-
-		/// <summary>
-		///     Whether or not the analysis has been finished.
-		///     The analysis is only ever finished when <see cref="Progress" /> has reached
-		///     <see cref="Percentage.HundredPercent" />.
-		/// </summary>
-		bool IsAnalysisFinished { get; }
-
-		/// <summary>
-		///     The current progress of the analysis.
-		/// </summary>
-		double Progress { get; }
-
-		/// <summary>
-		///     A
-		/// </summary>
-		string ProgressTooltip { get; }
-
-		/// <summary>
 		///     The current template of this widget.
 		///     Shall be continuously modified whenever changes to this widget
 		///     (such as title, view- or analysis configuration) are made.
@@ -71,10 +49,5 @@ namespace Tailviewer.Ui.Analysis
 		///     This method is called periodically to allow the view model to fetch data from the analysis.
 		/// </summary>
 		void Update();
-
-		/// <summary>
-		///     This event is fired when the <see cref="DeleteCommand" /> is executed.
-		/// </summary>
-		event Action<IWidgetViewModel> OnDelete;
 	}
 }

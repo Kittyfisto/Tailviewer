@@ -1,4 +1,6 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
@@ -23,6 +25,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
 			return new HelpWidgetViewModel(template, dataSourceAnalyser);
+		}
+
+		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		{
+			return new HelpWidgetControl
+			{
+				DataContext = viewModel
+			};
 		}
 	}
 }

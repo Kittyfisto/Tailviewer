@@ -70,7 +70,6 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
@@ -94,6 +93,7 @@
     <Compile Include="BusinessLogic\AnalysisStorageTest.cs" />
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisConfigurationTest.cs" />
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryIdTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
     <Compile Include="BusinessLogic\DataSourceAnalyserTest.cs" />
@@ -152,6 +152,7 @@
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
     <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParserTest.cs" />
+    <Compile Include="BusinessLogic\NoAnalyserTest.cs" />
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
@@ -304,10 +305,6 @@
     <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
       <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
       <Name>Tailviewer.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.QuickInfo\Tailviewer.QuickInfo.csproj">
-      <Project>{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}</Project>
-      <Name>Tailviewer.QuickInfo</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>

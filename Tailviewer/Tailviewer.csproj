@@ -51,14 +51,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -81,7 +73,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -196,6 +187,10 @@
     <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml.cs">
+      <DependentUpon>HelpWidgetControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetViewModelProxy.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -427,11 +422,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Widgets.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

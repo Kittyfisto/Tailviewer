@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
@@ -42,6 +43,35 @@ namespace Tailviewer.Test
 			(id2 != id2).Should().BeFalse();
 			(id1 != id2).Should().BeTrue();
 			(id2 != id1).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestRoundtrip()
+		{
+			var id = QuickFilterId.CreateNew();
+			var actualId = Roundtrip(id);
+			actualId.Should().NotBeNull();
+			actualId.Should().NotBeSameAs(id);
+			actualId.Value.Should().Be(id.Value);
+		}
+
+		private QuickFilterId Roundtrip(QuickFilterId id)
+		{
+			using (var stream = new MemoryStream())
+			{
+				var typeFactory = new TypeFactory();
+				using (var writer = new Writer(stream, typeFactory))
+				{
+					id.Serialize(writer);
+				}
+
+				stream.Position = 0;
+
+				var reader = new Reader(stream, typeFactory);
+				var actualId = new QuickFilterId();
+				actualId.Deserialize(reader);
+				return actualId;
+			}
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <inheritdoc />
 		public bool Equals(LogAnalyserFactoryId other)
 		{
-			return string.Equals(_value, other._value);
+			return string.Equals(Value, other.Value);
 		}
 
 		/// <inheritdoc />
@@ -33,7 +33,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <inheritdoc />
 		public override int GetHashCode()
 		{
-			return _value != null ? _value.GetHashCode() : 0;
+			return Value.GetHashCode();
 		}
 
 		/// <summary>
@@ -72,7 +72,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			return _value ?? string.Empty;
+			return Value;
+		}
+
+		private string Value
+		{
+			get { return _value ?? string.Empty; }
 		}
 	}
 }

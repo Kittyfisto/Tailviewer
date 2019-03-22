@@ -20,9 +20,9 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Core.Settings;
 using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Count.Ui;
-using Tailviewer.Events.BusinessLogic;
 using Tailviewer.QuickInfo.BusinessLogic;
 using Tailviewer.QuickInfo.Ui;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
@@ -77,23 +77,17 @@ namespace Tailviewer
 			using (var serialTaskScheduler = new SerialTaskScheduler())
 			using (var pluginScanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
-				var pluginCache = CreatePluginSystem(pluginScanner);
+				var pluginSystem = CreatePluginSystem(pluginScanner);
 
-				var fileFormatPlugins = pluginCache.LoadAllOfType<IFileFormatPlugin>();
+				var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
 				var filesystem = new Filesystem(serialTaskScheduler);
-				var plugins = LoadPlugins();
 
 				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
 				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-				using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler))
-				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(plugins)))
+				using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
+				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
 				{
-					foreach (var plugin in plugins)
-					{
-						logAnalyserEngine.RegisterFactory(plugin);
-					}
-
 					var arguments = ArgumentParser.TryParse(args);
 					if (arguments.FileToOpen != null)
 					{
@@ -138,7 +132,7 @@ namespace Tailviewer
 						                                      taskScheduler,
 						                                      analysisStorage,
 						                                      uiDispatcher,
-						                                      pluginCache)
+						                                      pluginSystem)
 					};
 
 					settings.MainWindow.RestoreTo(window);
@@ -196,21 +190,16 @@ namespace Tailviewer
 					}
 				}
 			}
+			factory.Add(typeof(AnalysisTemplate));
+			factory.Add(typeof(AnalysisViewTemplate));
 			factory.Add(typeof(ActiveAnalysisConfiguration));
 			factory.Add(typeof(AnalyserTemplate));
 			factory.Add(typeof(PageTemplate));
 			factory.Add(typeof(WidgetTemplate));
+			factory.Add(typeof(Core.Settings.QuickFilters));
+			factory.Add(typeof(QuickFilter));
+			factory.Add(typeof(QuickFilterId));
 			return factory;
-		}
-
-		private static IReadOnlyList<ILogAnalyserPlugin> LoadPlugins()
-		{
-			return new ILogAnalyserPlugin[]
-			{
-				new LogEntryCountAnalyserPlugin(),
-				new QuickInfoAnalyserPlugin(),
-				new EventsLogAnalyserPlugin()
-			};
 		}
 
 		private static void LogEnvironment()

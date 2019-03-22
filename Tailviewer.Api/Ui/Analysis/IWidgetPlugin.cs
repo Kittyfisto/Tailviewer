@@ -1,4 +1,6 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Templates.Analysis;
@@ -51,9 +53,16 @@ namespace Tailviewer.Ui.Analysis
 		///     <see cref="IDataSourceAnalyser.Configuration" /> if the user made changes to
 		///     the configuration as well as to present results from <see cref="IDataSourceAnalyser.Result" />.
 		/// </summary>
-		/// <param name="dataSourceAnalyser"></param>
 		/// <param name="template"></param>
+		/// <param name="dataSourceAnalyser"></param>
 		/// <returns></returns>
 		IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser);
+
+		/// <summary>
+		///     Creates a new control which presents the given view model.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		/// <returns></returns>
+		FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel);
 	}
 }

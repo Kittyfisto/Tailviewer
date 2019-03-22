@@ -15,9 +15,10 @@ namespace Tailviewer.Core
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private static readonly Type[] NoTypes = new Type[0];
 
+		private readonly object _syncRoot;
 		private readonly Dictionary<Type, Func<ISerializableType>> _factoriesByType;
 		private readonly Dictionary<string, Func<ISerializableType>> _factoriesByName;
-		private readonly object _syncRoot;
+		private readonly Dictionary<Type, string> _namesByType;
 
 		/// <summary>
 		/// Creates an empty factory which cannot create any custom type.
@@ -28,6 +29,7 @@ namespace Tailviewer.Core
 			_syncRoot = new object();
 			_factoriesByType = new Dictionary<Type, Func<ISerializableType>>();
 			_factoriesByName = new Dictionary<string, Func<ISerializableType>>();
+			_namesByType = new Dictionary<Type, string>();
 		}
 
 		/// <summary>
@@ -41,6 +43,15 @@ namespace Tailviewer.Core
 			{
 				Add(pair.Key, pair.Value);
 			}
+		}
+
+		/// <summary>
+		/// Registers the given type under its <see cref="Type.FullName"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		public void Add<T>()
+		{
+			Add(typeof(T));
 		}
 
 		/// <summary>
@@ -75,6 +86,7 @@ namespace Tailviewer.Core
 				if (!_factoriesByName.ContainsKey(name))
 				{
 					_factoriesByName.Add(name, factory);
+					_namesByType.Add(type, name);
 				}
 				else
 				{
@@ -83,30 +95,20 @@ namespace Tailviewer.Core
 			}
 		}
 
-		private Func<ISerializableType> CreateFactory(Type type)
-		{
-			var ctor = type.GetConstructor(NoTypes);
-			if (ctor == null)
-			{
-				Log.ErrorFormat("Unable to find parameterless public constructor for: {0}", type.AssemblyQualifiedName);
-				return null;
-			}
-
-			var expression = Expression.Lambda<Func<ISerializableType>>(Expression.New(ctor));
-			var factory = expression.Compile();
-			return factory;
-		}
-
 		/// <inheritdoc />
 		public ISerializableType TryCreateNew(string typeName)
 		{
 			if (typeName == null)
 				return null;
 
-			if (!_factoriesByName.TryGetValue(typeName, out var factory))
+			Func<ISerializableType> factory;
+			lock (_syncRoot)
 			{
-				Log.WarnFormat("Type '{0}' is unknown and cannot be created!", typeName);
-				return null;
+				if (!_factoriesByName.TryGetValue(typeName, out factory))
+				{
+					Log.WarnFormat("Type '{0}' is unknown and cannot be created!", typeName);
+					return null;
+				}
 			}
 
 			try
@@ -118,6 +120,37 @@ namespace Tailviewer.Core
 				Log.ErrorFormat("Creating new '{0}' threw an unexpected exception: {1}", typeName, e);
 				return null;
 			}
+		}
+
+		/// <inheritdoc />
+		public string TryGetTypeName(Type type)
+		{
+			lock (_syncRoot)
+			{
+				if (_namesByType.TryGetValue(type, out var value))
+					return value;
+
+				return null;
+			}
+		}
+
+		private Func<ISerializableType> CreateFactory(Type type)
+		{
+			var ctor = type.GetConstructor(NoTypes);
+			if (ctor == null)
+			{
+				if (type.IsValueType)
+				{
+					return () => (ISerializableType)Activator.CreateInstance(type);
+				}
+
+				Log.ErrorFormat("Unable to find parameterless public constructor for: {0}", type.AssemblyQualifiedName);
+				return null;
+			}
+
+			var expression = Expression.Lambda<Func<ISerializableType>>(Expression.New(ctor));
+			var factory = expression.Compile();
+			return factory;
 		}
 	}
 }

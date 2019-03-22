@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.QuickInfo.BusinessLogic;
 using Tailviewer.Templates.Analysis;
@@ -24,6 +25,14 @@ namespace Tailviewer.QuickInfo.Ui
 		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
 			return new QuickInfoWidgetViewModel(template, dataSourceAnalyser);
+		}
+
+		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		{
+			return new QuickInfoWidgetControl
+			{
+				DataContext = viewModel
+			};
 		}
 	}
 }

@@ -2,9 +2,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using log4net;
-using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
@@ -22,11 +20,7 @@ namespace Tailviewer.Core.Analysis
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
 		private readonly IWidgetTemplate _template;
 		private readonly ILogAnalyserConfiguration _analyserConfiguration;
-		private bool _isAnalysisFinished;
-
 		private bool _isEditing;
-		private double _progress;
-		private string _progressTooltip;
 
 		/// <summary>
 		/// </summary>
@@ -38,10 +32,8 @@ namespace Tailviewer.Core.Analysis
 
 			_dataSourceAnalyser = dataSourceAnalyser;
 			_analyserConfiguration = dataSourceAnalyser.Configuration?.Clone() as ILogAnalyserConfiguration;
-			_isAnalysisFinished = false;
 			_template = template;
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
-			DeleteCommand = new DelegateCommand(Delete);
 		}
 
 		/// <summary>
@@ -92,57 +84,6 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <inheritdoc />
-		public ICommand DeleteCommand { get; }
-
-		/// <inheritdoc />
-		public bool IsAnalysisFinished
-		{
-			get { return _isAnalysisFinished; }
-			private set
-			{
-				if (value == _isAnalysisFinished)
-					return;
-
-				_isAnalysisFinished = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		/// <inheritdoc />
-		public double Progress
-		{
-			get { return _progress; }
-			protected set
-			{
-				if (double.IsNaN(value))
-					value = 1;
-
-				if (value == _progress)
-					return;
-
-				_progress = value;
-				EmitPropertyChanged();
-
-				IsAnalysisFinished = value >= 1;
-				ProgressTooltip = string.Format("Analysis {0:P} complete", value);
-			}
-		}
-
-		/// <inheritdoc />
-		public string ProgressTooltip
-		{
-			get { return _progressTooltip; }
-			private set
-			{
-				if (value == _progressTooltip)
-					return;
-
-				_progressTooltip = value;
-				EmitPropertyChanged();
-			}
-		}
-
-		/// <inheritdoc />
 		public IWidgetTemplate Template => _template;
 
 		/// <inheritdoc />
@@ -151,11 +92,8 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public virtual void Update()
 		{
-			Progress = _dataSourceAnalyser.Progress.RelativeValue;
+			
 		}
-
-		/// <inheritdoc />
-		public event Action<IWidgetViewModel> OnDelete;
 
 		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)
 		{
@@ -171,6 +109,15 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <summary>
+		///     Call this method when a publicly visible property has changed its value.
+		/// </summary>
+		/// <param name="propertyName"></param>
+		protected virtual void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		/// <summary>
 		///     Tries to get the latest result.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -180,20 +127,6 @@ namespace Tailviewer.Core.Analysis
 		{
 			result = _dataSourceAnalyser.Result as T;
 			return result != null;
-		}
-
-		private void Delete()
-		{
-			OnDelete?.Invoke(this);
-		}
-
-		/// <summary>
-		///     Call this method when a publicly visible property has changed its value.
-		/// </summary>
-		/// <param name="propertyName"></param>
-		protected virtual void EmitPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

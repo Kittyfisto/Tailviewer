@@ -14,6 +14,7 @@ using Tailviewer.Core.Analysis;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -31,8 +32,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly PageTemplate _template;
 		private readonly IAnalysis _analysis;
 		private readonly DelegateCommand _deletePageCommand;
-		private readonly List<IWidgetViewModel> _widgets;
-		private readonly Dictionary<IWidgetViewModel, IDataSourceAnalyser> _analysersPerWidget;
+		private readonly List<WidgetViewModelProxy> _widgets;
+		private readonly Dictionary<WidgetViewModelProxy, IDataSourceAnalyser> _analysersPerWidget;
 		private bool _canBeDeleted;
 		private IWidgetLayoutViewModel _layout;
 		private PageLayout _pageLayout;
@@ -51,15 +52,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_analysis = analysis ?? throw new ArgumentNullException(nameof(analysis));
 			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
 			_deletePageCommand = new DelegateCommand(DeletePage, () => _canBeDeleted);
-			_widgets = new List<IWidgetViewModel>();
-			_analysersPerWidget = new Dictionary<IWidgetViewModel, IDataSourceAnalyser>();
+			_widgets = new List<WidgetViewModelProxy>();
+			_analysersPerWidget = new Dictionary<WidgetViewModelProxy, IDataSourceAnalyser>();
 
 			PageLayout = PageLayout.WrapHorizontal;
 
 			var widgetPlugins = LoadRelevantPlugins(pluginLoader);
 			foreach (var widgetTemplate in template.Widgets)
 			{
-				if (_analysis.TryGetAnalyser(widgetTemplate.AnalyserId, out var analyser))
+				if (TryGetAnalyser(widgetTemplate.AnalyserId, out var analyser))
 				{
 					if (widgetPlugins.TryGetValue(widgetTemplate.LogAnalyserFactoryId, out var plugin))
 					{
@@ -75,12 +76,26 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				}
 				else
 				{
-					Log.WarnFormat("Unable to find analyser '{0}', widget '{1} ({2})' will NOT be displayed",
-					               widgetTemplate.AnalyserId,
+					Log.WarnFormat("Unable to find analyser factory '{0}', widget '{1} ({2})' will NOT be displayed",
+					               widgetTemplate.LogAnalyserFactoryId,
 					               widgetTemplate.Title,
 					               widgetTemplate.Id);
 				}
 			}
+		}
+
+		private bool TryGetAnalyser(AnalyserId id, out IDataSourceAnalyser analyser)
+		{
+			if (id == AnalyserId.Empty)
+			{
+				analyser = new NoAnalyser();
+				return true;
+			}
+
+			if (_analysis.TryGetAnalyser(id, out analyser))
+				return true;
+
+			return false;
 		}
 
 		[Pure]
@@ -208,10 +223,10 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		/// <param name="analyser"></param>
 		private void AddExistingWidget(IWidgetPlugin plugin, IWidgetTemplate widgetTemplate, IDataSourceAnalyser analyser)
 		{
-			var widget = plugin.CreateViewModel(widgetTemplate, analyser);
-			_analysersPerWidget.Add(widget, analyser);
+			var widgetViewModel = new WidgetViewModelProxy(plugin, widgetTemplate, analyser);
+			_analysersPerWidget.Add(widgetViewModel, analyser);
 
-			Add(widget);
+			Add(widgetViewModel);
 		}
 
 		private IWidgetConfiguration CreateViewConfiguration(IWidgetPlugin plugin)
@@ -246,20 +261,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private void Add(IWidgetViewModel widget)
+		private void Add(WidgetViewModelProxy widgetViewModel)
 		{
-			_widgets.Add(widget);
-			_layout?.Add(widget);
-			widget.OnDelete += WidgetOnDelete;
+			_widgets.Add(widgetViewModel);
+			_layout?.Add(widgetViewModel);
+			widgetViewModel.OnDelete += WidgetOnDelete;
 			HasWidgets = _widgets.Any();
 		}
 
-		private void WidgetOnDelete(IWidgetViewModel widget)
+		private void WidgetOnDelete(WidgetViewModelProxy widget)
 		{
 			Remove(widget);
 		}
 
-		public void Remove(IWidgetViewModel widget)
+		public void Remove(WidgetViewModelProxy widget)
 		{
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);

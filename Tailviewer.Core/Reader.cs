@@ -63,6 +63,12 @@ namespace Tailviewer.Core
 		public DateTime TailviewerBuildDate => _tailviewerBuildDate;
 
 		/// <inheritdoc />
+		public bool TryReadAttribute(string name, out bool value)
+		{
+			return _documentReader.TryReadAttribute(name, out value);
+		}
+
+		/// <inheritdoc />
 		public bool TryReadAttribute(string name, out string value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
@@ -135,13 +141,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public bool TryReadAttribute<T>(string name, out T value) where T : class, ISerializableType
-		{
-			return _documentReader.TryReadAttribute(name, out value);
-		}
-
-		/// <inheritdoc />
-		public bool TryReadAttribute<T>(string name, out T? value) where T : struct, ISerializableType
+		public bool TryReadAttribute<T>(string name, out T value) where T : ISerializableType
 		{
 			return _documentReader.TryReadAttribute(name, out value);
 		}
@@ -170,6 +170,12 @@ namespace Tailviewer.Core
 			return _documentReader.TryReadAttribute(name, values);
 		}
 
+		/// <inheritdoc />
+		public bool TryReadAttributeEnum<T>(string name, out T value) where T : struct
+		{
+			return _documentReader.TryReadAttributeEnum(name, out value);
+		}
+
 		private sealed class ElementReader
 			: IReader
 		{
@@ -185,6 +191,15 @@ namespace Tailviewer.Core
 				foreach (XmlElement child in childNodes)
 					if (child != null)
 						_childElements.Add(child.Name, child);
+			}
+
+			public bool TryReadAttribute(string name, out bool value)
+			{
+				if (TryReadAttribute(name, out string stringValue) && bool.TryParse(stringValue, out value))
+					return true;
+
+				value = false;
+				return false;
 			}
 
 			public bool TryReadAttribute(string name, out string value)
@@ -346,52 +361,19 @@ namespace Tailviewer.Core
 
 			public bool TryReadAttribute(string name, out ISerializableType value)
 			{
+				return TryReadAttribute<ISerializableType>(name, out value);
+			}
+
+			public bool TryReadAttribute<T>(string name, out T value) where T : ISerializableType
+			{
 				XmlElement element;
 				if (!_childElements.TryGetValue(name, out element))
 				{
-					value = null;
+					value = default(T);
 					return false;
 				}
 
 				return TryReadChild(element, out value);
-			}
-
-			public bool TryReadAttribute<T>(string name, out T value) where T : class, ISerializableType
-			{
-				ISerializableType tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(T);
-					return false;
-				}
-
-				if (tmp == null)
-				{
-					value = null;
-					return true;
-				}
-
-				value = tmp as T;
-				return value != null;
-			}
-
-			public bool TryReadAttribute<T>(string name, out T? value) where T : struct, ISerializableType
-			{
-				ISerializableType tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(T);
-					return false;
-				}
-
-				if (tmp == null)
-				{
-					value = null;
-					return true;
-				}
-
-				value = tmp as T?;
-				return value != null;
 			}
 
 			public bool TryReadAttribute<T>(string name, T value) where T : class, ISerializableType
@@ -458,27 +440,46 @@ namespace Tailviewer.Core
 				return true;
 			}
 
-			private bool TryReadChild<T>(XmlElement element, out T value) where T : class, ISerializableType
+			public bool TryReadAttributeEnum<T>(string name, out T value) where T : struct
+			{
+				if (TryReadAttribute(name, out string stringValue) && Enum.TryParse(stringValue, out T tmp))
+				{
+					value = tmp;
+					return true;
+				}
+
+				value = default(T);
+				return false;
+			}
+
+			private bool TryReadChild<T>(XmlElement element, out T value) where T : ISerializableType
 			{
 				var type = element.GetElementsByTagName("Type").OfType<XmlElement>().FirstOrDefault();
 				if (type == null) //< This is the case when a null value was persisted
 				{
-					value = null;
+					value = default(T);
 					return true;
 				}
 
 				var typeName = type.InnerText;
-				value = _typeFactory.TryCreateNew(typeName) as T;
-				if (value == null) //< Type doesn't exist or couldn't be created
+				var tmp = _typeFactory.TryCreateNew(typeName);
+				if (!(tmp is T)) //< Type doesn't exist or couldn't be created
+				{
+					value = default(T);
 					return false;
+				}
 
 				var child = element.GetElementsByTagName("Value").OfType<XmlElement>().FirstOrDefault();
 				if (child == null)
+				{
+					value = default(T);
 					return false;
+				}
 
 				var reader = new ElementReader(child, _typeFactory);
 				try
 				{
+					value = (T) tmp;
 					value.Deserialize(reader);
 					return true;
 				}
@@ -486,6 +487,8 @@ namespace Tailviewer.Core
 				{
 					Log.ErrorFormat("Caught unexpected exception while deserializing '{0}': {1}",
 						typeName, e);
+
+					value = default(T);
 					return false;
 				}
 			}

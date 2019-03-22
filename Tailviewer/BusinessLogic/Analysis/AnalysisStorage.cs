@@ -263,7 +263,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				// Just in case we're writing over an existing file...
 				stream.SetLength(0);
-				using (var writer = new Writer(stream))
+				using (var writer = new Writer(stream, _typeFactory))
 				{
 					writer.WriteAttribute("Analysis", analysisConfiguration);
 				}
@@ -361,7 +361,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				try
 				{
 					using (var stream = task.Result)
-					using (var writer = new Writer(stream))
+					using (var writer = new Writer(stream, _typeFactory))
 					{
 						writer.WriteAttribute("Snapshot", snapshot);
 					}

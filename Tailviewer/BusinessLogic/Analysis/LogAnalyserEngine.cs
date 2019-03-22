@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
@@ -23,7 +24,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
 
-		public LogAnalyserEngine(ITaskScheduler scheduler)
+		public LogAnalyserEngine(ITaskScheduler scheduler, IPluginLoader pluginLoader = null)
 		{
 			if (scheduler == null)
 				throw new ArgumentNullException(nameof(scheduler));
@@ -32,6 +33,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_analyses = new List<IDataSourceAnalysisHandle>();
 			_syncRoot = new object();
 			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin>();
+
+			if (pluginLoader != null)
+			{
+				foreach (var plugin in pluginLoader.LoadAllOfType<ILogAnalyserPlugin>())
+				{
+					RegisterFactory(plugin);
+				}
+			}
 		}
 
 		public void Dispose()

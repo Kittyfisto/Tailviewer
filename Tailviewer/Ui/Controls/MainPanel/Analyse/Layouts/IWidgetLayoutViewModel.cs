@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
@@ -20,13 +21,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 		///     Adds the given widget to this layout.
 		/// </summary>
 		/// <param name="widget"></param>
-		void Add(IWidgetViewModel widget);
+		void Add(WidgetViewModelProxy widget);
 
 		/// <summary>
 		///     Removes the given widget from this layout.
 		/// </summary>
 		/// <param name="widget"></param>
-		void Remove(IWidgetViewModel widget);
+		void Remove(WidgetViewModelProxy widget);
 
 		/// <summary>
 		///     This event is fired when this layout requests that the given widget shall

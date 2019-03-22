@@ -9,6 +9,7 @@ namespace Tailviewer.Core
 	/// </summary>
 	public struct QuickFilterId
 		: IEquatable<QuickFilterId>
+		, ISerializableType
 	{
 		/// <summary>
 		///     The value for an empty id, representing nothing.
@@ -61,7 +62,7 @@ namespace Tailviewer.Core
 			return !left.Equals(right);
 		}
 
-		private readonly Guid _value;
+		private Guid _value;
 
 		/// <summary>
 		///     Initializes this id.
@@ -86,6 +87,18 @@ namespace Tailviewer.Core
 		public static QuickFilterId CreateNew()
 		{
 			return new QuickFilterId(Guid.NewGuid());
+		}
+
+		/// <inheritdoc />
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("value", _value);
+		}
+
+		/// <inheritdoc />
+		public void Deserialize(IReader reader)
+		{
+			reader.TryReadAttribute("value", out _value);
 		}
 	}
 }

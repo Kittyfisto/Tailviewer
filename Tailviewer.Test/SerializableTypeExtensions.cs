@@ -14,7 +14,15 @@ namespace Tailviewer.Test
 		{
 			using (var stream = new MemoryStream())
 			{
-				using (var writer = new Writer(stream))
+				var types = new Dictionary<string, Type>();
+				types.Add(typeof(T).FullName, typeof(T));
+				foreach (var additional in additionalTypes)
+				{
+					if (!types.ContainsKey(additional.FullName))
+						types.Add(additional.FullName, additional);
+				}
+				var typeFactory = new TypeFactory(types);
+				using (var writer = new Writer(stream, typeFactory))
 				{
 					writer.WriteAttribute("Test", that);
 				}
@@ -23,16 +31,8 @@ namespace Tailviewer.Test
 				var content = Format<T>(stream);
 				TestContext.Progress.WriteLine(content);
 
-				var types = new Dictionary<string, Type>();
-				types.Add(typeof(T).FullName, typeof(T));
-				foreach (var additional in additionalTypes)
-				{
-					if (!types.ContainsKey(additional.FullName))
-						types.Add(additional.FullName, additional);
-				}
-
 				stream.Position = 0;
-				var reader = new Reader(stream, new TypeFactory(types));
+				var reader = new Reader(stream, typeFactory);
 
 				T actualValue;
 				reader.TryReadAttribute("Test", out actualValue).Should().BeTrue("because an object of type '{0}' should be deserializable",

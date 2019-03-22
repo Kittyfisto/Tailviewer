@@ -7,7 +7,7 @@ namespace Tailviewer.Count.BusinessLogic
 	public sealed class LogEntryCountAnalyserConfiguration
 		: ILogAnalyserConfiguration
 	{
-		private readonly QuickFilters _quickFilters;
+		private QuickFilters _quickFilters;
 
 		public LogEntryCountAnalyserConfiguration()
 		{
@@ -48,12 +48,12 @@ namespace Tailviewer.Count.BusinessLogic
 
 		public void Serialize(IWriter writer)
 		{
-			throw new System.NotImplementedException();
+			writer.WriteAttribute("QuickFilters", (ISerializableType)_quickFilters);
 		}
 
 		public void Deserialize(IReader reader)
 		{
-			throw new System.NotImplementedException();
+			reader.TryReadAttribute("QuickFilters", out _quickFilters);
 		}
 	}
 }

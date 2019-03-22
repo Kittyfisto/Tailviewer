@@ -18,6 +18,8 @@ namespace Tailviewer.Core
 		: IWriter
 		, IDisposable
 	{
+		private readonly ITypeFactory _typeFactory;
+
 		/// <summary>
 		///     The current version of the xml format, produced by this writer.
 		///     Has to be incremented when backwards incompatible changes have been
@@ -35,8 +37,10 @@ namespace Tailviewer.Core
 		/// 
 		/// </summary>
 		/// <param name="output"></param>
-		public Writer(Stream output)
+		/// <param name="typeFactory"></param>
+		public Writer(Stream output, ITypeFactory typeFactory)
 		{
+			_typeFactory = typeFactory ?? throw new ArgumentNullException(nameof(typeFactory));
 			_created = DateTime.Now;
 
 			var settings = new XmlWriterSettings
@@ -56,6 +60,14 @@ namespace Tailviewer.Core
 		///     The timestamp when this writer was created.
 		/// </summary>
 		public DateTime Created => _created;
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, bool value)
+		{
+			_writer.WriteStartElement(name);
+			_writer.WriteValue(value);
+			_writer.WriteEndElement();
+		}
 
 		/// <inheritdoc />
 		public void WriteAttribute(string name, string value)
@@ -167,25 +179,38 @@ namespace Tailviewer.Core
 			}
 		}
 
+		/// <inheritdoc />
+		public void WriteAttributeEnum<T>(string name, T value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
 		private void WriteCustomType(ISerializableType value)
 		{
 			if (value != null)
 			{
 				var type = value.GetType();
-				var typeName = type.FullName;
-				WriteAttribute("Type", typeName);
-				_writer.WriteStartElement("Value");
-				try
+				var typeName = _typeFactory.TryGetTypeName(type);
+				if (typeName != null)
 				{
-					value.Serialize(this);
+					WriteAttribute("Type", typeName);
+					_writer.WriteStartElement("Value");
+					try
+					{
+						value.Serialize(this);
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Caught unexpected exception while trying to serialize '{0}': {1}", value, e);
+					}
+					finally
+					{
+						_writer.WriteEndElement();
+					}
 				}
-				catch (Exception e)
+				else
 				{
-					Log.ErrorFormat("Caught unexpected exception while trying to serialize '{0}': {1}", value, e);
-				}
-				finally
-				{
-					_writer.WriteEndElement();
+					Log.ErrorFormat("Unable to serialize type '{0}': It has not been registered with the type factory", type);
 				}
 			}
 		}

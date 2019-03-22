@@ -41,6 +41,10 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
 			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to find plugins in '{0}': {1}", path, e);
+			}
 		}
 
 		/// <inheritdoc />
@@ -120,10 +124,13 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
+			var interfaceType = typeof(T);
+			Log.InfoFormat("Loading plugins implementing '{0}'...", interfaceType.Name);
+
 			var ret = new List<T>();
 			foreach (var pluginDescription in Plugins)
 			{
-				if (pluginDescription.Plugins.ContainsKey(typeof(T)))
+				if (pluginDescription.Plugins.ContainsKey(interfaceType))
 				{
 					try
 					{
@@ -133,12 +140,15 @@ namespace Tailviewer.Archiver.Plugins
 					catch (Exception e)
 					{
 						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-							typeof(T),
+							interfaceType,
 							pluginDescription,
 							e);
 					}
 				}
 			}
+
+			Log.InfoFormat("Loaded #{0} plugins", ret.Count);
+
 			return ret;
 		}
 

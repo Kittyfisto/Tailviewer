@@ -10,6 +10,7 @@ namespace Tailviewer.Core.Settings
 	/// </summary>
 	public sealed class QuickFilters
 		: List<QuickFilter>
+		, ISerializableType
 		, ICloneable
 	{
 		private TimeFilter _timeFilter;
@@ -151,6 +152,20 @@ namespace Tailviewer.Core.Settings
 				return false;
 
 			return lhs.IsEquivalent(rhs);
+		}
+
+		/// <inheritdoc />
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("QuickFilters", (IEnumerable<QuickFilter>)this);
+		}
+
+		/// <inheritdoc />
+		public void Deserialize(IReader reader)
+		{
+			Clear();
+			if (reader.TryReadAttribute("QuickFilters", out IEnumerable<QuickFilter> filters))
+				AddRange(filters);
 		}
 	}
 }

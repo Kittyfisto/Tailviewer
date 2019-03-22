@@ -6,6 +6,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core;
+using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Test
 {
@@ -19,13 +20,12 @@ namespace Tailviewer.Test
 		[SetUp]
 		public void Setup()
 		{
-			_stream = new MemoryStream();
-			_writer = new Writer(_stream);
+			_typeFactory = new TypeFactory();
+			_typeFactory.Add("EmptyType", typeof(EmptyType));
+			_typeFactory.Add("SomeType", typeof(SomeType));
 
-			_typeFactory = new TypeFactory(new []
-			{
-				new KeyValuePair<string, Type>(typeof(EmptyType).FullName, typeof(EmptyType))
-			});
+			_stream = new MemoryStream();
+			_writer = new Writer(_stream, _typeFactory);
 		}
 
 		sealed class EmptyType
@@ -65,6 +65,69 @@ namespace Tailviewer.Test
 			reader.Created.Should().Be(_writer.Created);
 			reader.TailviewerVersion.Should().Be(Core.Constants.ApplicationVersion);
 			reader.TailviewerBuildDate.Should().Be(Core.Constants.BuildDate);
+		}
+
+		[Test]
+		[Description("Verifies that writing/reading a single attribute")]
+		public void TestBoolAttribute1([Values(true, false)] bool value)
+		{
+			_writer.WriteAttribute("Foo", value);
+
+			var reader = CloseAndRead();
+
+			bool actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value);
+		}
+
+		[Test]
+		[Description("Verifies that writing/reading multiple attributes in order works")]
+		public void TestBoolAttribute2([Values(true, false)] bool value1, [Values(true, false)] bool value2)
+		{
+			_writer.WriteAttribute("Foo", value1);
+			_writer.WriteAttribute("Hello", value2);
+
+			var reader = CloseAndRead();
+
+			bool actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value1);
+
+			reader.TryReadAttribute("Hello", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value2);
+		}
+
+		[Test]
+		[Description("Verifies that writing/reading multiple attributes out of order works")]
+		public void TestBoolAttribute3([Values(true, false)] bool value1, [Values(true, false)] bool value2)
+		{
+			_writer.WriteAttribute("Foo", value1);
+			_writer.WriteAttribute("Hello", value2);
+
+			var reader = CloseAndRead();
+
+			bool actualValue;
+			reader.TryReadAttribute("Hello", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value2);
+
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value1);
+		}
+
+		[Test]
+		[Description("Verifies that reading still works, even if we tried to access a non-existing attribute first")]
+		public void TestBoolAttribute4([Values(true, false)] bool value)
+		{
+			_writer.WriteAttribute("Foo", value);
+
+			var reader = CloseAndRead();
+
+			bool actualValue;
+			reader.TryReadAttribute("Hello", out actualValue).Should().BeFalse();
+			actualValue.Should().BeFalse();
+
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value);
 		}
 
 		[Test]
@@ -207,6 +270,22 @@ namespace Tailviewer.Test
 
 			reader.TryReadAttribute("Foo", out value).Should().BeTrue();
 			value.Should().Be(long.MaxValue);
+		}
+
+		[Test]
+		public void TestEnumAttribute()
+		{
+			_writer.WriteAttributeEnum("Foo", FilterMatchType.RegexpFilter);
+			_writer.WriteAttributeEnum("Hello", FilterMatchType.WildcardFilter);
+
+			var reader = CloseAndRead();
+
+			FilterMatchType value;
+			reader.TryReadAttributeEnum("Hello", out value).Should().BeTrue();
+			value.Should().Be(FilterMatchType.WildcardFilter);
+
+			reader.TryReadAttributeEnum("Foo", out value).Should().BeTrue();
+			value.Should().Be(FilterMatchType.RegexpFilter);
 		}
 
 		[Test]

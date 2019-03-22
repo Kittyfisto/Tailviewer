@@ -31,10 +31,12 @@ namespace Tailviewer.Test.BusinessLogic
 			_logAnalyserEngine = new Mock<ILogAnalyserEngine>();
 
 			_typeFactory = new TypeFactory();
-			_typeFactory.Add(typeof(ActiveAnalysisConfiguration));
-			_typeFactory.Add(typeof(AnalyserTemplate));
-			_typeFactory.Add(typeof(PageTemplate));
-			_typeFactory.Add(typeof(WidgetTemplate));
+			_typeFactory.Add<AnalysisTemplate>();
+			_typeFactory.Add<AnalysisViewTemplate>();
+			_typeFactory.Add<ActiveAnalysisConfiguration>();
+			_typeFactory.Add<AnalyserTemplate>();
+			_typeFactory.Add<PageTemplate>();
+			_typeFactory.Add<WidgetTemplate>();
 		}
 
 		[Test]

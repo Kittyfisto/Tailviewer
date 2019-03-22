@@ -8,12 +8,12 @@
 
 		public NoAnalyser()
 		{
-			_id = AnalyserId.CreateNew();
+			_id = AnalyserId.Empty;
 		}
 
 		public NoAnalyser(LogAnalyserFactoryId factoryId)
+			: this()
 		{
-			_id = AnalyserId.CreateNew();
 			_factoryId = factoryId;
 		}
 
