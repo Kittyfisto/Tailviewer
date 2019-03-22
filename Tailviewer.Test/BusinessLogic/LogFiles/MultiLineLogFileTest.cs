@@ -598,7 +598,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/74")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries6()
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
@@ -624,7 +624,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Ignore("Open issue, I need to fix this soon")]
-		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/74")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries7()
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);

@@ -93,8 +93,33 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			{
 				case nameof(IsSelected):
 					UpdateTooltip();
+
+					// It is visually jarring if a filter is added when the side panel closes,
+					// therefore we only add the filter becomes selected!
+					// See https://github.com/Kittyfisto/Tailviewer/issues/175
+					if (IsSelected)
+						AddEmptyFilterIfNecessary();
 					break;
 			}
+		}
+
+		private void AddEmptyFilterIfNecessary()
+		{
+			if (!HasEmptyFilter())
+				AddQuickFilter();
+		}
+
+		private bool HasEmptyFilter()
+		{
+			foreach (var filter in QuickFilters)
+			{
+				if (string.IsNullOrEmpty(filter.Value))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private void OnOnFiltersChanged()

@@ -279,7 +279,7 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
-		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/165")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/165")]
 		public void TestLongLogLine()
 		{
 			var message = new StringBuilder();

@@ -66,7 +66,7 @@ namespace Tailviewer.Test.Ui
 		private Mock<IAnalysisStorage> _analysisStorage;
 
 		[Test]
-		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/76")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/76")]
 		public void TestCtor()
 		{
 			var dataSource = _dataSources.AddDataSource(@"F:\logs\foo.log");

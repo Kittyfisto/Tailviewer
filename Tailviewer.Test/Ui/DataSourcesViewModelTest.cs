@@ -428,7 +428,7 @@ namespace Tailviewer.Test.Ui
 
 		[Test]
 		[Description("Verifies that the selected item is preserved when an item is grouped")]
-		[Defect("https://github.com/Kittyfisto/Tailviewer/issues/79")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/79")]
 		public void TestDropOntoGroup4()
 		{
 			var a = _model.GetOrAdd("A");

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -37,6 +38,69 @@ namespace Tailviewer.Test.Ui
 		{
 			_settings = new ApplicationSettings("addwa");
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/175")]
+		[Description("Verifies that if the panel becomes selected and there are no filters, then an empty filter is added")]
+		public void TestAddEmptyFilterWhenSelected1()
+		{
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
+			model.IsSelected.Should().BeFalse();
+
+			_settings.QuickFilters.Should().BeEmpty();
+			_quickFilters.Filters.Should().BeEmpty();
+
+			model.IsSelected = true;
+
+			const string reason = "because a single empty filter should be added whenever the user opens the panel";
+			_settings.QuickFilters.Should().HaveCount(1, reason);
+			_quickFilters.Filters.Should().HaveCount(1, reason);
+			var filter = _quickFilters.Filters.First();
+			filter.Id.Should().NotBe(QuickFilterId.Empty);
+			filter.Value.Should().BeNullOrEmpty();
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/175")]
+		[Description("Verifies that if the panel becomes selected and there are no empty filters, then an empty filter is added")]
+		public void TestAddEmptyFilterWhenSelected2()
+		{
+			_quickFilters.AddQuickFilter().Value = "stuff";
+
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
+			model.IsSelected.Should().BeFalse();
+
+			_settings.QuickFilters.Should().HaveCount(1);
+			_quickFilters.Filters.Should().HaveCount(1);
+
+			model.IsSelected = true;
+
+			const string reason = "because there doesn't exist any empty quick filter and thus a 2nd (empty) filter should've been added";
+			_settings.QuickFilters.Should().HaveCount(2, reason);
+			_quickFilters.Filters.Should().HaveCount(2, reason);
+			var filter = _quickFilters.Filters.Last();
+			filter.Id.Should().NotBe(QuickFilterId.Empty);
+			filter.Value.Should().BeNullOrEmpty();
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/175")]
+		[Description("Verifies that no filter is added upon becoming selected if there already is an empty filter")]
+		public void TestDontAddNeedlessEmptyFilters()
+		{
+			_quickFilters.AddQuickFilter();
+
+			var model = new QuickFiltersSidePanelViewModel(_settings, _quickFilters);
+			model.IsSelected.Should().BeFalse();
+
+			_settings.QuickFilters.Should().HaveCount(1);
+			_quickFilters.Filters.Should().HaveCount(1);
+
+			model.IsSelected = true;
+			const string reason = "because the panel shouldn't needlessly add empty filters whenever it is selected";
+			_settings.QuickFilters.Should().HaveCount(1, reason);
+			_quickFilters.Filters.Should().HaveCount(1, reason);
 		}
 
 		[Test]
