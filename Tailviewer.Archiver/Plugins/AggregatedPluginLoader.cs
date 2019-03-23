@@ -13,6 +13,10 @@ namespace Tailviewer.Archiver.Plugins
 	{
 		private readonly IReadOnlyList<IPluginLoader> _pluginLoaders;
 
+		public AggregatedPluginLoader(IEnumerable<IPluginLoader> pluginLoaders)
+			: this(pluginLoaders.ToArray())
+		{}
+
 		public AggregatedPluginLoader(params IPluginLoader[] pluginLoaders)
 		{
 			_pluginLoaders = pluginLoaders;

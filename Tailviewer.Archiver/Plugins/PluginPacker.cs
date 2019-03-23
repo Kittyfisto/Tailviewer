@@ -282,6 +282,7 @@ namespace Tailviewer.Archiver.Plugins
 				case "Metrolib":
 				case "System.Extensions":
 				case "Tailviewer.Api":
+				case "Tailviewer.Core":
 				case "PE":
 					return false;
 

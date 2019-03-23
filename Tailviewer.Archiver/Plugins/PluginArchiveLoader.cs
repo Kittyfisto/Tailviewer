@@ -26,14 +26,17 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <summary>
 		/// </summary>
-		public PluginArchiveLoader(string path)
+		/// <param name="filesystem"></param>
+		/// <param name="path"></param>
+		public PluginArchiveLoader(IFilesystem filesystem, string path)
 		{
 			_archivesByPlugin = new Dictionary<IPluginDescription, IPluginArchive>();
 			_pluginStati = new Dictionary<PluginId, IPluginStatus>();
 
 			try
 			{
-				var files = Directory.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension));
+				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
+				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension)).Result;
 				foreach (var pluginPath in files)
 					ReflectPlugin(pluginPath);
 			}

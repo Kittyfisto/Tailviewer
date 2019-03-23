@@ -605,18 +605,6 @@
       <Project>{62c60d20-180e-4a59-9ef3-30161e1e31cb}</Project>
       <Name>Tailviewer.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.Count\Tailviewer.Count.csproj">
-      <Project>{7E386963-E599-43B4-9856-486C87536416}</Project>
-      <Name>Tailviewer.Count</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.Events\Tailviewer.Events.csproj">
-      <Project>{A26C1ECF-D3A8-4826-910B-4BA59E2A248E}</Project>
-      <Name>Tailviewer.Events</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.QuickInfo\Tailviewer.QuickInfo.csproj">
-      <Project>{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}</Project>
-      <Name>Tailviewer.QuickInfo</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />

@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Count.Ui;
-using Tailviewer.QuickInfo.Ui;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
 

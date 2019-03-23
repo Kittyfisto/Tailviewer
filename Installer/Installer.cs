@@ -27,7 +27,7 @@ namespace Installer
 		public Installer()
 		{
 			_assembly = Assembly.GetExecutingAssembly();
-			_prefix = "Installer.InstallationFiles.";
+			_prefix = "InstallationFiles\\";
 			var allFiles = _assembly.GetManifestResourceNames();
 			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
 			InstallationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
@@ -86,10 +86,10 @@ namespace Installer
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			foreach (var file in _files)
+			var existingFiles = Directory.EnumerateFiles(installationPath).ToList();
+			foreach (var file in existingFiles)
 			{
-				var fullFilePath = DestFilePath(installationPath, file);
-				DeleteFile(fullFilePath);
+				DeleteFile(file);
 			}
 		}
 
@@ -175,18 +175,8 @@ namespace Installer
 		private string DestFilePath(string installationPath, string file)
 		{
 			var fileName = file.Substring(_prefix.Length);
-			var patchedFileName = Patch(fileName);
-			var destFilePath = Path.Combine(installationPath, patchedFileName);
+			var destFilePath = Path.Combine(installationPath, fileName);
 			return destFilePath;
-		}
-
-		private string Patch(string fileName)
-		{
-			return fileName.Replace("Fonts.", "Fonts\\")
-				.Replace("Icons.", "Icons\\")
-				.Replace("x64.", "x64\\")
-				.Replace("x86.", "x86\\")
-				.Replace("Plugins.", "Plugins\\");
 		}
 
 		private void CopyFile(string destFilePath, string sourceFilePath)
@@ -200,11 +190,13 @@ namespace Installer
 
 				Log.InfoFormat("Writing file '{0}'", destFilePath);
 
-				using (var dest = new FileStream(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+				using (var dest = new FileStream(destFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
 				using (var source = _assembly.GetManifestResourceStream(sourceFilePath))
 				{
 					const int size = 4096;
 					var buffer = new byte[size];
+
+					dest.SetLength(0); //< We might write less bytes than the file previously had!
 
 					int read;
 					while ((read = source.Read(buffer, 0, size)) > 0)

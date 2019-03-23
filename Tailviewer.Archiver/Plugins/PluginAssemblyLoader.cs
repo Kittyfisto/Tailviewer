@@ -6,9 +6,11 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -26,7 +28,12 @@ namespace Tailviewer.Archiver.Plugins
 
 		static PluginAssemblyLoader()
 		{
-			PluginInterfaces = new[] {typeof(IFileFormatPlugin)};
+			PluginInterfaces = new[]
+			{
+				typeof(IFileFormatPlugin),
+				typeof(ILogAnalyserPlugin),
+				typeof(IWidgetPlugin)
+			};
 		}
 
 		/// <summary>

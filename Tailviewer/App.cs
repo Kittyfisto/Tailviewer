@@ -21,10 +21,6 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Settings;
-using Tailviewer.Count.BusinessLogic;
-using Tailviewer.Count.Ui;
-using Tailviewer.QuickInfo.BusinessLogic;
-using Tailviewer.QuickInfo.Ui;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -75,77 +71,79 @@ namespace Tailviewer
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
-			using (var pluginScanner = new PluginArchiveLoader(Constants.PluginPath))
 			{
-				var pluginSystem = CreatePluginSystem(pluginScanner);
-
-				var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
 				var filesystem = new Filesystem(serialTaskScheduler);
-
-				var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
-				using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
-				using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-				using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
-				using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
+				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath))
 				{
-					var arguments = ArgumentParser.TryParse(args);
-					if (arguments.FileToOpen != null)
+					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
+
+					var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
+
+					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
+					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
+					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
+					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
+					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
 					{
-						if (File.Exists(arguments.FileToOpen))
+						var arguments = ArgumentParser.TryParse(args);
+						if (arguments.FileToOpen != null)
 						{
-							// Not only do we want to add this file to the list of data sources,
-							// but we also want to select it so the user can view it immediately, regardless
-							// of what was selected previously.
-							var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
-							settings.DataSources.SelectedItem = dataSource.Id;
-						}
-						else
+							if (File.Exists(arguments.FileToOpen))
+							{
+								// Not only do we want to add this file to the list of data sources,
+								// but we also want to select it so the user can view it immediately, regardless
+								// of what was selected previously.
+								var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
+									settings.DataSources.SelectedItem = dataSource.Id;
+								}
+								else
+								{
+									Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
+								}
+							}
+
+							if (settings.AutoUpdate.CheckForUpdates)
+							{
+								// Our initial check for updates is not due to a user action
+								// and therefore we don't need to show a notification when the
+								// application is up-to-date.
+								updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+							}
+
+							var quickFilters = new QuickFilters(settings.QuickFilters);
+							actionCenter.Add(Build.Current);
+							actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
+						var application = new App();
+						var dispatcher = Dispatcher.CurrentDispatcher;
+						var uiDispatcher = new UiDispatcher(dispatcher);
+						dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
+						TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
+
+						var window = new MainWindow(settings)
 						{
-							Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
-						}
+							DataContext = new MainWindowViewModel(settings,
+							                                      dataSources,
+							                                      quickFilters,
+							                                      actionCenter,
+							                                      updater,
+							                                      taskScheduler,
+							                                      analysisStorage,
+							                                      uiDispatcher,
+							                                      pluginSystem)
+						};
+
+						settings.MainWindow.RestoreTo(window);
+
+						window.Show();
+						mutex.SetListener(window);
+
+						return application.Run();
 					}
-
-					if (settings.AutoUpdate.CheckForUpdates)
-					{
-						// Our initial check for updates is not due to a user action
-						// and therefore we don't need to show a notification when the
-						// application is up-to-date.
-						updater.CheckForUpdates(addNotificationWhenUpToDate: false);
-					}
-
-					var quickFilters = new QuickFilters(settings.QuickFilters);
-					actionCenter.Add(Build.Current);
-					actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
-					var application = new App();
-					Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-					var uiDispatcher = new UiDispatcher(dispatcher);
-					dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
-					TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
-
-					var window = new MainWindow(settings)
-					{
-						DataContext = new MainWindowViewModel(settings,
-						                                      dataSources,
-						                                      quickFilters,
-						                                      actionCenter,
-						                                      updater,
-						                                      taskScheduler,
-						                                      analysisStorage,
-						                                      uiDispatcher,
-						                                      pluginSystem)
-					};
-
-					settings.MainWindow.RestoreTo(window);
-
-					window.Show();
-					mutex.SetListener(window);
-
-					return application.Run();
 				}
 			}
 		}
 
-		private static IPluginLoader CreatePluginSystem(PluginArchiveLoader pluginScanner)
+		private static IPluginLoader CreatePluginSystem(params IPluginLoader[] pluginLoaders)
 		{
 			// Currently, we deploy some well known "plugins" via the installer and they're
 			// not available as *.tvp files just yet (which means the PluginArchiveLoader won't find them).
@@ -154,7 +152,9 @@ namespace Tailviewer
 
 			// Even though we're dealing with the limitation above, the rest of the application should not need
 			// to care, which is why we make both of those types of plugin accessible from one loader
-			var pluginLoader = new AggregatedPluginLoader(pluginScanner, wellKnownPlugins);
+			var loaders = new List<IPluginLoader>(pluginLoaders);
+			loaders.Add(wellKnownPlugins);
+			var pluginLoader = new AggregatedPluginLoader(loaders);
 
 			// Last but not least, the PluginArchiveLoader doesn't cache anything which means
 			// that multiple Load requests would result in the same plugin being loaded many times.
@@ -166,10 +166,7 @@ namespace Tailviewer
 		private static IPluginLoader LoadWellKnownPlugins()
 		{
 			var registry = new PluginRegistry();
-			//registry.Register(new EventsLogAnalyserPlugin());
 			registry.Register(new HelpWidgetPlugin());
-			registry.Register(new QuickInfoAnalyserPlugin(), new QuickInfoWidgetPlugin());
-			registry.Register(new LogEntryCountAnalyserPlugin(), new LogEntryCountWidgetPlugin());
 			return registry;
 		}
 
