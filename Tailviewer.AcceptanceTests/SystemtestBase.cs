@@ -13,7 +13,14 @@ namespace Tailviewer.AcceptanceTests
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_installerPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Tailviewer-setup.exe");
+			const string installerName = "Tailviewer-setup.exe";
+			var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, installerName);
+			var destPath = Path.Combine(Path.GetTempPath(), installerName);
+			if (File.Exists(destPath))
+				File.Delete(destPath);
+			File.Copy(sourcePath, destPath);
+
+			_installerPath = destPath;
 		}
 
 		public string InstallerPath => _installerPath;

@@ -9,7 +9,6 @@ namespace Installer
 {
 	public sealed class Bootstrapper
 	{
-		private static string _containingAssembly;
 		private static string _subFolder;
 
 		[STAThread]
@@ -17,7 +16,7 @@ namespace Installer
 		{
 			InstallExceptionHandlers();
 
-			EnableEmbeddedDependencyLoading("Installer", "InstallationFiles");
+			EnableEmbeddedDependencyLoading("InstallationFiles");
 
 			return App.Run(args);
 		}
@@ -26,13 +25,12 @@ namespace Installer
 		///     Allows 3rd party assemblies to be resolved from an embedded resources in the given assembly under
 		///     %Assembly%\%subfolder%\
 		/// </summary>
-		/// <param name="containingAssembly"></param>
 		/// <param name="subFolder"></param>
-		private static void EnableEmbeddedDependencyLoading(string containingAssembly, string subFolder)
+		private static void EnableEmbeddedDependencyLoading(string subFolder)
 		{
-			_containingAssembly = containingAssembly;
 			_subFolder = subFolder;
 
+			var tmp = Assembly.GetExecutingAssembly().GetManifestResourceNames();
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 		}
 
@@ -43,7 +41,7 @@ namespace Installer
 			var assemblyName = new AssemblyName(name);
 			string fileName = assemblyName.Name;
 
-			string resource = string.Format("{0}.{1}.{2}.dll", _containingAssembly, _subFolder, fileName);
+			string resource = string.Format("{0}\\{1}.dll", _subFolder, fileName);
 			Assembly curAsm = Assembly.GetExecutingAssembly();
 
 			using (Stream stream = curAsm.GetManifestResourceStream(resource))
