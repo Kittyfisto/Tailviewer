@@ -1,14 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:layouts="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts">
+                    xmlns:layouts="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts"
+                    xmlns:horizontalWrap="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.HorizontalWrap">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/WidgetStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <DataTemplate DataType="{x:Type layouts:HorizontalWidgetLayoutViewModel}">
-        <layouts:HorizontalWidgetLayoutControl ItemsSource="{Binding Widgets}"
+    <DataTemplate DataType="{x:Type horizontalWrap:HorizontalWrapWidgetLayoutViewModel}">
+        <layouts:SimpleWidgetLayoutControl ItemsSource="{Binding Widgets}"
                                                ItemContainerStyle="{StaticResource WidgetStyle}"
                                                AllowDrop="True"
                                                Background="Transparent">
@@ -17,7 +18,7 @@
                     <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-        </layouts:HorizontalWidgetLayoutControl>
+        </layouts:SimpleWidgetLayoutControl>
     </DataTemplate>
 
 </ResourceDictionary>

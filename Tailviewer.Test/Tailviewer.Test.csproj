@@ -214,6 +214,7 @@
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\PageLayoutTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
@@ -311,7 +312,9 @@
       <Name>Tailviewer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Ui\Controls\MainPanel\Analyse\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

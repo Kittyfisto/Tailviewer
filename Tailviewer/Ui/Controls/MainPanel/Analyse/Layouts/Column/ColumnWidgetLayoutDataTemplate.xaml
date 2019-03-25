@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts"
+                    xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
+                    xmlns:column="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Column">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Widgets/WidgetStyle.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <DataTemplate DataType="{x:Type column:ColumnWidgetLayoutViewModel}">
+        <local:SimpleWidgetLayoutControl ItemsSource="{Binding Widgets}"
+                                                   ItemContainerStyle="{StaticResource WidgetStyle}"
+                                                   AllowDrop="True"
+                                                   Background="Transparent">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <metrolib:GridPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </local:SimpleWidgetLayoutControl>
+    </DataTemplate>
+
+</ResourceDictionary>

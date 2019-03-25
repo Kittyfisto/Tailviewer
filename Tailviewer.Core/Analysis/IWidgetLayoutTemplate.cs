@@ -9,7 +9,11 @@ namespace Tailviewer.Core.Analysis
 	/// </summary>
 	public interface IWidgetLayoutTemplate
 		: ISerializableType
-		, ICloneable
+			, ICloneable
 	{
+		/// <summary>
+		///     Describes the type of layout this is...
+		/// </summary>
+		PageLayout PageLayout { get; }
 	}
 }

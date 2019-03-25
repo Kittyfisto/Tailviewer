@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Tailviewer.Core.Analysis
+namespace Tailviewer.Core.Analysis.Layouts
 {
 	/// <summary>
-	///     The template for a horizontal widget layout:
+	///     The template for a row widget layout:
 	///     Used to persist the settings of the layout in between sessions.
 	/// </summary>
-	public sealed class HorizontalWidgetLayoutTemplate
+	public sealed class RowWidgetLayoutTemplate
 		: IWidgetLayoutTemplate
 	{
 		/// <inheritdoc />
@@ -30,9 +30,12 @@ namespace Tailviewer.Core.Analysis
 		/// </summary>
 		/// <returns></returns>
 		[Pure]
-		public HorizontalWidgetLayoutTemplate Clone()
+		public RowWidgetLayoutTemplate Clone()
 		{
-			return new HorizontalWidgetLayoutTemplate();
+			return new RowWidgetLayoutTemplate();
 		}
+
+		/// <inheritdoc />
+		public PageLayout PageLayout => PageLayout.Rows;
 	}
 }

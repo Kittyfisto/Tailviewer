@@ -11,9 +11,13 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Column;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.HorizontalWrap;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Row;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
@@ -55,7 +59,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets = new List<WidgetViewModelProxy>();
 			_analysersPerWidget = new Dictionary<WidgetViewModelProxy, IDataSourceAnalyser>();
 
-			PageLayout = PageLayout.WrapHorizontal;
+			PageLayout = template.Layout?.PageLayout ?? PageLayout.WrapHorizontal;
 
 			var widgetPlugins = LoadRelevantPlugins(pluginLoader);
 			foreach (var widgetTemplate in template.Widgets)
@@ -139,7 +143,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 						break;
 
 					case PageLayout.WrapHorizontal:
-						Layout = new HorizontalWidgetLayoutViewModel();
+						Layout = new HorizontalWrapWidgetLayoutViewModel(_template.Layout as HorizontalWidgetLayoutTemplate ?? new HorizontalWidgetLayoutTemplate());
+						break;
+
+					case PageLayout.Columns:
+						Layout = new ColumnWidgetLayoutViewModel(_template.Layout as ColumnWidgetLayoutTemplate ?? new ColumnWidgetLayoutTemplate());
+						break;
+
+					case PageLayout.Rows:
+						Layout = new RowWidgetLayoutViewModel(_template.Layout as RowWidgetLayoutTemplate ?? new RowWidgetLayoutTemplate());
 						break;
 				}
 			}
@@ -185,6 +197,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 						_layout.Add(widget);
 
 				HasWidgets = _widgets.Any();
+
+				UpdateLayoutTemplate();
+			}
+		}
+
+		private void UpdateLayoutTemplate()
+		{
+			var newLayoutTemplate = _layout?.Template;
+
+			if (!Equals(_template.Layout, newLayoutTemplate))
+			{
+				_template.Layout = _layout?.Template;
+				// Now that we've modified the template, we MUST save it...
+				// as usual, we save it asynchronously because there's really no need
+				// to block...
+				_analysisStorage.SaveAsync(_id);
 			}
 		}
 

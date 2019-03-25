@@ -186,6 +186,9 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\AbstractWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml.cs">
       <DependentUpon>HelpWidgetControl.xaml</DependentUpon>
@@ -229,8 +232,7 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisPageViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutControl.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\PageLayout.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\SimpleWidgetLayoutControl.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisItemViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\IItemViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateItemViewModel.cs" />
@@ -255,7 +257,7 @@
     <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Widget.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\IWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
@@ -398,6 +400,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -523,7 +533,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalLayoutDataTemplate.xaml">
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapLayoutDataTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -5,10 +5,14 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Column;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.HorizontalWrap;
+using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Row;
 
 namespace Tailviewer.Test.Ui.Controls.Analyse
 {
@@ -25,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void Setup()
 		{
 			_id = AnalysisId.CreateNew();
-			_template = new PageTemplate{Title = "A page"};
+			_template = new PageTemplate{Title = "A page", Layout = new HorizontalWidgetLayoutTemplate()};
 			_analyser = new Mock<IAnalysis>();
 
 			_analysisStorage = new Mock<IAnalysisStorage>();
@@ -40,8 +44,8 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.Name.Should().NotBeEmpty();
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
-			model.Layout.Should().BeOfType<HorizontalWidgetLayoutViewModel>();
-			((HorizontalWidgetLayoutViewModel) model.Layout).Widgets.Should().BeEmpty();
+			model.Layout.Should().BeOfType<HorizontalWrapWidgetLayoutViewModel>();
+			((HorizontalWrapWidgetLayoutViewModel) model.Layout).Widgets.Should().BeEmpty();
 			model.HasWidgets.Should().BeFalse();
 		}
 
@@ -66,13 +70,73 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
-			model.Layout.Should().BeOfType<HorizontalWidgetLayoutViewModel>();
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			model.Layout.Should().BeOfType<HorizontalWrapWidgetLayoutViewModel>();
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 			layout.Widgets.Should().HaveCount(1);
 
 			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
 			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never,
 			                        "because we've just create a view model from an existing template and NOT made any changes to said template. Therefore nothing should've been saved to disk");
+		}
+
+		[Test]
+		public void TestConstructionFromColumnLayoutTemplate()
+		{
+			_template.Layout = new ColumnWidgetLayoutTemplate();
+			var plugin = CreateWidgetPlugin();
+			_pluginRegistry.Register(plugin);
+
+			var analyser = AddAnalyser();
+
+			_template.Add(new WidgetTemplate
+			{
+				AnalyserId = analyser.Id,
+				LogAnalyserFactoryId = plugin.AnalyserId
+			});
+
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			model.Name.Should().NotBeEmpty();
+			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
+
+			model.PageLayout.Should().Be(PageLayout.Columns);
+			model.Layout.Should().NotBeNull();
+			model.Layout.Should().BeOfType<ColumnWidgetLayoutViewModel>();
+			var layout = (ColumnWidgetLayoutViewModel)model.Layout;
+			layout.Widgets.Should().HaveCount(1);
+
+			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never,
+				"because we've just create a view model from an existing template and NOT made any changes to said template. Therefore nothing should've been saved to disk");
+		}
+
+		[Test]
+		public void TestConstructionFromRowLayoutTemplate()
+		{
+			_template.Layout = new RowWidgetLayoutTemplate();
+			var plugin = CreateWidgetPlugin();
+			_pluginRegistry.Register(plugin);
+
+			var analyser = AddAnalyser();
+
+			_template.Add(new WidgetTemplate
+			{
+				AnalyserId = analyser.Id,
+				LogAnalyserFactoryId = plugin.AnalyserId
+			});
+
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			model.Name.Should().NotBeEmpty();
+			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
+
+			model.PageLayout.Should().Be(PageLayout.Rows);
+			model.Layout.Should().NotBeNull();
+			model.Layout.Should().BeOfType<RowWidgetLayoutViewModel>();
+			var layout = (RowWidgetLayoutViewModel)model.Layout;
+			layout.Widgets.Should().HaveCount(1);
+
+			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never,
+				"because we've just create a view model from an existing template and NOT made any changes to said template. Therefore nothing should've been saved to disk");
 		}
 
 		[Test]
@@ -94,8 +158,8 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
-			model.Layout.Should().BeOfType<HorizontalWidgetLayoutViewModel>();
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			model.Layout.Should().BeOfType<HorizontalWrapWidgetLayoutViewModel>();
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 			layout.Widgets.Should().HaveCount(1);
 
 			_template.Widgets.Should().HaveCount(1, "because the page template musn't have been modified");
@@ -108,7 +172,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestRequestAddWidget1()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
-			var layout = (HorizontalWidgetLayoutViewModel) model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel) model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
@@ -135,7 +199,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 					return widget.Object;
 				});
 
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 			layout.RaiseRequestAdd(factory.Object);
 
 			_template.Widgets.Should().HaveCount(1);
@@ -146,7 +210,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestRequestAddWidget3()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
@@ -159,7 +223,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			model.PageLayout = PageLayout.WrapHorizontal;
 
 			model.Layout.Should().NotBeSameAs(layout);
-			((HorizontalWidgetLayoutViewModel)model.Layout).Widgets.Should().Contain(x => x.InnerViewModel == widget);
+			((HorizontalWrapWidgetLayoutViewModel)model.Layout).Widgets.Should().Contain(x => x.InnerViewModel == widget);
 		}
 
 		[Test]
@@ -167,7 +231,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestRequestAddWidget4()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
@@ -186,7 +250,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestRemoveWidget1()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetPlugin>();
@@ -207,7 +271,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		public void TestRemoveWidget2()
 		{
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
-			var layout = (HorizontalWidgetLayoutViewModel)model.Layout;
+			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetPlugin>();
@@ -224,6 +288,28 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			viewModel.DeleteCommand.Execute(null);
 			_analysisStorage.Verify(x => x.SaveAsync(_id), Times.Exactly(2),
 			                        "because the page should've saved the analysis now that a widget's been removed");
+		}
+
+		[Test]
+		[Description("Verifies that changing the layout is stored in the template")]
+		public void TestChangeLayout()
+		{
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+
+			model.PageLayout = PageLayout.Columns;
+			model.Layout.Should().BeOfType<ColumnWidgetLayoutViewModel>();
+			_template.Layout.Should().BeOfType<ColumnWidgetLayoutTemplate>("because the template should have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Once);
+
+			model.PageLayout = PageLayout.Rows;
+			model.Layout.Should().BeOfType<RowWidgetLayoutViewModel>();
+			_template.Layout.Should().BeOfType<RowWidgetLayoutTemplate>("because the template should have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Exactly(2));
+
+			model.PageLayout = PageLayout.WrapHorizontal;
+			model.Layout.Should().BeOfType<HorizontalWrapWidgetLayoutViewModel>();
+			_template.Layout.Should().BeOfType<HorizontalWidgetLayoutTemplate>("because the template should have been modified");
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Exactly(3));
 		}
 
 		private IWidgetPlugin CreateWidgetPlugin()

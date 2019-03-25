@@ -6,11 +6,17 @@
                     xmlns:tailviewer="clr-namespace:Tailviewer">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Layouts/HorizontalLayoutDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Layouts/Column/ColumnWidgetLayoutDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Layouts/HorizontalWrap/HorizontalWrapLayoutDataTemplate.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/Layouts/Row/RowWidgetLayoutDataTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <tailviewer:PageLayoutConverter x:Key="WrapHorizontalPageLayoutConverter"
                                     Layout="WrapHorizontal" />
+    <tailviewer:PageLayoutConverter x:Key="ColumnsPageLayoutConverter"
+                                    Layout="Columns" />
+    <tailviewer:PageLayoutConverter x:Key="RowsPageLayoutConverter"
+                                    Layout="Rows" />
 
     <DataTemplate DataType="{x:Type local:AnalysisPageViewModel}"
                   x:Key="AnalysisPageContentDataTemplate">
@@ -32,11 +38,26 @@
                                Margin="0,0,6,0"
                                VerticalAlignment="Center" />
                     <controls:OneWayToggle ToolTip="Flow horizontal"
-                                           IsChecked="{Binding PageLayout, Converter={StaticResource WrapHorizontalPageLayoutConverter}}">
+                                           IsChecked="{Binding PageLayout, Converter={StaticResource WrapHorizontalPageLayoutConverter}, Mode=TwoWay}">
                         <Viewbox>
                             <Canvas Width="24" Height="24">
-                                <Path x:Name="PART_Icon" Fill="Black"
-                                      Data="{x:Static metrolib:Icons.ViewSequential}"/>
+                                <Path Fill="Black" Data="{x:Static metrolib:Icons.ViewModule}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </controls:OneWayToggle>
+                    <controls:OneWayToggle ToolTip="Columns"
+                                           IsChecked="{Binding PageLayout, Converter={StaticResource ColumnsPageLayoutConverter}, Mode=TwoWay}">
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="Black" Data="{x:Static metrolib:Icons.ViewColumn}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </controls:OneWayToggle>
+                    <controls:OneWayToggle ToolTip="Rows"
+                                           IsChecked="{Binding PageLayout, Converter={StaticResource RowsPageLayoutConverter}, Mode=TwoWay}">
+                        <Viewbox>
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="Black" Data="{x:Static metrolib:Icons.ViewSequential}"/>
                             </Canvas>
                         </Viewbox>
                     </controls:OneWayToggle>

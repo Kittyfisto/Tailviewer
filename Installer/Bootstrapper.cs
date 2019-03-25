@@ -30,7 +30,6 @@ namespace Installer
 		{
 			_subFolder = subFolder;
 
-			var tmp = Assembly.GetExecutingAssembly().GetManifestResourceNames();
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 		}
 

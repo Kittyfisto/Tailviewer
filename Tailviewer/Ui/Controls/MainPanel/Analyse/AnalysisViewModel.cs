@@ -11,6 +11,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Core.Analysis.Layouts;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 {
@@ -184,7 +185,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		{
 			var template = new PageTemplate
 			{
-				Title = "New Page"
+				Title = "New Page",
+				Layout = new HorizontalWidgetLayoutTemplate()
 			};
 			AddPage(template);
 			_viewTemplate.Add(template);

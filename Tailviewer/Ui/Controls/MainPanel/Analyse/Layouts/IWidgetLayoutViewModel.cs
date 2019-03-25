@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
@@ -17,6 +18,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 	public interface IWidgetLayoutViewModel
 		: INotifyPropertyChanged
 	{
+		/// <summary>
+		///     A template which describes the current layout.
+		///     This place should be used to store information about this layout which should be preserved in between sessions.
+		/// </summary>
+		IWidgetLayoutTemplate Template { get; }
+
 		/// <summary>
 		///     Adds the given widget to this layout.
 		/// </summary>

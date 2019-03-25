@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -57,13 +58,16 @@
     <Compile Include="Analysis\AnalyserResult.cs" />
     <Compile Include="Analysis\AnalyserTemplate.cs" />
     <Compile Include="Analysis\AnalysisViewTemplate.cs" />
+    <Compile Include="Analysis\Layouts\ColumnWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\IAnalyserTemplate.cs" />
     <Compile Include="Analysis\IAnalysisViewTemplate.cs" />
+    <Compile Include="Analysis\Layouts\RowWidgetLayoutTemplate.cs" />
+    <Compile Include="Analysis\PageLayout.cs" />
     <Compile Include="Analysis\PageTemplate.cs" />
     <Compile Include="Analysis\AnalysisSnapshot.cs" />
     <Compile Include="Analysis\AnalysisTemplate.cs" />
     <Compile Include="Analysis\FileDescriptor.cs" />
-    <Compile Include="Analysis\HorizontalWidgetLayoutTemplate.cs" />
+    <Compile Include="Analysis\Layouts\HorizontalWidgetLayoutTemplate.cs" />
     <Compile Include="Analysis\IPageTemplate.cs" />
     <Compile Include="Analysis\IAnalysisTemplate.cs" />
     <Compile Include="Analysis\IDataSourceDescriptor.cs" />
@@ -219,6 +223,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
-	public sealed class HorizontalWidgetLayoutViewModel
+	public abstract class AbstractWidgetLayoutViewModel
 		: IWidgetLayoutViewModel
 	{
 		private readonly ObservableCollection<WidgetViewModelProxy> _widgets;
 
-		public HorizontalWidgetLayoutViewModel()
+		protected AbstractWidgetLayoutViewModel()
 		{
 			_widgets = new ObservableCollection<WidgetViewModelProxy>();
 		}
+
+		public abstract IWidgetLayoutTemplate Template { get; }
 
 		public void Add(WidgetViewModelProxy widget)
 		{
@@ -28,20 +31,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 			_widgets.Remove(widget);
 		}
 
-		public void RaiseRequestAdd(IWidgetPlugin plugin)
-		{
-			RequestAdd?.Invoke(plugin);
-		}
+		public IEnumerable<WidgetViewModelProxy> Widgets => _widgets;
 
 		public event Action<IWidgetPlugin> RequestAdd;
 
-		public ICollection<WidgetViewModelProxy> Widgets => _widgets;
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private void EmitPropertyChanged([CallerMemberName] string propertyName = null)
+		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public void RaiseRequestAdd(IWidgetPlugin obj)
+		{
+			RequestAdd?.Invoke(obj);
 		}
 	}
 }

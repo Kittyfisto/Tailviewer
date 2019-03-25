@@ -4,10 +4,10 @@ using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 {
-	public sealed class HorizontalWidgetLayoutControl
+	public sealed class SimpleWidgetLayoutControl
 		: ItemsControl
 	{
-		public HorizontalWidgetLayoutControl()
+		public SimpleWidgetLayoutControl()
 		{
 			DragEnter += OnDragEnter;
 			Drop += OnDrop;
@@ -28,7 +28,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts
 			var viewModel = e.Data.GetData(typeof(WidgetFactoryViewModel)) as WidgetFactoryViewModel;
 			if (viewModel != null)
 			{
-				var dataContext = DataContext as HorizontalWidgetLayoutViewModel;
+				var dataContext = DataContext as AbstractWidgetLayoutViewModel;
 				dataContext?.RaiseRequestAdd(viewModel.Plugin);
 			}
 		}

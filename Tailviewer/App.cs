@@ -20,6 +20,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
+using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Core.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -187,15 +188,18 @@ namespace Tailviewer
 					}
 				}
 			}
-			factory.Add(typeof(AnalysisTemplate));
-			factory.Add(typeof(AnalysisViewTemplate));
-			factory.Add(typeof(ActiveAnalysisConfiguration));
-			factory.Add(typeof(AnalyserTemplate));
-			factory.Add(typeof(PageTemplate));
-			factory.Add(typeof(WidgetTemplate));
-			factory.Add(typeof(Core.Settings.QuickFilters));
-			factory.Add(typeof(QuickFilter));
-			factory.Add(typeof(QuickFilterId));
+			factory.Add<AnalysisTemplate>();
+			factory.Add<AnalysisViewTemplate>();
+			factory.Add<ActiveAnalysisConfiguration>();
+			factory.Add<AnalyserTemplate>();
+			factory.Add<PageTemplate>();
+			factory.Add<HorizontalWidgetLayoutTemplate>();
+			factory.Add<ColumnWidgetLayoutTemplate>();
+			factory.Add<RowWidgetLayoutTemplate>();
+			factory.Add<WidgetTemplate>();
+			factory.Add<Core.Settings.QuickFilters>();
+			factory.Add<QuickFilter>();
+			factory.Add<QuickFilterId>();
 			return factory;
 		}
 
