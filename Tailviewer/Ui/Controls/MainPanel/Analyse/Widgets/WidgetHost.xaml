@@ -28,7 +28,8 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                                <local:WidgetHostTitleBar x:Name="PART_TitleBar" />
+                                <local:WidgetHostTitleBar x:Name="PART_TitleBar"
+                                                          IsEditing="{Binding IsEditing}"/>
                                 <Rectangle Fill="#888888" Grid.Row="1" />
                                 <ContentPresenter Content="{Binding Content}"
                                                   Margin="4"

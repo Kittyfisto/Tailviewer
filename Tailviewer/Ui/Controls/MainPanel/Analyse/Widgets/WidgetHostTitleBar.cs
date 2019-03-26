@@ -13,6 +13,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 			                                         new FrameworkPropertyMetadata(typeof(WidgetHostTitleBar)));
 		}
 
+		public static readonly DependencyProperty IsEditingProperty = DependencyProperty.Register(
+		                                                "IsEditing", typeof(bool), typeof(WidgetHostTitleBar),
+		                                                new PropertyMetadata(false, OnIsEditingChanged));
+
+		private static void OnIsEditingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((WidgetHostTitleBar) d).UpdateVisualState();
+		}
+
+		public bool IsEditing
+		{
+			get { return (bool) GetValue(IsEditingProperty); }
+			set { SetValue(IsEditingProperty, value); }
+		}
+
 		public WidgetHostTitleBar()
 		{
 			MouseEnter += OnMouseEnter;
@@ -38,7 +53,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 		private void UpdateVisualState(bool useTransition = true)
 		{
-			VisualStateManager.GoToState(this, IsMouseOver ? "MouseOverState" : "NormalState", useTransition);
+			VisualStateManager.GoToState(this, IsMouseOver | IsEditing ? "MouseOverState" : "NormalState", useTransition);
 		}
 	}
 }
