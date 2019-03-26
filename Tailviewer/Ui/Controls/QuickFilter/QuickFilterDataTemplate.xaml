@@ -7,11 +7,11 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilter/FilterToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
-    <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
-    
+
     <DataTemplate DataType="{x:Type quickFilter:QuickFilterViewModel}">
         <Grid Margin="8,4,0,4">
 
@@ -22,6 +22,7 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="24" />
@@ -36,9 +37,17 @@
                     IsChecked="{Binding IsActive}"
                     IsEnabled="{Binding CanBeActivated}" />
 
+                <quickFilter:FilterToggleButton x:Name="PART_InvertFilter"
+                                                Grid.Column="1"
+                                                Width="22"
+                                                Height="22"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,8,0"
+                                                IsChecked="{Binding IsInverted, Mode=TwoWay}" />
+
                 <controls:FilterTextBox
                     x:Name="PART_Value"
-                    Grid.Column="1"
+                    Grid.Column="2"
                     Height="26"
                     FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                     IsValid="{Binding IsValid, Mode=OneWay}"
@@ -47,13 +56,13 @@
                 <controls:EditToggleButton
                     SnapsToDevicePixels="True"
                     x:Name="PART_EditToggleButton"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     VerticalAlignment="Stretch"
                     IsChecked="{Binding IsEditing, Mode=TwoWay}" />
 
                 <controls:CloseButton
                     x:Name="PART_RemoveButton"
-                    Grid.Column="3"
+                    Grid.Column="4"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Right"
                     Command="{Binding RemoveCommand}" />
@@ -67,43 +76,13 @@
                     <RowDefinition Height="1" />
                 </Grid.RowDefinitions>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-
-                    <controls:VisibilityToggleButton
-                        x:Name="PART_Inverted"
-                        IsChecked="{Binding IsInverted, Converter={StaticResource InvertBoolConverter}}"
-                        Width="24"
-                        Height="24">
-                    </controls:VisibilityToggleButton>
-
-                    <controls1:QuickFilterMatchTypeToggleButton
-                        FilterMatchType="{Binding MatchType, Mode=TwoWay}"
-                        Grid.Column="1"
-                        Margin="0,8,0,8" />
-                </Grid>
-
-                <!--<local:QuickFilterActionTypeToggleButton
-                                                        Grid.Row="1"
-                                                        Margin="0,0,0,8"
-                                                        />-->
+                <controls1:QuickFilterMatchTypeToggleButton
+                    FilterMatchType="{Binding MatchType, Mode=TwoWay}"
+                    Margin="0,8,0,8" />
 
                 <Rectangle Fill="{StaticResource SeparatorBrush}" Grid.Row="2" />
             </Grid>
         </Grid>
-        <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding IsInverted}" Value="True">
-                <Setter Property="ToolTip" TargetName="PART_Inverted"
-                        Value="Entries matching this filter will be EXCLUDED" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding IsInverted}" Value="False">
-                <Setter Property="ToolTip" TargetName="PART_Inverted"
-                        Value="Only those entries matching this filter will be INCLUDED" />
-            </DataTrigger>
-        </DataTemplate.Triggers>
     </DataTemplate>
     
 </ResourceDictionary>

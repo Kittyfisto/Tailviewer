@@ -133,5 +133,28 @@ namespace Tailviewer.Test.Ui
 			_model.Value = "id = 42";
 			_model.IsActive.Should().BeFalse("because a filter that doesn't control a data source cannot be activated");
 		}
+
+		[Test]
+		[Description("Verifies that toggling the 'IsInverted' property of an inactive filter causes both the property to change as well as the filter to be activated")]
+		public void TestChangeInverted1()
+		{
+			_model.IsActive.Should().BeFalse();
+			_model.IsInverted.Should().BeFalse();
+
+			_model.IsInverted = true;
+			_model.IsInverted.Should().BeTrue();
+			_model.IsActive.Should().BeTrue("because if a user toggles the inverted flag of a filter then the user clearly wants that filter to be used");
+		}
+
+		[Test]
+		public void TestChangeInverted2()
+		{
+			_model.IsActive = true;
+			_model.IsInverted.Should().BeFalse();
+
+			_model.IsInverted = true;
+			_model.IsInverted.Should().BeTrue();
+			_model.IsActive.Should().BeTrue("because if a user toggles the inverted flag of a filter then the user clearly wants that filter to be used");
+		}
 	}
 }

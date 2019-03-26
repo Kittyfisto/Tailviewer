@@ -55,8 +55,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.115, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.115\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
@@ -178,6 +178,7 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenter.cs" />
@@ -281,7 +282,6 @@
     <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
     <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
-    <Compile Include="Ui\Controls\QuickFilterActionTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
     <Compile Include="Ui\Controls\LogView\LogEntryListView.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControl.xaml.cs">
@@ -335,6 +335,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilter\FilterToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -507,10 +511,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\QuickFilterMatchTypeToggleButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\QuickFilterActionTypeToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

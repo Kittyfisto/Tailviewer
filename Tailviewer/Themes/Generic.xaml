@@ -5,7 +5,7 @@
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/DataSourcesControl.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/ImageLabel.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterMatchTypeToggleButton.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/QuickFilterActionTypeToggleButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
 
 </ResourceDictionary>

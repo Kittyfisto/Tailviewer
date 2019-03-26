@@ -47,8 +47,8 @@
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.115, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\packages\Metrolib.0.3.0.115\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -123,74 +123,74 @@
   <ItemGroup>
     <EmbeddedResource Include="..\LICENSE">
       <Link>InstallationFiles\LICENSE</Link>
-	  <LogicalName>InstallationFiles\LICENSE</LogicalName>
+      <LogicalName>InstallationFiles\LICENSE</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\FONTLOG.txt">
       <Link>InstallationFiles\Fonts\FONTLOG.txt</Link>
-	  <LogicalName>InstallationFiles\Fonts\FONTLOG.txt</LogicalName>
+      <LogicalName>InstallationFiles\Fonts\FONTLOG.txt</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\Tailviewer\Licenses\Inconsolata\OFL.txt">
       <Link>InstallationFiles\Fonts\OFL.txt</Link>
-	  <LogicalName>InstallationFiles\Fonts\OFL.txt</LogicalName>
+      <LogicalName>InstallationFiles\Fonts\OFL.txt</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\Tailviewer\Resources\Fonts\METADATA.pb">
       <Link>InstallationFiles\Fonts\METADATA.pb</Link>
-	  <LogicalName>InstallationFiles\Fonts\METADATA.pb</LogicalName>
+      <LogicalName>InstallationFiles\Fonts\METADATA.pb</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\Tailviewer\Resources\Tailviewer.ico">
       <Link>InstallationFiles\Icons\Tailviewer.ico</Link>
-	  <LogicalName>InstallationFiles\Icons\Tailviewer.ico</LogicalName>
+      <LogicalName>InstallationFiles\Icons\Tailviewer.ico</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.exe.config">
       <Link>InstallationFiles\Tailviewer.exe.config</Link>
-	  <LogicalName>InstallationFiles\Tailviewer.exe.config</LogicalName>
+      <LogicalName>InstallationFiles\Tailviewer.exe.config</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Plugins\Tailviewer.Count.0.7.tvp">
       <Link>InstallationFiles\Plugins\Tailviewer.Count.0.7.tvp</Link>
-	  <LogicalName>InstallationFiles\Plugins\Tailviewer.Count.0.7.tvp</LogicalName>
+      <LogicalName>InstallationFiles\Plugins\Tailviewer.Count.0.7.tvp</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Plugins\Tailviewer.Events.0.7.tvp">
       <Link>InstallationFiles\Plugins\Tailviewer.Events.0.7.tvp</Link>
-	  <LogicalName>InstallationFiles\Plugins\Tailviewer.Events.0.7.tvp</LogicalName>
+      <LogicalName>InstallationFiles\Plugins\Tailviewer.Events.0.7.tvp</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Plugins\Tailviewer.QuickInfo.0.7.tvp">
       <Link>InstallationFiles\Plugins\Tailviewer.QuickInfo.0.7.tvp</Link>
-	  <LogicalName>InstallationFiles\Plugins\Tailviewer.QuickInfo.0.7.tvp</LogicalName>
+      <LogicalName>InstallationFiles\Plugins\Tailviewer.QuickInfo.0.7.tvp</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\log4net.dll">
       <Link>InstallationFiles\log4net.dll</Link>
-	  <LogicalName>InstallationFiles\log4net.dll</LogicalName>
+      <LogicalName>InstallationFiles\log4net.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Metrolib.dll">
       <Link>InstallationFiles\Metrolib.dll</Link>
-	  <LogicalName>InstallationFiles\Metrolib.dll</LogicalName>
+      <LogicalName>InstallationFiles\Metrolib.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.exe">
       <Link>InstallationFiles\Tailviewer.exe</Link>
-	  <LogicalName>InstallationFiles\Tailviewer.exe</LogicalName>
+      <LogicalName>InstallationFiles\Tailviewer.exe</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="InstallationFiles\Plugins\Readme.txt">
-		<LogicalName>InstallationFiles\Plugins\Readme.txt</LogicalName>
-	</EmbeddedResource>
+      <LogicalName>InstallationFiles\Plugins\Readme.txt</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
-	  <LogicalName>InstallationFiles\MMQ.dll</LogicalName>
+      <LogicalName>InstallationFiles\MMQ.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.Api.dll">
       <Link>InstallationFiles\Tailviewer.Api.dll</Link>
-	  <LogicalName>InstallationFiles\Tailviewer.Api.dll</LogicalName>
+      <LogicalName>InstallationFiles\Tailviewer.Api.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\Tailviewer.Core.dll">
       <Link>InstallationFiles\Tailviewer.Core.dll</Link>
-	  <LogicalName>InstallationFiles\Tailviewer.Core.dll</LogicalName>
+      <LogicalName>InstallationFiles\Tailviewer.Core.dll</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\archive.exe">
       <Link>InstallationFiles\archive.exe</Link>
-	  <LogicalName>InstallationFiles\archive.exe</LogicalName>
+      <LogicalName>InstallationFiles\archive.exe</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="..\bin\System.Extensions.dll">
       <Link>InstallationFiles\System.Extensions.dll</Link>
-	  <LogicalName>InstallationFiles\System.Extensions.dll</LogicalName>
+      <LogicalName>InstallationFiles\System.Extensions.dll</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

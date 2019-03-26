@@ -125,6 +125,10 @@ namespace Tailviewer.Ui.Controls.QuickFilter
 				_quickFilter.IsInverted = value;
 				UpdateValidity();
 				EmitPropertyChanged();
+
+				// If a user toggles the inverted property of a filter then it becomes very clear that the user
+				// intents for the filter to be used
+				IsActive = true;
 			}
 		}
 
