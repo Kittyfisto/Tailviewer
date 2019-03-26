@@ -193,6 +193,8 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml.cs">
       <DependentUpon>HelpWidgetControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetViewModelProxy.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
@@ -433,6 +435,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
