@@ -1,0 +1,21 @@
+ABCDEFG2017-03-16 23:57:10,431 [10] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Starting periodic task #1 () at irregular intervals
+2017-03-16 23:57:10,458 [6] INFO  SampleLogger - [00:00:07] Enlighten: Bake started.
+2017-03-16 23:57:10,460 [6] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:11,085 [6] INFO  SampleLogger - Setting StandaloneWindows v5.5.0 for Unity v5.5.0f3 to F:\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+2017-03-16 23:57:11,085 [6] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:11,931 [6] INFO  SampleLogger - Processing request #12345
+2017-03-16 23:57:11,931 [12] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:12,521 [6] INFO  SampleLogger - Setting StandaloneWindows v5.5.0 for Unity v5.5.0f3 to F:\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+2017-03-16 23:57:12,521 [11] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:13,269 [6] INFO  SampleLogger - [00:00:01] Enlighten: Finished 1 Layout Systems job (0.00s execute, 0.00s integrate, 0.22s wallclock)
+2017-03-16 23:57:13,269 [6] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:13,331 [11] INFO  SampleLogger - Setting StandaloneWindows v5.5.0 for Unity v5.5.0f3 to F:\Unity\Editor\Data\PlaybackEngines\windowsstandalonesupport
+2017-03-16 23:57:13,331 [12] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:13,691 [12] INFO  SampleLogger - Unloading 38 Unused Serialized files (Serialized files now loaded: 0)
+2017-03-16 23:57:13,691 [6] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:13,839 [12] DEBUG SampleLogger - Initialize engine version: 5.5.0f3 (38b4efef76f0)
+2017-03-16 23:57:13,839 [12] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:14,256 [11] DEBUG SampleLogger - Refreshing native plugins compatible for Editor in 0.45 ms, found 4 plugins.
+2017-03-16 23:57:14,256 [12] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more
+2017-03-16 23:57:14,630 [11] INFO  SampleLogger - Platform assembly: F:\Unity\Editor\Data\Managed\UnityEngine.dll (this message is harmless)
+2017-03-16 23:57:14,630 [6] DEBUG System.Threading.Tasks.DefaultTaskScheduler - Periodic task 'System.Threading.Tasks.ContinuationResultTaskFromTask`1[System.Threading.Tasks.PeriodicTask]' has finished executing and is added to the task queue once more

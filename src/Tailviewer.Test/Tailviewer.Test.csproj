@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{284845FB-EFF7-434E-9006-E789AB95F2F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tailviewer.Test</RootNamespace>
+    <AssemblyName>Tailviewer.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WpfUnit.0.1.0.14-alpha\lib\net45\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.4.1.1\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Extensions, Version=1.0.11.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.Extensions.1.0.11\lib\net45\FluentAssertions.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.7.127.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Moq.4.7.127\lib\net45\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WpfUnit, Version=0.1.0.14, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WpfUnit.0.1.0.14-alpha\lib\net45\WpfUnit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbstractIdTest.cs" />
+    <Compile Include="AnalysisIdTest.cs" />
+    <Compile Include="AssemblySetup.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderActionTest.cs" />
+    <Compile Include="BusinessLogic\AnalysisStorageTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\ActiveAnalysisConfigurationTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\ActiveAnalysisTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserEngineTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserPluginIdTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxyTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryIdTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserProxyTestTest.cs" />
+    <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
+    <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
+    <Compile Include="BusinessLogic\DataSourceAnalyserTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
+    <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\AndFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\ContainsTimestampExpressionTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserErrorTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\ExpressionParserTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\FilterExpressionTest.cs" />
+    <Compile Include="BusinessLogic\Filters\ExpressionEngine\TokenizerTest.cs" />
+    <Compile Include="BusinessLogic\Filters\FilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\LevelFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\OrFilterTest.cs" />
+    <Compile Include="BusinessLogic\LevelFlagsTest.cs" />
+    <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
+    <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
+    <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryListTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFilePropertiesTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
+    <Compile Include="BusinessLogic\LogLineTest.cs" />
+    <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\InMemoryLogTableTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableListenerCollectionTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\LogTableSectionTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
+    <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParserTest.cs" />
+    <Compile Include="BusinessLogic\NoAnalyserTest.cs" />
+    <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
+    <Compile Include="BusinessLogic\QuickFilterTest.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
+    <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Parsers\TimestampParserTest.cs" />
+    <Compile Include="BusinessLogic\TestLogAnalyser.cs" />
+    <Compile Include="BusinessLogic\TestLogAnalyserConfiguration.cs" />
+    <Compile Include="ChangelogTest.cs" />
+    <Compile Include="DataSourceIdTest.cs" />
+    <Compile Include="IssueAttribute.cs" />
+    <Compile Include="EnhancementAttribute.cs" />
+    <Compile Include="FileExTest.cs" />
+    <Compile Include="LocalTest.cs" />
+    <Compile Include="LogAnalyserIdTest.cs" />
+    <Compile Include="QuickFilterIdTest.cs" />
+    <Compile Include="ReaderWriterTest.cs" />
+    <Compile Include="Settings\Analysis\AnalyserResultTest.cs" />
+    <Compile Include="Settings\Analysis\AnalyserTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisSnapshotTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\AnalysisViewTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\PageTemplateTest.cs" />
+    <Compile Include="Settings\Analysis\HorizontalWidgetLayoutTemplateTest.cs" />
+    <Compile Include="SerializableTypeExtensions.cs" />
+    <Compile Include="Settings\Analysis\WidgetTemplateTest.cs" />
+    <Compile Include="Settings\ApplicationSettingsTest.cs" />
+    <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
+    <Compile Include="Settings\DataSourcesTest.cs" />
+    <Compile Include="Settings\DataSourceTest.cs" />
+    <Compile Include="Settings\ExportSettingsTest.cs" />
+    <Compile Include="Settings\LogViewerSettingsTest.cs" />
+    <Compile Include="Settings\MainWindowSettingsTest.cs" />
+    <Compile Include="Settings\QuickFiltersTest.cs" />
+    <Compile Include="Settings\QuickFilterTest.cs" />
+    <Compile Include="Settings\TimeFilterTest.cs" />
+    <Compile Include="StringExtensionsTest.cs" />
+    <Compile Include="TypeFactoryTest.cs" />
+    <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModelTest.cs" />
+    <Compile Include="Ui\AutoUpdateViewModelTest.cs" />
+    <Compile Include="Ui\Controls\About\ChangelogViewModelTest.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ExportViewModelTest.cs" />
+    <Compile Include="Ui\Controls\Analyse\AnalysisPageViewModelTest.cs" />
+    <Compile Include="Ui\Controls\Analyse\AnalysisViewModelTest.cs" />
+    <Compile Include="Ui\Controls\Analyse\SidePanels\AnalysesSidePanelTest.cs" />
+    <Compile Include="Ui\Controls\Analyse\SidePanels\AnalysisDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\Controls\Analyse\SidePanels\WidgetsSidePanelTest.cs" />
+    <Compile Include="Ui\Controls\DispatcherExtensions.cs" />
+    <Compile Include="Ui\Controls\LogEntryListViewTest.cs" />
+    <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverterTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceCanvasTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButtonTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenterTest.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenterTest.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenterTest.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\Analyse\AnalyseMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\LogView\PresentationLogFileTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\PageLayoutTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModelTest.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
+    <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
+    <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModelTest.cs" />
+    <Compile Include="Ui\Controls\TextCanvasTest.cs" />
+    <Compile Include="Ui\Controls\TextLineTest.cs" />
+    <Compile Include="Ui\Converters\CountConverterTest.cs" />
+    <Compile Include="Ui\DataSourcesControlTest.cs" />
+    <Compile Include="Ui\DataSourcesViewModelTest.cs" />
+    <Compile Include="Ui\DragLayerTest.cs" />
+    <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
+    <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
+    <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
+    <Compile Include="Ui\Controls\LogViewerControlTest.cs" />
+    <Compile Include="Ui\LogViewerViewModelTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ui\MainWindowViewModelTest.cs" />
+    <Compile Include="Ui\QuickFiltersSidePanelViewModelTest.cs" />
+    <Compile Include="Ui\QuickFilterViewModelTest.cs" />
+    <Compile Include="WidgetIdTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Settings\settings_no_file_guid.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\2Lines.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\2LogEntries.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\2MB.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\DifferentLevels.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\LevelCounts.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <Content Include="TestData\20Mb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\HH_mm_ss%3bs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\HH_mm_ss.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\version.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\TestLive1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\TestLive2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
+      <Project>{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}</Project>
+      <Name>Tailviewer.Archiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
+      <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
+      <Name>Tailviewer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Ui\Controls\MainPanel\Analyse\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

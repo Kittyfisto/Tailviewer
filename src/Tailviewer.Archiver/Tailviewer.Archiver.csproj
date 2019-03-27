@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tailviewer.Archiver</RootNamespace>
+    <AssemblyName>archive</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
+    </Reference>
+    <Reference Include="PE, Version=0.1.10.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PE.0.1.10\lib\net45\PE.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Applications\Pack.cs" />
+    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="PackException.cs" />
+    <Compile Include="Plugins\AbstractPluginLoader.cs" />
+    <Compile Include="Plugins\AggregatedPluginLoader.cs" />
+    <Compile Include="Plugins\AssemblyDescription.cs" />
+    <Compile Include="Plugins\AssemblyReference.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Plugins\CorruptPluginException.cs" />
+    <Compile Include="Plugins\EmptyPluginArchive.cs" />
+    <Compile Include="Plugins\IAssemblyDescription.cs" />
+    <Compile Include="Plugins\IAssemblyReference.cs" />
+    <Compile Include="Plugins\INativeImageDescription.cs" />
+    <Compile Include="Plugins\IPluginArchive.cs" />
+    <Compile Include="Plugins\IPluginDescription.cs" />
+    <Compile Include="Plugins\IPluginLoader.cs" />
+    <Compile Include="Plugins\IPluginPackageIndex.cs" />
+    <Compile Include="ListOptions.cs" />
+    <Compile Include="Plugins\IPluginStatus.cs" />
+    <Compile Include="Plugins\NativeImageDescription.cs" />
+    <Compile Include="Applications\PackOptions.cs" />
+    <Compile Include="Plugins\PluginArchive.cs" />
+    <Compile Include="Plugins\PluginArchiveLoader.cs" />
+    <Compile Include="Plugins\PluginAssemblyLoader.cs" />
+    <Compile Include="Plugins\PluginCache.cs" />
+    <Compile Include="Plugins\PluginDescription.cs" />
+    <Compile Include="Plugins\PluginId.cs" />
+    <Compile Include="Plugins\PluginInterfaceImplementation.cs" />
+    <Compile Include="Plugins\PluginPackageIndex.cs" />
+    <Compile Include="Plugins\PluginPacker.cs" />
+    <Compile Include="Plugins\PluginRegistry.cs" />
+    <Compile Include="Plugins\PluginStatus.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\bin\CommandLine.dll">
+      <Link>Resources\CommandLine.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\log4net.dll">
+      <Link>Resources\log4net.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\Metrolib.dll">
+      <Link>Resources\Metrolib.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\Tailviewer.Api.dll">
+      <Link>Resources\Tailviewer.Api.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CSProj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\bin\PE.dll">
+      <Link>Resources\PE.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\bin\ImageProcessor.dll">
+      <Link>Resources\ImageProcessor.dll</Link>
+    </Content>
+    <Content Include="Readme.txt" />
+    <EmbeddedResource Include="..\..\bin\System.Extensions.dll">
+      <Link>Resources\System.Extensions.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy ..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll ..\bin\
+copy ..\packages\PE.0.1.10\lib\net45\PE.dll ..\bin\</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

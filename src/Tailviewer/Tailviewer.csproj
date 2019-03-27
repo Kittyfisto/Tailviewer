@@ -1,0 +1,646 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{799F74C7-6DE8-455D-936D-E11D7525AB36}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tailviewer</RootNamespace>
+    <AssemblyName>Tailviewer</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Tailviewer.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Tailviewer.Bootstrapper</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
+    </Reference>
+    <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="ArgumentParser.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxy.cs" />
+    <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
+    <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
+    <Compile Include="BusinessLogic\Filters\TimeFilter.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="Int32RangeRule.cs" />
+    <Compile Include="Settings\ILogViewerSettings.cs" />
+    <Compile Include="Settings\LogViewerSettings.cs" />
+    <Compile Include="TaskExtensions.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ActionCenterExtensions.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Build.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\ExportException.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IBug.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IExportAction.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\UnhandledException.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Change.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshot.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisStorage.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshotHandle.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalysisConfiguration.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\ILogAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\IAnalysis.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisListener.cs" />
+    <Compile Include="BusinessLogic\Analysis\NoAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\ActiveAnalysis.cs" />
+    <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
+    <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
+    <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
+    <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
+    <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisHandle.cs" />
+    <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
+    <Compile Include="BusinessLogic\DataSources\ISingleDataSource.cs" />
+    <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\ILogFileToFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
+    <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
+    <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
+    <Compile Include="BusinessLogic\Analysis\LogAnalyserProxy.cs" />
+    <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Count.cs" />
+    <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
+    <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
+    <Compile Include="BusinessLogic\Filters\QuickFilters.cs" />
+    <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
+    <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />
+    <Compile Include="BusinessLogic\Searches\ISearchResults.cs" />
+    <Compile Include="BusinessLogic\Searches\ISearchResultsByLogLineIndex.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchListenerCollection.cs" />
+    <Compile Include="BusinessLogic\Searches\LogFileSearchProxy.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatch.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatchIndex.cs" />
+    <Compile Include="BusinessLogic\Searches\LogMatchSection.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResults.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResultsByLogLineIndex.cs" />
+    <Compile Include="BusinessLogic\Searches\SearchResultsListener.cs" />
+    <Compile Include="Changelog.cs" />
+    <Compile Include="FrameworkElementExtensions.cs" />
+    <Compile Include="HashSetExtensions.cs" />
+    <Compile Include="PageLayoutConverter.cs" />
+    <Compile Include="Resource.cs" />
+    <Compile Include="Settings\AutoUpdateSettings.cs" />
+    <Compile Include="Settings\BookmarkSettings.cs" />
+    <Compile Include="Settings\BookmarksSettings.cs" />
+    <Compile Include="Settings\Dashboard\DashboardSettings.cs" />
+    <Compile Include="Settings\Dashboard\LayoutSettings.cs" />
+    <Compile Include="Settings\Dashboard\Widgets\WidgetSettings.cs" />
+    <Compile Include="Settings\DataSource.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="BusinessLogic\DataSources\DataSources.cs" />
+    <Compile Include="Settings\ExportSettings.cs" />
+    <Compile Include="Settings\IApplicationSettings.cs" />
+    <Compile Include="Settings\IAutoUpdateSettings.cs" />
+    <Compile Include="Settings\IDataSourcesSettings.cs" />
+    <Compile Include="Settings\IExportSettings.cs" />
+    <Compile Include="Settings\IMainWindowSettings.cs" />
+    <Compile Include="Settings\MainWindowSettings.cs" />
+    <Compile Include="SingleApplicationHelper.cs" />
+    <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\AbstractWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml.cs">
+      <DependentUpon>HelpWidgetControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetViewModelProxy.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\DataSourceSuggestionViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverter.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceCanvas.cs" />
+    <Compile Include="Settings\DataSourceDisplayMode.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButton.cs" />
+    <Compile Include="Ui\Controls\LogView\NonMergedDataSourceToVisibilityCollapsedConverter.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml.cs">
+      <DependentUpon>ChangelogControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\MainPanel\About\ChangelogViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\Dependency.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\LicenseControl.xaml.cs">
+      <DependentUpon>LicenseControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\MainPanel\About\TailviewerControl.xaml.cs">
+      <DependentUpon>TailviewerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml.cs">
+      <DependentUpon>ActionCenterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\ActionCenter\BugViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\BuildViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ExportViewModel.cs" />
+    <Compile Include="Ui\Controls\AutoUpdateControl.xaml.cs">
+      <DependentUpon>AutoUpdateControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisPageViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\SimpleWidgetLayoutControl.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\IItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotItemViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetPlugin.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
+    <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Widget.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\IWidgetLayoutViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
+    <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropType.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DropInfo.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
+    <Compile Include="Ui\Controls\ImageLabel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
+    <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
+    <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
+    <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
+    <Compile Include="Ui\Controls\LogView\TextLine.cs" />
+    <Compile Include="Ui\Controls\LogView\LogEntryListView.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\SidePanelControl.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\IChoseTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\SpecialTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml.cs">
+      <DependentUpon>TimeChooserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModel.cs" />
+    <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
+    <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
+    <Compile Include="Ui\Converters\VersionConverter.cs" />
+    <Compile Include="Ui\Converters\ZeroToHiddenConverter.cs" />
+    <Compile Include="Ui\DragLayer.cs" />
+    <Compile Include="Ui\ViewModels\AbstractDataSourceViewModel.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\AbstractNotificationViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ActionCenterViewModel.cs" />
+    <Compile Include="BusinessLogic\ActionCenter\Level.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\ChangeViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\NotificationViewModel.cs" />
+    <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
+    <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFiltersSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\QuickFiltersViewModel.cs" />
+    <Compile Include="Ui\Controls\QuickFilter\QuickFilterViewModel.cs" />
+    <Compile Include="Ui\Converters\BrushType.cs" />
+    <Compile Include="Settings\ApplicationSettings.cs" />
+    <Compile Include="Settings\DataSources.cs" />
+    <Compile Include="Ui\Converters\CountConverter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\DataSourcesViewModel.cs" />
+    <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
+    <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
+    <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
+    <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
+    <Page Include="Resources\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Constants.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilter\FilterToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\About\AboutMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\About\ChangelogControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\About\LicenseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\About\TailviewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ActionCenterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ActionCenterItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\BugTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\BuildTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ExportTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\NotificationTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ActionCenter\ChangeTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\AutoUpdateControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageContentDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageHeaderDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\LogViewMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Plugins\PluginDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\ActiveAnalysisDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilter\QuickFilterDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilter\QuickFiltersDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\BookmarksDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\DataSourcesDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\MergedDataSourceTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\SingleDataSourceTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\TreeViewItemStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\ImageLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\QuickFiltersSidePanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\QuickFilterMatchTypeToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\LogView\LogViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Ui\Controls\LogView\LogViewerControl.cs" />
+    <Compile Include="Ui\Controls\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\DataSourcesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\SettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\SidePanelControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapLayoutDataTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Resource Include="..\..\LICENSE">
+      <Link>Licenses\Tailviewer\LICENSE</Link>
+    </Resource>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <Resource Include="Licenses\MMQ\LICENSE" />
+    <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
+    <None Include="packages.config" />
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Fonts\Inconsolata-Bold.ttf" />
+    <Resource Include="Resources\Fonts\Inconsolata-Regular.ttf" />
+    <None Include="Resources\Fonts\METADATA.pb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Tailviewer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Tailviewer.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_open_10_black_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_white_18dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ic_no_time_black_8dp.png" />
+    <Resource Include="Resources\ic_no_time_white_8dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Fonts\FONTLOG.txt" />
+    <Resource Include="Licenses\Inconsolata\OFL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Licenses\GoogleMaterialDesignIcons\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Licenses\Log4Net\LICENSE-2.0.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Licenses\Metrolib\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Licenses\MaterialDesignIcons\License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
+      <Project>{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}</Project>
+      <Name>Tailviewer.Archiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62c60d20-180e-4a59-9ef3-30161e1e31cb}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Settings\Dashboard\Analysers\Event\" />
+    <Folder Include="Ui\Controls\LogView\DataSource\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

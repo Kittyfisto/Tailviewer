@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer", "Tailviewer\Tailviewer.csproj", "{799F74C7-6DE8-455D-936D-E11D7525AB36}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer", "src\Tailviewer\Tailviewer.csproj", "{799F74C7-6DE8-455D-936D-E11D7525AB36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Test", "Tailviewer.Test\Tailviewer.Test.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Test", "src\Tailviewer.Test\Tailviewer.Test.csproj", "{284845FB-EFF7-434E-9006-E789AB95F2F2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{790E58D1-E0A7-4B82-B617-3A5D442B8CC0}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{0A1431F6-8548-44D4-B82B-049B94A7F57D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "src\Installer\Installer.csproj", "{0A1431F6-8548-44D4-B82B-049B94A7F57D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0C18B216-9FF4-4DCF-88C0-4B1448892F43} = {0C18B216-9FF4-4DCF-88C0-4B1448892F43}
 		{04577417-8FF7-4583-AA9D-C2E92CA7EE6F} = {04577417-8FF7-4583-AA9D-C2E92CA7EE6F}
@@ -26,34 +26,38 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Inst
 		{A26C1ECF-D3A8-4826-910B-4BA59E2A248E} = {A26C1ECF-D3A8-4826-910B-4BA59E2A248E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Api", "src\Tailviewer.Api\Tailviewer.Api.csproj", "{0C18B216-9FF4-4DCF-88C0-4B1448892F43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.AcceptanceTests", "src\Tailviewer.AcceptanceTests\Tailviewer.AcceptanceTests.csproj", "{502F427E-C55C-4A8B-BCF9-9D8AE7451570}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "Tailviewer.Core\Tailviewer.Core.csproj", "{62C60D20-180E-4A59-9EF3-30161E1E31CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Core", "src\Tailviewer.Core\Tailviewer.Core.csproj", "{62C60D20-180E-4A59-9EF3-30161E1E31CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver", "Tailviewer.Archiver\Tailviewer.Archiver.csproj", "{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver", "src\Tailviewer.Archiver\Tailviewer.Archiver.csproj", "{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Test", "Tailviewer.Archiver.Test\Tailviewer.Archiver.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Archiver.Test", "src\Tailviewer.Archiver.Test\Tailviewer.Archiver.Test.csproj", "{32B4C733-2E01-4633-A163-D947E0743946}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplePlugin", "SamplePlugin\SamplePlugin.csproj", "{C2C093CC-86F9-4A39-AFC1-BF2D54B7F856}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamplePlugin", "src\Plugins\SamplePlugin\SamplePlugin.csproj", "{C2C093CC-86F9-4A39-AFC1-BF2D54B7F856}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.QuickInfo", "Tailviewer.QuickInfo\Tailviewer.QuickInfo.csproj", "{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.QuickInfo", "src\Plugins\Tailviewer.Analysis.QuickInfo\Tailviewer.Analysis.QuickInfo.csproj", "{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.QuickInfo.Test", "Tailviewer.QuickInfo.Test\Tailviewer.QuickInfo.Test.csproj", "{5511968B-07E5-44F2-9901-AE25D4B78A9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.QuickInfo.Test", "src\Plugins\Tailviewer.Analysis.QuickInfo.Test\Tailviewer.Analysis.QuickInfo.Test.csproj", "{5511968B-07E5-44F2-9901-AE25D4B78A9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Count", "Tailviewer.Count\Tailviewer.Count.csproj", "{7E386963-E599-43B4-9856-486C87536416}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Count", "src\Plugins\Tailviewer.Analysis.Count\Tailviewer.Analysis.Count.csproj", "{7E386963-E599-43B4-9856-486C87536416}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Count.Test", "Tailviewer.Count.Test\Tailviewer.Count.Test.csproj", "{B4DA371D-E41B-4D91-84E3-50F41A925686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Count.Test", "src\Plugins\Tailviewer.Analysis.Count.Test\Tailviewer.Analysis.Count.Test.csproj", "{B4DA371D-E41B-4D91-84E3-50F41A925686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Events", "Tailviewer.Events\Tailviewer.Events.csproj", "{A26C1ECF-D3A8-4826-910B-4BA59E2A248E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Events", "src\Plugins\Tailviewer.Analysis.Events\Tailviewer.Analysis.Events.csproj", "{A26C1ECF-D3A8-4826-910B-4BA59E2A248E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Events.Test", "Tailviewer.Events.Test\Tailviewer.Events.Test.csproj", "{05244FBF-D94D-473B-A102-AC7623A93E15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Events.Test", "src\Plugins\Tailviewer.Analysis.Events.Test\Tailviewer.Analysis.Events.Test.csproj", "{05244FBF-D94D-473B-A102-AC7623A93E15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.DataSources", "src\Plugins\Tailviewer.Analysis.DataSources\Tailviewer.Analysis.DataSources.csproj", "{91E9A698-B458-40F6-ACFE-715BFE9832BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.DataSources.Test", "src\Plugins\Tailviewer.Analysis.DataSources.Test\Tailviewer.Analysis.DataSources.Test.csproj", "{D5968F15-12E5-4DB3-B073-86802DAAE37B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +125,14 @@ Global
 		{05244FBF-D94D-473B-A102-AC7623A93E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05244FBF-D94D-473B-A102-AC7623A93E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05244FBF-D94D-473B-A102-AC7623A93E15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E9A698-B458-40F6-ACFE-715BFE9832BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E9A698-B458-40F6-ACFE-715BFE9832BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E9A698-B458-40F6-ACFE-715BFE9832BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E9A698-B458-40F6-ACFE-715BFE9832BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5968F15-12E5-4DB3-B073-86802DAAE37B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5968F15-12E5-4DB3-B073-86802DAAE37B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5968F15-12E5-4DB3-B073-86802DAAE37B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5968F15-12E5-4DB3-B073-86802DAAE37B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,5 +148,10 @@ Global
 		{B4DA371D-E41B-4D91-84E3-50F41A925686} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
 		{A26C1ECF-D3A8-4826-910B-4BA59E2A248E} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
 		{05244FBF-D94D-473B-A102-AC7623A93E15} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
+		{91E9A698-B458-40F6-ACFE-715BFE9832BD} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
+		{D5968F15-12E5-4DB3-B073-86802DAAE37B} = {BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0BB6C40-85F7-419C-8CBC-89473DC30B16}
 	EndGlobalSection
 EndGlobal
