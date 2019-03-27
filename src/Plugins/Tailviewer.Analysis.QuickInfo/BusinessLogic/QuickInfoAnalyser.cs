@@ -10,7 +10,7 @@ using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.QuickInfo.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	public sealed class QuickInfoAnalyser
 		: LogAnalyser
@@ -110,12 +110,12 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 			return result;
 		}
 
-		private static Tailviewer.QuickInfo.BusinessLogic.QuickInfo CreateResult(LogLine? line)
+		private static QuickInfo CreateResult(LogLine? line)
 		{
 			if (line == null)
 				return null;
 
-			return new Tailviewer.QuickInfo.BusinessLogic.QuickInfo(line.Value.Message, line.Value.Timestamp);
+			return new QuickInfo(line.Value.Message, line.Value.Timestamp);
 		}
 
 		/// <summary>

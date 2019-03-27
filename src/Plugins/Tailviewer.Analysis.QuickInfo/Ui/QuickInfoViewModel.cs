@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.QuickInfo.BusinessLogic;
+using Tailviewer.Analysis.QuickInfo.BusinessLogic;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	public sealed class QuickInfoViewModel
 		: INotifyPropertyChanged

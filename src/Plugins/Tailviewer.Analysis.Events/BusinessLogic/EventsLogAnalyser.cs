@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.LogTables;
 
-namespace Tailviewer.Events.BusinessLogic
+namespace Tailviewer.Analysis.Events.BusinessLogic
 {
 	/// <summary>
 	///     This log analyser is responsible for projecting a source log file

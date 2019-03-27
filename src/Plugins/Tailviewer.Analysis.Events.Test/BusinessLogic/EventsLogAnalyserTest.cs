@@ -2,12 +2,12 @@
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Analysis.Events.BusinessLogic;
 using Tailviewer.BusinessLogic;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.LogTables;
-using Tailviewer.Events.BusinessLogic;
 
-namespace Tailviewer.Events.Test.BusinessLogic
+namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class EventsLogAnalyserTest

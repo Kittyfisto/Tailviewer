@@ -1,11 +1,11 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Analysis.QuickInfo.BusinessLogic;
+using Tailviewer.Analysis.QuickInfo.Ui;
 using Tailviewer.Core.Settings;
-using Tailviewer.QuickInfo.BusinessLogic;
-using Tailviewer.QuickInfo.Ui;
 
-namespace Tailviewer.QuickInfo.Test.Ui
+namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 {
 	[TestFixture]
 	public sealed class QuickInfoViewModelTest

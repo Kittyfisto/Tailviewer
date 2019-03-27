@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Tailviewer.Analysis.Count.Ui;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Count.Ui;
 
-namespace Tailviewer.Count.BusinessLogic
+namespace Tailviewer.Analysis.Count.BusinessLogic
 {
 	public sealed class LogEntryCountAnalyserPlugin
 		: ILogAnalyserPlugin

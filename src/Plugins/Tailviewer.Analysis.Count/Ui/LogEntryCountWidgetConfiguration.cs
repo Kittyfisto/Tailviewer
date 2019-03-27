@@ -1,7 +1,7 @@
 ﻿using System;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Count.Ui
+namespace Tailviewer.Analysis.Count.Ui
 {
 	public sealed class LogEntryCountWidgetConfiguration
 		: IWidgetConfiguration

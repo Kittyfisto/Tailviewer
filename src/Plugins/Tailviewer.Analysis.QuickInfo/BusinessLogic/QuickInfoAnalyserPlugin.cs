@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Tailviewer.Analysis.QuickInfo.Ui;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.QuickInfo.Ui;
 
-namespace Tailviewer.QuickInfo.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	public sealed class QuickInfoAnalyserPlugin
 		: ILogAnalyserPlugin

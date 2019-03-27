@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.QuickInfo.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	/// <summary>
 	///     The configuration of a single quick info.

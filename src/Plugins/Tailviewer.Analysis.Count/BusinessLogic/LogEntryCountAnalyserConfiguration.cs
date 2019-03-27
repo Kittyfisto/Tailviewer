@@ -2,7 +2,7 @@
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Count.BusinessLogic
+namespace Tailviewer.Analysis.Count.BusinessLogic
 {
 	public sealed class LogEntryCountAnalyserConfiguration
 		: ILogAnalyserConfiguration

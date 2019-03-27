@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Analysis;
 
-namespace Tailviewer.QuickInfo.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	/// <summary>
 	///     The result of the <see cref="QuickInfoAnalyser" />.

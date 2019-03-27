@@ -3,7 +3,7 @@ using System.Xml;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 
-namespace Tailviewer.Events.BusinessLogic
+namespace Tailviewer.Analysis.Events.BusinessLogic
 {
 	/// <summary>
 	/// Contains all settings for a <see cref="EventsLogAnalyser"/>.

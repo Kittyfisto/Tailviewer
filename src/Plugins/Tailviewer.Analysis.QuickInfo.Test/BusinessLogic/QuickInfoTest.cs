@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Tailviewer.QuickInfo.Test.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class QuickInfoTest

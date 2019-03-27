@@ -1,9 +1,9 @@
-﻿using Tailviewer.BusinessLogic.Analysis;
+﻿using Tailviewer.Analysis.Count.BusinessLogic;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
-using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 
-namespace Tailviewer.Count.Ui
+namespace Tailviewer.Analysis.Count.Ui
 {
 	public sealed class LogEntryCountWidgetViewModel
 		: AbstractWidgetViewModel

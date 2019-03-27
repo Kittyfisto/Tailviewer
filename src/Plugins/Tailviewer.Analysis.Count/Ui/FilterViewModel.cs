@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 
-namespace Tailviewer.Count.Ui
+namespace Tailviewer.Analysis.Count.Ui
 {
 	public sealed class FilterViewModel
 		: INotifyPropertyChanged

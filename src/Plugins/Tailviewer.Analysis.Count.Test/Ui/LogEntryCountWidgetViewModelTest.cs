@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Analysis.Count.Ui;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
-using Tailviewer.Count.Ui;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Count.Test.Ui
+namespace Tailviewer.Analysis.Count.Test.Ui
 {
 	[TestFixture]
 	public sealed class LogEntryCountWidgetViewModelTest

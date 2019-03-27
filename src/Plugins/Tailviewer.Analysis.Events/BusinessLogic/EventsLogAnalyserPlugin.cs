@@ -4,7 +4,7 @@ using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Events.BusinessLogic
+namespace Tailviewer.Analysis.Events.BusinessLogic
 {
 	public sealed class EventsLogAnalyserPlugin
 		: ILogAnalyserPlugin

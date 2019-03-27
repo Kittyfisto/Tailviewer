@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	public sealed class QuickInfoWidgetConfiguration
 		: IWidgetConfiguration

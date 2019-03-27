@@ -1,6 +1,6 @@
 ﻿using Tailviewer.BusinessLogic.Analysis;
 
-namespace Tailviewer.Count.BusinessLogic
+namespace Tailviewer.Analysis.Count.BusinessLogic
 {
 	public sealed class LogEntryCountResult
 		: ILogAnalysisResult

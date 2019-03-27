@@ -1,7 +1,7 @@
 ﻿using System;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	public sealed class QuickInfoViewConfiguration
 		: ISerializableType

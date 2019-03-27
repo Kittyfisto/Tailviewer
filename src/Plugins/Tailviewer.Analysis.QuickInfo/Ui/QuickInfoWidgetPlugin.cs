@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Analysis.QuickInfo.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.QuickInfo.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	public sealed class QuickInfoWidgetPlugin
 		: IWidgetPlugin

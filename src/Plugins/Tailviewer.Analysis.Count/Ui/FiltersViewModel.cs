@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Count.Ui
+namespace Tailviewer.Analysis.Count.Ui
 {
 	public sealed class FiltersViewModel
 	{

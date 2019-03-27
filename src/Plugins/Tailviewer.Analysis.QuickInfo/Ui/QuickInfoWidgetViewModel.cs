@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Analysis.QuickInfo.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
-using Tailviewer.QuickInfo.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	public sealed class QuickInfoWidgetViewModel
 		: AbstractWidgetViewModel

@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using log4net;
+using Tailviewer.Analysis.QuickInfo.BusinessLogic;
 using Tailviewer.Core.Settings;
-using Tailviewer.QuickInfo.BusinessLogic;
 
-namespace Tailviewer.QuickInfo.Ui
+namespace Tailviewer.Analysis.QuickInfo.Ui
 {
 	/// <summary>
 	///     Responsible for formatting a quick info result as per

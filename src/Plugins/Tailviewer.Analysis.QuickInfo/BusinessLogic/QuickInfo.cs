@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.QuickInfo.BusinessLogic
+namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	public sealed class QuickInfo
 		: IEquatable<QuickInfo>

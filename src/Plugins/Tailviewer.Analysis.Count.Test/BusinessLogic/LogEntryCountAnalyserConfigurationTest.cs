@@ -4,12 +4,12 @@ using System.Text;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Analysis.Count.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
-using Tailviewer.Count.BusinessLogic;
 
-namespace Tailviewer.Count.Test.BusinessLogic
+namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class LogEntryCountAnalyserConfigurationTest

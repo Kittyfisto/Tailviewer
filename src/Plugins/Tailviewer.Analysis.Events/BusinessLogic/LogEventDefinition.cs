@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Events.BusinessLogic
+namespace Tailviewer.Analysis.Events.BusinessLogic
 {
 	/// <summary>
 	/// 

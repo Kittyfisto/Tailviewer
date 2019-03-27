@@ -2,10 +2,10 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.QuickInfo.Ui;
+using Tailviewer.Analysis.QuickInfo.Ui;
 using Tailviewer.Test;
 
-namespace Tailviewer.QuickInfo.Test.Ui
+namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 {
 	[TestFixture]
 	public sealed class QuickInfoViewConfigurationTest

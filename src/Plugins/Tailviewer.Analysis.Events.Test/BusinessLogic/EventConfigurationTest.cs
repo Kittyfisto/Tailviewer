@@ -2,9 +2,9 @@
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Events.BusinessLogic;
+using Tailviewer.Analysis.Events.BusinessLogic;
 
-namespace Tailviewer.Events.Test.BusinessLogic
+namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class EventConfigurationTest

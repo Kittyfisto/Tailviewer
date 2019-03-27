@@ -8,7 +8,7 @@ using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Count.BusinessLogic
+namespace Tailviewer.Analysis.Count.BusinessLogic
 {
 	public sealed class LogEntryCountAnalyser
 		: LogAnalyser

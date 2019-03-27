@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Analysis.Count.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.Count.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.Count.Ui
+namespace Tailviewer.Analysis.Count.Ui
 {
 	public sealed class LogEntryCountWidgetPlugin
 		: IWidgetPlugin
