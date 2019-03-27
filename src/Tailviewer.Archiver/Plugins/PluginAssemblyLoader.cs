@@ -32,6 +32,7 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				typeof(IFileFormatPlugin),
 				typeof(ILogAnalyserPlugin),
+				typeof(IDataSourceAnalyserPlugin),
 				typeof(IWidgetPlugin)
 			};
 		}

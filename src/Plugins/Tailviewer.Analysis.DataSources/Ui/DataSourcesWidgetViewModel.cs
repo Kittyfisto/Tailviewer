@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Tailviewer.Analysis.DataSources.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
-using Tailviewer.DataSources.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 
-namespace Tailviewer.DataSources.Ui
+namespace Tailviewer.Analysis.DataSources.Ui
 {
 	public sealed class DataSourcesWidgetViewModel
 		: AbstractWidgetViewModel

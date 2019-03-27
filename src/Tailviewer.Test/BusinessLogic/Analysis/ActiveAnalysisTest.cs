@@ -33,6 +33,47 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
+		public void TestAddLogFile()
+		{
+			var engine = new Mock<IDataSourceAnalyserEngine>();
+			var analyser = new Mock<IDataSourceAnalyser>();
+			engine.Setup(x => x.CreateAnalyser(It.IsAny<ILogFile>(), It.IsAny<AnalyserTemplate>()))
+			      .Returns(analyser.Object);
+
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, engine.Object, TimeSpan.Zero);
+
+			activeAnalysis.Add(AnalyserPluginId.Empty, new TestLogAnalyserConfiguration());
+
+			analyser.Verify(x => x.OnLogFileAdded(It.IsAny<ILogFile>()), Times.Never, "because we haven't added any log file for analysis just yet");
+
+			var logFile = new Mock<ILogFile>();
+			activeAnalysis.Add(logFile.Object);
+			analyser.Verify(x => x.OnLogFileAdded(logFile.Object), Times.Once, "because we've just added a log file for analysis and thus the analyser should have been notified");
+		}
+
+		[Test]
+		public void TestRemoveLogFile()
+		{
+			var engine = new Mock<IDataSourceAnalyserEngine>();
+			var analyser = new Mock<IDataSourceAnalyser>();
+			engine.Setup(x => x.CreateAnalyser(It.IsAny<ILogFile>(), It.IsAny<AnalyserTemplate>()))
+			      .Returns(analyser.Object);
+
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, engine.Object, TimeSpan.Zero);
+
+			activeAnalysis.Add(AnalyserPluginId.Empty, new TestLogAnalyserConfiguration());
+
+			analyser.Verify(x => x.OnLogFileRemoved(It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
+
+			var logFile = new Mock<ILogFile>();
+			activeAnalysis.Add(logFile.Object);
+			analyser.Verify(x => x.OnLogFileRemoved(It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
+
+			activeAnalysis.Remove(logFile.Object);
+			analyser.Verify(x => x.OnLogFileRemoved(logFile.Object), Times.Once, "because we've just removed a log file from analysis and thus the analyser should have been notified");
+		}
+
+		[Test]
 		public void TestConstructionEmptyTemplate()
 		{
 			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
@@ -58,12 +99,12 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
-			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			var analyser = activeAnalysis.Add(new AnalyserPluginId("foobar"), configuration);
 
 			_template.Analysers.Should().HaveCount(1);
 			var template = _template.Analysers.First();
 			template.Id.Should().Be(analyser.Id);
-			template.LogAnalyserPluginId.Should().Be(new LogAnalyserFactoryId("foobar"));
+			template.AnalyserPluginId.Should().Be(new AnalyserPluginId("foobar"));
 			template.Configuration.Should().Be(configuration);
 		}
 
@@ -74,7 +115,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
-			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			var analyser = activeAnalysis.Add(new AnalyserPluginId("foobar"), configuration);
 			activeAnalysis.TryGetAnalyser(analyser.Id, out var actualAnalyser).Should().BeTrue();
 			actualAnalyser.Should().BeSameAs(analyser);
 		}
@@ -86,7 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
-			activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), configuration);
+			activeAnalysis.Add(new AnalyserPluginId("foobar"), configuration);
 			activeAnalysis.TryGetAnalyser(AnalyserId.CreateNew(), out var actualAnalyser).Should().BeFalse();
 			actualAnalyser.Should().BeNull();
 		}
@@ -97,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
-			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), null);
+			var analyser = activeAnalysis.Add(new AnalyserPluginId("foobar"), null);
 			_template.Analysers.Should().HaveCount(1);
 
 			activeAnalysis.Remove(analyser);

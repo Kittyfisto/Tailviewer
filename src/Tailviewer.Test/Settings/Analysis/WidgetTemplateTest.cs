@@ -24,7 +24,7 @@ namespace Tailviewer.Test.Settings.Analysis
 			clone.Title.Should().Be("Foobar");
 			clone.Configuration.Should().BeNull();
 			clone.AnalyserId.Should().Be(AnalyserId.Empty);
-			clone.LogAnalyserFactoryId.Should().Be(LogAnalyserFactoryId.Empty);
+			clone.AnalyserPluginId.Should().Be(AnalyserPluginId.Empty);
 		}
 
 		[Test]
@@ -54,14 +54,14 @@ namespace Tailviewer.Test.Settings.Analysis
 			{
 				Id = WidgetId.CreateNew(),
 				AnalyserId = AnalyserId.CreateNew(),
-				LogAnalyserFactoryId = new LogAnalyserFactoryId("Company.Namespace.MyFactory")
+				AnalyserPluginId = new AnalyserPluginId("Company.Namespace.MyFactory")
 			};
 			var clone = template.Clone();
 			clone.Should().NotBeNull();
 			clone.Should().NotBeSameAs(template);
 			clone.Id.Should().Be(template.Id);
 			clone.AnalyserId.Should().Be(template.AnalyserId);
-			clone.LogAnalyserFactoryId.Should().Be(template.LogAnalyserFactoryId);
+			clone.AnalyserPluginId.Should().Be(template.AnalyserPluginId);
 		}
 
 		sealed class TestConfiguration
@@ -90,7 +90,7 @@ namespace Tailviewer.Test.Settings.Analysis
 			{
 				Id = WidgetId.CreateNew(),
 				AnalyserId = AnalyserId.CreateNew(),
-				LogAnalyserFactoryId = new LogAnalyserFactoryId("Company.Namespace.SomePlugin"),
+				AnalyserPluginId = new AnalyserPluginId("Company.Namespace.SomePlugin"),
 				Title = "dwankwadjkwad",
 				Configuration = new TestConfiguration()
 			};
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.Settings.Analysis
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Id.Should().Be(template.Id);
 			actualTemplate.AnalyserId.Should().Be(template.AnalyserId);
-			actualTemplate.LogAnalyserFactoryId.Should().Be(template.LogAnalyserFactoryId);
+			actualTemplate.AnalyserPluginId.Should().Be(template.AnalyserPluginId);
 			actualTemplate.Title.Should().Be(template.Title);
 			actualTemplate.Configuration.Should().NotBeNull();
 			actualTemplate.Configuration.Should().BeOfType<TestConfiguration>();

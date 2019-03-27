@@ -34,7 +34,7 @@ namespace Tailviewer.Templates.Analysis
 		/// <summary>
 		/// The id of the factory which should be used to instantiate a widget from this template.
 		/// </summary>
-		LogAnalyserFactoryId LogAnalyserFactoryId { get; }
+		AnalyserPluginId AnalyserPluginId { get; }
 
 		/// <summary>
 		///     The configuration of the view (widget).

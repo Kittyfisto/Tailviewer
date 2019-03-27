@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Tailviewer.DataSources.BusinessLogic;
+using Tailviewer.Analysis.DataSources.BusinessLogic;
 
-namespace Tailviewer.DataSources.Ui
+namespace Tailviewer.Analysis.DataSources.Ui
 {
 	public sealed class DataSourceViewModel
 	{

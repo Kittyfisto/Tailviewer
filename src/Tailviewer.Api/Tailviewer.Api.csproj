@@ -50,14 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalysisId.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserFactoryId.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalysisResult.cs" />
-    <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryId.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalyserPluginId.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFilePropertyDescriptor.cs" />

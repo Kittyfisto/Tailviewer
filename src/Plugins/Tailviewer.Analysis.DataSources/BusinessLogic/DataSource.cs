@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.DataSources.BusinessLogic
+﻿namespace Tailviewer.Analysis.DataSources.BusinessLogic
 {
 	public sealed class DataSource
 		: ISerializableType

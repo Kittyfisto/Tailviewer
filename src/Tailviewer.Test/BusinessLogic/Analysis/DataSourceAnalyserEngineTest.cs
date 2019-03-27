@@ -30,7 +30,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var logFile = new Mock<ILogFile>();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
 			{
-				LogAnalyserPluginId = new LogAnalyserFactoryId("Some Log Analyser Plugin")
+				AnalyserPluginId = new AnalyserPluginId("Some Log Analyser Plugin")
 			});
 			analyser.Should().NotBeNull();
 			_logAnalyserEngine.Verify(x => x.CreateAnalysis(logFile.Object, It.IsAny<DataSourceAnalysisConfiguration>(), It.IsAny<IDataSourceAnalysisListener>()),
@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestCreateCustomDataSourceAnalyser()
 		{
-			var id = new DataSourceAnalyserPluginId("Some Data Source Analyser Plugin");
+			var id = new AnalyserPluginId("Some Data Source Analyser Plugin");
 			var plugin = new Mock<IDataSourceAnalyserPlugin>();
 			plugin.Setup(x => x.Id).Returns(id);
 			var engine = new DataSourceAnalyserEngine(_logAnalyserEngine.Object, CreatePluginLoader(plugin.Object));
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var configuration = new TestLogAnalyserConfiguration();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
 			{
-				DataSourceAnalyserPluginId = id,
+				AnalyserPluginId = id,
 				Configuration = configuration
 			});
 			analyser.Should().NotBeNull();
@@ -60,31 +60,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
-		public void TestCreateCustomDataSourceAnalyserNotFound()
-		{
-			var plugin = new Mock<IDataSourceAnalyserPlugin>();
-			plugin.Setup(x => x.Id).Returns(new DataSourceAnalyserPluginId("Plugin A"));
-			var engine = new DataSourceAnalyserEngine(_logAnalyserEngine.Object, CreatePluginLoader(plugin.Object));
-			var logFile = new Mock<ILogFile>();
-			var configuration = new TestLogAnalyserConfiguration();
-			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
-			{
-				DataSourceAnalyserPluginId = new DataSourceAnalyserPluginId("Plugin B"),
-				Configuration = configuration
-			});
-			analyser.Should().NotBeNull();
-			analyser.Should().BeOfType<NoAnalyser>();
-
-			_logAnalyserEngine.Verify(x => x.CreateAnalysis(It.IsAny<ILogFile>(), It.IsAny<DataSourceAnalysisConfiguration>(), It.IsAny<IDataSourceAnalysisListener>()),
-			                          Times.Never, "because we have specified a DataSourceAnalyserPluginId and thus the corresponding plugin should've been used to create the data source analyser");
-			plugin.Verify(x => x.Create(It.IsAny<AnalyserId>(), logFile.Object, configuration),
-			              Times.Never, "because that plugin has a different id than we one we supplied with the analyser template");
-		}
-
-		[Test]
 		public void TestRemoveAnalyser()
 		{
-			var id = new DataSourceAnalyserPluginId("Some Data Source Analyser Plugin");
+			var id = new AnalyserPluginId("Some Data Source Analyser Plugin");
 			var plugin = new Mock<IDataSourceAnalyserPlugin>();
 			plugin.Setup(x => x.Id).Returns(id);
 			var pluginAnalyser = new Mock<IDataSourceAnalyser>();
@@ -97,7 +75,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var configuration = new TestLogAnalyserConfiguration();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
 			{
-				DataSourceAnalyserPluginId = id,
+				AnalyserPluginId = id,
 				Configuration = configuration
 			});
 			analyser.Should().NotBeNull();

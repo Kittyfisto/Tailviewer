@@ -71,14 +71,7 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
-		void WriteAttribute(string name, LogAnalyserFactoryId value);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		void WriteAttribute(string name, DataSourceAnalyserPluginId value);
+		void WriteAttribute(string name, AnalyserPluginId value);
 
 		/// <summary>
 		/// 

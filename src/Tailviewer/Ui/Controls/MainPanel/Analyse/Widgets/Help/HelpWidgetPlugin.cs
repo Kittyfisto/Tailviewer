@@ -9,9 +9,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 	public sealed class HelpWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId LogAnalyserId => LogAnalyserFactoryId.Empty;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
+		public AnalyserPluginId AnalyserId => AnalyserPluginId.Empty;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 

@@ -112,15 +112,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		/// <summary>
 		/// </summary>
-		/// <param name="factoryId"></param>
+		/// <param name="pluginId"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		public IDataSourceAnalyser Add(LogAnalyserFactoryId factoryId, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Add(AnalyserPluginId pluginId, ILogAnalyserConfiguration configuration)
 		{
 			var template = new AnalyserTemplate
 			{
 				Id = AnalyserId.CreateNew(),
-				LogAnalyserPluginId = factoryId,
+				AnalyserPluginId = pluginId,
 				Configuration = configuration
 			};
 
@@ -195,6 +195,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				_logFiles.Add(logFile);
 				UpdateProxy();
+				NotifyAnalysersAddLogFile(logFile);
 			}
 		}
 
@@ -204,6 +205,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				_logFiles.Remove(logFile);
 				UpdateProxy();
+				NotifyAnalysersRemoveLogFile(logFile);
 			}
 		}
 
@@ -213,6 +215,28 @@ namespace Tailviewer.BusinessLogic.Analysis
 				_maximumWaitTime,
 				_logFiles);
 			_logFile.InnerLogFile = merged;
+		}
+
+		private void NotifyAnalysersAddLogFile(ILogFile logFile)
+		{
+			// Not every analyser works with the proxy, some prefer
+			// to analyse each selected log file on its own, therefore
+			// we have to notify them that a log file has been added
+			foreach (var analyser in _analysers.Keys)
+			{
+				analyser.OnLogFileAdded(logFile);
+			}
+		}
+
+		private void NotifyAnalysersRemoveLogFile(ILogFile logFile)
+		{
+			// Not every analyser works with the proxy, some prefer
+			// to analyse each selected log file on its own, therefore
+			// we have to notify them that a log file has been removed
+			foreach (var analyser in _analysers.Keys)
+			{
+				analyser.OnLogFileRemoved(logFile);
+			}
 		}
 
 		/// <summary>
@@ -236,7 +260,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var result = analyser.Result?.Clone() as ILogAnalysisResult;
 			var progress = Progress;
 			return new DataSourceAnalyserSnapshot(analyser.Id,
-			                                      analyser.LogAnalyserPluginId,
+			                                      analyser.AnalyserPluginId,
 			                                      configuration,
 			                                      result,
 			                                      progress);

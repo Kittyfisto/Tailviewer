@@ -17,7 +17,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     A (hopefully) globally unique id that describes this factory.
 		///     It is advisable that this id be human-readable as well, be it just for debugging purposes.
 		/// </summary>
-		LogAnalyserFactoryId Id { get; }
+		AnalyserPluginId Id { get; }
 
 		/// <summary>
 		///     Types which are expected to be serialized. This must include the <see cref="ILogAnalyserConfiguration"/> implementation
@@ -26,6 +26,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <remarks>
 		///     It is expected that the name for a certain logical type does NOT change over the lifetime of the plugin.
 		///     Renaming a certain <see cref="Type"/> is fine, so as long as the name returned in this dictionary does NOT change.
+		/// </remarks>
+		/// <remarks>
+		///     TODO: This type will be removed in future versions
 		/// </remarks>
 		IEnumerable<KeyValuePair<string, Type>> SerializableTypes { get; }
 

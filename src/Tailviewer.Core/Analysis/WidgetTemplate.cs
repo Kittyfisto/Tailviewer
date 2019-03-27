@@ -20,7 +20,7 @@ namespace Tailviewer.Core.Analysis
 		private string _title;
 		private AnalyserId _analyserId;
 		private IWidgetConfiguration _configuration;
-		private LogAnalyserFactoryId _logAnalyserFactoryId;
+		private AnalyserPluginId _analyserPluginId;
 
 		/// <inheritdoc />
 		public string Title
@@ -44,10 +44,10 @@ namespace Tailviewer.Core.Analysis
 		}
 
 		/// <inheritdoc />
-		public LogAnalyserFactoryId LogAnalyserFactoryId
+		public AnalyserPluginId AnalyserPluginId
 		{
-			get { return _logAnalyserFactoryId; }
-			set { _logAnalyserFactoryId = value; }
+			get { return _analyserPluginId; }
+			set { _analyserPluginId = value; }
 		}
 
 		/// <inheritdoc />
@@ -64,7 +64,7 @@ namespace Tailviewer.Core.Analysis
 			writer.WriteAttribute("Title", _title);
 			writer.WriteAttribute("Configuration", _configuration);
 			writer.WriteAttribute("AnalyserId", _analyserId);
-			writer.WriteAttribute("FactoryId", _logAnalyserFactoryId);
+			writer.WriteAttribute("FactoryId", _analyserPluginId);
 		}
 
 		/// <inheritdoc />
@@ -74,7 +74,7 @@ namespace Tailviewer.Core.Analysis
 			reader.TryReadAttribute("Title", out _title);
 			reader.TryReadAttribute("Configuration", out _configuration);
 			reader.TryReadAttribute("AnalyserId", out _analyserId);
-			reader.TryReadAttribute("FactoryId", out _logAnalyserFactoryId);
+			reader.TryReadAttribute("FactoryId", out _analyserPluginId);
 		}
 
 		object ICloneable.Clone()
@@ -94,7 +94,7 @@ namespace Tailviewer.Core.Analysis
 				Id = _id,
 				Title = _title,
 				AnalyserId = AnalyserId,
-				LogAnalyserFactoryId = LogAnalyserFactoryId,
+				AnalyserPluginId = AnalyserPluginId,
 				Configuration = _configuration?.Clone() as IWidgetConfiguration
 			};
 		}

@@ -295,7 +295,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var template = new AnalysisTemplate(analysisSnapshot.Analysers.Select(x => new AnalyserTemplate
 			{
 				Id = x.Id,
-				LogAnalyserPluginId = x.LogAnalyserPluginId,
+				AnalyserPluginId = x.AnalyserPluginId,
 				Configuration = x.Configuration
 			}));
 			var clone = viewTemplate.Clone();

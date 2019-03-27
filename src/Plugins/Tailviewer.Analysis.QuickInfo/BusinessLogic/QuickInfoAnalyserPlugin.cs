@@ -10,9 +10,9 @@ namespace Tailviewer.QuickInfo.BusinessLogic
 	public sealed class QuickInfoAnalyserPlugin
 		: ILogAnalyserPlugin
 	{
-		public static readonly LogAnalyserFactoryId Id = new LogAnalyserFactoryId("Tailviewer.Analyser.QuickInfo");
+		public static readonly AnalyserPluginId Id = new AnalyserPluginId("Tailviewer.Analyser.QuickInfo");
 
-		LogAnalyserFactoryId ILogAnalyserPlugin.Id => Id;
+		AnalyserPluginId ILogAnalyserPlugin.Id => Id;
 
 		public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => 
 			new Dictionary<string, Type>

@@ -12,22 +12,14 @@ namespace Tailviewer.Core.Analysis
 		: IAnalyserTemplate
 	{
 		private ILogAnalyserConfiguration _configuration;
-		private LogAnalyserFactoryId _logAnalyserPluginId;
-		private DataSourceAnalyserPluginId _dataSourceAnalyserPluginId;
+		private AnalyserPluginId _analyserPluginId;
 		private AnalyserId _id;
 
 		/// <inheritdoc />
-		public LogAnalyserFactoryId LogAnalyserPluginId
+		public AnalyserPluginId AnalyserPluginId
 		{
-			get { return _logAnalyserPluginId; }
-			set { _logAnalyserPluginId = value; }
-		}
-
-		/// <inheritdoc />
-		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId
-		{
-			get { return _dataSourceAnalyserPluginId; }
-			set { _dataSourceAnalyserPluginId = value; }
+			get { return _analyserPluginId; }
+			set { _analyserPluginId = value; }
 		}
 
 		/// <inheritdoc />
@@ -48,9 +40,8 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
-			writer.WriteAttribute("LogAnalyserPluginId", _logAnalyserPluginId);
-			writer.WriteAttribute("DataSourceAnalyserPluginId", _dataSourceAnalyserPluginId);
 			writer.WriteAttribute("Id", _id);
+			writer.WriteAttribute("AnalyserPluginId", _analyserPluginId);
 			writer.WriteAttribute("Configuration", _configuration);
 		}
 
@@ -59,10 +50,9 @@ namespace Tailviewer.Core.Analysis
 		{
 			reader.TryReadAttribute("Id", out _id);
 
-			if (!reader.TryReadAttribute("LogAnalyserPluginId", out _logAnalyserPluginId))
-				reader.TryReadAttribute("FactoryId", out _logAnalyserPluginId); //< legacy name..
+			if (!reader.TryReadAttribute("AnalyserPluginId", out _analyserPluginId))
+				reader.TryReadAttribute("FactoryId", out _analyserPluginId); //< legacy name..
 
-			reader.TryReadAttribute("DataSourceAnalyserPluginId", out _dataSourceAnalyserPluginId);
 			reader.TryReadAttribute("Configuration", out _configuration);
 		}
 
@@ -80,8 +70,7 @@ namespace Tailviewer.Core.Analysis
 			return new AnalyserTemplate
 			{
 				Id = Id,
-				LogAnalyserPluginId = LogAnalyserPluginId,
-				DataSourceAnalyserPluginId = DataSourceAnalyserPluginId,
+				AnalyserPluginId = AnalyserPluginId,
 				Configuration = _configuration?.Clone() as ILogAnalyserConfiguration
 			};
 		}

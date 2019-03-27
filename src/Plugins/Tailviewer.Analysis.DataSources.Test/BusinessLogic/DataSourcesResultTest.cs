@@ -3,10 +3,10 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Analysis.DataSources.BusinessLogic;
 using Tailviewer.Core;
-using Tailviewer.DataSources.BusinessLogic;
 
-namespace Tailviewer.DataSources.Test.BusinessLogic
+namespace Tailviewer.Analysis.DataSources.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class DataSourcesResultTest

@@ -67,14 +67,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			{
 				if (TryGetAnalyser(widgetTemplate.AnalyserId, out var analyser))
 				{
-					if (widgetPlugins.TryGetValue(widgetTemplate.LogAnalyserFactoryId, out var plugin))
+					if (widgetPlugins.TryGetValue(widgetTemplate.AnalyserPluginId, out var plugin))
 					{
 						AddExistingWidget(plugin, widgetTemplate, analyser);
 					}
 					else
 					{
 						Log.WarnFormat("Unable to find plugin widget factory '{0}', widget '{1} ({2})' will NOT be displayed",
-						               widgetTemplate.LogAnalyserFactoryId,
+						               widgetTemplate.AnalyserPluginId,
 						               widgetTemplate.Title,
 						               widgetTemplate.Id);
 					}
@@ -82,7 +82,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				else
 				{
 					Log.WarnFormat("Unable to find analyser factory '{0}', widget '{1} ({2})' will NOT be displayed",
-					               widgetTemplate.LogAnalyserFactoryId,
+					               widgetTemplate.AnalyserPluginId,
 					               widgetTemplate.Title,
 					               widgetTemplate.Id);
 				}
@@ -104,21 +104,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		}
 
 		[Pure]
-		private static IReadOnlyDictionary<LogAnalyserFactoryId, IWidgetPlugin> LoadRelevantPlugins(IPluginLoader pluginLoader)
+		private static IReadOnlyDictionary<AnalyserPluginId, IWidgetPlugin> LoadRelevantPlugins(IPluginLoader pluginLoader)
 		{
 			var plugins = pluginLoader.LoadAllOfType<IWidgetPlugin>();
-			var pluginsById = new Dictionary<LogAnalyserFactoryId, IWidgetPlugin>(plugins.Count);
+			var pluginsById = new Dictionary<AnalyserPluginId, IWidgetPlugin>(plugins.Count);
 			foreach (var plugin in plugins)
 			{
-				if (!pluginsById.TryGetValue(plugin.LogAnalyserId, out var existingPlugin))
+				if (!pluginsById.TryGetValue(plugin.AnalyserId, out var existingPlugin))
 				{
-					pluginsById.Add(plugin.LogAnalyserId, plugin);
+					pluginsById.Add(plugin.AnalyserId, plugin);
 				}
 				else
 				{
 					Log.WarnFormat("Ignoring plugin {0} with id {1}, there already is another plugin registered with the same id: {2}",
 					               plugin.GetType(),
-					               plugin.LogAnalyserId,
+					               plugin.AnalyserId,
 					               existingPlugin.GetType());
 				}
 			}
@@ -226,13 +226,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddNewWidget(IWidgetPlugin plugin, ILogAnalyserConfiguration configuration, IWidgetConfiguration viewConfiguration)
 		{
-			var analyser = CreateAnalyser(plugin.LogAnalyserId, configuration);
+			var analyser = CreateAnalyser(plugin.AnalyserId, configuration);
 
 			var widgetTemplate = new WidgetTemplate
 			{
 				Id = WidgetId.CreateNew(),
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.LogAnalyserId,
+				AnalyserPluginId = plugin.AnalyserId,
 				Configuration = viewConfiguration
 			};
 
@@ -271,22 +271,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			}
 		}
 
-		private IDataSourceAnalyser CreateAnalyser(LogAnalyserFactoryId factoryId, ILogAnalyserConfiguration configuration)
+		private IDataSourceAnalyser CreateAnalyser(AnalyserPluginId pluginId, ILogAnalyserConfiguration configuration)
 		{
 			try
 			{
-				if (factoryId != LogAnalyserFactoryId.Empty)
+				if (pluginId != AnalyserPluginId.Empty)
 				{
-					return _analysis.Add(factoryId, configuration);
+					return _analysis.Add(pluginId, configuration);
 				}
 
-				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", factoryId);
+				Log.DebugFormat("Widget '{0}' doesn't specify a log analyser, none will created", pluginId);
 				return new NoAnalyser();
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", factoryId, e);
-				return new NoAnalyser(factoryId);
+				Log.ErrorFormat("Caught unexpected exception while creating log analyser for widget '{0}': {1}", pluginId, e);
+				return new NoAnalyser(pluginId);
 			}
 		}
 

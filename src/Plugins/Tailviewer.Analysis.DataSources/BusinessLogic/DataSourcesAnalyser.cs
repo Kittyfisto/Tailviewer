@@ -1,65 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.Analysis;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.DataSources.BusinessLogic
+namespace Tailviewer.Analysis.DataSources.BusinessLogic
 {
 	public sealed class DataSourcesAnalyser
-		: LogAnalyser
+		: IDataSourceAnalyser
 	{
+		private readonly AnalyserId _id;
 		private readonly DataSourcesResult _result;
-		private readonly ILogFile _source;
-		private readonly HashSet<string> _dataSourceNames;
+		private readonly Dictionary<ILogFile, DataSource> _logFiles;
 
-		public DataSourcesAnalyser(ILogFile source, TimeSpan maximumWaitTime)
+		public DataSourcesAnalyser(AnalyserId id)
 		{
+			_id = id;
 			_result = new DataSourcesResult();
-			_dataSourceNames = new HashSet<string>();
-
-			_source = source;
-
-			// DO NOT ADD ANYTHING AFTER THIS LINE
-			_source.AddListener(this, maximumWaitTime, 1000);
+			_logFiles = new Dictionary<ILogFile, DataSource>();
 		}
 
-		public override ILogAnalysisResult Result => _result;
+		public ILogAnalysisResult Result => _result;
 
-		public override Percentage Progress => Percentage.HundredPercent;
+		public bool IsFrozen => false;
 
-		protected override void OnLogFileModifiedInternal(ILogFile logFile, LogFileSection section)
+		public ILogAnalyserConfiguration Configuration { get; set; }
+
+		public void OnLogFileAdded(ILogFile logFile)
 		{
-			if (section.IsReset)
+			var dataSource = new DataSource
 			{
-				_dataSourceNames.Clear();
-				_result.DataSources.Clear();
-			}
-			else if (section.IsInvalidate)
+				Name = logFile.GetValue(LogFileProperties.Name)
+			};
+			_logFiles.Add(logFile, dataSource);
+			_result.DataSources.Add(dataSource);
+		}
+
+		public void OnLogFileRemoved(ILogFile logFile)
+		{
+			if (_logFiles.TryGetValue(logFile, out var dataSource))
 			{
-				// TODO: Implement properly
-			}
-			else
-			{
-				var buffer = new LogEntryBuffer(section.Count, LogFileColumns.OriginalDataSourceName);
-				logFile.GetEntries(section, buffer);
-				foreach (var dataSourceName in buffer.Column(LogFileColumns.OriginalDataSourceName))
-				{
-					if (_dataSourceNames.Add(dataSourceName))
-					{
-						_result.DataSources.Add(new DataSource
-						{
-							Name = dataSourceName
-						});
-					}
-				}
+				_logFiles.Remove(logFile);
+				_result.DataSources.Remove(dataSource);
 			}
 		}
 
-		protected override void DisposeInternal()
-		{
-			_source.RemoveListener(this);
-		}
+		public AnalyserId Id => _id;
+
+		public AnalyserPluginId AnalyserPluginId => DataSourcesAnalyserPlugin.Id;
+
+		public Percentage Progress => Percentage.HundredPercent;
+
+		#region Implementation of IDisposable
+
+		public void Dispose()
+		{}
+
+		#endregion
 	}
 }

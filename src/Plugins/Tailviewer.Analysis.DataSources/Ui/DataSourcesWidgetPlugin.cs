@@ -1,18 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Analysis.DataSources.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.DataSources.BusinessLogic;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 
-namespace Tailviewer.DataSources.Ui
+namespace Tailviewer.Analysis.DataSources.Ui
 {
 	public sealed class DataSourcesWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId LogAnalyserId => DataSourcesAnalyserPlugin.Id;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
+		public AnalyserPluginId AnalyserId => DataSourcesAnalyserPlugin.Id;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 

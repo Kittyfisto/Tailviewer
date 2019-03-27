@@ -23,7 +23,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly List<IDataSourceAnalyser> _dataSourceAnalysers;
-		private readonly Dictionary<DataSourceAnalyserPluginId, IDataSourceAnalyserPlugin> _factoriesById;
+		private readonly Dictionary<AnalyserPluginId, IDataSourceAnalyserPlugin> _factoriesById;
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
 
 		private readonly object _syncRoot;
@@ -33,7 +33,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_logAnalyserEngine = logAnalyserEngine ?? throw new ArgumentNullException(nameof(logAnalyserEngine));
 			_syncRoot = new object();
 			_dataSourceAnalysers = new List<IDataSourceAnalyser>();
-			_factoriesById = new Dictionary<DataSourceAnalyserPluginId, IDataSourceAnalyserPlugin>();
+			_factoriesById = new Dictionary<AnalyserPluginId, IDataSourceAnalyserPlugin>();
 
 			if (pluginLoader != null)
 				foreach (var plugin in pluginLoader.LoadAllOfType<IDataSourceAnalyserPlugin>())
@@ -43,26 +43,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <inheritdoc />
 		public IDataSourceAnalyser CreateAnalyser(ILogFile logFile, AnalyserTemplate template)
 		{
-			var pluginId = template.DataSourceAnalyserPluginId;
-			if (pluginId != DataSourceAnalyserPluginId.Empty)
+			if (TryGetPlugin(template.AnalyserPluginId, out var plugin))
 			{
-				if (TryGetPlugin(pluginId, out var plugin))
-				{
-					// As usual, we don't trust plugins to behave nice and therefore we wrap them in a proxy
-					// which handles all exceptions thrown by the plugin.
-					var analyser = new DataSourceAnalyserProxy(plugin, template.Id, logFile, template.Configuration);
-					Add(analyser);
-					return analyser;
-				}
-				else
-				{
-					Log.ErrorFormat("Unable to find plugin '{0}', analysis will be skipped", pluginId);
-
-					var analyser = new NoAnalyser();
-					return analyser;
-				}
+				// As usual, we don't trust plugins to behave nice and therefore we wrap them in a proxy
+				// which handles all exceptions thrown by the plugin.
+				var analyser = new DataSourceAnalyserProxy(plugin, template.Id, logFile, template.Configuration);
+				Add(analyser);
+				return analyser;
 			}
-
+			else
 			{
 				var analyser = new DataSourceAnalyser(template, logFile, _logAnalyserEngine);
 				Add(analyser);
@@ -110,7 +99,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		private bool TryGetPlugin(DataSourceAnalyserPluginId id, out IDataSourceAnalyserPlugin plugin)
+		private bool TryGetPlugin(AnalyserPluginId id, out IDataSourceAnalyserPlugin plugin)
 		{
 			lock (_syncRoot)
 			{

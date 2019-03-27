@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.DataSources.BusinessLogic
+namespace Tailviewer.Analysis.DataSources.BusinessLogic
 {
 	public sealed class DataSourcesAnalyserPlugin
-		: ILogAnalyserPlugin
+		: IDataSourceAnalyserPlugin
 	{
-		public static readonly LogAnalyserFactoryId Id = new LogAnalyserFactoryId("Tailviewer.Analyser.DataSources");
+		public static readonly AnalyserPluginId Id = new AnalyserPluginId("Tailviewer.Analyser.DataSources");
 
-		LogAnalyserFactoryId ILogAnalyserPlugin.Id => Id;
+		AnalyserPluginId IDataSourceAnalyserPlugin.Id => Id;
+
+		public IDataSourceAnalyser Create(AnalyserId id, ILogFile logFile, ILogAnalyserConfiguration configuration)
+		{
+			return new DataSourcesAnalyser(id);
+		}
 
 		public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => new Dictionary<string, Type>
 		{
 			{ "Tailviewer.DataSources.BusinessLogic.DataSourcesResult", typeof(DataSourcesResult) },
 			{ "Tailviewer.DataSources.BusinessLogic.DataSource", typeof(DataSource) }
 		};
-
-		public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)
-		{
-			return new DataSourcesAnalyser(source, TimeSpan.FromSeconds(1));
-		}
 	}
 }

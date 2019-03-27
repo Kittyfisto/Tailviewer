@@ -37,9 +37,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		{
 			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), null, null);
 
-			_actualAnalyser.Setup(x => x.OnAddLogFile(It.IsAny<ILogFile>())).Throws<NullReferenceException>();
-			new Action(() => analyser.OnAddLogFile(null)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
-			_actualAnalyser.Verify(x => x.OnAddLogFile(It.IsAny<ILogFile>()), Times.Once, "because the proxy should have at least tried to call AddLogFile on the inner analyser");
+			_actualAnalyser.Setup(x => x.OnLogFileAdded(It.IsAny<ILogFile>())).Throws<NullReferenceException>();
+			new Action(() => analyser.OnLogFileAdded(null)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
+			_actualAnalyser.Verify(x => x.OnLogFileAdded(It.IsAny<ILogFile>()), Times.Once, "because the proxy should have at least tried to call AddLogFile on the inner analyser");
 		}
 
 		[Test]
@@ -47,9 +47,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		{
 			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), null, null);
 
-			_actualAnalyser.Setup(x => x.OnRemoveLogFile(It.IsAny<ILogFile>())).Throws<NullReferenceException>();
-			new Action(() => analyser.OnRemoveLogFile(null)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
-			_actualAnalyser.Verify(x => x.OnRemoveLogFile(It.IsAny<ILogFile>()), Times.Once, "because the proxy should have at least tried to call RemoveLogFile on the inner analyser");
+			_actualAnalyser.Setup(x => x.OnLogFileRemoved(It.IsAny<ILogFile>())).Throws<NullReferenceException>();
+			new Action(() => analyser.OnLogFileRemoved(null)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
+			_actualAnalyser.Verify(x => x.OnLogFileRemoved(It.IsAny<ILogFile>()), Times.Once, "because the proxy should have at least tried to call RemoveLogFile on the inner analyser");
 		}
 	}
 }

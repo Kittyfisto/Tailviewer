@@ -1,19 +1,17 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Analysis.DataSources.BusinessLogic;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.DataSources.BusinessLogic;
 
-namespace Tailviewer.DataSources.Test.BusinessLogic
+namespace Tailviewer.Analysis.DataSources.Test.BusinessLogic
 {
 	[TestFixture]
 	public sealed class DataSourcesAnalyserTest
 	{
 		[Test]
-		public void TestEmptyLogFile()
+		public void TestNoLogFile()
 		{
-			var logFile = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
-			var analyser = new DataSourcesAnalyser(logFile, TimeSpan.Zero);
+			var analyser = new DataSourcesAnalyser(AnalyserId.Empty);
 			analyser.Progress.Should().Be(Percentage.HundredPercent);
 
 			analyser.Result.Should().NotBeNull();
@@ -23,17 +21,15 @@ namespace Tailviewer.DataSources.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestOneDataSource()
+		public void TestOneLogFile()
 		{
-			var logFile = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
+			var logFile = new InMemoryLogFile();
+			logFile.SetValue(LogFileProperties.Name, "Hello there.txt");
 
-			var entry = new LogEntry2();
-			entry.Add(LogFileColumns.OriginalDataSourceName, "Hello there.txt");
-			logFile.Add(entry);
-
-			var analyser = new DataSourcesAnalyser(logFile, TimeSpan.Zero);
+			var analyser = new DataSourcesAnalyser(AnalyserId.Empty);
 			analyser.Progress.Should().Be(Percentage.HundredPercent);
 
+			analyser.OnLogFileAdded(logFile);
 			analyser.Result.Should().NotBeNull();
 			analyser.Result.Should().BeOfType<DataSourcesResult>();
 			var result = (DataSourcesResult)analyser.Result;

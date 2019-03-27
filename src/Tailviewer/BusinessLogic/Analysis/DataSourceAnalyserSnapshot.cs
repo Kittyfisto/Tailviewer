@@ -18,18 +18,18 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalysisResult _result;
 
 		public DataSourceAnalyserSnapshot(AnalyserId id,
-			LogAnalyserFactoryId factoryId,
+			AnalyserPluginId pluginId,
 			ILogAnalyserConfiguration configuration,
 			ILogAnalysisResult result,
 			Percentage progress)
 		{
 			if (id == AnalyserId.Empty)
 				throw new ArgumentException(nameof(id));
-			if (factoryId ==  LogAnalyserFactoryId.Empty)
-				throw new ArgumentException(nameof(factoryId));
+			if (pluginId ==  Analysis.AnalyserPluginId.Empty)
+				throw new ArgumentException(nameof(pluginId));
 
 			Id = id;
-			LogAnalyserPluginId = factoryId;
+			AnalyserPluginId = pluginId;
 			_configuration = configuration;
 			_result = result;
 			_progress = progress;
@@ -37,9 +37,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id { get; }
 
-		public LogAnalyserFactoryId LogAnalyserPluginId { get; }
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => DataSourceAnalyserPluginId.Empty;
+		public AnalyserPluginId AnalyserPluginId { get; }
 
 		public Percentage Progress => _progress;
 
@@ -53,12 +51,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 			set { throw new InvalidOperationException("Changing the configuration of a snapshot is not allowed"); }
 		}
 
-		public void OnAddLogFile(ILogFile logFile)
+		public void OnLogFileAdded(ILogFile logFile)
 		{
 			throw new InvalidOperationException("Adding a log file to a snapshot is not allowed");
 		}
 
-		public void OnRemoveLogFile(ILogFile logFile)
+		public void OnLogFileRemoved(ILogFile logFile)
 		{
 			throw new InvalidOperationException("Removing a log file from a snapshot is not allowed");
 		}

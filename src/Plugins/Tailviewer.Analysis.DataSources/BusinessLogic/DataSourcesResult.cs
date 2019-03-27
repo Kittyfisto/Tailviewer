@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.Analysis;
 
-namespace Tailviewer.DataSources.BusinessLogic
+namespace Tailviewer.Analysis.DataSources.BusinessLogic
 {
 	/// <summary>
 	///     The analysis result of a <see cref="DataSourcesAnalyser" />: Describes the data sources which were used during the analysis.

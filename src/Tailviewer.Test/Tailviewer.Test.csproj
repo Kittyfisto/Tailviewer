@@ -94,9 +94,8 @@
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisConfigurationTest.cs" />
     <Compile Include="BusinessLogic\Analysis\ActiveAnalysisTest.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserEngineTest.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserPluginIdTest.cs" />
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxyTest.cs" />
-    <Compile Include="BusinessLogic\Analysis\LogAnalyserFactoryIdTest.cs" />
+    <Compile Include="BusinessLogic\Analysis\AnalyserPluginIdTest.cs" />
     <Compile Include="BusinessLogic\Analysis\LogAnalyserProxyTestTest.cs" />
     <Compile Include="BusinessLogic\AutoUpdater\AutoUpdaterTest.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />

@@ -9,9 +9,9 @@ namespace Tailviewer.Events.BusinessLogic
 	public sealed class EventsLogAnalyserPlugin
 		: ILogAnalyserPlugin
 	{
-		public static readonly LogAnalyserFactoryId Id = new LogAnalyserFactoryId("Tailviewer.Analyser.EventsLogAnalyser");
+		public static readonly AnalyserPluginId Id = new AnalyserPluginId("Tailviewer.Analyser.EventsLogAnalyser");
 
-		LogAnalyserFactoryId ILogAnalyserPlugin.Id => Id;
+		AnalyserPluginId ILogAnalyserPlugin.Id => Id;
 
 		public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => 
 			new Dictionary<string, Type>

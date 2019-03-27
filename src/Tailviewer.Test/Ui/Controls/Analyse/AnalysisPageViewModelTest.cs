@@ -61,7 +61,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.LogAnalyserId
+				AnalyserPluginId = plugin.AnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.LogAnalyserId
+				AnalyserPluginId = plugin.AnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -121,7 +121,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.LogAnalyserId
+				AnalyserPluginId = plugin.AnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -149,7 +149,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = AnalyserId.Empty,
-				LogAnalyserFactoryId = plugin.LogAnalyserId
+				AnalyserPluginId = plugin.AnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -347,7 +347,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			var factory = new Mock<IWidgetPlugin>();
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget);
-			factory.Setup(x => x.LogAnalyserId).Returns(new LogAnalyserFactoryId("Test Widget Plugin"));
+			factory.Setup(x => x.AnalyserId).Returns(new AnalyserPluginId("Test Widget Plugin"));
 			return factory.Object;
 		}
 

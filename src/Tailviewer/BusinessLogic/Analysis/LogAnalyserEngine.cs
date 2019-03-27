@@ -20,7 +20,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<IDataSourceAnalysisHandle> _analyses;
-		private readonly Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin> _factoriesById;
+		private readonly Dictionary<AnalyserPluginId, ILogAnalyserPlugin> _factoriesById;
 		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
 
@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_scheduler = scheduler;
 			_analyses = new List<IDataSourceAnalysisHandle>();
 			_syncRoot = new object();
-			_factoriesById = new Dictionary<LogAnalyserFactoryId, ILogAnalyserPlugin>();
+			_factoriesById = new Dictionary<AnalyserPluginId, ILogAnalyserPlugin>();
 
 			if (pluginLoader != null)
 			{
@@ -68,7 +68,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			lock (_syncRoot)
 			{
-				var analysis = CreatAnalysisFor(configuration.FactoryId, logFile, configuration.Configuration, listener);
+				var analysis = CreatAnalysisFor(configuration.PluginId, logFile, configuration.Configuration, listener);
 				_analyses.Add(analysis);
 				// DO NOT ANYTHING IN BETWEEN ADD AND RETURN
 				return analysis;
@@ -105,7 +105,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		private IDataSourceAnalysisHandle CreatAnalysisFor(LogAnalyserFactoryId id,
+		private IDataSourceAnalysisHandle CreatAnalysisFor(AnalyserPluginId id,
 			ILogFile logFile,
 			ILogAnalyserConfiguration configuration,
 			IDataSourceAnalysisListener listener)

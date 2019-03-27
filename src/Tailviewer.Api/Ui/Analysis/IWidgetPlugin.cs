@@ -19,16 +19,9 @@ namespace Tailviewer.Ui.Analysis
 		: IPlugin
 	{
 		/// <summary>
-		///     The id of the <see cref="ILogAnalyserPlugin"/> which shall be used to produce analysis results for this widget.
-		///     Can be null in case this widget does not work with a <see cref="ILogAnalyserPlugin"/>.
+		///     The id of the <see cref="ILogAnalyserPlugin"/> OR <see cref="IDataSourceAnalyserPlugin"/> which shall be used to produce analysis results for this widget.
 		/// </summary>
-		LogAnalyserFactoryId LogAnalyserId { get; }
-
-		/// <summary>
-		///     The id of the <see cref="IDataSourceAnalyserPlugin"/> which shall be used to produce analysis results for this widget.
-		///     Can be null in case this widget does not work with a <see cref="IDataSourceAnalyserPlugin"/>.
-		/// </summary>
-		DataSourceAnalyserPluginId DataSourceAnalyserId { get; }
+		AnalyserPluginId AnalyserId { get; }
 
 		/// <summary>
 		///     The configuration which shall be used when creating a new widget of this type.

@@ -115,13 +115,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public void WriteAttribute(string name, LogAnalyserFactoryId value)
-		{
-			WriteAttribute(name, value.ToString());
-		}
-
-		/// <inheritdoc />
-		public void WriteAttribute(string name, DataSourceAnalyserPluginId value)
+		public void WriteAttribute(string name, AnalyserPluginId value)
 		{
 			WriteAttribute(name, value.ToString());
 		}

@@ -61,9 +61,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id => _id;
 
-		public LogAnalyserFactoryId LogAnalyserPluginId => LogAnalyserFactoryId.Empty;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => _plugin.Id;
+		public AnalyserPluginId AnalyserPluginId => _plugin.Id;
 
 		public Percentage Progress
 		{
@@ -105,11 +103,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public ILogAnalyserConfiguration Configuration { get; set; }
 
-		public void OnAddLogFile(ILogFile logFile)
+		public void OnLogFileAdded(ILogFile logFile)
 		{
 			try
 			{
-				_analyser?.OnAddLogFile(logFile);
+				_analyser?.OnLogFileAdded(logFile);
 			}
 			catch (Exception e)
 			{
@@ -119,11 +117,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void OnRemoveLogFile(ILogFile logFile)
+		public void OnLogFileRemoved(ILogFile logFile)
 		{
 			try
 			{
-				_analyser?.OnRemoveLogFile(logFile);
+				_analyser?.OnLogFileRemoved(logFile);
 			}
 			catch (Exception e)
 			{

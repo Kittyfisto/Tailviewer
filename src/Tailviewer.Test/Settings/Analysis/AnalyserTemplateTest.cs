@@ -13,8 +13,7 @@ namespace Tailviewer.Test.Settings.Analysis
 		public void TestConstruction()
 		{
 			var template = new AnalyserTemplate();
-			template.LogAnalyserPluginId.Should().Be(LogAnalyserFactoryId.Empty);
-			template.DataSourceAnalyserPluginId.Should().Be(DataSourceAnalyserPluginId.Empty);
+			template.AnalyserPluginId.Should().Be(AnalyserPluginId.Empty);
 		}
 
 		[Test]
@@ -41,15 +40,13 @@ namespace Tailviewer.Test.Settings.Analysis
 		{
 			var template = new AnalyserTemplate
 			{
-				LogAnalyserPluginId = new LogAnalyserFactoryId("nöknöökawdawd"),
-				DataSourceAnalyserPluginId = new DataSourceAnalyserPluginId("irqnq,nfk")
+				AnalyserPluginId = new AnalyserPluginId("nöknöökawdawd"),
 			};
 
 			var actualTemplate = template.Clone();
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Should().NotBeSameAs(template);
-			actualTemplate.LogAnalyserPluginId.Should().Be(template.LogAnalyserPluginId);
-			actualTemplate.DataSourceAnalyserPluginId.Should().Be(template.DataSourceAnalyserPluginId);
+			actualTemplate.AnalyserPluginId.Should().Be(template.AnalyserPluginId);
 		}
 
 		sealed class TestConfiguration
@@ -82,16 +79,14 @@ namespace Tailviewer.Test.Settings.Analysis
 			var template = new AnalyserTemplate
 			{
 				Id = AnalyserId.CreateNew(),
-				LogAnalyserPluginId = new LogAnalyserFactoryId("lkwdqjklowlkw"),
-				DataSourceAnalyserPluginId = new DataSourceAnalyserPluginId("fwadlnknpkaffwa"),
+				AnalyserPluginId = new AnalyserPluginId("lkwdqjklowlkw"),
 				Configuration = new TestConfiguration()
 			};
 
 			var actualTemplate = template.Roundtrip(typeof(TestConfiguration));
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Id.Should().Be(template.Id);
-			actualTemplate.LogAnalyserPluginId.Should().Be(template.LogAnalyserPluginId);
-			actualTemplate.DataSourceAnalyserPluginId.Should().Be(template.DataSourceAnalyserPluginId);
+			actualTemplate.AnalyserPluginId.Should().Be(template.AnalyserPluginId);
 			actualTemplate.Configuration.Should().NotBeNull();
 			actualTemplate.Configuration.Should().BeOfType<TestConfiguration>();
 		}

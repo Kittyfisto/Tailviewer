@@ -40,9 +40,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id => _template.Id;
 
-		public LogAnalyserFactoryId LogAnalyserPluginId => _template.LogAnalyserPluginId;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => _template.DataSourceAnalyserPluginId;
+		public AnalyserPluginId AnalyserPluginId => _template.AnalyserPluginId;
 
 		public Percentage Progress { get; private set; }
 
@@ -63,14 +61,20 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void OnAddLogFile(ILogFile logFile)
+		public void OnLogFileAdded(ILogFile logFile)
 		{
-			throw new NotImplementedException();
+			// This default implementation forwards the merged log file from the constructor
+			// to the ILogAnalyser and therefore we don't need to care about log files being
+			// added / removed (because the merged log file represents all selected log files)
+			// These methods are only of interest to custom plugins.
 		}
 
-		public void OnRemoveLogFile(ILogFile logFile)
+		public void OnLogFileRemoved(ILogFile logFile)
 		{
-			throw new NotImplementedException();
+			// This default implementation forwards the merged log file from the constructor
+			// to the ILogAnalyser and therefore we don't need to care about log files being
+			// added / removed (because the merged log file represents all selected log files)
+			// These methods are only of interest to custom plugins.
 		}
 
 		public void OnProgress(IDataSourceAnalysisHandle handle, Percentage progress)
@@ -107,7 +111,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var result = Result?.Clone() as ILogAnalysisResult;
 			var progress = Progress;
 			return new DataSourceAnalyserSnapshot(Id,
-				LogAnalyserPluginId,
+				AnalyserPluginId,
 				configuration,
 				result,
 				progress);
@@ -123,7 +127,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			var configuration = new DataSourceAnalysisConfiguration
 			{
-				FactoryId = _template.LogAnalyserPluginId,
+				PluginId = _template.AnalyserPluginId,
 				Configuration = _configuration
 			};
 			_currentAnalysis = _logAnalyserEngine.CreateAnalysis(_logFile, configuration, this);

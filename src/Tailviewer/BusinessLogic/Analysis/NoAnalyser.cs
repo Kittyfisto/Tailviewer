@@ -6,24 +6,22 @@ namespace Tailviewer.BusinessLogic.Analysis
 		: IDataSourceAnalyser
 	{
 		private readonly AnalyserId _id;
-		private readonly LogAnalyserFactoryId _factoryId;
+		private readonly AnalyserPluginId _pluginId;
 
 		public NoAnalyser()
 		{
 			_id = AnalyserId.Empty;
 		}
 
-		public NoAnalyser(LogAnalyserFactoryId factoryId)
+		public NoAnalyser(AnalyserPluginId pluginId)
 			: this()
 		{
-			_factoryId = factoryId;
+			_pluginId = pluginId;
 		}
 
 		public AnalyserId Id => _id;
 
-		public LogAnalyserFactoryId LogAnalyserPluginId => _factoryId;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => DataSourceAnalyserPluginId.Empty;
+		public AnalyserPluginId AnalyserPluginId => _pluginId;
 
 		public Percentage Progress => Percentage.HundredPercent;
 
@@ -32,10 +30,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public bool IsFrozen => false;
 
 		public ILogAnalyserConfiguration Configuration { get; set; }
-		public void OnAddLogFile(ILogFile logFile)
+		public void OnLogFileAdded(ILogFile logFile)
 		{}
 
-		public void OnRemoveLogFile(ILogFile logFile)
+		public void OnLogFileRemoved(ILogFile logFile)
 		{}
 
 		public void Dispose()

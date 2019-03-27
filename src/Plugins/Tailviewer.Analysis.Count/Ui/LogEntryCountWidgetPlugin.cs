@@ -10,9 +10,7 @@ namespace Tailviewer.Count.Ui
 	public sealed class LogEntryCountWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId LogAnalyserId => LogEntryCountAnalyserPlugin.Id;
-
-		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
+		public AnalyserPluginId AnalyserId => LogEntryCountAnalyserPlugin.Id;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new LogEntryCountAnalyserConfiguration();
 

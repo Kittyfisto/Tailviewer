@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
@@ -48,6 +49,20 @@ namespace Tailviewer.Test.BusinessLogic
 
 			_engine.Verify( x=> x.CreateAnalysis(It.IsAny<ILogFile>(), It.IsAny<DataSourceAnalysisConfiguration>(), It.IsAny<IDataSourceAnalysisListener>()),
 				Times.Once);
+		}
+
+		[Test]
+		public void TestOnLogFileAdded()
+		{
+			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
+			new Action(() => analyser.OnLogFileAdded(new Mock<ILogFile>().Object)).ShouldNotThrow();
+		}
+
+		[Test]
+		public void TestOnLogFileRemoved()
+		{
+			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
+			new Action(() => analyser.OnLogFileRemoved(new Mock<ILogFile>().Object)).ShouldNotThrow();
 		}
 	}
 }
