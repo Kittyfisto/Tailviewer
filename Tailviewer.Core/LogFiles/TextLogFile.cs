@@ -82,6 +82,7 @@ namespace Tailviewer.Core.LogFiles
 
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties.SetValue(LogFileProperties.Name, _fileName);
 			_syncRoot = new object();
 			_encoding = encoding ?? Encoding.UTF8;
 
@@ -243,6 +244,10 @@ namespace Tailviewer.Core.LogFiles
 				else if (Equals(column, LogFileColumns.ElapsedTime))
 				{
 					GetElapsedTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				{
+					GetDataSourceName(indices, (string[]) (object) buffer, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.RawContent))
 				{
@@ -520,6 +525,14 @@ namespace Tailviewer.Core.LogFiles
 						? line.Value.Timestamp - startTimestamp
 						: LogFileColumns.ElapsedTime.DefaultValue;
 				}
+			}
+		}
+
+		private void GetDataSourceName(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
+		{
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				buffer[destinationIndex + i] = _fileName;
 			}
 		}
 

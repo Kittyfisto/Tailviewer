@@ -121,6 +121,12 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
+		public void WriteAttribute(string name, DataSourceAnalyserPluginId value)
+		{
+			WriteAttribute(name, value.ToString());
+		}
+
+		/// <inheritdoc />
 		public void WriteAttribute(string name, DataSourceId value)
 		{
 			WriteAttribute(name, value.ToString());

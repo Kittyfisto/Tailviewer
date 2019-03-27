@@ -13,29 +13,29 @@ namespace Tailviewer.BusinessLogic.Analysis
 		, IDisposable
 	{
 		private readonly AnalysisTemplate _template;
-		private readonly Dictionary<DataSourceAnalyser, AnalyserTemplate> _analysers;
-		private readonly ILogAnalyserEngine _logAnalyserEngine;
+		private readonly Dictionary<IDataSourceAnalyser, AnalyserTemplate> _analysers;
+		private readonly IDataSourceAnalyserEngine _analyserEngine;
 		private readonly LogFileProxy _logFile;
 		private readonly List<ILogFile> _logFiles;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly AnalysisId _id;
-		private bool _isDiposed;
+		private bool _isDisposed;
 
 		public ActiveAnalysis(
 			AnalysisId id,
 			AnalysisTemplate template,
 			ITaskScheduler taskScheduler,
-			ILogAnalyserEngine logAnalyserEngine,
+			IDataSourceAnalyserEngine analyserEngine,
 			TimeSpan maximumWaitTime)
 		{
 			if (template == null)
 				throw new ArgumentNullException(nameof(template));
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
-			if (logAnalyserEngine == null)
-				throw new ArgumentNullException(nameof(logAnalyserEngine));
+			if (analyserEngine == null)
+				throw new ArgumentNullException(nameof(analyserEngine));
 
 			_id = id;
 			_template = template;
@@ -43,8 +43,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_maximumWaitTime = maximumWaitTime;
 			_logFiles = new List<ILogFile>();
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
-			_logAnalyserEngine = logAnalyserEngine;
-			_analysers = new Dictionary<DataSourceAnalyser, AnalyserTemplate>();
+			_analyserEngine = analyserEngine;
+			_analysers = new Dictionary<IDataSourceAnalyser, AnalyserTemplate>();
 			_syncRoot = new object();
 
 			foreach (var analysisTemplate in template.Analysers)
@@ -107,7 +107,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public bool IsDisposed
 		{
-			get { return _isDiposed; }
+			get { return _isDisposed; }
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var template = new AnalyserTemplate
 			{
 				Id = AnalyserId.CreateNew(),
-				FactoryId = factoryId,
+				LogAnalyserPluginId = factoryId,
 				Configuration = configuration
 			};
 
@@ -133,7 +133,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		private IDataSourceAnalyser Add(AnalyserTemplate template)
 		{
-			var analyser = new DataSourceAnalyser(template, _logFile, _logAnalyserEngine);
+			var analyser = _analyserEngine.CreateAnalyser(_logFile, template);
 			try
 			{
 				lock (_syncRoot)
@@ -183,12 +183,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			lock (_syncRoot)
 			{
-				foreach (var analyser in _analysers.Keys)
-					analyser.Dispose();
 				_analysers.Clear();
-
 				_logFile.Dispose();
-				_isDiposed = true;
+				_isDisposed = true;
 			}
 		}
 
@@ -228,9 +225,21 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				var analysers = new List<DataSourceAnalyserSnapshot>(_analysers.Count);
 				foreach (var analyser in _analysers.Keys)
-					analysers.Add(analyser.CreateSnapshot());
+					analysers.Add(CreateSnapshot(analyser));
 				return new AnalysisSnapshot(Progress, analysers);
 			}
+		}
+
+		private DataSourceAnalyserSnapshot CreateSnapshot(IDataSourceAnalyser analyser)
+		{
+			var configuration = analyser.Configuration?.Clone() as ILogAnalyserConfiguration;
+			var result = analyser.Result?.Clone() as ILogAnalysisResult;
+			var progress = Progress;
+			return new DataSourceAnalyserSnapshot(analyser.Id,
+			                                      analyser.LogAnalyserPluginId,
+			                                      configuration,
+			                                      result,
+			                                      progress);
 		}
 	}
 }

@@ -5,21 +5,23 @@ using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Count.Ui
 {
-	public sealed class EntryCountWidgetViewModel
+	public sealed class LogEntryCountWidgetViewModel
 		: AbstractWidgetViewModel
 	{
-		private readonly LogEntryCountAnalyserConfiguration _configuration;
+		private readonly LogEntryCountAnalyserConfiguration _analyserConfiguration;
+		private readonly LogEntryCountWidgetConfiguration _widgetConfiguration;
 		private readonly FiltersViewModel _quickFilters;
 		private long? _count;
-		private string _caption;
 
-		public EntryCountWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+		public LogEntryCountWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 			: base(template, dataSourceAnalyser)
 		{
-			_configuration = AnalyserConfiguration as LogEntryCountAnalyserConfiguration;
+			_analyserConfiguration = AnalyserConfiguration as LogEntryCountAnalyserConfiguration ?? new LogEntryCountAnalyserConfiguration();
+			_widgetConfiguration = ViewConfiguration as LogEntryCountWidgetConfiguration ?? new LogEntryCountWidgetConfiguration();
+
 			Title = "Line Count";
 			Caption = "Line(s)";
-			_quickFilters = new FiltersViewModel(_configuration?.QuickFilters);
+			_quickFilters = new FiltersViewModel(_analyserConfiguration?.QuickFilters);
 		}
 
 		public long? Count
@@ -37,14 +39,15 @@ namespace Tailviewer.Count.Ui
 
 		public string Caption
 		{
-			get { return _caption; }
+			get { return _widgetConfiguration.Caption; }
 			set
 			{
-				if (value == _caption)
+				if (value == Caption)
 					return;
 
-				_caption = value;
+				_widgetConfiguration.Caption = value;
 				EmitPropertyChanged();
+				EmitTemplateModified();
 			}
 		}
 

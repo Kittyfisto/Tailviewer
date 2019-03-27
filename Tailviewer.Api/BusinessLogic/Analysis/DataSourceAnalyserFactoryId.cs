@@ -4,18 +4,18 @@ using Tailviewer.Ui.Analysis;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Identifies a <see cref="ILogAnalyserPlugin"/> type (i.e. an implementation of the interface).
+	///     Identifies a <see cref="IDataSourceAnalyserPlugin"/> type (i.e. an implementation of the interface).
 	/// </summary>
-	public struct LogAnalyserFactoryId : IEquatable<LogAnalyserFactoryId>
+	public struct DataSourceAnalyserPluginId : IEquatable<DataSourceAnalyserPluginId>
 	{
 		/// <summary>
 		///     This id may be used to specify that a <see cref="IWidgetPlugin" /> does not need a
-		///     <see cref="ILogAnalyserPlugin" />.
+		///     <see cref="IDataSourceAnalyserPlugin" />.
 		/// </summary>
-		public static readonly LogAnalyserFactoryId Empty = new LogAnalyserFactoryId();
+		public static readonly DataSourceAnalyserPluginId Empty = new DataSourceAnalyserPluginId();
 
 		/// <inheritdoc />
-		public bool Equals(LogAnalyserFactoryId other)
+		public bool Equals(DataSourceAnalyserPluginId other)
 		{
 			return string.Equals(Value, other.Value);
 		}
@@ -24,7 +24,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is LogAnalyserFactoryId && Equals((LogAnalyserFactoryId) obj);
+			return obj is DataSourceAnalyserPluginId && Equals((DataSourceAnalyserPluginId)obj);
 		}
 
 		/// <inheritdoc />
@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(LogAnalyserFactoryId left, LogAnalyserFactoryId right)
+		public static bool operator ==(DataSourceAnalyserPluginId left, DataSourceAnalyserPluginId right)
 		{
 			return left.Equals(right);
 		}
@@ -50,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(LogAnalyserFactoryId left, LogAnalyserFactoryId right)
+		public static bool operator !=(DataSourceAnalyserPluginId left, DataSourceAnalyserPluginId right)
 		{
 			return !left.Equals(right);
 		}
@@ -61,7 +61,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     Creates a new id from the given value.
 		/// </summary>
 		/// <param name="value"></param>
-		public LogAnalyserFactoryId(string value)
+		public DataSourceAnalyserPluginId(string value)
 		{
 			_value = value;
 		}

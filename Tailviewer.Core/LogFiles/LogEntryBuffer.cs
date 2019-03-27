@@ -180,6 +180,25 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		/// Returns an enumeration which iterates over all values in the given column.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException">When this buffer doesn't hold the given column</exception>
+		/// <exception cref="ArgumentNullException">When <paramref name="column"/> is null</exception>
+		public IEnumerable<T> Column<T>(ILogFileColumn<T> column)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (!_dataByColumn.TryGetValue(column, out var data))
+				throw new ArgumentException(string.Format("No such column: {0}", column));
+
+			return ((ColumnData<T>) data);
+		}
+
 		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index] => this[index];
 
 		private sealed class LogEntryAccessor
@@ -283,6 +302,7 @@ namespace Tailviewer.Core.LogFiles
 
 		sealed class ColumnData<T>
 			: IColumnData
+			, IEnumerable<T>
 		{
 			private readonly ILogFileColumn<T> _column;
 			private readonly T[] _data;
@@ -370,6 +390,16 @@ namespace Tailviewer.Core.LogFiles
 			public void FillDefault(int destinationIndex, int length)
 			{
 				_data.Fill(_column.DefaultValue, destinationIndex, length);
+			}
+
+			public IEnumerator<T> GetEnumerator()
+			{
+				return ((IEnumerable<T>)_data).GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     Responsible for creating and executing analyses on <see cref="ILogFile" />:
+	///     Responsible for creating and executing analyses on virtual <see cref="ILogFile" />:
 	///     Each analysis produces a continuous stream of results which are forwarded to their <see cref="IDataSourceAnalysisListener" />.
 	/// </summary>
 	/// <remarks>

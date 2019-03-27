@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.BusinessLogic.Analysis
+﻿using Tailviewer.BusinessLogic.LogFiles;
+
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	public sealed class NoAnalyser
 		: IDataSourceAnalyser
@@ -19,7 +21,9 @@
 
 		public AnalyserId Id => _id;
 
-		public LogAnalyserFactoryId FactoryId => _factoryId;
+		public LogAnalyserFactoryId LogAnalyserPluginId => _factoryId;
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => DataSourceAnalyserPluginId.Empty;
 
 		public Percentage Progress => Percentage.HundredPercent;
 
@@ -28,5 +32,14 @@
 		public bool IsFrozen => false;
 
 		public ILogAnalyserConfiguration Configuration { get; set; }
+		public void OnAddLogFile(ILogFile logFile)
+		{}
+
+		public void OnRemoveLogFile(ILogFile logFile)
+		{}
+
+		public void Dispose()
+		{
+		}
 	}
 }

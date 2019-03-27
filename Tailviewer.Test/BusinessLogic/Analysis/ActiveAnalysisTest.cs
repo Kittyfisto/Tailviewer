@@ -14,18 +14,20 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 	public sealed class ActiveAnalysisTest
 	{
 		private ManualTaskScheduler _taskScheduler;
-		private Mock<ILogAnalyserEngine> _analysisEngine;
+		private Mock<ILogAnalyserEngine> _logAnalyserEngine;
+		private DataSourceAnalyserEngine _dataSourceAnalyserEngine;
 		private AnalysisTemplate _template;
 
 		[SetUp]
 		public void Setup()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_analysisEngine = new Mock<ILogAnalyserEngine>();
-			_analysisEngine.Setup(x => x.CreateAnalysis(It.IsAny<ILogFile>(),
+			_logAnalyserEngine = new Mock<ILogAnalyserEngine>();
+			_logAnalyserEngine.Setup(x => x.CreateAnalysis(It.IsAny<ILogFile>(),
 					It.IsAny<DataSourceAnalysisConfiguration>(),
 					It.IsAny<IDataSourceAnalysisListener>()))
 				.Returns(() => new Mock<IDataSourceAnalysisHandle>().Object);
+			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_logAnalyserEngine.Object);
 
 			_template = new AnalysisTemplate();
 		}
@@ -33,7 +35,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestConstructionEmptyTemplate()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			activeAnalysis.Analysers.Should().BeEmpty();
 		}
 
@@ -43,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Add(new AnalyserTemplate());
 			_template.Add(new AnalyserTemplate());
 
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			activeAnalysis.Analysers.Should().HaveCount(2);
 
 			_template.Analysers.Should().HaveCount(2, "because the template may not have been modified by the ctor");
@@ -52,7 +54,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAdd1()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
@@ -61,14 +63,14 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Analysers.Should().HaveCount(1);
 			var template = _template.Analysers.First();
 			template.Id.Should().Be(analyser.Id);
-			template.FactoryId.Should().Be(new LogAnalyserFactoryId("foobar"));
+			template.LogAnalyserPluginId.Should().Be(new LogAnalyserFactoryId("foobar"));
 			template.Configuration.Should().Be(configuration);
 		}
 
 		[Test]
 		public void TestTryGetAnalyser()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
@@ -80,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestTryGetNonExistentAnalyser()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var configuration = new Mock<ILogAnalyserConfiguration>().Object;
@@ -92,7 +94,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAddRemove1()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 
 			var analyser = activeAnalysis.Add(new LogAnalyserFactoryId("foobar"), null);
@@ -105,7 +107,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestDispose()
 		{
-			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _analysisEngine.Object, TimeSpan.Zero);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			activeAnalysis.Dispose();
 
 			_taskScheduler.PeriodicTaskCount.Should()

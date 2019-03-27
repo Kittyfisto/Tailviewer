@@ -10,11 +10,13 @@ namespace Tailviewer.Count.Ui
 	public sealed class LogEntryCountWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId AnalyserId => LogEntryCountAnalyserPlugin.Id;
+		public LogAnalyserFactoryId LogAnalyserId => LogEntryCountAnalyserPlugin.Id;
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new LogEntryCountAnalyserConfiguration();
 
-		public IWidgetConfiguration DefaultViewConfiguration => null;
+		public IWidgetConfiguration DefaultViewConfiguration => new LogEntryCountWidgetConfiguration();
 
 		public string Name => "Log Entry Count";
 
@@ -24,7 +26,7 @@ namespace Tailviewer.Count.Ui
 
 		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new EntryCountWidgetViewModel(template, dataSourceAnalyser);
+			return new LogEntryCountWidgetViewModel(template, dataSourceAnalyser);
 		}
 
 		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)

@@ -11,14 +11,24 @@ namespace Tailviewer.Ui.Analysis
 	///     The interface for a plugin to create widgets:
 	///     Is responsible for providing view models as well as a template to display them.
 	/// </summary>
+	/// <remarks>
+	///     A widget usually works in conjunction with an analyser: This can be either a <see cref="ILogAnalyser"/>
+	///     or <see cref="IDataSourceAnalyser"/>.
+	/// </remarks>
 	public interface IWidgetPlugin
 		: IPlugin
 	{
 		/// <summary>
-		///     The type of analyser that shall be used to produce the analysis result
-		///     for the resulting widgets.
+		///     The id of the <see cref="ILogAnalyserPlugin"/> which shall be used to produce analysis results for this widget.
+		///     Can be null in case this widget does not work with a <see cref="ILogAnalyserPlugin"/>.
 		/// </summary>
-		LogAnalyserFactoryId AnalyserId { get; }
+		LogAnalyserFactoryId LogAnalyserId { get; }
+
+		/// <summary>
+		///     The id of the <see cref="IDataSourceAnalyserPlugin"/> which shall be used to produce analysis results for this widget.
+		///     Can be null in case this widget does not work with a <see cref="IDataSourceAnalyserPlugin"/>.
+		/// </summary>
+		DataSourceAnalyserPluginId DataSourceAnalyserId { get; }
 
 		/// <summary>
 		///     The configuration which shall be used when creating a new widget of this type.

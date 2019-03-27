@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
 
 namespace Tailviewer.Ui.Analysis
@@ -44,6 +45,15 @@ namespace Tailviewer.Ui.Analysis
 		///     (such as title, view- or analysis configuration) are made.
 		/// </summary>
 		IWidgetTemplate Template { get; }
+
+		/// <summary>
+		/// This event is fired whenever <see cref="Template"/> has been modified.
+		/// A view model implementation shall do so when it has modified the:
+		/// - <see cref="Title"/>
+		/// - <see cref="IWidgetConfiguration"/>
+		/// - <see cref="ILogAnalyserConfiguration"/>
+		/// </summary>
+		event Action TemplateModified;
 
 		/// <summary>
 		///     This method is called periodically to allow the view model to fetch data from the analysis.

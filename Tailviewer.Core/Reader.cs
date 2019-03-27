@@ -117,6 +117,12 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
+		public bool TryReadAttribute(string name, out DataSourceAnalyserPluginId value)
+		{
+			return _documentReader.TryReadAttribute(name, out value);
+		}
+
+		/// <inheritdoc />
 		public bool TryReadAttribute(string name, out DataSourceId value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
@@ -317,6 +323,19 @@ namespace Tailviewer.Core
 				}
 
 				value = new LogAnalyserFactoryId(tmp);
+				return true;
+			}
+
+			public bool TryReadAttribute(string name, out DataSourceAnalyserPluginId value)
+			{
+				string tmp;
+				if (!TryReadAttribute(name, out tmp))
+				{
+					value = default(DataSourceAnalyserPluginId);
+					return false;
+				}
+
+				value = new DataSourceAnalyserPluginId(tmp);
 				return true;
 			}
 

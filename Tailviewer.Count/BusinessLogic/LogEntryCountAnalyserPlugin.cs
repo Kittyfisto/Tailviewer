@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Count.Ui;
 
 namespace Tailviewer.Count.BusinessLogic
 {
@@ -16,7 +17,8 @@ namespace Tailviewer.Count.BusinessLogic
 		public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => 
 			new Dictionary<string, Type>
 			{
-				{"Tailviewer.Events.BusinessLogic.LogEntryCountAnalyserConfiguration", typeof(LogEntryCountAnalyserConfiguration)}
+				{"Tailviewer.Count.BusinessLogic.LogEntryCountAnalyserConfiguration", typeof(LogEntryCountAnalyserConfiguration)},
+				{"Tailviewer.Count.Ui.LogEntryCountWidgetConfiguration", typeof(LogEntryCountWidgetConfiguration) }
 			};
 
 		public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)

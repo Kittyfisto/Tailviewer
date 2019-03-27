@@ -1,4 +1,7 @@
-﻿namespace Tailviewer.BusinessLogic.Analysis
+﻿using System;
+using Tailviewer.BusinessLogic.LogFiles;
+
+namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     Represents a live analysis or a snapshot (depending on <see cref="IsFrozen" />) of a
@@ -7,6 +10,7 @@
 	///     forwarded to a <see cref="ILogAnalyser" />.
 	/// </summary>
 	public interface IDataSourceAnalyser
+		: IDisposable
 	{
 		/// <summary>
 		///     A unique id which identifies this analyser.
@@ -16,7 +20,12 @@
 		/// <summary>
 		///     The id of the factory which created this analyser.
 		/// </summary>
-		LogAnalyserFactoryId FactoryId { get; }
+		LogAnalyserFactoryId LogAnalyserPluginId { get; }
+
+		/// <summary>
+		///     The id of the factory which created this analyser.
+		/// </summary>
+		DataSourceAnalyserPluginId DataSourceAnalyserPluginId { get; }
 
 		/// <summary>
 		///     The current progress of the analysis.
@@ -45,5 +54,17 @@
 		///     of the analysis using the new configuration.
 		/// </summary>
 		ILogAnalyserConfiguration Configuration { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="logFile"></param>
+		void OnAddLogFile(ILogFile logFile);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="logFile"></param>
+		void OnRemoveLogFile(ILogFile logFile);
 	}
 }

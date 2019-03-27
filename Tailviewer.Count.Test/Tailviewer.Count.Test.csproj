@@ -66,6 +66,7 @@
     <Compile Include="BusinessLogic\LogEntryCountAnalyserConfigurationTest.cs" />
     <Compile Include="BusinessLogic\LogEntryCountAnalyserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ui\LogEntryCountWidgetViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

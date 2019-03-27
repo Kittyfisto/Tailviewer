@@ -50,7 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalysisId.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserFactoryId.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyser.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyser.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserConfiguration.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />

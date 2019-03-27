@@ -21,7 +21,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly ILogAnalyserEngine _logAnalyserEngine;
+		private readonly IDataSourceAnalyserEngine _dataSourceAnalyserEngine;
 		private readonly SnapshotsWatchdog _snapshots;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
@@ -33,11 +33,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalysisStorage(ITaskScheduler taskScheduler,
 			IFilesystem filesystem,
-			ILogAnalyserEngine logAnalyserEngine,
+			IDataSourceAnalyserEngine dataSourceAnalyserEngine,
 			ITypeFactory typeFactory)
 		{
 			_taskScheduler = taskScheduler ?? throw new ArgumentNullException(nameof(taskScheduler));
-			_logAnalyserEngine = logAnalyserEngine ?? throw new ArgumentNullException(nameof(logAnalyserEngine));
+			_dataSourceAnalyserEngine = dataSourceAnalyserEngine ?? throw new ArgumentNullException(nameof(dataSourceAnalyserEngine));
 			_filesystem = filesystem ?? throw new ArgumentNullException(nameof(filesystem));
 			_typeFactory = typeFactory ?? throw new ArgumentNullException(nameof(typeFactory));
 			_syncRoot = new object();
@@ -67,7 +67,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 							var analysis = new ActiveAnalysis(configuration.Id,
 								configuration.Template,
 								_taskScheduler,
-								_logAnalyserEngine,
+								_dataSourceAnalyserEngine,
 								TimeSpan.FromMilliseconds(100));
 
 							try
@@ -192,7 +192,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var analysis = new ActiveAnalysis(id,
 			                                  template,
 			                                  _taskScheduler,
-			                                  _logAnalyserEngine,
+			                                  _dataSourceAnalyserEngine,
 			                                  TimeSpan.FromMilliseconds(100));
 
 			try
@@ -295,7 +295,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var template = new AnalysisTemplate(analysisSnapshot.Analysers.Select(x => new AnalyserTemplate
 			{
 				Id = x.Id,
-				FactoryId = x.FactoryId,
+				LogAnalyserPluginId = x.LogAnalyserPluginId,
 				Configuration = x.Configuration
 			}));
 			var clone = viewTemplate.Clone();

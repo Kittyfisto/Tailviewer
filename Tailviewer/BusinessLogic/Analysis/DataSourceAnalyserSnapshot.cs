@@ -1,4 +1,5 @@
 ﻿using System;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Analysis
 {
@@ -28,7 +29,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentException(nameof(factoryId));
 
 			Id = id;
-			FactoryId = factoryId;
+			LogAnalyserPluginId = factoryId;
 			_configuration = configuration;
 			_result = result;
 			_progress = progress;
@@ -36,7 +37,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id { get; }
 
-		public LogAnalyserFactoryId FactoryId { get; }
+		public LogAnalyserFactoryId LogAnalyserPluginId { get; }
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => DataSourceAnalyserPluginId.Empty;
 
 		public Percentage Progress => _progress;
 
@@ -48,6 +51,20 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			get { return _configuration; }
 			set { throw new InvalidOperationException("Changing the configuration of a snapshot is not allowed"); }
+		}
+
+		public void OnAddLogFile(ILogFile logFile)
+		{
+			throw new InvalidOperationException("Adding a log file to a snapshot is not allowed");
+		}
+
+		public void OnRemoveLogFile(ILogFile logFile)
+		{
+			throw new InvalidOperationException("Removing a log file from a snapshot is not allowed");
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

@@ -301,6 +301,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			buffer[3].Timestamp.Should().Be(new DateTime(2017, 12, 12, 19, 27, 0));
 		}
 
+		[Test]
+		public void TestColumn()
+		{
+			var buffer = new LogEntryBuffer(4, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			buffer.Column(LogFileColumns.DeltaTime).Should().Equal(new object[] {null, null, null, null});
+
+			buffer.CopyFrom(LogFileColumns.DeltaTime, 0, new TimeSpan?[]
+				{
+					TimeSpan.FromDays(1),
+					TimeSpan.FromSeconds(42),
+					null,
+					TimeSpan.FromMinutes(-10)
+				},
+				0, 4);
+			buffer.Column(LogFileColumns.DeltaTime).Should().Equal(new object[]
+			{
+				TimeSpan.FromDays(1),
+				TimeSpan.FromSeconds(42),
+				null,
+				TimeSpan.FromMinutes(-10)
+			});
+		}
+
 		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
 		{
 			return new LogEntryBuffer(0, columns);

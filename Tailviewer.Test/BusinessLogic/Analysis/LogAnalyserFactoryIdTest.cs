@@ -16,6 +16,12 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
+		public void TestEqualsDifferentIds()
+		{
+			new LogAnalyserFactoryId("Foo").Should().NotBe(new LogAnalyserFactoryId("Bar"));
+		}
+
+		[Test]
 		public void TestGetHashCodeEmptyId()
 		{
 			new LogAnalyserFactoryId().GetHashCode().Should().Be(LogAnalyserFactoryId.Empty.GetHashCode());

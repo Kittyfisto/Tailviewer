@@ -12,14 +12,22 @@ namespace Tailviewer.Core.Analysis
 		: IAnalyserTemplate
 	{
 		private ILogAnalyserConfiguration _configuration;
-		private LogAnalyserFactoryId _factoryId;
+		private LogAnalyserFactoryId _logAnalyserPluginId;
+		private DataSourceAnalyserPluginId _dataSourceAnalyserPluginId;
 		private AnalyserId _id;
 
 		/// <inheritdoc />
-		public LogAnalyserFactoryId FactoryId
+		public LogAnalyserFactoryId LogAnalyserPluginId
 		{
-			get { return _factoryId; }
-			set { _factoryId = value; }
+			get { return _logAnalyserPluginId; }
+			set { _logAnalyserPluginId = value; }
+		}
+
+		/// <inheritdoc />
+		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId
+		{
+			get { return _dataSourceAnalyserPluginId; }
+			set { _dataSourceAnalyserPluginId = value; }
 		}
 
 		/// <inheritdoc />
@@ -40,7 +48,8 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public void Serialize(IWriter writer)
 		{
-			writer.WriteAttribute("FactoryId", _factoryId);
+			writer.WriteAttribute("LogAnalyserPluginId", _logAnalyserPluginId);
+			writer.WriteAttribute("DataSourceAnalyserPluginId", _dataSourceAnalyserPluginId);
 			writer.WriteAttribute("Id", _id);
 			writer.WriteAttribute("Configuration", _configuration);
 		}
@@ -49,7 +58,11 @@ namespace Tailviewer.Core.Analysis
 		public void Deserialize(IReader reader)
 		{
 			reader.TryReadAttribute("Id", out _id);
-			reader.TryReadAttribute("FactoryId", out _factoryId);
+
+			if (!reader.TryReadAttribute("LogAnalyserPluginId", out _logAnalyserPluginId))
+				reader.TryReadAttribute("FactoryId", out _logAnalyserPluginId); //< legacy name..
+
+			reader.TryReadAttribute("DataSourceAnalyserPluginId", out _dataSourceAnalyserPluginId);
 			reader.TryReadAttribute("Configuration", out _configuration);
 		}
 
@@ -67,7 +80,8 @@ namespace Tailviewer.Core.Analysis
 			return new AnalyserTemplate
 			{
 				Id = Id,
-				FactoryId = FactoryId,
+				LogAnalyserPluginId = LogAnalyserPluginId,
+				DataSourceAnalyserPluginId = DataSourceAnalyserPluginId,
 				Configuration = _configuration?.Clone() as ILogAnalyserConfiguration
 			};
 		}

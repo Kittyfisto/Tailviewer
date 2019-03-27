@@ -8,7 +8,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	///     Represents a (user defined) analysis of a data source.
-	///     Encapsules an underlying <see cref="ILogAnalyser" />, forwards its result
+	///     Encapsulates an underlying <see cref="ILogAnalyser" />, forwards its result
 	///     and hides all of its (possible) failures.
 	/// </summary>
 	public sealed class LogAnalyserProxy
@@ -42,8 +42,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(logFile));
 			if (plugin == null)
 				throw new ArgumentNullException(nameof(plugin));
-			if (configuration == null)
-				throw new ArgumentNullException(nameof(configuration));
 			if (listener == null)
 				throw new ArgumentNullException(nameof(listener));
 

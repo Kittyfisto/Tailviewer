@@ -10,22 +10,46 @@ namespace Tailviewer.Test.Settings.Analysis
 	public sealed class AnalyserTemplateTest
 	{
 		[Test]
+		public void TestConstruction()
+		{
+			var template = new AnalyserTemplate();
+			template.LogAnalyserPluginId.Should().Be(LogAnalyserFactoryId.Empty);
+			template.DataSourceAnalyserPluginId.Should().Be(DataSourceAnalyserPluginId.Empty);
+		}
+
+		[Test]
 		public void TestClone1()
 		{
 			var analysisConfiguration = new Mock<ILogAnalyserConfiguration>();
 			analysisConfiguration.Setup(x => x.Clone()).Returns(new Mock<ILogAnalyserConfiguration>().Object);
-			var widget = new AnalyserTemplate
+			var template = new AnalyserTemplate
 			{
 				Configuration = analysisConfiguration.Object
 			};
 
 			analysisConfiguration.Verify(x => x.Clone(), Times.Never);
-			var clone = widget.Clone();
+			var clone = template.Clone();
 			clone.Should().NotBeNull();
-			clone.Should().NotBeSameAs(widget);
+			clone.Should().NotBeSameAs(template);
 			clone.Configuration.Should().NotBeNull();
 			clone.Configuration.Should().NotBeSameAs(analysisConfiguration.Object);
 			analysisConfiguration.Verify(x => x.Clone(), Times.Once);
+		}
+
+		[Test]
+		public void TestClone2()
+		{
+			var template = new AnalyserTemplate
+			{
+				LogAnalyserPluginId = new LogAnalyserFactoryId("nöknöökawdawd"),
+				DataSourceAnalyserPluginId = new DataSourceAnalyserPluginId("irqnq,nfk")
+			};
+
+			var actualTemplate = template.Clone();
+			actualTemplate.Should().NotBeNull();
+			actualTemplate.Should().NotBeSameAs(template);
+			actualTemplate.LogAnalyserPluginId.Should().Be(template.LogAnalyserPluginId);
+			actualTemplate.DataSourceAnalyserPluginId.Should().Be(template.DataSourceAnalyserPluginId);
 		}
 
 		sealed class TestConfiguration
@@ -58,14 +82,16 @@ namespace Tailviewer.Test.Settings.Analysis
 			var template = new AnalyserTemplate
 			{
 				Id = AnalyserId.CreateNew(),
-				FactoryId = new LogAnalyserFactoryId("lkwdqjklowlkw"),
+				LogAnalyserPluginId = new LogAnalyserFactoryId("lkwdqjklowlkw"),
+				DataSourceAnalyserPluginId = new DataSourceAnalyserPluginId("fwadlnknpkaffwa"),
 				Configuration = new TestConfiguration()
 			};
 
 			var actualTemplate = template.Roundtrip(typeof(TestConfiguration));
 			actualTemplate.Should().NotBeNull();
 			actualTemplate.Id.Should().Be(template.Id);
-			actualTemplate.FactoryId.Should().Be(template.FactoryId);
+			actualTemplate.LogAnalyserPluginId.Should().Be(template.LogAnalyserPluginId);
+			actualTemplate.DataSourceAnalyserPluginId.Should().Be(template.DataSourceAnalyserPluginId);
 			actualTemplate.Configuration.Should().NotBeNull();
 			actualTemplate.Configuration.Should().BeOfType<TestConfiguration>();
 		}

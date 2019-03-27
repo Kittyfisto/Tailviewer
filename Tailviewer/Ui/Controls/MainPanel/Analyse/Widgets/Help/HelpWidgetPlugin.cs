@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Templates.Analysis;
@@ -10,7 +9,9 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 	public sealed class HelpWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId AnalyserId => LogAnalyserFactoryId.Empty;
+		public LogAnalyserFactoryId LogAnalyserId => LogAnalyserFactoryId.Empty;
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 

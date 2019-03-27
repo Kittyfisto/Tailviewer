@@ -76,6 +76,11 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileColumn<int> OriginalLineNumber;
 
 		/// <summary>
+		///     The name of the log entry's original data source.
+		/// </summary>
+		public static readonly ILogFileColumn<string> OriginalDataSourceName;
+
+		/// <summary>
 		///     The log level of the entry (debug, info, warning, etc...)
 		/// </summary>
 		public static readonly ILogFileColumn<LevelFlags> LogLevel;
@@ -122,6 +127,7 @@ namespace Tailviewer.Core.LogFiles
 			LogEntryIndex = new WellKnownLogFileColumn<LogEntryIndex>("log_entry_index", Tailviewer.LogEntryIndex.Invalid);
 			LineNumber = new WellKnownLogFileColumn<int>("line_number");
 			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
+			OriginalDataSourceName = new WellKnownLogFileColumn<string>("original_data_source_name");
 			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");
 			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");

@@ -61,7 +61,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.AnalyserId
+				LogAnalyserFactoryId = plugin.LogAnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.AnalyserId
+				LogAnalyserFactoryId = plugin.LogAnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -121,7 +121,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.AnalyserId
+				LogAnalyserFactoryId = plugin.LogAnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -149,7 +149,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_template.Add(new WidgetTemplate
 			{
 				AnalyserId = AnalyserId.Empty,
-				LogAnalyserFactoryId = plugin.AnalyserId
+				LogAnalyserFactoryId = plugin.LogAnalyserId
 			});
 
 			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
@@ -312,13 +312,42 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Exactly(3));
 		}
 
+		[Test]
+		[Description("Verifies that the page causes the analysis to be saved whenever a widget says it has modified the configuration")]
+		public void TestOnTemplateModified()
+		{
+			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var widget = AddWidget(model);
+
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Once, "because we've added a new widget");
+
+			widget.Raise(x => x.TemplateModified += null);
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Exactly(2), "because the new widget has requested another save");
+
+			widget.Raise(x => x.TemplateModified += null);
+			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Exactly(3), "because the new widget has requested another save");
+		}
+
+		private Mock<IWidgetViewModel> AddWidget(AnalysisPageViewModel model)
+		{
+			var widget = new Mock<IWidgetViewModel>();
+			var factory = new Mock<IWidgetPlugin>();
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+				.Returns(widget.Object);
+
+			var layout = (HorizontalWrapWidgetLayoutViewModel) model.Layout;
+			layout.RaiseRequestAdd(factory.Object);
+
+			return widget;
+		}
+
 		private IWidgetPlugin CreateWidgetPlugin()
 		{
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
 			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget);
-			factory.Setup(x => x.AnalyserId).Returns(new LogAnalyserFactoryId("Test Widget Plugin"));
+			factory.Setup(x => x.LogAnalyserId).Returns(new LogAnalyserFactoryId("Test Widget Plugin"));
 			return factory.Object;
 		}
 

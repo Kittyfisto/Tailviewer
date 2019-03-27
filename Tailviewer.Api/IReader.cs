@@ -108,6 +108,16 @@ namespace Tailviewer
 		/// <param name="name"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		bool TryReadAttribute(string name, out DataSourceAnalyserPluginId value);
+
+		/// <summary>
+		///     Tries to read the attribute with the given name.
+		///     Returns false if there is no such attribute or some other prevented
+		///     reading back the value.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		bool TryReadAttribute(string name, out DataSourceId value);
 
 		/// <summary>

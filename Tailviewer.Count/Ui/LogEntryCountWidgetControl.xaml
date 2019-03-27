@@ -42,7 +42,8 @@
                        FontSize="48"
                        FontWeight="Bold"
                        Margin="6" />
-            <controls:EditableTextBlock Text="{Binding Caption}"
+
+            <controls:EditableTextBlock Text="{Binding Caption, Mode=TwoWay}"
                                         HorizontalAlignment="Center"
                                         FontSize="16"
                                         Margin="6,0,6,6" />

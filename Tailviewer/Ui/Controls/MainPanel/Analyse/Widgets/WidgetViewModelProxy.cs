@@ -50,6 +50,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 			if (InnerViewModel != null)
 			{
 				InnerViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+				InnerViewModel.TemplateModified += ViewModelOnTemplateModified;
 
 				try
 				{
@@ -247,9 +248,19 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		/// </summary>
 		public event Action<WidgetViewModelProxy> OnDelete;
 
+		/// <summary>
+		///     This event is fired when the <see cref="IWidgetViewModel.TemplateModified"/> event is fired.
+		/// </summary>
+		public event Action<WidgetViewModelProxy> TemplateModified;
+
 		private void ViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			PropertyChanged?.Invoke(this, e);
+		}
+
+		private void ViewModelOnTemplateModified()
+		{
+			TemplateModified?.Invoke(this);
 		}
 
 		/// <summary>

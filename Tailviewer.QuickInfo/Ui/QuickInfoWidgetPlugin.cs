@@ -10,7 +10,9 @@ namespace Tailviewer.QuickInfo.Ui
 	public sealed class QuickInfoWidgetPlugin
 		: IWidgetPlugin
 	{
-		public LogAnalyserFactoryId AnalyserId => QuickInfoAnalyserPlugin.Id;
+		public LogAnalyserFactoryId LogAnalyserId => QuickInfoAnalyserPlugin.Id;
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserId => DataSourceAnalyserPluginId.Empty;
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => new QuickInfoAnalyserConfiguration();
 

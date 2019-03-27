@@ -36,5 +36,18 @@ namespace Tailviewer.Test.BusinessLogic
 			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
 			analyser.Configuration.Should().BeSameAs(_template.Configuration);
 		}
+
+		[Test]
+		[Description("Verifies that an analysis can be started without configuration (because it is supposed to be optional)")]
+		public void TestAnalysisWithoutConfiguration()
+		{
+			_template.Configuration = null;
+
+			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
+			analyser.Configuration.Should().BeNull("because this analyser doesn't need any configuration");
+
+			_engine.Verify( x=> x.CreateAnalysis(It.IsAny<ILogFile>(), It.IsAny<DataSourceAnalysisConfiguration>(), It.IsAny<IDataSourceAnalysisListener>()),
+				Times.Once);
+		}
 	}
 }

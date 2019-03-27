@@ -38,12 +38,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly DelegateCommand _deletePageCommand;
 		private readonly List<WidgetViewModelProxy> _widgets;
 		private readonly Dictionary<WidgetViewModelProxy, IDataSourceAnalyser> _analysersPerWidget;
+		private readonly IAnalysisStorage _analysisStorage;
+		private readonly AnalysisId _id;
+
 		private bool _canBeDeleted;
 		private IWidgetLayoutViewModel _layout;
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
-		private readonly IAnalysisStorage _analysisStorage;
-		private readonly AnalysisId _id;
 
 		public AnalysisPageViewModel(AnalysisId id,
 		                             PageTemplate template,
@@ -109,15 +110,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			var pluginsById = new Dictionary<LogAnalyserFactoryId, IWidgetPlugin>(plugins.Count);
 			foreach (var plugin in plugins)
 			{
-				if (!pluginsById.TryGetValue(plugin.AnalyserId, out var existingPlugin))
+				if (!pluginsById.TryGetValue(plugin.LogAnalyserId, out var existingPlugin))
 				{
-					pluginsById.Add(plugin.AnalyserId, plugin);
+					pluginsById.Add(plugin.LogAnalyserId, plugin);
 				}
 				else
 				{
 					Log.WarnFormat("Ignoring plugin {0} with id {1}, there already is another plugin registered with the same id: {2}",
 					               plugin.GetType(),
-					               plugin.AnalyserId,
+					               plugin.LogAnalyserId,
 					               existingPlugin.GetType());
 				}
 			}
@@ -225,13 +226,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddNewWidget(IWidgetPlugin plugin, ILogAnalyserConfiguration configuration, IWidgetConfiguration viewConfiguration)
 		{
-			var analyser = CreateAnalyser(plugin.AnalyserId, configuration);
+			var analyser = CreateAnalyser(plugin.LogAnalyserId, configuration);
 
 			var widgetTemplate = new WidgetTemplate
 			{
 				Id = WidgetId.CreateNew(),
 				AnalyserId = analyser.Id,
-				LogAnalyserFactoryId = plugin.AnalyserId,
+				LogAnalyserFactoryId = plugin.LogAnalyserId,
 				Configuration = viewConfiguration
 			};
 
@@ -294,12 +295,19 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Add(widgetViewModel);
 			_layout?.Add(widgetViewModel);
 			widgetViewModel.OnDelete += WidgetOnDelete;
+			widgetViewModel.TemplateModified += WidgetTemplateModified;
 			HasWidgets = _widgets.Any();
 		}
 
 		private void WidgetOnDelete(WidgetViewModelProxy widget)
 		{
 			Remove(widget);
+		}
+
+		private void WidgetTemplateModified(WidgetViewModelProxy obj)
+		{
+			// TODO: This might be a good place to prevent plugins from bringing TV to its knees by firing this event thousands of times per second
+			_analysisStorage.SaveAsync(_id);
 		}
 
 		public void Remove(WidgetViewModelProxy widget)

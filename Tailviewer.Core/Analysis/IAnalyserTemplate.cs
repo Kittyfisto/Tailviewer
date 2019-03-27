@@ -10,9 +10,16 @@ namespace Tailviewer.Core.Analysis
 			, ICloneable
 	{
 		/// <summary>
-		///     The id of the factory which produced the analysier.
+		///     The id of the <see cref="ILogAnalyserPlugin" /> which shall be used or
+		///     <see cref="LogAnalyserFactoryId.Empty" /> if none is to be used.
 		/// </summary>
-		LogAnalyserFactoryId FactoryId { get; }
+		LogAnalyserFactoryId LogAnalyserPluginId { get; }
+
+		/// <summary>
+		///     The id of the <see cref="IDataSourceAnalyserPlugin" /> which shall be used or
+		///     <see cref="BusinessLogic.Analysis.DataSourceAnalyserPluginId.Empty" /> if none is to be used.
+		/// </summary>
+		DataSourceAnalyserPluginId DataSourceAnalyserPluginId { get; }
 
 		/// <summary>
 		///     The id of the analyser instance.

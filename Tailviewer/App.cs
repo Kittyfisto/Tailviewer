@@ -84,7 +84,8 @@ namespace Tailviewer
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
-					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, logAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
+					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(logAnalyserEngine, pluginSystem))
+					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
 					{
 						var arguments = ArgumentParser.TryParse(args);
 						if (arguments.FileToOpen != null)

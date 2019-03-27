@@ -18,8 +18,6 @@ namespace Tailviewer.Core.Analysis
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
-		private readonly IWidgetTemplate _template;
-		private readonly ILogAnalyserConfiguration _analyserConfiguration;
 		private bool _isEditing;
 
 		/// <summary>
@@ -31,8 +29,8 @@ namespace Tailviewer.Core.Analysis
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
-			_analyserConfiguration = dataSourceAnalyser.Configuration?.Clone() as ILogAnalyserConfiguration;
-			_template = template;
+			AnalyserConfiguration = dataSourceAnalyser.Configuration?.Clone() as ILogAnalyserConfiguration;
+			Template = template;
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
 		}
 
@@ -42,17 +40,17 @@ namespace Tailviewer.Core.Analysis
 		///     When <see cref="IsEditing" /> is set to false again, the current value of this property is then forwarded
 		///     to the <see cref="IDataSourceAnalyser" /> via <see cref="IDataSourceAnalyser.Configuration" />.
 		/// </summary>
-		protected ILogAnalyserConfiguration AnalyserConfiguration => _analyserConfiguration;
+		protected ILogAnalyserConfiguration AnalyserConfiguration { get; }
 
 		/// <summary>
 		///     The current configuration of the view.
 		/// </summary>
-		protected IWidgetConfiguration ViewConfiguration => _template.Configuration;
+		protected IWidgetConfiguration ViewConfiguration => Template.Configuration;
 
 		/// <inheritdoc />
 		public bool IsEditing
 		{
-			get { return _isEditing; }
+			get => _isEditing;
 			set
 			{
 				if (value == _isEditing)
@@ -62,7 +60,10 @@ namespace Tailviewer.Core.Analysis
 				EmitPropertyChanged();
 
 				if (!value)
+				{
 					_dataSourceAnalyser.Configuration = AnalyserConfiguration.Clone() as ILogAnalyserConfiguration;
+					EmitTemplateModified();
+				}
 			}
 		}
 
@@ -72,19 +73,24 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public string Title
 		{
-			get { return _template.Title; }
+			get => Template.Title;
 			set
 			{
-				if (value == _template.Title)
+				if (value == Template.Title)
 					return;
 
-				_template.Title = value;
+				Template.Title = value;
 				EmitPropertyChanged();
+
+				EmitTemplateModified();
 			}
 		}
 
 		/// <inheritdoc />
-		public IWidgetTemplate Template => _template;
+		public IWidgetTemplate Template { get; }
+
+		/// <inheritdoc />
+		public event Action TemplateModified;
 
 		/// <inheritdoc />
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -92,7 +98,14 @@ namespace Tailviewer.Core.Analysis
 		/// <inheritdoc />
 		public virtual void Update()
 		{
-			
+		}
+
+		/// <summary>
+		///     Fires the <see cref="TemplateModified" /> event.
+		/// </summary>
+		protected void EmitTemplateModified()
+		{
+			TemplateModified?.Invoke();
 		}
 
 		private ILogAnalyserConfiguration CloneConfiguration(IDataSourceAnalyser dataSourceAnalyser)

@@ -362,6 +362,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			});
 		}
 
+		[Test]
+		public void Test()
+		{
+			_file.GetValue(LogFileProperties.Name).Should().Be(_fname);
+		}
+
 		protected override ILogFile CreateEmpty()
 		{
 			var logFile = new TextLogFile(_scheduler, "fawwaaw");

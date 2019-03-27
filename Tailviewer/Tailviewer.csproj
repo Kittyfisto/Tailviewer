@@ -83,7 +83,10 @@
     <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxy.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
+    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserEngine.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
@@ -575,7 +578,9 @@
     <None Include="Resources\Fonts\METADATA.pb" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Tailviewer.png" />

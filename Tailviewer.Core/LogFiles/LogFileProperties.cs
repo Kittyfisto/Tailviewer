@@ -12,6 +12,11 @@ namespace Tailviewer.Core.LogFiles
 	public static class LogFileProperties
 	{
 		/// <summary>
+		///     The name of the log file (for example the file name of a text log file).
+		/// </summary>
+		public static readonly ILogFilePropertyDescriptor<string> Name;
+
+		/// <summary>
 		///     The first identified timestamp of the data source, if any, null otherwise.
 		/// </summary>
 		public static readonly ILogFilePropertyDescriptor<DateTime?> StartTimestamp;
@@ -53,6 +58,7 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileProperties()
 		{
+			Name = new WellKnownLogFilePropertyDescriptor<string>("Name");
 			StartTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("StartTimestamp");
 			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTimestamp");
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
@@ -62,6 +68,7 @@ namespace Tailviewer.Core.LogFiles
 
 			Minimum = new ILogFilePropertyDescriptor[]
 			{
+				Name,
 				StartTimestamp,
 				EndTimestamp,
 				LastModified,

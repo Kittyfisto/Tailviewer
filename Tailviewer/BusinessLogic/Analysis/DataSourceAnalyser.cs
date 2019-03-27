@@ -12,7 +12,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 	public sealed class DataSourceAnalyser
 		: IDataSourceAnalyser
 		, IDataSourceAnalysisListener
-		, IDisposable
 	{
 		private readonly AnalyserTemplate _template;
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
@@ -41,7 +40,9 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public AnalyserId Id => _template.Id;
 
-		public LogAnalyserFactoryId FactoryId => _template.FactoryId;
+		public LogAnalyserFactoryId LogAnalyserPluginId => _template.LogAnalyserPluginId;
+
+		public DataSourceAnalyserPluginId DataSourceAnalyserPluginId => _template.DataSourceAnalyserPluginId;
 
 		public Percentage Progress { get; private set; }
 
@@ -60,6 +61,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 				_configuration = value;
 				RestartAnalysis();
 			}
+		}
+
+		public void OnAddLogFile(ILogFile logFile)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void OnRemoveLogFile(ILogFile logFile)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void OnProgress(IDataSourceAnalysisHandle handle, Percentage progress)
@@ -96,7 +107,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			var result = Result?.Clone() as ILogAnalysisResult;
 			var progress = Progress;
 			return new DataSourceAnalyserSnapshot(Id,
-				FactoryId,
+				LogAnalyserPluginId,
 				configuration,
 				result,
 				progress);
@@ -110,20 +121,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 				_currentAnalysis = null;
 			}
 
-			if (_configuration != null)
+			var configuration = new DataSourceAnalysisConfiguration
 			{
-				var configuration = new DataSourceAnalysisConfiguration
-				{
-					FactoryId = _template.FactoryId,
-					Configuration = _configuration
-				};
-				_currentAnalysis = _logAnalyserEngine.CreateAnalysis(_logFile, configuration, this);
-				// Now that we've assigned the current analysis, we can actually start it
-				// (otherwise there would be the race condition of being notified through the
-				// listener interface before we've assigned the new handle, effectively losing
-				// the values provided by the callback).
-				_currentAnalysis.Start();
-			}
+				FactoryId = _template.LogAnalyserPluginId,
+				Configuration = _configuration
+			};
+			_currentAnalysis = _logAnalyserEngine.CreateAnalysis(_logFile, configuration, this);
+			// Now that we've assigned the current analysis, we can actually start it
+			// (otherwise there would be the race condition of being notified through the
+			// listener interface before we've assigned the new handle, effectively losing
+			// the values provided by the callback).
+			_currentAnalysis.Start();
 		}
 	}
 }

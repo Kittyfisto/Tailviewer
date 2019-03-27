@@ -5,9 +5,14 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
-	///     The interface for an analyser, responsible for looking at a <see cref="ILogFile" />
-	///     and producing a result. The result should be updated when the log file or table changes.
+	///     The interface for an analyser, responsible for looking at a virtual <see cref="ILogFile" />
+	///     and producing a result. The result is updated whenever the log file changes.
 	/// </summary>
+	/// <remarks>
+	///     A <see cref="ILogAnalyser"/> only works with a static <see cref="ILogAnalyserConfiguration"/> and is destroyed and re-created
+	///     whenever the configuration changes. If this is unacceptable to you, then you might want to implement
+	///     <see cref="IDataSourceAnalyser"/>.
+	/// </remarks>
 	public interface ILogAnalyser
 		: ILogFileListener
 		, IDisposable
