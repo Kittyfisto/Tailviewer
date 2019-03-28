@@ -1,5 +1,8 @@
-﻿namespace Tailviewer.Analysis.DataSources.BusinessLogic
+﻿using System.Runtime.Serialization;
+
+namespace Tailviewer.Analysis.DataSources.BusinessLogic
 {
+	[DataContract]
 	public sealed class DataSource
 		: ISerializableType
 	{

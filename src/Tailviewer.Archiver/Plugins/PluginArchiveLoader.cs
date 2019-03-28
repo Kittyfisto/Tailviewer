@@ -86,8 +86,6 @@ namespace Tailviewer.Archiver.Plugins
 			return true;
 		}
 
-		public IEnumerable<IPluginDescription> AllPlugins => _archivesByPlugin.Keys.ToList();
-
 		/// <inheritdoc />
 		public void Dispose()
 		{
@@ -109,7 +107,26 @@ namespace Tailviewer.Archiver.Plugins
 			return status;
 		}
 
-		/// <inheritdoc />
+		public IReadOnlyDictionary<string, Type> ResolveSerializableTypes()
+		{
+			var serializableTypes = new Dictionary<string, Type>();
+
+			foreach (var pair in _archivesByPlugin)
+			{
+				var assembly = pair.Value.LoadPlugin();
+				var types = pair.Key.SerializableTypes;
+				foreach (var tmp in types)
+				{
+					if (TryResolveType(assembly, tmp.Value, out var type))
+					{
+						serializableTypes.Add(tmp.Key, type);
+					}
+				}
+			}
+
+			return serializableTypes;
+		}
+
 		public T Load<T>(IPluginDescription description) where T : class, IPlugin
 		{
 			if (!_archivesByPlugin.TryGetValue(description, out var archive))
@@ -180,6 +197,27 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
+		private bool TryResolveType(Assembly assembly, string typeName, out Type type)
+		{
+			try
+			{
+				type = assembly.GetType(typeName, throwOnError: true);
+				if (type == null)
+				{
+					Log.ErrorFormat("Unable to resolve type '{0}'", typeName);
+					return false;
+				}
+
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to resolve type '{0}': {1}", typeName, e);
+				type = null;
+				return false;
+			}
+		}
+
 		private static void ExtractIdAndVersion(string pluginPath, out PluginId id, out Version version)
 		{
 			var fileName = Path.GetFileNameWithoutExtension(pluginPath);
@@ -235,6 +273,11 @@ namespace Tailviewer.Archiver.Plugins
 				else
 					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...", pair.InterfaceTypename);
 			}
+			var serializableTypes = new Dictionary<string, string>();
+			foreach (var pair in archiveIndex.SerializableTypes)
+			{
+				serializableTypes.Add(pair.Name, pair.FullName);
+			}
 
 			var desc = new PluginDescription
 			{
@@ -245,7 +288,8 @@ namespace Tailviewer.Archiver.Plugins
 				Author = archiveIndex.Author,
 				Description = archiveIndex.Description,
 				Website = website,
-				Plugins = plugins
+				Plugins = plugins,
+				SerializableTypes = serializableTypes
 			};
 
 			return desc;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
@@ -7,6 +8,7 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 	/// <summary>
 	///     The configuration of a single quick info.
 	/// </summary>
+	[DataContract]
 	public sealed class QuickInfoConfiguration
 		: ISerializableType
 		, ICloneable

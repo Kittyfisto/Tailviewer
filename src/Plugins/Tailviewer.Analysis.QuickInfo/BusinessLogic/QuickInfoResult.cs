@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
@@ -8,6 +9,7 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 	/// <summary>
 	///     The result of the <see cref="QuickInfoAnalyser" />.
 	/// </summary>
+	[DataContract]
 	public sealed class QuickInfoResult
 		: ILogAnalysisResult
 	{

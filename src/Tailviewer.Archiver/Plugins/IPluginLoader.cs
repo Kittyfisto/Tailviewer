@@ -23,6 +23,12 @@ namespace Tailviewer.Archiver.Plugins
 		IPluginStatus GetStatus(IPluginDescription description);
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		IReadOnlyDictionary<string, Type> ResolveSerializableTypes();
+
+		/// <summary>
 		///     Loads all plugins in the given list that implement the given interface <typeparamref name="T" />.
 		///     All plugins that cannot be loaded are ignored (an error is logged, but the caller is not notified).
 		/// </summary>

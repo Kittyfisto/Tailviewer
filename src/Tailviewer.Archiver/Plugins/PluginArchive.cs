@@ -51,7 +51,7 @@ namespace Tailviewer.Archiver.Plugins
 		///     The currently minimum plugin-archive-version supported by this software.
 		/// </summary>
 		public const int MinimumSupportedPluginArchiveVersion = CurrentPluginArchiveVersion;
-		
+
 		private PluginArchive(ZipArchive archive)
 		{
 			if (archive == null)

@@ -14,19 +14,6 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     A unique id which distinguishes this plugin implementation from any other.
 		/// </summary>
 		AnalyserPluginId Id { get; }
-		
-		/// <summary>
-		///     Types which are expected to be serialized. This must include the <see cref="ILogAnalyserConfiguration"/> implementation
-		/// if this plugin ships with one.
-		/// </summary>
-		/// <remarks>
-		///     It is expected that the name for a certain logical type does NOT change over the lifetime of the plugin.
-		///     Renaming a certain <see cref="Type"/> is fine, so as long as the name returned in this dictionary does NOT change.
-		/// </remarks>
-		/// <remarks>
-		///     TODO: This type will be removed in future versions
-		/// </remarks>
-		IEnumerable<KeyValuePair<string, Type>> SerializableTypes { get; }
 
 		/// <summary>
 		///     Creates a new data source analyser.

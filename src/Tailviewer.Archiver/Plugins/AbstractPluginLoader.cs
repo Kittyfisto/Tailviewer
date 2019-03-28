@@ -38,7 +38,8 @@ namespace Tailviewer.Archiver.Plugins
 			throw new NotImplementedException();
 		}
 
-		/// <inheritdoc />
+		public abstract IReadOnlyDictionary<string, Type> ResolveSerializableTypes();
+
 		public abstract T Load<T>(IPluginDescription description) where T : class, IPlugin;
 
 		/// <inheritdoc />

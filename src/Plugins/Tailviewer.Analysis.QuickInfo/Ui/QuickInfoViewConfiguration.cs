@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Analysis.QuickInfo.Ui
 {
+	[DataContract]
 	public sealed class QuickInfoViewConfiguration
 		: ISerializableType
 		, ICloneable

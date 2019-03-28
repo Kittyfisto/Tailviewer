@@ -70,5 +70,10 @@ namespace Tailviewer.Archiver.Plugins
 		///     A map from the plugin interface to its actual implementation.
 		/// </summary>
 		IReadOnlyDictionary<Type, string> Plugins { get; }
+
+		/// <summary>
+		///     A map from an immutable name to a .NET assembly qualified typename of a serializable type.
+		/// </summary>
+		IReadOnlyDictionary<string, string> SerializableTypes { get; }
 	}
 }

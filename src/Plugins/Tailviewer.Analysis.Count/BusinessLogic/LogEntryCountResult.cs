@@ -1,7 +1,9 @@
-﻿using Tailviewer.BusinessLogic.Analysis;
+﻿using System.Runtime.Serialization;
+using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Analysis.Count.BusinessLogic
 {
+	[DataContract]
 	public sealed class LogEntryCountResult
 		: ILogAnalysisResult
 	{

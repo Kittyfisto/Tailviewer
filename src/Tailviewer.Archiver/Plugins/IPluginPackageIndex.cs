@@ -37,12 +37,10 @@ namespace Tailviewer.Archiver.Plugins
 		string Author { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		string Description { get; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		string Website { get; }
 
@@ -64,5 +62,10 @@ namespace Tailviewer.Archiver.Plugins
 		///     The list of plugin-interface implementations, contained in the plugin assembly.
 		/// </summary>
 		IEnumerable<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; }
+
+		/// <summary>
+		///     The list of serializable types implemented by the plugin.
+		/// </summary>
+		IEnumerable<SerializableTypeDescription> SerializableTypes { get; }
 	}
 }

@@ -30,6 +30,9 @@ namespace Tailviewer.Archiver.Plugins
 		[DataMember]
 		public List<PluginInterfaceImplementation> ImplementedPluginInterfaces { get; set; }
 
+		[DataMember]
+		public List<SerializableTypeDescription> SerializableTypes { get; set; }
+
 		/// <inheritdoc />
 		public int PluginArchiveVersion { get; set; }
 
@@ -66,6 +69,8 @@ namespace Tailviewer.Archiver.Plugins
 
 		[DataMember]
 		public string Version { get; set; }
+
+		IEnumerable<SerializableTypeDescription> IPluginPackageIndex.SerializableTypes => SerializableTypes;
 
 		IEnumerable<PluginInterfaceImplementation> IPluginPackageIndex.ImplementedPluginInterfaces => ImplementedPluginInterfaces;
 

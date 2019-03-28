@@ -13,10 +13,12 @@ namespace Tailviewer.Archiver.Plugins
 		: IPluginDescription
 	{
 		private static readonly ReadOnlyDictionary<Type, string> NoPlugins;
+		private static readonly ReadOnlyDictionary<string, string> NoSerializableTypes;
 
 		static PluginDescription()
 		{
 			NoPlugins = new ReadOnlyDictionary<Type, string>(new Dictionary<Type, string>());
+			NoSerializableTypes = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
 		}
 
 		/// <summary>
@@ -25,6 +27,7 @@ namespace Tailviewer.Archiver.Plugins
 		public PluginDescription()
 		{
 			Plugins = NoPlugins;
+			SerializableTypes = NoSerializableTypes;
 		}
 
 		/// <inheritdoc />
@@ -56,6 +59,9 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<Type, string> Plugins { get; set; }
+
+		/// <inheritdoc />
+		public IReadOnlyDictionary<string, string> SerializableTypes { get; set; }
 
 		#region Overrides of Object
 

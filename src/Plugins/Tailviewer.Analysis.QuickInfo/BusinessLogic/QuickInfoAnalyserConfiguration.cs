@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
+	[DataContract]
 	public sealed class QuickInfoAnalyserConfiguration
 		: ILogAnalyserConfiguration
 	{

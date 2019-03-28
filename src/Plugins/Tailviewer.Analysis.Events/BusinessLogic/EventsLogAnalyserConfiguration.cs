@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml;
 using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
@@ -9,6 +10,7 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 	/// Contains all settings for a <see cref="EventsLogAnalyser"/>.
 	/// Consists of mainly a list of <see cref="EventConfiguration"/>.
 	/// </summary>
+	[DataContract]
 	public sealed class EventsLogAnalyserConfiguration
 		: ILogAnalyserConfiguration
 	{

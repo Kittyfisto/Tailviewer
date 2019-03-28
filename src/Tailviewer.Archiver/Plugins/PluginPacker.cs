@@ -327,6 +327,15 @@ namespace Tailviewer.Archiver.Plugins
 					ImplementationTypename = pair.Value
 				});
 			}
+			_index.SerializableTypes = new List<SerializableTypeDescription>();
+			foreach (var pair in description.SerializableTypes)
+			{
+				_index.SerializableTypes.Add(new SerializableTypeDescription
+				{
+					Name = pair.Key,
+					FullName = pair.Value
+				});
+			}
 		}
 
 		private Assembly LoadAssemblyFrom(Stream assemblyContent, out byte[] rawAssembly)

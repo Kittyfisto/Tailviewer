@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Tailviewer.Ui.Analysis;
 
 namespace Tailviewer.Analysis.QuickInfo.Ui
 {
+	[DataContract]
 	public sealed class QuickInfoWidgetConfiguration
 		: IWidgetConfiguration
 	{

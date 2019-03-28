@@ -85,7 +85,7 @@ namespace Tailviewer
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
 					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(logAnalyserEngine, pluginSystem))
-					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem.LoadAllOfType<ILogAnalyserPlugin>())))
+					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem)))
 					{
 						var arguments = ArgumentParser.TryParse(args);
 						if (arguments.FileToOpen != null)
@@ -172,22 +172,12 @@ namespace Tailviewer
 			return registry;
 		}
 
-		private static ITypeFactory CreateTypeFactory(IEnumerable<ILogAnalyserPlugin> plugins)
+		private static ITypeFactory CreateTypeFactory(IPluginLoader pluginLoader)
 		{
 			var factory = new TypeFactory();
-			foreach (var plugin in plugins)
+			foreach (var pair in pluginLoader.ResolveSerializableTypes())
 			{
-				foreach (var pair in plugin.SerializableTypes)
-				{
-					try
-					{
-						factory.Add(pair.Key, pair.Value);
-					}
-					catch (Exception e)
-					{
-						Log.ErrorFormat("Caught unexpected exception: {0}", e);
-					}
-				}
+				factory.Add(pair.Key, pair.Value);
 			}
 			factory.Add<AnalysisTemplate>();
 			factory.Add<AnalysisViewTemplate>();

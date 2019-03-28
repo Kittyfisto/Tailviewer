@@ -95,6 +95,7 @@
     <Compile Include="Plugins\PluginPackageIndex.cs" />
     <Compile Include="Plugins\PluginPacker.cs" />
     <Compile Include="Plugins\PluginRegistry.cs" />
+    <Compile Include="Plugins\SerializableTypeDescription.cs" />
     <Compile Include="Plugins\PluginStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

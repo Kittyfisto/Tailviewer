@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Threading;
 using log4net;
 using Metrolib;
@@ -72,6 +73,11 @@ namespace Tailviewer.Archiver.Plugins
 		public void Dispose()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomainOnAssemblyResolve;
+		}
+
+		public override IReadOnlyDictionary<string, Type> ResolveSerializableTypes()
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -159,6 +165,8 @@ namespace Tailviewer.Archiver.Plugins
 					pluginPath,
 					string.Join(", ", PluginInterfaces.Select(x => x.Name)));
 
+			var serializableTypes = FindSerializableTypes(pluginPath, assembly);
+
 			return new PluginDescription
 			{
 				Id = new PluginId(string.Format("{0}.{1}", idAttribute.Namespace, idAttribute.Name)),
@@ -168,7 +176,8 @@ namespace Tailviewer.Archiver.Plugins
 				Description = descriptionAttribute?.Description,
 				Version = pluginVersion,
 				FilePath = pluginPath,
-				Plugins = plugins
+				Plugins = plugins,
+				SerializableTypes = serializableTypes
 			};
 		}
 
@@ -259,6 +268,38 @@ namespace Tailviewer.Archiver.Plugins
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;
+		}
+
+		private IReadOnlyDictionary<string, string> FindSerializableTypes(string pluginPath, Assembly assembly)
+		{
+			var serializableTypes = new Dictionary<string, string>();
+			foreach (var type in assembly.ExportedTypes)
+			{
+				var interfaces = type.GetInterfaces();
+
+				var attribute = type.GetCustomAttribute<DataContractAttribute>();
+				if (attribute != null)
+				{
+					var name = attribute.Name ?? type.FullName;
+					if (serializableTypes.TryGetValue(name, out var existingType))
+					{
+						Log.ErrorFormat("Plugin '{0}' contains at least two serializable types ({1} and {2}) which claim to use the same name: There can only be one!",
+						                pluginPath,
+						                type.AssemblyQualifiedName,
+						                existingType);
+					}
+					else
+					{
+						serializableTypes.Add(name, type.FullName);
+					}
+				}
+				else if (interfaces.Contains(typeof(ISerializableType)))
+				{
+					Log.WarnFormat("The type '{0}' should be marked with the [DataContract] attribute!", type.FullName);
+				}
+			}
+
+			return serializableTypes;
 		}
 	}
 }

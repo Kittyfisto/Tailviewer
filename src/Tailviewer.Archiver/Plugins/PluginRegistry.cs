@@ -61,6 +61,11 @@ namespace Tailviewer.Archiver.Plugins
 			return new PluginStatus();
 		}
 
+		public IReadOnlyDictionary<string, Type> ResolveSerializableTypes()
+		{
+			return new Dictionary<string, Type>();
+		}
+
 		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
 			if (!_pluginsByInterface.TryGetValue(typeof(T), out var plugins))

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using log4net;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
@@ -11,6 +14,8 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class AggregatedPluginLoader
 		: IPluginLoader
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly IReadOnlyList<IPluginLoader> _pluginLoaders;
 
 		public AggregatedPluginLoader(IEnumerable<IPluginLoader> pluginLoaders)
@@ -42,6 +47,27 @@ namespace Tailviewer.Archiver.Plugins
 				IsInstalled = false,
 				IsLoaded = false
 			};
+		}
+
+		public IReadOnlyDictionary<string, Type> ResolveSerializableTypes()
+		{
+			var types = new Dictionary<string, Type>();
+			foreach (var pluginLoader in _pluginLoaders)
+			{
+				foreach (var pair in pluginLoader.ResolveSerializableTypes())
+				{
+					if (types.TryGetValue(pair.Key, out var existingType))
+					{
+						Log.WarnFormat("There are at least two types ({0} and {1}) which have the same name '{2}', ignoring the latter!",
+						               existingType, pair.Value, pair.Key);
+					}
+					else
+					{
+						types.Add(pair.Key, pair.Value);
+					}
+				}
+			}
+			return types;
 		}
 
 		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
