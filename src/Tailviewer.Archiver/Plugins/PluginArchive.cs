@@ -45,7 +45,10 @@ namespace Tailviewer.Archiver.Plugins
 		/// <remarks>
 		///     Version 3: ILogFile interface has been mostly rewritten to support custom columns and properties
 		/// </remarks>
-		public const int CurrentPluginArchiveVersion = 3;
+		/// <remarks>
+		///     Version 4: PluginPackageIndex stores list of serializable types the plugin implements
+		/// </remarks>
+		public const int CurrentPluginArchiveVersion = 4;
 
 		/// <summary>
 		///     The currently minimum plugin-archive-version supported by this software.
