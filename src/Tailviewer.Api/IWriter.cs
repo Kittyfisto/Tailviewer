@@ -43,6 +43,13 @@ namespace Tailviewer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <param name="value"></param>
+		void WriteAttribute(string name, DateTime? value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
 		void WriteAttribute(string name, Guid value);
 
 		/// <summary>
@@ -58,6 +65,13 @@ namespace Tailviewer
 		/// <param name="name"></param>
 		/// <param name="value"></param>
 		void WriteAttribute(string name, long value);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		void WriteAttribute(string name, long? value);
 
 		/// <summary>
 		/// 

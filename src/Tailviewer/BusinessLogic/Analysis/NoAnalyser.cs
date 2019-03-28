@@ -30,10 +30,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		public bool IsFrozen => false;
 
 		public ILogAnalyserConfiguration Configuration { get; set; }
-		public void OnLogFileAdded(ILogFile logFile)
+		public void OnLogFileAdded(DataSourceId id, ILogFile logFile)
 		{}
 
-		public void OnLogFileRemoved(ILogFile logFile)
+		public void OnLogFileRemoved(DataSourceId id, ILogFile logFile)
 		{}
 
 		public void Dispose()

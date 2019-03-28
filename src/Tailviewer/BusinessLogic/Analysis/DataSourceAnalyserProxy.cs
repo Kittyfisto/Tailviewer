@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -19,21 +20,21 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalyserConfiguration _configuration;
 		private readonly IDataSourceAnalyser _analyser;
 
-		public DataSourceAnalyserProxy(IDataSourceAnalyserPlugin plugin, AnalyserId id, ILogFile logFile, ILogAnalyserConfiguration configuration)
+		public DataSourceAnalyserProxy(IDataSourceAnalyserPlugin plugin, AnalyserId id, ITaskScheduler scheduler, ILogFile logFile, ILogAnalyserConfiguration configuration)
 		{
 			_plugin = plugin;
 			_id = id;
 			_logFile = logFile;
 			_configuration = configuration;
 
-			_analyser = TryCreateAnalyser();
+			_analyser = TryCreateAnalyser(scheduler);
 		}
 
-		private IDataSourceAnalyser TryCreateAnalyser()
+		private IDataSourceAnalyser TryCreateAnalyser(ITaskScheduler scheduler)
 		{
 			try
 			{
-				var analyser = _plugin.Create(_id, _logFile, _configuration);
+				var analyser = _plugin.Create(_id, scheduler, _logFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)
@@ -103,11 +104,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public ILogAnalyserConfiguration Configuration { get; set; }
 
-		public void OnLogFileAdded(ILogFile logFile)
+		public void OnLogFileAdded(DataSourceId id, ILogFile logFile)
 		{
 			try
 			{
-				_analyser?.OnLogFileAdded(logFile);
+				_analyser?.OnLogFileAdded(id, logFile);
 			}
 			catch (Exception e)
 			{
@@ -117,11 +118,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void OnLogFileRemoved(ILogFile logFile)
+		public void OnLogFileRemoved(DataSourceId id, ILogFile logFile)
 		{
 			try
 			{
-				_analyser?.OnLogFileRemoved(logFile);
+				_analyser?.OnLogFileRemoved(id, logFile);
 			}
 			catch (Exception e)
 			{

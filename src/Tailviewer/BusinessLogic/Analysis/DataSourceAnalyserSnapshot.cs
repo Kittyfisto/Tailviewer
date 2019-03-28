@@ -51,12 +51,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 			set { throw new InvalidOperationException("Changing the configuration of a snapshot is not allowed"); }
 		}
 
-		public void OnLogFileAdded(ILogFile logFile)
+		public void OnLogFileAdded(DataSourceId id, ILogFile logFile)
 		{
 			throw new InvalidOperationException("Adding a log file to a snapshot is not allowed");
 		}
 
-		public void OnLogFileRemoved(ILogFile logFile)
+		public void OnLogFileRemoved(DataSourceId id, ILogFile logFile)
 		{
 			throw new InvalidOperationException("Removing a log file from a snapshot is not allowed");
 		}

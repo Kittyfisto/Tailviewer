@@ -315,7 +315,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 			_widgets.Remove(widget);
 			_layout?.Remove(widget);
 			_template.Remove(widget.Template);
-			_analysisStorage.SaveAsync(_id);
 
 			IDataSourceAnalyser analyser;
 			if (_analysersPerWidget.TryGetValue(widget, out analyser))
@@ -323,6 +322,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 				_analysersPerWidget.Remove(widget);
 				_analysis.Remove(analyser);
 			}
+
+			_analysisStorage.SaveAsync(_id);
 
 			widget.OnDelete -= WidgetOnDelete;
 			HasWidgets = _widgets.Any();

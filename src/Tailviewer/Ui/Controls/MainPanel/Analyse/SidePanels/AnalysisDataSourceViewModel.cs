@@ -43,12 +43,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels
 					if (value)
 					{
 						_dataSource.EnableAnalysis(_currentAnalysis.Id);
-						_currentAnalysis.Add(_dataSource.UnfilteredLogFile);
+						_currentAnalysis.Add(_dataSource.Id, _dataSource.UnfilteredLogFile);
 					}
 					else
 					{
 						_dataSource.DisableAnalysis(_currentAnalysis.Id);
-						_currentAnalysis.Remove(_dataSource.UnfilteredLogFile);
+						_currentAnalysis.Remove(_dataSource.Id, _dataSource.UnfilteredLogFile);
 					}
 				}
 			}

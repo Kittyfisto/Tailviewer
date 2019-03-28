@@ -91,6 +91,13 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
+		public void WriteAttribute(string name, DateTime? value)
+		{
+			if (value != null)
+				WriteAttribute(name, value.Value);
+		}
+
+		/// <inheritdoc />
 		public void WriteAttribute(string name, Guid value)
 		{
 			WriteAttribute(name, value.ToString());
@@ -106,6 +113,13 @@ namespace Tailviewer.Core
 		public void WriteAttribute(string name, long value)
 		{
 			WriteAttribute(name, value.ToString(CultureInfo.InvariantCulture));
+		}
+
+		/// <inheritdoc />
+		public void WriteAttribute(string name, long? value)
+		{
+			if (value != null)
+				WriteAttribute(name, value.Value);
 		}
 
 		/// <inheritdoc />

@@ -14,7 +14,7 @@ namespace Tailviewer.Analysis.DataSources.Ui
 
 		public ILogAnalyserConfiguration DefaultAnalyserConfiguration => null;
 
-		public IWidgetConfiguration DefaultViewConfiguration => null;
+		public IWidgetConfiguration DefaultViewConfiguration => new DataSourcesWidgetConfiguration();
 
 		public string Name => "Data sources";
 

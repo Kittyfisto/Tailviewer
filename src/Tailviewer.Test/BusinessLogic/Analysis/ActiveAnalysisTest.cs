@@ -4,6 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
@@ -27,7 +28,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 					It.IsAny<DataSourceAnalysisConfiguration>(),
 					It.IsAny<IDataSourceAnalysisListener>()))
 				.Returns(() => new Mock<IDataSourceAnalysisHandle>().Object);
-			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_logAnalyserEngine.Object);
+			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object);
 
 			_template = new AnalysisTemplate();
 		}
@@ -44,11 +45,12 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 
 			activeAnalysis.Add(AnalyserPluginId.Empty, new TestLogAnalyserConfiguration());
 
-			analyser.Verify(x => x.OnLogFileAdded(It.IsAny<ILogFile>()), Times.Never, "because we haven't added any log file for analysis just yet");
+			analyser.Verify(x => x.OnLogFileAdded(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>()), Times.Never, "because we haven't added any log file for analysis just yet");
 
+			var id =  DataSourceId.CreateNew();
 			var logFile = new Mock<ILogFile>();
-			activeAnalysis.Add(logFile.Object);
-			analyser.Verify(x => x.OnLogFileAdded(logFile.Object), Times.Once, "because we've just added a log file for analysis and thus the analyser should have been notified");
+			activeAnalysis.Add(id, logFile.Object);
+			analyser.Verify(x => x.OnLogFileAdded(id, logFile.Object), Times.Once, "because we've just added a log file for analysis and thus the analyser should have been notified");
 		}
 
 		[Test]
@@ -63,14 +65,15 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 
 			activeAnalysis.Add(AnalyserPluginId.Empty, new TestLogAnalyserConfiguration());
 
-			analyser.Verify(x => x.OnLogFileRemoved(It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
+			analyser.Verify(x => x.OnLogFileRemoved(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
 
+			var id = DataSourceId.CreateNew();
 			var logFile = new Mock<ILogFile>();
-			activeAnalysis.Add(logFile.Object);
-			analyser.Verify(x => x.OnLogFileRemoved(It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
+			activeAnalysis.Add(id, logFile.Object);
+			analyser.Verify(x => x.OnLogFileRemoved(id, It.IsAny<ILogFile>()), Times.Never, "because we haven't removed any log file from analysis just yet");
 
-			activeAnalysis.Remove(logFile.Object);
-			analyser.Verify(x => x.OnLogFileRemoved(logFile.Object), Times.Once, "because we've just removed a log file from analysis and thus the analyser should have been notified");
+			activeAnalysis.Remove(id, logFile.Object);
+			analyser.Verify(x => x.OnLogFileRemoved(id, logFile.Object), Times.Once, "because we've just removed a log file from analysis and thus the analyser should have been notified");
 		}
 
 		[Test]
@@ -139,6 +142,25 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_template.Analysers.Should().BeEmpty();
 
 			var analyser = activeAnalysis.Add(new AnalyserPluginId("foobar"), null);
+			_template.Analysers.Should().HaveCount(1);
+
+			activeAnalysis.Remove(analyser);
+			_template.Analysers.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestAddRemoveCustomAnalyzer1()
+		{
+			var pluginLoader = new PluginRegistry();
+			var id = new AnalyserPluginId("stuff");
+			var plugin = new Mock<IDataSourceAnalyserPlugin>();
+			plugin.Setup(x => x.Id).Returns(id);
+			pluginLoader.Register(plugin.Object);
+			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object, pluginLoader);
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
+			_template.Analysers.Should().BeEmpty();
+
+			var analyser = activeAnalysis.Add(id, null);
 			_template.Analysers.Should().HaveCount(1);
 
 			activeAnalysis.Remove(analyser);

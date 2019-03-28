@@ -3,8 +3,8 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.QuickInfo.BusinessLogic;
+using Tailviewer.Core;
 using Tailviewer.Core.Settings;
-using Tailviewer.Test;
 
 namespace Tailviewer.Analysis.QuickInfo.Test.BusinessLogic
 {

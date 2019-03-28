@@ -18,7 +18,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		ICommand AddPageCommand { get; }
 		double Progress { get; }
 
-		void Add(ILogFile logFile);
-		void Remove(ILogFile logFile);
+		void Add(DataSourceId id, ILogFile logFile);
+		void Remove(DataSourceId id, ILogFile logFile);
 	}
 }

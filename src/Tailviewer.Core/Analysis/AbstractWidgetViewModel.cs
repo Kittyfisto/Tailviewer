@@ -19,6 +19,7 @@ namespace Tailviewer.Core.Analysis
 
 		private readonly IDataSourceAnalyser _dataSourceAnalyser;
 		private bool _isEditing;
+		private bool _canBeEdited;
 
 		/// <summary>
 		/// </summary>
@@ -61,14 +62,30 @@ namespace Tailviewer.Core.Analysis
 
 				if (!value)
 				{
-					_dataSourceAnalyser.Configuration = AnalyserConfiguration.Clone() as ILogAnalyserConfiguration;
-					EmitTemplateModified();
+					var existingConfiguration = _dataSourceAnalyser.Configuration;
+					var newConfiguration = AnalyserConfiguration;
+					if (existingConfiguration != null || newConfiguration != null)
+					{
+						_dataSourceAnalyser.Configuration = newConfiguration?.Clone() as ILogAnalyserConfiguration;
+						EmitTemplateModified();
+					}
 				}
 			}
 		}
 
 		/// <inheritdoc />
-		public bool CanBeEdited { get; }
+		public bool CanBeEdited
+		{
+			get => _canBeEdited;
+			protected set
+			{
+				if (value == _canBeEdited)
+					return;
+
+				_canBeEdited = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		/// <inheritdoc />
 		public string Title

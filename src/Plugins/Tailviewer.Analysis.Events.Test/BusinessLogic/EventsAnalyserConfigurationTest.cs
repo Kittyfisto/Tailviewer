@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Xml;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Tailviewer.Analysis.Events.BusinessLogic;
+using Tailviewer.Core;
 
 namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 {
@@ -12,50 +10,28 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 		[Test]
 		public void TestRoundtrip()
 		{
-			using (var data = new MemoryStream())
+			var config = new EventsLogAnalyserConfiguration
 			{
-				var settings = new EventsLogAnalyserConfiguration
+				MaxEvents = 9999,
+				Events =
 				{
-					MaxEvents = 9999,
-					Events =
+					new EventConfiguration
 					{
-						new EventConfiguration
-						{
-							Name = "My custom event",
-							FilterExpression = "%d",
-						}
-					}
-				};
-
-				using (var writer = XmlWriter.Create(data, new XmlWriterSettings
-				{
-					NewLineHandling = NewLineHandling.Entitize,
-					Indent = true,
-					NewLineChars = "\r\n"
-				}))
-				{
-					writer.WriteStartElement("Test");
-					//settings.Save(writer);
-					writer.WriteEndElement();
-				}
-				data.Position = 0;
-				using (var reader = new StreamReader(data))
-				{
-					Console.Write(reader.ReadToEnd());
-					data.Position = 0;
-					using (var xmlReader = XmlReader.Create(data))
-					{
-						xmlReader.MoveToContent();
-						xmlReader.MoveToElement();
-
-						//var actualSettings = (EventsLogAnalyserConfiguration)LogAnalyserConfiguration.Restore(xmlReader);
-						//actualSettings.MaxEvents.Should().Be(9999);
-						//actualSettings.Events.Count.Should().Be(1);
-						//actualSettings.Events[0].Name.Should().Be("My custom event");
-						//actualSettings.Events[0].FilterExpression.Should().Be("%d");
+						Name = "My custom event",
+						FilterExpression = "%d",
 					}
 				}
-			}
+			};
+			var actualConfig = Roundtrip(config);
+			//actualConfig.MaxEvents.Should().Be(9999);
+			//actualConfig.Events.Count.Should().Be(1);
+			//actualConfig.Events[0].Name.Should().Be("My custom event");
+			//actualConfig.Events[0].FilterExpression.Should().Be("%d");
+		}
+
+		private EventsLogAnalyserConfiguration Roundtrip(EventsLogAnalyserConfiguration config)
+		{
+			return config.Roundtrip(typeof(EventConfiguration));
 		}
 	}
 }

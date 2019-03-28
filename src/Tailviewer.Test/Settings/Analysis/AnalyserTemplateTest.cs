@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Test.Settings.Analysis

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -27,9 +28,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
 
 		private readonly object _syncRoot;
+		private readonly ITaskScheduler _scheduler;
 
-		public DataSourceAnalyserEngine(ILogAnalyserEngine logAnalyserEngine, IPluginLoader pluginLoader = null)
+		public DataSourceAnalyserEngine(ITaskScheduler scheduler, ILogAnalyserEngine logAnalyserEngine, IPluginLoader pluginLoader = null)
 		{
+			_scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
 			_logAnalyserEngine = logAnalyserEngine ?? throw new ArgumentNullException(nameof(logAnalyserEngine));
 			_syncRoot = new object();
 			_dataSourceAnalysers = new List<IDataSourceAnalyser>();
@@ -47,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				// As usual, we don't trust plugins to behave nice and therefore we wrap them in a proxy
 				// which handles all exceptions thrown by the plugin.
-				var analyser = new DataSourceAnalyserProxy(plugin, template.Id, logFile, template.Configuration);
+				var analyser = new DataSourceAnalyserProxy(plugin, template.Id, _scheduler, logFile, template.Configuration);
 				Add(analyser);
 				return analyser;
 			}

@@ -87,6 +87,12 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
+		public bool TryReadAttribute(string name, out DateTime? value)
+		{
+			return _documentReader.TryReadAttribute(name, out value);
+		}
+
+		/// <inheritdoc />
 		public bool TryReadAttribute(string name, out Guid value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
@@ -100,6 +106,12 @@ namespace Tailviewer.Core
 
 		/// <inheritdoc />
 		public bool TryReadAttribute(string name, out long value)
+		{
+			return _documentReader.TryReadAttribute(name, out value);
+		}
+
+		/// <inheritdoc />
+		public bool TryReadAttribute(string name, out long? value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
 		}
@@ -238,16 +250,31 @@ namespace Tailviewer.Core
 
 			public bool TryReadAttribute(string name, out DateTime value)
 			{
-				string tmp;
-				if (!TryReadAttribute(name, out tmp))
+				string stringValue;
+				if (!TryReadAttribute(name, out stringValue))
 				{
 					value = default(DateTime);
 					return false;
 				}
 
-				if (!DateTime.TryParseExact(tmp, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out value))
-					return false;
+				return TryParseDateTime(stringValue, out value);
+			}
 
+			public bool TryReadAttribute(string name, out DateTime? value)
+			{
+				if (!TryReadAttribute(name, out string stringValue))
+				{
+					value = null;
+					return false;
+				}
+
+				if (!TryParseDateTime(stringValue, out var actualValue))
+				{
+					value = null;
+					return false;
+				}
+
+				value = actualValue;
 				return true;
 			}
 
@@ -288,9 +315,25 @@ namespace Tailviewer.Core
 					return false;
 				}
 
-				if (!long.TryParse(tmp, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
-					return false;
+				return TryParseLong(tmp, out value);
+			}
 
+			public bool TryReadAttribute(string name, out long? value)
+			{
+				string tmp;
+				if (!TryReadAttribute(name, out tmp))
+				{
+					value = null;
+					return false;
+				}
+
+				if (!TryParseLong(tmp, out var actualValue))
+				{
+					value = null;
+					return false;
+				}
+
+				value = actualValue;
 				return true;
 			}
 
@@ -450,6 +493,22 @@ namespace Tailviewer.Core
 
 				value = default(T);
 				return false;
+			}
+
+			private static bool TryParseDateTime(string stringValue, out DateTime value)
+			{
+				if (!DateTime.TryParseExact(stringValue, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out value))
+					return false;
+
+				return true;
+			}
+
+			private static bool TryParseLong(string stringValue, out long value)
+			{
+				if (!long.TryParse(stringValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
+					return false;
+
+				return true;
 			}
 
 			private bool TryReadChild<T>(XmlElement element, out T value) where T : ISerializableType

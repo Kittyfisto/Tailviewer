@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Analysis.Layouts;
 

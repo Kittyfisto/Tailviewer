@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -92,39 +90,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 
 		private LogEntryCountAnalyserConfiguration Roundtrip(LogEntryCountAnalyserConfiguration config)
 		{
-			using (var stream = new MemoryStream())
-			{
-				var typeFactory = CreateTypeFactory();
-				using (var writer = new Writer(stream, typeFactory))
-				{
-					config.Serialize(writer);
-				}
-
-				stream.Position = 0;
-				Print(stream);
-				stream.Position = 0;
-
-				var reader = new Reader(stream, typeFactory);
-				var actualConfig = new LogEntryCountAnalyserConfiguration();
-				actualConfig.Deserialize(reader);
-				return actualConfig;
-			}
-		}
-
-		private ITypeFactory CreateTypeFactory()
-		{
-			var factory = new TypeFactory();
-			factory.Add<QuickFilter>();
-			factory.Add<QuickFilters>();
-			factory.Add<QuickFilterId>();
-			return factory;
-		}
-
-		private void Print(MemoryStream stream)
-		{
-			var reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true);
-			var content = reader.ReadToEnd();
-			TestContext.Progress.WriteLine(content);
+			return config.Roundtrip(typeof(QuickFilter), typeof(QuickFilters), typeof(QuickFilterId));
 		}
 	}
 }

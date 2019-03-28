@@ -15,10 +15,10 @@ namespace Tailviewer.Analysis.DataSources.BusinessLogic
 	{
 		public DataSourcesResult()
 		{
-			DataSources = new List<DataSource>();
+			DataSources = new List<DataSourceResult>();
 		}
 
-		public List<DataSource> DataSources { get; }
+		public List<DataSourceResult> DataSources { get; }
 
 		public void Serialize(IWriter writer)
 		{

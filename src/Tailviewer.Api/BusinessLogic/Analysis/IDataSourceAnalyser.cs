@@ -70,9 +70,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     <see cref="IDataSourceAnalyserPlugin.Create" />
 		///     is NOT being used in which case an analyser will want to start analysing the given log file.
 		/// </remarks>
+		/// <param name="id"></param>
 		/// <param name="logFile"></param>
-		void OnLogFileAdded(ILogFile logFile);
-		
+		void OnLogFileAdded(DataSourceId id, ILogFile logFile);
+
 		/// <summary>
 		///     This method is called whenever log file should no longer be analysed.
 		/// </summary>
@@ -81,7 +82,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     <see cref="IDataSourceAnalyserPlugin.Create" />
 		///     is NOT being used in which case an analyser will want to stop analysing thatthe given log file.
 		/// </remarks>
+		/// <param name="id"></param>
 		/// <param name="logFile"></param>
-		void OnLogFileRemoved(ILogFile logFile);
+		void OnLogFileRemoved(DataSourceId id, ILogFile logFile);
 	}
 }

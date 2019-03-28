@@ -35,6 +35,9 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Metrolib, Version=0.3.0.116, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Metrolib.0.3.0.116\lib\net45\Metrolib.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -47,7 +50,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessLogic\DataSource.cs" />
+    <Compile Include="BusinessLogic\DataSourceResult.cs" />
     <Compile Include="BusinessLogic\DataSourcesAnalyser.cs" />
     <Compile Include="BusinessLogic\DataSourcesAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\DataSourcesResult.cs" />
@@ -56,6 +59,7 @@
     <Compile Include="Ui\DataSourcesWidget.xaml.cs">
       <DependentUpon>DataSourcesWidget.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\DataSourcesWidgetConfiguration.cs" />
     <Compile Include="Ui\DataSourcesWidgetPlugin.cs" />
     <Compile Include="Ui\DataSourcesWidgetViewModel.cs" />
     <Compile Include="Ui\DataSourceViewModel.cs" />

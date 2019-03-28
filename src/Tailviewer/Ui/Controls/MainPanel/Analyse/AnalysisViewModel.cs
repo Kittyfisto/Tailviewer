@@ -163,14 +163,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		public event Action<AnalysisViewModel> OnRemove;
 
-		public void Add(ILogFile logFile)
+		public void Add(DataSourceId id, ILogFile logFile)
 		{
-			_analyser.Add(logFile);
+			_analyser.Add(id, logFile);
 		}
 
-		public void Remove(ILogFile logFile)
+		public void Remove(DataSourceId id, ILogFile logFile)
 		{
-			_analyser.Remove(logFile);
+			_analyser.Remove(id, logFile);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;

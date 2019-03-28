@@ -131,6 +131,56 @@ namespace Tailviewer.Test
 		}
 
 		[Test]
+		public void TestWriteNullableDateTimeAttribute1()
+		{
+			var value = DateTime.Now;
+			_writer.WriteAttribute("Foo", (DateTime?)value);
+
+			var reader = CloseAndRead();
+
+			DateTime? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value);
+		}
+
+		[Test]
+		public void TestWriteNullableDateTimeAttribute2()
+		{
+			var value = DateTime.Now;
+			_writer.WriteAttribute("Foo", (DateTime?)null);
+
+			var reader = CloseAndRead();
+
+			DateTime? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
+		}
+
+		[Test]
+		public void TestWriteNullableDateTimeAttribute3()
+		{
+			_writer.WriteAttribute("Bar", (DateTime?)DateTime.Now);
+
+			var reader = CloseAndRead();
+
+			DateTime? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
+		}
+
+		[Test]
+		public void TestWriteNullableDateTimeAttribute4()
+		{
+			_writer.WriteAttribute("Foo", "dwawdaw");
+
+			var reader = CloseAndRead();
+
+			DateTime? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
+		}
+
+		[Test]
 		[Description("Verifies that writing/reading a single attribute")]
 		public void TestStringAttribute1()
 		{
@@ -270,6 +320,55 @@ namespace Tailviewer.Test
 
 			reader.TryReadAttribute("Foo", out value).Should().BeTrue();
 			value.Should().Be(long.MaxValue);
+		}
+
+		[Test]
+		public void TestWriteNullableLongAttribute1()
+		{
+			var value = 49081240891208912L;
+			_writer.WriteAttribute("Foo", (long?)value);
+
+			var reader = CloseAndRead();
+
+			long? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeTrue();
+			actualValue.Should().Be(value);
+		}
+
+		[Test]
+		public void TestWriteNullableLongAttribute2()
+		{
+			_writer.WriteAttribute("Foo", (long?)null);
+
+			var reader = CloseAndRead();
+
+			long? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
+		}
+
+		[Test]
+		public void TestWriteNullableLongAttribute3()
+		{
+			_writer.WriteAttribute("Bar", (long?)49081240891208912L);
+
+			var reader = CloseAndRead();
+
+			long? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
+		}
+
+		[Test]
+		public void TestWriteNullableLongAttribute4()
+		{
+			_writer.WriteAttribute("Foo", "dwawdaw");
+
+			var reader = CloseAndRead();
+
+			long? actualValue;
+			reader.TryReadAttribute("Foo", out actualValue).Should().BeFalse();
+			actualValue.Should().BeNull();
 		}
 
 		[Test]

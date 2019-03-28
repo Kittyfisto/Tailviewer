@@ -155,17 +155,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <param name="analyser"></param>
 		public void Remove(IDataSourceAnalyser analyser)
 		{
-			var tmp = analyser as DataSourceAnalyser;
 			lock (_syncRoot)
 			{
 				AnalyserTemplate template;
-				if (tmp != null && _analysers.TryGetValue(tmp, out template))
+				if (analyser != null && _analysers.TryGetValue(analyser, out template))
 				{
-					// TODO: Do we need a lock here?
 					_template.Remove(template);
-					_analysers.Remove(tmp);
+					_analysers.Remove(analyser);
 
-					tmp?.Dispose();
+					analyser.Dispose();
 				}
 			}
 		}
@@ -189,23 +187,23 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void Add(ILogFile logFile)
+		public void Add(DataSourceId id, ILogFile logFile)
 		{
 			lock (_syncRoot)
 			{
 				_logFiles.Add(logFile);
 				UpdateProxy();
-				NotifyAnalysersAddLogFile(logFile);
+				NotifyAnalysersAddLogFile(id, logFile);
 			}
 		}
 
-		public void Remove(ILogFile logFile)
+		public void Remove(DataSourceId id, ILogFile logFile)
 		{
 			lock (_syncRoot)
 			{
 				_logFiles.Remove(logFile);
 				UpdateProxy();
-				NotifyAnalysersRemoveLogFile(logFile);
+				NotifyAnalysersRemoveLogFile(id, logFile);
 			}
 		}
 
@@ -217,25 +215,25 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_logFile.InnerLogFile = merged;
 		}
 
-		private void NotifyAnalysersAddLogFile(ILogFile logFile)
+		private void NotifyAnalysersAddLogFile(DataSourceId id, ILogFile logFile)
 		{
 			// Not every analyser works with the proxy, some prefer
 			// to analyse each selected log file on its own, therefore
 			// we have to notify them that a log file has been added
 			foreach (var analyser in _analysers.Keys)
 			{
-				analyser.OnLogFileAdded(logFile);
+				analyser.OnLogFileAdded(id, logFile);
 			}
 		}
 
-		private void NotifyAnalysersRemoveLogFile(ILogFile logFile)
+		private void NotifyAnalysersRemoveLogFile(DataSourceId id, ILogFile logFile)
 		{
 			// Not every analyser works with the proxy, some prefer
 			// to analyse each selected log file on its own, therefore
 			// we have to notify them that a log file has been removed
 			foreach (var analyser in _analysers.Keys)
 			{
-				analyser.OnLogFileRemoved(logFile);
+				analyser.OnLogFileRemoved(id, logFile);
 			}
 		}
 

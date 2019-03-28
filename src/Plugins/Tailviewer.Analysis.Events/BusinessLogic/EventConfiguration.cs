@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Xml;
 
 namespace Tailviewer.Analysis.Events.BusinessLogic
@@ -5,7 +6,9 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 	/// <summary>
 	/// Contains the settings for a single event of a <see cref="EventsLogAnalyser"/>.
 	/// </summary>
+	[DataContract]
 	public sealed class EventConfiguration
+		: ISerializableType
 	{
 		public string Name;
 		public string FilterExpression;
@@ -36,6 +39,27 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 		{
 			writer.WriteAttributeString("name", Name);
 			writer.WriteAttributeString("filterexpression", FilterExpression);
+		}
+
+		public void Serialize(IWriter writer)
+		{
+			writer.WriteAttribute("name", Name);
+			writer.WriteAttribute("filterexpression", FilterExpression);
+		}
+
+		public void Deserialize(IReader reader)
+		{
+			reader.TryReadAttribute("name", out Name);
+			reader.TryReadAttribute("filterexpression", out FilterExpression);
+		}
+
+		public EventConfiguration Clone()
+		{
+			return new EventConfiguration
+			{
+				Name = Name,
+				FilterExpression = FilterExpression
+			};
 		}
 	}
 }

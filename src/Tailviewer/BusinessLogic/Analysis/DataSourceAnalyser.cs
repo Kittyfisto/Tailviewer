@@ -61,7 +61,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		public void OnLogFileAdded(ILogFile logFile)
+		public void OnLogFileAdded(DataSourceId id, ILogFile logFile)
 		{
 			// This default implementation forwards the merged log file from the constructor
 			// to the ILogAnalyser and therefore we don't need to care about log files being
@@ -69,7 +69,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			// These methods are only of interest to custom plugins.
 		}
 
-		public void OnLogFileRemoved(ILogFile logFile)
+		public void OnLogFileRemoved(DataSourceId id, ILogFile logFile)
 		{
 			// This default implementation forwards the merged log file from the constructor
 			// to the ILogAnalyser and therefore we don't need to care about log files being

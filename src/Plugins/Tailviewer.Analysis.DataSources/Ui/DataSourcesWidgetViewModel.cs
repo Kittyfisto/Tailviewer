@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using Metrolib;
 using Tailviewer.Analysis.DataSources.BusinessLogic;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
@@ -11,15 +14,20 @@ namespace Tailviewer.Analysis.DataSources.Ui
 		: AbstractWidgetViewModel
 	{
 		private readonly ObservableCollection<DataSourceViewModel> _dataSources;
-		private readonly Dictionary<string, DataSourceViewModel> _dataSourcesByName;
+		private readonly Dictionary<DataSourceId, DataSourceViewModel> _dataSourcesById;
 		private int _dataSourceCount;
 
 		public DataSourcesWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 			: base(template, dataSourceAnalyser)
 		{
 			_dataSources = new ObservableCollection<DataSourceViewModel>();
-			_dataSourcesByName = new Dictionary<string, DataSourceViewModel>();
+			_dataSourcesById = new Dictionary<DataSourceId, DataSourceViewModel>();
+			CanBeEdited = true;
+
+			Configuration.PropertyChanged += ConfigurationOnPropertyChanged;
 		}
+
+		public DataSourcesWidgetConfiguration Configuration => (DataSourcesWidgetConfiguration) ViewConfiguration;
 
 		public IEnumerable<DataSourceViewModel> DataSources => _dataSources;
 
@@ -36,21 +44,46 @@ namespace Tailviewer.Analysis.DataSources.Ui
 			}
 		}
 
+		private void ConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			EmitTemplateModified();
+		}
+
 		public override void Update()
 		{
-			DataSourcesResult result;
-			if (TryGetResult(out result))
+			if (TryGetResult(out DataSourcesResult result))
 			{
 				foreach (var dataSource in result.DataSources)
 				{
-					if (!_dataSourcesByName.ContainsKey(dataSource.Name))
+					if (!_dataSourcesById.TryGetValue(dataSource.Id, out var viewModel))
 					{
-						var viewModel = new DataSourceViewModel(dataSource);
-						_dataSourcesByName.Add(dataSource.Name, viewModel);
+						viewModel = new DataSourceViewModel(dataSource,
+							(DataSourcesWidgetConfiguration) ViewConfiguration);
+						_dataSourcesById.Add(dataSource.Id, viewModel);
 						_dataSources.Add(viewModel);
 					}
+
+					viewModel.Size = dataSource.SizeInBytes != null
+						? Size.FromBytes(dataSource.SizeInBytes.Value)
+						: (Size?) null;
+					viewModel.Created = dataSource.Created;
+					viewModel.LastModified = dataSource.LastModified;
 				}
-				// TODO: Remove invalid/old
+
+				for(int i = 0; i < _dataSources.Count;)
+				{
+					var id = _dataSources[i].Id;
+					if (result.DataSources.All(x => x.Id != id))
+					{
+						_dataSourcesById.Remove(id);
+						_dataSources.RemoveAt(i);
+					}
+					else
+					{
+						++i;
+					}
+				}
+
 				DataSourceCount = _dataSources.Count;
 			}
 

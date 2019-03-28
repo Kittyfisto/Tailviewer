@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
-using System.Xml;
-using Metrolib;
 using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Analysis.Events.BusinessLogic
@@ -22,50 +22,16 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 			Events = new List<EventConfiguration>();
 		}
 
-		public void RestoreInternal(XmlReader reader)
+		public EventsLogAnalyserConfiguration Clone()
 		{
-			for (int i = 0; i < reader.AttributeCount; ++i)
-			{
-				reader.MoveToAttribute(i);
-				switch (reader.Name)
-				{
-					case "maxevents":
-						MaxEvents = reader.ReadContentAsInt();
-						break;
-				}
-			}
-
-			reader.MoveToElement();
-			XmlReader subtree = reader.ReadSubtree();
-
-			while (subtree.Read())
-			{
-				switch (subtree.Name)
-				{
-					case "event":
-						var @event = new EventConfiguration();
-						@event.Restore(reader);
-						Events.Add(@event);
-						break;
-				}
-			}
+			var clone = new EventsLogAnalyserConfiguration {MaxEvents = MaxEvents};
+			clone.Events.AddRange(Events.Select(x => x.Clone()));
+			return clone;
 		}
 
-		public void SaveInternal(XmlWriter writer)
+		object ICloneable.Clone()
 		{
-			writer.WriteAttributeInt("maxevents", MaxEvents);
-
-			foreach (var @event in Events)
-			{
-				writer.WriteStartElement("event");
-				@event.Save(writer);
-				writer.WriteEndElement();
-			}
-		}
-
-		public object Clone()
-		{
-			throw new System.NotImplementedException();
+			return Clone();
 		}
 
 		public bool IsEquivalent(ILogAnalyserConfiguration other)
@@ -75,12 +41,12 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 
 		public void Serialize(IWriter writer)
 		{
-			throw new System.NotImplementedException();
+			writer.WriteAttribute("Events", Events);
 		}
 
 		public void Deserialize(IReader reader)
 		{
-			throw new System.NotImplementedException();
+			reader.TryReadAttribute("Events", Events);
 		}
 	}
 }

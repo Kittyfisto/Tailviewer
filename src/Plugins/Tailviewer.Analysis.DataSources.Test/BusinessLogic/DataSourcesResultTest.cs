@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.DataSources.BusinessLogic;
@@ -18,11 +16,11 @@ namespace Tailviewer.Analysis.DataSources.Test.BusinessLogic
 			{
 				DataSources =
 				{
-					new DataSource
+					new DataSourceResult
 					{
 						Name = "Stuff.txt"
 					},
-					new DataSource
+					new DataSourceResult
 					{
 						Name = "fooBar"
 					}
@@ -57,7 +55,7 @@ namespace Tailviewer.Analysis.DataSources.Test.BusinessLogic
 			{
 				DataSources =
 				{
-					new DataSource
+					new DataSourceResult
 					{
 						Name = "Stuff.txt"
 					}
@@ -74,38 +72,7 @@ namespace Tailviewer.Analysis.DataSources.Test.BusinessLogic
 
 		private DataSourcesResult Roundtrip(DataSourcesResult config)
 		{
-			using (var stream = new MemoryStream())
-			{
-				var typeFactory = CreateTypeFactory();
-				using (var writer = new Writer(stream, typeFactory))
-				{
-					config.Serialize(writer);
-				}
-
-				stream.Position = 0;
-				Print(stream);
-				stream.Position = 0;
-
-				var reader = new Reader(stream, typeFactory);
-				var actualConfig = new DataSourcesResult();
-				actualConfig.Deserialize(reader);
-				return actualConfig;
-			}
-		}
-
-		private ITypeFactory CreateTypeFactory()
-		{
-			var factory = new TypeFactory();
-			factory.Add<DataSource>();
-			factory.Add<DataSourcesResult>();
-			return factory;
-		}
-
-		private void Print(MemoryStream stream)
-		{
-			var reader = new StreamReader(stream, Encoding.UTF8, true, 4096, true);
-			var content = reader.ReadToEnd();
-			TestContext.Progress.WriteLine(content);
+			return config.Roundtrip(typeof(DataSourcesResult), typeof(DataSourceResult));
 		}
 	}
 }

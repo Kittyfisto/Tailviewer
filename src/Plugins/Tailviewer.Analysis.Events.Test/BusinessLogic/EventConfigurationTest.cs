@@ -1,8 +1,7 @@
-﻿using System.IO;
-using System.Xml;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.Events.BusinessLogic;
+using Tailviewer.Core;
 
 namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 {
@@ -12,29 +11,14 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 		[Test]
 		public void TestRoundtrip()
 		{
-			using (var data = new MemoryStream())
+			var config = new EventConfiguration
 			{
-				var @event = new EventConfiguration
-				{
-					Name = "My custom event",
-					FilterExpression = "%d"
-				};
-				using (var writer = XmlWriter.Create(data))
-				{
-					writer.WriteStartElement("Test");
-					@event.Save(writer);
-					writer.WriteEndElement();
-				}
-				data.Position = 0;
-				using (var reader = XmlReader.Create(data))
-				{
-					var actualEvent = new EventConfiguration();
-					reader.MoveToContent();
-					actualEvent.Restore(reader);
-					actualEvent.Name.Should().Be("My custom event");
-					actualEvent.FilterExpression.Should().Be("%d");
-				}
-			}
+				Name = "My custom event",
+				FilterExpression = "%d"
+			};
+			var actualConfig = config.Roundtrip();
+			actualConfig.Name.Should().Be("My custom event");
+			actualConfig.FilterExpression.Should().Be("%d");
 		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
@@ -26,10 +25,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     <see cref="ILogAnalyser" />
 		///     (which is why the latter exists), but allows analysis data to be carried over in between changes.
 		/// </remarks>
-		/// <param name="id"></param>
+		/// <param name="id">TODO: Remove this parameter</param>
+		/// <param name="scheduler"></param>
 		/// <param name="logFile"/>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IDataSourceAnalyser Create(AnalyserId id, ILogFile logFile, ILogAnalyserConfiguration configuration);
+		IDataSourceAnalyser Create(AnalyserId id, ITaskScheduler scheduler, ILogFile logFile, ILogAnalyserConfiguration configuration);
 	}
 }

@@ -47,12 +47,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public DateTime CreationDate => _creationDate;
 
-		public void Add(ILogFile logFile)
+		public void Add(DataSourceId id, ILogFile logFile)
 		{
 			throw new InvalidOperationException("Adding log files to a snapshot is not allowed");
 		}
 
-		public void Remove(ILogFile logFile)
+		public void Remove(DataSourceId id, ILogFile logFile)
 		{
 			throw new InvalidOperationException("Removing log files from a snapshot is not allowed");
 		}

@@ -45,13 +45,15 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		/// <summary>
 		/// </summary>
+		/// <param name="id"></param>
 		/// <param name="logFile"></param>
-		void Add(ILogFile logFile);
+		void Add(DataSourceId id, ILogFile logFile);
 
 		/// <summary>
 		/// </summary>
+		/// <param name="id"></param>
 		/// <param name="logFile"></param>
-		void Remove(ILogFile logFile);
+		void Remove(DataSourceId id, ILogFile logFile);
 
 		/// <summary>
 		/// </summary>

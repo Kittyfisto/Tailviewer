@@ -3,7 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.QuickInfo.Ui;
-using Tailviewer.Test;
+using Tailviewer.Core;
 
 namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 {

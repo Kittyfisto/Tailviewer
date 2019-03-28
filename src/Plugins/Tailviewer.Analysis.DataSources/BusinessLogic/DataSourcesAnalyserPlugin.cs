@@ -1,4 +1,6 @@
-﻿using Tailviewer.BusinessLogic.Analysis;
+﻿using System;
+using System.Threading;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Analysis.DataSources.BusinessLogic
@@ -10,9 +12,10 @@ namespace Tailviewer.Analysis.DataSources.BusinessLogic
 
 		AnalyserPluginId IDataSourceAnalyserPlugin.Id => Id;
 
-		public IDataSourceAnalyser Create(AnalyserId id, ILogFile logFile, ILogAnalyserConfiguration configuration)
+		public IDataSourceAnalyser Create(AnalyserId id, ITaskScheduler scheduler, ILogFile logFile,
+			ILogAnalyserConfiguration configuration)
 		{
-			return new DataSourcesAnalyser(id);
+			return new DataSourcesAnalyser(id, TimeSpan.FromMilliseconds(100));
 		}
 	}
 }
