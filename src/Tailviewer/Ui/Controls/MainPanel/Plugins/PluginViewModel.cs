@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.RightsManagement;
 using System.Windows.Input;
 using System.Windows.Media;
 using Tailviewer.Archiver.Plugins;
@@ -23,12 +24,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 			//_deleteCommand = new DelegateCommand();
 		}
 
-		public string Name => _description.Name;
+		public string Name => string.IsNullOrEmpty(_description.Name) ? _description.Id.ToString() : _description.Name;
 		public Version Version => _description.Version;
 		public string Author => _description.Author ?? "N/A";
-		public string Description => _description.Description ?? _description.Error;
+		public string Description => _description.Description;
+		public string Error => _description.Error;
 		public Uri Website => _description.Website;
 		public ImageSource Icon => _description.Icon;
 		public ICommand DeleteCommand => null;
+		public bool HasError => !string.IsNullOrEmpty(_description.Error);
 	}
 }
