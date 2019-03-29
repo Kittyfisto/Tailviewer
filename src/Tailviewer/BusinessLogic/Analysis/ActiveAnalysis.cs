@@ -16,7 +16,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly Dictionary<IDataSourceAnalyser, AnalyserTemplate> _analysers;
 		private readonly IDataSourceAnalyserEngine _analyserEngine;
 		private readonly LogFileProxy _logFile;
-		private readonly List<ILogFile> _logFiles;
+		private readonly Dictionary<DataSourceId, ILogFile> _logFiles;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly object _syncRoot;
 		private readonly ITaskScheduler _taskScheduler;
@@ -41,7 +41,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			_template = template;
 			_taskScheduler = taskScheduler;
 			_maximumWaitTime = maximumWaitTime;
-			_logFiles = new List<ILogFile>();
+			_logFiles = new Dictionary<DataSourceId, ILogFile>();
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_analyserEngine = analyserEngine;
 			_analysers = new Dictionary<IDataSourceAnalyser, AnalyserTemplate>();
@@ -73,7 +73,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				lock (_syncRoot)
 				{
-					return _logFiles.ToList();
+					return _logFiles.Values.ToList();
 				}
 			}
 		}
@@ -139,6 +139,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 				lock (_syncRoot)
 				{
 					_analysers.Add(analyser, template);
+					foreach (var pair in _logFiles)
+					{
+						analyser.OnLogFileAdded(pair.Key, pair.Value);
+					}
 				}
 
 				return analyser;
@@ -191,7 +195,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			lock (_syncRoot)
 			{
-				_logFiles.Add(logFile);
+				_logFiles.Add(id, logFile);
 				UpdateProxy();
 				NotifyAnalysersAddLogFile(id, logFile);
 			}
@@ -201,7 +205,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			lock (_syncRoot)
 			{
-				_logFiles.Remove(logFile);
+				_logFiles.Remove(id);
 				UpdateProxy();
 				NotifyAnalysersRemoveLogFile(id, logFile);
 			}
@@ -211,7 +215,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			var merged = new MergedLogFile(_taskScheduler,
 				_maximumWaitTime,
-				_logFiles);
+				_logFiles.Values);
 			_logFile.InnerLogFile = merged;
 		}
 

@@ -20,7 +20,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly ILogAnalyserConfiguration _configuration;
 		private readonly IDataSourceAnalyser _analyser;
 
-		public DataSourceAnalyserProxy(IDataSourceAnalyserPlugin plugin, AnalyserId id, ITaskScheduler scheduler, ILogFile logFile, ILogAnalyserConfiguration configuration)
+		public DataSourceAnalyserProxy(IDataSourceAnalyserPlugin plugin,
+			AnalyserId id,
+			ITaskScheduler scheduler,
+			ILogFile logFile,
+			ILogAnalyserConfiguration configuration)
 		{
 			_plugin = plugin;
 			_id = id;

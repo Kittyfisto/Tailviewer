@@ -54,6 +54,24 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		}
 
 		[Test]
+		public void TestAddLogFileThenAddWidget()
+		{
+			var engine = new Mock<IDataSourceAnalyserEngine>();
+			var analyser = new Mock<IDataSourceAnalyser>();
+			engine.Setup(x => x.CreateAnalyser(It.IsAny<ILogFile>(), It.IsAny<AnalyserTemplate>()))
+				.Returns(analyser.Object);
+
+			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, engine.Object, TimeSpan.Zero);
+
+			var id = DataSourceId.CreateNew();
+			var logFile = new Mock<ILogFile>();
+			activeAnalysis.Add(id, logFile.Object);
+
+			activeAnalysis.Add(AnalyserPluginId.Empty, new TestLogAnalyserConfiguration());
+			analyser.Verify(x => x.OnLogFileAdded(id, logFile.Object), Times.Once, "because we've just added a log file for analysis and thus the analyser should have been notified");
+		}
+
+		[Test]
 		public void TestRemoveLogFile()
 		{
 			var engine = new Mock<IDataSourceAnalyserEngine>();
