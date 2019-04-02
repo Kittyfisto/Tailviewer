@@ -19,9 +19,9 @@ namespace Tailviewer.Archiver.Plugins
 		/// Obtains status information for that particular plugin.
 		/// Includes potential errors, etc...
 		/// </summary>
-		/// <param name="description"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
-		IPluginStatus GetStatus(IPluginDescription description);
+		IPluginStatus GetStatus(PluginId id);
 
 		/// <summary>
 		/// 

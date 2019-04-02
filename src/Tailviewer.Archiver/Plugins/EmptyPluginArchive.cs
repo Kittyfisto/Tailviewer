@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace Tailviewer.Archiver.Plugins
@@ -12,11 +13,12 @@ namespace Tailviewer.Archiver.Plugins
 	{
 		private readonly PluginPackageIndex _index;
 
-		public EmptyPluginArchive()
+		public EmptyPluginArchive(Version pluginVersion)
 		{
 			_index = new PluginPackageIndex
 			{
-				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion
+				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
+				Version = pluginVersion.ToString()
 			};
 		}
 

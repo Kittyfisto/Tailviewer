@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using log4net.Plugin;
 
 namespace Tailviewer.Archiver.Plugins.Description
 {
@@ -67,9 +68,9 @@ namespace Tailviewer.Archiver.Plugins.Description
 		string Error { get; }
 
 		/// <summary>
-		///     A map from the plugin interface to its actual implementation.
+		///     A map of all <see cref="IPlugin"/> implementations offered by the plugin.
 		/// </summary>
-		IReadOnlyDictionary<Type, IPluginImplementationDescription> Plugins { get; }
+		IReadOnlyDictionary<Type, IPluginImplementationDescription> PluginImplementations { get; }
 
 		/// <summary>
 		///     A map from an immutable name to a .NET assembly qualified typename of a serializable type.

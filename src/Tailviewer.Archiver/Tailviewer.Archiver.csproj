@@ -92,6 +92,7 @@
     <Compile Include="Plugins\PluginAssemblyLoader.cs" />
     <Compile Include="Plugins\PluginCache.cs" />
     <Compile Include="Plugins\Description\PluginDescription.cs" />
+    <Compile Include="Plugins\PluginGroup.cs" />
     <Compile Include="Plugins\PluginId.cs" />
     <Compile Include="Plugins\Description\PluginImplementationDescription.cs" />
     <Compile Include="Plugins\PluginInterfaceImplementation.cs" />

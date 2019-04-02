@@ -320,7 +320,7 @@ namespace Tailviewer.Archiver.Plugins
 			_index.Website = description.Website != null ? description.Website.ToString() : null;
 			_index.Version = description.Version?.ToString();
 			_index.ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>();
-			foreach (var pair in description.Plugins)
+			foreach (var pair in description.PluginImplementations)
 			{
 				_index.ImplementedPluginInterfaces.Add(new PluginInterfaceImplementation
 				{
@@ -350,16 +350,6 @@ namespace Tailviewer.Archiver.Plugins
 				offset += assemblyContent.Read(rawAssembly, offset, toRead);
 			}
 			return Assembly.Load(rawAssembly);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fname"></param>
-		/// <returns></returns>
-		public static PluginPacker Create(string fname)
-		{
-			return new PluginPacker(ZipFile.Open(fname, ZipArchiveMode.Create, Encoding.UTF8));
 		}
 
 		/// <summary>

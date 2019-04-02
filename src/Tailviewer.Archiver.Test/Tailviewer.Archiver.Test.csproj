@@ -45,9 +45,6 @@
     <Reference Include="Moq, Version=4.7.127.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.7.127\lib\net45\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Moq, Version=4.7.127.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Moq.4.7.127\lib\net45\Moq.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -73,6 +70,7 @@
     <Compile Include="Plugins\Description\PluginDescriptionTest.cs" />
     <Compile Include="PluginPackerTest.cs" />
     <Compile Include="Plugins\Description\PluginImplementationDescriptionTest.cs" />
+    <Compile Include="Plugins\PluginGroupTest.cs" />
     <Compile Include="Plugins\PluginIdTest.cs" />
     <Compile Include="PluginRegistryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +88,10 @@
     <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
       <Project>{c667eb8a-6781-4623-ac7c-d3fba2f6e7d4}</Project>
       <Name>Tailviewer.Archiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
+      <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>
+      <Name>Tailviewer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

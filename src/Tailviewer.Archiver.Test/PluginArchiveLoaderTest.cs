@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
@@ -30,6 +26,8 @@ namespace Tailviewer.Archiver.Test
 				DeleteContents(_pluginFolder);
 
 			_filesystem = new InMemoryFilesystem();
+			_filesystem.AddRoot(Path.GetPathRoot(Constants.PluginPath));
+			_filesystem.CreateDirectory(Constants.PluginPath);
 		}
 
 		private static void DeleteContents(string pluginFolder)
@@ -56,7 +54,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestGetPluginStatusForNonPlugin()
 		{
-			using (var loader = new PluginArchiveLoader(_filesystem, null))
+			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 			{
 				var status = loader.GetStatus(null);
 				status.Should().NotBeNull();
@@ -64,8 +62,7 @@ namespace Tailviewer.Archiver.Test
 				status.IsLoaded.Should().BeFalse();
 
 
-				var description = new Mock<IPluginDescription>();
-				status = loader.GetStatus(description.Object);
+				status = loader.GetStatus(new PluginId("dawawd"));
 				status.Should().NotBeNull();
 				status.IsInstalled.Should().BeFalse();
 				status.IsLoaded.Should().BeFalse();
@@ -77,35 +74,19 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var stream = new MemoryStream())
 			{
-				CreatePlugin(stream);
+				var id = CreatePlugin(stream);
+				_filesystem.Write(Path.Combine(Constants.PluginPath, $"{id}.2.tvp"), stream);
 
-				using (var loader = new PluginArchiveLoader(_filesystem, null))
+				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var description = loader.ReflectPlugin(stream, true);
-					var status = loader.GetStatus(description);
+					loader.Plugins.Should().HaveCount(1, "because one plugin should've been loaded");
+					var status = loader.GetStatus(id);
 					status.Should().NotBeNull();
 					status.IsInstalled.Should().BeTrue("because we've just installed that plugin");
-					status.IsLoaded.Should().BeFalse("because we haven't tried to load the plugin just yet");
-					status.LoadException.Should().BeNull("because we haven't tried to load the plugin just yet");
+					status.IsLoaded.Should().BeTrue("because we successfully loaded the plugin");
+					status.LoadException.Should().BeNull("because we successfully loaded the plugin");
 				}
 			}
-		}
-
-
-
-		private static void CreatePlugin(MemoryStream stream)
-		{
-			using (var packer = PluginPacker.Create(stream, true))
-			{
-				var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "My very own plugin", "Simon", "http://google.com",
-					"get of my lawn");
-				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
-				builder.Save();
-
-				packer.AddPluginAssembly(builder.FileName);
-			}
-
-			stream.Position = 0;
 		}
 
 		[Test]
@@ -123,10 +104,12 @@ namespace Tailviewer.Archiver.Test
 				}
 
 				stream.Position = 0;
+				_filesystem.Write(Path.Combine(Constants.PluginPath, "Kittyfisto.UniquePluginId.2.0.tvp"), stream);
 
-				using (var loader = new PluginArchiveLoader(_filesystem, null))
+				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var description = loader.ReflectPlugin(stream, true);
+					loader.Plugins.Should().HaveCount(1, "because one plugin should've been loaded");
+					var description = loader.Plugins.First();
 					description.Should().NotBeNull();
 					description.Id.Should().Be(new PluginId("Kittyfisto.UniquePluginId"));
 					description.Name.Should().Be("My very own plugin");
@@ -142,17 +125,20 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that ReflectPlugin() doesn't throw when a plugin couldn't be loaded and instead returns a descriptor with as much information as can be obtained")]
 		public void TestReflect2()
 		{
-			using (var loader = new PluginArchiveLoader(_filesystem, null))
+			var path = Path.Combine(Constants.PluginPath, "BrokenPlugin.1.0.2.4.tvp");
+			_filesystem.CreateFile(path);
+			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 			{
-				var description = loader.ReflectPlugin("C:\\BrokenPlugin.1.0.2.4.tvp");
+				loader.Plugins.Should().HaveCount(1, "because we've created one plugin");
+				var description = loader.Plugins.First();
 				description.Should().NotBeNull();
 				description.Author.Should().BeNull("because the author cannot be known");
 				description.Description.Should().BeNull("because we couldn't extract a description from the plugin");
-				description.FilePath.Should().Be("C:\\BrokenPlugin.1.0.2.4.tvp");
+				description.FilePath.Should().Be(path);
 				description.Id.Should().Be(new PluginId("BrokenPlugin"), "because the id should've been extracted from the path");
 				description.Error.Should().NotBeNull("because the plugin couldn't be loaded");
-				description.Plugins.Should().NotBeNull();
-				description.Plugins.Should().BeEmpty();
+				description.PluginImplementations.Should().NotBeNull();
+				description.PluginImplementations.Should().BeEmpty();
 				description.Version.Should().Be(new Version(1, 0, 2, 4), "because the version should've been extracted from the path");
 				description.Icon.Should().BeNull();
 				description.Website.Should().BeNull();
@@ -174,12 +160,13 @@ namespace Tailviewer.Archiver.Test
 				}
 
 				stream.Position = 0;
+				var path = Path.Combine(Constants.PluginPath, "Kittyfisto.Simon.1.0.tvp");
+				_filesystem.WriteAllBytes(path, stream.ToArray());
 
-				using (var loader = new PluginArchiveLoader(_filesystem, null))
+				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var description = loader.ReflectPlugin(stream, true);
-					var plugin = loader.Load<IFileFormatPlugin>(description);
-					plugin.Should().NotBeNull();
+					var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
+					plugins.Should().HaveCount(1, "because we've added one plugin which implements the IFileFormatPlugin interface");
 				}
 			}
 		}
@@ -188,37 +175,17 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that if the same plugin is available in two versions, then the highest possible version will be available only")]
 		public void TestLoadDifferentVersions()
 		{
-			var plugin1 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 0));
-			var plugin2 = CreatePlugin("Kittyfisto", "Foobar", new Version(1, 1));
+			CreatePlugin("Kittyfisto", "Foobar", new Version(1, 0));
+			CreatePlugin("Kittyfisto", "Foobar", new Version(1, 1));
 
-			using (var loader = new PluginArchiveLoader(_filesystem, null))
+			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 			{
-				loader.ReflectPlugin(plugin1);
-				loader.ReflectPlugin(plugin2);
-
 				loader.Plugins.Should().HaveCount(1);
 				loader.Plugins.First().Version.Should().Be(new Version(1, 1));
 
 				var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
 				plugins.Should().HaveCount(1);
 			}
-		}
-
-		private string CreatePlugin(string @namespace, string name, Version version)
-		{
-			var fileName = Path.Combine(_pluginFolder, string.Format("{0}.{1}.{2}.dll", @namespace, name, version));
-			using (var packer = PluginPacker.Create(fileName))
-			{
-				var builder = new PluginBuilder(@namespace, name, "dawawdwdaaw") { PluginVersion = version };
-				builder.ImplementInterface<IFileFormatPlugin>("dwwwddwawa");
-				builder.Save();
-				packer.AddPluginAssembly(builder.FileName);
-			}
-
-			var dest = Path.Combine(_pluginFolder, Path.GetFileName(fileName));
-			File.Move(fileName, dest);
-
-			return dest;
 		}
 
 		[Test]
@@ -236,10 +203,10 @@ namespace Tailviewer.Archiver.Test
 				}
 
 				stream.Position = 0;
+				_filesystem.Write(Path.Combine(Constants.PluginPath, "Kittyfisto.SomePlugin.1.tvp"), stream);
 
-				using (var loader = new PluginArchiveLoader(_filesystem, null))
+				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
 				{
-					var description = loader.ReflectPlugin(stream, true);
 					var plugins = loader.LoadAllOfType<IFileFormatPlugin>()?.ToList();
 					plugins.Should().NotBeNull();
 					plugins.Should().HaveCount(1);
@@ -265,99 +232,40 @@ namespace Tailviewer.Archiver.Test
 			version.Should().Be(new Version(3, 2));
 		}
 
-		[Test]
-		public void TestPluginIndexTooOld()
+		private static PluginId CreatePlugin(MemoryStream stream)
 		{
-			var index = new PluginPackageIndex
+			var @namespace = "Kittyfisto";
+			var name = "UniquePluginId";
+			using (var packer = PluginPacker.Create(stream, true))
 			{
-				PluginArchiveVersion = PluginArchive.MinimumSupportedPluginArchiveVersion - 1
-			};
-			PluginArchiveLoader.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
-			{
-				new PluginError("The plugin targets an older version of Tailviewer and must be compiled against the current version in order to be usable")
-			});
+				var builder = new PluginBuilder(@namespace, name, "My very own plugin", "Simon", "http://google.com",
+				                                "get of my lawn");
+				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+				builder.Save();
+
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			stream.Position = 0;
+			return new PluginId($"{@namespace}.{name}");
 		}
 
-		[Test]
-		public void TestPluginIndexTooNew()
+		private void CreatePlugin(string @namespace, string name, Version version)
 		{
-			var index = new PluginPackageIndex
+			using (var stream = new MemoryStream())
 			{
-				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion + 1
-			};
-			PluginArchiveLoader.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
-			{
-				new PluginError("The plugin targets a newer version of Tailviewer and must be compiled against the current version in order to be usable")
-			});
-		}
-
-		[Test]
-		[Description("Verifies that an error is generated if a plugin has been implemented against an older interface version")]
-		public void TestPluginInterfaceTooOld()
-		{
-			var index = new PluginPackageIndex
-			{
-				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
-				ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>
+				using (var packer = PluginPacker.Create(stream, leaveOpen: true))
 				{
-					new PluginInterfaceImplementation
-					{
-						InterfaceVersion = 1, // It's an older code, sir, and doesn't check out
-						InterfaceTypename = typeof(IDataSourceAnalyserPlugin).FullName
-					}
+					var builder = new PluginBuilder(@namespace, name, "dawawdwdaaw") { PluginVersion = version };
+					builder.ImplementInterface<IFileFormatPlugin>("dwwwddwawa");
+					builder.Save();
+					packer.AddPluginAssembly(builder.FileName);
 				}
-			};
-			PluginArchiveLoader.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
-			{
-				new PluginError($"The plugin implements an older version of '{typeof(IDataSourceAnalyserPlugin).FullName}'. It must target the current version in order to be usable!")
-			});
-		}
 
-		[Test]
-		[Description("Verifies that an error is generated if a plugin has been implemented against a newer interface version")]
-		public void TestPluginInterfaceTooNew()
-		{
-			var index = new PluginPackageIndex
-			{
-				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
-				ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>
-				{
-					new PluginInterfaceImplementation
-					{
-						InterfaceVersion = 11, // It's a newer code, sir, and doesn't check out
-						InterfaceTypename = typeof(IDataSourceAnalyserPlugin).FullName
-					}
-				}
-			};
-			PluginArchiveLoader.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
-			{
-				new PluginError($"The plugin implements a newer version of '{typeof(IDataSourceAnalyserPlugin).FullName}'. It must target the current version in order to be usable!")
-			});
-		}
-
-		interface IFancyPantsInterface
-			: IPlugin
-		{}
-
-		[Test]
-		public void TestPluginInterfaceUnknown()
-		{
-			var index = new PluginPackageIndex
-			{
-				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
-				ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>
-				{
-					new PluginInterfaceImplementation
-					{
-						InterfaceVersion = 1,
-						InterfaceTypename = typeof(IFancyPantsInterface).FullName //< That interface won't be loaded by the PluginArchiverLoader because it's not part of the API project
-					}
-				}
-			};
-			PluginArchiveLoader.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
-			{
-				new PluginError($"The plugin implements an unknown interface '{typeof(IFancyPantsInterface).FullName}' which is probably part of a newer tailviewer version. The plugin should target the current version in order to be usable!")
-			});
+				stream.Position = 0;
+				var fileName = Path.Combine(Constants.PluginPath, string.Format("{0}.{1}.{2}.tvp", @namespace, name, version));
+				_filesystem.Write(fileName, stream);
+			}
 		}
 	}
 }

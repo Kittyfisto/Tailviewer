@@ -32,11 +32,11 @@ namespace Tailviewer.Archiver.Plugins
 
 		public IEnumerable<IPluginDescription> Plugins => _pluginLoaders.SelectMany(x => x.Plugins).ToList();
 
-		public IPluginStatus GetStatus(IPluginDescription description)
+		public IPluginStatus GetStatus(PluginId id)
 		{
 			foreach (var pluginLoader in _pluginLoaders)
 			{
-				var status = pluginLoader.GetStatus(description);
+				var status = pluginLoader.GetStatus(id);
 				if (status.IsInstalled)
 				{
 					return status;

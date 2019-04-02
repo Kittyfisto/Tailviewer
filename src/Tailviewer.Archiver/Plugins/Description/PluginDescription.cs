@@ -26,7 +26,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		/// </summary>
 		public PluginDescription()
 		{
-			Plugins = NoPlugins;
+			PluginImplementations = NoPlugins;
 			SerializableTypes = NoSerializableTypes;
 		}
 
@@ -58,7 +58,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		public string Error { get; set; }
 
 		/// <inheritdoc />
-		public IReadOnlyDictionary<Type, IPluginImplementationDescription> Plugins { get; set; }
+		public IReadOnlyDictionary<Type, IPluginImplementationDescription> PluginImplementations { get; set; }
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<string, string> SerializableTypes { get; set; }

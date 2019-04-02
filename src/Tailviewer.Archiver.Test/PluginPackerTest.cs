@@ -29,7 +29,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestAddAssembly1()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
 				builder.AssemblyVersion = "4.0.3.1";
@@ -63,7 +63,7 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that adding x64 assemblies is not supported (yet)")]
 		public void TestAddAssembly2()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var fname = Path.Combine(_testData, "Managed", "x64", "ClassLibrary1.dll");
 				new Action(() => packer.AddFile("ClassLibrary1.dll", fname))
@@ -76,7 +76,7 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that adding x86 assemblies is allowed")]
 		public void TestAddAssembly3()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var fname = Path.Combine(_testData, "Managed", "x86", "ClassLibrary1.dll");
 				packer.AddFile("ClassLibrary1.dll", fname);
@@ -98,7 +98,7 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that plugins may not target newer frameworks than 4.5.2")]
 		public void TestAddAssembly4()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
@@ -120,7 +120,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestAddAssembly5()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var builder = new AbstractPluginTest.PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
 				builder.PluginVersion = new Version(1, 4, 12034);
@@ -143,7 +143,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestAddNativeImage1()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
 				builder.Save();
@@ -171,7 +171,7 @@ namespace Tailviewer.Archiver.Test
 		[Description("Verifies that adding a 64-bit native image is not supported (yet)")]
 		public void TestAddNativeImage2()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				var fname = Path.Combine(_testData, "Native", "x64", "NativeImage.dll");
 				new Action(() => packer.AddFile("NativeImage.dll", fname))
@@ -183,7 +183,7 @@ namespace Tailviewer.Archiver.Test
 		[Test]
 		public void TestAddIcon1()
 		{
-			using (var packer = PluginPacker.Create(_fname))
+			using (var packer = CreatePacker(_fname))
 			{
 				using (var icon = File.OpenRead(Path.Combine(_testData, "cropped-uiforetwicon2.png")))
 				{
@@ -202,6 +202,16 @@ namespace Tailviewer.Archiver.Test
 					image.Height.Should().Be(16);
 				}
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fname"></param>
+		/// <returns></returns>
+		private static PluginPacker CreatePacker(string fname)
+		{
+			return PluginPacker.Create(File.OpenWrite(fname));
 		}
 
 		public static string AssemblyDirectory

@@ -28,8 +28,8 @@ namespace Tailviewer.Archiver.Test
 			description.Author.Should().Be("John Snow");
 			description.Website.Should().Be(new Uri("https://got.com", UriKind.RelativeOrAbsolute));
 			description.Description.Should().Be("You know nothing, John Snow!");
-			description.Plugins.Should().NotBeNull();
-			description.Plugins.Should().BeEmpty("Because we didn't add any plugin implementations");
+			description.PluginImplementations.Should().NotBeNull();
+			description.PluginImplementations.Should().BeEmpty("Because we didn't add any plugin implementations");
 		}
 
 		[Test]
@@ -48,8 +48,8 @@ namespace Tailviewer.Archiver.Test
 			description.Author.Should().Be("SMI");
 			description.Website.Should().Be(new Uri("none of your business", UriKind.RelativeOrAbsolute));
 			description.Description.Should().Be("go away");
-			description.Plugins.Should().HaveCount(1);
-			var implementationDescription = description.Plugins[typeof(IFileFormatPlugin)];
+			description.PluginImplementations.Should().HaveCount(1);
+			var implementationDescription = description.PluginImplementations[typeof(IFileFormatPlugin)];
 			implementationDescription.FullTypeName.Should().Be("sql.LogFilePlugin");
 			implementationDescription
 				.Version.Should().Be(PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)));
@@ -104,7 +104,7 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				Plugins = new Dictionary<Type, IPluginImplementationDescription>
+				PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
 				{
 					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 				}
@@ -131,7 +131,7 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				Plugins = new Dictionary<Type, IPluginImplementationDescription>
+				PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
 				{
 					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 				}
@@ -175,7 +175,7 @@ namespace Tailviewer.Archiver.Test
 				var description = new PluginDescription
 				{
 					FilePath = "some nonexistant assembly",
-					Plugins = new Dictionary<Type, IPluginImplementationDescription>
+					PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
 					{
 						{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 					}

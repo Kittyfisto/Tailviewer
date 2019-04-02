@@ -88,7 +88,7 @@ namespace Tailviewer.Archiver.Plugins
 				throw new ArgumentNullException(nameof(description));
 
 			var assembly = Assembly.LoadFrom(description.FilePath);
-			var implementationDescription = description.Plugins[typeof(T)];
+			var implementationDescription = description.PluginImplementations[typeof(T)];
 			var implementation = assembly.GetType(implementationDescription.FullTypeName);
 			if (implementation == null)
 				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
@@ -177,7 +177,7 @@ namespace Tailviewer.Archiver.Plugins
 				Description = descriptionAttribute?.Description,
 				Version = pluginVersion,
 				FilePath = pluginPath,
-				Plugins = plugins,
+				PluginImplementations = plugins,
 				SerializableTypes = serializableTypes
 			};
 		}

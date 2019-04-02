@@ -57,7 +57,7 @@ namespace Tailviewer.Archiver.Plugins
 
 		public IEnumerable<IPluginDescription> Plugins => Enumerable.Empty<IPluginDescription>();
 
-		public IPluginStatus GetStatus(IPluginDescription description)
+		public IPluginStatus GetStatus(PluginId id)
 		{
 			return new PluginStatus();
 		}

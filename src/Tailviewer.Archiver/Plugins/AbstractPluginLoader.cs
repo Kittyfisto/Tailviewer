@@ -34,7 +34,7 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		public IPluginStatus GetStatus(IPluginDescription description)
+		public IPluginStatus GetStatus(PluginId id)
 		{
 			throw new NotImplementedException();
 		}
@@ -49,7 +49,7 @@ namespace Tailviewer.Archiver.Plugins
 			var ret = new List<T>();
 			foreach (var pluginDescription in Plugins)
 			{
-				if (pluginDescription.Plugins.ContainsKey(typeof(T)))
+				if (pluginDescription.PluginImplementations.ContainsKey(typeof(T)))
 					try
 					{
 						var plugin = Load<T>(pluginDescription);

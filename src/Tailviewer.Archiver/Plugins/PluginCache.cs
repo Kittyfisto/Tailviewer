@@ -25,9 +25,9 @@ namespace Tailviewer.Archiver.Plugins
 
 		public IEnumerable<IPluginDescription> Plugins => _pluginLoader.Plugins;
 
-		public IPluginStatus GetStatus(IPluginDescription description)
+		public IPluginStatus GetStatus(PluginId id)
 		{
-			return _pluginLoader.GetStatus(description);
+			return _pluginLoader.GetStatus(id);
 		}
 
 		public IReadOnlyDictionary<string, Type> ResolveSerializableTypes()
