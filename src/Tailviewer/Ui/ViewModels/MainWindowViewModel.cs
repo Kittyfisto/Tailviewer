@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;

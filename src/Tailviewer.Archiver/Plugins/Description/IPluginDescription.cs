@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace Tailviewer.Archiver.Plugins
+namespace Tailviewer.Archiver.Plugins.Description
 {
 	/// <summary>
 	///     Describes a tailviewer plugin.
@@ -69,7 +69,7 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		///     A map from the plugin interface to its actual implementation.
 		/// </summary>
-		IReadOnlyDictionary<Type, string> Plugins { get; }
+		IReadOnlyDictionary<Type, IPluginImplementationDescription> Plugins { get; }
 
 		/// <summary>
 		///     A map from an immutable name to a .NET assembly qualified typename of a serializable type.

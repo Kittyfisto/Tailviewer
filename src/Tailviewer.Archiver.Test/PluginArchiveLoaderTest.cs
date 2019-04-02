@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
@@ -244,6 +245,22 @@ namespace Tailviewer.Archiver.Test
 					plugins[0].GetType().FullName.Should().Be("Plugin.FileFormatPlugin");
 				}
 			}
+		}
+
+		[Test]
+		public void TestExtractIdAndVersion1()
+		{
+			PluginArchiveLoader.ExtractIdAndVersion("SamplePlugin.1.2.3.tvp", out var id, out var version);
+			id.Should().Be(new PluginId("SamplePlugin"));
+			version.Should().Be(new Version(1, 2, 3));
+		}
+
+		[Test]
+		public void TestExtractIdAndVersion2()
+		{
+			PluginArchiveLoader.ExtractIdAndVersion("Tailviewer.BrokenPlugin.3.2.tvp", out var id, out var version);
+			id.Should().Be(new PluginId("Tailviewer.BrokenPlugin"));
+			version.Should().Be(new Version(3, 2));
 		}
 	}
 }

@@ -6,9 +6,7 @@ using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources

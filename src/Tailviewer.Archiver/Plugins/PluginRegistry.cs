@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins

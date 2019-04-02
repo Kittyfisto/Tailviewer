@@ -6,6 +6,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 {
 	/// <summary>
 	/// </summary>
+	/// <remarks>
+	///    Version 1
+	///    Initial definition
+	/// </remarks>
+	/// <remarks>
+	///    Version 2
+	///    Breaking changes:
+	///    - Added ITaskScheduler parameter to Create method
+	/// </remarks>
+	[PluginInterfaceVersion(2)]
 	public interface IDataSourceAnalyserPlugin
 		: IPlugin
 	{

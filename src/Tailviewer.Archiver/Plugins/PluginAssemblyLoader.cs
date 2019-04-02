@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
@@ -87,12 +88,12 @@ namespace Tailviewer.Archiver.Plugins
 				throw new ArgumentNullException(nameof(description));
 
 			var assembly = Assembly.LoadFrom(description.FilePath);
-			var fullTypeName = description.Plugins[typeof(T)];
-			var implementation = assembly.GetType(fullTypeName);
+			var implementationDescription = description.Plugins[typeof(T)];
+			var implementation = assembly.GetType(implementationDescription.FullTypeName);
 			if (implementation == null)
 				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
 					description.FilePath,
-					fullTypeName));
+					implementationDescription));
 
 			var plugin = (T) Activator.CreateInstance(implementation);
 			return plugin;
@@ -258,13 +259,13 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		/// <param name="assembly"></param>
 		/// <returns></returns>
-		private IReadOnlyDictionary<Type, string> FindPluginImplementations(Assembly assembly)
+		private IReadOnlyDictionary<Type, IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
 		{
-			var plugins = new Dictionary<Type, string>();
+			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
 			foreach (var type in assembly.ExportedTypes)
 			foreach (var @interface in PluginInterfaces)
 				if (type.GetInterface(@interface.FullName) != null)
-					plugins.Add(@interface, type.FullName);
+					plugins.Add(@interface, new PluginImplementationDescription(type.FullName , @interface));
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;

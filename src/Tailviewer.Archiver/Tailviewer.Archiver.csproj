@@ -78,7 +78,8 @@
     <Compile Include="Plugins\IAssemblyReference.cs" />
     <Compile Include="Plugins\INativeImageDescription.cs" />
     <Compile Include="Plugins\IPluginArchive.cs" />
-    <Compile Include="Plugins\IPluginDescription.cs" />
+    <Compile Include="Plugins\Description\IPluginDescription.cs" />
+    <Compile Include="Plugins\Description\IPluginImplementationDescription.cs" />
     <Compile Include="Plugins\IPluginLoader.cs" />
     <Compile Include="Plugins\IPluginPackageIndex.cs" />
     <Compile Include="ListOptions.cs" />
@@ -89,8 +90,9 @@
     <Compile Include="Plugins\PluginArchiveLoader.cs" />
     <Compile Include="Plugins\PluginAssemblyLoader.cs" />
     <Compile Include="Plugins\PluginCache.cs" />
-    <Compile Include="Plugins\PluginDescription.cs" />
+    <Compile Include="Plugins\Description\PluginDescription.cs" />
     <Compile Include="Plugins\PluginId.cs" />
+    <Compile Include="Plugins\Description\PluginImplementationDescription.cs" />
     <Compile Include="Plugins\PluginInterfaceImplementation.cs" />
     <Compile Include="Plugins\PluginPackageIndex.cs" />
     <Compile Include="Plugins\PluginPacker.cs" />

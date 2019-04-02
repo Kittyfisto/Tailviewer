@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
 

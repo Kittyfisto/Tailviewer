@@ -1,9 +1,9 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 
-namespace Tailviewer.Archiver.Test
+namespace Tailviewer.Archiver.Test.Plugins.Description
 {
 	[TestFixture]
 	public sealed class PluginDescriptionTest

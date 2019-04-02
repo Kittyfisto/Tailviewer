@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows.Media;
 
-namespace Tailviewer.Archiver.Plugins
+namespace Tailviewer.Archiver.Plugins.Description
 {
 	/// <summary>
 	///     Describes a plugin that is located inside a .NET assembly.
@@ -12,12 +12,12 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PluginDescription
 		: IPluginDescription
 	{
-		private static readonly ReadOnlyDictionary<Type, string> NoPlugins;
+		private static readonly ReadOnlyDictionary<Type, IPluginImplementationDescription> NoPlugins;
 		private static readonly ReadOnlyDictionary<string, string> NoSerializableTypes;
 
 		static PluginDescription()
 		{
-			NoPlugins = new ReadOnlyDictionary<Type, string>(new Dictionary<Type, string>());
+			NoPlugins = new ReadOnlyDictionary<Type, IPluginImplementationDescription>(new Dictionary<Type, IPluginImplementationDescription>());
 			NoSerializableTypes = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
 		}
 
@@ -58,7 +58,7 @@ namespace Tailviewer.Archiver.Plugins
 		public string Error { get; set; }
 
 		/// <inheritdoc />
-		public IReadOnlyDictionary<Type, string> Plugins { get; set; }
+		public IReadOnlyDictionary<Type, IPluginImplementationDescription> Plugins { get; set; }
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<string, string> SerializableTypes { get; set; }

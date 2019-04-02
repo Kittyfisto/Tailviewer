@@ -10,5 +10,8 @@ namespace Tailviewer.Archiver.Plugins
 
 		[DataMember]
 		public string ImplementationTypename { get; set; }
+
+		[DataMember]
+		public int InterfaceVersion { get; set; }
 	}
 }

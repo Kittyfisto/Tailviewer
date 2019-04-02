@@ -8,6 +8,7 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Xml.Serialization;
 using PE;
+using Tailviewer.Archiver.Plugins.Description;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -324,7 +325,8 @@ namespace Tailviewer.Archiver.Plugins
 				_index.ImplementedPluginInterfaces.Add(new PluginInterfaceImplementation
 				{
 					InterfaceTypename = pair.Key.FullName,
-					ImplementationTypename = pair.Value
+					ImplementationTypename = pair.Value.FullTypeName,
+					InterfaceVersion = pair.Value.Version.Value
 				});
 			}
 			_index.SerializableTypes = new List<SerializableTypeDescription>();

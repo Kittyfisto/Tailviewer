@@ -70,8 +70,9 @@
     <Compile Include="PluginArchiveTest.cs" />
     <Compile Include="PluginAssemblyLoaderTest.cs" />
     <Compile Include="PluginCacheTest.cs" />
-    <Compile Include="PluginDescriptionTest.cs" />
+    <Compile Include="Plugins\Description\PluginDescriptionTest.cs" />
     <Compile Include="PluginPackerTest.cs" />
+    <Compile Include="Plugins\Description\PluginImplementationDescriptionTest.cs" />
     <Compile Include="Plugins\PluginIdTest.cs" />
     <Compile Include="PluginRegistryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

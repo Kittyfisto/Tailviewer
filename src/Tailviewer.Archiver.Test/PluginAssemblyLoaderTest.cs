@@ -4,6 +4,7 @@ using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test
@@ -48,9 +49,10 @@ namespace Tailviewer.Archiver.Test
 			description.Website.Should().Be(new Uri("none of your business", UriKind.RelativeOrAbsolute));
 			description.Description.Should().Be("go away");
 			description.Plugins.Should().HaveCount(1);
-			description.Plugins.Should().Contain(
-				new KeyValuePair<Type, string>(typeof(IFileFormatPlugin), "sql.LogFilePlugin")
-			);
+			var implementationDescription = description.Plugins[typeof(IFileFormatPlugin)];
+			implementationDescription.FullTypeName.Should().Be("sql.LogFilePlugin");
+			implementationDescription
+				.Version.Should().Be(PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)));
 		}
 
 		[Test]
@@ -102,9 +104,9 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				Plugins = new Dictionary<Type, string>
+				Plugins = new Dictionary<Type, IPluginImplementationDescription>
 				{
-					{typeof(IFileFormatPlugin), "Foo1.MyAwesomePlugin"}
+					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 				}
 			};
 
@@ -129,9 +131,9 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				Plugins = new Dictionary<Type, string>
+				Plugins = new Dictionary<Type, IPluginImplementationDescription>
 				{
-					{typeof(IFileFormatPlugin), "Foo2.MyAwesomePlugin"}
+					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 				}
 			};
 
@@ -173,9 +175,9 @@ namespace Tailviewer.Archiver.Test
 				var description = new PluginDescription
 				{
 					FilePath = "some nonexistant assembly",
-					Plugins = new Dictionary<Type, string>
+					Plugins = new Dictionary<Type, IPluginImplementationDescription>
 					{
-						{typeof(IFileFormatPlugin), "Foo1.MyAwesomePlugin"}
+						{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
 					}
 				};
 

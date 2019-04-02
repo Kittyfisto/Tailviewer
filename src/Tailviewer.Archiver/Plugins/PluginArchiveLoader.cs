@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using log4net;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins
@@ -136,7 +138,7 @@ namespace Tailviewer.Archiver.Plugins
 				throw new NotImplementedException();
 
 			var plugin = archive.LoadPlugin();
-			var type = plugin.GetType(interfaceImplementation);
+			var type = plugin.GetType(interfaceImplementation.FullTypeName);
 			var pluginObject = Activator.CreateInstance(type);
 			return (T) pluginObject;
 		}
@@ -189,7 +191,7 @@ namespace Tailviewer.Archiver.Plugins
 					Id = id,
 					Version = version,
 					Error = string.Format("The plugin couldn't be loaded: {0}", e.Message),
-					Plugins = new Dictionary<Type, string>(),
+					Plugins = new Dictionary<Type, IPluginImplementationDescription>(),
 					FilePath = pluginPath
 				};
 				_archivesByPlugin.Add(description, new EmptyPluginArchive());
@@ -218,21 +220,50 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		private static void ExtractIdAndVersion(string pluginPath, out PluginId id, out Version version)
+		public static void ExtractIdAndVersion(string pluginPath, out PluginId id, out Version version)
 		{
 			var fileName = Path.GetFileNameWithoutExtension(pluginPath);
-			int idx = fileName.IndexOf(".");
-			if (idx != -1)
+			var tokens = fileName.Split('.').ToList();
+			var versionNumbers = new List<int>();
+			for (int i = tokens.Count - 1; i >= 0; --i)
 			{
-				id = new PluginId(fileName.Substring(0, idx));
-				var tmp = fileName.Substring(idx + 1);
-				if (!Version.TryParse(tmp, out version))
-					version = new Version(0, 0, 0, 0);
+				if (int.TryParse(tokens[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out var versionNumber))
+				{
+					versionNumbers.Insert(0, versionNumber);
+					tokens.RemoveAt(i);
+				}
+			}
+
+			if (tokens.Count == 0)
+			{
+				id = new PluginId("Unknown");
 			}
 			else
 			{
-				id = new PluginId("Unknown");
-				version = new Version(0, 0, 0, 0);
+				id = new PluginId(string.Join(".", tokens));
+			}
+
+			switch (versionNumbers.Count)
+			{
+				case 4:
+					version = new Version(versionNumbers[0], versionNumbers[1], versionNumbers[2], versionNumbers[3]);
+					break;
+
+				case 3:
+					version = new Version(versionNumbers[0], versionNumbers[1], versionNumbers[2]);
+					break;
+
+				case 2:
+					version = new Version(versionNumbers[0], versionNumbers[1]);
+					break;
+
+				case 1:
+					version = new Version(versionNumbers[0], 0);
+					break;
+
+				default:
+					version = new Version(0, 0, 0, 0);
+					break;
 			}
 		}
 
@@ -264,14 +295,14 @@ namespace Tailviewer.Archiver.Plugins
 
 			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out var website);
 
-			var plugins = new Dictionary<Type, string>();
-			foreach (var pair in archiveIndex.ImplementedPluginInterfaces)
+			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
+			foreach (var description in archiveIndex.ImplementedPluginInterfaces)
 			{
-				var pluginInterfaceType = typeof(IPlugin).Assembly.GetType(pair.InterfaceTypename);
+				var pluginInterfaceType = typeof(IPlugin).Assembly.GetType(description.InterfaceTypename);
 				if (pluginInterfaceType != null)
-					plugins.Add(pluginInterfaceType, pair.ImplementationTypename);
+					plugins.Add(pluginInterfaceType, new PluginImplementationDescription(description));
 				else
-					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...", pair.InterfaceTypename);
+					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...", description.InterfaceTypename);
 			}
 			var serializableTypes = new Dictionary<string, string>();
 			foreach (var pair in archiveIndex.SerializableTypes)
