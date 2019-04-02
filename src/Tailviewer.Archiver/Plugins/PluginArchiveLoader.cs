@@ -19,7 +19,7 @@ namespace Tailviewer.Archiver.Plugins
 	/// </summary>
 	public sealed class PluginArchiveLoader
 		: IPluginLoader
-		, IDisposable
+			, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -38,7 +38,8 @@ namespace Tailviewer.Archiver.Plugins
 			try
 			{
 				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
-				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension)).Result;
+				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
+				                      .Result;
 				foreach (var pluginPath in files)
 					ReflectPlugin(pluginPath);
 			}
@@ -57,16 +58,66 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			get
 			{
-				var plugins = _archivesByPlugin.GroupBy(x => x.Key.Id).Select(FindUsablePlugin).Where(x => x != null).ToList();
+				var plugins = _archivesByPlugin.GroupBy(x => x.Key.Id).Select(FindUsablePlugin).Where(x => x != null)
+				                               .ToList();
 				return plugins;
 			}
 		}
 
 		[Pure]
-		private static IPluginDescription FindUsablePlugin(IGrouping<PluginId, KeyValuePair<IPluginDescription, IPluginArchive>> grouping)
+		private static IPluginDescription FindUsablePlugin(
+			IGrouping<PluginId, KeyValuePair<IPluginDescription, IPluginArchive>> grouping)
 		{
 			var highestUsable = grouping.Where(x => IsUsable(x.Value.Index)).MaxBy(x => x.Key.Version);
 			return highestUsable.Key;
+		}
+
+		[Pure]
+		public static List<PluginError> FindCompatibilityErrors(IPluginPackageIndex index)
+		{
+			var errors = new List<PluginError>();
+			if (index.PluginArchiveVersion < PluginArchive.MinimumSupportedPluginArchiveVersion)
+			{
+				// TODO: Make we should make this easier by inserting the current tailviewer version here?
+				errors.Add(new PluginError("The plugin targets an older version of Tailviewer and must be compiled against the current version in order to be usable"));
+			}
+
+			if (index.PluginArchiveVersion > PluginArchive.CurrentPluginArchiveVersion)
+			{
+				// TODO: Make we should make this easier by inserting the current tailviewer version here?
+				errors.Add(new PluginError("The plugin targets a newer version of Tailviewer and must be compiled against the current version in order to be usable"));
+			}
+
+			if (index.ImplementedPluginInterfaces != null)
+			{
+				foreach (var implementation in index.ImplementedPluginInterfaces)
+				{
+					if (TryResolvePluginInterface(implementation, out var @interface))
+					{
+						var currentInterfaceVersion = PluginInterfaceVersionAttribute.GetInterfaceVersion(@interface);
+						var implementedInterfaceVersion = new PluginInterfaceVersion(implementation.InterfaceVersion);
+
+						if (implementedInterfaceVersion < currentInterfaceVersion)
+						{
+							// TODO: Make we should make this easier by inserting the current tailviewer version here?
+							errors.Add(new PluginError($"The plugin implements an older version of '{@interface.FullName}'. It must target the current version in order to be usable!"));
+						}
+						else if (implementedInterfaceVersion > currentInterfaceVersion)
+						{
+							// TODO: Make we should make this easier by inserting the current tailviewer version here?
+							errors.Add(new PluginError($"The plugin implements a newer version of '{@interface.FullName}'. It must target the current version in order to be usable!"));
+						}
+					}
+					else
+					{
+						// If a plugin unfortunately implements an interface that is not known to this tailviewer,
+						// then it is bad news because that means we won't be able to load its assembly!
+						errors.Add(new PluginError($"The plugin implements an unknown interface '{implementation.InterfaceTypename}' which is probably part of a newer tailviewer version. The plugin should target the current version in order to be usable!"));
+					}
+				}
+			}
+
+			return errors;
 		}
 
 		/// <summary>
@@ -75,17 +126,9 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="index"></param>
 		/// <returns></returns>
 		[Pure]
-		private static bool IsUsable(IPluginPackageIndex index)
+		public static bool IsUsable(IPluginPackageIndex index)
 		{
-			if (index.PluginArchiveVersion < PluginArchive.MinimumSupportedPluginArchiveVersion)
-				return false;
-
-			if (index.PluginArchiveVersion > PluginArchive.CurrentPluginArchiveVersion)
-				return false;
-
-			// We might also want to discard plugins which are built against outdated APIs, but this
-			// will probably have to be hard-coded, no?
-			return true;
+			return !FindCompatibilityErrors(index).Any();
 		}
 
 		/// <inheritdoc />
@@ -162,9 +205,9 @@ namespace Tailviewer.Archiver.Plugins
 					catch (Exception e)
 					{
 						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-							interfaceType,
-							pluginDescription,
-							e);
+						                interfaceType,
+						                pluginDescription,
+						                e);
 					}
 				}
 			}
@@ -285,6 +328,7 @@ namespace Tailviewer.Archiver.Plugins
 					IsInstalled = true
 				});
 			}
+
 			return description;
 		}
 
@@ -298,12 +342,14 @@ namespace Tailviewer.Archiver.Plugins
 			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
 			foreach (var description in archiveIndex.ImplementedPluginInterfaces)
 			{
-				var pluginInterfaceType = typeof(IPlugin).Assembly.GetType(description.InterfaceTypename);
+				var pluginInterfaceType = ResolvePluginInterface(description);
 				if (pluginInterfaceType != null)
 					plugins.Add(pluginInterfaceType, new PluginImplementationDescription(description));
 				else
-					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...", description.InterfaceTypename);
+					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...",
+					               description.InterfaceTypename);
 			}
+
 			var serializableTypes = new Dictionary<string, string>();
 			foreach (var pair in archiveIndex.SerializableTypes)
 			{
@@ -324,6 +370,29 @@ namespace Tailviewer.Archiver.Plugins
 			};
 
 			return desc;
+		}
+
+		private static bool TryResolvePluginInterface(PluginInterfaceImplementation description, out Type interfaceType)
+		{
+			try
+			{
+				// GetType(..., false) does not cut it because that STILL throws exceptions, yay!
+				interfaceType = ResolvePluginInterface(description);
+				return interfaceType != null;
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught exception while trying to resolve interface '{0}':\r\n{1}",
+				                description.InterfaceTypename,
+				                e);
+				interfaceType = null;
+				return false;
+			}
+		}
+
+		private static Type ResolvePluginInterface(PluginInterfaceImplementation description)
+		{
+			return typeof(IPlugin).Assembly.GetType(description.InterfaceTypename);
 		}
 
 		private static ImageSource LoadIcon(Stream icon)

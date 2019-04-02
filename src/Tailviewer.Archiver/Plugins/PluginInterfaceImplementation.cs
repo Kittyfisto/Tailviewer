@@ -11,6 +11,9 @@ namespace Tailviewer.Archiver.Plugins
 		[DataMember]
 		public string ImplementationTypename { get; set; }
 
+		/// <summary>
+		/// The version of the interface at the time it was implemented.
+		/// </summary>
 		[DataMember]
 		public int InterfaceVersion { get; set; }
 	}
