@@ -15,6 +15,7 @@ namespace Tailviewer.Archiver.Test
 		private readonly string _fileName;
 		private TypeBuilder _referencer;
 		private readonly List<string> _dependencies;
+		private readonly List<TypeBuilder> _types;
 
 		public PluginBuilder(
 			string pluginIdNamespace,
@@ -40,7 +41,7 @@ namespace Tailviewer.Archiver.Test
 			_module = _assembly.DefineDynamicModule(pluginName, _fileName);
 
 			_dependencies = new List<string>();
-			new List<TypeBuilder>();
+			_types = new List<TypeBuilder>();
 			_referencer = _module.DefineType("HoldsReferences", TypeAttributes.Class | TypeAttributes.Public);
 		}
 
@@ -53,10 +54,11 @@ namespace Tailviewer.Archiver.Test
 			_dependencies.Add(filePath);
 		}
 
-		public void ImplementInterface<T>(string fullName) where T : IPlugin
+		public TypeBuilder ImplementInterface<T>(string fullName) where T : IPlugin
 		{
 			var interfaceType = typeof(T);
 			var typeBuilder = _module.DefineType(fullName, TypeAttributes.Public | TypeAttributes.Sealed);
+			_types.Add(typeBuilder);
 			typeBuilder.AddInterfaceImplementation(interfaceType);
 
 			var properties = interfaceType.GetProperties();
@@ -92,7 +94,8 @@ namespace Tailviewer.Archiver.Test
 					typeBuilder.DefineMethodOverride(method, interfaceMethod);
 				}
 			}
-			typeBuilder.CreateType();
+
+			return typeBuilder;
 		}
 
 		private MethodBuilder DefineMethod(TypeBuilder typeBuilder, MethodAttributes attributes, string name, CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
@@ -136,6 +139,8 @@ namespace Tailviewer.Archiver.Test
 		private void FinishBuild()
 		{
 			_referencer.CreateType();
+			foreach(var typeBuilder in _types)
+				typeBuilder.CreateType();
 		}
 
 		public string FileName => _fileName;
