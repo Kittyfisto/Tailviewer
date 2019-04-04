@@ -321,13 +321,13 @@ namespace Tailviewer.Archiver.Plugins
 			_index.Website = description.Website != null ? description.Website.ToString() : null;
 			_index.Version = description.Version?.ToString();
 			_index.ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>();
-			foreach (var pair in description.PluginImplementations)
+			foreach (var implementationDescription in description.PluginImplementations)
 			{
 				_index.ImplementedPluginInterfaces.Add(new PluginInterfaceImplementation
 				{
-					InterfaceTypename = pair.Key.FullName,
-					ImplementationTypename = pair.Value.FullTypeName,
-					InterfaceVersion = pair.Value.Version.Value
+					InterfaceTypename = implementationDescription.InterfaceType.FullName,
+					ImplementationTypename = implementationDescription.FullTypeName,
+					InterfaceVersion = implementationDescription.Version.Value
 				});
 			}
 			_index.SerializableTypes = new List<SerializableTypeDescription>();

@@ -8,6 +8,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Test;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -143,7 +144,7 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
-		[Description("https://github.com/Kittyfisto/Tailviewer/issues/179")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/179")]
 		public void TestAddSameAssemblyTwice()
 		{
 			var directory = Directory.GetCurrentDirectory();

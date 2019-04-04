@@ -12,12 +12,12 @@ namespace Tailviewer.Archiver.Plugins.Description
 	public sealed class PluginDescription
 		: IPluginDescription
 	{
-		private static readonly ReadOnlyDictionary<Type, IPluginImplementationDescription> NoPlugins;
+		private static readonly IReadOnlyList<IPluginImplementationDescription> NoPlugins;
 		private static readonly ReadOnlyDictionary<string, string> NoSerializableTypes;
 
 		static PluginDescription()
 		{
-			NoPlugins = new ReadOnlyDictionary<Type, IPluginImplementationDescription>(new Dictionary<Type, IPluginImplementationDescription>());
+			NoPlugins = new IPluginImplementationDescription[0];
 			NoSerializableTypes = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
 		}
 
@@ -58,7 +58,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		public string Error { get; set; }
 
 		/// <inheritdoc />
-		public IReadOnlyDictionary<Type, IPluginImplementationDescription> PluginImplementations { get; set; }
+		public IReadOnlyList<IPluginImplementationDescription> PluginImplementations { get; set; }
 
 		/// <inheritdoc />
 		public IReadOnlyDictionary<string, string> SerializableTypes { get; set; }

@@ -41,7 +41,8 @@ namespace Tailviewer.Archiver.Plugins
 
 		public abstract IReadOnlyDictionary<string, Type> ResolveSerializableTypes();
 
-		public abstract T Load<T>(IPluginDescription description) where T : class, IPlugin;
+		public abstract T Load<T>(IPluginDescription plugin,
+		                          IPluginImplementationDescription implementation) where T : class, IPlugin;
 
 		/// <inheritdoc />
 		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
@@ -49,19 +50,24 @@ namespace Tailviewer.Archiver.Plugins
 			var ret = new List<T>();
 			foreach (var pluginDescription in Plugins)
 			{
-				if (pluginDescription.PluginImplementations.ContainsKey(typeof(T)))
-					try
+				foreach (var description in pluginDescription.PluginImplementations)
+				{
+					if (description.InterfaceType == typeof(T))
 					{
-						var plugin = Load<T>(pluginDescription);
-						ret.Add(plugin);
+						try
+						{
+							var plugin = Load<T>(pluginDescription, description);
+							ret.Add(plugin);
+						}
+						catch (Exception e)
+						{
+							Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
+							                typeof(T),
+							                pluginDescription,
+							                e);
+						}
 					}
-					catch (Exception e)
-					{
-						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-							typeof(T),
-							pluginDescription,
-							e);
-					}
+				}
 			}
 			return ret;
 		}

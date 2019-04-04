@@ -82,21 +82,22 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <inheritdoc />
-		public override T Load<T>(IPluginDescription description)
+		public override T Load<T>(IPluginDescription plugin,
+		                          IPluginImplementationDescription implementation)
 		{
-			if (description == null)
-				throw new ArgumentNullException(nameof(description));
-
-			var assembly = Assembly.LoadFrom(description.FilePath);
-			var implementationDescription = description.PluginImplementations[typeof(T)];
-			var implementation = assembly.GetType(implementationDescription.FullTypeName);
+			if (plugin == null)
+				throw new ArgumentNullException(nameof(plugin));
 			if (implementation == null)
-				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
-					description.FilePath,
-					implementationDescription));
+				throw new ArgumentNullException(nameof(implementation));
 
-			var plugin = (T) Activator.CreateInstance(implementation);
-			return plugin;
+			var assembly = Assembly.LoadFrom(plugin.FilePath);
+			var type = assembly.GetType(implementation.FullTypeName);
+			if (type == null)
+				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
+				                                          plugin.FilePath,
+				                                          implementation));
+
+			return (T) Activator.CreateInstance(type);
 		}
 
 		/// <summary>
@@ -259,13 +260,13 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		/// <param name="assembly"></param>
 		/// <returns></returns>
-		private IReadOnlyDictionary<Type, IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
+		private IReadOnlyList<IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
 		{
-			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
+			var plugins = new List<IPluginImplementationDescription>();
 			foreach (var type in assembly.ExportedTypes)
 			foreach (var @interface in PluginInterfaces)
 				if (type.GetInterface(@interface.FullName) != null)
-					plugins.Add(@interface, new PluginImplementationDescription(type.FullName , @interface));
+					plugins.Add(new PluginImplementationDescription(type.FullName , @interface));
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;

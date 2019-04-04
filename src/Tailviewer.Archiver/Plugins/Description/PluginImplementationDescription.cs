@@ -13,6 +13,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		{
 			FullTypeName = fullTypeName;
 			Version = PluginInterfaceVersionAttribute.GetInterfaceVersion(@interface);
+			InterfaceType = @interface;
 		}
 
 		public PluginImplementationDescription(PluginInterfaceImplementation description)
@@ -26,6 +27,8 @@ namespace Tailviewer.Archiver.Plugins.Description
 		public string FullTypeName { get; set; }
 
 		public PluginInterfaceVersion Version { get; set; }
+
+		public Type InterfaceType { get; set; }
 
 		#endregion
 	}

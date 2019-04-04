@@ -1,3 +1,4 @@
+using System;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Plugins.Description
@@ -15,5 +16,10 @@ namespace Tailviewer.Archiver.Plugins.Description
 		///     The version of the inteface being implemented.
 		/// </summary>
 		PluginInterfaceVersion Version { get; }
+
+		/// <summary>
+		/// The <see cref="IPlugin"/> interface which is implemented by this type.
+		/// </summary>
+		Type InterfaceType { get; }
 	}
 }

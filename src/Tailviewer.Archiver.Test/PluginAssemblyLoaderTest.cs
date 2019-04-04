@@ -55,7 +55,8 @@ namespace Tailviewer.Archiver.Test
 			description.Website.Should().Be(new Uri("none of your business", UriKind.RelativeOrAbsolute));
 			description.Description.Should().Be("go away");
 			description.PluginImplementations.Should().HaveCount(1);
-			var implementationDescription = description.PluginImplementations[typeof(IFileFormatPlugin)];
+			description.PluginImplementations.Should().Contain(x => x.InterfaceType == typeof(IFileFormatPlugin));
+			var implementationDescription = description.PluginImplementations[0];
 			implementationDescription.FullTypeName.Should().Be("sql.LogFilePlugin");
 			implementationDescription
 				.Version.Should().Be(PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)));
@@ -93,6 +94,7 @@ namespace Tailviewer.Archiver.Test
 		#region DataContract checks
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/177")]
 		public void TestReflectPluginMissingDefaultCtor()
 		{
 			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginMissingDefaultCtor");
@@ -130,6 +132,7 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/177")]
 		public void TestReflectPluginProtectedDefaultCtor()
 		{
 			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginProtectedDefaultCtor");
@@ -167,6 +170,7 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/177")]
 		public void TestReflectPluginPrivateDefaultCtor()
 		{
 			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginNonPublicDefaultCtor");
@@ -204,6 +208,7 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/177")]
 		public void TestReflectPluginInternalDefaultCtor()
 		{
 			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginInternalDefaultCtor");
@@ -241,6 +246,7 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/177")]
 		public void TestReflectPluginNonPublicSerializableType()
 		{
 			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginNonPublicSerializableType");
@@ -280,6 +286,25 @@ namespace Tailviewer.Archiver.Test
 		#endregion
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/178")]
+		public void TestReflectTwoPluginImplementations()
+		{
+			var builder = new PluginBuilder("Kittyfisto", "TestReflectTwoPluginImplementations", "TestReflectTwoPluginImplementations");
+			builder.ImplementInterface<IFileFormatPlugin>("A");
+			builder.ImplementInterface<IFileFormatPlugin>("B");
+			builder.Save();
+
+			var assemblyLoader = new PluginAssemblyLoader();
+			var description = assemblyLoader.ReflectPlugin(builder.FileName);
+			description.PluginImplementations.Should().HaveCount(2, "because we've implemented the IFileFormatPlugin twice");
+			description.PluginImplementations[0].InterfaceType.Should().Be<IFileFormatPlugin>();
+			description.PluginImplementations[0].FullTypeName.Should().Be("A");
+
+			description.PluginImplementations[1].InterfaceType.Should().Be<IFileFormatPlugin>();
+			description.PluginImplementations[1].FullTypeName.Should().Be("B");
+		}
+
+		[Test]
 		public void TestReflectPlugins()
 		{
 			var scanner = new PluginAssemblyLoader(@"C:\adwwdwawad\asxas");
@@ -299,15 +324,15 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
+				PluginImplementations = new []
 				{
-					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
+					new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))
 				}
 			};
 
 			using (var scanner = new PluginAssemblyLoader())
 			{
-				var plugin = scanner.Load<IFileFormatPlugin>(description);
+				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo1.MyAwesomePlugin");
 			}
@@ -326,15 +351,15 @@ namespace Tailviewer.Archiver.Test
 			var description = new PluginDescription
 			{
 				FilePath = assemblyFileName,
-				PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
+				PluginImplementations = new List<IPluginImplementationDescription>
 				{
-					{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(IFileFormatPlugin))}
+					new PluginImplementationDescription("Foo2.MyAwesomePlugin", typeof(IFileFormatPlugin))
 				}
 			};
 
 			using (var scanner = new PluginAssemblyLoader())
 			{
-				var plugin = scanner.Load<IFileFormatPlugin>(description);
+				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo2.MyAwesomePlugin");
 			}
@@ -355,7 +380,7 @@ namespace Tailviewer.Archiver.Test
 				builder.Save();
 
 				var description = scanner.ReflectPlugin(assemblyFileName);
-				var plugin = scanner.Load<IFileFormatPlugin>(description);
+				var plugin = scanner.Load<IFileFormatPlugin>(description, description.PluginImplementations[0]);
 				plugin.Should().NotBeNull();
 				plugin.GetType().FullName.Should().Be("Foo3.MyAwesomePlugin");
 			}
@@ -370,9 +395,9 @@ namespace Tailviewer.Archiver.Test
 				var description = new PluginDescription
 				{
 					FilePath = "some nonexistant assembly",
-					PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>
+					PluginImplementations = new List<IPluginImplementationDescription>
 					{
-						{typeof(IFileFormatPlugin), new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))}
+						new PluginImplementationDescription("Foo1.MyAwesomePlugin", typeof(IFileFormatPlugin))
 					}
 				};
 

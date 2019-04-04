@@ -70,7 +70,7 @@ namespace Tailviewer.Archiver.Plugins.Description
 		/// <summary>
 		///     A map of all <see cref="IPlugin"/> implementations offered by the plugin.
 		/// </summary>
-		IReadOnlyDictionary<Type, IPluginImplementationDescription> PluginImplementations { get; }
+		IReadOnlyList<IPluginImplementationDescription> PluginImplementations { get; }
 
 		/// <summary>
 		///     A map from an immutable name to a .NET assembly qualified typename of a serializable type.

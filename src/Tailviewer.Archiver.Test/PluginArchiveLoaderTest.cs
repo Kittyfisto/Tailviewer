@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Test;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -143,6 +144,39 @@ namespace Tailviewer.Archiver.Test
 				description.Icon.Should().BeNull();
 				description.Website.Should().BeNull();
 			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/178")]
+		public void TestReflectTwoPluginImplementations()
+		{
+			var stream = new MemoryStream();
+			using (var packer = PluginPacker.Create(stream, true))
+			{
+				var builder = new PluginBuilder("Kittyfisto", "UniquePluginId", "MyAwesomePlugin");
+				builder.ImplementInterface<IFileFormatPlugin>("A");
+				builder.ImplementInterface<IFileFormatPlugin>("B");
+				builder.Save();
+
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			stream.Position = 0;
+			_filesystem.Write(Path.Combine(Constants.PluginPath, "Kittyfisto.UniquePluginId.2.0.tvp"), stream);
+
+			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
+			{
+				loader.Plugins.Should().HaveCount(1, "because one plugin should've been loaded");
+				var description = loader.Plugins.First();
+				description.PluginImplementations.Should().HaveCount(2, "because we've implemented the IFileFormatPlugin twice");
+				description.PluginImplementations[0].InterfaceType.Should().Be<IFileFormatPlugin>();
+				description.PluginImplementations[0].FullTypeName.Should().Be("A");
+
+				description.PluginImplementations[1].InterfaceType.Should().Be<IFileFormatPlugin>();
+				description.PluginImplementations[1].FullTypeName.Should().Be("B");
+			}
+
+			var assemblyLoader = new PluginAssemblyLoader();
 		}
 
 		[Test]
