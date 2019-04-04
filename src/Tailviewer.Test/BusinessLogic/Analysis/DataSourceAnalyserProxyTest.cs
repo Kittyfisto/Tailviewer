@@ -58,5 +58,51 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			new Action(() => analyser.OnLogFileRemoved(id, logFile)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
 			_actualAnalyser.Verify(x => x.OnLogFileRemoved(id, logFile), Times.Once, "because the proxy should have at least tried to call RemoveLogFile on the inner analyser");
 		}
+
+		[Test]
+		[Description("Verifies that the proxy handles exceptions thrown by the inner analyser")]
+		public void TestSetConfiguration1()
+		{
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			_actualAnalyser.SetupSet(x => x.Configuration).Throws<NullReferenceException>();
+
+			var config = new TestLogAnalyserConfiguration();
+			new Action(() => analyser.Configuration = config).ShouldNotThrow();
+			_actualAnalyser.VerifySet(x => x.Configuration = config, Times.Once);
+		}
+
+		[Test]
+		[Description("Verifies that the proxy forwards the configuration to the ")]
+		public void TestSetConfiguration2()
+		{
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			_actualAnalyser.SetupProperty(x => x.Configuration);
+
+			var config = new TestLogAnalyserConfiguration();
+			new Action(() => analyser.Configuration = config).ShouldNotThrow();
+			_actualAnalyser.Object.Configuration.Should().Be(config);
+		}
+
+		[Test]
+		[Description("Verifies that the proxy handles exceptions thrown by the inner analyser")]
+		public void TestGetConfiguration1()
+		{
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			_actualAnalyser.Setup(x => x.Configuration).Throws<NullReferenceException>();
+
+			analyser.Configuration.Should().BeNull();
+			_actualAnalyser.Verify(x => x.Configuration, Times.Once);
+		}
+
+		[Test]
+		public void TestGetConfiguration2()
+		{
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			_actualAnalyser.Setup(x => x.Configuration).Throws<NullReferenceException>();
+
+			var config = new TestLogAnalyserConfiguration();
+			_actualAnalyser.Setup(x => x.Configuration).Returns(config);
+			analyser.Configuration.Should().BeSameAs(config);
+		}
 	}
 }

@@ -106,7 +106,36 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		public bool IsFrozen => false;
 
-		public ILogAnalyserConfiguration Configuration { get; set; }
+		public ILogAnalyserConfiguration Configuration
+		{
+			get
+			{
+				try
+				{
+					return _analyser.Configuration;
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception while trying to get the configuration from analyser '{0}': {1}",
+						_plugin.Id,
+						e);
+					return null;
+				}
+			}
+			set
+			{
+				try
+				{
+					_analyser.Configuration = value;
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception while trying to forward the configuration to analyser '{0}': {1}",
+						_plugin.Id,
+						e);
+				}
+			}
+		}
 
 		public void OnLogFileAdded(DataSourceId id, ILogFile logFile)
 		{
