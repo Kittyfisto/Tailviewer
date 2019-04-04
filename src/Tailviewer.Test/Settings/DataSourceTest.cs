@@ -170,7 +170,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.Save(writer);
 				}
 				stream.Position = 0;
-				Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+				//Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
 				using (var reader = XmlReader.Create(stream))
 				{
