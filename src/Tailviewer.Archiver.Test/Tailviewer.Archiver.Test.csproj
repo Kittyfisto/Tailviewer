@@ -66,6 +66,7 @@
     <Compile Include="PluginArchiveLoaderTest.cs" />
     <Compile Include="PluginArchiveTest.cs" />
     <Compile Include="PluginAssemblyLoaderTest.cs" />
+    <Compile Include="PluginBuilder.cs" />
     <Compile Include="PluginCacheTest.cs" />
     <Compile Include="Plugins\Description\PluginDescriptionTest.cs" />
     <Compile Include="PluginPackerTest.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Plugins\PluginGroupTest.cs" />
     <Compile Include="Plugins\PluginIdTest.cs" />
     <Compile Include="PluginRegistryTest.cs" />
+    <Compile Include="Plugins\PluginPackageIndexTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

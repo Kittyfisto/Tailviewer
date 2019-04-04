@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
@@ -31,7 +33,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = CreatePacker(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
+				var builder = new PluginBuilder("Simon", "Foo", "Plugin");
 				builder.AssemblyVersion = "4.0.3.1";
 				builder.AssemblyFileVersion = "1.2.3.42";
 				builder.AssemblyInformationalVersion = "4.0.0.0-beta";
@@ -122,7 +124,7 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = CreatePacker(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
+				var builder = new PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
 				builder.PluginVersion = new Version(1, 4, 12034);
 				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
 				builder.Save();
@@ -141,11 +143,50 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
+		[Description("https://github.com/Kittyfisto/Tailviewer/issues/179")]
+		public void TestAddSameAssemblyTwice()
+		{
+			var aFileName = "A.dll";
+			var aFilePath = Path.Combine(Directory.GetCurrentDirectory(), aFileName);
+			var bFileName = "B.dll";
+			var bFilePath = Path.Combine(Directory.GetCurrentDirectory(), bFileName);
+			using (var packer = CreatePacker(_fname))
+			{
+				var aBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("A"), AssemblyBuilderAccess.Save);
+				var aModule = aBuilder.DefineDynamicModule(aFileName);
+				var aType = aModule.DefineType("A_Dummy", TypeAttributes.Class | TypeAttributes.Public);
+				aType.CreateType();
+				aBuilder.Save(aFileName);
+
+				var bBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("B"), AssemblyBuilderAccess.Save);
+				var bModule = bBuilder.DefineDynamicModule(bFileName);
+				var bType = bModule.DefineType("B_Dummy", TypeAttributes.Class | TypeAttributes.Public, Assembly.LoadFile(aFilePath).ExportedTypes.First());
+				bType.CreateType();
+				bBuilder.Save(bFileName);
+
+				var builder = new PluginBuilder("Simon", "Foo", "Plugin");
+				builder.AddDependency(aFilePath);
+				builder.AddDependency(bFilePath);
+				builder.Save();
+				packer.AddPluginAssembly(builder.FileName);
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			{
+				var assemblies = reader.Index.Assemblies;
+				assemblies.Should().ContainSingle(x => x.AssemblyName == "A");
+				assemblies.Should().ContainSingle(x => x.AssemblyName == "B");
+				assemblies.Should().ContainSingle(x => x.AssemblyName == "Plugin");
+				assemblies.Should().HaveCount(3, "because we expect a total of 3 assemblies to have been saved");
+			}
+		}
+
+		[Test]
 		public void TestAddNativeImage1()
 		{
 			using (var packer = CreatePacker(_fname))
 			{
-				var builder = new AbstractPluginTest.PluginBuilder("Simon", "Foo", "Plugin");
+				var builder = new PluginBuilder("Simon", "Foo", "Plugin");
 				builder.Save();
 				packer.AddPluginAssembly(builder.FileName);
 

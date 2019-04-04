@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Xml.Serialization;
+using log4net;
 using PE;
 using Tailviewer.Archiver.Plugins.Description;
 
@@ -21,6 +23,8 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PluginPacker
 		: IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		/// <summary>
 		///     The maximum size of an icon's edge (height and/or width) in pixels.
 		/// </summary>
@@ -56,21 +60,6 @@ namespace Tailviewer.Archiver.Plugins
 				StoreIndex();
 				_archive.Dispose();
 				_disposed = true;
-			}
-		}
-
-		private void StoreIndex()
-		{
-			using (var stream = new MemoryStream())
-			{
-				using (var writer = new StreamWriter(stream, Encoding.UTF8, 4086, true))
-				{
-					var serializer = new XmlSerializer(typeof(PluginPackageIndex));
-					serializer.Serialize(writer, _index);
-				}
-
-				stream.Position = 0;
-				AddFile(PluginArchive.IndexEntryName, stream);
 			}
 		}
 
@@ -117,26 +106,14 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <summary>
-		///     Adds a new file to the  plugin package.
-		/// </summary>
-		/// <param name="entryName"></param>
-		/// <param name="content"></param>
-		public void AddFile(string entryName, byte[] content)
-		{
-			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
-			using (var stream = entry.Open())
-			{
-				stream.Write(content, 0, content.Length);
-			}
-		}
-
-		/// <summary>
 		///     Adds a new file to the plugin package.
 		/// </summary>
 		/// <param name="entryName"></param>
 		/// <param name="content"></param>
 		public void AddFile(string entryName, Stream content)
 		{
+			Log.InfoFormat("Adding file '{0}'...", entryName);
+
 			PeHeader header;
 			PortableExecutable.TryReadHeader(content, out header, leaveOpen: true);
 			content.Position = 0;
@@ -168,6 +145,8 @@ namespace Tailviewer.Archiver.Plugins
 		/// <param name="icon"></param>
 		public void SetIcon(Stream icon)
 		{
+			Log.InfoFormat("Adding icon...");
+
 			using (var image = new Bitmap(icon))
 			{
 				// TODO: Include rescaling the icon if we don't like its size...
@@ -235,6 +214,20 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <summary>
+		///     Adds a new file to the  plugin package.
+		/// </summary>
+		/// <param name="entryName"></param>
+		/// <param name="content"></param>
+		private void AddFile(string entryName, byte[] content)
+		{
+			var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
+			using (var stream = entry.Open())
+			{
+				stream.Write(content, 0, content.Length);
+			}
+		}
+
+		/// <summary>
 		/// Parses the .NET version from the given attribute name.
 		/// </summary>
 		/// <param name="targetFramework"></param>
@@ -276,6 +269,12 @@ namespace Tailviewer.Archiver.Plugins
 
 		private bool ShouldAddDependency(AssemblyName dependency)
 		{
+			if (_index.Assemblies.Any(x => x.AssemblyName == dependency.Name))
+			{
+				Log.DebugFormat("Assembly '{0}' has already been added to the archive, skipping it...", dependency);
+				return false;
+			}
+
 			switch (dependency.Name)
 			{
 				case "CommandLine":
@@ -289,9 +288,11 @@ namespace Tailviewer.Archiver.Plugins
 
 				default:
 					var assembly = Assembly.Load(dependency);
-					var attribute = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false)[0] as AssemblyProductAttribute;
-					var isFrameworkAssembly = attribute != null && attribute.Product == "Microsoft® .NET Framework";
-					if (isFrameworkAssembly)
+					var attribute = assembly.GetCustomAttribute<AssemblyProductAttribute>();
+					if (attribute == null)
+						return true;
+
+					if (attribute.Product == "Microsoft® .NET Framework")
 						return false;
 
 					return true;
@@ -337,6 +338,21 @@ namespace Tailviewer.Archiver.Plugins
 					Name = pair.Key,
 					FullName = pair.Value
 				});
+			}
+		}
+
+		private void StoreIndex()
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var writer = new StreamWriter(stream, Encoding.UTF8, 4086, true))
+				{
+					var serializer = new XmlSerializer(typeof(PluginPackageIndex));
+					serializer.Serialize(writer, _index);
+				}
+
+				stream.Position = 0;
+				AddFile(PluginArchive.IndexEntryName, stream);
 			}
 		}
 

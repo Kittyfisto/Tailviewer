@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -77,5 +80,46 @@ namespace Tailviewer.Archiver.Plugins
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
 
 		IReadOnlyList<INativeImageDescription> IPluginPackageIndex.NativeImages => NativeImages;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="stream"></param>
+		public void Serialize(Stream stream)
+		{
+			using (var writer = new StreamWriter(stream, Encoding.UTF8, 4086, true))
+			{
+				var serializer = new XmlSerializer(typeof(PluginPackageIndex));
+				serializer.Serialize(writer, this);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <returns></returns>
+		public static PluginPackageIndex Deserialize(Stream stream)
+		{
+			using (var reader = new StreamReader(stream))
+			{
+				var serializer = new XmlSerializer(typeof(PluginPackageIndex));
+				return serializer.Deserialize(reader) as PluginPackageIndex;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public PluginPackageIndex Roundtrip()
+		{
+			using (var stream = new MemoryStream())
+			{
+				Serialize(stream);
+				stream.Position = 0;
+				return Deserialize(stream);
+			}
+		}
 	}
 }

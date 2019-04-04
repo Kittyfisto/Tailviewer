@@ -18,7 +18,7 @@ namespace Tailviewer.Archiver.Applications
 
 		[Option('f', "files",
 			SetName = "bylines",
-			HelpText = "Additional files to be added to the archive.")]
+			HelpText = "Additional files (including .NET assemblies) to be added to the archive.")]
 		public IEnumerable<string> Files { get; set; }
 
 		[Option('i', "icon",
