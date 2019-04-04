@@ -274,7 +274,7 @@ namespace Tailviewer.Archiver.Plugins
 		private IReadOnlyDictionary<string, string> FindSerializableTypes(string pluginPath, Assembly assembly)
 		{
 			var serializableTypes = new Dictionary<string, string>();
-			foreach (var type in assembly.ExportedTypes)
+			foreach (var type in assembly.DefinedTypes)
 			{
 				var interfaces = type.GetInterfaces();
 
@@ -293,10 +293,35 @@ namespace Tailviewer.Archiver.Plugins
 					{
 						serializableTypes.Add(name, type.FullName);
 					}
+
+					var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+					                       .Concat(type.GetConstructors(BindingFlags.NonPublic |BindingFlags.Instance)).ToList();
+					var defaultConstructor = constructors.FirstOrDefault(x => x.GetParameters().Length == 0);
+					if (defaultConstructor == null)
+					{
+						Log.ErrorFormat("The type '{0}' is missing a parameterless constructor, you must add one!", type.FullName);
+					}
+					else if (defaultConstructor.IsPrivate)
+					{
+						Log.ErrorFormat("The type '{0}' only has a private parameterless constructor, you must set it to public!", type.FullName);
+					}
+					else if (defaultConstructor.IsFamily)
+					{
+						Log.ErrorFormat("The type '{0}' only has a protected parameterless constructor, you must set it to public!", type.FullName);
+					}
+					else if (defaultConstructor.IsAssembly)
+					{
+						Log.ErrorFormat("The type '{0}' only has an internal parameterless constructor, you must set it to public!", type.FullName);
+					}
+
+					if (type.IsNotPublic)
+					{
+						Log.ErrorFormat("The type '{0}' is serializable and thus must be set to public!", type.FullName);
+					}
 				}
 				else if (interfaces.Contains(typeof(ISerializableType)))
 				{
-					Log.WarnFormat("The type '{0}' should be marked with the [DataContract] attribute!", type.FullName);
+					Log.ErrorFormat("The type '{0}' must be marked with the [DataContract] attribute!", type.FullName);
 				}
 			}
 

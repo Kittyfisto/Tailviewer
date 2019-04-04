@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using FluentAssertions;
+using log4net.Core;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Test;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -83,6 +89,195 @@ namespace Tailviewer.Archiver.Test
 			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).ShouldThrow<ArgumentException>(
 				"because we used illegal characters in that path");
 		}
+
+		#region DataContract checks
+
+		[Test]
+		public void TestReflectPluginMissingDefaultCtor()
+		{
+			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginMissingDefaultCtor");
+			var type = pluginBuilder.DefineType("SomeSerializableType", TypeAttributes.Class | TypeAttributes.Public);
+			type.AddInterfaceImplementation(typeof(ISerializableType));
+			var attribute = pluginBuilder.BuildCustomAttribute(new DataContractAttribute());
+			type.SetCustomAttribute(attribute);
+			var ctorBuilder = type.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new[] {typeof(object)});
+			var gen = ctorBuilder.GetILGenerator();
+			gen.Emit(OpCodes.Ret);
+
+			var serialize = type.DefineMethod(nameof(ISerializableType.Serialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                  CallingConventions.HasThis,
+			                                  typeof(void),
+			                                  new []{typeof(IWriter)});
+			serialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			var deserialize = type.DefineMethod(nameof(ISerializableType.Deserialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                    CallingConventions.HasThis,
+			                                    typeof(void),
+			                                    new []{typeof(IReader)});
+			deserialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			type.CreateType();
+			pluginBuilder.Save();
+
+			var scanner = new PluginAssemblyLoader();
+
+			var appender = Appender.CaptureEvents("Tailviewer.Archiver.Plugins.PluginAssemblyLoader", Level.Error);
+			scanner.ReflectPlugin(pluginBuilder.FileName);
+			appender.Events.Should().HaveCount(1, "because one serializable type is missing a parameterless constructor and this should've provoked an error");
+			var error = appender.Events.First();
+			error.RenderedMessage.Should().Contain(type.FullName);
+			error.RenderedMessage.Should().Contain("is missing a parameterless constructor, you must add one");
+		}
+
+		[Test]
+		public void TestReflectPluginProtectedDefaultCtor()
+		{
+			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginProtectedDefaultCtor");
+			var type = pluginBuilder.DefineType("SomeSerializableType", TypeAttributes.Class | TypeAttributes.Public);
+			type.AddInterfaceImplementation(typeof(ISerializableType));
+			var attribute = pluginBuilder.BuildCustomAttribute(new DataContractAttribute());
+			type.SetCustomAttribute(attribute);
+			var ctorBuilder = type.DefineConstructor(MethodAttributes.Family, CallingConventions.HasThis, new Type[0]);
+			var gen = ctorBuilder.GetILGenerator();
+			gen.Emit(OpCodes.Ret);
+
+			var serialize = type.DefineMethod(nameof(ISerializableType.Serialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                  CallingConventions.HasThis,
+			                                  typeof(void),
+			                                  new []{typeof(IWriter)});
+			serialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			var deserialize = type.DefineMethod(nameof(ISerializableType.Deserialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                    CallingConventions.HasThis,
+			                                    typeof(void),
+			                                    new []{typeof(IReader)});
+			deserialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			type.CreateType();
+			pluginBuilder.Save();
+
+			var scanner = new PluginAssemblyLoader();
+
+			var appender = Appender.CaptureEvents("Tailviewer.Archiver.Plugins.PluginAssemblyLoader", Level.Error);
+			scanner.ReflectPlugin(pluginBuilder.FileName);
+			appender.Events.Should().HaveCount(1, "because the serializable type's parameterless constructor is not publicly visible and this should have provoked an error");
+			var error = appender.Events.First();
+			error.RenderedMessage.Should().Contain(type.FullName);
+			error.RenderedMessage.Should().Contain("only has a protected parameterless constructor, you must set it to public!");
+		}
+
+		[Test]
+		public void TestReflectPluginPrivateDefaultCtor()
+		{
+			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginNonPublicDefaultCtor");
+			var type = pluginBuilder.DefineType("SomeSerializableType", TypeAttributes.Class | TypeAttributes.Public);
+			type.AddInterfaceImplementation(typeof(ISerializableType));
+			var attribute = pluginBuilder.BuildCustomAttribute(new DataContractAttribute());
+			type.SetCustomAttribute(attribute);
+			var ctorBuilder = type.DefineConstructor(MethodAttributes.Private, CallingConventions.HasThis, new Type[0]);
+			var gen = ctorBuilder.GetILGenerator();
+			gen.Emit(OpCodes.Ret);
+
+			var serialize = type.DefineMethod(nameof(ISerializableType.Serialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                  CallingConventions.HasThis,
+			                                  typeof(void),
+			                                  new []{typeof(IWriter)});
+			serialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			var deserialize = type.DefineMethod(nameof(ISerializableType.Deserialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                    CallingConventions.HasThis,
+			                                    typeof(void),
+			                                    new []{typeof(IReader)});
+			deserialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			type.CreateType();
+			pluginBuilder.Save();
+
+			var scanner = new PluginAssemblyLoader();
+
+			var appender = Appender.CaptureEvents("Tailviewer.Archiver.Plugins.PluginAssemblyLoader", Level.Error);
+			scanner.ReflectPlugin(pluginBuilder.FileName);
+			appender.Events.Should().HaveCount(1, "because the serializable type's parameterless constructor is not publicly visible and this should have provoked an error");
+			var error = appender.Events.First();
+			error.RenderedMessage.Should().Contain(type.FullName);
+			error.RenderedMessage.Should().Contain("only has a private parameterless constructor, you must set it to public!");
+		}
+
+		[Test]
+		public void TestReflectPluginInternalDefaultCtor()
+		{
+			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginInternalDefaultCtor");
+			var type = pluginBuilder.DefineType("SomeSerializableType", TypeAttributes.Class | TypeAttributes.Public);
+			type.AddInterfaceImplementation(typeof(ISerializableType));
+			var attribute = pluginBuilder.BuildCustomAttribute(new DataContractAttribute());
+			type.SetCustomAttribute(attribute);
+			var ctorBuilder = type.DefineConstructor(MethodAttributes.Assembly, CallingConventions.HasThis, new Type[0]);
+			var gen = ctorBuilder.GetILGenerator();
+			gen.Emit(OpCodes.Ret);
+
+			var serialize = type.DefineMethod(nameof(ISerializableType.Serialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                  CallingConventions.HasThis,
+			                                  typeof(void),
+			                                  new []{typeof(IWriter)});
+			serialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			var deserialize = type.DefineMethod(nameof(ISerializableType.Deserialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                    CallingConventions.HasThis,
+			                                    typeof(void),
+			                                    new []{typeof(IReader)});
+			deserialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			type.CreateType();
+			pluginBuilder.Save();
+
+			var scanner = new PluginAssemblyLoader();
+
+			var appender = Appender.CaptureEvents("Tailviewer.Archiver.Plugins.PluginAssemblyLoader", Level.Error);
+			scanner.ReflectPlugin(pluginBuilder.FileName);
+			appender.Events.Should().HaveCount(1, "because the serializable type's parameterless constructor is not publicly visible and this should have provoked an error");
+			var error = appender.Events.First();
+			error.RenderedMessage.Should().Contain(type.FullName);
+			error.RenderedMessage.Should().Contain("only has an internal parameterless constructor, you must set it to public!");
+		}
+
+		[Test]
+		public void TestReflectPluginNonPublicSerializableType()
+		{
+			var pluginBuilder = new PluginBuilder("Kittyfisto", "Test", "TestReflectPluginNonPublicSerializableType");
+			var type = pluginBuilder.DefineType("SomeSerializableType", TypeAttributes.Class | TypeAttributes.NotPublic);
+			type.AddInterfaceImplementation(typeof(ISerializableType));
+			var attribute = pluginBuilder.BuildCustomAttribute(new DataContractAttribute());
+			type.SetCustomAttribute(attribute);
+			var ctorBuilder = type.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new Type[0]);
+			var gen = ctorBuilder.GetILGenerator();
+			gen.Emit(OpCodes.Ret);
+
+			var serialize = type.DefineMethod(nameof(ISerializableType.Serialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                  CallingConventions.HasThis,
+			                                  typeof(void),
+			                                  new []{typeof(IWriter)});
+			serialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			var deserialize = type.DefineMethod(nameof(ISerializableType.Deserialize), MethodAttributes.Public | MethodAttributes.Virtual,
+			                                    CallingConventions.HasThis,
+			                                    typeof(void),
+			                                    new []{typeof(IReader)});
+			deserialize.GetILGenerator().Emit(OpCodes.Ret);
+
+			type.CreateType();
+			pluginBuilder.Save();
+
+			var scanner = new PluginAssemblyLoader();
+
+			var appender = Appender.CaptureEvents("Tailviewer.Archiver.Plugins.PluginAssemblyLoader", Level.Error);
+			scanner.ReflectPlugin(pluginBuilder.FileName);
+			appender.Events.Should().HaveCount(1, "because the serializable type's parameterless constructor is not publicly visible and this should have provoked an error");
+			var error = appender.Events.First();
+			error.RenderedMessage.Should().Contain(type.FullName);
+			error.RenderedMessage.Should().Contain("must be set to public!");
+		}
+
+		#endregion
 
 		[Test]
 		public void TestReflectPlugins()

@@ -146,10 +146,11 @@ namespace Tailviewer.Archiver.Test
 		[Description("https://github.com/Kittyfisto/Tailviewer/issues/179")]
 		public void TestAddSameAssemblyTwice()
 		{
+			var directory = Directory.GetCurrentDirectory();
 			var aFileName = "A.dll";
-			var aFilePath = Path.Combine(Directory.GetCurrentDirectory(), aFileName);
+			var aFilePath = Path.Combine(directory, aFileName);
 			var bFileName = "B.dll";
-			var bFilePath = Path.Combine(Directory.GetCurrentDirectory(), bFileName);
+			var bFilePath = Path.Combine(directory, bFileName);
 			using (var packer = CreatePacker(_fname))
 			{
 				var aBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("A"), AssemblyBuilderAccess.Save);

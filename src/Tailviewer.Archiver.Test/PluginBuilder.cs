@@ -40,6 +40,7 @@ namespace Tailviewer.Archiver.Test
 			_module = _assembly.DefineDynamicModule(pluginName, _fileName);
 
 			_dependencies = new List<string>();
+			new List<TypeBuilder>();
 			_referencer = _module.DefineType("HoldsReferences", TypeAttributes.Class | TypeAttributes.Public);
 		}
 
@@ -206,6 +207,29 @@ namespace Tailviewer.Archiver.Test
 			var ctors = type.GetConstructors();
 			var builder = new CustomAttributeBuilder(ctors.First(), parameters);
 			return builder;
+		}
+
+		public TypeBuilder DefineType(string name, TypeAttributes attr)
+		{
+			return _module.DefineType(name, attr);
+		}
+
+		public CustomAttributeBuilder BuildCustomAttribute(Attribute attribute)
+		{
+			Type type = attribute.GetType();
+			var constructor = type.GetConstructor(Type.EmptyTypes);
+			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanRead && x.CanWrite).ToArray();
+			var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(x => !x.IsInitOnly).ToArray();
+
+			var propertyValues = properties.Select(x => x.GetValue(attribute, null)).ToList();
+			var fieldValues = fields.Select(x => x.GetValue(attribute)).ToList();
+
+			return new CustomAttributeBuilder(constructor, 
+			                                  Type.EmptyTypes,
+			                                  properties,
+			                                  propertyValues.ToArray(),
+			                                  fields,
+			                                  fieldValues.ToArray());
 		}
 	}
 }

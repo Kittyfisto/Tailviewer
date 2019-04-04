@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="AbstractIdTest.cs" />
     <Compile Include="AnalysisIdTest.cs" />
+    <Compile Include="Appender.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
