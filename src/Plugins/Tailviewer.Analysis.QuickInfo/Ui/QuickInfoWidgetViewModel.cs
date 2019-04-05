@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Analysis.QuickInfo.BusinessLogic;
@@ -25,12 +26,21 @@ namespace Tailviewer.Analysis.QuickInfo.Ui
 			IDataSourceAnalyser dataSourceAnalyser)
 			: base(template, dataSourceAnalyser)
 		{
-			_viewConfiguration = template.Configuration as QuickInfoWidgetConfiguration;
-			_analyserConfiguration = AnalyserConfiguration as QuickInfoAnalyserConfiguration;
+			_viewConfiguration = template.Configuration as QuickInfoWidgetConfiguration ?? new QuickInfoWidgetConfiguration();
+			_analyserConfiguration = AnalyserConfiguration as QuickInfoAnalyserConfiguration ?? new QuickInfoAnalyserConfiguration();
 
 			_quickInfosById = new Dictionary<Guid, QuickInfoViewModel>();
 			_quickInfos = new ObservableCollection<QuickInfoViewModel>();
 			_addQuickInfoCommand = new DelegateCommand2(AddQuickInfo);
+
+			foreach (var quickInfo in _viewConfiguration.Titles)
+			{
+				var analysis = _analyserConfiguration.QuickInfos.FirstOrDefault(x => x.Id == quickInfo.Id);
+				if (analysis != null)
+				{
+					AddQuickInfo(quickInfo.Id, quickInfo, analysis);
+				}
+			}
 
 			PropertyChanged += OnPropertyChanged;
 		}
@@ -53,12 +63,20 @@ namespace Tailviewer.Analysis.QuickInfo.Ui
 			var id = Guid.NewGuid();
 			var viewConfig = new QuickInfoViewConfiguration(id);
 			var analyserConfig = new QuickInfoConfiguration(id);
+			AddQuickInfo(id, viewConfig, analyserConfig);
+
+			_viewConfiguration.Add(viewConfig);
+			_analyserConfiguration.Add(analyserConfig);
+
+			EmitTemplateModified();
+		}
+
+		private void AddQuickInfo(Guid id, QuickInfoViewConfiguration viewConfig, QuickInfoConfiguration analyserConfig)
+		{
 			var viewModel = new QuickInfoViewModel(id, viewConfig, analyserConfig);
 			viewModel.OnRemoved += OnQuickInfoRemoved;
 			viewModel.IsEditing = IsEditing;
 
-			_viewConfiguration.Add(viewConfig);
-			_analyserConfiguration.Add(analyserConfig);
 			_quickInfosById.Add(id, viewModel);
 			_quickInfos.Add(viewModel);
 		}
