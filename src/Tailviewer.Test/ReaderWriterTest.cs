@@ -541,13 +541,13 @@ namespace Tailviewer.Test
 		private Reader CloseAndRead()
 		{
 			_writer.Dispose();
-			_stream.Position = 0;
 
+			/*_stream.Position = 0;
 			using (var tmp = new StreamReader(_stream, Encoding.UTF8, true, 4096, true))
 			{
 				var document = tmp.ReadToEnd();
 				Console.WriteLine(document);
-			}
+			}*/
 
 			_stream.Position = 0;
 			var reader = new Reader(_stream, _typeFactory);

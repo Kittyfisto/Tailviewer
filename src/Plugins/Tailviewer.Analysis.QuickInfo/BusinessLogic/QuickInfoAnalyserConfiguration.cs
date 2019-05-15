@@ -24,9 +24,14 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 
 		public IEnumerable<QuickInfoConfiguration> QuickInfos => _quickInfos.Values;
 
-		public object Clone()
+		public QuickInfoAnalyserConfiguration Clone()
 		{
 			return new QuickInfoAnalyserConfiguration(_quickInfos?.ToDictionary(x => x.Key, x => x.Value?.Clone()));
+		}
+
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 
 		public bool IsEquivalent(ILogAnalyserConfiguration other)

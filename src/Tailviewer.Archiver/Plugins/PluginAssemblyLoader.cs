@@ -82,21 +82,22 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <inheritdoc />
-		public override T Load<T>(IPluginDescription description)
+		public override T Load<T>(IPluginDescription plugin,
+		                          IPluginImplementationDescription implementation)
 		{
-			if (description == null)
-				throw new ArgumentNullException(nameof(description));
-
-			var assembly = Assembly.LoadFrom(description.FilePath);
-			var implementationDescription = description.PluginImplementations[typeof(T)];
-			var implementation = assembly.GetType(implementationDescription.FullTypeName);
+			if (plugin == null)
+				throw new ArgumentNullException(nameof(plugin));
 			if (implementation == null)
-				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
-					description.FilePath,
-					implementationDescription));
+				throw new ArgumentNullException(nameof(implementation));
 
-			var plugin = (T) Activator.CreateInstance(implementation);
-			return plugin;
+			var assembly = Assembly.LoadFrom(plugin.FilePath);
+			var type = assembly.GetType(implementation.FullTypeName);
+			if (type == null)
+				throw new ArgumentException(string.Format("Plugin '{0}' does not define a type named '{1}'",
+				                                          plugin.FilePath,
+				                                          implementation));
+
+			return (T) Activator.CreateInstance(type);
 		}
 
 		/// <summary>
@@ -259,13 +260,13 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		/// <param name="assembly"></param>
 		/// <returns></returns>
-		private IReadOnlyDictionary<Type, IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
+		private IReadOnlyList<IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
 		{
-			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
+			var plugins = new List<IPluginImplementationDescription>();
 			foreach (var type in assembly.ExportedTypes)
 			foreach (var @interface in PluginInterfaces)
 				if (type.GetInterface(@interface.FullName) != null)
-					plugins.Add(@interface, new PluginImplementationDescription(type.FullName , @interface));
+					plugins.Add(new PluginImplementationDescription(type.FullName , @interface));
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;
@@ -274,7 +275,7 @@ namespace Tailviewer.Archiver.Plugins
 		private IReadOnlyDictionary<string, string> FindSerializableTypes(string pluginPath, Assembly assembly)
 		{
 			var serializableTypes = new Dictionary<string, string>();
-			foreach (var type in assembly.ExportedTypes)
+			foreach (var type in assembly.DefinedTypes)
 			{
 				var interfaces = type.GetInterfaces();
 
@@ -293,10 +294,35 @@ namespace Tailviewer.Archiver.Plugins
 					{
 						serializableTypes.Add(name, type.FullName);
 					}
+
+					var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+					                       .Concat(type.GetConstructors(BindingFlags.NonPublic |BindingFlags.Instance)).ToList();
+					var defaultConstructor = constructors.FirstOrDefault(x => x.GetParameters().Length == 0);
+					if (defaultConstructor == null)
+					{
+						Log.ErrorFormat("The type '{0}' is missing a parameterless constructor, you must add one!", type.FullName);
+					}
+					else if (defaultConstructor.IsPrivate)
+					{
+						Log.ErrorFormat("The type '{0}' only has a private parameterless constructor, you must set it to public!", type.FullName);
+					}
+					else if (defaultConstructor.IsFamily)
+					{
+						Log.ErrorFormat("The type '{0}' only has a protected parameterless constructor, you must set it to public!", type.FullName);
+					}
+					else if (defaultConstructor.IsAssembly)
+					{
+						Log.ErrorFormat("The type '{0}' only has an internal parameterless constructor, you must set it to public!", type.FullName);
+					}
+
+					if (type.IsNotPublic)
+					{
+						Log.ErrorFormat("The type '{0}' is serializable and thus must be set to public!", type.FullName);
+					}
 				}
 				else if (interfaces.Contains(typeof(ISerializableType)))
 				{
-					Log.WarnFormat("The type '{0}' should be marked with the [DataContract] attribute!", type.FullName);
+					Log.ErrorFormat("The type '{0}' must be marked with the [DataContract] attribute!", type.FullName);
 				}
 			}
 

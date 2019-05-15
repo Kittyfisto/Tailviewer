@@ -51,5 +51,24 @@ namespace Tailviewer.Analysis.QuickInfo.Test.BusinessLogic
 			actualConfig.QuickInfos.First().FilterValue.Should().Be("ERROR: ");
 			actualConfig.QuickInfos.First().MatchType.Should().Be(FilterMatchType.TimeFilter);
 		}
+
+		[Test]
+		public void TestCloneOneQuickInfo()
+		{
+			var config = new QuickInfoAnalyserConfiguration();
+			var id = Guid.NewGuid();
+			config.Add(new QuickInfoConfiguration(id)
+			{
+				FilterValue = "ERROR: ",
+				MatchType = FilterMatchType.TimeFilter
+			});
+
+			var actualConfig = config.Clone();
+			actualConfig.Should().NotBeNull();
+			actualConfig.QuickInfos.Should().HaveCount(1);
+			actualConfig.QuickInfos.First().Id.Should().Be(id);
+			actualConfig.QuickInfos.First().FilterValue.Should().Be("ERROR: ");
+			actualConfig.QuickInfos.First().MatchType.Should().Be(FilterMatchType.TimeFilter);
+		}
 	}
 }

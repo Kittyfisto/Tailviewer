@@ -153,12 +153,6 @@ namespace Tailviewer.Test.BusinessLogic
 		}
 
 		[Test]
-		public void TestSize()
-		{
-			Console.WriteLine("sizeof(LogLine): {0} bytes", Marshal.SizeOf<LogLine>());
-		}
-
-		[Test]
 		public void TestToString1()
 		{
 			var line = new LogLine(1, 2, 3, new LogLineSourceId(4), "foobar", LevelFlags.Trace, null, 0);

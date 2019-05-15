@@ -111,7 +111,7 @@ namespace Tailviewer.Archiver.Plugins
 					{
 						Id = _id,
 						Error = "The plugin couldn't be loaded",
-						PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>(),
+						PluginImplementations = new IPluginImplementationDescription[0]
 					};
 					var plugin = compatiblePlugins.First(); //< Never empty: we have at least 1 plugin
 					_selectedPlugin.FilePath = plugin.FilePath;
@@ -128,7 +128,7 @@ namespace Tailviewer.Archiver.Plugins
 				{
 					Id = _id,
 					Error = "The plugin couldn\'t be loaded",
-					PluginImplementations = new Dictionary<Type, IPluginImplementationDescription>(),
+					PluginImplementations = new IPluginImplementationDescription[0]
 				};
 
 				if (_pluginsByVersion.Any()) //< Might be empty
@@ -148,27 +148,29 @@ namespace Tailviewer.Archiver.Plugins
 			if (preferredPlugin == null)
 				return Enumerable.Empty<T>();
 
-			if (!preferredPlugin.PluginImplementations.TryGetValue(typeof(T), out var interfaceImplementation))
-				return Enumerable.Empty<T>();
-
-			try
+			var types = new List<T>();
+			foreach (var implementation in preferredPlugin.PluginImplementations)
 			{
-				var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
-				var type = assembly.GetType(interfaceImplementation.FullTypeName);
-				var pluginObject = Activator.CreateInstance(type);
-				return new []
+				if (implementation.InterfaceType == typeof(T))
 				{
-					(T) pluginObject
-				};
+					try
+					{
+						var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
+						var type = assembly.GetType(implementation.FullTypeName);
+						var pluginObject = Activator.CreateInstance(type);
+						types.Add((T) pluginObject);
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
+						                typeof(T).FullName,
+						                preferredPlugin,
+						                e);
+					}
+				}
 			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-				                typeof(T).FullName,
-				                preferredPlugin,
-				                e);
-				return Enumerable.Empty<T>();
-			}
+
+			return types;
 		}
 
 		/// <summary>
@@ -328,12 +330,15 @@ namespace Tailviewer.Archiver.Plugins
 
 			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out var website);
 
-			var plugins = new Dictionary<Type, IPluginImplementationDescription>();
+			var plugins = new List<IPluginImplementationDescription>();
 			foreach (var description in archiveIndex.ImplementedPluginInterfaces)
 			{
 				var pluginInterfaceType = ResolvePluginInterface(description);
 				if (pluginInterfaceType != null)
-					plugins.Add(pluginInterfaceType, new PluginImplementationDescription(description));
+					plugins.Add(new PluginImplementationDescription(description)
+					{
+						InterfaceType = pluginInterfaceType
+					});
 				else
 					Log.WarnFormat("Plugin implements unknown interface '{0}', skipping it...",
 					               description.InterfaceTypename);

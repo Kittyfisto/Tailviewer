@@ -8,7 +8,7 @@ using Tailviewer.Core;
 namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 {
 	[TestFixture]
-	public sealed class QuickInfoViewConfigurationTest
+	public sealed class QuickInfoWidgetConfigurationTest
 	{
 		[Test]
 		public void TestConstruction()

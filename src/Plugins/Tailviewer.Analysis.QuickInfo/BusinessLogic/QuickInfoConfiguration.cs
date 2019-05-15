@@ -44,6 +44,7 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 		{
 			return new QuickInfoConfiguration
 			{
+				_id = _id,
 				FilterValue = FilterValue,
 				MatchType = MatchType
 			};

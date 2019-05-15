@@ -30,7 +30,7 @@ namespace Tailviewer.Core.Analysis
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 
 			_dataSourceAnalyser = dataSourceAnalyser;
-			AnalyserConfiguration = dataSourceAnalyser.Configuration?.Clone() as ILogAnalyserConfiguration;
+			AnalyserConfiguration = CloneConfiguration(dataSourceAnalyser);
 			Template = template;
 			CanBeEdited = AnalyserConfiguration != null && !dataSourceAnalyser.IsFrozen;
 		}

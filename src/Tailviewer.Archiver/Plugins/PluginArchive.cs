@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -71,11 +70,9 @@ namespace Tailviewer.Archiver.Plugins
 				throw new CorruptPluginException(string.Format("Plugin is missing {0}", IndexEntryName));
 
 			using (var stream = index.Open())
-			using (var reader = new StreamReader(stream))
 			{
-				var serializer = new XmlSerializer(typeof(PluginPackageIndex));
 				sw.Restart();
-				_index = serializer.Deserialize(reader) as PluginPackageIndex;
+				_index = PluginPackageIndex.Deserialize(stream);
 			}
 			sw.Stop();
 			Console.WriteLine("Deserialize index: {0}ms", sw.ElapsedMilliseconds);

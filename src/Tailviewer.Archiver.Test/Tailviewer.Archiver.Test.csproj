@@ -56,6 +56,7 @@
     <Reference Include="System.Extensions, Version=1.1.39.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Extensions.1.1.39\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
@@ -63,9 +64,11 @@
   <ItemGroup>
     <Compile Include="AbstractPluginTest.cs" />
     <Compile Include="AggregatedPluginLoaderTest.cs" />
+    <Compile Include="AssemblySetup.cs" />
     <Compile Include="PluginArchiveLoaderTest.cs" />
     <Compile Include="PluginArchiveTest.cs" />
     <Compile Include="PluginAssemblyLoaderTest.cs" />
+    <Compile Include="PluginBuilder.cs" />
     <Compile Include="PluginCacheTest.cs" />
     <Compile Include="Plugins\Description\PluginDescriptionTest.cs" />
     <Compile Include="PluginPackerTest.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="Plugins\PluginGroupTest.cs" />
     <Compile Include="Plugins\PluginIdTest.cs" />
     <Compile Include="PluginRegistryTest.cs" />
+    <Compile Include="Plugins\PluginPackageIndexTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +92,10 @@
     <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
       <Project>{c667eb8a-6781-4623-ac7c-d3fba2f6e7d4}</Project>
       <Name>Tailviewer.Archiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Test\Tailviewer.Test.csproj">
+      <Project>{284845FB-EFF7-434E-9006-E789AB95F2F2}</Project>
+      <Name>Tailviewer.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
       <Project>{799F74C7-6DE8-455D-936D-E11D7525AB36}</Project>

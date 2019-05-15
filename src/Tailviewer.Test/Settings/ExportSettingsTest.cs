@@ -41,7 +41,7 @@ namespace Tailviewer.Test.Settings
 				}
 
 				stream.Position = 0;
-				Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+				//Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
 				using (var reader = XmlReader.Create(stream))
 				{
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.Settings
 				}
 
 				stream.Position = 0;
-				Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+				//Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
 				using (var reader = XmlReader.Create(stream))
 				{
