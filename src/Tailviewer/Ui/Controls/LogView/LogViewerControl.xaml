@@ -45,7 +45,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <WrapPanel Orientation="Horizontal" Margin="8">
+        <WrapPanel Orientation="Horizontal" Margin="0">
             <controls:FolderOpenButton Margin="0,0,0,4"
                                        Padding="0"
                                        Width="26"
