@@ -12,24 +12,14 @@
                     <Border Background="{TemplateBinding Background}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
                                 <ColumnDefinition Width="48" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Border Background="White">
-                                <ContentPresenter x:Name="PART_Content"
-                                                  Content="{TemplateBinding DisplayedPanel}"
-                                                  HorizontalAlignment="Right"
-                                                  Width="300">
-                                    <ContentPresenter.LayoutTransform>
-                                        <ScaleTransform ScaleX="0" />
-                                    </ContentPresenter.LayoutTransform>
-                                </ContentPresenter>
-                            </Border>
 
                             <ItemsControl ItemsSource="{TemplateBinding SidePanels}"
                                           FocusVisualStyle="{x:Null}"
-                                          Grid.Column="1">
+                                         >
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
                                         <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -57,6 +47,18 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
+                            <Border Background="White" Grid.Column="1">
+                                <ContentPresenter x:Name="PART_Content"
+                                                  
+                                                  Content="{TemplateBinding DisplayedPanel}"
+                                                  HorizontalAlignment="Left"
+                                                  Width="300">
+                                    <ContentPresenter.LayoutTransform>
+                                        <ScaleTransform ScaleX="0" />
+                                    </ContentPresenter.LayoutTransform>
+                                </ContentPresenter>
+                            </Border>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
