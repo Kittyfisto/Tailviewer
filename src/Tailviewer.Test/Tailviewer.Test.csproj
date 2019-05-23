@@ -242,7 +242,7 @@
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
     <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="FileLogger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />
     <Compile Include="Ui\Controls\LogViewerControlTest.cs" />
@@ -275,6 +275,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <Content Include="TestData\20Mb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Multiline\Log1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\Multiline\Log2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt">

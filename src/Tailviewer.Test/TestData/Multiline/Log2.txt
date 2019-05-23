@@ -1,0 +1,5 @@
+18/03/2019 14:09:54:176    1 Information BTPVM3372 05:30:00 6060
+18/03/2019  14:09:54:178    1 Information   Loading preferences Started
+BTPVM3372 05:30:00 6060
+18/03/2019  14:09:54:550    1 Information    RMClientURL: BTPVM3372 05:30:00
+6060

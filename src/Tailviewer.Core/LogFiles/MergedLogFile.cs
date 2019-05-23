@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -167,6 +169,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				GetIndices(section, (LogLineIndex[]) (object) buffer, destinationIndex);
 			}
+			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			{
+				GetLogEntryIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
+			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
@@ -209,6 +215,10 @@ namespace Tailviewer.Core.LogFiles
 			         Equals(column, LogFileColumns.OriginalIndex))
 			{
 				GetIndices(indices, (LogLineIndex[]) (object) buffer, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			{
+				GetLogEntryIndices(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
@@ -365,6 +375,25 @@ namespace Tailviewer.Core.LogFiles
 					else
 					{
 						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetLogEntryIndices(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = _indices[index.Value].MergedLogEntryIndex;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogEntryIndex.Invalid;
 					}
 				}
 			}

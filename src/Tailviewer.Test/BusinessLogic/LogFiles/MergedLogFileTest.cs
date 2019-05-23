@@ -372,6 +372,38 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestMergeMultiline4()
+		{
+			var source = new InMemoryLogFile();
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
+
+			source.AddMultilineEntry(LevelFlags.None, new DateTime(2017, 12, 3, 11, 59, 30), new []
+			{
+				"2017-12-03 11:59:30 Hello, ",
+				"World!"
+			});
+			_taskScheduler.RunOnce();
+
+			merged.Count.Should().Be(2);
+
+			var entries = merged.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
+				new ILogFileColumn[]
+				{
+					LogFileColumns.LineNumber, LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp,
+					LogFileColumns.RawContent
+				});
+			var line = entries[0];
+			line.GetValue(LogFileColumns.LineNumber).Should().Be(1);
+			line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(0);
+			line.RawContent.Should().Be("2017-12-03 11:59:30 Hello, ");
+
+			line = entries[1];
+			line.GetValue(LogFileColumns.LineNumber).Should().Be(2);
+			line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(0);
+			line.RawContent.Should().Be("World!");
+		}
+
+		[Test]
 		[Ignore("Not yet implemented")]
 		[Description("Verifies that changes from many sources are batched together")]
 		public void TestManySources1()

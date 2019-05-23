@@ -123,8 +123,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			try
 			{
-				Result = _analyser.Result;
-				Progress = _analyser.Progress;
+				if (_analyser != null)
+				{
+					Result = _analyser.Result;
+					Progress = _analyser.Progress;
+				}
+				else
+				{
+					Result = null;
+					Progress = Percentage.HundredPercent;
+				}
 			}
 			catch (Exception e)
 			{

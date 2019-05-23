@@ -117,6 +117,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="section"></param>
 		/// <param name="columns"></param>
 		/// <returns></returns>
+		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection section, params ILogFileColumn[] columns)
 		{
 			var buffer = new LogEntryBuffer(section.Count, columns);
@@ -132,6 +133,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="section"></param>
 		/// <param name="columns"></param>
 		/// <returns></returns>
+		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection section, IEnumerable<ILogFileColumn> columns)
 		{
 			var buffer = new LogEntryBuffer(section.Count, columns);
@@ -163,9 +165,10 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="indices"></param>
 		/// <param name="columns"></param>
 		/// <returns></returns>
+		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, params ILogFileColumn[] columns)
 		{
-			var buffer = new LogEntryBuffer(indices.Count);
+			var buffer = new LogEntryBuffer(indices.Count, columns);
 			logFile.GetEntries(indices, buffer);
 			return buffer;
 		}
@@ -178,6 +181,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="indices"></param>
 		/// <param name="columns"></param>
 		/// <returns></returns>
+		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, IEnumerable<ILogFileColumn> columns)
 		{
 			var buffer = new LogEntryBuffer(indices.Count);

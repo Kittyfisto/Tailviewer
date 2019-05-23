@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
@@ -18,6 +19,7 @@ namespace Tailviewer.Core.LogFiles
 	///     Responsible for scanning and reading the content of a file on disk, forwarding
 	///     them to its <see cref="ILogFileListener"/>s.
 	/// </summary>
+	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class TextLogFile
 		: AbstractLogFile
 	{
@@ -224,6 +226,10 @@ namespace Tailviewer.Core.LogFiles
 				{
 					GetIndex(indices, (LogLineIndex[])(object)buffer, destinationIndex);
 				}
+				else if (Equals(column, LogFileColumns.LogEntryIndex))
+				{
+					GetIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
+				}
 				else if (Equals(column, LogFileColumns.LineNumber) ||
 				         Equals(column, LogFileColumns.OriginalLineNumber))
 				{
@@ -251,7 +257,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 				else if (Equals(column, LogFileColumns.RawContent))
 				{
-					throw new NotImplementedException();
+					GetRawContent(indices, (string[])(object)buffer, destinationIndex);
 				}
 				else
 				{
@@ -476,7 +482,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-		
+
 		private void GetIndex(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
 		{
 			lock (_syncRoot)
@@ -629,34 +635,39 @@ namespace Tailviewer.Core.LogFiles
 
 				if (timestamp != null)
 				{
-					var lastModified = _properties.GetValue(LogFileProperties.LastModified);
-					var difference = timestamp - lastModified;
-					if (difference >= TimeSpan.FromSeconds(10))
-					{
-						// I've had this issue occur on one system and I can't really explain it.
-						// For some reason, new FileInfo(...).LastWriteTime will not give correct
-						// results when we can see that the bloody file is being written to as we speak.
-						// As a work around, we'll just use the timestamp of the log file as lastModifed
-						// if that happens to be newer.
-						//
-						// This might be related to files being consumed from a network share. Anyways,
-						// this quick fix should improve user feedback...
-						if (!_loggedTimestampWarning)
-						{
-							Log.InfoFormat(
-								"FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
-								lastModified,
-								timestamp
-							);
-							_loggedTimestampWarning = true;
-						}
-
-						_properties.SetValue(LogFileProperties.LastModified, timestamp.Value);
-					}
+					UpdateLastModifiedIfNecessary(timestamp.Value);
 				}
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
+		}
+
+		private void UpdateLastModifiedIfNecessary(DateTime timestamp)
+		{
+			var lastModified = _properties.GetValue(LogFileProperties.LastModified);
+			var difference = timestamp - lastModified;
+			if (difference >= TimeSpan.FromSeconds(10))
+			{
+				// I've had this issue occur on one system and I can't really explain it.
+				// For some reason, new FileInfo(...).LastWriteTime will not give correct
+				// results when we can see that the bloody file is being written to as we speak.
+				// As a work around, we'll just use the timestamp of the log file as lastModifed
+				// if that happens to be newer.
+				//
+				// This might be related to files being consumed from a network share. Anyways,
+				// this quick fix should improve user feedback...
+				if (!_loggedTimestampWarning)
+				{
+					Log.InfoFormat(
+						"FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
+						lastModified,
+						timestamp
+					);
+					_loggedTimestampWarning = true;
+				}
+
+				_properties.SetValue(LogFileProperties.LastModified, timestamp);
+			}
 		}
 
 		[Pure]

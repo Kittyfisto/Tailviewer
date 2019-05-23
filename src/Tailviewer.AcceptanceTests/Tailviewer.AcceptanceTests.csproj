@@ -91,6 +91,8 @@
     <Compile Include="BusinessLogic\DataSources\SingleDataSourceRealTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredAndMergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.CustomTimestampParser.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />

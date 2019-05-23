@@ -263,5 +263,43 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return Index + index;
 			}
 		}
+
+		/// <summary>
+		/// Splits up this section into multiple ones if it:
+		/// - Is neither reset, nor invalidates
+		/// - Appends more than the given amount of rows
+		/// </summary>
+		/// <param name="maxCount"></param>
+		/// <returns></returns>
+		public IEnumerable<LogFileSection> Split(int maxCount)
+		{
+			if (maxCount <= 0)
+				throw new ArgumentException("You need to specify a maximum count greater than 0!");
+
+			if (IsInvalidate || IsReset || Count == 0)
+			{
+				return new[] {this};
+			}
+
+			return SplitAppend(maxCount);
+		}
+
+		private IEnumerable<LogFileSection> SplitAppend(int maxCount)
+		{
+			var nextIndex = Index;
+			var remainingCount = Count;
+			while (remainingCount > maxCount)
+			{
+				yield return new LogFileSection(nextIndex, maxCount);
+
+				nextIndex += maxCount;
+				remainingCount -= maxCount;
+			}
+
+			if (remainingCount > 0)
+			{
+				yield return new LogFileSection(nextIndex, remainingCount);
+			}
+		}
 	}
 }

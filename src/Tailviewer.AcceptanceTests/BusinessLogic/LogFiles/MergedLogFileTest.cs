@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using FluentAssertions;
+using log4net.Core;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
@@ -177,6 +180,86 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				               .Be(new LogLine(18, 18, 18, new LogLineSourceId(1),
 				                               @"2016-02-17 22:57:59,864 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one",
 				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 864)));
+			}
+		}
+
+		[Test]
+		[Repeat(10)]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/182")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/183")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/185")]
+		[Description("Verifies that TextLogFile, MultiLineLogFile and MergedLogFile work in conjunction to produce a merged log file of two source files")]
+		public void TestMultilineNoLogLevels()
+		{
+			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel2, new CustomTimestampParser()))
+			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
+			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
+			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
+			{
+				merged.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(10)).BeTrue();
+				var entries = merged.GetEntries(new LogFileSection(0, 11),
+				                                LogFileColumns.Timestamp,
+				                                LogFileColumns.LogEntryIndex,
+				                                LogFileColumns.LineNumber,
+				                                LogFileColumns.RawContent);
+
+				var line = entries[0];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 176));
+				line.RawContent.Should().Be("18/03/2019 14:09:54:176    1 Information BTPVM3372 05:30:00 6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(0));
+
+				line = entries[1];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.RawContent.Should()
+				    .Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(1));
+
+				line = entries[2];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.RawContent.Should().Be("Started BTPVM3372 05:30:00 6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(1));
+
+				line = entries[3];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 178));
+				line.RawContent.Should().Be("18/03/2019  14:09:54:178    1 Information   Loading preferences Started");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(2));
+
+				line = entries[4];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 178));
+				line.RawContent.Should().Be("BTPVM3372 05:30:00 6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(2));
+
+				line = entries[5];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.RawContent.Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(3));
+
+				line = entries[6];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.RawContent.Should().Be("preferences Started BTPVM3372 05:30:00 6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(3));
+
+				line = entries[7];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 550));
+				line.RawContent.Should()
+				    .Be("18/03/2019  14:09:54:550    1 Information    RMClientURL: BTPVM3372 05:30:00");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(4));
+
+				line = entries[8];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 550));
+				line.RawContent.Should().Be("6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(4));
+
+				line = entries[9];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.RawContent.Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(5));
+
+				line = entries[10];
+				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.RawContent.Should().Be("BTPVM3372 05:30:00 6060");
+				line.LogEntryIndex.Should().Be(new LogEntryIndex(5));
 			}
 		}
 	}

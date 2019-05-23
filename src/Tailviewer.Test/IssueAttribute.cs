@@ -2,7 +2,7 @@
 
 namespace Tailviewer.Test
 {
-	[AttributeUsage(AttributeTargets.Method)]
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public sealed class IssueAttribute
 		: Attribute
 	{

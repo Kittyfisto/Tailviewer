@@ -24,6 +24,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public const string File2Entries = @"TestData\2LogEntries.txt";
 		public const string FileTestLive1 = @"TestData\TestLive1.txt";
 		public const string FileTestLive2 = @"TestData\TestLive2.txt";
+		public const string MultilineNoLogLevel1 = @"TestData\Multiline\Log1.txt";
+		public const string MultilineNoLogLevel2 = @"TestData\Multiline\Log2.txt";
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -243,7 +245,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			if (File.Exists(fname))
 				File.Delete(fname);
 
-			using (var logger = new Logger(fname))
+			using (var logger = new FileLogger(fname))
 			using (var logFile = new TextLogFile(_scheduler, fname))
 			{
 				logFile.Count.Should().Be(0);
@@ -262,7 +264,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			if (File.Exists(fname))
 				File.Delete(fname);
 
-			using (var logger = new Logger(fname))
+			using (var logger = new FileLogger(fname))
 			using (var logFile = new TextLogFile(_scheduler, fname))
 			{
 				logFile.Count.Should().Be(0);
