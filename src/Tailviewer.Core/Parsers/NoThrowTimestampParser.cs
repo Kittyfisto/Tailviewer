@@ -28,6 +28,23 @@ namespace Tailviewer.Core.Parsers
 		}
 
 		/// <inheritdoc />
+		public int MinimumLength
+		{
+			get
+			{
+				try
+				{
+					return _parser.MinimumLength;
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Caught unexpected exception: {0}", e);
+					return 0;
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
 		{
 			try

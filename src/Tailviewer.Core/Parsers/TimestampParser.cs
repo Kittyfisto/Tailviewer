@@ -15,7 +15,12 @@ namespace Tailviewer.Core.Parsers
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITimestampParser[] _subParsers;
-		private int? _dateTimeFormatIndex;
+		private readonly int _minimumLength;
+
+		/// <summary>
+		/// The parser (if any) which has been successful in the past and will be used from now on.
+		/// </summary>
+		private ITimestampParser _determinedParser;
 		private int _numExceptions;
 
 		/// <summary>
@@ -25,7 +30,14 @@ namespace Tailviewer.Core.Parsers
 			: this(
 				// The format I currently use at work - should be supported by default :P
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss,fff"),
+
+				// Request by abani1986 (https://github.com/Kittyfisto/Tailviewer/issues/182)
+				new DateTimeParser("yyyy-MM-dd HH:mm:ss:fff"),
+
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss"),
+
+				// Request by abani1986 (https://github.com/Kittyfisto/Tailviewer/issues/182)
+				new DateTimeParser("dd/MM/yyyy HH:mm:ss:fff"),
 
 				// Another one used by a colleague, well its actually nanoseconds but I can't find that format string
 				new DateTimeParser("yyyy MMM dd HH:mm:ss.fff"),
@@ -55,6 +67,18 @@ namespace Tailviewer.Core.Parsers
 				throw new ArgumentNullException(nameof(parsers));
 
 			_subParsers = parsers;
+			if (parsers.Length > 0)
+			{
+				_minimumLength = int.MaxValue;
+				foreach (var parser in parsers)
+				{
+					_minimumLength = Math.Min(_minimumLength, parser.MinimumLength);
+				}
+			}
+			else
+			{
+				_minimumLength = 0;
+			}
 		}
 
 		/// <summary>
@@ -66,6 +90,9 @@ namespace Tailviewer.Core.Parsers
 		///     The length of the expected timestamp.
 		/// </summary>
 		public int? DateTimeLength { get; private set; }
+
+		/// <inheritdoc />
+		public int MinimumLength => _minimumLength;
 
 		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
@@ -94,15 +121,14 @@ namespace Tailviewer.Core.Parsers
 
 		private bool TryParseTimestamp(string content, out DateTime timestamp)
 		{
-			if (_dateTimeFormatIndex != null && DateTimeColumn != null && DateTimeLength != null)
+			if (_determinedParser != null && DateTimeColumn != null && DateTimeLength != null)
 			{
 				var start = DateTimeColumn.Value;
 				var length = DateTimeLength.Value;
 				if (content.Length >= start + length)
 				{
 					var timestampValue = content.Substring(start, length);
-					var parser = _subParsers[_dateTimeFormatIndex.Value];
-					if (parser.TryParse(timestampValue, out timestamp))
+					if (_determinedParser.TryParse(timestampValue, out timestamp))
 						return true;
 				}
 			}
@@ -113,27 +139,29 @@ namespace Tailviewer.Core.Parsers
 
 		private void DetermineDateTimePart(string line)
 		{
-			for (var m = 0; m < _subParsers.Length; ++m)
-			for (var i = 0; i < line.Length; ++i)
-			for (var n = i; n <= line.Length; ++n)
+			foreach (var parser in _subParsers)
 			{
-				var dateTimeString = line.Substring(i, n - i);
-				try
+				for (var firstIndex = 0; firstIndex < line.Length; ++firstIndex)
+				for (var lastIndex = firstIndex + parser.MinimumLength; lastIndex <= line.Length; ++lastIndex)
 				{
-					DateTime unused;
-					if (_subParsers[m].TryParse(dateTimeString, out unused))
+					var dateTimeString = line.Substring(firstIndex, lastIndex - firstIndex);
+					try
 					{
-						var length = n - i;
-						DateTimeColumn = i;
-						DateTimeLength = length;
-						_dateTimeFormatIndex = m;
-						return;
+						DateTime unused;
+						if (parser.TryParse(dateTimeString, out unused))
+						{
+							var length = lastIndex - firstIndex;
+							DateTimeColumn = firstIndex;
+							DateTimeLength = length;
+							_determinedParser = parser;
+							return;
+						}
 					}
-				}
-				catch (Exception e)
-				{
-					++_numExceptions;
-					Log.ErrorFormat("Caught unexpected exception: {0}", e);
+					catch (Exception e)
+					{
+						++_numExceptions;
+						Log.ErrorFormat("Caught unexpected exception: {0}", e);
+					}
 				}
 			}
 		}

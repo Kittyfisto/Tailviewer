@@ -9,6 +9,11 @@ namespace Tailviewer.Core.Parsers
 	public interface ITimestampParser
 	{
 		/// <summary>
+		///     The minimum length (in characters) of the timestamp this parser is able to parse.
+		/// </summary>
+		int MinimumLength { get; }
+
+		/// <summary>
 		/// </summary>
 		/// <param name="content"></param>
 		/// <param name="timestamp"></param>

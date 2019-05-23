@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows.Navigation;
 
 namespace Tailviewer.Core.Parsers
 {
@@ -22,6 +23,15 @@ namespace Tailviewer.Core.Parsers
 		public DateTimeParser(string format)
 		{
 			_format = format;
+		}
+
+		/// <inheritdoc />
+		public int MinimumLength => _format.Length;
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return _format;
 		}
 
 		/// <inheritdoc />

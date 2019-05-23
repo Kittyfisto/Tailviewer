@@ -11,6 +11,9 @@ namespace Tailviewer.Core.Parsers
 		: ITimestampParser
 	{
 		/// <inheritdoc />
+		public int MinimumLength => 1;
+
+		/// <inheritdoc />
 		public bool TryParse(string content, out DateTime timestamp)
 		{
 			timestamp = DateTime.MinValue;

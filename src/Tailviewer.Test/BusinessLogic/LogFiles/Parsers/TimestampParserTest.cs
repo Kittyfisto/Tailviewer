@@ -204,5 +204,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			timestamp.Second.Should().Be(39);
 			timestamp.Millisecond.Should().Be(369);
 		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/182")]
+		public void TestTryParse12()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			parser
+				.TryParse(
+					"2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals",
+					out timestamp)
+				.Should()
+				.BeTrue();
+			timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+		}
 	}
 }
