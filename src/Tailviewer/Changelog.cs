@@ -47,10 +47,10 @@ namespace Tailviewer
 			AddV062();
 			AddV070();
 			AddV071();
-			AddV072();
+			AddV080();
 		}
 
-		private static void AddV072()
+		private static void AddV080()
 		{
 			var features = new string[]
 			{
@@ -59,12 +59,18 @@ namespace Tailviewer
 			{
 				"Fixed rendering very long lines",
 				"Fixed crash starting Tailviewer",
-				"Merged data source appear in data source quick chooser (ctrl+t)"
+				"Merged data source appear in data source quick chooser (ctrl+t)",
+				"Plugin archiver no longer adds dependencies multiple times"
 			};
 			var misc = new string[]
-			{};
-			var releaseDate = new DateTime(2018, 06, 17);
-			var version = new Version(0, 7, 2);
+			{
+				"Opening the quick filter panel ensures that there is always at least one empty quick filter present for quick access",
+				"Plugins can implemented multiple interfaces at the same time",
+				"Plugins no longer need to manually declare serializable types",
+				"Plugin archiver enforces DataContract rules"
+			};
+			var releaseDate = new DateTime(2019, 05, 28);
+			var version = new Version(0, 8, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
 		}
