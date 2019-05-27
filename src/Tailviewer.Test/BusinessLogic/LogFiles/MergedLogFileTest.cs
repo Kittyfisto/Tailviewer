@@ -114,6 +114,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that disposing a removes it as listener from its sources")]
+		public void TestDispose2()
+		{
+			var source1 = new Mock<ILogFile>();
+			var source2 = new Mock<ILogFile>();
+
+			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
+			source1.Verify(x => x.AddListener(logFile, It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
+			source2.Verify(x => x.AddListener(logFile, It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
+
+			logFile.Dispose();
+			source1.Verify(x => x.RemoveListener(logFile), Times.Once, "because a merged log file is supposed to remove itself as a listener from its sources when its being disposed of");
+			source2.Verify(x => x.RemoveListener(logFile), Times.Once, "because a merged log file is supposed to remove itself as a listener from its sources when its being disposed of");
+		}
+
+		[Test]
 		[Description("Verifies that EndOfSourceReached tests if the inner sources are too")]
 		public void TestEndOfSourceReached1()
 		{

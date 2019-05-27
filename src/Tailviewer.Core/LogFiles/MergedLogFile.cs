@@ -24,6 +24,8 @@ namespace Tailviewer.Core.LogFiles
 		, IMergedLogFile
 		, ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private const int BatchSize = 1000;
 
 		private readonly List<Index> _indices;
@@ -34,6 +36,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly IReadOnlyList<ILogFile> _sources;
 		private readonly ILogFileProperties _properties;
 		private readonly object _syncRoot;
+		private readonly LogLine[] _buffer;
 		private int _maxCharactersPerLine;
 		private Percentage _progress;
 
@@ -71,6 +74,7 @@ namespace Tailviewer.Core.LogFiles
 			_syncRoot = new object();
 			_maximumWaitTime = maximumWaitTime;
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_buffer = new LogLine[BatchSize];
 
 			byte idx = 0;
 			foreach (var logFile in _sources)
@@ -81,6 +85,17 @@ namespace Tailviewer.Core.LogFiles
 				++idx;
 			}
 			StartTask();
+		}
+
+		/// <inheritdoc />
+		protected override void DisposeAdditional()
+		{
+			foreach (var source in _sources)
+			{
+				source.RemoveListener(this);
+			}
+
+			base.DisposeAdditional();
 		}
 
 		/// <inheritdoc />
@@ -144,6 +159,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("OnLogFileModified({0}, {1})", logFile, section);
+
 			_pendingModifications.Enqueue(new PendingModification(logFile, section));
 			ResetEndOfSourceReached();
 		}
@@ -541,52 +559,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 				else
 				{
-					for (var i = 0; i < modification.Section.Count; ++i)
-					{
-						var sourceIndex = modification.Section.Index + i;
-						var newLogLine = modification.LogFile.GetLine((int) sourceIndex);
-						if (newLogLine.Timestamp != null)
-						{
-							// We need to find out where this new entry (or entries) is/are to be inserted.
-							var insertionIndex = _indices.Count;
-							byte logFileIndex;
-							_logFileIndices.TryGetValue(modification.LogFile, out logFileIndex);
-							for (var n = _indices.Count - 1; n >= 0; --n)
-							{
-								var idx = _indices[n];
-								var logFile = _sources[idx.LogFileIndex];
-								var entry = logFile.GetLine(idx.SourceLineIndex);
-								if (entry.Timestamp <= newLogLine.Timestamp)
-								{
-									insertionIndex = n + 1;
-									break;
-								}
-								if (entry.Timestamp > newLogLine.Timestamp)
-									insertionIndex = n;
-							}
-
-							var mergedLogEntryIndex = GetMergedLogEntryIndex(modification.LogFile, insertionIndex, newLogLine);
-							var index = new Index((int) sourceIndex,
-								mergedLogEntryIndex,
-								newLogLine.LogEntryIndex,
-								logFileIndex);
-							if (insertionIndex < _indices.Count)
-								InvalidateOnward(insertionIndex, modification.LogFile, newLogLine);
-
-							lock (_syncRoot)
-							{
-								_indices.Insert(insertionIndex, index);
-								_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message?.Length ?? 0);
-							}
-
-							Listeners.OnRead(_indices.Count);
-
-							// There's no need to frantically update every time, but every
-							// once in a while would be nice...
-							if (i % 100 == 0)
-								UpdateProperties();
-						}
-					}
+					Append(modification.LogFile, modification.Section);
 				}
 			}
 
@@ -596,6 +569,62 @@ namespace Tailviewer.Core.LogFiles
 			SetEndOfSourceReached();
 
 			return _maximumWaitTime;
+		}
+
+		private void Append(ILogFile modifiedLogFile, LogFileSection modifiedSection)
+		{
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("Append({0}, {1})", modifiedLogFile, modifiedSection);
+
+			// We never get more lines per 'modifiedSection' than BatchSize,
+			// so our buffer is always big enough
+			modifiedLogFile.GetSection(modifiedSection, _buffer);
+			for (var i = 0; i < modifiedSection.Count; ++i)
+			{
+				var sourceIndex = modifiedSection.Index + i;
+				var newLogLine = _buffer[i];
+				if (newLogLine.Timestamp != null)
+				{
+					// We need to find out where this new entry (or entries) is/are to be inserted.
+					var insertionIndex = _indices.Count;
+					_logFileIndices.TryGetValue(modifiedLogFile, out var logFileIndex);
+					for (var n = _indices.Count - 1; n >= 0; --n)
+					{
+						var idx = _indices[n];
+						var otherLogFile = _sources[idx.LogFileIndex];
+						var entry = otherLogFile.GetLine(idx.SourceLineIndex);
+						if (entry.Timestamp <= newLogLine.Timestamp)
+						{
+							insertionIndex = n + 1;
+							break;
+						}
+
+						if (entry.Timestamp > newLogLine.Timestamp)
+							insertionIndex = n;
+					}
+
+					var mergedLogEntryIndex = GetMergedLogEntryIndex(modifiedLogFile, insertionIndex, newLogLine);
+					var index = new Index((int) sourceIndex,
+						mergedLogEntryIndex,
+						newLogLine.LogEntryIndex,
+						logFileIndex);
+					if (insertionIndex < _indices.Count)
+						InvalidateOnward(insertionIndex, modifiedLogFile, newLogLine);
+
+					lock (_syncRoot)
+					{
+						_indices.Insert(insertionIndex, index);
+						_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message?.Length ?? 0);
+					}
+
+					Listeners.OnRead(_indices.Count);
+
+					// There's no need to frantically update every time, but every
+					// once in a while would be nice...
+					if (i % 100 == 0)
+						UpdateProperties();
+				}
+			}
 		}
 
 		private void UpdateProperties()

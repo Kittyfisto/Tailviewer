@@ -217,6 +217,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("AddListener({0}, {1}, {2})", listener, maximumWaitTime, maximumLineCount);
+
 			_listeners.AddListener(listener, maximumWaitTime, maximumLineCount);
 		}
 
@@ -233,6 +236,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void RemoveListener(ILogFileListener listener)
 		{
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("RemoveListener({0})", listener);
+
 			_listeners.RemoveListener(listener);
 		}
 
@@ -415,6 +421,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("OnLogFileModified({0}, {1})", logFile, section);
+
 			_pendingSections.Enqueue(new KeyValuePair<ILogFile, LogFileSection>(logFile, section));
 		}
 	}

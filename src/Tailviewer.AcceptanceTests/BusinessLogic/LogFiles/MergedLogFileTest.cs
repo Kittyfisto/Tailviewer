@@ -226,7 +226,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				line = entries[3];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 178));
-				line.RawContent.Should().Be("18/03/2019  14:09:54:178    1 Information   Loading preferences Started");
+				line.RawContent.Should().Be("18/03/2019 14:09:54:178    1 Information   Loading preferences Started");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(2));
 				line.GetValue(LogFileColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
@@ -251,7 +251,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				line = entries[7];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 550));
 				line.RawContent.Should()
-				    .Be("18/03/2019  14:09:54:550    1 Information    RMClientURL: BTPVM3372 05:30:00");
+				    .Be("18/03/2019 14:09:54:550    1 Information    RMClientURL: BTPVM3372 05:30:00");
 				line.LogEntryIndex.Should().Be(new LogEntryIndex(4));
 				line.GetValue(LogFileColumns.OriginalDataSourceName).Should().Be(@"TestData\Multiline\Log2.txt");
 
