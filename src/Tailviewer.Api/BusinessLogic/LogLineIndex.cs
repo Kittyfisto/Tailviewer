@@ -40,6 +40,11 @@ namespace Tailviewer.BusinessLogic
 		/// </summary>
 		public bool IsInvalid => this == Invalid;
 
+		/// <summary>
+		///     Whether or not this index is valid.
+		/// </summary>
+		public bool IsValid => !IsInvalid;
+
 		/// <inheritdoc />
 		public int CompareTo(LogLineIndex other)
 		{

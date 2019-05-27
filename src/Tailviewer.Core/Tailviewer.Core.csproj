@@ -88,6 +88,11 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogFilePendingModification.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogFileIndex.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogFileSection.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="Settings\SpecialDateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />

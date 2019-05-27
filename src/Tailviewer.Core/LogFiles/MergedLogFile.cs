@@ -10,6 +10,7 @@ using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles.Merged;
 
 namespace Tailviewer.Core.LogFiles
 {
@@ -28,11 +29,11 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 1000;
 
-		private readonly List<Index> _indices;
+		private readonly List<MergedLogLineIndex> _indices;
 		private readonly IReadOnlyDictionary<ILogFile, byte> _logFileIndices;
 		private readonly TimeSpan _maximumWaitTime;
 
-		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
+		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly IReadOnlyList<ILogFile> _sources;
 		private readonly ILogFileProperties _properties;
 		private readonly object _syncRoot;
@@ -67,8 +68,8 @@ namespace Tailviewer.Core.LogFiles
 			if (sources.Length > LogLineSourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported", sources.Length));
 
 			_sources = sources;
-			_pendingModifications = new ConcurrentQueue<PendingModification>();
-			_indices = new List<Index>();
+			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
+			_indices = new List<MergedLogLineIndex>();
 			var logFileIndices = new Dictionary<ILogFile, byte>();
 			_logFileIndices = logFileIndices;
 			_syncRoot = new object();
@@ -162,7 +163,7 @@ namespace Tailviewer.Core.LogFiles
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("OnLogFileModified({0}, {1})", logFile, section);
 
-			_pendingModifications.Enqueue(new PendingModification(logFile, section));
+			_pendingModifications.Enqueue(new MergedLogFilePendingModification(logFile, section));
 			ResetEndOfSourceReached();
 		}
 
@@ -520,7 +521,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			Index idx;
+			MergedLogLineIndex idx;
 			lock (_indices)
 			{
 				idx = _indices[index];
@@ -540,7 +541,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
-			PendingModification modification;
+			MergedLogFilePendingModification modification;
 			while (_pendingModifications.TryDequeue(out modification))
 			{
 				if (token.IsCancellationRequested)
@@ -604,7 +605,7 @@ namespace Tailviewer.Core.LogFiles
 					}
 
 					var mergedLogEntryIndex = GetMergedLogEntryIndex(modifiedLogFile, insertionIndex, newLogLine);
-					var index = new Index((int) sourceIndex,
+					var index = new MergedLogLineIndex((int) sourceIndex,
 						mergedLogEntryIndex,
 						newLogLine.LogEntryIndex,
 						logFileIndex);
@@ -703,6 +704,10 @@ namespace Tailviewer.Core.LogFiles
 			// issue another modification that includes everything from the newly inserted index
 			// to the end.
 			var count = _indices.Count - insertionIndex;
+
+			if (Log.IsDebugEnabled)
+				Log.DebugFormat("InvalidateOnward({0}, {1}, {2}, count={3})", insertionIndex, source, newLogLine, count);
+
 			Listeners.Invalidate(insertionIndex, count);
 
 			// This is really interesting.
@@ -750,53 +755,6 @@ namespace Tailviewer.Core.LogFiles
 			{
 				Listeners.Reset();
 				Listeners.OnRead(_indices.Count);
-			}
-		}
-
-		/// <summary>
-		///     Represents an index in the merged data-structure.
-		///     Points towards a particular <see cref="LogLine" /> of a particular
-		///     <see cref="ILogFile" />.
-		/// </summary>
-		private struct Index
-		{
-			public readonly int OriginalLogEntryIndex;
-			public readonly int SourceLineIndex;
-			public readonly byte LogFileIndex;
-			public int MergedLogEntryIndex;
-
-			public Index(int sourceLineIndex,
-				int mergedLogEntryIndex,
-				int originalLogEntryIndex,
-				byte logFileIndex)
-			{
-				SourceLineIndex = sourceLineIndex;
-				MergedLogEntryIndex = mergedLogEntryIndex;
-				OriginalLogEntryIndex = originalLogEntryIndex;
-				LogFileIndex = logFileIndex;
-			}
-
-			public override string ToString()
-			{
-				return string.Format("SourceLineIndex: {0}, OriginalLogEntryIndex: {1}, LogFile: {2}, MergedLogEntryIndex: {3}",
-					SourceLineIndex, OriginalLogEntryIndex, LogFileIndex, MergedLogEntryIndex);
-			}
-		}
-
-		private struct PendingModification
-		{
-			public readonly ILogFile LogFile;
-			public readonly LogFileSection Section;
-
-			public PendingModification(ILogFile logFile, LogFileSection section)
-			{
-				LogFile = logFile;
-				Section = section;
-			}
-
-			public override string ToString()
-			{
-				return string.Format("{0} ({1})", Section, LogFile);
 			}
 		}
 	}

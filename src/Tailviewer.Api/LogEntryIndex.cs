@@ -43,6 +43,11 @@ namespace Tailviewer
 		public bool IsInvalid => this == Invalid;
 
 		/// <summary>
+		///     Tests if this index is not <see cref="Invalid" />.
+		/// </summary>
+		public bool IsValid => !IsInvalid;
+
+		/// <summary>
 		///     Numerically compares this index to the given one.
 		/// </summary>
 		/// <param name="other"></param>
