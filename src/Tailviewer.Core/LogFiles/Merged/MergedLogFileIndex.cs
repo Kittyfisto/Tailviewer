@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -11,8 +12,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 	/// </summary>
 	internal sealed class MergedLogFileIndex
 	{
-		private readonly ILogFile[] _sources;
 		private readonly List<MergedLogLineIndex> _indices;
+		private readonly ILogFile[] _sources;
 		private readonly object _syncRoot;
 
 		public MergedLogFileIndex(params ILogFile[] sources)
@@ -31,6 +32,33 @@ namespace Tailviewer.Core.LogFiles.Merged
 					return _indices.Count;
 				}
 			}
+		}
+
+		[Pure]
+		public IReadOnlyList<MergedLogLineIndex> Get(LogFileSection section)
+		{
+			var indices = new MergedLogLineIndex[section.Count];
+			lock (_syncRoot)
+			{
+				if (section.Index.Value < _indices.Count)
+				{
+					var count = Math.Min((section.Index + section.Count).Value, _indices.Count);
+					_indices.CopyTo(section.Index.Value, indices, 0, count);
+					for (int i = 0; i < section.Count - count; ++i)
+					{
+						indices[section.LastIndex + i] = MergedLogLineIndex.Invalid;
+					}
+				}
+				else
+				{
+					for (int i = 0; i < section.Count; ++i)
+					{
+						indices[i] = MergedLogLineIndex.Invalid;
+					}
+				}
+			}
+
+			return indices;
 		}
 
 		/// <summary>
@@ -63,24 +91,24 @@ namespace Tailviewer.Core.LogFiles.Merged
 			// the list once it is done.
 			// It will try to compress the changes to the bare minimum
 			// (which it can do if given more pending modifications at once).
-			var changes = new List<LogFileSection>(3);
+			var changes = new List<LogFileSection>(capacity: 3);
 
 			// TODO: Process invalidations
 			// TODO: Process clears
 
 			var indices = CreateIndices(pendingModifications);
 
-			bool invalidated = false;
+			var invalidated = false;
+			int invalidationIndex = -1;
 
 			lock (_syncRoot)
 			{
-				int appendStartingIndex = _indices.Count;
+				var appendStartingIndex = _indices.Count;
 
 				foreach (var index in indices)
 				{
 					var insertionIndex = FindInsertionIndexNoLock(index);
 					if (insertionIndex < _indices.Count)
-					{
 						if (!invalidated)
 						{
 							// Here's the awesome thing: We're inserting a "pre-sorted" list of indices
@@ -99,10 +127,9 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 							// There's still possible append's after this invalidation...
 							appendStartingIndex = insertionIndex;
-
+							invalidationIndex = insertionIndex;
 							invalidated = true;
 						}
-					}
 
 					_indices.Insert(insertionIndex, index);
 				}
@@ -110,6 +137,12 @@ namespace Tailviewer.Core.LogFiles.Merged
 				var appendCount2 = _indices.Count - appendStartingIndex;
 				if (appendCount2 > 0)
 					changes.Add(new LogFileSection(appendStartingIndex, appendCount2));
+
+				if (invalidated)
+				{
+					// TODO: Update indices from 'invalidationIndex' onward
+					// The log entry index has possibly changed
+				}
 			}
 
 			return changes;
@@ -119,45 +152,24 @@ namespace Tailviewer.Core.LogFiles.Merged
 		private int FindInsertionIndexNoLock(MergedLogLineIndex index)
 		{
 			// TODO: Find out if a binary search performs better
-			for (int i = _indices.Count - 1; i >= 0; --i)
-			{
+			for (var i = _indices.Count - 1; i >= 0; --i)
 				if (index.Timestamp > _indices[i].Timestamp)
-				{
 					return i + 1;
-				}
-			}
 
 			return 0;
 		}
 
+		/// <summary>
+		///     Retrieves the content the given modifications concern.
+		///     Only retrieves the <see cref="LogFileColumns.Index" />, <see cref="LogFileColumns.LogEntryIndex" />
+		///     and <see cref="LogFileColumns.Timestamp" /> columns (as these are the only ones required in order to
+		///     merge stuff).
+		/// </summary>
+		/// <param name="pendingModifications"></param>
+		/// <returns></returns>
 		[Pure]
-		private static IReadOnlyList<MergedLogLineIndex> CreateIndices(IReadOnlyList<MergedLogFileSection> pendingModifications)
-		{
-			var indices = new List<MergedLogLineIndex>();
-			foreach (var pendingModification in pendingModifications)
-			{
-				var entries = pendingModification.Entries;
-				foreach (var entry in entries)
-				{
-					var index = entry.GetValue(LogFileColumns.Index);
-					var entryIndex = entry.GetValue(LogFileColumns.LogEntryIndex);
-					var timestamp = entry.GetValue(LogFileColumns.Timestamp);
-					if (index.IsValid &&
-					    entryIndex.IsValid && //< Invalid values are possible if the file has been invalidated in between it sending us a change and us having retrieved the corresponding data
-					    timestamp != null) //< Not every line has a timestamp
-					{
-						indices.Add(new MergedLogLineIndex(index.Value, 0, entryIndex.Value, 0, timestamp.Value));
-					}
-				}
-			}
-
-			indices.Sort(new MergedLogLineIndexComparer());
-
-			return indices;
-		}
-
-		[Pure]
-		private static IReadOnlyList<MergedLogFileSection> GetEntries(IEnumerable<MergedLogFilePendingModification> pendingModifications)
+		private static IReadOnlyList<MergedLogFileSection> GetEntries(
+			IEnumerable<MergedLogFilePendingModification> pendingModifications)
 		{
 			var columns = new ILogFileColumn[]
 			{
@@ -181,7 +193,44 @@ namespace Tailviewer.Core.LogFiles.Merged
 					sections.Add(new MergedLogFileSection(logFile, section));
 				}
 			}
+
 			return sections;
+		}
+
+		/// <summary>
+		///     Creates a sorted list of <see cref="MergedLogLineIndex" />s concerning the given modifications.
+		/// </summary>
+		/// <remarks>
+		///     This method skips both <see cref="LogFileSection.IsReset" /> and <see cref="LogFileSection.IsInvalidate" />.
+		/// </remarks>
+		/// <param name="pendingModifications"></param>
+		/// <returns></returns>
+		[Pure]
+		private static IReadOnlyList<MergedLogLineIndex> CreateIndices(
+			IReadOnlyList<MergedLogFileSection> pendingModifications)
+		{
+			var indices = new List<MergedLogLineIndex>();
+			foreach (var pendingModification in pendingModifications)
+			{
+				var entries = pendingModification.Entries;
+				foreach (var entry in entries)
+				{
+					var index = entry.GetValue(LogFileColumns.Index);
+					var entryIndex = entry.GetValue(LogFileColumns.LogEntryIndex);
+					var timestamp = entry.GetValue(LogFileColumns.Timestamp);
+					if (index.IsValid &&
+					    entryIndex
+						    .IsValid && //< Invalid values are possible if the file has been invalidated in between it sending us a change and us having retrieved the corresponding data
+					    timestamp != null) //< Not every line has a timestamp
+						indices.Add(new MergedLogLineIndex(index.Value, mergedLogEntryIndex: 0,
+						                                   originalLogEntryIndex: entryIndex.Value, logFileIndex: 0,
+						                                   timestamp: timestamp.Value));
+				}
+			}
+
+			indices.Sort(new MergedLogLineIndexComparer());
+
+			return indices;
 		}
 	}
 }

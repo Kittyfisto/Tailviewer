@@ -7,11 +7,43 @@ namespace Tailviewer.Core.LogFiles.Merged
 	/// </summary>
 	internal struct MergedLogLineIndex : IEquatable<MergedLogLineIndex>
 	{
+		public static readonly MergedLogLineIndex Invalid;
+
 		public readonly int OriginalLogEntryIndex;
 		public readonly int SourceLineIndex;
 		public readonly byte LogFileIndex;
 		public readonly DateTime Timestamp;
 		public int MergedLogEntryIndex;
+
+		static MergedLogLineIndex()
+		{
+			Invalid = new MergedLogLineIndex(-1, -1, -1, 0);
+		}
+
+		public MergedLogLineIndex(int sourceLineIndex,
+		                          int mergedLogEntryIndex,
+		                          int originalLogEntryIndex,
+		                          byte logFileIndex)
+		{
+			SourceLineIndex = sourceLineIndex;
+			MergedLogEntryIndex = mergedLogEntryIndex;
+			OriginalLogEntryIndex = originalLogEntryIndex;
+			Timestamp = DateTime.MinValue;
+			LogFileIndex = logFileIndex;
+		}
+
+		public MergedLogLineIndex(int sourceLineIndex,
+		                          int mergedLogEntryIndex,
+		                          int originalLogEntryIndex,
+		                          byte logFileIndex,
+		                          DateTime timestamp)
+		{
+			SourceLineIndex = sourceLineIndex;
+			MergedLogEntryIndex = mergedLogEntryIndex;
+			OriginalLogEntryIndex = originalLogEntryIndex;
+			Timestamp = timestamp;
+			LogFileIndex = logFileIndex;
+		}
 
 		#region Equality members
 
@@ -52,31 +84,6 @@ namespace Tailviewer.Core.LogFiles.Merged
 		}
 
 		#endregion
-
-		public MergedLogLineIndex(int sourceLineIndex,
-		                          int mergedLogEntryIndex,
-		                          int originalLogEntryIndex,
-		                          byte logFileIndex)
-		{
-			SourceLineIndex = sourceLineIndex;
-			MergedLogEntryIndex = mergedLogEntryIndex;
-			OriginalLogEntryIndex = originalLogEntryIndex;
-			Timestamp = DateTime.MinValue;
-			LogFileIndex = logFileIndex;
-		}
-
-		public MergedLogLineIndex(int sourceLineIndex,
-		                          int mergedLogEntryIndex,
-		                          int originalLogEntryIndex,
-		                          byte logFileIndex,
-		                          DateTime timestamp)
-		{
-			SourceLineIndex = sourceLineIndex;
-			MergedLogEntryIndex = mergedLogEntryIndex;
-			OriginalLogEntryIndex = originalLogEntryIndex;
-			Timestamp = timestamp;
-			LogFileIndex = logFileIndex;
-		}
 
 		public override string ToString()
 		{
