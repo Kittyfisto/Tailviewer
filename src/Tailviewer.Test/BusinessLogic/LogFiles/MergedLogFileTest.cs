@@ -224,7 +224,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source0 = new InMemoryLogFile();
 			var source1 = new InMemoryLogFile();
 
-			var merged = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source0, source1);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source0, source1);
 			var data = Listen(merged);
 
 			var later = new DateTime(2016, 2, 16);
@@ -256,7 +256,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source0 = new InMemoryLogFile();
 			var source1 = new InMemoryLogFile();
 
-			var merged = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source0, source1);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source0, source1);
 			var data = Listen(merged);
 			var changes = ListenToChanges(merged, 1);
 

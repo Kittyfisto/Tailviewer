@@ -6,8 +6,6 @@ using log4net.Appender;
 using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.LogFiles.Merged;
 
 namespace Tailviewer
 {
@@ -98,9 +96,9 @@ namespace Tailviewer
 			fileAppender.ActivateOptions();
 			hierarchy.Root.AddAppender(fileAppender);
 
-			SetLogLevelOf<MergedLogFile>(Level.Debug);
-			SetLogLevelOf<MergedLogFileIndex>(Level.Debug);
-			SetLogLevelOf<LogFileProxy>(Level.Debug);
+			//SetLogLevelOf<MergedLogFile>(Level.Debug);
+			//SetLogLevelOf<MergedLogFileIndex>(Level.Debug);
+			//SetLogLevelOf<LogFileProxy>(Level.Debug);
 
 			hierarchy.Root.Level = Level.Info;
 			hierarchy.Configured = true;
