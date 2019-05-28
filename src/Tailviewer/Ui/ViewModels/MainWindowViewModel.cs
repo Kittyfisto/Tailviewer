@@ -119,7 +119,7 @@ namespace Tailviewer.Ui.ViewModels
 			_topEntries = new IMainPanelEntry[]
 			{
 				_rawEntry,
-				_analyseEntry
+				//_analyseEntry
 			};
 
 			_settingsEntry = new SettingsMainPanelEntry();

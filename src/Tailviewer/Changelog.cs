@@ -59,17 +59,20 @@ namespace Tailviewer
 			{
 				"Fixed rendering very long lines",
 				"Fixed crash starting Tailviewer",
+				"Fixed bug where merged data source sometimes displayed the wrong source file name",
+				"Fixed multi line detection for log files without log levels",
 				"Merged data source appear in data source quick chooser (ctrl+t)",
 				"Plugin archiver no longer adds dependencies multiple times"
 			};
-			var misc = new string[]
+			var misc = new []
 			{
+				"Improved performance of merged data sources",
 				"Opening the quick filter panel ensures that there is always at least one empty quick filter present for quick access",
 				"Plugins can implemented multiple interfaces at the same time",
 				"Plugins no longer need to manually declare serializable types",
 				"Plugin archiver enforces DataContract rules"
 			};
-			var releaseDate = new DateTime(2019, 05, 28);
+			var releaseDate = new DateTime(2019, 05, 29);
 			var version = new Version(0, 8, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
