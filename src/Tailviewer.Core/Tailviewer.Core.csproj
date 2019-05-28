@@ -94,6 +94,7 @@
     <Compile Include="LogFiles\Merged\MergedLogFileSection.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
+    <Compile Include="LogFiles\Merged\Stuff.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="Settings\SpecialDateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />

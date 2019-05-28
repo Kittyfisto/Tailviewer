@@ -26,7 +26,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		/// The number of lines in this section
 		/// </summary>
-		public readonly int Count;
+		public int Count;
 
 		/// <summary>
 		/// The index of the first line in this section.

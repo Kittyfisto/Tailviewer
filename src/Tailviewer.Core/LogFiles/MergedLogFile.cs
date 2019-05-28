@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -29,19 +28,14 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 1000;
 
-		private readonly List<MergedLogLineIndex> _indices;
-		private readonly IReadOnlyDictionary<ILogFile, byte> _logFileIndices;
+		private readonly MergedLogFileIndex _index;
 		private readonly TimeSpan _maximumWaitTime;
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
-		private readonly IReadOnlyList<ILogFile> _sources;
 		private readonly ILogFileProperties _properties;
-		private readonly object _syncRoot;
-		private readonly LogLine[] _buffer;
-		private int _maxCharactersPerLine;
-		private Percentage _progress;
-
-		private int _totalLineCount;
+		private readonly IReadOnlyList<ILogFile> _sources;
+		private int _maxCharactersPerLine = 140;
+		private Percentage _progress = Percentage.Zero;
 
 		/// <summary>
 		///     Initializes this object.
@@ -68,14 +62,11 @@ namespace Tailviewer.Core.LogFiles
 			if (sources.Length > LogLineSourceId.MaxSources) throw new ArgumentException(string.Format("Only up to {0} sources are supported", sources.Length));
 
 			_sources = sources;
+			_index = new MergedLogFileIndex(sources);
 			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
-			_indices = new List<MergedLogLineIndex>();
 			var logFileIndices = new Dictionary<ILogFile, byte>();
-			_logFileIndices = logFileIndices;
-			_syncRoot = new object();
 			_maximumWaitTime = maximumWaitTime;
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
-			_buffer = new LogLine[BatchSize];
 
 			byte idx = 0;
 			foreach (var logFile in _sources)
@@ -105,19 +96,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override bool EndOfSourceReached
 		{
-			get { return _sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached; }
+			get { return Sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached; }
 		}
 
 		/// <inheritdoc />
 		public override int Count
 		{
-			get
-			{
-				lock (_indices)
-				{
-					return _indices.Count;
-				}
-			}
+			get { return _index.Count; }
 		}
 
 		/// <inheritdoc />
@@ -135,16 +120,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
@@ -186,16 +169,16 @@ namespace Tailviewer.Core.LogFiles
 			else if (Equals(column, LogFileColumns.Index) ||
 			         Equals(column, LogFileColumns.OriginalIndex))
 			{
-				GetIndices(section, (LogLineIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogLineIndices(section, (LogLineIndex[]) (object) buffer, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LogEntryIndex))
 			{
-				GetLogEntryIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogEntryIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
-				GetLineNumbers(section, (int[]) (object) buffer, destinationIndex);
+				_index.GetLineNumbers(section, (int[]) (object) buffer, destinationIndex);
 			}
 			else
 			{
@@ -203,7 +186,7 @@ namespace Tailviewer.Core.LogFiles
 				// The best we can achieve is up to one call per source, which is what the following
 				// code achieves:
 				// At first, we want to build the list of indices we need to retrieve per source
-				var sourceIndices = GetOriginalLogLineIndices<T>(section);
+				var sourceIndices = _index.GetOriginalLogLineIndices<T>(section);
 				// Then we want to retrieve the column values per source
 				GetSourceColumnValues(column, sourceIndices);
 				// And finally we want to copy those column values back to the destination
@@ -233,66 +216,26 @@ namespace Tailviewer.Core.LogFiles
 			else if (Equals(column, LogFileColumns.Index) ||
 			         Equals(column, LogFileColumns.OriginalIndex))
 			{
-				GetIndices(indices, (LogLineIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogLineIndices(indices, (LogLineIndex[]) (object) buffer, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LogEntryIndex))
 			{
-				GetLogEntryIndices(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
+				_index.GetLogEntryIndices(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
-				GetLineNumbers(indices, (int[]) (object) buffer, destinationIndex);
+				_index.GetLineNumbers(indices, (int[]) (object) buffer, destinationIndex);
 			}
 			else
 			{
-				var sourceIndices = GetOriginalLogLineIndices<T>(indices);
+				var sourceIndices = _index.GetOriginalLogLineIndices<T>(indices);
 				GetSourceColumnValues(column, sourceIndices);
 				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
 			}
 		}
 
 		#region Retrieving Column Values from source files
-
-		private Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(IReadOnlyList<LogLineIndex> indices)
-		{
-			var sourceIndices = new Dictionary<int, Stuff<T>>();
-
-			lock (_syncRoot)
-			{
-				// Do NOT call any virtual methods
-				// Do NOT block for any amount of time
-
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					if (index >= 0 && index < _indices.Count)
-					{
-						var sourceIndex = _indices[index.Value];
-						Stuff<T> stuff;
-						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
-						{
-							stuff = new Stuff<T>();
-							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
-						}
-						stuff.Add(i, sourceIndex.SourceLineIndex);
-					}
-					else
-					{
-						const int invalidIndex = -1;
-						Stuff<T> stuff;
-						if (!sourceIndices.TryGetValue(invalidIndex, out stuff))
-						{
-							stuff = new Stuff<T>();
-							sourceIndices.Add(invalidIndex, stuff);
-						}
-						stuff.Add(i, invalidIndex);
-					}
-				}
-			}
-
-			return sourceIndices;
-		}
 
 		private void GetSourceColumnValues<T>(ILogFileColumn<T> column, Dictionary<int, Stuff<T>> originalBuffers)
 		{
@@ -329,116 +272,6 @@ namespace Tailviewer.Core.LogFiles
 				{
 					var destIndex = destinationIndex + stuff.DestinationIndices[i];
 					buffer[destIndex] = sourceColumnValues[i];
-				}
-			}
-		}
-
-		/// <summary>
-		///     Keeps track of which indices of a source log file are being requested,
-		///     as well as their index into a destination buffer.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		sealed class Stuff<T>
-		{
-			private readonly List<LogLineIndex> _originalLogLineIndices;
-			private readonly List<int> _destinationIndices;
-
-			public IReadOnlyList<int> DestinationIndices => _destinationIndices;
-
-			private T[] _buffer;
-
-			public Stuff()
-			{
-				_destinationIndices = new List<int>();
-				_originalLogLineIndices = new List<LogLineIndex>();
-			}
-
-			public IReadOnlyList<LogLineIndex> OriginalLogLineIndices => _originalLogLineIndices;
-
-			public T[] Buffer
-			{
-				get
-				{
-					if (_buffer == null)
-					{
-						_buffer = new T[_originalLogLineIndices.Count];
-					}
-					return _buffer;
-				}
-			}
-
-			public void Add(int destIndex, LogLineIndex index)
-			{
-				_destinationIndices.Add(destIndex);
-				_originalLogLineIndices.Add(index);
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="indices"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex"></param>
-		private void GetIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					if (index >= 0 && index < _indices.Count)
-					{
-						buffer[destinationIndex + i] = index;
-					}
-					else
-					{
-						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
-					}
-				}
-			}
-		}
-
-		private void GetLogEntryIndices(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					if (index >= 0 && index < _indices.Count)
-					{
-						buffer[destinationIndex + i] = _indices[index.Value].MergedLogEntryIndex;
-					}
-					else
-					{
-						buffer[destinationIndex + i] = LogEntryIndex.Invalid;
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="indices"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex"></param>
-		private void GetLineNumbers(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
-		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < indices.Count; ++i)
-				{
-					var index = indices[i];
-					if (index >= 0 && index < _indices.Count)
-					{
-						buffer[destinationIndex + i] = (int) (index + 1);
-					}
-					else
-					{
-						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
-					}
 				}
 			}
 		}
@@ -521,11 +354,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			MergedLogLineIndex idx;
-			lock (_indices)
-			{
-				idx = _indices[index];
-			}
+			MergedLogLineIndex idx = _index[index];
 
 			var logFileIndex = idx.LogFileIndex;
 			var logFile = _sources[logFileIndex];
@@ -541,89 +370,36 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
-			MergedLogFilePendingModification modification;
-			while (_pendingModifications.TryDequeue(out modification))
-			{
-				if (token.IsCancellationRequested)
-					return TimeSpan.Zero;
-
-				_totalLineCount = CalculateTotalLogLineCount();
-				_progress = Percentage.Of(_indices.Count, _totalLineCount);
-
-				if (modification.Section.IsReset)
-				{
-					Clear(modification.LogFile);
-				}
-				else if (modification.Section.IsInvalidate)
-				{
-					throw new NotImplementedException();
-				}
-				else
-				{
-					Append(modification.LogFile, modification.Section);
-				}
-			}
+			var modifications = _pendingModifications.DequeueAll();
+			var changes = _index.Process(modifications);
 
 			UpdateProperties();
 
-			Listeners.OnRead(_indices.Count);
+			NotifyListeners(changes);
+
 			SetEndOfSourceReached();
+
+			if (modifications.Any())
+				return TimeSpan.Zero;
 
 			return _maximumWaitTime;
 		}
 
-		private void Append(ILogFile modifiedLogFile, LogFileSection modifiedSection)
+		private void NotifyListeners(IEnumerable<LogFileSection> changes)
 		{
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("Append({0}, {1})", modifiedLogFile, modifiedSection);
-
-			// We never get more lines per 'modifiedSection' than BatchSize,
-			// so our buffer is always big enough
-			modifiedLogFile.GetSection(modifiedSection, _buffer);
-			for (var i = 0; i < modifiedSection.Count; ++i)
+			foreach (var section in changes)
 			{
-				var sourceIndex = modifiedSection.Index + i;
-				var newLogLine = _buffer[i];
-				if (newLogLine.Timestamp != null)
+				if (section.IsInvalidate)
 				{
-					// We need to find out where this new entry (or entries) is/are to be inserted.
-					var insertionIndex = _indices.Count;
-					_logFileIndices.TryGetValue(modifiedLogFile, out var logFileIndex);
-					for (var n = _indices.Count - 1; n >= 0; --n)
-					{
-						var idx = _indices[n];
-						var otherLogFile = _sources[idx.LogFileIndex];
-						var entry = otherLogFile.GetLine(idx.SourceLineIndex);
-						if (entry.Timestamp <= newLogLine.Timestamp)
-						{
-							insertionIndex = n + 1;
-							break;
-						}
-
-						if (entry.Timestamp > newLogLine.Timestamp)
-							insertionIndex = n;
-					}
-
-					var mergedLogEntryIndex = GetMergedLogEntryIndex(modifiedLogFile, insertionIndex, newLogLine);
-					var index = new MergedLogLineIndex((int) sourceIndex,
-						mergedLogEntryIndex,
-						newLogLine.LogEntryIndex,
-						logFileIndex);
-					if (insertionIndex < _indices.Count)
-						InvalidateOnward(insertionIndex, modifiedLogFile, newLogLine);
-
-					lock (_syncRoot)
-					{
-						_indices.Insert(insertionIndex, index);
-						_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, newLogLine.Message?.Length ?? 0);
-					}
-
-					Listeners.OnRead(_indices.Count);
-
-					// There's no need to frantically update every time, but every
-					// once in a while would be nice...
-					if (i % 100 == 0)
-						UpdateProperties();
+					Listeners.Invalidate((int) section.Index, section.Count);
+				}
+				else if (section.IsReset)
+				{
+					Listeners.Reset();
+				}
+				else
+				{
+					Listeners.OnRead((int) (section.Index + section.Count));
 				}
 			}
 		}
@@ -659,103 +435,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties.SetValue(LogFileProperties.Size, size);
 			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
 			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
-			_progress = Percentage.Of(_indices.Count, _totalLineCount);
-		}
-
-		[Pure]
-		private int CalculateTotalLogLineCount()
-		{
-			var count = 0;
-			foreach (var logFile in _sources)
-				// TODO: Introduce separate property that counts the number of lines with a timestamp as only those are of interest to us
-				count += logFile.Count;
-			return count;
-		}
-
-		/// <summary>
-		///     Finds the log entry index for the given log line in this merged data structure.
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="insertionIndex"></param>
-		/// <param name="newLogLine"></param>
-		/// <returns></returns>
-		[Pure]
-		private int GetMergedLogEntryIndex(ILogFile logFile, int insertionIndex, LogLine newLogLine)
-		{
-			if (insertionIndex > 0)
-			{
-				var previousLine = _indices[insertionIndex - 1];
-				var previousLineLogFile = _sources[previousLine.LogFileIndex];
-
-				if (previousLineLogFile == logFile &&
-				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
-					return previousLine.MergedLogEntryIndex;
-
-				return previousLine.MergedLogEntryIndex + 1;
-			}
-
-			return 0;
-		}
-
-		private void InvalidateOnward(int insertionIndex, ILogFile source, LogLine newLogLine)
-		{
-			// If the new entry is to be inserted anywhere else, then we need to invalidate
-			// everything from that index on, insert the new line at the given index and then
-			// issue another modification that includes everything from the newly inserted index
-			// to the end.
-			var count = _indices.Count - insertionIndex;
-
-			if (Log.IsDebugEnabled)
-				Log.DebugFormat("InvalidateOnward({0}, {1}, {2}, count={3})", insertionIndex, source, newLogLine, count);
-
-			Listeners.Invalidate(insertionIndex, count);
-
-			// This is really interesting.
-			// We're inserting a line somewhere in the middle which means that the logentry index of all following
-			// entries MAY increase by 1, depending on whether or not the inserted log line is a new entry
-			// or belongs to the previous line's entry
-			var patchFollowingIndices = true;
-			if (insertionIndex > 0)
-			{
-				var previousLine = _indices[insertionIndex - 1];
-				var previousLineLogFile = _sources[previousLine.LogFileIndex];
-
-				if (previousLineLogFile == source &&
-				    previousLine.OriginalLogEntryIndex == newLogLine.LogEntryIndex)
-					patchFollowingIndices = false;
-			}
-
-			if (patchFollowingIndices)
-				for (var i = 0; i < count; ++i)
-				{
-					var idx = _indices[insertionIndex + i];
-					idx.MergedLogEntryIndex++;
-					_indices[insertionIndex + i] = idx;
-				}
-		}
-
-		private void Clear(ILogFile logFile)
-		{
-			var numRemoved = 0;
-			lock (_syncRoot)
-			{
-				for (var i = _indices.Count - 1; i >= 0; --i)
-				{
-					var index = _indices[i];
-					var indexLogFile = _sources[index.LogFileIndex];
-					if (indexLogFile == logFile)
-					{
-						_indices.RemoveAt(i);
-						++numRemoved;
-					}
-				}
-			}
-
-			if (numRemoved > 0)
-			{
-				Listeners.Reset();
-				Listeners.OnRead(_indices.Count);
-			}
+			//_progress = Percentage.Of(_index.Count, _totalLineCount);
 		}
 	}
 }

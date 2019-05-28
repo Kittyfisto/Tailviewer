@@ -51,19 +51,39 @@ namespace Tailviewer.Core.LogFiles.Merged
 				return;
 			}
 
-			var invalidationCount = _count - firstInvalidIndex;
-			if (_invalidationIndex != -1)
+			if (firstInvalidIndex >= _initialCount)
 			{
-				var invalidation = _changes[_invalidationIndex];
-				if (invalidation.Index <= firstInvalidIndex)
-					return; //< Nothing to do
-
-				_changes[_invalidationIndex] = LogFileSection.Invalidate(firstInvalidIndex, invalidationCount);
+				// We do not need to add an invalidation, rather we can simply clamp an existing previous append
+				if (firstInvalidIndex > 0)
+				{
+					var previous = _changes[_changes.Count - 1];
+					if (!previous.IsInvalidate && !previous.IsReset)
+					{
+						var gap = previous.Index + previous.Count - firstInvalidIndex;
+						if (gap > 0)
+						{
+							previous.Count -= gap;
+							_changes[_changes.Count - 1] = previous;
+						}
+					}
+				}
 			}
 			else
 			{
-				_invalidationIndex = _changes.Count;
-				_changes.Add(LogFileSection.Invalidate(firstInvalidIndex, invalidationCount));
+				var invalidationCount = _count - firstInvalidIndex;
+				if (_invalidationIndex != -1)
+				{
+					var invalidation = _changes[_invalidationIndex];
+					if (invalidation.Index <= firstInvalidIndex)
+						return; //< Nothing to do
+
+					_changes[_invalidationIndex] = LogFileSection.Invalidate(firstInvalidIndex, invalidationCount);
+				}
+				else
+				{
+					_invalidationIndex = _changes.Count;
+					_changes.Add(LogFileSection.Invalidate(firstInvalidIndex, invalidationCount));
+				}
 			}
 		}
 
@@ -114,6 +134,11 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 			var last = _changes[_changes.Count - 1];
 			_count = (int) (last.Index + last.Count);
+		}
+
+		private void ClampPeviousAppendIfNecessary(int invalidationIndex, LogLineIndex firstInvalidIndex)
+		{
+			
 		}
 
 		private bool TryGetLast(out LogFileSection lastSection)

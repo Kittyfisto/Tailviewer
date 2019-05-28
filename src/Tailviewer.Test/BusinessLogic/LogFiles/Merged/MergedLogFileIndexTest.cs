@@ -50,10 +50,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 				new LogFileSection(0, 1)
 			});
 
-			index.Get(new LogFileSection(0, 1)).Should().Equal(new object[]
-			{
-				new MergedLogLineIndex(0, 0, 0, 0, new DateTime(2019, 5, 28, 19, 55, 10))
-			});
+			var indices = index.Get(new LogFileSection(0, 1));
+			indices.Count.Should().Be(1);
+			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[0].OriginalLogEntryIndex.Should().Be(0);
+			indices[0].MergedLogEntryIndex.Should().Be(0);
+			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 19, 55, 10));
 		}
 
 		[Test]
@@ -143,6 +146,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 				LogFileSection.Invalidate(0, 1),
 				new LogFileSection(0, 2)
 			});
+
+			var indices = index.Get(new LogFileSection(0, 2));
+			indices.Count.Should().Be(2);
+			indices[0].LogFileIndex.Should().Be(1);
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[0].OriginalLogEntryIndex.Should().Be(0);
+			indices[0].MergedLogEntryIndex.Should().Be(0);
+			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 9, 0));
+
+			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(0);
+			indices[1].OriginalLogEntryIndex.Should().Be(0);
+			indices[1].MergedLogEntryIndex.Should().Be(1);
+			indices[1].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 10, 0));
 		}
 
 		[Test]
@@ -199,6 +216,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			{
 				LogFileSection.Reset
 			});
+			index.Count.Should().Be(0);
+			index.Get(new LogFileSection(0, 1)).Should().Equal(new object[]
+			{
+				MergedLogLineIndex.Invalid
+			});
 		}
 
 		[Test]
@@ -217,6 +239,59 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			{
 				new LogFileSection(0, 1)
 			}, "because the index shouldn't process changes belonging to source1 prior to the last reset");
+			index.Count.Should().Be(1);
 		}
+
+		#region Skip log lines without timestamp
+
+		[Test]
+		[Description("Verifies that log lines without timestamp will be ignored")]
+		public void TestAppendOneSourceOneLineWithoutTimestamp()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("Hello, World!", LevelFlags.None);
+
+			var index = new MergedLogFileIndex(source);
+			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
+			changes.Should().BeEmpty("because the only added line doesn't have a timestamp and thus cannot be added to the merged log file");
+
+			index.Count.Should().Be(0);
+			index.Get(new LogFileSection(0, 1)).Should().Equal(new object[]
+			{
+				MergedLogLineIndex.Invalid
+			});
+		}
+
+		[Test]
+		[Description("Verifies that log lines without timestamp will be ignored")]
+		public void TestAppendOneSourceThreeOneLinesOneWithoutTimestamp()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 19, 30, 1));
+			source.AddEntry("B", LevelFlags.None);
+			source.AddEntry("C", LevelFlags.None, new DateTime(2019, 5, 28, 19, 30, 42));
+
+			var index = new MergedLogFileIndex(source);
+			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 3)));
+			changes.Should().Equal(new object[] {new LogFileSection(0, 2)});
+
+			index.Count.Should().Be(2);
+
+			var indices = index.Get(new LogFileSection(0, 2));
+			indices.Count.Should().Be(2);
+			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[0].OriginalLogEntryIndex.Should().Be(0);
+			indices[0].MergedLogEntryIndex.Should().Be(0);
+			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 19, 30, 1));
+
+			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(2);
+			indices[1].OriginalLogEntryIndex.Should().Be(2);
+			indices[1].MergedLogEntryIndex.Should().Be(1);
+			indices[1].Timestamp.Should().Be(new DateTime(2019, 5, 28, 19, 30, 42));
+		}
+
+		#endregion
 	}
 }

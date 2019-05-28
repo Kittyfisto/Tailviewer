@@ -148,7 +148,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		}
 
 		[Test]
-		public void TestAppendThenInvalidate()
+		public void TestAppendInvalidate()
 		{
 			var changes = new MergedLogFileChanges(0);
 			changes.Append(0, 42);
@@ -156,8 +156,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			changes.Sections.Should().Equal(new object[]
 			{
-				new LogFileSection(0, 42),
-				LogFileSection.Invalidate(20, 22)
+				new LogFileSection(0, 20)
+			});
+		}
+
+		[Test]
+		public void TestAppendInvalidateAppend()
+		{
+			var changes = new MergedLogFileChanges(0);
+			changes.Append(0, 2);
+			changes.InvalidateFrom(1);
+			changes.Append(1, 1);
+
+			changes.Sections.Should().Equal(new object[]
+			{
+				new LogFileSection(0, 2)
 			});
 		}
 	}

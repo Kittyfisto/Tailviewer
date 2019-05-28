@@ -41,6 +41,23 @@ namespace Tailviewer.Core.LogFiles.Merged
 			}
 		}
 
+		public MergedLogLineIndex this[LogLineIndex index]
+		{
+			get
+			{
+				if (index.IsInvalid)
+					return MergedLogLineIndex.Invalid;
+
+				lock (_syncRoot)
+				{
+					if (index >= _indices.Count)
+						return MergedLogLineIndex.Invalid;
+
+					return _indices[(int) index];
+				}
+			}
+		}
+
 		[Pure]
 		public IReadOnlyList<MergedLogLineIndex> Get(LogFileSection section)
 		{
@@ -87,6 +104,104 @@ namespace Tailviewer.Core.LogFiles.Merged
 			return Process(entries);
 		}
 
+		public void GetLogLineIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = index;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		public void GetLogEntryIndices(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = _indices[index.Value].MergedLogEntryIndex;
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogEntryIndex.Invalid;
+					}
+				}
+			}
+		}
+
+		public void GetLineNumbers(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						buffer[destinationIndex + i] = (int) (index + 1);
+					}
+					else
+					{
+						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+					}
+				}
+			}
+		}
+
+		[Pure]
+		public Dictionary<int, Stuff<T>> GetOriginalLogLineIndices<T>(IReadOnlyList<LogLineIndex> indices)
+		{
+			var sourceIndices = new Dictionary<int, Stuff<T>>();
+
+			lock (_syncRoot)
+			{
+				// Do NOT call any virtual methods
+				// Do NOT block for any amount of time
+
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					var index = indices[i];
+					if (index >= 0 && index < _indices.Count)
+					{
+						var sourceIndex = _indices[index.Value];
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
+						}
+						stuff.Add(i, sourceIndex.SourceLineIndex);
+					}
+					else
+					{
+						const int invalidIndex = -1;
+						Stuff<T> stuff;
+						if (!sourceIndices.TryGetValue(invalidIndex, out stuff))
+						{
+							stuff = new Stuff<T>();
+							sourceIndices.Add(invalidIndex, stuff);
+						}
+						stuff.Add(i, invalidIndex);
+					}
+				}
+			}
+
+			return sourceIndices;
+		}
+
 		private IReadOnlyList<LogFileSection> Process(IReadOnlyList<MergedLogFileSection> pendingModifications)
 		{
 			// This method keeps track of the changes made
@@ -113,6 +228,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		private void ProcessResetsNoLock(IReadOnlyList<MergedLogFileSection> pendingModifications, MergedLogFileChanges changes)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			foreach (var pendingModification in pendingModifications)
 			{
 				if (pendingModification.Section.IsReset)
@@ -134,6 +251,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		private void ProcessAppendsNoLock(IReadOnlyList<MergedLogFileSection> pendingModifications, MergedLogFileChanges changes)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			var indices = CreateIndices(pendingModifications);
 
 			var invalidated = false;
@@ -172,6 +291,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		private void UpdateLogEntryIndicesNoLock(MergedLogFileChanges changes)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			// We only need to re-calculate those indices if there was an invalidation or a portion
 			// of this index. If there wasn't, then ProcessAppendsNoLock() already does its job as required...
 			if (changes.TryGetFirstInvalidationIndex(out var firstInvalidatedIndex))
@@ -214,6 +335,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		private byte GetLogFileIndex(ILogFile logFile)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			if (!_logFileIndices.TryGetValue(logFile, out var index))
 				throw new NotImplementedException();
 
@@ -225,7 +348,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		{
 			// TODO: Find out if a binary search performs better
 			for (var i = _indices.Count - 1; i >= 0; --i)
-				if (index.Timestamp > _indices[i].Timestamp)
+				if (index.Timestamp >= _indices[i].Timestamp)
 					return i + 1;
 
 			return 0;
@@ -283,6 +406,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 		private IReadOnlyList<MergedLogLineIndex> CreateIndices(
 			IReadOnlyList<MergedLogFileSection> pendingModifications)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			var indices = new List<MergedLogLineIndex>();
 			foreach (var pendingModification in pendingModifications)
 			{
@@ -299,6 +424,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 		[Pure]
 		private IEnumerable<MergedLogLineIndex> CreateIndices(IReadOnlyLogEntries entries, byte logFileIndex)
 		{
+			// DO NOT CALL EXTERNAL / VIRTUAL METHODS OF ANY KIND HERE
+
 			if (entries == null)
 				return Enumerable.Empty<MergedLogLineIndex>();
 
