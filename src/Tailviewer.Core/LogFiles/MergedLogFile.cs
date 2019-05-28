@@ -26,7 +26,7 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private const int BatchSize = 1000;
+		private const int MaximumBatchSizePerSource = 1000;
 
 		private readonly MergedLogFileIndex _index;
 		private readonly TimeSpan _maximumWaitTime;
@@ -71,7 +71,7 @@ namespace Tailviewer.Core.LogFiles
 			byte idx = 0;
 			foreach (var logFile in _sources)
 			{
-				logFile.AddListener(this, maximumWaitTime, BatchSize);
+				logFile.AddListener(this, maximumWaitTime, MaximumBatchSizePerSource);
 				logFileIndices.Add(logFile, idx);
 
 				++idx;
@@ -370,19 +370,41 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
-			var modifications = _pendingModifications.DequeueAll();
-			var changes = _index.Process(modifications);
-
-			UpdateProperties();
-
-			NotifyListeners(changes);
+			// Every Process() invocation locks the sync root until
+			// the changes have been processed. The goal is to minimize
+			// total process time and to prevent locking for too long.
+			// The following number has been empirically determined
+			// via testing and it felt alright :P
+			const int maxLineCount = 5 * MaximumBatchSizePerSource;
+			while (TryDequeueUpTo(maxLineCount, out var modifications))
+			{
+				var changes = _index.Process(modifications);
+				UpdateProperties();
+				NotifyListeners(changes);
+			}
 
 			SetEndOfSourceReached();
 
-			if (modifications.Any())
-				return TimeSpan.Zero;
-
 			return _maximumWaitTime;
+		}
+
+		private bool TryDequeueUpTo(int maxLineCount, out IEnumerable<MergedLogFilePendingModification> sections)
+		{
+			var tmp = new List<MergedLogFilePendingModification>();
+			int count = 0;
+
+			while (_pendingModifications.TryDequeue(out var modification))
+			{
+				tmp.Add(modification);
+				if (!modification.Section.IsInvalidate)
+					count += modification.Section.Count;
+
+				if (count >= maxLineCount)
+					break;
+			}
+
+			sections = tmp;
+			return tmp.Count > 0;
 		}
 
 		private void NotifyListeners(IEnumerable<LogFileSection> changes)

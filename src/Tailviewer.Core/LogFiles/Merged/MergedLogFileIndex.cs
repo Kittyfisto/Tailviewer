@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
+using log4net;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -14,6 +17,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 	/// </summary>
 	internal sealed class MergedLogFileIndex
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly List<MergedLogLineIndex> _indices;
 		private readonly Dictionary<ILogFile, byte> _logFileIndices;
 		private readonly object _syncRoot;
@@ -212,6 +217,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 			lock (_syncRoot)
 			{
+				var stopwatch = Stopwatch.StartNew();
+
 				var changes = new MergedLogFileChanges(_indices.Count);
 
 				ProcessResetsNoLock(pendingModifications, changes);
@@ -221,6 +228,13 @@ namespace Tailviewer.Core.LogFiles.Merged
 				ProcessAppendsNoLock(pendingModifications, changes);
 
 				UpdateLogEntryIndicesNoLock(changes);
+
+				stopwatch.Stop();
+				if (Log.IsDebugEnabled)
+				{
+					int lineCount = pendingModifications.Sum(x => x.Section.IsInvalidate ? 0 : x.Section.Count);
+					Log.DebugFormat("MergedLogFileIndex::Process(#{0} modifications, #{1} lines): {2}ms", pendingModifications.Count, lineCount, stopwatch.ElapsedMilliseconds);
+				}
 
 				return changes.Sections;
 			}
@@ -344,11 +358,53 @@ namespace Tailviewer.Core.LogFiles.Merged
 		}
 
 		[Pure]
-		private int FindInsertionIndexNoLock(MergedLogLineIndex index)
+		public int FindInsertionIndexNoLock(MergedLogLineIndex index)
 		{
-			// TODO: Find out if a binary search performs better
+			if (_indices.Count == 0)
+				return 0;
+
+			// Changes are we need to insert that index AFTER the last, so let's
+			// optimize for that...
+			if (index.Timestamp >= _indices[_indices.Count - 1].Timestamp)
+				return _indices.Count;
+
+			var binary = FindInsertionIndexBinary(index.Timestamp);
+			/*var actual = FindInsertionIndexLinear(index.Timestamp);
+			if (actual != binary)
+				throw new NotImplementedException($"Mismatch detected: linear search wants to insert at {actual} and binary wants to insert at {binary} (the latter is incorrect)");
+			return actual*/
+			return binary;
+		}
+
+		public int FindInsertionIndexBinary(DateTime timestamp)
+		{
+			var lower = 0;
+			var upper = _indices.Count - 1;
+			while (lower <= upper)
+			{
+				var mid = (lower + upper) / 2;
+				var currentTimestamp = _indices[mid].Timestamp;
+				if (timestamp < currentTimestamp)
+				{
+					upper = mid - 1;
+				}
+				else if (timestamp >= currentTimestamp)
+				{
+					lower = mid + 1;
+				}
+				else
+				{
+					return mid + 1;
+				}
+			}
+
+			return lower;
+		}
+
+		public int FindInsertionIndexLinear(DateTime timestamp)
+		{
 			for (var i = _indices.Count - 1; i >= 0; --i)
-				if (index.Timestamp >= _indices[i].Timestamp)
+				if (timestamp >= _indices[i].Timestamp)
 					return i + 1;
 
 			return 0;

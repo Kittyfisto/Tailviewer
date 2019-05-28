@@ -188,6 +188,92 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		}
 
 		[Test]
+		public void TestAppendOneSourceTwoIdenticalTimestamps()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 0));
+			source.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 2));
+			source.AddEntry("C1", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
+			source.AddEntry("C2", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
+			source.AddEntry("D", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 6));
+			source.AddEntry("E", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 8));
+
+			var index = new MergedLogFileIndex(source);
+			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 6)));
+
+			var indices = index.Get(new LogFileSection(0, 6));
+			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceLineIndex.Should().Be(0);
+
+			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(1);
+
+			indices[2].LogFileIndex.Should().Be(0);
+			indices[2].SourceLineIndex.Should().Be(2);
+
+			indices[3].LogFileIndex.Should().Be(0);
+			indices[3].SourceLineIndex.Should().Be(3);
+
+			indices[4].LogFileIndex.Should().Be(0);
+			indices[4].SourceLineIndex.Should().Be(4);
+
+			indices[5].LogFileIndex.Should().Be(0);
+			indices[5].SourceLineIndex.Should().Be(5);
+		}
+
+		[Test]
+		public void TestAppendTwoSourcesInterlocked()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 0));
+			source1.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 2));
+			source1.AddEntry("C", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
+			source1.AddEntry("D", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 6));
+			source1.AddEntry("E", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 8));
+			var source2 = new InMemoryLogFile();
+			source2.AddEntry("1", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 1));
+			source2.AddEntry("2", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 3));
+			source2.AddEntry("3", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 5));
+			source2.AddEntry("4", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 7));
+			source2.AddEntry("5", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 9));
+
+			var index = new MergedLogFileIndex(source1, source2);
+			index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 5)));
+			index.Process(new MergedLogFilePendingModification(source2, new LogFileSection(0, 5)));
+
+			var indices = index.Get(new LogFileSection(0, 10));
+			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceLineIndex.Should().Be(0);
+
+			indices[1].LogFileIndex.Should().Be(1);
+			indices[1].SourceLineIndex.Should().Be(0);
+
+			indices[2].LogFileIndex.Should().Be(0);
+			indices[2].SourceLineIndex.Should().Be(1);
+
+			indices[3].LogFileIndex.Should().Be(1);
+			indices[3].SourceLineIndex.Should().Be(1);
+
+			indices[4].LogFileIndex.Should().Be(0);
+			indices[4].SourceLineIndex.Should().Be(2);
+
+			indices[5].LogFileIndex.Should().Be(1);
+			indices[5].SourceLineIndex.Should().Be(2);
+
+			indices[6].LogFileIndex.Should().Be(0);
+			indices[6].SourceLineIndex.Should().Be(3);
+
+			indices[7].LogFileIndex.Should().Be(1);
+			indices[7].SourceLineIndex.Should().Be(3);
+
+			indices[8].LogFileIndex.Should().Be(0);
+			indices[8].SourceLineIndex.Should().Be(4);
+
+			indices[9].LogFileIndex.Should().Be(1);
+			indices[9].SourceLineIndex.Should().Be(4);
+		}
+
+		[Test]
 		public void TestOneSourceResetEmpty()
 		{
 			var source1 = new InMemoryLogFile();

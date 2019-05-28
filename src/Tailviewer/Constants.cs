@@ -44,7 +44,13 @@ namespace Tailviewer
 			ApplicationFolder = Core.Constants.ApplicationFolder;
 			PluginPath = Path.Combine(ApplicationFolder, "Plugins");
 			AppDataLocalFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationTitle);
+
+			#if DEBUG
+			ApplicationLogFile = Path.Combine(ApplicationFolder, "Tailviewer.log");
+			#else
 			ApplicationLogFile = Path.Combine(AppDataLocalFolder, "Tailviewer.log");
+			#endif
+
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
 			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationTitle);
 			ExportDirectory = Path.Combine(MyDocumentsFolder, "Export");
