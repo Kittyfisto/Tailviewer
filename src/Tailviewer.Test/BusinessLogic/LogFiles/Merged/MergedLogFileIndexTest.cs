@@ -328,6 +328,33 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			index.Count.Should().Be(1);
 		}
 
+		[Test]
+		public void TestOneSourceManySameTimestamps()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("A", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 053));
+			source.AddEntry("B", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("C", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("D", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("E", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("F", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("G", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("H", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+
+			var index = new MergedLogFileIndex(source);
+			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 8)));
+
+			var indices = index.Get(new LogFileSection(0, 8));
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(1);
+			indices[2].SourceLineIndex.Should().Be(2);
+			indices[3].SourceLineIndex.Should().Be(3);
+			indices[4].SourceLineIndex.Should().Be(4);
+			indices[5].SourceLineIndex.Should().Be(5);
+			indices[6].SourceLineIndex.Should().Be(6);
+			indices[7].SourceLineIndex.Should().Be(7);
+		}
+
 		#region Skip log lines without timestamp
 
 		[Test]

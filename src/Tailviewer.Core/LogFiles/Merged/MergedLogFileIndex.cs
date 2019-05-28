@@ -472,9 +472,8 @@ namespace Tailviewer.Core.LogFiles.Merged
 				indices.AddRange(CreateIndices(entries, logFileIndex));
 			}
 
-			indices.Sort(new MergedLogLineIndexComparer());
-
-			return indices;
+			// TODO: Create unit test which fails if we don't use a stable sort...
+			return indices.OrderBy(x => x.Timestamp).ToList();
 		}
 
 		[Pure]
