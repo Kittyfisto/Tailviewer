@@ -88,6 +88,7 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
+    <Compile Include="LogFiles\Merged\MergedLogFileChanges.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFilePendingModification.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFileIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFileSection.cs" />

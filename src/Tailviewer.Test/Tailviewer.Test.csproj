@@ -136,7 +136,9 @@
     <Compile Include="BusinessLogic\LogFiles\LogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileChangesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileIndexTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFilePendingModificationTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />

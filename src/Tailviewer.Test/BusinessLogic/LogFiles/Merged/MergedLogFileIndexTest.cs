@@ -41,13 +41,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceOneLine()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("Hello, World!", LevelFlags.None, DateTime.Now);
+			source.AddEntry("Hello, World!", LevelFlags.None, new DateTime(2019, 5, 28, 19, 55, 10));
 
 			var index = new MergedLogFileIndex(source);
 			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
 			changes.Should().Equal(new object[]
 			{
 				new LogFileSection(0, 1)
+			});
+
+			index.Get(new LogFileSection(0, 1)).Should().Equal(new object[]
+			{
+				new MergedLogLineIndex(0, 0, 0, 0, new DateTime(2019, 5, 28, 19, 55, 10))
 			});
 		}
 
@@ -70,6 +75,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			{
 				new LogFileSection(1, 1)
 			});
+
+			var indices = index.Get(new LogFileSection(0, 2));
+			indices.Count.Should().Be(2);
+			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[0].OriginalLogEntryIndex.Should().Be(0);
+			indices[0].MergedLogEntryIndex.Should().Be(0);
+			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 37, 0));
+
+			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(1);
+			indices[1].OriginalLogEntryIndex.Should().Be(1);
+			indices[1].MergedLogEntryIndex.Should().Be(1);
+			indices[1].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 38, 0));
 		}
 
 		[Test]
@@ -87,6 +106,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			{
 				new LogFileSection(0, 2)
 			});
+
+			var indices = index.Get(new LogFileSection(0, 2));
+			indices.Count.Should().Be(2);
+			indices[0].LogFileIndex.Should().Be(1);
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[0].OriginalLogEntryIndex.Should().Be(0);
+			indices[0].MergedLogEntryIndex.Should().Be(0);
+			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 9, 0));
+
+			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(0);
+			indices[1].OriginalLogEntryIndex.Should().Be(0);
+			indices[1].MergedLogEntryIndex.Should().Be(1);
+			indices[1].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 10, 0));
 		}
 
 		[Test]
@@ -135,6 +168,55 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 				LogFileSection.Invalidate(1, 1),
 				new LogFileSection(1, 3)
 			});
+		}
+
+		[Test]
+		public void TestOneSourceResetEmpty()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+
+			var index = new MergedLogFileIndex(source1);
+			var changes = index.Process(new MergedLogFilePendingModification(source1, LogFileSection.Reset));
+			changes.Should().BeEmpty("because the index itself is empty and thus its source resetting itself doesn't require any change");
+		}
+
+		[Test]
+		public void TestOneSourceAppendReset()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+
+			var index = new MergedLogFileIndex(source1);
+			var changes = index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 1)));
+			changes.Should().Equal(new object[]
+			{
+				new LogFileSection(0, 1)
+			});
+
+			changes = index.Process(new MergedLogFilePendingModification(source1, LogFileSection.Reset));
+			changes.Should().Equal(new object[]
+			{
+				LogFileSection.Reset
+			});
+		}
+
+		[Test]
+		public void TestOneSourceResetAndAppend()
+		{
+			var source1 = new InMemoryLogFile();
+			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+
+			var index = new MergedLogFileIndex(source1);
+			var changes = index.Process(
+				new MergedLogFilePendingModification(source1, new LogFileSection(0, 2)),
+				new MergedLogFilePendingModification(source1, LogFileSection.Reset),
+				new MergedLogFilePendingModification(source1, new LogFileSection(0, 1))
+				);
+			changes.Should().Equal(new object[]
+			{
+				new LogFileSection(0, 1)
+			}, "because the index shouldn't process changes belonging to source1 prior to the last reset");
 		}
 	}
 }
