@@ -4,7 +4,7 @@
 
 Tailviewer is a free and active open-source log file viewer.
 
-Tailviewer is supported on Windows 7, 8 and 10 and requires .NET 4.5 or higher.
+Tailviewer is supported on Windows 7, 8 and 10 and requires .NET 4.7.1 or higher.
 
 Head on over to https://kittyfisto.github.io/Tailviewer/ in order to download the newest version.
 
