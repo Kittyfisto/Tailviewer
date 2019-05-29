@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Cache;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Xml;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -175,7 +176,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		private byte[] Download(Version version, Uri uri)
+		internal byte[] Download(Version version, Uri uri)
 		{
 			try
 			{
@@ -230,7 +231,7 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 			}
 		}
 
-		private VersionInfo QueryNewestVersions()
+		internal VersionInfo QueryNewestVersions()
 		{
 			try
 			{
@@ -241,6 +242,11 @@ namespace Tailviewer.BusinessLogic.AutoUpdates
 					client.Proxy = _settings.GetWebProxy();
 
 					Uri uri = BuildVersionCheckUri();
+
+					// For some reason, DownloadData does not accept the certificate offered by kittyfisto.github.io
+					// anymore (I've found this out in May 2019). Forcing the SPM to accept TLS 1.2 on top of its defaults
+					// fixes that, but sucks because older client's won't update automatically...
+					ServicePointManager.SecurityProtocol |= (SecurityProtocolType)SslProtocols.Tls12;
 
 					Log.InfoFormat("Looking for newest version on '{0}", uri);
 					byte[] data = client.DownloadData(uri);

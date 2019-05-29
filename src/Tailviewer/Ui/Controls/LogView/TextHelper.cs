@@ -106,7 +106,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			                             FlowDirection.LeftToRight,
 			                             Typeface,
 			                             FontSize,
-			                             Brushes.Black).Width;
+			                             Brushes.Black,
+			                             1.25).Width;
 		}
 
 		private static FontFamily PickFontFamily()

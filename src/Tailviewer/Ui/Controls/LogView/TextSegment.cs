@@ -9,11 +9,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		public TextSegment(string value, Brush foregroundBrush, bool isRegular)
 		{
 			FormattedText = new FormattedText(Prepare(value),
-			                         CultureInfo.CurrentUICulture,
-			                         FlowDirection.LeftToRight,
-			                         TextHelper.Typeface,
-			                         TextHelper.FontSize,
-			                         foregroundBrush);
+			                                  CultureInfo.CurrentUICulture,
+			                                  FlowDirection.LeftToRight,
+			                                  TextHelper.Typeface,
+			                                  TextHelper.FontSize,
+			                                  foregroundBrush,
+			                                  1.25);
 			FormattedText.LineHeight = TextHelper.LineHeight;
 			//Width = TextHelper.EstimateWidthUpperLimit(value);
 			Width = FormattedText.WidthIncludingTrailingWhitespace;

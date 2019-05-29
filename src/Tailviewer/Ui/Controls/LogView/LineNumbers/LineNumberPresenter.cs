@@ -27,7 +27,8 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			                         FlowDirection.LeftToRight,
 			                         TextHelper.Typeface,
 			                         TextHelper.FontSize,
-			                         TextHelper.LineNumberForegroundBrush);
+			                         TextHelper.LineNumberForegroundBrush,
+			                         1.25);
 		}
 
 		private bool Equals(LineNumberPresenter other)

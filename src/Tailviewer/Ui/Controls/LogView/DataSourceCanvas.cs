@@ -213,12 +213,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			var culture = CultureInfo.CurrentUICulture;
 			return new FormattedText(dataSourceName,
-				culture,
-				FlowDirection.LeftToRight,
-				TextHelper.Typeface,
-				TextHelper.FontSize,
-				brush);
-
+			                         culture,
+			                         FlowDirection.LeftToRight,
+			                         TextHelper.Typeface,
+			                         TextHelper.FontSize,
+			                         brush,
+			                         1.25);
 		}
 
 		private void Render(FormattedText dataSourceName, DrawingContext drawingContext, double y, double dataSourceWidth)

@@ -50,7 +50,8 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 			                         FlowDirection.LeftToRight,
 			                         TextHelper.Typeface,
 			                         TextHelper.FontSize,
-			                         TextHelper.LineNumberForegroundBrush);
+			                         TextHelper.LineNumberForegroundBrush,
+			                         1.25);
 		}
 	}
 }

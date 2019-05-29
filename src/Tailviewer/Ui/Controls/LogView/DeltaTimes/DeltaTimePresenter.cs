@@ -49,7 +49,8 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 			                         FlowDirection.LeftToRight,
 			                         TextHelper.Typeface,
 			                         TextHelper.FontSize,
-			                         TextHelper.LineNumberForegroundBrush);
+			                         TextHelper.LineNumberForegroundBrush,
+			                         1.25);
 		}
 
 		private static string ToString(IFormatProvider provider, int rawValue, string singularSuffix, string pluralSuffix)
