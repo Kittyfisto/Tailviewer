@@ -86,10 +86,13 @@ namespace Installer
 
 		private void RemovePreviousInstallation(string installationPath)
 		{
-			var existingFiles = Directory.EnumerateFiles(installationPath).ToList();
-			foreach (var file in existingFiles)
+			if (Directory.Exists(installationPath))
 			{
-				DeleteFile(file);
+				var existingFiles = Directory.EnumerateFiles(installationPath).ToList();
+				foreach (var file in existingFiles)
+				{
+					DeleteFile(file);
+				}
 			}
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -52,8 +53,31 @@ namespace Tailviewer.AcceptanceTests
 			"Verifies that a fresh install into a completely empty directory yields a runnable tailviewer application")]
 		public void TestFreshInstall()
 		{
+			Delete(_installationPath);
 			InstallInto(_installationPath);
 			Execute(_installationPath);
+		}
+
+		[Test]
+		public void TestOverwriteInstall()
+		{
+			Delete(_installationPath);
+			InstallInto(_installationPath);
+			InstallInto(_installationPath);
+			Execute(_installationPath);
+		}
+
+		private void Delete(string installationPath)
+		{
+			if (Directory.Exists(installationPath))
+			{
+				var files = Directory.EnumerateFiles(installationPath, "*", SearchOption.AllDirectories).ToList();
+				foreach (var file in files)
+				{
+					File.Delete(file);
+				}
+				Directory.Delete(installationPath, true);
+			}
 		}
 
 		private void StartInstaller()
