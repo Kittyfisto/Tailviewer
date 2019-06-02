@@ -51,7 +51,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			new Action(() => parser
 					.TryParse(
 						content,
-						out timestamp)).ShouldNotThrow();
+						out timestamp)).Should().NotThrow();
 
 			parser.TryParse(content, out timestamp).Should().BeFalse();
 		}

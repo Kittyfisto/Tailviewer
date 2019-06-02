@@ -68,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				Times.Once,
 				"because the single line log file should register itself as a source at the listener");
 
-			new Action(() => logFile.Dispose()).ShouldNotThrow("because Dispose() must always succeed");
+			new Action(() => logFile.Dispose()).Should().NotThrow("because Dispose() must always succeed");
 			_source.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => Equals(y, logFile))), Times.Once,
 				"because the single line log file should remove itself as a listener from its source upon being disposed of");
 		}

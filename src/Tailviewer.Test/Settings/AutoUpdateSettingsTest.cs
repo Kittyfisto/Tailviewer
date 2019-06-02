@@ -55,7 +55,7 @@ namespace Tailviewer.Test.Settings
 			_settings.ProxyServer = null;
 			_settings.ProxyUsername = null;
 			_settings.ProxyPassword = null;
-			new Action(() => _settings.GetWebProxy()).ShouldNotThrow();
+			new Action(() => _settings.GetWebProxy()).Should().NotThrow();
 			var proxy = _settings.GetWebProxy();
 			proxy.Should().NotBeNull();
 			proxy.Credentials.Should().BeNull();

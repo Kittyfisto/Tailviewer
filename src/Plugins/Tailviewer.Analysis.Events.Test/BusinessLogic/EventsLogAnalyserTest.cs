@@ -60,7 +60,7 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 			new Action(() => new EventsLogAnalyser(_scheduler,
 				_source,
 				TimeSpan.Zero,
-				settings)).ShouldNotThrow("becuase the analyser should just ignore invalid event definitions");
+				settings)).Should().NotThrow("becuase the analyser should just ignore invalid event definitions");
 		}
 
 		[Test]

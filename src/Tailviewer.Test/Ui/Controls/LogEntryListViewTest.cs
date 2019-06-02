@@ -76,7 +76,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that an empty log file can be represented")]
 		public void TestSetLogFile1()
 		{
-			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+			new Action(() => _control.LogFile = _logFile.Object).Should().NotThrow();
 			_control.LogFile.Should().BeSameAs(_logFile.Object);
 
 			DispatcherExtensions.ExecuteAllEvents();
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
 
-			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+			new Action(() => _control.LogFile = _logFile.Object).Should().NotThrow();
 
 			_control.VisibleTextLines.Count.Should().Be(1, "Because the log file contains one log line");
 			_control.VisibleTextLines[0].LogLine.Should().Be(_lines[0]);
@@ -115,7 +115,7 @@ namespace Tailviewer.Test.Ui.Controls
 				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
 			}
 
-			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+			new Action(() => _control.LogFile = _logFile.Object).Should().NotThrow();
 
 			_control.VisibleTextLines.Count.Should().Be(46, "Because the view can display 46 lines and we've added as many");
 			for (int i = 0; i < 46; ++i)
@@ -141,7 +141,7 @@ namespace Tailviewer.Test.Ui.Controls
 				_lines.Add(new LogLine(0, 0, "Foobar", LevelFlags.Debug));
 			}
 
-			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+			new Action(() => _control.LogFile = _logFile.Object).Should().NotThrow();
 
 			// It takes some "time" until the control has done its layouting
 			DispatcherExtensions.ExecuteAllEvents();
@@ -168,7 +168,7 @@ namespace Tailviewer.Test.Ui.Controls
 					called = true;
 					return 221;
 				});
-			new Action(() => _control.LogFile = _logFile.Object).ShouldNotThrow();
+			new Action(() => _control.LogFile = _logFile.Object).Should().NotThrow();
 
 			_control.HorizontalScrollBar.Visibility.Should().Be(Visibility.Visible, "Because a scroll bar is necessary to view all contents of the log file");
 			_control.HorizontalScrollBar.Maximum.Should().BeGreaterThan(0, "Because the log file claims that its greatest line contains more characters than can currently be represented by the control, hence a scrollbar is necessary");
@@ -293,7 +293,7 @@ namespace Tailviewer.Test.Ui.Controls
 						throw new SystemException();
 				});
 
-			new Action(() => _control.OnTimer(null, null)).ShouldNotThrow("Because any and all exceptions must be handled inside this callback");
+			new Action(() => _control.OnTimer(null, null)).Should().NotThrow("Because any and all exceptions must be handled inside this callback");
 			_control.PendingModificationsCount.Should().Be(1, "Because another update should've been scheduled as this one wasn't fully completed");
 			exceptionThrown.Should().BeTrue("Because the control should've queried the ILogFile.Count property during its update");
 

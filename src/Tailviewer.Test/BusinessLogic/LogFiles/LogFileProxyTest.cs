@@ -53,8 +53,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.Count.Should().Be(0);
 				proxy.Columns.Should().Equal(LogFileColumns.Minimum);
 
-				new Action(() => proxy.GetLine(0)).ShouldThrow<IndexOutOfRangeException>();
-				new Action(() => proxy.GetSection(new LogFileSection(0, 1))).ShouldThrow<IndexOutOfRangeException>();
+				new Action(() => proxy.GetLine(0)).Should().Throw<IndexOutOfRangeException>();
+				new Action(() => proxy.GetSection(new LogFileSection(0, 1))).Should().Throw<IndexOutOfRangeException>();
 			}
 		}
 
@@ -179,7 +179,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_scheduler.PeriodicTaskCount.Should().Be(1);
 
 			proxy.IsDisposed.Should().BeFalse();
-			new Action(proxy.Dispose).ShouldNotThrow();
+			new Action(proxy.Dispose).Should().NotThrow();
 			proxy.IsDisposed.Should().BeTrue();
 			_scheduler.PeriodicTaskCount.Should().Be(0);
 		}
@@ -269,10 +269,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				proxy.AddListener(_listener.Object, TimeSpan.Zero, 1000);
 
-				new Action(() => proxy.OnLogFileModified(new Mock<ILogFile>().Object, new LogFileSection(0, 1))).ShouldNotThrow();
+				new Action(() => proxy.OnLogFileModified(new Mock<ILogFile>().Object, new LogFileSection(0, 1))).Should().NotThrow();
 				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 
-				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).ShouldNotThrow();
+				new Action(() => proxy.OnLogFileModified(null, new LogFileSection(0, 1))).Should().NotThrow();
 				_modifications.Should().Equal(new[] { LogFileSection.Reset }, "because the OnLogFileModified shouldn't have been forwarded since it's from the wrong source");
 			}
 		}

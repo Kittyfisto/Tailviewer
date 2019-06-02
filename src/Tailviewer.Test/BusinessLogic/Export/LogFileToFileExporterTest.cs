@@ -30,7 +30,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 			logFile.AddEntry("World!", LevelFlags.None);
 			var exporter = new LogFileToFileExporter(logFile, _directory, "foo");
 			exporter.FullExportFilename.Should().BeNull("because the full filename must be determined from inside Export, NOT beforehand");
-			new Action(() => exporter.Export()).ShouldNotThrow();
+			new Action(() => exporter.Export()).Should().NotThrow();
 			exporter.FullExportFilename.Should().NotBeNull();
 			exporter.FullExportFilename.Should().StartWith(_directory);
 
@@ -47,7 +47,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 
 			logFile.AddEntry("World!", LevelFlags.None);
 			var exporter2 = new LogFileToFileExporter(logFile, _directory, "foo");
-			new Action(() => exporter2.Export()).ShouldNotThrow();
+			new Action(() => exporter2.Export()).Should().NotThrow();
 
 			exporter1.FullExportFilename.Should()
 				.NotBe(exporter2.FullExportFilename,

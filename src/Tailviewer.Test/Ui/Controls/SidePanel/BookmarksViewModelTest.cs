@@ -60,7 +60,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel
 
 			var bookmark = _viewModel.Bookmarks.First();
 			bookmark.RemoveCommand.CanExecute(null).Should().BeTrue();
-			new Action(() => bookmark.RemoveCommand.Execute(null)).ShouldNotThrow();
+			new Action(() => bookmark.RemoveCommand.Execute(null)).Should().NotThrow();
 			_viewModel.Bookmarks.Should().BeEmpty();
 			_dataSources.Verify(x => x.RemoveBookmark(It.IsAny<Bookmark>()), Times.Once);
 		}

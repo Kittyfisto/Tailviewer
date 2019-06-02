@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		public void TestToString1()
 		{
 			var row = new LogEntry();
-			new Action(() => row.ToString()).ShouldNotThrow();
+			new Action(() => row.ToString()).Should().NotThrow();
 		}
 
 		[Test]

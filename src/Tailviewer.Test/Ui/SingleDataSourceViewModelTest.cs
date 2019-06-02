@@ -152,7 +152,7 @@ namespace Tailviewer.Test.Ui
 			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 
 			model.DisplayName.Should().Be("foo");
-			new Action(() => model.DisplayName = "bar").ShouldThrow<InvalidOperationException>();
+			new Action(() => model.DisplayName = "bar").Should().Throw<InvalidOperationException>();
 			model.DisplayName.Should().Be("foo");
 		}
 
@@ -167,7 +167,7 @@ namespace Tailviewer.Test.Ui
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				model.RemoveCommand.Should().NotBeNull();
 				model.RemoveCommand.CanExecute(null).Should().BeTrue();
-				new Action(() => model.RemoveCommand.Execute(null)).ShouldNotThrow();
+				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
 			}
 		}
 
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.Ui
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				var calls = new List<IDataSourceViewModel>();
 				model.Remove += calls.Add;
-				new Action(() => model.RemoveCommand.Execute(null)).ShouldNotThrow();
+				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
 				calls.Should().Equal(new object[] {model});
 			}
 		}

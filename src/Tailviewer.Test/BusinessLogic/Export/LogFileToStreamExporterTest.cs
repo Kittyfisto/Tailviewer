@@ -18,9 +18,9 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestConstruction1()
 		{
 			new Action(() => new LogFileToStreamExporter(null, new MemoryStream()))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 			new Action(() => new LogFileToStreamExporter(new Mock<ILogFile>().Object, null))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 			var stream = new MemoryStream();
 			var logFile = new InMemoryLogFile();
 			var exporter = new LogFileToStreamExporter(logFile, stream);
-			new Action(() => exporter.Export()).ShouldNotThrow();
+			new Action(() => exporter.Export()).Should().NotThrow();
 			GetString(stream).Should().Be(string.Empty, "because an empty log file should result in an empty export");
 		}
 
@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello, World!", LevelFlags.None);
 			var exporter = new LogFileToStreamExporter(logFile, stream);
-			new Action(() => exporter.Export()).ShouldNotThrow();
+			new Action(() => exporter.Export()).Should().NotThrow();
 
 			GetString(stream).Should().Be("Hello, World!");
 		}
@@ -53,7 +53,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 			logFile.AddEntry("Hello,", LevelFlags.None);
 			logFile.AddEntry("World!", LevelFlags.None);
 			var exporter = new LogFileToStreamExporter(logFile, stream);
-			new Action(() => exporter.Export()).ShouldNotThrow();
+			new Action(() => exporter.Export()).Should().NotThrow();
 
 			GetString(stream).Should().Be("Hello,\r\nWorld!");
 		}

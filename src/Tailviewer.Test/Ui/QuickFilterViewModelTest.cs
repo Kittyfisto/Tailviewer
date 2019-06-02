@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.QuickFilter;
@@ -72,7 +70,7 @@ namespace Tailviewer.Test.Ui
 			_model.CurrentDataSource = null;
 			_model.CanBeActivated.Should().BeFalse();
 			_model.IsActive.Should().BeFalse();
-			new Action(() => _model.IsActive = true).ShouldThrow<InvalidOperationException>();
+			new Action(() => _model.IsActive = true).Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]

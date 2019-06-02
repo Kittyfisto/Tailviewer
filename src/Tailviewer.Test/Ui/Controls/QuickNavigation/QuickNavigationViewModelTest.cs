@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -101,9 +100,11 @@ namespace Tailviewer.Test.Ui.Controls.QuickNavigation
 			var suggestion = viewModel.Suggestions[0];
 			viewModel.ChooseDataSourceCommand.CanExecute(suggestion).Should().BeTrue();
 
-			viewModel.MonitorEvents();
-			viewModel.ChooseDataSourceCommand.Execute(suggestion);
-			viewModel.ShouldRaise(nameof(QuickNavigationViewModel.DataSourceChosen));
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.ChooseDataSourceCommand.Execute(suggestion);
+				monitor.Should().Raise(nameof(QuickNavigationViewModel.DataSourceChosen));
+			}
 		}
 
 		private static IDataSource CreateSingleDataSource(string fileName)

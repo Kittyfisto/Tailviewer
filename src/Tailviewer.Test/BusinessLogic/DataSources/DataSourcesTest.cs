@@ -246,7 +246,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSources.Bookmarks.Should().BeEmpty();
 
 			new Action(() => _dataSources.RemoveBookmark(new Bookmark(new Mock<IDataSource>().Object, 1)))
-				.ShouldNotThrow("because removing a bookmark that was never there shouldn't be considered an error");
+				.Should().NotThrow("because removing a bookmark that was never there shouldn't be considered an error");
 			_dataSources.Bookmarks.Should().BeEmpty("because no boomark should've been added in the process");
 		}
 	}

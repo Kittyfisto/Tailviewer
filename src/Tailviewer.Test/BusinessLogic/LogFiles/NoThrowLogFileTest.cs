@@ -29,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDispose()
 		{
 			_logFile.Setup(x => x.Dispose()).Throws<SystemException>();
-			new Action(() => _proxy.Dispose()).ShouldNotThrow();
+			new Action(() => _proxy.Dispose()).Should().NotThrow();
 			_logFile.Verify(x => x.Dispose(), Times.Once);
 		}
 
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.GetValue(LogFileProperties.LastModified);
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.GetValue(LogFileProperties.LastModified), Times.Once);
 		}
 
@@ -59,7 +59,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.GetValue(LogFileProperties.EmptyReason);
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.GetValue(LogFileProperties.EmptyReason), Times.Once);
 		}
 
@@ -70,7 +70,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.EndOfSourceReached;
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.EndOfSourceReached, Times.Once);
 		}
 
@@ -81,7 +81,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.Count;
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.Count, Times.Once);
 		}
 
@@ -92,7 +92,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.OriginalCount;
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.OriginalCount, Times.Once);
 		}
 
@@ -103,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = _proxy.MaxCharactersPerLine;
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			_logFile.Verify(x => x.MaxCharactersPerLine, Times.Once);
 		}
 
@@ -114,7 +114,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var listener = new Mock<ILogFileListener>().Object;
 			var maximumWaitTime = TimeSpan.FromSeconds(42);
 			var maximumLineCount = 9001;
-			new Action(() => _proxy.AddListener(listener, maximumWaitTime, maximumLineCount)).ShouldNotThrow();
+			new Action(() => _proxy.AddListener(listener, maximumWaitTime, maximumLineCount)).Should().NotThrow();
 			_logFile.Verify(x => x.AddListener(It.Is<ILogFileListener>(y => y == listener),
 				It.Is<TimeSpan>(y => y == maximumWaitTime),
 				It.Is<int>(y => y == maximumLineCount)), Times.Once);
@@ -125,7 +125,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>())).Throws<SystemException>();
 			var listener = new Mock<ILogFileListener>().Object;
-			new Action(() => _proxy.RemoveListener(listener)).ShouldNotThrow();
+			new Action(() => _proxy.RemoveListener(listener)).Should().NotThrow();
 			_logFile.Verify(x => x.RemoveListener(It.Is<ILogFileListener>(y => y == listener)), Times.Once);
 		}
 
@@ -135,7 +135,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>())).Throws<SystemException>();
 			var section = new LogFileSection(42, 9001);
 			var lines = new LogLine[9001];
-			new Action(() => _proxy.GetSection(section, lines)).ShouldNotThrow();
+			new Action(() => _proxy.GetSection(section, lines)).Should().NotThrow();
 			_logFile.Verify(x => x.GetSection(It.Is<LogFileSection>(y => y == section),
 				It.Is<LogLine[]>(y => y == lines)), Times.Once);
 		}
@@ -145,7 +145,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Throws<SystemException>();
 			var index = 9001;
-			new Action(() => _proxy.GetLine(index)).ShouldNotThrow();
+			new Action(() => _proxy.GetLine(index)).Should().NotThrow();
 			_logFile.Verify(x => x.GetLine(It.Is<int>(y => y == index)), Times.Once);
 		}
 
@@ -154,7 +154,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			_logFile.Setup(x => x.GetLogLineIndexOfOriginalLineIndex(It.IsAny<LogLineIndex>())).Throws<SystemException>();
 			var index = new LogLineIndex(42);
-			new Action(() => _proxy.GetLogLineIndexOfOriginalLineIndex(index)).ShouldNotThrow();
+			new Action(() => _proxy.GetLogLineIndexOfOriginalLineIndex(index)).Should().NotThrow();
 			_logFile.Verify(x => x.GetLogLineIndexOfOriginalLineIndex(It.Is<LogLineIndex>(y => y == index)), Times.Once);
 		}
 
@@ -165,7 +165,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[9101];
-			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, 9001)).ShouldNotThrow();
+			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, 9001)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
 			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
@@ -181,7 +181,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
-			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101)).ShouldNotThrow();
+			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
 			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
@@ -197,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new Mock<ILogEntries>().Object;
-			new Action(() => _proxy.GetEntries(section, buffer, 9001)).ShouldNotThrow();
+			new Action(() => _proxy.GetEntries(section, buffer, 9001)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
 			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),
@@ -212,7 +212,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var indices = new LogLineIndex[] { 1, 2, 3 };
 			var buffer = new Mock<ILogEntries>().Object;
-			new Action(() => _proxy.GetEntries(indices, buffer, 101)).ShouldNotThrow();
+			new Action(() => _proxy.GetEntries(indices, buffer, 101)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
 			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),

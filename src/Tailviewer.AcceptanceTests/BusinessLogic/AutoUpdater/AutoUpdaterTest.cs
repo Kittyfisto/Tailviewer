@@ -36,7 +36,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.AutoUpdater
 			});
 			var newestVersion = updater.QueryNewestVersions();
 			new Action(() => updater.Download(newestVersion.Stable, newestVersion.StableAddress))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 		}
 	}
 }

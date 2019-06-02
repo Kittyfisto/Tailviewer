@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel.Settings
 			var dataContext = new SettingsMainPanelViewModel(_applicationSettings.Object);
 			_control.DataContext = dataContext;
 
-			new Action(() => _control.DataContext = null).ShouldNotThrow();
+			new Action(() => _control.DataContext = null).Should().NotThrow();
 		}
 	}
 }

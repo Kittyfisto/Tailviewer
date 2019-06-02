@@ -25,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic
 			        .Callback((ILogFile file, LogFileSection y) => sections.Add(y));
 
 			collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10);
-			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).ShouldNotThrow();
+			new Action(() => collection.AddListener(listener.Object, TimeSpan.FromSeconds(1), 10)).Should().NotThrow();
 
 			collection.OnRead(10);
 			sections.Should().Equal(new[]

@@ -57,7 +57,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		public void TestUpdate1()
 		{
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
-			new Action(() => model.Update()).ShouldNotThrow();
+			new Action(() => model.Update()).Should().NotThrow();
 		}
 
 		[Test]
@@ -173,7 +173,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		{
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
 			model.CurrentDataSource.Should().BeNull();
-			new Action(() => model.GoToNextDataSource()).ShouldNotThrow();
+			new Action(() => model.GoToNextDataSource()).Should().NotThrow();
 			model.CurrentDataSource.Should().BeNull();
 		}
 
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		{
 			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
 			model.CurrentDataSource.Should().BeNull();
-			new Action(() => model.GoToPreviousDataSource()).ShouldNotThrow();
+			new Action(() => model.GoToPreviousDataSource()).Should().NotThrow();
 			model.CurrentDataSource.Should().BeNull();
 		}
 

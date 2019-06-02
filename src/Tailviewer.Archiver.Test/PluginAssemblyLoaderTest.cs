@@ -66,28 +66,28 @@ namespace Tailviewer.Archiver.Test
 		public void TestReflectPlugin3()
 		{
 			var scanner = new PluginAssemblyLoader();
-			new Action(() => scanner.ReflectPlugin(null)).ShouldThrow<ArgumentNullException>();
+			new Action(() => scanner.ReflectPlugin(null)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin4()
 		{
 			var scanner = new PluginAssemblyLoader();
-			new Action(() => scanner.ReflectPlugin("DAAWDADAWWF")).ShouldThrow<FileNotFoundException>();
+			new Action(() => scanner.ReflectPlugin("DAAWDADAWWF")).Should().Throw<FileNotFoundException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin5()
 		{
 			var scanner = new PluginAssemblyLoader();
-			new Action(() => scanner.ReflectPlugin(@"C:\adwwdwawad\asxas")).ShouldThrow<FileNotFoundException>();
+			new Action(() => scanner.ReflectPlugin(@"C:\adwwdwawad\asxas")).Should().Throw<FileNotFoundException>();
 		}
 
 		[Test]
 		public void TestReflectPlugin6()
 		{
 			var scanner = new PluginAssemblyLoader();
-			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).ShouldThrow<ArgumentException>(
+			new Action(() => scanner.ReflectPlugin("C:\adwwdwawad\asxas")).Should().Throw<ArgumentException>(
 				"because we used illegal characters in that path");
 		}
 
@@ -401,7 +401,7 @@ namespace Tailviewer.Archiver.Test
 					}
 				};
 
-				new Action(() => scanner.LoadAllOfType<IFileFormatPlugin>()).ShouldNotThrow();
+				new Action(() => scanner.LoadAllOfType<IFileFormatPlugin>()).Should().NotThrow();
 				scanner.LoadAllOfType<IFileFormatPlugin>().Should().BeEmpty();
 			}
 		}

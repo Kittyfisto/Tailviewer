@@ -77,9 +77,9 @@ namespace Tailviewer.Test.Settings
 			var a = new DataSource(@"A");
 			var b = new DataSource(@"B");
 			dataSources.Add(a);
-			new Action(() => dataSources.MoveBefore(a, b)).ShouldNotThrow();
+			new Action(() => dataSources.MoveBefore(a, b)).Should().NotThrow();
 			dataSources.Should().Equal(a);
-			new Action(() => dataSources.MoveBefore(b, a)).ShouldNotThrow();
+			new Action(() => dataSources.MoveBefore(b, a)).Should().NotThrow();
 			dataSources.Should().Equal(a);
 		}
 
@@ -92,7 +92,7 @@ namespace Tailviewer.Test.Settings
 			var b = new DataSource(@"B");
 			var c = new DataSource(@"C");
 			dataSources.Add(a);
-			new Action(() => dataSources.MoveBefore(b, c)).ShouldNotThrow();
+			new Action(() => dataSources.MoveBefore(b, c)).Should().NotThrow();
 			dataSources.Should().Equal(a);
 		}
 	}

@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		public void TestGetTestPluginVersionWrongType()
 		{
 			new Action(() => PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(object)))
-				.ShouldThrow<ArgumentException>();
+				.Should().Throw<ArgumentException>();
 		}
 	}
 }

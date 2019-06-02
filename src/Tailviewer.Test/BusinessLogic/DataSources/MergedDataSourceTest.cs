@@ -103,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestCtor1()
 		{
 			new Action(() => new MergedDataSource(_taskScheduler, null))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -112,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestCtor2()
 		{
 			new Action(() => new MergedDataSource(_taskScheduler, new DataSource()))
-				.ShouldThrow<ArgumentException>();
+				.Should().Throw<ArgumentException>();
 		}
 
 		[Test]

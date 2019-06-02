@@ -26,15 +26,16 @@ namespace Tailviewer.Analysis.Count.Test.Ui
 			var template = new WidgetTemplate
 			{};
 			var model = new LogEntryCountWidgetViewModel(template, _analyser.Object);
-			model.MonitorEvents();
+			using (var monitor = model.Monitor())
+			{
+				model.Title = "Hello there...";
+				template.Title.Should().Be("Hello there...");
+				monitor.Should().Raise(nameof(IWidgetViewModel.TemplateModified));
 
-			model.Title = "Hello there...";
-			template.Title.Should().Be("Hello there...");
-			model.ShouldRaise(nameof(IWidgetViewModel.TemplateModified));
-
-			model.Title = "Sup!";
-			template.Title.Should().Be("Sup!");
-			model.ShouldRaise(nameof(IWidgetViewModel.TemplateModified));
+				model.Title = "Sup!";
+				template.Title.Should().Be("Sup!");
+				monitor.Should().Raise(nameof(IWidgetViewModel.TemplateModified));
+			}
 		}
 
 		[Test]
@@ -47,15 +48,16 @@ namespace Tailviewer.Analysis.Count.Test.Ui
 				Configuration = widgetConfiguration
 			};
 			var model = new LogEntryCountWidgetViewModel(template, _analyser.Object);
-			model.MonitorEvents();
+			using (var monitor = model.Monitor())
+			{
+				model.Caption = "Hello there...";
+				widgetConfiguration.Caption.Should().Be("Hello there...");
+				monitor.Should().Raise(nameof(IWidgetViewModel.TemplateModified));
 
-			model.Caption = "Hello there...";
-			widgetConfiguration.Caption.Should().Be("Hello there...");
-			model.ShouldRaise(nameof(IWidgetViewModel.TemplateModified));
-
-			model.Caption = "Sup!";
-			widgetConfiguration.Caption.Should().Be("Sup!");
-			model.ShouldRaise(nameof(IWidgetViewModel.TemplateModified));
+				model.Caption = "Sup!";
+				widgetConfiguration.Caption.Should().Be("Sup!");
+				monitor.Should().Raise(nameof(IWidgetViewModel.TemplateModified));
+			}
 		}
 	}
 }

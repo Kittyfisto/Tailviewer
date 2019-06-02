@@ -180,7 +180,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Description("Verifies that an empty queue can be disposed of")]
 		public void TestDispose1()
 		{
-			new Action(() => _queue.Dispose()).ShouldNotThrow();
+			new Action(() => _queue.Dispose()).Should().NotThrow();
 		}
 
 		[Test]
@@ -188,9 +188,9 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestDispose2()
 		{
 			var task = _queue[new LogEntryIndex(42)];
-			new Action(() => _queue.Dispose()).ShouldNotThrow();
+			new Action(() => _queue.Dispose()).Should().NotThrow();
 			task.IsCanceled.Should().BeTrue();
-			new Action(() => { var unused = task.Result; }).ShouldNotThrow();
+			new Action(() => { var unused = task.Result; }).Should().NotThrow();
 			task.Result.Should().Be(default(LogEntry));
 		}
 
@@ -199,8 +199,8 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestDispose3()
 		{
 			_queue.Dispose();
-			new Action(() => _queue.Dispose()).ShouldNotThrow();
-			new Action(() => _queue.Dispose()).ShouldNotThrow();
+			new Action(() => _queue.Dispose()).Should().NotThrow();
+			new Action(() => _queue.Dispose()).Should().NotThrow();
 		}
 	}
 }

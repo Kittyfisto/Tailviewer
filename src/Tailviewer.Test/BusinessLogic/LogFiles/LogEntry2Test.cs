@@ -17,16 +17,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var entry = new LogEntry2();
 			entry.Columns.Should().BeEmpty();
-			new Action(() => { var unused = entry.DeltaTime; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.ElapsedTime; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.Index; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LineNumber; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LogEntryIndex; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LogLevel; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.OriginalIndex; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.OriginalLineNumber; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.RawContent; }).ShouldThrow<NoSuchColumnException>();
-			new Action(() => { var unused = entry.Timestamp; }).ShouldThrow<NoSuchColumnException>();
+			new Action(() => { var unused = entry.DeltaTime; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.ElapsedTime; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.Index; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.LineNumber; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.LogEntryIndex; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.LogLevel; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.OriginalIndex; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.OriginalLineNumber; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.RawContent; }).Should().Throw<NoSuchColumnException>();
+			new Action(() => { var unused = entry.Timestamp; }).Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
@@ -169,9 +169,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetValueWrongType()
 		{
 			var entry = new LogEntry2();
-			new Action(() => entry.SetValue(LogFileColumns.RawContent, 42)).ShouldThrow<ArgumentException>();
+			new Action(() => entry.SetValue(LogFileColumns.RawContent, 42)).Should().Throw<ArgumentException>();
 			entry.Columns.Should().BeEmpty();
-			new Action(() => entry.GetValue(LogFileColumns.RawContent)).ShouldThrow<ArgumentException>();
+			new Action(() => entry.GetValue(LogFileColumns.RawContent)).Should().Throw<ArgumentException>();
 		}
 
 		protected override IReadOnlyLogEntry CreateEmpty()

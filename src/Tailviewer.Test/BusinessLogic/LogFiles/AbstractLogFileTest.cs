@@ -72,28 +72,28 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetNullColumn()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(0, 0), null, new int[0], 0)).ShouldThrow<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogFileSection(0, 0), null, new int[0], 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestGetColumnNullIndices()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(null, LogFileColumns.Index, new LogLineIndex[0], 0)).ShouldThrow<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(null, LogFileColumns.Index, new LogLineIndex[0], 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestGetColumnNullBuffer1()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogFileSection(), LogFileColumns.Index, null, 0)).ShouldThrow<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogFileSection(), LogFileColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestGetColumnNullBuffer2()
 		{
 			var logFile = CreateEmpty();
-			new Action(() => logFile.GetColumn(new LogLineIndex[0], LogFileColumns.Index, null, 0)).ShouldThrow<ArgumentNullException>();
+			new Action(() => logFile.GetColumn(new LogLineIndex[0], LogFileColumns.Index, null, 0)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
 			                                   LogFileColumns.OriginalLineNumber,
-			                                   new int[9])).ShouldThrow<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
+			                                   new int[9])).Should().Throw<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
 		}
 
 		[Test]
@@ -111,7 +111,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = CreateEmpty();
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
 			                                   LogFileColumns.OriginalLineNumber,
-			                                   new int[9])).ShouldThrow<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
+			                                   new int[9])).Should().Throw<ArgumentException>("because the given buffer is less than the amount of retrieved entries");
 		}
 
 		[Test]
@@ -121,7 +121,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
 			                                   LogFileColumns.OriginalLineNumber,
 			                                   new int[10],
-			                                   -1)).ShouldThrow<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
+			                                   -1)).Should().Throw<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
 		}
 
 		[Test]
@@ -131,7 +131,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
 			                                   LogFileColumns.OriginalLineNumber,
 			                                   new int[10],
-			                                   -1)).ShouldThrow<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
+			                                   -1)).Should().Throw<ArgumentOutOfRangeException>("because the given destination index shouldn't be negative");
 		}
 
 		[Test]
@@ -141,7 +141,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetColumn(new LogFileSection(1, 10),
 			                                   LogFileColumns.OriginalLineNumber,
 			                                   new int[15],
-			                                   6)).ShouldThrow<ArgumentException>("because the given length and offset are greater than the buffer length");
+			                                   6)).Should().Throw<ArgumentException>("because the given length and offset are greater than the buffer length");
 		}
 
 		[Test]
@@ -151,7 +151,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => logFile.GetColumn(new LogLineIndex[10],
 			                                   LogFileColumns.OriginalLineNumber,
 			                                   new int[15],
-			                                   6)).ShouldThrow<ArgumentException>("because the given length and offset are greater than the buffer length");
+			                                   6)).Should().Throw<ArgumentException>("because the given length and offset are greater than the buffer length");
 		}
 
 		#region Index

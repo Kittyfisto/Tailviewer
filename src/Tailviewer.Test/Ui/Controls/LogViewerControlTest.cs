@@ -510,8 +510,8 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_control.DataSource = dataSource.Object;
 
-			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode).ShouldNotThrow();
-			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.Filename).ShouldNotThrow();
+			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.CharacterCode).Should().NotThrow();
+			new Action(() => _control.MergedDataSourceDisplayMode = DataSourceDisplayMode.Filename).Should().NotThrow();
 		}
 
 		[Test]

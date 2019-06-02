@@ -30,11 +30,11 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestConvert3()
 		{
 			var converter = new AdjustingDoubleConverter();
-			new Action(() => converter.Convert(null, typeof(double), null, CultureInfo.CurrentCulture)).ShouldNotThrow();
-			new Action(() => converter.Convert(42, typeof(double), null, CultureInfo.CurrentCulture)).ShouldNotThrow();
-			new Action(() => converter.Convert(42f, typeof(double), null, CultureInfo.CurrentCulture)).ShouldNotThrow();
-			new Action(() => converter.Convert("42", typeof(double), null, CultureInfo.CurrentCulture)).ShouldNotThrow();
-			new Action(() => converter.Convert(typeof(bool), typeof(double), null, CultureInfo.CurrentCulture)).ShouldNotThrow();
+			new Action(() => converter.Convert(null, typeof(double), null, CultureInfo.CurrentCulture)).Should().NotThrow();
+			new Action(() => converter.Convert(42, typeof(double), null, CultureInfo.CurrentCulture)).Should().NotThrow();
+			new Action(() => converter.Convert(42f, typeof(double), null, CultureInfo.CurrentCulture)).Should().NotThrow();
+			new Action(() => converter.Convert("42", typeof(double), null, CultureInfo.CurrentCulture)).Should().NotThrow();
+			new Action(() => converter.Convert(typeof(bool), typeof(double), null, CultureInfo.CurrentCulture)).Should().NotThrow();
 		}
 	}
 }

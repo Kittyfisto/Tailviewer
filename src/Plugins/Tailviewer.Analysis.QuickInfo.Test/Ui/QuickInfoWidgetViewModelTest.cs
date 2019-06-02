@@ -55,12 +55,13 @@ namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 			var analyserConfiguration = new QuickInfoAnalyserConfiguration();
 			analyser.Setup(x => x.Configuration).Returns(analyserConfiguration);
 			var viewModel = new QuickInfoWidgetViewModel(template, analyser.Object);
-			viewModel.MonitorEvents();
-
-			viewModel.AddQuickInfoCommand.Execute(null);
-			widgetConfiguration.Titles.Should().HaveCount(1, "because we've just added one new element");
-			//analyserConfiguration.QuickInfos.Should().HaveCount(1, "because we've just added one new element");
-			viewModel.ShouldRaise(nameof(QuickInfoWidgetViewModel.TemplateModified));
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.AddQuickInfoCommand.Execute(null);
+				widgetConfiguration.Titles.Should().HaveCount(1, "because we've just added one new element");
+				//analyserConfiguration.QuickInfos.Should().HaveCount(1, "because we've just added one new element");
+				monitor.Should().Raise(nameof(QuickInfoWidgetViewModel.TemplateModified));
+			}
 		}
 	}
 }

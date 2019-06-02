@@ -56,7 +56,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
 			var id = DataSourceId.CreateNew();
-			new Action(() => analyser.OnLogFileAdded(id, new Mock<ILogFile>().Object)).ShouldNotThrow();
+			new Action(() => analyser.OnLogFileAdded(id, new Mock<ILogFile>().Object)).Should().NotThrow();
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace Tailviewer.Test.BusinessLogic
 		{
 			var analyser = new DataSourceAnalyser(_template, _logFile, _engine.Object);
 			var id = DataSourceId.CreateNew();
-			new Action(() => analyser.OnLogFileRemoved(id, new Mock<ILogFile>().Object)).ShouldNotThrow();
+			new Action(() => analyser.OnLogFileRemoved(id, new Mock<ILogFile>().Object)).Should().NotThrow();
 		}
 	}
 }

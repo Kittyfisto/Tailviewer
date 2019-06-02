@@ -66,7 +66,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			MergedLogFile logFile = null;
 			new Action(() => logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			logFile.Should().NotBeNull();
 		}
 
@@ -88,7 +88,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				.Select(unused => new Mock<ILogFile>().Object).ToArray();
 
 			new Action(() => new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), sources))
-				.ShouldThrow<ArgumentException>("because the a merged log file can only support so many sources");
+				.Should().Throw<ArgumentException>("because the a merged log file can only support so many sources");
 		}
 
 		[Test]
@@ -99,7 +99,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new Mock<ILogFile>();
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
-			new Action(logFile.Dispose).ShouldNotThrow();
+			new Action(logFile.Dispose).Should().NotThrow();
 		}
 
 		[Test]

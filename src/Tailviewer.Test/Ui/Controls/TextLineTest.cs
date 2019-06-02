@@ -255,10 +255,10 @@ namespace Tailviewer.Test.Ui.Controls
 			var searchResults = new SearchResults();
 			searchResults.Add(new LogLineIndex(0), new LogLineMatch(42, 101));
 			
-			new Action(() => textLine.SearchResults = searchResults).ShouldNotThrow();
+			new Action(() => textLine.SearchResults = searchResults).Should().NotThrow();
 
 			IEnumerable<TextSegment> segments = null;
-			new Action(() => segments = textLine.Segments).ShouldNotThrow();
+			new Action(() => segments = textLine.Segments).Should().NotThrow();
 
 			segments.Should().NotBeEmpty();
 			segments.Count().Should().Be(1);
@@ -273,7 +273,7 @@ namespace Tailviewer.Test.Ui.Controls
 			new Action(() =>
 			{
 				var unused = textLine.Segments;
-			}).ShouldNotThrow();
+			}).Should().NotThrow();
 			var segments = textLine.Segments;
 			segments.Should().BeEmpty();
 		}

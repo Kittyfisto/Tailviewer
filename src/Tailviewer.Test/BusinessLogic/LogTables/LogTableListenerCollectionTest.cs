@@ -41,7 +41,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables
 		public void TestAddListener2()
 		{
 			_collection.AddListener(_listener.Object, TimeSpan.Zero, 1);
-			new Action(() => _collection.AddListener(_listener.Object, TimeSpan.Zero, 1)).ShouldNotThrow();
+			new Action(() => _collection.AddListener(_listener.Object, TimeSpan.Zero, 1)).Should().NotThrow();
 
 			_modifications.Should().Equal(new object[] {LogTableModification.Reset},
 				"because the listener should've only been added once");

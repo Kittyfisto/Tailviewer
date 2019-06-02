@@ -69,12 +69,14 @@ namespace Tailviewer.Test.Ui
 			model.CanBeRenamed.Should().BeTrue("because this implementation should support renaming...");
 			model.DisplayName.Should().Be("Merged Data Source");
 
-			model.MonitorEvents();
-			model.DisplayName = "Foobar";
-			model.DisplayName.Should().Be("Foobar");
-			model.DataSourceOrigin.Should().Be("Foobar");
-			model.ShouldRaisePropertyChangeFor(x => x.DisplayName, "because we've just changed the name");
-			model.ShouldRaisePropertyChangeFor(x => x.DataSourceOrigin, "because we've just changed the name");
+			using (var monitor = model.Monitor())
+			{
+				model.DisplayName = "Foobar";
+				model.DisplayName.Should().Be("Foobar");
+				model.DataSourceOrigin.Should().Be("Foobar");
+				monitor.Should().RaisePropertyChangeFor(x => x.DisplayName, "because we've just changed the name");
+				monitor.Should().RaisePropertyChangeFor(x => x.DataSourceOrigin, "because we've just changed the name");
+			}
 		}
 
 		[Test]

@@ -15,14 +15,14 @@ namespace Tailviewer.Test.BusinessLogic.ActionCenter
 		public void TestCtor1()
 		{
 			Action a = new Action(() => new OpenFolderAction(null, new Mock<IFileExplorer>().Object));
-			a.ShouldThrow<ArgumentNullException>("because path isn't set");
+			a.Should().Throw<ArgumentNullException>("because path isn't set");
 		}
 
 		[Test]
 		public void TestCtor2()
 		{
 			Action a = new Action(() => new OpenFolderAction("a", null));
-			a.ShouldThrow<ArgumentNullException>("because file explorer isn't set");
+			a.Should().Throw<ArgumentNullException>("because file explorer isn't set");
 		}
 
 		[Test]

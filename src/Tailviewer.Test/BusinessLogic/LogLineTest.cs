@@ -162,7 +162,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestDetermineLevelsFromLine1()
 		{
-			new Action(() => LogLine.DetermineLevelFromLine(null)).ShouldNotThrow();
+			new Action(() => LogLine.DetermineLevelFromLine(null)).Should().NotThrow();
 			LogLine.DetermineLevelFromLine(null).Should().Be(LevelFlags.None);
 		}
 

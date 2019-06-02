@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = buffer[invalidIndex];
-			}).ShouldThrow<IndexOutOfRangeException>();
+			}).Should().Throw<IndexOutOfRangeException>();
 		}
 
 		[Test]
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = new LogEntryBuffer(2, LogFileColumns.Timestamp);
 			new Action(() => buffer.CopyFrom(null, 0, new string[0], 0, 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = new LogEntryBuffer(2, LogFileColumns.Timestamp);
 			new Action(() => buffer.CopyFrom(LogFileColumns.RawContent, 0, new string[0], 0, 0))
-				.ShouldThrow<NoSuchColumnException>();
+				.Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
@@ -144,14 +144,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestAccessUnavailableColumn()
 		{
 			var buffer = new LogEntryBuffer(1);
-			new Action(() => { var unused = buffer[0].RawContent; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].Index; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].OriginalIndex; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].LineNumber; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].OriginalLineNumber; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].Timestamp; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].ElapsedTime; }).ShouldThrow<ColumnNotRetrievedException>();
-			new Action(() => { var unused = buffer[0].DeltaTime; }).ShouldThrow<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].RawContent; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].Index; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].OriginalIndex; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].LineNumber; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].OriginalLineNumber; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].Timestamp; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].ElapsedTime; }).Should().Throw<ColumnNotRetrievedException>();
+			new Action(() => { var unused = buffer[0].DeltaTime; }).Should().Throw<ColumnNotRetrievedException>();
 		}
 
 		[Test]

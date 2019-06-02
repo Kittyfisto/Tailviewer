@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
 
 			_actualAnalyser.Setup(x => x.Dispose()).Throws<NullReferenceException>();
-			new Action(() => analyser.Dispose()).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
+			new Action(() => analyser.Dispose()).Should().NotThrow("because the proxy is supposed to handle failures of its plugin");
 			_actualAnalyser.Verify(x => x.Dispose(), Times.Once, "because the proxy should have at least tried to dispose of the inner analyser");
 		}
 
@@ -43,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_actualAnalyser.Setup(x => x.OnLogFileAdded(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>())).Throws<NullReferenceException>();
 			var id = DataSourceId.CreateNew();
 			var logFile = new Mock<ILogFile>().Object;
-			new Action(() => analyser.OnLogFileAdded(id, logFile)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
+			new Action(() => analyser.OnLogFileAdded(id, logFile)).Should().NotThrow("because the proxy is supposed to handle failures of its plugin");
 			_actualAnalyser.Verify(x => x.OnLogFileAdded(id, logFile), Times.Once, "because the proxy should have at least tried to call AddLogFile on the inner analyser");
 		}
 
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_actualAnalyser.Setup(x => x.OnLogFileRemoved(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>())).Throws<NullReferenceException>();
 			var id = DataSourceId.CreateNew();
 			var logFile = new Mock<ILogFile>().Object;
-			new Action(() => analyser.OnLogFileRemoved(id, logFile)).ShouldNotThrow("because the proxy is supposed to handle failures of its plugin");
+			new Action(() => analyser.OnLogFileRemoved(id, logFile)).Should().NotThrow("because the proxy is supposed to handle failures of its plugin");
 			_actualAnalyser.Verify(x => x.OnLogFileRemoved(id, logFile), Times.Once, "because the proxy should have at least tried to call RemoveLogFile on the inner analyser");
 		}
 
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_actualAnalyser.SetupSet(x => x.Configuration).Throws<NullReferenceException>();
 
 			var config = new TestLogAnalyserConfiguration();
-			new Action(() => analyser.Configuration = config).ShouldNotThrow();
+			new Action(() => analyser.Configuration = config).Should().NotThrow();
 			_actualAnalyser.VerifySet(x => x.Configuration = config, Times.Once);
 		}
 
@@ -79,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			_actualAnalyser.SetupProperty(x => x.Configuration);
 
 			var config = new TestLogAnalyserConfiguration();
-			new Action(() => analyser.Configuration = config).ShouldNotThrow();
+			new Action(() => analyser.Configuration = config).Should().NotThrow();
 			_actualAnalyser.Object.Configuration.Should().Be(config);
 		}
 

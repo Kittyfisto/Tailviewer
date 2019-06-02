@@ -214,7 +214,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
-			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object)).ShouldNotThrow();
+			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
 			viewModel.Should().NotBeNull();
@@ -236,7 +236,7 @@ namespace Tailviewer.Test.Ui
 			var dest = _model.GetOrAdd("B");
 
 			new Action(() => _model.OnDropped(source, dest, DataSourceDropType.Group))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Count.Should().Be(1);
 			var viewModel = _model.Observable.First();
 			viewModel.Should().NotBeNull();
@@ -374,7 +374,7 @@ namespace Tailviewer.Test.Ui
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
 			merged.Should().NotBeNull();
 
-			new Action(() => _model.OnDropped(c, merged, DataSourceDropType.Group)).ShouldNotThrow();
+			new Action(() => _model.OnDropped(c, merged, DataSourceDropType.Group)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(1);
 			_model.Observable.Should().Equal(new object[] {merged});
 			merged.Observable.Should().Equal(a, b, c);
@@ -391,7 +391,7 @@ namespace Tailviewer.Test.Ui
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
-			new Action(() => _model.OnDropped(c, b, DataSourceDropType.Group)).ShouldNotThrow();
+			new Action(() => _model.OnDropped(c, b, DataSourceDropType.Group)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(1);
 			_model.Observable.Should().Equal(new object[] {merged});
 			merged.Observable.Should().Equal(a, b, c);
@@ -455,7 +455,7 @@ namespace Tailviewer.Test.Ui
 		public void TestGetOrAdd1()
 		{
 			IDataSourceViewModel viewModel = null;
-			new Action(() => viewModel = _model.GetOrAdd("foobar")).ShouldNotThrow();
+			new Action(() => viewModel = _model.GetOrAdd("foobar")).Should().NotThrow();
 			viewModel.Should().NotBeNull();
 			viewModel.DataSource.Should().NotBeNull();
 			viewModel.DataSource.Settings.Should().NotBeNull();
@@ -470,7 +470,7 @@ namespace Tailviewer.Test.Ui
 			var b = _model.GetOrAdd("B");
 
 			new Action(() => _model.OnDropped(b, a, DataSourceDropType.ArrangeTop))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Should().Equal(new object[]
 			{
 				b, a
@@ -488,7 +488,7 @@ namespace Tailviewer.Test.Ui
 			var b = _model.GetOrAdd("B");
 
 			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Should().Equal(new object[]
 			{
 				b, a
@@ -508,7 +508,7 @@ namespace Tailviewer.Test.Ui
 			_settingsMock.ResetCalls();
 
 			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 
 			_settingsMock.Verify(x => x.SaveAsync(), Times.Once);
 		}
@@ -526,7 +526,7 @@ namespace Tailviewer.Test.Ui
 			_model.Observable.Should().Equal(@group, c);
 
 			new Action(() => _model.OnDropped(b, c, DataSourceDropType.ArrangeBottom))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Should().Equal(new object[]
 			{
 				a, c, b
@@ -552,7 +552,7 @@ namespace Tailviewer.Test.Ui
 			var group2 = _model.Observable[1] as MergedDataSourceViewModel;
 
 			new Action(() => _model.OnDropped(group1, group2, DataSourceDropType.ArrangeBottom))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Should().Equal(new object[]
 			{
 				group2, group1
@@ -571,7 +571,7 @@ namespace Tailviewer.Test.Ui
 			var group = _model.Observable[0] as MergedDataSourceViewModel;
 
 			new Action(() => _model.OnDropped(c, a, DataSourceDropType.ArrangeBottom | DataSourceDropType.Group))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			_model.Observable.Should().Equal(new object[]
 			{
 				group
@@ -595,7 +595,7 @@ namespace Tailviewer.Test.Ui
 			var group = _model.Observable[0] as MergedDataSourceViewModel;
 			group.Observable.Should().Equal(new object[] {a, b});
 
-			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom)).ShouldNotThrow();
+			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom)).Should().NotThrow();
 			_model.Observable.Should().Equal(new object[] {group});
 			group.Observable.Should().Equal(new object[] {b, a});
 		}
@@ -737,7 +737,7 @@ namespace Tailviewer.Test.Ui
 		public void TestSelect3()
 		{
 			var model = _model.GetOrAdd("foo");
-			new Action(() => _model.SelectedItem = null).ShouldNotThrow();
+			new Action(() => _model.SelectedItem = null).Should().NotThrow();
 			_model.SelectedItem.Should().BeNull();
 			model.IsVisible.Should().BeFalse();
 		}

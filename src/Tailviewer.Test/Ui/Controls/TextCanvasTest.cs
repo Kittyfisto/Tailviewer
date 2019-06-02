@@ -49,7 +49,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.LogFile = logFile.Object;
 			_control.CurrentLine = 1;
 
-			new Action(() => _control.OnSizeChanged()).ShouldNotThrow();
+			new Action(() => _control.OnSizeChanged()).Should().NotThrow();
 
 			_control.CurrentlyVisibleSection.Should().Equal(new LogFileSection(0, 0));
 		}
@@ -78,11 +78,11 @@ namespace Tailviewer.Test.Ui.Controls
 			logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
 				.Throws<IndexOutOfRangeException>();
 
-			new Action(() => _control.UpdateVisibleLines()).ShouldNotThrow();
+			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 
 			logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
 				.Throws<ArgumentOutOfRangeException>();
-			new Action(() => _control.UpdateVisibleLines()).ShouldNotThrow();
+			new Action(() => _control.UpdateVisibleLines()).Should().NotThrow();
 		}
 
 		[Test]

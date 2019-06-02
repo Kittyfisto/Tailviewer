@@ -72,7 +72,7 @@ namespace Tailviewer.AcceptanceTests.Ui.Controls.LogView
 			var settings = new LogViewerSettings();
 
 			_control.Settings = settings;
-			new Action(() => _control.Settings = null).ShouldNotThrow();
+			new Action(() => _control.Settings = null).Should().NotThrow();
 			_control.Settings.Should().BeNull();
 		}
 	}

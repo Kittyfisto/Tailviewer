@@ -30,7 +30,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		private void FailParse(string expression, string innerErrorMessage)
 		{
 			var completeErrorMessage = string.Format("Unable to parse \"{0}\": {1}", expression, innerErrorMessage);
-			new Action(() => { new ExpressionParser().Parse(expression); }).ShouldThrow<ParseException>()
+			new Action(() => { new ExpressionParser().Parse(expression); }).Should().Throw<ParseException>()
 				  .WithMessage(completeErrorMessage);
 		}
 	}

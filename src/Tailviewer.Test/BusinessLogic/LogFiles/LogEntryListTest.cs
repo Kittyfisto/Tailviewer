@@ -72,7 +72,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = entries[invalidIndex];
-			}).ShouldThrow<ArgumentOutOfRangeException>();
+			}).Should().Throw<ArgumentOutOfRangeException>();
 		}
 
 		[Test]
@@ -175,7 +175,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[0].DeltaTime.Should().Be(TimeSpan.FromSeconds(44));
 			entries[0].RawContent.Should().Be("stuff");
 
-			new Action(() => entries.RemoveAt(invalidIndex)).ShouldThrow<ArgumentOutOfRangeException>();
+			new Action(() => entries.RemoveAt(invalidIndex)).Should().Throw<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(1);
 			entries[0].DeltaTime.Should().Be(TimeSpan.FromSeconds(44));
 			entries[0].RawContent.Should().Be("stuff");
@@ -245,7 +245,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logEntry = ReadOnlyLogEntry.Create(new[] {LogFileColumns.ElapsedTime },
 			                                       new object[] {TimeSpan.FromHours(22)});
 			new Action(() => entries.Insert(invalidIndex, logEntry))
-				.ShouldThrow<ArgumentOutOfRangeException>();
+				.Should().Throw<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(0);
 		}
 
@@ -280,7 +280,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var entries = new LogEntryList(LogFileColumns.DeltaTime);
 			entries.Count.Should().Be(0);
-			new Action(() => entries.InsertEmpty(invalidIndex)).ShouldThrow<ArgumentOutOfRangeException>();
+			new Action(() => entries.InsertEmpty(invalidIndex)).Should().Throw<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(0);
 		}
 
@@ -292,7 +292,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Add("bar");
 			entries.Count.Should().Be(2);
 
-			new Action(() => entries.RemoveRange(invalidIndex, 1)).ShouldThrow<ArgumentOutOfRangeException>();
+			new Action(() => entries.RemoveRange(invalidIndex, 1)).Should().Throw<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(2);
 			entries[0].RawContent.Should().Be("foo");
 			entries[1].RawContent.Should().Be("bar");
@@ -306,7 +306,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Add("bar");
 			entries.Count.Should().Be(2);
 
-			new Action(() => entries.RemoveRange(invalidIndex, 1)).ShouldThrow<ArgumentException>();
+			new Action(() => entries.RemoveRange(invalidIndex, 1)).Should().Throw<ArgumentException>();
 			entries.Count.Should().Be(2);
 			entries[0].RawContent.Should().Be("foo");
 			entries[1].RawContent.Should().Be("bar");
@@ -324,7 +324,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Add("r");
 			entries.Count.Should().Be(6);
 
-			new Action(() => entries.RemoveRange(index, 7)).ShouldThrow<ArgumentException>();
+			new Action(() => entries.RemoveRange(index, 7)).Should().Throw<ArgumentException>();
 			entries.Count.Should().Be(6);
 			entries[0].RawContent.Should().Be("f");
 			entries[1].RawContent.Should().Be("o");
@@ -350,7 +350,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Action(() =>
 				{
 					var unused = enumerator.Current;
-				}).ShouldThrow<InvalidOperationException>();
+				}).Should().Throw<InvalidOperationException>();
 			}
 		}
 

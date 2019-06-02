@@ -12,7 +12,7 @@ namespace Tailviewer.Test
 		public void TestTrimNewlineEnd1()
 		{
 			string line = null;
-			new Action(() => line.TrimNewlineEnd()).ShouldNotThrow();
+			new Action(() => line.TrimNewlineEnd()).Should().NotThrow();
 			line.TrimNewlineEnd().Should().BeNull();
 		}
 
@@ -20,7 +20,7 @@ namespace Tailviewer.Test
 		public void TestTrimNewlineEnd2()
 		{
 			string line = string.Empty;
-			new Action(() => line.TrimNewlineEnd()).ShouldNotThrow();
+			new Action(() => line.TrimNewlineEnd()).Should().NotThrow();
 			line.TrimNewlineEnd().Should().Be(string.Empty);
 		}
 

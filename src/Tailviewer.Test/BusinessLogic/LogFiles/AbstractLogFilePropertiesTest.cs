@@ -43,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var properties = Create();
 			object unused;
 			new Action(() => properties.TryGetValue(null, out unused))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var properties = Create();
 			string unused;
 			new Action(() => properties.TryGetValue(null, out unused))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var properties = Create();
 			new Action(() => properties.SetValue(null, new DateTime(2017, 12, 29, 13, 2, 0)))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var properties = Create();
 			new Action(() => properties.SetValue((ILogFilePropertyDescriptor) null, new DateTime(2017, 12, 29, 13, 2, 0)))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
-			new Action(() => properties.GetValues(null)).ShouldThrow<ArgumentNullException>();
+			new Action(() => properties.GetValues(null)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]

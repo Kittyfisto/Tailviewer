@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 		{
 			var filter = new SubstringFilter("Foobar", true);
 			var matches = new List<LogLineMatch>();
-			new Action(() => filter.Match(new LogLine(0, 0, null, LevelFlags.All), matches)).ShouldNotThrow();
+			new Action(() => filter.Match(new LogLine(0, 0, null, LevelFlags.All), matches)).Should().NotThrow();
 			matches.Should().BeEmpty();
 		}
 

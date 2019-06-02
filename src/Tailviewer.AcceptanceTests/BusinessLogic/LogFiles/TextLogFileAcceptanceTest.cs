@@ -136,7 +136,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 						}
 
 						File.Delete(fname);
-					}).ShouldNotThrow();
+					}).Should().NotThrow();
 			}
 		}
 		
@@ -147,7 +147,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new TextLogFile(_scheduler, "dadwdawdw")).ShouldNotThrow();
+				new Action(() => logFile = new TextLogFile(_scheduler, "dadwdawdw")).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist);
@@ -167,7 +167,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new TextLogFile(_scheduler, File2Lines)).ShouldNotThrow();
+				new Action(() => logFile = new TextLogFile(_scheduler, File2Lines)).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None);
@@ -288,7 +288,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 
-				new Action(() => logFile = new TextLogFile(_scheduler, fileName)).ShouldNotThrow();
+				new Action(() => logFile = new TextLogFile(_scheduler, fileName)).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist,

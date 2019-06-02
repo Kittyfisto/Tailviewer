@@ -138,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			DateTime unused;
 			subParser.Setup(x => x.TryParse(It.IsAny<string>(), out unused)).Throws<NullReferenceException>();
 
-			new Action(() => parser.TryParse("dawwadw", out unused)).ShouldNotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
+			new Action(() => parser.TryParse("dawwadw", out unused)).Should().NotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
 			subParser.Verify(x => x.TryParse(It.IsAny<string>(), out unused), Times.AtLeastOnce);
 		}
 

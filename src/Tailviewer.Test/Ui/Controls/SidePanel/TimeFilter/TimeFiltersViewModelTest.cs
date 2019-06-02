@@ -130,12 +130,13 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 		{
 			var viewModel = new TimeFiltersViewModel(_timeFilter);
 			viewModel.SelectByInterval = true;
-			viewModel.MonitorEvents();
-
-			viewModel.Minimum = new DateTime(2018, 8, 13, 23, 25, 0);
-			_timeFilter.Minimum.Should().Be(new DateTime(2018, 8, 13, 23, 25, 0));
-			viewModel.Description.Should().Be("Select from 8/13/2018 11:25:00 PM");
-			viewModel.ShouldRaise(nameof(TimeFiltersViewModel.OnFiltersChanged));
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.Minimum = new DateTime(2018, 8, 13, 23, 25, 0);
+				_timeFilter.Minimum.Should().Be(new DateTime(2018, 8, 13, 23, 25, 0));
+				viewModel.Description.Should().Be("Select from 8/13/2018 11:25:00 PM");
+				monitor.Should().Raise(nameof(TimeFiltersViewModel.OnFiltersChanged));
+			}
 		}
 
 		[Test]
@@ -145,12 +146,13 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.TimeFilter
 			var viewModel = new TimeFiltersViewModel(_timeFilter);
 
 			viewModel.SelectByInterval = true;
-			viewModel.MonitorEvents();
-
-			viewModel.Maximum = new DateTime(2018, 8, 13, 23, 25, 0);
-			_timeFilter.Maximum.Should().Be(new DateTime(2018, 8, 13, 23, 25, 0));
-			viewModel.Description.Should().Be("Select until 8/13/2018 11:25:00 PM");
-			viewModel.ShouldRaise(nameof(TimeFiltersViewModel.OnFiltersChanged));
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.Maximum = new DateTime(2018, 8, 13, 23, 25, 0);
+				_timeFilter.Maximum.Should().Be(new DateTime(2018, 8, 13, 23, 25, 0));
+				viewModel.Description.Should().Be("Select until 8/13/2018 11:25:00 PM");
+				monitor.Should().Raise(nameof(TimeFiltersViewModel.OnFiltersChanged));
+			}
 		}
 
 		[Test]

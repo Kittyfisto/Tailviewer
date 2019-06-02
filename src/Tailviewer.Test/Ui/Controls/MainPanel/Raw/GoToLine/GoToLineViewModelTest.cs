@@ -12,23 +12,26 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel.Raw.GoToLine
 		public void TestChooseLineNumber1()
 		{
 			var viewModel = new GoToLineViewModel();
-			viewModel.MonitorEvents();
-
-			viewModel.LineNumber.Should().BeNull();
-			new Action(() => viewModel.ChoseLineNumber()).ShouldNotThrow();
-			viewModel.ShouldNotRaise(nameof(GoToLineViewModel.LineNumberChosen),
-				"because no line number was entered yet");
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.LineNumber.Should().BeNull();
+				new Action(() => viewModel.ChoseLineNumber()).Should().NotThrow();
+				monitor.Should().NotRaise(nameof(GoToLineViewModel.LineNumberChosen),
+				                            "because no line number was entered yet");
+			}
 		}
 
 		[Test]
 		public void TestChooseLineNumber2()
 		{
 			var viewModel = new GoToLineViewModel();
-			viewModel.MonitorEvents();
 
-			viewModel.LineNumber = 42;
-			new Action(() => viewModel.ChoseLineNumber()).ShouldNotThrow();
-			viewModel.ShouldRaise(nameof(GoToLineViewModel.LineNumberChosen));
+			using (var monitor = viewModel.Monitor())
+			{
+				viewModel.LineNumber = 42;
+				new Action(() => viewModel.ChoseLineNumber()).Should().NotThrow();
+				monitor.Should().Raise(nameof(GoToLineViewModel.LineNumberChosen));
+			}
 		}
 
 		[Test]

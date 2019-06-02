@@ -50,7 +50,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
 			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, 0, new TimeSpan?[0], 0, 0))
-				.ShouldThrow<NoSuchColumnException>();
+				.Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
@@ -58,7 +58,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
 			new Action(() => buffer.CopyTo(LogFileColumns.ElapsedTime, new int[0], new TimeSpan?[0], 0))
-				.ShouldThrow<NoSuchColumnException>();
+				.Should().Throw<NoSuchColumnException>();
 		}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
 			new Action(() => buffer.CopyTo(null, 0, new TimeSpan?[0], 0, 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -74,7 +74,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.DeltaTime);
 			new Action(() => buffer.CopyTo(null, new int[0], new TimeSpan?[0], 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -82,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, 0, null, 0, 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new int[0], null, 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			var destination = new[] {"foo"};
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, -1, destination, 0, 1))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			destination[0].Should().BeNull();
 		}
 
@@ -113,7 +113,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = Create(entry);
 			var destination = new[] { "f", "o", "o" };
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, 0, destination, 0, 3))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			destination[0].Should().Be("stuff");
 			destination[1].Should().BeNull("because the second index we access (1) isn't valid and thus should be served with null");
 			destination[2].Should().BeNull("because the last index we access (2) isn't valid and thus should be served with null");
@@ -128,7 +128,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = Create(entry);
 			var destination = new[] { "f", "o", "o" };
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, -1, destination, 0, 3))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			destination[0].Should().BeNull("because the first index we access (-1) isn't valid and thus should be served with null");
 			destination[1].Should().Be("stuff");
 			destination[2].Should().BeNull("because the last index we access (1) isn't valid and thus should be served with null");
@@ -141,7 +141,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			var destination = new[] {"foo"};
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] {-1}, destination, 0))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			destination[0].Should().BeNull();
 		}
 
@@ -153,7 +153,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var buffer = Create(entry);
 			var destination = new[] { "foo", "stuff" };
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, new[] { -1, 0 }, destination, 0))
-				.ShouldNotThrow();
+				.Should().NotThrow();
 			destination[0].Should().BeNull();
 			destination[1].Should().Be("bar");
 		}
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var buffer = CreateEmpty(LogFileColumns.RawContent);
 			new Action(() => buffer.CopyTo(LogFileColumns.RawContent, null, new string[0], 0))
-				.ShouldThrow<ArgumentNullException>();
+				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -307,7 +307,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() =>
 			{
 				var unused = actualEntry.Timestamp;
-			}).ShouldThrow<ColumnNotRetrievedException>();
+			}).Should().Throw<ColumnNotRetrievedException>();
 		}
 	}
 }

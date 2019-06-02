@@ -34,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void TestClear1()
 		{
 			var results = new SearchResults();
-			new Action(results.Clear).ShouldNotThrow();
+			new Action(results.Clear).Should().NotThrow();
 			results.Count.Should().Be(0);
 			results.Matches.Should().BeEmpty();
 		}
@@ -48,7 +48,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 			results.Count.Should().Be(1);
 			results.Matches.Should().Equal(new[] {new LogMatch(42, new LogLineMatch(1, 5))});
 
-			new Action(results.Clear).ShouldNotThrow();
+			new Action(results.Clear).Should().NotThrow();
 			results.Count.Should().Be(0);
 			results.Matches.Should().BeEmpty();
 		}
@@ -61,7 +61,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 
 			results.MatchesByLine[42].Should().NotBeEmpty();
 
-			new Action(results.Clear).ShouldNotThrow();
+			new Action(results.Clear).Should().NotThrow();
 			results.MatchesByLine[42].Should().BeEmpty();
 		}
 	}
