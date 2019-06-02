@@ -1,21 +1,22 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
 	public struct TextSegment
 	{
-		public TextSegment(string value, Brush foregroundBrush, bool isRegular)
+		public TextSegment(string value, Brush foregroundBrush, bool isRegular, TextSettings textSettings)
 		{
 			FormattedText = new FormattedText(Prepare(value),
 			                                  CultureInfo.CurrentUICulture,
 			                                  FlowDirection.LeftToRight,
-			                                  TextHelper.Typeface,
-			                                  TextHelper.FontSize,
+			                                  textSettings.Typeface,
+			                                  textSettings.FontSize,
 			                                  foregroundBrush,
 			                                  1.25);
-			FormattedText.LineHeight = TextHelper.LineHeight;
+			FormattedText.LineHeight = textSettings.LineHeight;
 			//Width = TextHelper.EstimateWidthUpperLimit(value);
 			Width = FormattedText.WidthIncludingTrailingWhitespace;
 			IsRegular = isRegular;

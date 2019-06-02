@@ -16,6 +16,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
 using Tailviewer.Core;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -32,6 +33,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private readonly ScrollBar _verticalScrollBar;
+		private readonly TextSettings _textSettings;
 		private readonly List<TextLine> _visibleTextLines;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
@@ -47,12 +49,13 @@ namespace Tailviewer.Ui.Controls.LogView
 		private ILogFileSearch _search;
 		private int _selectedSearchResultIndex;
 
-		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar)
+		public TextCanvas(ScrollBar horizontalScrollBar, ScrollBar verticalScrollBar, TextSettings textSettings)
 		{
 			_horizontalScrollBar = horizontalScrollBar;
 			_horizontalScrollBar.ValueChanged += HorizontalScrollBarOnScroll;
 
 			_verticalScrollBar = verticalScrollBar;
+			_textSettings = textSettings;
 			_verticalScrollBar.ValueChanged += VerticalScrollBarOnValueChanged;
 
 			_selectedIndices = new HashSet<LogLineIndex>();
@@ -270,7 +273,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			foreach (TextLine textLine in _visibleTextLines)
 			{
 				textLine.Render(drawingContext, x, y, ActualWidth, ColorByLevel);
-				y += TextHelper.LineHeight;
+				y += _textSettings.LineHeight;
 			}
 		}
 
@@ -289,7 +292,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public void DetermineVerticalOffset()
 		{
 			double value = _verticalScrollBar.Value;
-			var lineBeginning = (int) (Math.Floor(value/TextHelper.LineHeight)*TextHelper.LineHeight);
+			var lineBeginning = (int) (Math.Floor(value/_textSettings.LineHeight)*_textSettings.LineHeight);
 			_yOffset = lineBeginning - value;
 		}
 
@@ -305,7 +308,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				_logFile.GetSection(_currentlyVisibleSection, data);
 				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 				{
-					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel)
+					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings)
 					{
 						IsFocused = IsFocused,
 						SearchResults = _searchResults
@@ -402,7 +405,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			if (_logFile == null)
 				return new LogFileSection(0, 0);
 
-			double maxLinesInViewport = (ActualHeight - _yOffset)/TextHelper.LineHeight;
+			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
 			var logLineCount = LogFile.Count;
 			// Somebody may have specified that he wants to view line X, but if the source
@@ -426,7 +429,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void OnMouseMove(Point relativePos)
 		{
 			double y = relativePos.Y - _yOffset;
-			var visibleLineIndex = (int) Math.Floor(y/TextHelper.LineHeight);
+			var visibleLineIndex = (int) Math.Floor(y/_textSettings.LineHeight);
 			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 			{
 				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
@@ -438,7 +441,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void VerticalScrollBarOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> args)
 		{
 			double pos = args.NewValue;
-			var currentLine = (int) Math.Floor(pos/TextHelper.LineHeight);
+			var currentLine = (int) Math.Floor(pos/_textSettings.LineHeight);
 
 			DetermineVerticalOffset();
 			_currentLine = currentLine;

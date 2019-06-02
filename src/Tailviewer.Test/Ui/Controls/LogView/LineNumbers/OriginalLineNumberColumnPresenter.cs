@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.LineNumbers;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
@@ -20,7 +21,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		[SetUp]
 		public void Setup()
 		{
-			_column = new Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter();
+			_column = new Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter(TextSettings.Default);
 
 			_logFile = new InMemoryLogFile();
 		}

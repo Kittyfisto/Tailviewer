@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.Ui.Controls.LogView
+namespace Tailviewer.Ui.Controls.LogView.DataSource
 {
 	/// <summary>
 	///     A "canvas" which draws the data source name in the same vertical alignment as <see cref="TextCanvas" />
@@ -28,6 +28,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private static readonly int MaximumDataSourceCharacters = 22;
 
+		private readonly TextSettings _textSettings;
 		private readonly List<FormattedText> _dataSourcesPerLogLine;
 		private readonly double _maximumWidth;
 
@@ -35,10 +36,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		private LogFileSection _visibleSection;
 		private double _yOffset;
 
-		public DataSourceCanvas()
+		public DataSourceCanvas(TextSettings textSettings)
 		{
+			_textSettings = textSettings;
 			_dataSourcesPerLogLine = new List<FormattedText>();
-			_maximumWidth = TextHelper.EstimateWidthUpperLimit(MaximumDataSourceCharacters);
+			_maximumWidth = textSettings.EstimateWidthUpperLimit(MaximumDataSourceCharacters);
 
 			ClipToBounds = true;
 			SnapsToDevicePixels = true;
@@ -76,7 +78,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			foreach (var dataSource in _dataSourcesPerLogLine)
 			{
 				Render(dataSource, drawingContext, y, _maximumWidth);
-				y += TextHelper.LineHeight;
+				y += _textSettings.LineHeight;
 			}
 		}
 
@@ -117,7 +119,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					}
 				}
 
-				Width = TextHelper.EstimateWidthUpperLimit(maximumCharacterCount);
+				Width = _textSettings.EstimateWidthUpperLimit(maximumCharacterCount);
 			}
 			else
 			{
@@ -215,8 +217,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			return new FormattedText(dataSourceName,
 			                         culture,
 			                         FlowDirection.LeftToRight,
-			                         TextHelper.Typeface,
-			                         TextHelper.FontSize,
+			                         _textSettings.Typeface,
+			                         _textSettings.FontSize,
 			                         brush,
 			                         1.25);
 		}

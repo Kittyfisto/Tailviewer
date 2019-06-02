@@ -10,5 +10,10 @@
 		/// <summary>
 		/// </summary>
 		int LinesScrolledPerWheelTick { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		int FontSize { get; set; }
 	}
 }

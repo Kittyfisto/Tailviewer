@@ -121,6 +121,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			}
 		}
 
+		public int FontSize
+		{
+			get { return _settings.LogViewer.FontSize; }
+			set
+			{
+				if (value == _settings.LogViewer.FontSize)
+					return;
+
+				_settings.LogViewer.FontSize = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
+
 		public bool AlwaysOnTop
 		{
 			get { return _settings.MainWindow.AlwaysOnTop; }

@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 using WpfUnit;
 
@@ -30,7 +31,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_mouse = new TestMouse();
 			_keyboard = new TestKeyboard();
 
-			_control = new TextCanvas(new ScrollBar(), new ScrollBar())
+			_control = new TextCanvas(new ScrollBar(), new ScrollBar(), TextSettings.Default)
 			{
 				Width = 800,
 				Height = 600

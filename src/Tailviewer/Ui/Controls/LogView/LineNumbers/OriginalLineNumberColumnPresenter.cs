@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 {
@@ -15,13 +16,13 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 	{
 		private double _lineNumberWidth;
 
-		public OriginalLineNumberColumnPresenter()
-			: base(LogFileColumns.OriginalLineNumber)
+		public OriginalLineNumberColumnPresenter(TextSettings textSettings)
+			: base(LogFileColumns.OriginalLineNumber, textSettings)
 		{}
 
 		public IEnumerable<LineNumberPresenter> LineNumbers => Values.Cast<LineNumberPresenter>();
 
-		protected override void UpdateWidth(ILogFile logFile)
+		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
 		{
 			int lineNumberCharacterCount;
 			if (logFile != null)
@@ -30,13 +31,13 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 				lineNumberCharacterCount = 0;
 
 			// We always reserve space for at least 3 characters.
-			_lineNumberWidth = TextHelper.EstimateWidthUpperLimit(Math.Max(lineNumberCharacterCount, val2: 3));
-			Width = _lineNumberWidth + TextHelper.LineNumberSpacing;
+			_lineNumberWidth = textSettings.EstimateWidthUpperLimit(Math.Max(lineNumberCharacterCount, val2: 3));
+			Width = _lineNumberWidth + textSettings.LineNumberSpacing;
 		}
 
 		protected override AbstractLogEntryValuePresenter CreatePresenter(int value)
 		{
-			return new LineNumberPresenter(value);
+			return new LineNumberPresenter(value, TextSettings);
 		}
 	}
 }

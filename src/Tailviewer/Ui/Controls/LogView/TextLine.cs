@@ -7,6 +7,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -19,6 +20,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
 		private readonly LogLine _logLine;
 		private readonly List<TextSegment> _segments;
+		private readonly TextSettings _textSettings;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private ISearchResults _searchResults;
 		private Brush _lastForegroundBrush;
@@ -29,6 +31,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		                HashSet<LogLineIndex> hoveredIndices,
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel)
+			: this(logLine, hoveredIndices, selectedIndices, colorByLevel, TextSettings.Default)
+		{}
+
+		public TextLine(LogLine logLine,
+		                HashSet<LogLineIndex> hoveredIndices,
+		                HashSet<LogLineIndex> selectedIndices,
+		                bool colorByLevel,
+		                TextSettings textSettings)
 		{
 			if (logLine == null) throw new ArgumentNullException(nameof(logLine));
 			if (hoveredIndices == null) throw new ArgumentNullException(nameof(hoveredIndices));
@@ -39,6 +49,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = selectedIndices;
 			_segments = new List<TextSegment>();
 			_colorByLevel = colorByLevel;
+			_textSettings = textSettings;
 			_isFocused = true;
 		}
 
@@ -249,7 +260,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				var remaining = message.Length - start;
 				var length = Math.Min(remaining, maxCharactersPerSegment);
 				var segment = message.Substring(i * maxCharactersPerSegment, length);
-				_segments.Add(new TextSegment(segment, brush, isRegular));
+				_segments.Add(new TextSegment(segment, brush, isRegular, _textSettings));
 			}
 		}
 
@@ -286,7 +297,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					{
 						var rect = new Rect(x, y,
 						                    segment.Width,
-						                    TextHelper.LineHeight);
+						                    _textSettings.LineHeight);
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
 
@@ -300,7 +311,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				var rect = new Rect(x, y,
 				                    actualWidth - x,
-				                    TextHelper.LineHeight);
+				                    _textSettings.LineHeight);
 				drawingContext.DrawRectangle(regularBackgroundBrush, null, rect);
 			}
 		}

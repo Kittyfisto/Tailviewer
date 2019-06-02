@@ -3,6 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Test.Ui.Controls.LogView
@@ -21,7 +22,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestEmptyFile()
 		{
-			var index = new PresentationLogFile(_scheduler, new InMemoryLogFile());
+			var index = new PresentationLogFile(_scheduler, new InMemoryLogFile(), TextSettings.Default);
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().Be(0);
 			index.LineCount.Should().Be(0);
@@ -31,7 +32,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestOneLine()
 		{
 			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 			logFile.Add(new LogEntry2 {RawContent = "Hello, World!"});
 
 			_scheduler.RunOnce();
@@ -43,7 +44,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestTwoLines()
 		{
 			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
 
 			_scheduler.RunOnce();
@@ -55,7 +56,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestAddSeveralEntries()
 		{
 			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
 			logFile.Add(new LogEntry2 {RawContent = "Foo"});
 			_scheduler.RunOnce();
@@ -77,7 +78,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestPartialInvalidate()
 		{
 			var logFile = new InMemoryLogFile();
-			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero);
+			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
 			logFile.Add(new LogEntry2 {RawContent = "Foo"});
 			_scheduler.RunOnce();

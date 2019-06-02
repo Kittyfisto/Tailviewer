@@ -97,6 +97,7 @@
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
+    <Compile Include="Settings\TextSettings.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenter.cs" />
@@ -206,7 +207,7 @@
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\DataSourceSuggestionViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\AdjustingDoubleConverter.cs" />
-    <Compile Include="Ui\Controls\LogView\DataSourceCanvas.cs" />
+    <Compile Include="Ui\Controls\LogView\DataSource\DataSourceCanvas.cs" />
     <Compile Include="Settings\DataSourceDisplayMode.cs" />
     <Compile Include="Ui\Controls\LogView\DataSourceDisplayModeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\NonMergedDataSourceToVisibilityCollapsedConverter.cs" />
@@ -633,7 +634,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
-    <Folder Include="Ui\Controls\LogView\DataSource\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

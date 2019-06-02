@@ -6,7 +6,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.LogView;
+using Tailviewer.Ui.Controls.LogView.DataSource;
 
 namespace Tailviewer.Test.Ui.Controls.LogView
 {
@@ -17,7 +17,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestCtor()
 		{
-			var canvas = new DataSourceCanvas();
+			var canvas = new DataSourceCanvas(TextSettings.Default);
 			canvas.DataSources.Should().BeEmpty();
 			canvas.DisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
@@ -25,7 +25,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestUpdateLineNumbers1()
 		{
-			var canvas = new DataSourceCanvas();
+			var canvas = new DataSourceCanvas(TextSettings.Default);
 			canvas.UpdateDataSources(null, new LogFileSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
 		}
@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Test]
 		public void TestUpdateLineNumbers2()
 		{
-			var canvas = new DataSourceCanvas();
+			var canvas = new DataSourceCanvas(TextSettings.Default);
 			var dataSource = new Mock<IDataSource>();
 			canvas.UpdateDataSources(dataSource.Object, new LogFileSection(0, 0), 0);
 			canvas.DataSources.Should().BeEmpty();
@@ -43,7 +43,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Description("Verifies that the filenames of the original data source are displayed next to each line")]
 		public void TestUpdateLineNumbers3()
 		{
-			var canvas = new DataSourceCanvas();
+			var canvas = new DataSourceCanvas(TextSettings.Default);
 			var mergedDataSource = new Mock<IMergedDataSource>();
 			var dataSource0 = new Mock<IDataSource>();
 			dataSource0.Setup(x => x.FullFileName).Returns(@"A:\foo\bar.txt");
@@ -74,7 +74,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		[Description("Verifies that the character codes of the original data source are displayed next to each line")]
 		public void TestUpdateLineNumbers4()
 		{
-			var canvas = new DataSourceCanvas
+			var canvas = new DataSourceCanvas(TextSettings.Default)
 			{
 				DisplayMode = DataSourceDisplayMode.CharacterCode
 			};

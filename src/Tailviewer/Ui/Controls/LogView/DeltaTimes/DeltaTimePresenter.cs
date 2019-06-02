@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 {
@@ -12,6 +13,11 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 		private readonly TimeSpan? _delta;
 
 		public DeltaTimePresenter(TimeSpan? delta)
+			: this(delta, TextSettings.Default)
+		{}
+
+		public DeltaTimePresenter(TimeSpan? delta, TextSettings textSettings)
+			: base(textSettings)
 		{
 			_delta = delta;
 		}
@@ -42,13 +48,15 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 			return string.Empty;
 		}
 
-		protected override FormattedText CreateFormattedText(string text, CultureInfo culture)
+		protected override FormattedText CreateFormattedText(string text,
+		                                                     CultureInfo culture,
+		                                                     TextSettings textSettings)
 		{
 			return new FormattedText(text,
 			                         culture,
 			                         FlowDirection.LeftToRight,
-			                         TextHelper.Typeface,
-			                         TextHelper.FontSize,
+			                         textSettings.Typeface,
+			                         textSettings.FontSize,
 			                         TextHelper.LineNumberForegroundBrush,
 			                         1.25);
 		}

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 {
@@ -11,6 +12,11 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		private readonly int _number;
 
 		public LineNumberPresenter(int value)
+			: this(value, TextSettings.Default)
+		{}
+
+		public LineNumberPresenter(int value, TextSettings textSettings)
+			: base(textSettings)
 		{
 			_number = value;
 		}
@@ -20,13 +26,15 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			return _number.ToString(provider);
 		}
 
-		protected override FormattedText CreateFormattedText(string text, CultureInfo culture)
+		protected override FormattedText CreateFormattedText(string text,
+		                                                     CultureInfo culture,
+		                                                     TextSettings textSettings)
 		{
 			return new FormattedText(ToString(culture),
 			                         culture,
 			                         FlowDirection.LeftToRight,
-			                         TextHelper.Typeface,
-			                         TextHelper.FontSize,
+			                         textSettings.Typeface,
+			                         textSettings.FontSize,
 			                         TextHelper.LineNumberForegroundBrush,
 			                         1.25);
 		}

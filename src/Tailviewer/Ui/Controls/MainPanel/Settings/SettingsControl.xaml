@@ -48,12 +48,17 @@
                 <controls:FlatGroupBox Grid.Row="1" Header="Log Viewer" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Scroll speed" Margin="0,6,6,6"/>
-                        <controls:EditorTextBox Grid.Column="1">
+
+                        <TextBlock Text="Scroll speed" Margin="0,6,6,6" Grid.Row="0" />
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="0">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="ScrollSpeed"
                                          Mode="TwoWay"
@@ -64,6 +69,22 @@
                                 </Binding>
                             </controls:EditorTextBox.Text>
                         </controls:EditorTextBox>
+
+                        <TextBlock Text="Font Size"
+                                   Grid.Row="1"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="1">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="FontSize"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
+
                     </Grid>
                 </controls:FlatGroupBox>
             </Grid>

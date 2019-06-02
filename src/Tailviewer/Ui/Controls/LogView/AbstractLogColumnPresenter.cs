@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -14,20 +15,28 @@ namespace Tailviewer.Ui.Controls.LogView
 		: FrameworkElement
 	{
 		private readonly ILogFileColumn<T> _column;
+		private readonly TextSettings _textSettings;
 		private readonly List<AbstractLogEntryValuePresenter> _values;
+
 		private double _yOffset;
 
-		protected AbstractLogColumnPresenter(ILogFileColumn<T> column)
+		protected AbstractLogColumnPresenter(ILogFileColumn<T> column, TextSettings textSettings)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 
 			_column = column;
+			_textSettings = textSettings;
 			_values = new List<AbstractLogEntryValuePresenter>();
 			ClipToBounds = true;
 		}
 
 		protected IEnumerable<AbstractLogEntryValuePresenter> Values => _values;
+
+		public TextSettings TextSettings
+		{
+			get { return _textSettings; }
+		}
 
 		/// <summary>
 		///     Fetches the newest values for this presenter's column from the given log file.
@@ -51,11 +60,11 @@ namespace Tailviewer.Ui.Controls.LogView
 					_values.Add(CreatePresenter(value));
 			}
 
-			UpdateWidth(logFile);
+			UpdateWidth(logFile, _textSettings);
 			InvalidateVisual();
 		}
 
-		protected abstract void UpdateWidth(ILogFile logFile);
+		protected abstract void UpdateWidth(ILogFile logFile, TextSettings textSettings);
 
 		/// <summary>
 		/// </summary>
@@ -72,7 +81,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			foreach (var number in _values)
 			{
 				number.Render(drawingContext, y, Width);
-				y += TextHelper.LineHeight;
+				y += _textSettings.LineHeight;
 			}
 		}
 	}

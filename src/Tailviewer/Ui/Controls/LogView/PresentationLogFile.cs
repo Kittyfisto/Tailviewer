@@ -9,6 +9,7 @@ using log4net;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
@@ -32,18 +33,19 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly LogEntryList _indices;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly TextSettings _textSettings;
 		private readonly object _syncRoot;
 		private readonly ILogFile _source;
 
 		private float _maxWidth;
 		private int _lineCount;
 
-		public PresentationLogFile(ITaskScheduler scheduler, ILogFile source)
-			: this(scheduler, source, TimeSpan.FromMilliseconds(value: 100))
+		public PresentationLogFile(ITaskScheduler scheduler, ILogFile source, TextSettings textSettings)
+			: this(scheduler, source, TimeSpan.FromMilliseconds(value: 100), textSettings)
 		{
 		}
 
-		public PresentationLogFile(ITaskScheduler scheduler, ILogFile source, TimeSpan maximumWaitTime)
+		public PresentationLogFile(ITaskScheduler scheduler, ILogFile source, TimeSpan maximumWaitTime, TextSettings textSettings)
 			: base(scheduler)
 		{
 			if (scheduler == null)
@@ -52,6 +54,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				throw new ArgumentNullException(nameof(source));
 
 			_maximumWaitTime = maximumWaitTime;
+			_textSettings = textSettings;
 			_source = source;
 
 			_indices = new LogEntryList(IndexedColumns);
@@ -225,7 +228,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private float EstimateWidth(string rawContent)
 		{
-			return (float) TextHelper.EstimateWidthUpperLimit(rawContent);
+			return (float) _textSettings.EstimateWidthUpperLimit(rawContent);
 		}
 
 		private struct PendingModification

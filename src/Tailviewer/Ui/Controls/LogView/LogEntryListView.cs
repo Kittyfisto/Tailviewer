@@ -17,6 +17,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.LogView.DataSource;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 using Tailviewer.Ui.Controls.LogView.ElapsedTime;
 using Tailviewer.Ui.Controls.LogView.LineNumbers;
@@ -72,6 +73,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
 		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null));
 
+		public static readonly DependencyProperty TextSettingsProperty = DependencyProperty.Register(
+		                                                "TextSettings", typeof(TextSettings), typeof(LogEntryListView), new PropertyMetadata(TextSettings.Default, OnTextSettingsChanged));
+
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
 		private readonly DataSourceCanvas _dataSourceCanvas;
@@ -85,6 +89,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private int _maxLineWidth;
 		private int _pendingModificationsCount;
+		private TextSettings _textSettings;
 
 		static LogEntryListView()
 		{
@@ -94,6 +99,8 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
+			_textSettings = TextSettings;
+
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
@@ -113,8 +120,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, value: 0);
 			_verticalScrollBar.SetValue(ColumnProperty, value: 6);
-			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
-			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
+			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
+			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
 
 			_horizontalScrollBar = new FlatScrollBar
 			{
@@ -125,32 +132,32 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
 			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 6);
-			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, TextHelper.LineHeight);
-			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * TextHelper.LineHeight);
+			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
+			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
 
-			_lineNumberColumn = new OriginalLineNumberColumnPresenter();
+			_lineNumberColumn = new OriginalLineNumberColumnPresenter(_textSettings);
 			_lineNumberColumn.SetValue(RowProperty, value: 0);
 			_lineNumberColumn.SetValue(ColumnProperty, value: 0);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
-			_dataSourceCanvas = new DataSourceCanvas();
+			_dataSourceCanvas = new DataSourceCanvas(_textSettings);
 			_dataSourceCanvas.SetValue(RowProperty, value: 0);
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_deltaTimesColumn = new DeltaTimeColumnPresenter();
+			_deltaTimesColumn = new DeltaTimeColumnPresenter(_textSettings);
 			_deltaTimesColumn.Visibility = Visibility.Collapsed;
 			_deltaTimesColumn.SetValue(RowProperty, value: 0);
 			_deltaTimesColumn.SetValue(ColumnProperty, value: 2);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_elapsedTimeColumn = new ElapsedTimeColumnPresenter();
+			_elapsedTimeColumn = new ElapsedTimeColumnPresenter(_textSettings);
 			_elapsedTimeColumn.Visibility = Visibility.Collapsed;
 			_elapsedTimeColumn.SetValue(RowProperty, value: 0);
 			_elapsedTimeColumn.SetValue(ColumnProperty, value: 3);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar);
+			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar, _textSettings);
 			PartTextCanvas.SetValue(RowProperty, value: 0);
 			PartTextCanvas.SetValue(ColumnProperty, value: 5);
 			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
@@ -230,6 +237,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			set { SetValue(FollowTailProperty, value); }
 		}
 
+		public TextSettings TextSettings
+		{
+			get { return (TextSettings) GetValue(TextSettingsProperty); }
+			set { SetValue(TextSettingsProperty, value); }
+		}
+
 		public int PendingModificationsCount => _pendingModificationsCount;
 
 		public ScrollBar VerticalScrollBar => _verticalScrollBar;
@@ -278,7 +291,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			var width = TextHelper.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
+			var width = _textSettings.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
 			var upperWidth = (int) Math.Ceiling(width);
 
 			// Setting an integer is an atomic operation and thus no
@@ -384,7 +397,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				// so that the top line is only partially visible, then this method would always bring
 				// it fully visible. Removing the following filter would completely remove per pixel scrolling...
 				if (current.Index != index)
-					_verticalScrollBar.Value = (int) index * TextHelper.LineHeight;
+					_verticalScrollBar.Value = (int) index * _textSettings.LineHeight;
 			}
 		}
 
@@ -411,15 +424,15 @@ namespace Tailviewer.Ui.Controls.LogView
 			var offset = PartTextCanvas.YOffset;
 			var start = PartTextCanvas.CurrentLine;
 			var diff = logLineIndex - start;
-			var minY = diff * TextHelper.LineHeight + offset;
-			var maxY = (diff + 1) * TextHelper.LineHeight + offset;
+			var minY = diff * _textSettings.LineHeight + offset;
+			var maxY = (diff + 1) * _textSettings.LineHeight + offset;
 			if (minY < 0)
 				_verticalScrollBar.Value += minY;
 			else if (maxY > height)
 				_verticalScrollBar.Value += maxY - height;
 
-			var minX = TextHelper.GlyphWidth * match.Index;
-			var maxX = TextHelper.GlyphWidth * (match.Index + match.Count);
+			var minX = _textSettings.GlyphWidth * match.Index;
+			var maxX = _textSettings.GlyphWidth * (match.Index + match.Count);
 			var visibleMinX = _horizontalScrollBar.Value;
 			var visibleMaxX = visibleMinX + _horizontalScrollBar.ViewportSize;
 			if (maxX < visibleMinX || minX > visibleMaxX)
@@ -460,7 +473,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			var delta = _verticalScrollBar.Value - _verticalScrollBar.Minimum;
 			var linesToScroll = Settings?.LinesScrolledPerWheelTick ?? LogViewerSettings.DefaultLinesScrolledPerWheelTick;
-			var heightToScroll = linesToScroll * TextHelper.LineHeight;
+			var heightToScroll = linesToScroll * _textSettings.LineHeight;
 			var toScroll = Math.Min(delta, heightToScroll);
 
 			if (toScroll > 0)
@@ -474,7 +487,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			var delta = _verticalScrollBar.Maximum - _verticalScrollBar.Value;
 			var linesToScroll = Settings?.LinesScrolledPerWheelTick ?? LogViewerSettings.DefaultLinesScrolledPerWheelTick;
-			var heightToScroll = linesToScroll * TextHelper.LineHeight;
+			var heightToScroll = linesToScroll * _textSettings.LineHeight;
 			// We might not be able to scroll that far because there's less content available so we'll have to clamp
 			// that value...
 			var maximumPossibleScroll = Math.Min(delta, heightToScroll);
@@ -482,6 +495,17 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			if (_verticalScrollBar.Value >= _verticalScrollBar.Maximum)
 				FollowTail = true;
+		}
+
+		private static void OnTextSettingsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((LogEntryListView) d).OnTextSettingsChanged((TextSettings)e.OldValue, (TextSettings)e.NewValue);
+		}
+
+		private void OnTextSettingsChanged(TextSettings oldValue, TextSettings newValue)
+		{
+			_textSettings = newValue;
+			// TODO
 		}
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -561,7 +585,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(value: 100), maximumLineCount: 10000);
 
-				_maxLineWidth = (int) Math.Ceiling(TextHelper.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
+				_maxLineWidth = (int) Math.Ceiling(_textSettings.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
 				UpdateScrollViewerRegions();
 				PartTextCanvas.DetermineVerticalOffset();
 				PartTextCanvas.UpdateVisibleSection();
@@ -577,7 +601,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void MatchScrollbarValueToCurrentLine()
 		{
-			var value = PartTextCanvas.CurrentLine * TextHelper.LineHeight;
+			var value = PartTextCanvas.CurrentLine * _textSettings.LineHeight;
 			if (value >= 0 && value <= _verticalScrollBar.Maximum)
 				_verticalScrollBar.Value = value;
 			else
@@ -624,13 +648,13 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void UpdateVerticalScrollbar()
 		{
 			var count = LogFile.Count;
-			var totalHeight = count * TextHelper.LineHeight;
+			var totalHeight = count * _textSettings.LineHeight;
 			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)
 			{
 				_verticalScrollBar.Minimum = 0;
-				_verticalScrollBar.Maximum = Math.Ceiling((totalHeight - usableHeight) / TextHelper.LineHeight) *
-				                             TextHelper.LineHeight;
+				_verticalScrollBar.Maximum = Math.Ceiling((totalHeight - usableHeight) / _textSettings.LineHeight) *
+				                             _textSettings.LineHeight;
 				_verticalScrollBar.ViewportSize = usableHeight;
 				_verticalScrollBar.Visibility = Visibility.Visible;
 			}

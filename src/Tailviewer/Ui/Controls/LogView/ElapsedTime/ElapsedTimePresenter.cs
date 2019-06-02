@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 {
@@ -12,7 +13,8 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 		public const int CharacterWidth = 11;
 		private readonly TimeSpan? _value;
 
-		public ElapsedTimePresenter(TimeSpan? value)
+		public ElapsedTimePresenter(TimeSpan? value, TextSettings textSettings)
+			: base(textSettings)
 		{
 			_value = value;
 		}
@@ -43,13 +45,15 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 			return ToString(_value, provider);
 		}
 
-		protected override FormattedText CreateFormattedText(string text, CultureInfo culture)
+		protected override FormattedText CreateFormattedText(string text,
+		                                                     CultureInfo culture,
+		                                                     TextSettings textSettings)
 		{
 			return new FormattedText(text,
 			                         culture,
 			                         FlowDirection.LeftToRight,
-			                         TextHelper.Typeface,
-			                         TextHelper.FontSize,
+			                         textSettings.Typeface,
+			                         textSettings.FontSize,
 			                         TextHelper.LineNumberForegroundBrush,
 			                         1.25);
 		}

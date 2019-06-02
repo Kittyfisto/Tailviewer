@@ -4,6 +4,7 @@ using System.Windows;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
 
 namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
@@ -18,7 +19,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 		[SetUp]
 		public void Setup()
 		{
-			_column = new DeltaTimeColumnPresenter();
+			_column = new DeltaTimeColumnPresenter(TextSettings.Default);
 			_logFile = new Mock<ILogFile>();
 		}
 
