@@ -15,10 +15,10 @@ namespace Tailviewer.Ui.Controls.LogView
 		: FrameworkElement
 	{
 		private readonly ILogFileColumn<T> _column;
-		private readonly TextSettings _textSettings;
 		private readonly List<AbstractLogEntryValuePresenter> _values;
 
 		private double _yOffset;
+		private TextSettings _textSettings;
 
 		protected AbstractLogColumnPresenter(ILogFileColumn<T> column, TextSettings textSettings)
 		{
@@ -36,6 +36,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		public TextSettings TextSettings
 		{
 			get { return _textSettings; }
+			set
+			{
+				_textSettings = value;
+				// TODO:
+			}
 		}
 
 		/// <summary>

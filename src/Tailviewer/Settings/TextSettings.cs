@@ -47,6 +47,28 @@ namespace Tailviewer.Settings
 			                             1.25).Width;
 		}
 
+		#region Overrides of Object
+
+		public override int GetHashCode()
+		{
+			return 42;
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = obj as TextSettings;
+			if (other == null)
+				return false;
+
+			return FontSize == other.FontSize &&
+			       LineSpacing == other.LineSpacing &&
+			       LineHeight == other.LineHeight &&
+			       LineNumberSpacing == other.LineNumberSpacing &&
+			       Equals(Typeface, other.Typeface);
+		}
+
+		#endregion
+
 		/// <summary>
 		///     Estimates the width of the given text in DIP units.
 		/// </summary>

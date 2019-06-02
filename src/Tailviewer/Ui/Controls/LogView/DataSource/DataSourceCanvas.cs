@@ -28,7 +28,7 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 
 		private static readonly int MaximumDataSourceCharacters = 22;
 
-		private readonly TextSettings _textSettings;
+		private TextSettings _textSettings;
 		private readonly List<FormattedText> _dataSourcesPerLogLine;
 		private readonly double _maximumWidth;
 
@@ -53,6 +53,16 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 		}
 
 		public IReadOnlyList<FormattedText> DataSources => _dataSourcesPerLogLine;
+
+		public TextSettings TextSettings
+		{
+			get { return _textSettings; }
+			set
+			{
+				_textSettings = value;
+				// TODO
+			}
+		}
 
 		private static void OnDisplayModeChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{

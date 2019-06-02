@@ -49,15 +49,19 @@
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Scroll speed" Margin="0,6,6,6" Grid.Row="0" />
+                        <TextBlock Text="Scroll speed"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="0" />
                         <controls:EditorTextBox Grid.Column="1" Grid.Row="0">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="ScrollSpeed"
@@ -71,9 +75,11 @@
                         </controls:EditorTextBox>
 
                         <TextBlock Text="Font Size"
-                                   Grid.Row="1"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="2"
                                    Grid.Column="0"/>
-                        <controls:EditorTextBox Grid.Column="1" Grid.Row="1">
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="2">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="FontSize"
                                          Mode="TwoWay"

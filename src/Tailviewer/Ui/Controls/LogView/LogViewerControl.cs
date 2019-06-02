@@ -85,7 +85,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
 
 		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-		                                                "Settings", typeof(ILogViewerSettings), typeof(LogViewerControl), new PropertyMetadata(null));
+		                                                "Settings", typeof(ILogViewerSettings), typeof(LogViewerControl),
+		                                                new PropertyMetadata(null));
 
 		private static void OnMergedDataSourceDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
 		{

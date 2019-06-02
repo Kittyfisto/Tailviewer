@@ -71,10 +71,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
 
 		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null));
-
-		public static readonly DependencyProperty TextSettingsProperty = DependencyProperty.Register(
-		                                                "TextSettings", typeof(TextSettings), typeof(LogEntryListView), new PropertyMetadata(TextSettings.Default, OnTextSettingsChanged));
+		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null, OnSettingsChanged));
 
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
@@ -99,7 +96,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
-			_textSettings = TextSettings;
+			var textSettings = TextSettings.Default;
 
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
 			ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(value: 1, type: GridUnitType.Auto) });
@@ -120,8 +117,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			_verticalScrollBar.Scroll += VerticalScrollBarOnScroll;
 			_verticalScrollBar.SetValue(RowProperty, value: 0);
 			_verticalScrollBar.SetValue(ColumnProperty, value: 6);
-			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
-			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
 
 			_horizontalScrollBar = new FlatScrollBar
 			{
@@ -132,32 +127,30 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(RowProperty, value: 1);
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
 			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 6);
-			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
-			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
 
-			_lineNumberColumn = new OriginalLineNumberColumnPresenter(_textSettings);
+			_lineNumberColumn = new OriginalLineNumberColumnPresenter(textSettings);
 			_lineNumberColumn.SetValue(RowProperty, value: 0);
 			_lineNumberColumn.SetValue(ColumnProperty, value: 0);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
 
-			_dataSourceCanvas = new DataSourceCanvas(_textSettings);
+			_dataSourceCanvas = new DataSourceCanvas(textSettings);
 			_dataSourceCanvas.SetValue(RowProperty, value: 0);
 			_dataSourceCanvas.SetValue(ColumnProperty, value: 1);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_deltaTimesColumn = new DeltaTimeColumnPresenter(_textSettings);
+			_deltaTimesColumn = new DeltaTimeColumnPresenter(textSettings);
 			_deltaTimesColumn.Visibility = Visibility.Collapsed;
 			_deltaTimesColumn.SetValue(RowProperty, value: 0);
 			_deltaTimesColumn.SetValue(ColumnProperty, value: 2);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			_elapsedTimeColumn = new ElapsedTimeColumnPresenter(_textSettings);
+			_elapsedTimeColumn = new ElapsedTimeColumnPresenter(textSettings);
 			_elapsedTimeColumn.Visibility = Visibility.Collapsed;
 			_elapsedTimeColumn.SetValue(RowProperty, value: 0);
 			_elapsedTimeColumn.SetValue(ColumnProperty, value: 3);
 			_dataSourceCanvas.SetValue(MarginProperty, new Thickness(left: 0, top: 0, right: 5, bottom: 0));
 
-			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar, _textSettings);
+			PartTextCanvas = new TextCanvas(_horizontalScrollBar, _verticalScrollBar, textSettings);
 			PartTextCanvas.SetValue(RowProperty, value: 0);
 			PartTextCanvas.SetValue(ColumnProperty, value: 5);
 			PartTextCanvas.MouseWheelDown += TextCanvasOnMouseWheelDown;
@@ -167,6 +160,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			PartTextCanvas.RequestBringIntoView += TextCanvasOnRequestBringIntoView;
 			PartTextCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
 			PartTextCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
+
+			ChangeTextSettings(textSettings);
 
 			var separator = new Rectangle
 			{
@@ -235,12 +230,6 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (bool) GetValue(FollowTailProperty); }
 			set { SetValue(FollowTailProperty, value); }
-		}
-
-		public TextSettings TextSettings
-		{
-			get { return (TextSettings) GetValue(TextSettingsProperty); }
-			set { SetValue(TextSettingsProperty, value); }
 		}
 
 		public int PendingModificationsCount => _pendingModificationsCount;
@@ -497,15 +486,36 @@ namespace Tailviewer.Ui.Controls.LogView
 				FollowTail = true;
 		}
 
-		private static void OnTextSettingsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		private static void OnSettingsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			((LogEntryListView) d).OnTextSettingsChanged((TextSettings)e.OldValue, (TextSettings)e.NewValue);
+			((LogEntryListView) d).OnSettingsChanged((ILogViewerSettings)e.NewValue);
 		}
 
-		private void OnTextSettingsChanged(TextSettings oldValue, TextSettings newValue)
+		private void OnSettingsChanged(ILogViewerSettings settings)
 		{
-			_textSettings = newValue;
-			// TODO
+			ChangeTextSettings(settings != null ? new TextSettings(settings.FontSize) : TextSettings.Default);
+		}
+
+		private void ChangeTextSettings(TextSettings textSettings)
+		{
+			_textSettings = textSettings;
+
+			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
+			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
+
+			_horizontalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
+			_horizontalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
+
+			_lineNumberColumn.TextSettings = _textSettings;
+			_dataSourceCanvas.TextSettings = _textSettings;
+			_deltaTimesColumn.TextSettings = _textSettings;
+			_elapsedTimeColumn.TextSettings = _textSettings;
+			PartTextCanvas.TextSettings = _textSettings;
+
+			if (LogFile != null)
+			{
+				TextCanvasOnVisibleLinesChanged();
+			}
 		}
 
 		private static void OnFollowTailChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

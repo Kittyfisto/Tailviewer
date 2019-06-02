@@ -1,8 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 using WpfUnit;
 
@@ -62,6 +64,16 @@ namespace Tailviewer.AcceptanceTests.Ui.Controls.LogView
 			{
 				_control.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent));
 			}
+		}
+
+		[Test]
+		public void TestChangeSettingsToNull()
+		{
+			var settings = new LogViewerSettings();
+
+			_control.Settings = settings;
+			new Action(() => _control.Settings = null).ShouldNotThrow();
+			_control.Settings.Should().BeNull();
 		}
 	}
 }

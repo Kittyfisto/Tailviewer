@@ -33,7 +33,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly HashSet<LogLineIndex> _hoveredIndices;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private readonly ScrollBar _verticalScrollBar;
-		private readonly TextSettings _textSettings;
+		private TextSettings _textSettings;
 		private readonly List<TextLine> _visibleTextLines;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
@@ -214,6 +214,16 @@ namespace Tailviewer.Ui.Controls.LogView
 					SetSelected(index, SelectMode.Replace);
 					InvalidateVisual();
 				}
+			}
+		}
+
+		public TextSettings TextSettings
+		{
+			get { return _textSettings; }
+			set
+			{
+				_textSettings = value;
+				// TODO
 			}
 		}
 
