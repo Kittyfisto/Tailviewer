@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -145,6 +146,17 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			return viewModel;
 		}
 
+		public override Geometry Icon => Icons.Database;
+
+		public override string Id => "datasources";
+
+		[Pure]
+		public IDataSourceViewModel TryGet(DataSourceId id)
+		{
+			var viewModel = _observable.FirstOrDefault(x => x.DataSource.Id == id);
+			return viewModel;
+		}
+
 		private void AddDataSource()
 		{
 			// Create OpenFileDialog 
@@ -195,7 +207,7 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			}
 			else
 			{
-				var merged = dataSource as MergedDataSource;
+				var merged = dataSource as IMergedDataSource;
 				if (merged != null)
 				{
 					viewModel = new MergedDataSourceViewModel(merged, _actionCenter);
@@ -476,9 +488,5 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		{
 			viewModel.AddChild(source);
 		}
-		
-		public override Geometry Icon => Icons.Database;
-
-		public override string Id => "datasources";
 	}
 }

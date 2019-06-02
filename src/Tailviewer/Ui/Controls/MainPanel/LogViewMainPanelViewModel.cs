@@ -261,7 +261,20 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			if (value != null)
 			{
 				WindowTitle = string.Format("{0} - {1}", Constants.MainWindowTitle, value.DisplayName);
-				WindowTitleSuffix = value.DataSourceOrigin;
+
+				var child = value as ISingleDataSourceViewModel;
+				var parentId = value.DataSource.ParentId;
+				var parent = _dataSources.TryGet(parentId);
+				if (child != null && parent != null)
+				{
+					WindowTitleSuffix = string.Format("{0} -> [{1}] {2}", parent.DisplayName,
+					                                  child.CharacterCode,
+					                                  child.DataSourceOrigin);
+				}
+				else
+				{
+					WindowTitleSuffix = value.DataSourceOrigin;
+				}
 			}
 			else
 			{

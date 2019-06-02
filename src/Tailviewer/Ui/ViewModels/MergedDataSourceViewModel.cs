@@ -32,7 +32,7 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _isSelected;
 		private readonly IActionCenter _actionCenter;
 
-		public MergedDataSourceViewModel(MergedDataSource dataSource, IActionCenter actionCenter)
+		public MergedDataSourceViewModel(IMergedDataSource dataSource, IActionCenter actionCenter)
 			: base(dataSource)
 		{
 			if (actionCenter == null) throw new ArgumentNullException(nameof(actionCenter));

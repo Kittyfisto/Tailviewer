@@ -186,6 +186,55 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			model.CurrentDataSource.Should().BeNull();
 		}
 
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/127")]
+		public void TestSelectDataSourcePartOfMergedDataSource()
+		{
+			var mergedDataSource = new Mock<IMergedDataSource>();
+			mergedDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
+			mergedDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			mergedDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			mergedDataSource.Setup(x => x.Settings).Returns(new DataSource());
+			mergedDataSource.Setup(x => x.DisplayName).Returns("My custom merged data source");
+
+			var dataSource1 = new Mock<ISingleDataSource>();
+			dataSource1.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource1.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource1.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
+			dataSource1.Setup(x => x.ParentId).Returns(mergedDataSource.Object.Id);
+			dataSource1.Setup(x => x.Settings).Returns(new DataSource());
+			dataSource1.Setup(x => x.FullFileName).Returns("log1.txt");
+			dataSource1.SetupProperty(x => x.CharacterCode);
+
+			var dataSource2 = new Mock<ISingleDataSource>();
+			dataSource2.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			dataSource2.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
+			dataSource2.Setup(x => x.Settings).Returns(new DataSource());
+			dataSource2.Setup(x => x.FullFileName).Returns("log2.csv");
+			dataSource2.SetupProperty(x => x.CharacterCode);
+
+			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {mergedDataSource.Object, dataSource1.Object, dataSource2.Object});
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var dataSources = model.SidePanels.OfType<DataSourcesViewModel>().First();
+
+			var dataSource1ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource1.Object);
+			model.CurrentDataSource = dataSource1ViewModel;
+			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - log1.txt");
+			model.WindowTitleSuffix.Should().Be("My custom merged data source -> [A] log1.txt",
+			                                    "because the titlebar shall mention the parent's name, if available as well as the character code of the selected data source");
+
+			var dataSource2ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource2.Object);
+			model.CurrentDataSource = dataSource2ViewModel;
+			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - log2.csv");
+			model.WindowTitleSuffix.Should().Be("log2.csv");
+
+			var mergedViewModel = dataSources.DataSources.First(x => x.DataSource == mergedDataSource.Object);
+			model.CurrentDataSource = mergedViewModel;
+			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - My custom merged data source");
+			model.WindowTitleSuffix.Should().Be("My custom merged data source");
+		}
+
 		private Mock<IDataSourceViewModel> CreateDataSourceViewModel()
 		{
 			var dataSource = CreateDataSource();
