@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.QuickFilter;
@@ -28,10 +29,11 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settings = new ApplicationSettings("adwad");
+			_bookmarks = new Bookmarks("aawdwa");
 			_dispatcher = new ManualDispatcher();
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
@@ -64,6 +66,7 @@ namespace Tailviewer.Test.Ui
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
 		private Mock<IAnalysisStorage> _analysisStorage;
+		private Bookmarks _bookmarks;
 
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/76")]

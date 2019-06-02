@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.ViewModels;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 
@@ -20,9 +21,11 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settings = new Tailviewer.Settings.DataSources();
+			_bookmarks = new Mock<IBookmarks>();
+
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings, _bookmarks.Object);
 			_actionCenter = new Mock<IActionCenter>();
 
 		}
@@ -32,6 +35,7 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
 		private Mock<IActionCenter> _actionCenter;
+		private Mock<IBookmarks> _bookmarks;
 
 		[Test]
 		public void TestConstruction1()

@@ -9,6 +9,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.ViewModels;
@@ -26,6 +27,7 @@ namespace Tailviewer.Test.Ui
 		private IApplicationSettings _settings;
 		private Mock<IApplicationSettings> _settingsMock;
 		private Mock<IActionCenter> _actionCenter;
+		private Mock<IBookmarks> _bookmarks;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -41,7 +43,8 @@ namespace Tailviewer.Test.Ui
 			_settingsMock = new Mock<IApplicationSettings>();
 			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSources());
 			_settings = _settingsMock.Object;
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_bookmarks = new Mock<IBookmarks>();
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 		}
 
@@ -186,7 +189,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -213,7 +216,7 @@ namespace Tailviewer.Test.Ui
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -609,7 +612,7 @@ namespace Tailviewer.Test.Ui
 			_settings = new ApplicationSettings("foobar");
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 			viewModel.RemoveCommand.Execute(null);
@@ -634,7 +637,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
 			_settings.DataSources.Add(group);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var merged = (MergedDataSourceViewModel) _model.Observable[0];
 			var viewModel1 = merged.Observable.ElementAt(0);
@@ -657,7 +660,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 

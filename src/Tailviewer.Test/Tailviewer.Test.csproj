@@ -198,6 +198,7 @@
     <Compile Include="Settings\Analysis\WidgetTemplateTest.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
     <Compile Include="Settings\AutoUpdateSettingsTest.cs" />
+    <Compile Include="Settings\Bookmarks\BookmarksTest.cs" />
     <Compile Include="Settings\DataSourcesTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Settings\ExportSettingsTest.cs" />

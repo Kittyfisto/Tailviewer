@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.Bookmarks
 {
@@ -49,6 +51,12 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		public override string ToString()
 		{
 			return string.Format("Bookmark at {0}", Index);
+		}
+
+		[Pure]
+		public BookmarkSettings CreateSetting()
+		{
+			return new BookmarkSettings(DataSource.Id, Index);
 		}
 	}
 }

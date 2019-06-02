@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.Bookmarks
 {
@@ -12,17 +13,20 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		, IDisposable
 	{
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly HashSet<Bookmark> _bookmarks;
+		private readonly Dictionary<Bookmark, BookmarkSettings> _bookmarks;
 		private IReadOnlyList<Bookmark> _roBookmarks;
 		private readonly Dictionary<ILogFile, IDataSource> _dataSourcesByLogFile;
 		private readonly object _syncRoot;
+		private readonly IBookmarks _settings;
 
-		public BookmarkCollection(TimeSpan maximumWaitTime)
+		public BookmarkCollection(IBookmarks bookmarks,
+		                          TimeSpan maximumWaitTime)
 		{
+			_settings = bookmarks ?? throw new ArgumentNullException(nameof(bookmarks));
 			_maximumWaitTime = maximumWaitTime;
 			_syncRoot = new object();
 			_dataSourcesByLogFile = new Dictionary<ILogFile, IDataSource>();
-			_bookmarks = new HashSet<Bookmark>();
+			_bookmarks = new Dictionary<Bookmark, BookmarkSettings>();
 			Update();
 		}
 
@@ -35,6 +39,14 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				{
 					_dataSourcesByLogFile.Add(logFile, dataSource);
 					logFile.AddListener(this, _maximumWaitTime, 10000);
+
+					foreach (var setting in _settings.All.Where(x => x.DataSourceId == dataSource.Id))
+					{
+						var bookmark = new Bookmark(dataSource, setting.Index);
+						_bookmarks.Add(bookmark, setting);
+					}
+
+					Update();
 				}
 			}
 		}
@@ -47,7 +59,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				if (_dataSourcesByLogFile.Remove(logFile))
 				{
 					logFile.RemoveListener(this);
-					_bookmarks.RemoveWhere(x => x.DataSource == dataSource);
+					Remove(_bookmarks.Keys.Where(x => x.DataSource == dataSource).ToList());
 				}
 			}
 		}
@@ -59,11 +71,12 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 					return;
 
-				if (section.IsReset)
-				{
-					_bookmarks.RemoveWhere(x => x.DataSource.UnfilteredLogFile == logFile);
-					Update();
-				}
+				if (!section.IsReset)
+					return;
+
+				var toRemove = _bookmarks.Keys.Where(x => x.DataSource.UnfilteredLogFile == logFile).ToList();
+				Remove(toRemove);
+				Update();
 			}
 		}
 
@@ -94,11 +107,17 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				if (logLineIndex >= logFile.Count)
 					return null;
 
-				var bookmark = new Bookmark(dataSource, logLineIndex);
-				if (!_bookmarks.Add(bookmark))
+				Bookmark bookmark = new Bookmark(dataSource, logLineIndex);
+				if (_bookmarks.ContainsKey(bookmark))
 					return null;
 
+				var settings = bookmark.CreateSetting();
+				_bookmarks.Add(bookmark, settings);
+				_settings.Add(settings);
 				Update();
+
+				_settings.SaveAsync();
+
 				return bookmark;
 			}
 		}
@@ -118,10 +137,11 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 
 			lock (_syncRoot)
 			{
-				if (_bookmarks.Remove(bookmark))
-				{
-					Update();
-				}
+				if (!_bookmarks.Remove(bookmark))
+					return;
+
+				Update();
+				_settings.SaveAsync();
 			}
 		}
 
@@ -130,13 +150,29 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		{
 			lock (_syncRoot)
 			{
-				return _bookmarks.Contains(new Bookmark(dataSource, index));
+				return _bookmarks.ContainsKey(new Bookmark(dataSource, index));
 			}
+		}
+
+		private void Remove(IReadOnlyCollection<Bookmark> toList)
+		{
+			var bookmarksSettings = new List<BookmarkSettings>();
+			foreach (var bookmark in toList)
+			{
+				if (_bookmarks.TryGetValue(bookmark, out var settings))
+				{
+					bookmarksSettings.Add(settings);
+					_bookmarks.Remove(bookmark);
+				}
+			}
+			_settings.Remove(bookmarksSettings);
+
+			Update();
 		}
 
 		private void Update()
 		{
-			_roBookmarks = _bookmarks.ToList();
+			_roBookmarks = _bookmarks.Keys.ToList();
 		}
 	}
 }

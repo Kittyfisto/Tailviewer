@@ -22,6 +22,7 @@ using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -69,6 +70,9 @@ namespace Tailviewer
 				//       (maybe we should preserve an old version)
 			}
 
+			var bookmarks = Bookmarks.Create();
+			bookmarks.Restore();
+
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
@@ -81,7 +85,7 @@ namespace Tailviewer
 					var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
 
 					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
-					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources))
+					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
 					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(taskScheduler, logAnalyserEngine, pluginSystem))

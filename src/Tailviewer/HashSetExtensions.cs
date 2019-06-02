@@ -4,6 +4,14 @@ namespace Tailviewer
 {
 	public static class HashSetExtensions
 	{
+		public static void RemoveAll<T>(this HashSet<T> that, IEnumerable<T> values)
+		{
+			foreach (var value in values)
+			{
+				that.Remove(value);
+			}
+		}
+
 		public static bool HasEqualContent<T>(this HashSet<T> that, HashSet<T> other)
 		{
 			if (that == null)

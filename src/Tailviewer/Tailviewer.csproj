@@ -95,6 +95,7 @@
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
+    <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
     <Compile Include="Settings\TextSettings.cs" />
@@ -165,8 +166,8 @@
     <Compile Include="PageLayoutConverter.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
-    <Compile Include="Settings\BookmarkSettings.cs" />
-    <Compile Include="Settings\BookmarksSettings.cs" />
+    <Compile Include="Settings\Bookmarks\BookmarkSettings.cs" />
+    <Compile Include="Settings\Bookmarks\Bookmarks.cs" />
     <Compile Include="Settings\Dashboard\DashboardSettings.cs" />
     <Compile Include="Settings\Dashboard\LayoutSettings.cs" />
     <Compile Include="Settings\Dashboard\Widgets\WidgetSettings.cs" />
