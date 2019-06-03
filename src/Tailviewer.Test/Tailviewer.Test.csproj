@@ -104,6 +104,7 @@
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollectionTest.cs" />
     <Compile Include="BusinessLogic\DataSourceAnalyserTest.cs" />
     <Compile Include="BusinessLogic\DataSources\DataSourcesTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\FolderDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToFileExporterTest.cs" />
     <Compile Include="BusinessLogic\Export\LogFileToStreamExporterTest.cs" />
     <Compile Include="BusinessLogic\Filters\EmptyLogLineFilterTest.cs" />

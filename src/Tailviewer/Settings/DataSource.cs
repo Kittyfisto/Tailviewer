@@ -44,6 +44,22 @@ namespace Tailviewer.Settings
 		/// </summary>
 		public DataSourceId ParentId;
 
+		/// <summary>
+		///     The path to the folder which is watched over for log files.
+		/// </summary>
+		public string LogFileFolderPath;
+
+		/// <summary>
+		///     The regular expression used to select the log files to display.
+		///     Only used in conjunction with <see cref="LogFileFolderPath"/>.
+		/// </summary>
+		public string LogFileRegex;
+
+		/// <summary>
+		///     Used in conjunction with <see cref="LogFileFolderPath"/>.
+		/// </summary>
+		public bool Recursive;
+
 		public HashSet<LogLineIndex> SelectedLogLines;
 		public string SearchTerm;
 		public LogLineIndex VisibleLogLine;
@@ -111,6 +127,9 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeInt("visibleentryindex", (int) VisibleLogLine);
 			writer.WriteAttribute("id", Id);
 			writer.WriteAttribute("parentid", ParentId);
+			writer.WriteAttributeString("logfilefolderpath", LogFileFolderPath);
+			writer.WriteAttributeString("logfileregex", LogFileRegex);
+			writer.WriteAttributeBool("recursive", Recursive);
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
 			writer.WriteAttributeEnum("mergeddatasourcedisplaymode", MergedDataSourceDisplayMode);
@@ -189,6 +208,18 @@ namespace Tailviewer.Settings
 
 					case "parentid":
 						ParentId = reader.ReadContentAsDataSourceId();
+						break;
+
+					case "logfilefolderpath":
+						LogFileFolderPath = reader.ReadContentAsString();
+						break;
+
+					case "logfileregex":
+						LogFileRegex = reader.ReadContentAsString();
+						break;
+
+					case "recursive":
+						Recursive = reader.ReadContentAsBoolean();
 						break;
 
 					case "lastviewed":
@@ -281,6 +312,9 @@ namespace Tailviewer.Settings
 				LastViewed = LastViewed,
 				LevelFilter = LevelFilter,
 				Order = Order,
+				LogFileFolderPath = LogFileFolderPath,
+				LogFileRegex = LogFileRegex,
+				Recursive = Recursive,
 				ParentId = ParentId,
 				SearchTerm = SearchTerm,
 				ShowLineNumbers = ShowLineNumbers,

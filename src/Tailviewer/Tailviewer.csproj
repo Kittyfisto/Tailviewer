@@ -87,7 +87,10 @@
     <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxy.cs" />
     <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
     <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserEngine.cs" />
+    <Compile Include="BusinessLogic\DataSources\FolderDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\IMultiDataSource.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
