@@ -77,7 +77,7 @@ namespace Tailviewer
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
 			{
-				var filesystem = new Filesystem(serialTaskScheduler);
+				var filesystem = new Filesystem(serialTaskScheduler, taskScheduler);
 				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath))
 				{
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);

@@ -16,11 +16,11 @@
 		/// <summary>
 		///     The regular expression which shall be used to select the log files to display.
 		/// </summary>
-		string LogFileRegex { get; }
+		string LogFileSearchPattern { get; }
 
 		/// <summary>
 		///     When set to true, then <see cref="LogFileFolderPath" /> will be searched recursively for matches against
-		///     <see cref="LogFileRegex" />, otherwise only the top-level folder will be searched.
+		///     <see cref="LogFileSearchPattern" />, otherwise only the top-level folder will be searched.
 		/// </summary>
 		bool Recursive { get; }
 
@@ -28,8 +28,8 @@
 		/// 
 		/// </summary>
 		/// <param name="folderPath"></param>
-		/// <param name="logFileRegex"></param>
+		/// <param name="searchPattern"></param>
 		/// <param name="recursive"></param>
-		void Change(string folderPath, string logFileRegex, bool recursive);
+		void Change(string folderPath, string searchPattern, bool recursive);
 	}
 }

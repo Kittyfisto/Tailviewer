@@ -83,6 +83,32 @@ namespace Tailviewer.BusinessLogic.DataSources
 			UpdateUnfilteredLogFile();
 		}
 
+		public void SetDataSources(IReadOnlyList<IDataSource> dataSources)
+		{
+			foreach (var dataSource in dataSources)
+			{
+				if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)
+					throw new ArgumentException("This data source already belongs to a different parent");
+			}
+
+			foreach (var dataSource in dataSources)
+			{
+				_dataSources.Add(dataSource);
+				dataSource.Settings.ParentId = Settings.Id;
+			}
+
+			foreach (var dataSource in _dataSources.ToList())
+			{
+				if (!dataSources.Contains(dataSource))
+				{
+					_dataSources.Remove(dataSource);
+					dataSource.Settings.ParentId = DataSourceId.Empty;
+				}
+			}
+
+			UpdateUnfilteredLogFile();
+		}
+
 		protected override void DisposeAdditional()
 		{
 			_unfilteredLogFile?.Dispose();

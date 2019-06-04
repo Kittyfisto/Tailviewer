@@ -1,4 +1,5 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
+﻿using System.Collections.Generic;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
@@ -30,5 +31,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		/// <param name="dataSource"></param>
 		void Remove(IDataSource dataSource);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dataSources"></param>
+		void SetDataSources(IReadOnlyList<IDataSource> dataSources);
 	}
 }

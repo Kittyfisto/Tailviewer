@@ -235,5 +235,78 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_merged.FilteredLogFile.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "bar", LevelFlags.Trace, t2));
 			_merged.FilteredLogFile.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "Houston, we have a problem", LevelFlags.Warning, t3));
 		}
+
+		[Test]
+		public void TestSetDataSourcesEmpty()
+		{
+			_merged.OriginalSources.Should().BeEmpty();
+			_merged.SetDataSources(new IDataSource[0]);
+			_merged.OriginalSources.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestSetDataSourcesOneSource()
+		{
+			var logFile1 = new InMemoryLogFile();
+			var source1 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile1,
+			                                   TimeSpan.Zero);
+
+			_merged.SetDataSources(new []{source1});
+			_merged.OriginalSources.Should().Equal(new object[] {source1});
+			source1.ParentId.Should().Be(_merged.Id);
+		}
+
+		[Test]
+		public void TestSetDataSourcesOneNewSource()
+		{
+			var logFile1 = new InMemoryLogFile();
+			var source1 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile1,
+			                                   TimeSpan.Zero);
+
+			_merged.SetDataSources(new []{source1});
+
+			var logFile2 = new InMemoryLogFile();
+			var source2 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile2,
+			                                   TimeSpan.Zero);
+
+			_merged.SetDataSources(new []{source1, source2});
+			_merged.OriginalSources.Should().BeEquivalentTo(new object[] {source1, source2});
+
+			source1.ParentId.Should().Be(_merged.Id);
+			source2.ParentId.Should().Be(_merged.Id);
+		}
+
+		[Test]
+		public void TestSetDataSourcesOneLessSource()
+		{
+			var logFile1 = new InMemoryLogFile();
+			var source1 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile1,
+			                                   TimeSpan.Zero);
+
+			var logFile2 = new InMemoryLogFile();
+			var source2 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile2,
+			                                   TimeSpan.Zero);
+
+			_merged.SetDataSources(new []{source1, source2});
+			_merged.OriginalSources.Should().BeEquivalentTo(new object[] {source1, source2});
+			source1.ParentId.Should().Be(_merged.Id);
+			source2.ParentId.Should().Be(_merged.Id);
+			
+			_merged.SetDataSources(new []{source2});
+			_merged.OriginalSources.Should().BeEquivalentTo(new object[] {source2});
+			source1.ParentId.Should().Be(DataSourceId.Empty);
+			source2.ParentId.Should().Be(_merged.Id);
+
+		}
 	}
 }

@@ -53,7 +53,7 @@ namespace Tailviewer.Settings
 		///     The regular expression used to select the log files to display.
 		///     Only used in conjunction with <see cref="LogFileFolderPath"/>.
 		/// </summary>
-		public string LogFileRegex;
+		public string LogFileSearchPattern;
 
 		/// <summary>
 		///     Used in conjunction with <see cref="LogFileFolderPath"/>.
@@ -128,7 +128,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttribute("id", Id);
 			writer.WriteAttribute("parentid", ParentId);
 			writer.WriteAttributeString("logfilefolderpath", LogFileFolderPath);
-			writer.WriteAttributeString("logfileregex", LogFileRegex);
+			writer.WriteAttributeString("logfileregex", LogFileSearchPattern);
 			writer.WriteAttributeBool("recursive", Recursive);
 			writer.WriteAttributeDateTime("lastviewed", LastViewed);
 			writer.WriteAttributeDouble("horizontaloffset", HorizontalOffset);
@@ -215,7 +215,7 @@ namespace Tailviewer.Settings
 						break;
 
 					case "logfileregex":
-						LogFileRegex = reader.ReadContentAsString();
+						LogFileSearchPattern = reader.ReadContentAsString();
 						break;
 
 					case "recursive":
@@ -313,7 +313,7 @@ namespace Tailviewer.Settings
 				LevelFilter = LevelFilter,
 				Order = Order,
 				LogFileFolderPath = LogFileFolderPath,
-				LogFileRegex = LogFileRegex,
+				LogFileSearchPattern = LogFileSearchPattern,
 				Recursive = Recursive,
 				ParentId = ParentId,
 				SearchTerm = SearchTerm,

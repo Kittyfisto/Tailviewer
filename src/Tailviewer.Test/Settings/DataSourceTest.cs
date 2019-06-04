@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Settings
 			dataSource.FollowTail.Should().BeFalse();
 
 			dataSource.LogFileFolderPath.Should().BeNull();
-			dataSource.LogFileRegex.Should().BeNull();
+			dataSource.LogFileSearchPattern.Should().BeNull();
 			dataSource.Recursive.Should().BeFalse();
 
 			dataSource.ShowLineNumbers.Should().BeTrue();
@@ -77,7 +77,7 @@ namespace Tailviewer.Test.Settings
 				LevelFilter = LevelFlags.Fatal,
 				ParentId = parent,
 				LogFileFolderPath = @"C:\temp\logs",
-				LogFileRegex = "*.log",
+				LogFileSearchPattern = "*.log",
 				SearchTerm = "stuff",
 				SelectedLogLines =
 				{
@@ -104,7 +104,7 @@ namespace Tailviewer.Test.Settings
 			cloned.LevelFilter.Should().Be(LevelFlags.Fatal);
 			cloned.ParentId.Should().Be(parent);
 			cloned.LogFileFolderPath.Should().Be(@"C:\temp\logs");
-			cloned.LogFileRegex.Should().Be("*.log");
+			cloned.LogFileSearchPattern.Should().Be("*.log");
 			cloned.SearchTerm.Should().Be("stuff");
 			cloned.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));
 			cloned.SelectedLogLines.Should().NotBeSameAs(dataSource.SelectedLogLines);
@@ -137,7 +137,7 @@ namespace Tailviewer.Test.Settings
 				LevelFilter = LevelFlags.Fatal,
 				ParentId = parent,
 				LogFileFolderPath = @"C:\temp\logs",
-				LogFileRegex = "*.log",
+				LogFileSearchPattern = "*.log",
 				Recursive = recursive,
 				SearchTerm = "stuff",
 				SelectedLogLines =
@@ -164,7 +164,7 @@ namespace Tailviewer.Test.Settings
 			cloned.LevelFilter.Should().Be(LevelFlags.Fatal);
 			cloned.ParentId.Should().Be(parent);
 			cloned.LogFileFolderPath.Should().Be(@"C:\temp\logs");
-			cloned.LogFileRegex.Should().Be("*.log");
+			cloned.LogFileSearchPattern.Should().Be("*.log");
 			cloned.Recursive.Should().Be(recursive);
 			cloned.SearchTerm.Should().Be("stuff");
 			cloned.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));
@@ -208,7 +208,7 @@ namespace Tailviewer.Test.Settings
 						LevelFilter = LevelFlags.Fatal,
 						ParentId = parent,
 						LogFileFolderPath = @"E:\logs\",
-						LogFileRegex = "*.txt",
+						LogFileSearchPattern = "*.txt",
 						SearchTerm = "stuff",
 						//SelectedLogLines =
 						//{
@@ -244,7 +244,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.LevelFilter.Should().Be(LevelFlags.Fatal);
 					dataSource.ParentId.Should().Be(parent);
 					dataSource.LogFileFolderPath.Should().Be(@"E:\logs\");
-					dataSource.LogFileRegex.Should().Be("*.txt");
+					dataSource.LogFileSearchPattern.Should().Be("*.txt");
 					dataSource.SearchTerm.Should().Be("stuff");
 					//dataSource.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));
 					dataSource.ActivatedQuickFilters.Should().Equal(new object[] { filter });
@@ -284,7 +284,7 @@ namespace Tailviewer.Test.Settings
 						LevelFilter = LevelFlags.Fatal,
 						ParentId = parent,
 						LogFileFolderPath = @"E:\logs\",
-						LogFileRegex = "*.txt",
+						LogFileSearchPattern = "*.txt",
 						Recursive = recursive,
 						SearchTerm = "stuff",
 						//SelectedLogLines =
@@ -321,7 +321,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.LevelFilter.Should().Be(LevelFlags.Fatal);
 					dataSource.ParentId.Should().Be(parent);
 					dataSource.LogFileFolderPath.Should().Be(@"E:\logs\");
-					dataSource.LogFileRegex.Should().Be("*.txt");
+					dataSource.LogFileSearchPattern.Should().Be("*.txt");
 					dataSource.Recursive.Should().Be(recursive);
 					dataSource.SearchTerm.Should().Be("stuff");
 					//dataSource.SelectedLogLines.Should().BeEquivalentTo(new LogLineIndex(1), new LogLineIndex(10));

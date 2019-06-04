@@ -50,11 +50,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      TimeSpan.Zero);
 			dataSource.Change(folderPath, logFileRegex, recursive);
 			dataSource.LogFileFolderPath.Should().Be(folderPath);
-			dataSource.LogFileRegex.Should().Be(logFileRegex);
+			dataSource.LogFileSearchPattern.Should().Be(logFileRegex);
 			dataSource.Recursive.Should().Be(recursive);
 
 			_settings.LogFileFolderPath.Should().Be(folderPath);
-			_settings.LogFileRegex.Should().Be(logFileRegex);
+			_settings.LogFileSearchPattern.Should().Be(logFileRegex);
 			_settings.Recursive.Should().Be(recursive);
 		}
 
@@ -82,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine("Z:", "logs");
+			var path = Path.Combine("Z:\\", "logs");
 			dataSource.Change(path, "*", false);
 
 			dataSource.OriginalSources.Should().BeEmpty();
@@ -106,7 +106,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		public void TestOneMatchingLogFile()
 		{
 			var dataSource = new FolderDataSource(_taskScheduler,
@@ -121,6 +120,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]).Wait();
 
 			dataSource.Change(path, "*.log", false);
+			_taskScheduler.RunOnce();
 
 			dataSource.Property(x => (IEnumerable<IDataSource>)x.OriginalSources).ShouldEventually().HaveCount(1);
 			var child = dataSource.OriginalSources[0];
