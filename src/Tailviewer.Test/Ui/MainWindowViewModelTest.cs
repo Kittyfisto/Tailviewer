@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -33,7 +34,8 @@ namespace Tailviewer.Test.Ui
 			_dispatcher = new ManualDispatcher();
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks);
+			_filesystem = new InMemoryFilesystem();
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
@@ -67,12 +69,13 @@ namespace Tailviewer.Test.Ui
 		private ILogFileFactory _logFileFactory;
 		private Mock<IAnalysisStorage> _analysisStorage;
 		private Bookmarks _bookmarks;
+		private InMemoryFilesystem _filesystem;
 
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/76")]
 		public void TestCtor()
 		{
-			var dataSource = _dataSources.AddDataSource(@"F:\logs\foo.log");
+			var dataSource = _dataSources.AddFile(@"F:\logs\foo.log");
 			_settings.DataSources.SelectedItem = dataSource.Id;
 
 			_mainWindow = new MainWindowViewModel(_settings,

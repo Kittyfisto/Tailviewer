@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -28,12 +29,14 @@ namespace Tailviewer.Test.Ui
 		private Mock<IApplicationSettings> _settingsMock;
 		private Mock<IActionCenter> _actionCenter;
 		private Mock<IBookmarks> _bookmarks;
+		private InMemoryFilesystem _filesystem;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_filesystem = new InMemoryFilesystem();
 			_actionCenter = new Mock<IActionCenter>();
 		}
 
@@ -44,7 +47,7 @@ namespace Tailviewer.Test.Ui
 			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSources());
 			_settings = _settingsMock.Object;
 			_bookmarks = new Mock<IBookmarks>();
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 		}
 
@@ -52,7 +55,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that adding the first data source sets it to be selected")]
 		public void TestAdd1()
 		{
-			var model = _model.GetOrAdd("foo");
+			var model = _model.GetOrAddFile("foo");
 			_model.SelectedItem.Should().BeSameAs(model);
 			model.IsVisible.Should().BeTrue();
 		}
@@ -61,7 +64,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a single source can be dragged")]
 		public void TestCanBeDragged1()
 		{
-			var a = _model.GetOrAdd("A");
+			var a = _model.GetOrAddFile("A");
 			_model.CanBeDragged(a).Should().BeTrue();
 		}
 
@@ -69,8 +72,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a source with a parent can be dragged")]
 		public void TestCanBeDragged2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			_model.CanBeDragged(a).Should().BeTrue();
 		}
@@ -79,9 +82,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a merged source cannot be dragged to form a group")]
 		public void TestCanBeDragged3()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
 			IDataSourceViewModel unused;
@@ -91,7 +94,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCanBeDropped1()
 		{
-			var a = _model.GetOrAdd("A");
+			var a = _model.GetOrAddFile("A");
 			IDataSourceViewModel unused;
 			_model.CanBeDropped(a, a, DataSourceDropType.Group, out unused)
 				.Should()
@@ -101,8 +104,8 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCanBeDropped2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			IDataSourceViewModel unused;
 			_model.CanBeDropped(a, b, DataSourceDropType.Group, out unused).Should().BeTrue("Because two items can be grouped");
 		}
@@ -111,9 +114,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that an item can be dropped above an item in a group")]
 		public void TestCanBeDropped3()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 
 			IDataSourceViewModel group;
@@ -126,9 +129,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that an item can be dropped below an item in a group")]
 		public void TestCanBeDropped4()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 
 			IDataSourceViewModel group;
@@ -141,8 +144,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a group cannot be rearranged above or beneath a grouped source")]
 		public void TestCanBeDropped5()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var group = _model.Observable[0];
 
@@ -155,8 +158,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a group can only contain up to 255 sources")]
 		public void TestCanBeDropped6()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var group = (MergedDataSourceViewModel) _model.Observable[0];
 			_model.OnDropped(a, group, DataSourceDropType.Group);
@@ -165,13 +168,13 @@ namespace Tailviewer.Test.Ui
 			IDataSourceViewModel unused;
 			for (var i = 0; i < LogLineSourceId.MaxSources - 2; ++i)
 			{
-				var source = _model.GetOrAdd(i.ToString());
+				var source = _model.GetOrAddFile(i.ToString());
 				_model.CanBeDropped(source, group, DataSourceDropType.Group, out unused)
 					.Should().BeTrue();
 				_model.OnDropped(source, group, DataSourceDropType.Group);
 			}
 
-			var next = _model.GetOrAdd("C");
+			var next = _model.GetOrAddFile("C");
 			_model.CanBeDropped(next, group, DataSourceDropType.Group, out unused)
 				.Should().BeFalse("because there cannot be more than 255 sources in a group");
 		}
@@ -189,7 +192,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source1);
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -216,7 +219,7 @@ namespace Tailviewer.Test.Ui
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew(), ParentId = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(group);
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			new Action(() => _model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object)).Should().NotThrow();
 			_model.Observable.Count.Should().Be(2);
 			var viewModel = _model.Observable[0];
@@ -235,8 +238,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that dropping a source onto another one creates a new group with the 2 sources")]
 		public void TestDrop1()
 		{
-			var source = _model.GetOrAdd("A");
-			var dest = _model.GetOrAdd("B");
+			var source = _model.GetOrAddFile("A");
+			var dest = _model.GetOrAddFile("B");
 
 			new Action(() => _model.OnDropped(source, dest, DataSourceDropType.Group))
 				.Should().NotThrow();
@@ -262,10 +265,10 @@ namespace Tailviewer.Test.Ui
 			)]
 		public void TestDrop2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged1 = _model.Observable[0] as MergedDataSourceViewModel;
@@ -283,9 +286,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that a group is removed if only one source remains in it after a drop")]
 		public void TestDrop3()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged1 = _model.Observable[0];
 			_model.Observable.Should().Equal(new object[] {merged1, c});
@@ -303,11 +306,11 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that the order of data sources is preserved when creating a group")]
 		public void TestDrop4()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
-			var e = _model.GetOrAdd("E");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
+			var e = _model.GetOrAddFile("E");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged1 = _model.Observable[0] as MergedDataSourceViewModel;
 			_model.Observable.Should().Equal(new object[] {merged1, c, d, e});
@@ -317,11 +320,11 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that the order of data sources is preserved when creating a group")]
 		public void TestDrop5()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
-			var e = _model.GetOrAdd("E");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
+			var e = _model.GetOrAddFile("E");
 			_model.OnDropped(a, e, DataSourceDropType.Group);
 			var merged1 = _model.Observable[3] as MergedDataSourceViewModel;
 			_model.Observable.Should().Equal(new object[] {b, c, d, merged1});
@@ -331,8 +334,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that when a group is dissolved due to a drop, both data source's parent is removed")]
 		public void TestDrop6()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
 			_model.OnDropped(a, merged, DataSourceDropType.ArrangeTop);
@@ -354,8 +357,8 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestDrop7()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 			_settings.DataSources.Count.Should().Be(2);
 			_settings.DataSources[0].File.Should().EndWith("A");
 			_settings.DataSources[1].File.Should().EndWith("B");
@@ -369,9 +372,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that dragging a third file onto the group works")]
 		public void TestDropOntoGroup1()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
@@ -388,9 +391,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that dragging a third file onto a file of a group works")]
 		public void TestDropOntoGroup2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
@@ -405,11 +408,11 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that dragging a file from one group onto another works")]
 		public void TestDropOntoGroup3()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
-			var e = _model.GetOrAdd("E");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
+			var e = _model.GetOrAddFile("E");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged1 = _model.Observable[0] as MergedDataSourceViewModel;
@@ -434,10 +437,10 @@ namespace Tailviewer.Test.Ui
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/79")]
 		public void TestDropOntoGroup4()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
 
 			_model.OnDropped(b, c, DataSourceDropType.Group);
 			var group = (MergedDataSourceViewModel) _model.Observable[1];
@@ -458,7 +461,7 @@ namespace Tailviewer.Test.Ui
 		public void TestGetOrAdd1()
 		{
 			IDataSourceViewModel viewModel = null;
-			new Action(() => viewModel = _model.GetOrAdd("foobar")).Should().NotThrow();
+			new Action(() => viewModel = _model.GetOrAddFile("foobar")).Should().NotThrow();
 			viewModel.Should().NotBeNull();
 			viewModel.DataSource.Should().NotBeNull();
 			viewModel.DataSource.Settings.Should().NotBeNull();
@@ -469,8 +472,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that arranging a source to the topmost spot works")]
 		public void TestRearrange1()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 
 			new Action(() => _model.OnDropped(b, a, DataSourceDropType.ArrangeTop))
 				.Should().NotThrow();
@@ -487,8 +490,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that arranging a source to the bottom-most spot works")]
 		public void TestRearrange2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 
 			new Action(() => _model.OnDropped(a, b, DataSourceDropType.ArrangeBottom))
 				.Should().NotThrow();
@@ -505,8 +508,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that arranging a source causes the settings to be saved")]
 		public void TestRearrange3()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 
 			_settingsMock.ResetCalls();
 
@@ -520,9 +523,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that arranging a source from a group destroys the group when there's only 1 source left")]
 		public void TestRearrange4()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var group = _model.Observable[0] as MergedDataSourceViewModel;
@@ -544,10 +547,10 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that re-arranging groups is possible")]
 		public void TestRearrange5()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			_model.OnDropped(c, d, DataSourceDropType.Group);
@@ -566,9 +569,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that dropping and rearranging an item inside a group works")]
 		public void TestRearrange6()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var group = _model.Observable[0] as MergedDataSourceViewModel;
@@ -591,8 +594,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that rearranging an item inside a group works")]
 		public void TestRearrange7()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var group = _model.Observable[0] as MergedDataSourceViewModel;
@@ -612,7 +615,7 @@ namespace Tailviewer.Test.Ui
 			_settings = new ApplicationSettings("foobar");
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 			viewModel.RemoveCommand.Execute(null);
@@ -637,7 +640,7 @@ namespace Tailviewer.Test.Ui
 			_settings.DataSources.Add(source2);
 			_settings.DataSources.Add(source3);
 			_settings.DataSources.Add(group);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var merged = (MergedDataSourceViewModel) _model.Observable[0];
 			var viewModel1 = merged.Observable.ElementAt(0);
@@ -660,7 +663,7 @@ namespace Tailviewer.Test.Ui
 		{
 			var source = new DataSource("foo") {Id = DataSourceId.CreateNew()};
 			_settings.DataSources.Add(source);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings.DataSources, _bookmarks.Object);
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
 			_model = new DataSourcesViewModel(_settings, _dataSources, _actionCenter.Object);
 			var viewModel = _model.Observable[0];
 
@@ -675,10 +678,10 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that deleting a merged data source puts the original data sources back in place")]
 		public void TestRemoveMerged1()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
-			var c = _model.GetOrAdd("C");
-			var d = _model.GetOrAdd("D");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
+			var c = _model.GetOrAddFile("C");
+			var d = _model.GetOrAddFile("D");
 
 			_model.OnDropped(b, c, DataSourceDropType.Group);
 			var merged = _model.Observable[1] as MergedDataSourceViewModel;
@@ -691,8 +694,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that deleting a merged data source removes its as parent from its child data sources")]
 		public void TestRemoveMerged2()
 		{
-			var a = _model.GetOrAdd("A");
-			var b = _model.GetOrAdd("B");
+			var a = _model.GetOrAddFile("A");
+			var b = _model.GetOrAddFile("B");
 
 			_model.OnDropped(a, b, DataSourceDropType.Group);
 			var merged = _model.Observable[0] as MergedDataSourceViewModel;
@@ -709,8 +712,8 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that selecting a data source sets the IsVisible property on all view models")]
 		public void TestSelect1()
 		{
-			var model1 = _model.GetOrAdd("foo");
-			var model2 = _model.GetOrAdd("bar");
+			var model1 = _model.GetOrAddFile("foo");
+			var model2 = _model.GetOrAddFile("bar");
 
 			_model.SelectedItem.Should().BeSameAs(model1);
 			_model.SelectedItem = model2;
@@ -723,9 +726,9 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that selecting a data source sets the IsVisible property on all view models")]
 		public void TestSelect2()
 		{
-			var model1 = _model.GetOrAdd("foo");
-			var model2 = _model.GetOrAdd("bar");
-			var model3 = _model.GetOrAdd("clondyke");
+			var model1 = _model.GetOrAddFile("foo");
+			var model2 = _model.GetOrAddFile("bar");
+			var model3 = _model.GetOrAddFile("clondyke");
 			_model.OnDropped(model2, model3, DataSourceDropType.Group);
 
 			_model.SelectedItem = model2;
@@ -739,7 +742,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that selecting a null data source is possible")]
 		public void TestSelect3()
 		{
-			var model = _model.GetOrAdd("foo");
+			var model = _model.GetOrAddFile("foo");
 			new Action(() => _model.SelectedItem = null).Should().NotThrow();
 			_model.SelectedItem.Should().BeNull();
 			model.IsVisible.Should().BeFalse();

@@ -36,7 +36,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// <returns></returns>
 		bool Contains(DataSourceId id);
 
-		SingleDataSource AddDataSource(string fileName);
+		SingleDataSource AddFile(string fileName);
+		FolderDataSource AddFolder(string folderPath);
 		MergedDataSource AddGroup();
 		bool Remove(IDataSource viewModelDataSource);
 

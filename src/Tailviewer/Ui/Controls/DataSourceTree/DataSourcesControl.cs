@@ -45,9 +45,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			DependencyProperty.Register("SearchTerm", typeof (string), typeof (LogView.LogViewerControl),
 			                            new PropertyMetadata(null, OnStringFilterChanged));
 
-		public static readonly DependencyProperty AddDataSourceCommandProperty =
-			DependencyProperty.Register("AddDataSourceCommand", typeof (ICommand), typeof (DataSourcesControl),
+		public static readonly DependencyProperty AddDataSourceFromFileCommandProperty =
+			DependencyProperty.Register("AddDataSourceFromFileCommand", typeof (ICommand), typeof (DataSourcesControl),
 			                            new PropertyMetadata(default(ICommand)));
+
+		public static readonly DependencyProperty AddDataSourceFromFolderCommandProperty = DependencyProperty.Register(
+		                                                "AddDataSourceFromFolderCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
 
 		public static DataSourcesControl Instance;
 
@@ -66,10 +69,16 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			Instance = this;
 		}
 
-		public ICommand AddDataSourceCommand
+		public ICommand AddDataSourceFromFileCommand
 		{
-			get { return (ICommand) GetValue(AddDataSourceCommandProperty); }
-			set { SetValue(AddDataSourceCommandProperty, value); }
+			get { return (ICommand) GetValue(AddDataSourceFromFileCommandProperty); }
+			set { SetValue(AddDataSourceFromFileCommandProperty, value); }
+		}
+
+		public ICommand AddDataSourceFromFolderCommand
+		{
+			get { return (ICommand) GetValue(AddDataSourceFromFolderCommandProperty); }
+			set { SetValue(AddDataSourceFromFolderCommandProperty, value); }
 		}
 
 		public string StringFilter

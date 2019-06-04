@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -25,9 +26,9 @@ namespace Tailviewer.Test.Ui
 
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
-			_dataSources = new DataSources(_logFileFactory, _scheduler, _settings, _bookmarks.Object);
+			_filesystem = new InMemoryFilesystem();
+			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 			_actionCenter = new Mock<IActionCenter>();
-
 		}
 
 		private DataSources _dataSources;
@@ -36,6 +37,7 @@ namespace Tailviewer.Test.Ui
 		private ILogFileFactory _logFileFactory;
 		private Mock<IActionCenter> _actionCenter;
 		private Mock<IBookmarks> _bookmarks;
+		private InMemoryFilesystem _filesystem;
 
 		[Test]
 		public void TestConstruction1()
@@ -113,7 +115,7 @@ namespace Tailviewer.Test.Ui
 		public void TestAddChild1()
 		{
 			var model = new MergedDataSourceViewModel(_dataSources.AddGroup(), _actionCenter.Object);
-			SingleDataSource source = _dataSources.AddDataSource("foo");
+			SingleDataSource source = _dataSources.AddFile("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
 			model.AddChild(sourceViewModel);
 			model.Observable.Should().Equal(sourceViewModel);
@@ -126,7 +128,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			SingleDataSource source = _dataSources.AddDataSource("foo");
+			SingleDataSource source = _dataSources.AddFile("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
 
 			model.AddChild(sourceViewModel);
@@ -143,7 +145,7 @@ namespace Tailviewer.Test.Ui
 			var sources = new List<SingleDataSourceViewModel>();
 			for (int i = 0; i < LogLineSourceId.MaxSources; ++i)
 			{
-				var source = _dataSources.AddDataSource(i.ToString());
+				var source = _dataSources.AddFile(i.ToString());
 				var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
 				sources.Add(sourceViewModel);
 
@@ -151,7 +153,7 @@ namespace Tailviewer.Test.Ui
 				model.Observable.Should().Equal(sources, "because all previously added children should be there");
 			}
 
-			var tooMuch = new SingleDataSourceViewModel(_dataSources.AddDataSource("dadw"), _actionCenter.Object);
+			var tooMuch = new SingleDataSourceViewModel(_dataSources.AddFile("dadw"), _actionCenter.Object);
 			model.AddChild(tooMuch).Should().BeFalse("because no more children can be added");
 			model.Observable.Should().Equal(sources, "because only those sources which could be added should be present");
 		}
@@ -162,7 +164,7 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			SingleDataSource source = _dataSources.AddDataSource("foo");
+			SingleDataSource source = _dataSources.AddFile("foo");
 			var sourceViewModel = new SingleDataSourceViewModel(source, _actionCenter.Object);
 
 			model.Insert(0, sourceViewModel);
@@ -175,11 +177,11 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"), _actionCenter.Object);
+			var child1 = new SingleDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
 			model.AddChild(child1);
 			child1.CharacterCode.Should().Be("A");
 
-			var child2 = new SingleDataSourceViewModel(_dataSources.AddDataSource("bar"), _actionCenter.Object);
+			var child2 = new SingleDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
 			model.Insert(0, child2);
 			model.Observable.Should().Equal(new object[]
 			{
@@ -197,10 +199,10 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddGroup();
 			var model = new MergedDataSourceViewModel(dataSource, _actionCenter.Object);
 
-			var child1 = new SingleDataSourceViewModel(_dataSources.AddDataSource("foo"), _actionCenter.Object);
+			var child1 = new SingleDataSourceViewModel(_dataSources.AddFile("foo"), _actionCenter.Object);
 			model.AddChild(child1);
 
-			var child2 = new SingleDataSourceViewModel(_dataSources.AddDataSource("bar"), _actionCenter.Object);
+			var child2 = new SingleDataSourceViewModel(_dataSources.AddFile("bar"), _actionCenter.Object);
 			model.AddChild(child2);
 			model.Observable.Should().Equal(new object[]
 			{

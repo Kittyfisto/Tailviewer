@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -20,6 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_filesystem = new InMemoryFilesystem();
 		}
 
 		[SetUp]
@@ -27,7 +29,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_settings = new Tailviewer.Settings.DataSources();
 			_bookmarks = new Mock<IBookmarks>();
-			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _settings, _bookmarks.Object);
+			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 		}
 
 		[TearDown]
@@ -41,11 +43,12 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
 		private Mock<IBookmarks> _bookmarks;
+		private InMemoryFilesystem _filesystem;
 
 		[Test]
-		public void TestAdd()
+		public void TestAddFile()
 		{
-			SingleDataSource source = _dataSources.AddDataSource(@"E:\Code\test.log");
+			SingleDataSource source = _dataSources.AddFile(@"E:\Code\test.log");
 			source.Should().NotBeNull();
 			source.FullFileName.Should().Be(@"E:\Code\test.log");
 			source.FollowTail.Should().BeFalse();
@@ -56,11 +59,25 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		public void TestAddFolder()
+		{
+			FolderDataSource source = _dataSources.AddFolder(@"E:\Code\");
+			source.Should().NotBeNull();
+			source.FullFileName.Should().Be(@"E:\Code\");
+			source.FollowTail.Should().BeFalse();
+			source.Id.Should().NotBe(Guid.Empty, "Because a newly added data source should have a unique id");
+
+			_settings.Count.Should().Be(1);
+			_settings[0].File.Should().BeNull();
+			_settings[0].LogFileFolderPath.Should().Be(@"E:\Code\");
+		}
+
+		[Test]
 		[Description("Verifies that adding a group also creates and adds a corresponding settings object")]
 		public void TestAddGroup1()
 		{
 			var settings = new Tailviewer.Settings.DataSources();
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				MergedDataSource group = dataSources.AddGroup();
 				group.Should().NotBeNull();
@@ -96,7 +113,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 							Id = DataSourceId.CreateNew()
 						}
 				};
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(1);
 				IDataSource dataSource = dataSources.Sources.First();
@@ -129,7 +146,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[0].ParentId = merged.Id;
 			settings[1].ParentId = merged.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(4, "Because we've loaded 4 data sources");
 				var mergedDataSource = dataSources[3] as MergedDataSource;
@@ -173,7 +190,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			settings[1].ParentId = merged2.Id;
 			settings[2].ParentId = merged3.Id;
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				dataSources.Count.Should().Be(6, "Because we've loaded 6 data sources");
 				var mergedDataSource1 = dataSources[3] as MergedDataSource;
@@ -206,7 +223,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				}
 			};
 
-			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, settings, _bookmarks.Object))
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				var group1 = dataSources.Sources.First() as IMergedDataSource;
 				group1.Should().NotBeNull();
@@ -219,10 +236,29 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		public void TestCtor5()
+		{
+			var settings = new Tailviewer.Settings.DataSources
+			{
+				new DataSource
+				{
+					Id = DataSourceId.CreateNew(),
+					LogFileFolderPath = @"F:\logs"
+				},
+			};
+
+			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
+			{
+				var folder = dataSources.Sources.First() as IFolderDataSource;
+				folder.Should().NotBeNull();
+			}
+		}
+
+		[Test]
 		public void TestRemove()
 		{
-			SingleDataSource source1 = _dataSources.AddDataSource(@"E:\Code\test1.log");
-			SingleDataSource source2 = _dataSources.AddDataSource(@"E:\Code\test2.log");
+			SingleDataSource source1 = _dataSources.AddFile(@"E:\Code\test1.log");
+			SingleDataSource source2 = _dataSources.AddFile(@"E:\Code\test2.log");
 
 			_dataSources.Remove(source1);
 			_settings.Count.Should().Be(1);

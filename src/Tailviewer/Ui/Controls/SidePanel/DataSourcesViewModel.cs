@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
@@ -26,7 +27,8 @@ namespace Tailviewer.Ui.Controls.SidePanel
 		private readonly ObservableCollection<IDataSourceViewModel> _observable;
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _settings;
-		private readonly ICommand _addDataSourceCommand;
+		private readonly ICommand _addDataSourceFromFileCommand;
+		private readonly ICommand _addDataSourceFromFolderCommand;
 		private IDataSourceViewModel _selectedItem;
 
 
@@ -40,7 +42,8 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			_settings = settings;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_allDataSourceViewModels = new List<IDataSourceViewModel>();
-			_addDataSourceCommand = new DelegateCommand(AddDataSource);
+			_addDataSourceFromFileCommand = new DelegateCommand(AddDataSourceFromFile);
+			_addDataSourceFromFolderCommand = new DelegateCommand(AddDataSourceFromFolder);
 			_dataSources = dataSources;
 			foreach (IDataSource dataSource in dataSources.Sources)
 			{
@@ -83,7 +86,9 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			}
 		}
 
-		public ICommand AddDataSourceCommand => _addDataSourceCommand;
+		public ICommand AddDataSourceFromFileCommand => _addDataSourceFromFileCommand;
+
+		public ICommand AddDataSourceFromFolderCommand => _addDataSourceFromFolderCommand;
 
 		public IDataSourceViewModel SelectedItem
 		{
@@ -126,14 +131,35 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			}
 		}
 
-		public IDataSourceViewModel GetOrAdd(string fileName)
+		public IDataSourceViewModel GetOrAddFile(string fileName)
 		{
 			string fullName = Path.GetFullPath(fileName);
 			IDataSourceViewModel viewModel =
 				_observable.FirstOrDefault(x => Represents(x, fullName));
 			if (viewModel == null)
 			{
-				IDataSource dataSource = _dataSources.AddDataSource(fileName);
+				IDataSource dataSource = _dataSources.AddFile(fileName);
+				viewModel = Add(dataSource);
+				_settings.SaveAsync();
+
+				if (_observable.Count == 1)
+				{
+					SelectedItem = viewModel;
+				}
+			}
+
+			return viewModel;
+		}
+
+		public IDataSourceViewModel GetOrAddFolder(string folder)
+		{
+			string fullPath = Path.GetFullPath(folder);
+			IDataSourceViewModel viewModel =
+				_observable.FirstOrDefault(x => Represents(x, fullPath));
+
+			if (viewModel == null)
+			{
+				IDataSource dataSource = _dataSources.AddFolder(fullPath);
 				viewModel = Add(dataSource);
 				_settings.SaveAsync();
 
@@ -157,27 +183,41 @@ namespace Tailviewer.Ui.Controls.SidePanel
 			return viewModel;
 		}
 
-		private void AddDataSource()
+		private void AddDataSourceFromFile()
 		{
-			// Create OpenFileDialog 
 			var dlg = new OpenFileDialog
 			{
+				Title = "Select log file to open",
 				DefaultExt = ".log",
 				Filter = "Log Files (*.log)|*.log|Txt Files (*.txt)|*.txt|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
 				Multiselect = true
 			};
 
-			// Display OpenFileDialog by calling ShowDialog method 
 			if (dlg.ShowDialog() == true)
 			{
 				string[] selectedFiles = dlg.FileNames;
 				foreach (string fileName in selectedFiles)
 				{
-					GetOrAdd(fileName);
+					GetOrAddFile(fileName);
 				}
 			}
 		}
-		
+
+		private void AddDataSourceFromFolder()
+		{
+			var dlg = new VistaFolderBrowserDialog
+			{
+				Description = "Select folder to open",
+				UseDescriptionForTitle = true
+			};
+
+			if (dlg.ShowDialog() == true)
+			{
+				var folder = dlg.SelectedPath;
+				GetOrAddFolder(folder);
+			}
+		}
+
 		private bool Represents(IDataSourceViewModel dataSourceViewModel, string fullName)
 		{
 			var file = dataSourceViewModel as SingleDataSourceViewModel;
@@ -214,7 +254,15 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				}
 				else
 				{
-					throw new ArgumentException(string.Format("Unknown data source: {0} ({1})", dataSource, dataSource.GetType()));
+					var folder = dataSource as IFolderDataSource;
+					if (folder != null)
+					{
+						viewModel = new FolderDataSourceViewModel(folder, _actionCenter);
+					}
+					else
+					{
+						throw new ArgumentException(string.Format("Unknown data source: {0} ({1})", dataSource, dataSource.GetType()));
+					}
 				}
 			}
 			viewModel.Remove += OnRemove;

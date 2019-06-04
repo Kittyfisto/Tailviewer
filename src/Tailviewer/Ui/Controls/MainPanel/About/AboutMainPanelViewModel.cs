@@ -5,6 +5,7 @@ using System.Threading;
 using log4net;
 using Metrolib.Controls;
 using MMQ;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
 
@@ -30,7 +31,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.About
 				new Dependency("Google Material Design Icons", new Version(3, 0, 1, 0),
 					"https://github.com/google/material-design-icons", "Licenses/GoogleMaterialDesignIcons/License.txt"),
 				new Dependency("Material Design Icons", new Version(1, 7, 22, 0),
-					"https://github.com/Templarian/MaterialDesign", "Licenses/MaterialDesignIcons/License.txt")
+					"https://github.com/Templarian/MaterialDesign", "Licenses/MaterialDesignIcons/License.txt"),
+				Dependency.CreateFrom<VistaFolderBrowserDialog>("https://github.com/caioproiete/ookii-dialogs-wpf", "Licenses/Ookii.Dialogs.Wpf/LICENSE")
 			};
 			SelectedDependency = _dependencies[0];
 		}

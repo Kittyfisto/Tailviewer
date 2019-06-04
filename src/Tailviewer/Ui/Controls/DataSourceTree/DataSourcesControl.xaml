@@ -34,20 +34,34 @@
                             </Grid.RowDefinitions>
 
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
                                 <TextBlock Text="Data sources"
                                            Foreground="DarkGray"
                                            FontSize="14"
                                            VerticalAlignment="Center"
                                            Margin="8,0,0,0" />
 
-                                <controls2:AddButton
-                                    Grid.Column="1"
+                                <controls2:FileAddButton
+                                    Grid.Column="2"
                                     Width="26"
                                     Height="26"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Right"
                                     ToolTip="Add new data source from file"
-                                    Command="{TemplateBinding AddDataSourceCommand}" />
+                                    Command="{TemplateBinding AddDataSourceFromFileCommand}" />
+                                <controls2:FolderAddButton
+                                    Grid.Column="3"
+                                    Width="26"
+                                    Height="26"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    ToolTip="Add new data source from folder"
+                                    Command="{TemplateBinding AddDataSourceFromFolderCommand}" />
                             </Grid>
 
                             <controls2:FilterTextBox

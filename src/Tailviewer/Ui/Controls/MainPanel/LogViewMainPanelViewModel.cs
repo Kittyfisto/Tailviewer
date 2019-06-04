@@ -285,7 +285,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		public IDataSourceViewModel OpenFile(string file)
 		{
-			IDataSourceViewModel dataSource = _dataSources.GetOrAdd(file);
+			IDataSourceViewModel dataSource = _dataSources.GetOrAddFile(file);
 			OpenFile(dataSource);
 			return dataSource;
 		}

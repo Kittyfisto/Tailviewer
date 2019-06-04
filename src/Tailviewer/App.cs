@@ -85,7 +85,7 @@ namespace Tailviewer
 					var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
 
 					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
-					using (var dataSources = new DataSources(logFileFactory, taskScheduler, settings.DataSources, bookmarks))
+					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
 					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(taskScheduler, logAnalyserEngine, pluginSystem))
@@ -99,7 +99,7 @@ namespace Tailviewer
 								// Not only do we want to add this file to the list of data sources,
 								// but we also want to select it so the user can view it immediately, regardless
 								// of what was selected previously.
-								var dataSource = dataSources.AddDataSource(arguments.FileToOpen);
+								var dataSource = dataSources.AddFile(arguments.FileToOpen);
 									settings.DataSources.SelectedItem = dataSource.Id;
 								}
 								else

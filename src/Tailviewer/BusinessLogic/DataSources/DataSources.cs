@@ -27,20 +27,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly IDataSourcesSettings _settings;
 		private readonly object _syncRoot;
 		private readonly BookmarkCollection _bookmarks;
+		private readonly IFilesystem _filesystem;
 
 		public DataSources(ILogFileFactory logFileFactory,
 		                   ITaskScheduler taskScheduler,
+						   IFilesystem filesystem,
 		                   IDataSourcesSettings settings,
 		                   IBookmarks bookmarks)
 		{
-			if (logFileFactory == null) throw new ArgumentNullException(nameof(logFileFactory));
-			if (settings == null) throw new ArgumentNullException(nameof(settings));
-
-			_logFileFactory = logFileFactory;
+			_logFileFactory = logFileFactory ?? throw new ArgumentNullException(nameof(logFileFactory));
 			_taskScheduler = taskScheduler;
+			_filesystem = filesystem ?? throw new ArgumentNullException(nameof(filesystem));
 			_maximumWaitTime = TimeSpan.FromMilliseconds(100);
 			_syncRoot = new object();
-			_settings = settings;
+			_settings = settings ?? throw new ArgumentNullException(nameof(settings));
 			_bookmarks = new BookmarkCollection(bookmarks, _maximumWaitTime);
 			_dataSources = new List<IDataSource>();
 			_dataSourceIds = new HashSet<DataSourceId>();
@@ -147,8 +147,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			lock (_syncRoot)
 			{
-				AbstractDataSource dataSource;
-				if (!string.IsNullOrEmpty(settings.File))
+				IDataSource dataSource;
+				if (!string.IsNullOrEmpty(settings.LogFileFolderPath))
+				{
+					dataSource = new FolderDataSource(_taskScheduler, _logFileFactory, _filesystem, settings);
+				}
+				else if (!string.IsNullOrEmpty(settings.File))
 				{
 					dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
@@ -185,10 +189,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return dataSource;
 		}
 
-		public SingleDataSource AddDataSource(string fileName)
+		public SingleDataSource AddFile(string fileName)
 		{
-			string fullFileName;
-			string key = GetKey(fileName, out fullFileName);
+			string key = GetKey(fileName, out var fullFileName);
 			SingleDataSource dataSource;
 
 			lock (_syncRoot)
@@ -204,6 +207,31 @@ namespace Tailviewer.BusinessLogic.DataSources
 						};
 					_settings.Add(settings);
 					dataSource = (SingleDataSource) AddDataSource(settings);
+				}
+			}
+
+			return dataSource;
+		}
+
+		public FolderDataSource AddFolder(string folderPath)
+		{
+			string key = GetKey(folderPath, out var fullFolderPath);
+			FolderDataSource dataSource;
+
+			lock (_syncRoot)
+			{
+				dataSource =
+					(FolderDataSource)
+					_dataSources.FirstOrDefault(x => string.Equals(x.FullFileName, key, StringComparison.InvariantCultureIgnoreCase));
+				if (dataSource == null)
+				{
+					var settings = new DataSource
+					{
+						Id = DataSourceId.CreateNew(),
+						LogFileFolderPath = fullFolderPath
+					};
+					_settings.Add(settings);
+					dataSource = (FolderDataSource) AddDataSource(settings);
 				}
 			}
 

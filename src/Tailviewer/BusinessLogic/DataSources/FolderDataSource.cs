@@ -106,7 +106,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public string FullFileName
 		{
-			get { return _mergedDataSource.FullFileName; }
+			get { return _settings.LogFileFolderPath; }
 		}
 
 		public bool FollowTail
