@@ -44,14 +44,14 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		public void TestUpdateLineNumbers3()
 		{
 			var canvas = new DataSourceCanvas(TextSettings.Default);
-			var mergedDataSource = new Mock<IMergedDataSource>();
+			var multiDataSource = new Mock<IMultiDataSource>();
 			var dataSource0 = new Mock<IDataSource>();
 			dataSource0.Setup(x => x.FullFileName).Returns(@"A:\foo\bar.txt");
 
 			var dataSource1 = new Mock<IDataSource>();
 			dataSource1.Setup(x => x.FullFileName).Returns(@"B:\a really long file name.log");
 
-			mergedDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
+			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
 			var mergedLogFile = new Mock<ILogFile>();
 			mergedLogFile.Setup(x => x.Count).Returns(2);
 			mergedLogFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
@@ -60,9 +60,9 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 					lines[0] = new LogLine(0, 0, 0, new LogLineSourceId(1), "foo", LevelFlags.Trace, null);
 					lines[1] = new LogLine(1, 1, 1, new LogLineSourceId(0), "bar", LevelFlags.Trace, null);
 				});
-			mergedDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
+			multiDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
 
-			canvas.UpdateDataSources(mergedDataSource.Object, new LogFileSection(0, 2), 0);
+			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
 			canvas.DataSources[0].Text.Should().Be("a really long file nam");
@@ -79,14 +79,14 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 				DisplayMode = DataSourceDisplayMode.CharacterCode
 			};
 
-			var mergedDataSource = new Mock<IMergedDataSource>();
+			var multiDataSource = new Mock<IMultiDataSource>();
 			var dataSource0 = new Mock<IDataSource>();
 			dataSource0.Setup(x => x.CharacterCode).Returns("FB");
 
 			var dataSource1 = new Mock<IDataSource>();
 			dataSource1.Setup(x => x.CharacterCode).Returns(@"TH");
 
-			mergedDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
+			multiDataSource.Setup(x => x.OriginalSources).Returns(new[] { dataSource0.Object, dataSource1.Object });
 			var mergedLogFile = new Mock<ILogFile>();
 			mergedLogFile.Setup(x => x.Count).Returns(2);
 			mergedLogFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
@@ -95,9 +95,9 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 					lines[0] = new LogLine(0, 0, 0, new LogLineSourceId(1), "foo", LevelFlags.Trace, null);
 					lines[1] = new LogLine(1, 1, 1, new LogLineSourceId(0), "bar", LevelFlags.Trace, null);
 				});
-			mergedDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
+			multiDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
 
-			canvas.UpdateDataSources(mergedDataSource.Object, new LogFileSection(0, 2), 0);
+			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
 			canvas.DataSources[0].Should().NotBeNull();
 			canvas.DataSources[0].Text.Should().Be("TH");

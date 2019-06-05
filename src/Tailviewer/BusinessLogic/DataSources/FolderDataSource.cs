@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
@@ -24,6 +26,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 	public sealed class FolderDataSource
 		: IFolderDataSource
 	{
+		private static readonly ILog Log =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly Dictionary<IFileInfoAsync, SingleDataSource> _dataSources;
 		private readonly MergedDataSource _mergedDataSource;
 		private readonly IFilesystem _filesystem;
@@ -34,18 +39,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private IFilesystemWatcher _watchdog;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
-		                        ILogFileFactory logFileFactory,
-		                        IFilesystem filesystem,
-		                        DataSource settings)
+								ILogFileFactory logFileFactory,
+								IFilesystem filesystem,
+								DataSource settings)
 			: this(taskScheduler, logFileFactory, filesystem, settings, TimeSpan.FromMilliseconds(value: 10))
 		{
 		}
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
-		                        ILogFileFactory logFileFactory,
-		                        IFilesystem filesystem,
-		                        DataSource settings,
-		                        TimeSpan maximumWaitTime)
+								ILogFileFactory logFileFactory,
+								IFilesystem filesystem,
+								DataSource settings,
+								TimeSpan maximumWaitTime)
 		{
 			_taskScheduler = taskScheduler;
 			_logFileFactory = logFileFactory;
@@ -54,6 +59,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_syncRoot = new object();
 			_dataSources = new Dictionary<IFileInfoAsync, SingleDataSource>();
 			_mergedDataSource = new MergedDataSource(taskScheduler, settings, maximumWaitTime);
+
+			DoChange();
 		}
 
 		#region Implementation of IDisposable
@@ -325,8 +332,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public void Change(string folderPath, string searchPattern, bool recursive)
 		{
 			if (folderPath == LogFileFolderPath &&
-			    searchPattern == LogFileSearchPattern &&
-			    Recursive == recursive)
+				searchPattern == LogFileSearchPattern &&
+				Recursive == recursive)
 				return;
 
 			_settings.LogFileFolderPath = folderPath;
@@ -335,11 +342,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			// TODO: Maybe we should somehow trigger a persist?
 
+			DoChange();
+		}
+
+		private void DoChange()
+		{
 			_watchdog?.Dispose();
-			_watchdog = _filesystem.Watchdog.StartDirectoryWatch(folderPath,
-			                                                     TimeSpan.FromMilliseconds(500),
-			                                                     searchPattern,
-			                                                     SearchOption.TopDirectoryOnly);
+			_watchdog = _filesystem.Watchdog.StartDirectoryWatch(_settings.LogFileFolderPath,
+				TimeSpan.FromMilliseconds(500),
+				string.IsNullOrEmpty(_settings.LogFileSearchPattern) ? null : _settings.LogFileSearchPattern,
+				_settings.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 			_watchdog.Changed += OnFolderChanged;
 			OnFolderChanged();
 		}
@@ -355,6 +367,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private IReadOnlyList<IDataSource> SynchronizeDataSources(IReadOnlyList<IFileInfoAsync> files)
 		{
+			var newFiles = new List<IFileInfoAsync>();
+			var oldFiles = new List<IFileInfoAsync>();
 			var dataSources = new List<IDataSource>();
 
 			try
@@ -370,21 +384,29 @@ namespace Tailviewer.BusinessLogic.DataSources
 								Id = DataSourceId.CreateNew()
 							};
 							dataSource = new SingleDataSource(_logFileFactory,
-							                                  _taskScheduler,
-							                                  settings);
+															  _taskScheduler,
+															  settings);
 							_dataSources.Add(file, dataSource);
+							newFiles.Add(file);
+
 						}
 
 						dataSources.Add(dataSource);
 					}
 
-					foreach (var file in _dataSources.Keys.ToList())
+					foreach (var file in _dataSources.Keys)
 					{
 						if (!files.Contains(file))
 						{
-							_dataSources.TryGetValue(file, out var dataSource);
-							dataSource?.Dispose();
+							oldFiles.Add(file);
 						}
+					}
+
+					foreach (var file in oldFiles)
+					{
+						_dataSources.TryGetValue(file, out var dataSource);
+						_dataSources.Remove(file);
+						dataSource?.Dispose();
 					}
 				}
 			}
@@ -395,6 +417,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 					dataSource.Dispose();
 				}
 				throw;
+			}
+
+			if (Log.IsDebugEnabled)
+			{
+				Log.DebugFormat("Adding #{0} files ({1}), removing #{2} files ({3})",
+					newFiles.Count,
+					string.Join(", ", newFiles.Select(x => x.FullPath)),
+					oldFiles.Count,
+					string.Join(", ", oldFiles.Select(x => x.FullPath)));
 			}
 
 			return dataSources;

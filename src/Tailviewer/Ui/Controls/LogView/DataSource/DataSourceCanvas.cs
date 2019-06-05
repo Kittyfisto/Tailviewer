@@ -98,10 +98,10 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 			_visibleSection = visibleSection;
 			_yOffset = yOffset;
 
-			var merged = UnpackMergedDataSource(dataSource);
-			if (merged != null)
+			var multi = UnpackMultiDataSource(dataSource);
+			if (multi != null)
 			{
-				var dataSources = merged.OriginalSources;
+				var dataSources = multi.OriginalSources;
 				var displayMode = DisplayMode;
 
 				var maximumCharacterCount = GetMaximumCharacterCount(displayMode, dataSources);
@@ -114,7 +114,7 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 
 				_dataSourcesPerLogLine.Clear();
 				var logLines = new LogLine[visibleSection.Count];
-				merged.UnfilteredLogFile.GetSection(visibleSection, logLines);
+				multi.UnfilteredLogFile.GetSection(visibleSection, logLines);
 				foreach (var logLine in logLines)
 				{
 					var dataSourceId = (int) logLine.SourceId;
@@ -241,10 +241,10 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 			drawingContext.DrawText(dataSourceName, new Point(x: 0, y: y));
 		}
 
-		private static IMergedDataSource UnpackMergedDataSource(IDataSource dataSource)
+		private static IMultiDataSource UnpackMultiDataSource(IDataSource dataSource)
 		{
-			var mergedDataSource = dataSource as IMergedDataSource;
-			return mergedDataSource;
+			var multiDataSource = dataSource as IMultiDataSource;
+			return multiDataSource;
 		}
 	}
 }

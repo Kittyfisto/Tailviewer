@@ -11,6 +11,8 @@
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/SingleDataSourceTemplate.xaml" />
         <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/FolderDataSourceTemplate.xaml" />
+        <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/MergedDataSourceTemplate.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/TreeViewItemStyle.xaml" />
