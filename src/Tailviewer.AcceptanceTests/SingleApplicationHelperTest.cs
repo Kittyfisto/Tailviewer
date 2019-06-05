@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Moq;
 using NUnit.Framework;
 
@@ -30,6 +31,7 @@ namespace Tailviewer.AcceptanceTests
 				mutex.SetListener(listener.Object);
 
 				SingleApplicationHelper.BringToFront();
+				Thread.Sleep(TimeSpan.FromMilliseconds(500));
 				listener.Verify(x => x.OnShowMainwindow(), Times.Once);
 			}
 		}
