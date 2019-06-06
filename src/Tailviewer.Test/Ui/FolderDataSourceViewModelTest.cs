@@ -14,6 +14,21 @@ namespace Tailviewer.Test.Ui
 	public sealed class FolderDataSourceViewModelTest
 	{
 		[Test]
+		public void TestConstruction1()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.LogFileFolderPath).Returns(@"F:\logs\today");
+			dataSource.Setup(x => x.Settings).Returns(new DataSource());
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			var actionCenter = new Mock<IActionCenter>();
+
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			viewModel.CanBeRenamed.Should().BeFalse();
+			viewModel.DisplayName.Should().Be("today");
+			viewModel.DataSourceOrigin.Should().Be(@"F:\logs\today");
+		}
+
+		[Test]
 		public void TestUpdateOnewNewSource()
 		{
 			var dataSource = new Mock<IFolderDataSource>();

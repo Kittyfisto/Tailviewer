@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
@@ -17,11 +19,16 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IActionCenter _actionCenter;
 		private readonly Dictionary<IDataSource, IDataSourceViewModel> _dataSourceViewModelsByDataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _dataSourceViewModels;
+		private readonly string _displayName;
 
 		public FolderDataSourceViewModel(IFolderDataSource folder, IActionCenter actionCenter)
 			: base(folder)
 		{
 			_dataSource = folder;
+			var path = folder.LogFileFolderPath;
+			if (!string.IsNullOrEmpty(path))
+				_displayName = Path.GetFileName(path);
+
 			_actionCenter = actionCenter;
 			_dataSourceViewModelsByDataSource = new Dictionary<IDataSource, IDataSourceViewModel>();
 			_dataSourceViewModels = new ObservableCollection<IDataSourceViewModel>();
@@ -31,7 +38,11 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override ICommand OpenInExplorerCommand => null;
 
-		public override string DisplayName { get; set; }
+		public override string DisplayName
+		{
+			get => _displayName;
+			set { throw new NotImplementedException(); }
+		}
 
 		public override bool CanBeRenamed => false;
 

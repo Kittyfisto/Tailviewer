@@ -29,9 +29,9 @@
                 <controls:FlatTextBlock Text="{Binding DisplayName}" />
 
                 <!-- Folder -->
-                <controls:FlatTextBlock Text="{Binding FullPath}"
+                <controls:FlatTextBlock Text="{Binding DataSourceOrigin}"
                                         Foreground="{StaticResource TextBrushUnimportant}"
-                                        ToolTip="{Binding FullPath}"
+                                        ToolTip="{Binding DataSourceOrigin}"
                                         TextTrimming="CharacterEllipsis"
                                         Grid.Row="1" />
 
