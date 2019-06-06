@@ -1,4 +1,5 @@
-﻿namespace Tailviewer.Settings
+﻿
+namespace Tailviewer.Settings
 {
 	/// <summary>
 	///     "Global" configuration of the log viewer.
@@ -12,7 +13,6 @@
 		int LinesScrolledPerWheelTick { get; set; }
 
 		/// <summary>
-		/// 
 		/// </summary>
 		int FontSize { get; set; }
 	}

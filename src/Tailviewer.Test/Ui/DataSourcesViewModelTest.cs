@@ -44,7 +44,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settingsMock = new Mock<IApplicationSettings>();
-			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSources());
+			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSourceSettings());
 			_settings = _settingsMock.Object;
 			_bookmarks = new Mock<IBookmarks>();
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);

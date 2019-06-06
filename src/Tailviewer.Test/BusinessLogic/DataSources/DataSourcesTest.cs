@@ -27,7 +27,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new Tailviewer.Settings.DataSources();
+			_settings = new Tailviewer.Settings.DataSourceSettings();
 			_bookmarks = new Mock<IBookmarks>();
 			_dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 		}
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_dataSources.Dispose();
 		}
 
-		private Tailviewer.Settings.DataSources _settings;
+		private Tailviewer.Settings.DataSourceSettings _settings;
 		private Tailviewer.BusinessLogic.DataSources.DataSources _dataSources;
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
@@ -59,13 +59,19 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
-		public void TestAddFolder()
+		public void TestAddFolder([Values(true, false)] bool recursive,
+		                          [Values("", "*.log", "*.txt|*.foo")] string pattern)
 		{
+			_settings.FolderDataSourcePattern = pattern;
+			_settings.FolderDataSourceRecursive = recursive;
+
 			FolderDataSource source = _dataSources.AddFolder(@"E:\Code\");
 			source.Should().NotBeNull();
 			source.FullFileName.Should().Be(@"E:\Code\");
 			source.FollowTail.Should().BeFalse();
 			source.Id.Should().NotBe(Guid.Empty, "Because a newly added data source should have a unique id");
+			source.Recursive.Should().Be(recursive);
+			source.LogFileSearchPattern.Should().Be(pattern);
 
 			_settings.Count.Should().Be(1);
 			_settings[0].File.Should().BeNull();
@@ -76,7 +82,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that adding a group also creates and adds a corresponding settings object")]
 		public void TestAddGroup1()
 		{
-			var settings = new Tailviewer.Settings.DataSources();
+			var settings = new DataSourceSettings();
 			using (var dataSources = new Tailviewer.BusinessLogic.DataSources.DataSources(_logFileFactory, _scheduler, _filesystem, settings, _bookmarks.Object))
 			{
 				MergedDataSource group = dataSources.AddGroup();
@@ -106,7 +112,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that a business object is created for every data source")]
 		public void TestCtor1()
 		{
-			var settings = new Tailviewer.Settings.DataSources
+			var settings = new Tailviewer.Settings.DataSourceSettings
 				{
 					new DataSource(@"E:\Code\test.log")
 						{
@@ -126,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that data sources are added to a parent, when specified")]
 		public void TestCtor2()
 		{
-			var settings = new Tailviewer.Settings.DataSources
+			var settings = new Tailviewer.Settings.DataSourceSettings
 				{
 					new DataSource("test1.log")
 						{
@@ -165,7 +171,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Description("Verifies that data sources are added to the correct parent")]
 		public void TestCtor3()
 		{
-			var settings = new Tailviewer.Settings.DataSources
+			var settings = new Tailviewer.Settings.DataSourceSettings
 				{
 					new DataSource("test1.log")
 						{
@@ -210,7 +216,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor4()
 		{
-			var settings = new Tailviewer.Settings.DataSources
+			var settings = new Tailviewer.Settings.DataSourceSettings
 			{
 				new DataSource
 				{
@@ -238,7 +244,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor5()
 		{
-			var settings = new Tailviewer.Settings.DataSources
+			var settings = new Tailviewer.Settings.DataSourceSettings
 			{
 				new DataSource
 				{

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
 using Metrolib;
@@ -29,6 +31,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private const char PatternSeparator = ';';
+
 		private readonly Dictionary<IFileInfoAsync, SingleDataSource> _dataSources;
 		private readonly MergedDataSource _mergedDataSource;
 		private readonly IFilesystem _filesystem;
@@ -37,6 +41,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly DataSource _settings;
 		private readonly object _syncRoot;
 		private IFilesystemWatcher _watchdog;
+		private Predicate<string> _filter;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
 								ILogFileFactory logFileFactory,
@@ -347,11 +352,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void DoChange()
 		{
+			_filter = CreateFilter(_settings.LogFileSearchPattern);
 			_watchdog?.Dispose();
 			_watchdog = _filesystem.Watchdog.StartDirectoryWatch(_settings.LogFileFolderPath,
-				TimeSpan.FromMilliseconds(500),
-				string.IsNullOrEmpty(_settings.LogFileSearchPattern) ? null : _settings.LogFileSearchPattern,
-				_settings.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+			                                                     TimeSpan.FromMilliseconds(500),
+			                                                     null,
+			                                                     _settings.Recursive
+				                                                     ? SearchOption.AllDirectories
+				                                                     : SearchOption.TopDirectoryOnly);
 			_watchdog.Changed += OnFolderChanged;
 			OnFolderChanged();
 		}
@@ -360,7 +368,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void OnFolderChanged()
 		{
-			var files = _watchdog.Files;
+			var files = FilterFiles(_watchdog.Files, _filter);
 			var dataSources = SynchronizeDataSources(files.ToList());
 			_mergedDataSource.SetDataSources(dataSources);
 		}
@@ -429,6 +437,48 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 
 			return dataSources;
+		}
+
+		[Pure]
+		private static IReadOnlyList<IFileInfoAsync> FilterFiles(IEnumerable<IFileInfoAsync> files, Predicate<string> filter)
+		{
+			var matches = new List<IFileInfoAsync>();
+			foreach (var file in files)
+			{
+				if (filter(file.Name))
+					matches.Add(file);
+			}
+			return matches;
+		}
+
+		[Pure]
+		private static Predicate<string> CreateFilter(string searchPattern)
+		{
+			if (string.IsNullOrWhiteSpace(searchPattern))
+				return _ => true;
+
+			var patterns = ParseSearchPattern(searchPattern);
+			var regexPattern = string.Join("|", patterns.Select(x => Regex.Escape(x).Replace("\\*", ".*?")));
+			var regex = new Regex(regexPattern, RegexOptions.Compiled);
+			return str => regex.IsMatch(str);
+		}
+
+		[Pure]
+		private static IReadOnlyList<string> ParseSearchPattern(string value)
+		{
+			if (value == null)
+				return new string[0];
+
+			var values = new List<string>();
+			foreach (var pattern in value.Split(PatternSeparator))
+			{
+				if (!string.IsNullOrWhiteSpace(pattern))
+				{
+					values.Add(pattern.Trim());
+				}
+			}
+
+			return values;
 		}
 	}
 }

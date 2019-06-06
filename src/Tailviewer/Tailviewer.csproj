@@ -332,7 +332,7 @@
     <Compile Include="Ui\Controls\QuickFilter\QuickFilterViewModel.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
-    <Compile Include="Settings\DataSources.cs" />
+    <Compile Include="Settings\DataSourceSettings.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\DataSourcesViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />

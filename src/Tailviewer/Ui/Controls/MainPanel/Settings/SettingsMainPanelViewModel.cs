@@ -157,6 +157,33 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 				_settings.SaveAsync();
 			}
 		}
+
+		public bool FolderDataSourceRecursive
+		{
+			get { return _settings.DataSources.FolderDataSourceRecursive; }
+			set
+			{
+				if (value == _settings.DataSources.FolderDataSourceRecursive)
+					return;
+
+				_settings.DataSources.FolderDataSourceRecursive = value;
+				_settings.SaveAsync();
+			}
+		}
+
+		public string FolderDataSourcePatterns
+		{
+			get { return _settings.DataSources.FolderDataSourcePattern; }
+			set
+			{
+				if (string.Equals(_settings.DataSources.FolderDataSourcePattern, value))
+					return;
+
+				_settings.DataSources.FolderDataSourcePattern = value;
+				_settings.SaveAsync();
+			}
+		}
+
 		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
 
 		public override void Update()

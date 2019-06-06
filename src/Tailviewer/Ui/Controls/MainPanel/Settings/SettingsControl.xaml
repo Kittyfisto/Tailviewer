@@ -13,9 +13,14 @@
              Background="White">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="HeaderDataTemplate">
-            <TextBlock FontSize="22" Text="{Binding}" />
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="HeaderDataTemplate">
+                <TextBlock FontSize="22" Text="{Binding}" />
+            </DataTemplate>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -27,6 +32,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
@@ -90,6 +96,61 @@
                                 </Binding>
                             </controls:EditorTextBox.Text>
                         </controls:EditorTextBox>
+
+                    </Grid>
+                </controls:FlatGroupBox>
+                
+                <controls:FlatGroupBox Grid.Row="2" Header="Data Sources" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Folder data source is recursive"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="0" />
+                        <CheckBox Grid.Column="1" Grid.Row="0"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding FolderDataSourceRecursive, Mode=TwoWay}" />
+                        <TextBlock Grid.Column="0"
+                                   Grid.Row="1"
+                                   Grid.ColumnSpan="2"
+                                   Foreground="#545454"
+                                   Margin="0,0,0,6"
+                                   TextWrapping="Wrap"
+                                   Text="When checked, newly created folder data sources will display all files in the selected folder AND its subfolders." />
+
+                        <TextBlock Text="Folder data source pattern"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="3"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="3"
+                                                Text="{Binding FolderDataSourcePatterns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                />
+                        <TextBlock Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   Grid.Row="4"
+                                   Foreground="#545454"
+                                   TextWrapping="Wrap">
+                            <Run Text="Newly created folder data sources will use this pattern to select files which shall be displayed." />
+                            <LineBreak />
+                            <Run Text="A pattern such as '*.log' (without quotes) selects files which end in .log." />
+                            <LineBreak />
+                            <Run Text="'*.txt;*.log' (without quotes) selects files which end in either .txt or .log." />
+                            <LineBreak />
+                            <Run Text="'*bb*' (without quotes) selects files which have bb in their file name." />
+                        </TextBlock>
 
                     </Grid>
                 </controls:FlatGroupBox>

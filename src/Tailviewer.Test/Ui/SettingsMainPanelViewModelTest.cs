@@ -9,33 +9,79 @@ namespace Tailviewer.Test.Ui
 	[TestFixture]
 	public sealed class SettingsMainPanelViewModelTest
 	{
-		private ApplicationSettings _settings;
-		private SettingsMainPanelViewModel _model;
-
-		[SetUp]
-		public void SetUp()
+		[Test]
+		public void TestConstruction([Values(true, false)] bool recursive)
 		{
-			_settings = new ApplicationSettings("foo");
-			_model = new SettingsMainPanelViewModel(_settings);
+			var settings = new ApplicationSettings("foo");
+			settings.DataSources.FolderDataSourceRecursive = recursive;
+			settings.DataSources.FolderDataSourcePattern = "*.log;*.txt";
+
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.FolderDataSourceRecursive.Should().Be(recursive);
+			model.FolderDataSourcePatterns.Should().Be("*.log;*.txt");
+		}
+
+		[Test]
+		public void TestSetFolderDataSourcePatterns1([Values(null, "", " ", ";;")] string emptyPattern)
+		{
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.FolderDataSourcePatterns = emptyPattern;
+			settings.DataSources.FolderDataSourcePattern.Should().Be(emptyPattern);
+		}
+
+		[Test]
+		public void TestSetFolderDataSourcePatternsSkipTrailingSpace()
+		{
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.FolderDataSourcePatterns = "*.log ";
+			settings.DataSources.FolderDataSourcePattern.Should().Be("*.log ");
+		}
+
+		[Test]
+		public void TestSetFolderDataSourceMultiplePatterns()
+		{
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.FolderDataSourcePatterns = "*.txt;*.log ;*log*";
+			settings.DataSources.FolderDataSourcePattern.Should().Be("*.txt;*.log ;*log*");
+		}
+
+		[Test]
+		public void TestSetFolderDataSourcePatternsSkipLeadingSpace()
+		{
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.FolderDataSourcePatterns = " *.log";
+			settings.DataSources.FolderDataSourcePattern.Should().Be(" *.log");
 		}
 
 		[Test]
 		public void TestProxyPassword1()
 		{
-			var changes = new List<string>();
-			_model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
 
-			_model.ProxyPassword = "foobar";
+			var changes = new List<string>();
+			model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
+
+			model.ProxyPassword = "foobar";
 			changes.Should().Equal(new object[] {"ProxyPassword"});
 
-			_model.ProxyPassword = "blub";
+			model.ProxyPassword = "blub";
 			changes.Should().Equal(new object[]
 				{
 					"ProxyPassword",
 					"ProxyPassword"
 				});
 
-			_model.ProxyPassword = "blub";
+			model.ProxyPassword = "blub";
 			changes.Should().Equal(new object[]
 				{
 					"ProxyPassword",
@@ -46,14 +92,17 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestProxyPassword2()
 		{
-			_model.ProxyPassword = "foobar";
-			_settings.AutoUpdate.ProxyPassword.Should().Be("foobar");
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
 
-			_model.ProxyPassword = null;
-			_settings.AutoUpdate.ProxyPassword.Should().BeNull();
+			model.ProxyPassword = "foobar";
+			settings.AutoUpdate.ProxyPassword.Should().Be("foobar");
 
-			_model.ProxyPassword = string.Empty;
-			_settings.AutoUpdate.ProxyPassword.Should().BeEmpty();
+			model.ProxyPassword = null;
+			settings.AutoUpdate.ProxyPassword.Should().BeNull();
+
+			model.ProxyPassword = string.Empty;
+			settings.AutoUpdate.ProxyPassword.Should().BeEmpty();
 		}
 	}
 }

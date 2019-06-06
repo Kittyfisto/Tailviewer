@@ -4,11 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
+using Metrolib;
 using Tailviewer.Core;
 
 namespace Tailviewer.Settings
 {
-	public sealed class DataSources
+	public sealed class DataSourceSettings
 		: List<DataSource>
 		, IDataSourcesSettings
 		, ICloneable
@@ -16,7 +17,17 @@ namespace Tailviewer.Settings
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private string _pattern;
+
 		public DataSourceId SelectedItem { get; set; }
+
+		public string FolderDataSourcePattern
+		{
+			get { return _pattern; }
+			set { _pattern = value; }
+		}
+
+		public bool FolderDataSourceRecursive { get; set; }
 
 		object ICloneable.Clone()
 		{
@@ -30,6 +41,10 @@ namespace Tailviewer.Settings
 			var subtree = reader.ReadSubtree();
 			var selectedItem = DataSourceId.Empty;
 
+			// Defaults, will be overwritten if present in the xml document
+			FolderDataSourceRecursive = true;
+			FolderDataSourcePattern = "*.txt;*.log";
+
 			while (subtree.Read())
 				switch (subtree.Name)
 				{
@@ -41,6 +56,14 @@ namespace Tailviewer.Settings
 							{
 								case "selecteditem":
 									selectedItem = subtree.ReadContentAsDataSourceId();
+									break;
+
+								case "folderdatasourcerecursive":
+									FolderDataSourceRecursive = subtree.ReadContentAsBoolean();
+									break;
+
+								case "folderdatasourcepattern":
+									FolderDataSourcePattern = subtree.ReadContentAsString();
 									break;
 							}
 						}
@@ -76,6 +99,8 @@ namespace Tailviewer.Settings
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttribute("selecteditem", SelectedItem);
+			writer.WriteAttributeBool("folderdatasourcerecursive", FolderDataSourceRecursive);
+			writer.WriteAttributeString("folderdatasourcepattern", _pattern);
 
 			foreach (var dataSource in this)
 			{
@@ -85,11 +110,13 @@ namespace Tailviewer.Settings
 			}
 		}
 
-		public DataSources Clone()
+		public DataSourceSettings Clone()
 		{
-			var clone = new DataSources();
+			var clone = new DataSourceSettings();
 			clone.AddRange(this.Select(x => x.Clone()));
 			clone.SelectedItem = SelectedItem;
+			clone.FolderDataSourceRecursive = FolderDataSourceRecursive;
+			clone.FolderDataSourcePattern = FolderDataSourcePattern;
 			return clone;
 		}
 

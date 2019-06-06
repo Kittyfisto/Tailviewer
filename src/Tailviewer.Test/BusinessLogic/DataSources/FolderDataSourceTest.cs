@@ -126,5 +126,28 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			var child = dataSource.OriginalSources[0];
 			child.FullFileName.Should().Be(Path.Combine(path, "foo.log"));
 		}
+
+		[Test]
+		public void TestMultiplePatterns()
+		{
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			_filesystem.CreateDirectory(path);
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]);
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.bar"), new byte[0]);
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]).Wait();
+
+			dataSource.Change(path, "*.log;*.txt", false);
+			_taskScheduler.RunOnce();
+
+			dataSource.Property(x => (IEnumerable<IDataSource>)x.OriginalSources).ShouldEventually().HaveCount(2);
+			dataSource.OriginalSources[0].FullFileName.Should().Be(Path.Combine(path, "foo.log"));
+			dataSource.OriginalSources[1].FullFileName.Should().Be(Path.Combine(path, "foo.txt"));
+		}
 	}
 }

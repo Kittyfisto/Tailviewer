@@ -21,7 +21,7 @@ namespace Tailviewer.Test.Ui
 		[SetUp]
 		public void SetUp()
 		{
-			_settings = new Tailviewer.Settings.DataSources();
+			_settings = new Tailviewer.Settings.DataSourceSettings();
 			_bookmarks = new Mock<IBookmarks>();
 
 			_scheduler = new ManualTaskScheduler();
@@ -32,7 +32,7 @@ namespace Tailviewer.Test.Ui
 		}
 
 		private DataSources _dataSources;
-		private Tailviewer.Settings.DataSources _settings;
+		private Tailviewer.Settings.DataSourceSettings _settings;
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
 		private Mock<IActionCenter> _actionCenter;

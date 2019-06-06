@@ -18,7 +18,7 @@ namespace Tailviewer.Settings
 
 		private readonly AutoUpdateSettings _autoUpdate;
 
-		private readonly DataSources _dataSources;
+		private readonly DataSourceSettings _dataSources;
 		private readonly string _fileFolder;
 		private readonly string _fileName;
 		private readonly MainWindowSettings _mainWindow;
@@ -50,7 +50,7 @@ namespace Tailviewer.Settings
 
 			_autoUpdate = new AutoUpdateSettings();
 			_mainWindow = new MainWindowSettings();
-			_dataSources = new DataSources();
+			_dataSources = new DataSourceSettings();
 			_quickFilters = new QuickFilters();
 			_logViewer = new LogViewerSettings();
 			_export = new ExportSettings();

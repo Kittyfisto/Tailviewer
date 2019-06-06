@@ -228,7 +228,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 					var settings = new DataSource
 					{
 						Id = DataSourceId.CreateNew(),
-						LogFileFolderPath = fullFolderPath
+						LogFileFolderPath = fullFolderPath,
+						LogFileSearchPattern = _settings.FolderDataSourcePattern,
+						Recursive = _settings.FolderDataSourceRecursive
 					};
 					_settings.Add(settings);
 					dataSource = (FolderDataSource) AddDataSource(settings);
