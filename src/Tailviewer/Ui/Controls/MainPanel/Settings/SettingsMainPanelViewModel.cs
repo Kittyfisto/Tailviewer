@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
+using Metrolib;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
 
@@ -106,6 +109,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			}
 		}
 
+		public ICommand ChooseExportFolderCommand
+		{
+			get { return new DelegateCommand2(ChooseExportFolder); }
+		}
+
 		public int ScrollSpeed
 		{
 			get { return _settings.LogViewer.LinesScrolledPerWheelTick; }
@@ -188,5 +196,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 
 		public override void Update()
 		{}
+
+		private void ChooseExportFolder()
+		{
+			var dialog = new VistaFolderBrowserDialog
+			{
+				SelectedPath = ExportFolder,
+				Description = "Choose export folder",
+				UseDescriptionForTitle = true
+			};
+
+			if (dialog.ShowDialog() == true)
+			{
+				ExportFolder = dialog.SelectedPath;
+			}
+		}
 	}
 }

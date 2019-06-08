@@ -118,6 +118,7 @@
             </metrolib:EmailToggleButton>
 
             <metrolib:MoreButton Grid.Column="3"
+                                 Orientation="Vertical"
                                  TextBlock.FontSize="14">
                 <metrolib:MoreButton.ContextMenu>
                     <metrolib:FlatContextMenu HorizontalOffset="-118"

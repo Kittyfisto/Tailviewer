@@ -46,8 +46,9 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Export folder" Margin="0,6,6,6"/>
-                        <controls:EditorTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                   Grid.Column="1"/>
+                        <controls:PathChooserTextBox Text="{Binding ExportFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     PathChooserCommand="{Binding ChooseExportFolderCommand}"
+                                                     Grid.Column="1"/>
                     </Grid>
                 </controls:FlatGroupBox>
 
