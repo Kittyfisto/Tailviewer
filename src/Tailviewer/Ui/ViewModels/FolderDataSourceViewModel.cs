@@ -9,6 +9,7 @@ using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.FileExplorer;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.ViewModels
@@ -49,7 +50,13 @@ namespace Tailviewer.Ui.ViewModels
 
 		#region Overrides of AbstractDataSourceViewModel
 
-		public override ICommand OpenInExplorerCommand => null;
+		public override ICommand OpenInExplorerCommand => new DelegateCommand2(OpenInExplorer);
+
+		private void OpenInExplorer()
+		{
+			var action = new OpenFolderAction(FolderPath, new FileExplorer());
+			_actionCenter.Add(action);
+		}
 
 		public string FolderPath
 		{

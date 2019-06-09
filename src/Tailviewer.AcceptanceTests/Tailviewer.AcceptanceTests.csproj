@@ -106,6 +106,7 @@
     <Compile Include="SingleApplicationHelperTest.cs" />
     <Compile Include="SystemtestBase.cs" />
     <Compile Include="Ui\Controls\LogView\LogEntryListViewTest.cs" />
+    <Compile Include="Ui\ViewModels\FolderDataSourceViewModelTest.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModelTest.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModelTest.cs" />
   </ItemGroup>
