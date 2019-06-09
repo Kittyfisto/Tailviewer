@@ -496,6 +496,8 @@ namespace Tailviewer.Ui.ViewModels
 				_dataSource.Settings.ParentId = value?.DataSource.Id ?? DataSourceId.Empty;
 				_parent = value;
 				IsGrouped = value != null;
+
+				EmitPropertyChanged();
 			}
 		}
 

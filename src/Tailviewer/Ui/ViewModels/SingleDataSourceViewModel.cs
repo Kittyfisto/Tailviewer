@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Windows.Input;
 using Metrolib;
@@ -19,8 +20,8 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly IActionCenter _actionCenter;
 		private readonly ISingleDataSource _dataSource;
 		private readonly string _fileName;
-		private readonly string _folder;
 		private readonly ICommand _openInExplorerCommand;
+		private string _folder;
 		private bool _displayNoTimestampCount;
 
 		public SingleDataSourceViewModel(ISingleDataSource dataSource,
@@ -32,9 +33,10 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenter = actionCenter;
 			_dataSource = dataSource;
 			_fileName = Path.GetFileName(dataSource.FullFileName);
-			_folder = Path.GetDirectoryName(dataSource.FullFileName);
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
+
 			Update();
+			UpdateFolder();
 
 			UpdateDisplayNoTimestampCount();
 			PropertyChanged += OnPropertyChanged;
@@ -65,8 +67,6 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override string DataSourceOrigin => FullName;
 
-		public string FileName => _fileName;
-
 		public string Folder => _folder;
 
 		public string FullName => _dataSource.FullFileName;
@@ -89,10 +89,55 @@ namespace Tailviewer.Ui.ViewModels
 			switch (e.PropertyName)
 			{
 				case "IsGrouped":
+					UpdateDisplayNoTimestampCount();
+					UpdateFolder();
+					break;
+
 				case "NoTimestampCount":
 					UpdateDisplayNoTimestampCount();
 					break;
 			}
+		}
+
+		private void UpdateFolder()
+		{
+			var folderViewModel = Parent as FolderDataSourceViewModel;
+			string path;
+			if (folderViewModel != null)
+			{
+				var folderRoot = folderViewModel.DataSourceOrigin;
+				path = "<root>\\" + Path.GetDirectoryName(GetRelativePath(folderRoot, _dataSource.FullFileName));
+			}
+			else
+			{
+				path = Path.GetDirectoryName(_dataSource.FullFileName);
+			}
+
+			if (path == null || !path.EndsWith("\\"))
+				path += "\\";
+
+			_folder = path;
+			EmitPropertyChanged(nameof(Folder));
+		}
+
+		[Pure]
+		private static string GetRelativePath(string folderRoot, string fullFilePath)
+		{
+			if (string.IsNullOrEmpty(folderRoot))
+				return fullFilePath;
+
+			if (!folderRoot.EndsWith("\\") && !folderRoot.EndsWith("/"))
+				folderRoot += '\\';
+
+			Uri fullPath = new Uri(fullFilePath);
+			Uri folder = new Uri(folderRoot);
+			string relativePath = 
+				Uri.UnescapeDataString(
+				                       folder.MakeRelativeUri(fullPath)
+				                             .ToString()
+				                             .Replace('/', Path.DirectorySeparatorChar)
+				                      );
+			return relativePath;
 		}
 
 		private void UpdateDisplayNoTimestampCount()

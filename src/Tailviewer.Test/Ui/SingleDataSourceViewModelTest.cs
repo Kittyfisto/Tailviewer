@@ -57,7 +57,6 @@ namespace Tailviewer.Test.Ui
 				source.SearchTerm.Should().Be("foobar");
 
 				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
-				model.FileName.Should().Be("foo.txt");
 				model.SearchTerm.Should().Be("foobar");
 			}
 		}
@@ -223,6 +222,37 @@ namespace Tailviewer.Test.Ui
 			model.CharacterCode = null;
 			model.CharacterCode.Should().BeNull();
 			dataSource.Object.CharacterCode.Should().BeNull();
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/125")]
+		public void TestDisplayRelativePathWithFolderParent()
+		{
+			var single = new Mock<ISingleDataSource>();
+			single.Setup(x => x.Settings).Returns(new DataSource());
+			single.Setup(x => x.FullFileName).Returns(@"C:\Users\Simon\AppData\Local\Tailviewer\Installation.log");
+			var singleViewModel = new SingleDataSourceViewModel(single.Object, _actionCenter.Object);
+			using (var monitor = singleViewModel.Monitor())
+			{
+				singleViewModel.DisplayName.Should().Be("Installation.log");
+				singleViewModel.Folder.Should().Be(@"C:\Users\Simon\AppData\Local\Tailviewer\");
+
+				var folder = new Mock<IFolderDataSource>();
+				folder.Setup(x => x.OriginalSources).Returns(new List<IDataSource>());
+				folder.Setup(x => x.LogFileFolderPath).Returns(@"C:\Users\Simon\AppData\Local\");
+				var folderViewModel = new FolderDataSourceViewModel(folder.Object, _actionCenter.Object);
+
+				singleViewModel.Parent = folderViewModel;
+				singleViewModel.DisplayName.Should().Be("Installation.log");
+				singleViewModel.Folder.Should().Be(@"<root>\Tailviewer\");
+				monitor.Should().RaisePropertyChangeFor(x => x.Folder);
+				monitor.Clear();
+
+				singleViewModel.Parent = null;
+				singleViewModel.DisplayName.Should().Be("Installation.log");
+				singleViewModel.Folder.Should().Be(@"C:\Users\Simon\AppData\Local\Tailviewer\");
+				monitor.Should().RaisePropertyChangeFor(x => x.Folder);
+			}
 		}
 	}
 }

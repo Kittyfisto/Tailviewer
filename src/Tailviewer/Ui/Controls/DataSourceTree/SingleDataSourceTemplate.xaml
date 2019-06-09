@@ -54,7 +54,7 @@
                 <!-- Folder -->
                 <controls:FlatTextBlock Text="{Binding Folder}"
                                         Foreground="{StaticResource TextBrushUnimportant}"
-                                        ToolTip="{Binding Folder}"
+                                        ToolTip="{Binding FullName}"
                                         TextTrimming="CharacterEllipsis"
                                         Grid.Row="1" />
 
