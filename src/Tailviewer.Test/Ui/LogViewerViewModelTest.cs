@@ -216,6 +216,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(0);
 			dataSource.Setup(x => x.FilteredFileCount).Returns(0);
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>());
 			dataSource.Setup(x => x.FullFileName).Returns(@"F:\logs\today");
 
 			var dataSourceModel = new FolderDataSourceViewModel(dataSource.Object, _actionCenter.Object);
@@ -234,6 +235,7 @@ namespace Tailviewer.Test.Ui
 			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
 			dataSource.Setup(x => x.UnfilteredFileCount).Returns(1);
 			dataSource.Setup(x => x.FilteredFileCount).Returns(0);
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>());
 			dataSource.Setup(x => x.FullFileName).Returns(@"C:\logs\yesterday");
 			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.foo");
 

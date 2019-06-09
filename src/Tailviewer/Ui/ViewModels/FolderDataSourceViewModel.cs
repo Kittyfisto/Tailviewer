@@ -20,6 +20,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly Dictionary<IDataSource, IDataSourceViewModel> _dataSourceViewModelsByDataSource;
 		private readonly ObservableCollection<IDataSourceViewModel> _dataSourceViewModels;
 		private readonly string _displayName;
+		private string _fileReport;
 
 		public FolderDataSourceViewModel(IFolderDataSource folder, IActionCenter actionCenter)
 			: base(folder)
@@ -32,6 +33,8 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenter = actionCenter;
 			_dataSourceViewModelsByDataSource = new Dictionary<IDataSource, IDataSourceViewModel>();
 			_dataSourceViewModels = new ObservableCollection<IDataSourceViewModel>();
+
+			UpdateFileReport();
 		}
 
 		#region Overrides of AbstractDataSourceViewModel
@@ -47,6 +50,19 @@ namespace Tailviewer.Ui.ViewModels
 		public override bool CanBeRenamed => false;
 
 		public override string DataSourceOrigin => _dataSource.LogFileFolderPath;
+
+		public string FileReport
+		{
+			get { return _fileReport; }
+			private set
+			{
+				if (value == _fileReport)
+					return;
+
+				_fileReport = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public DataSourceDisplayMode DisplayMode
 		{
@@ -72,7 +88,12 @@ namespace Tailviewer.Ui.ViewModels
 			changed |= RemoveOldDataSources(dataSources);
 
 			if (changed)
+			{
 				DistributeCharacterCodes();
+			}
+
+			if (changed || FileReport == null)
+				UpdateFileReport();
 
 			UpdateDataSources();
 		}
@@ -118,6 +139,37 @@ namespace Tailviewer.Ui.ViewModels
 			}
 
 			return toRemove.Count > 0;
+		}
+
+		private void UpdateFileReport()
+		{
+			var unfilteredCount = _dataSource.UnfilteredFileCount;
+			var filteredCount = _dataSource.FilteredFileCount;
+			var actualCount = _dataSource.OriginalSources.Count;
+
+			var reportBuilder = new StringBuilder();
+
+			if (unfilteredCount == filteredCount)
+			{
+				reportBuilder.AppendFormat("Monitoring {0}", Language.Count("file", actualCount));
+			}
+			else
+			{
+				var notMatchingCount = unfilteredCount - filteredCount;
+				reportBuilder.AppendFormat("Monitoring {0} ({1} not matching filter)",
+				                           Language.Count("file", actualCount),
+				                           notMatchingCount);
+			}
+
+			var skipped = filteredCount - actualCount;
+			if (skipped > 0)
+			{
+				reportBuilder.AppendLine();
+				reportBuilder.AppendFormat("Skipping {0} (due to internal limitation)",
+				                           Language.Count("file", skipped));
+			}
+
+			FileReport = reportBuilder.ToString();
 		}
 
 		private void UpdateDataSources()

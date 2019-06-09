@@ -35,6 +35,11 @@
                                         TextTrimming="CharacterEllipsis"
                                         Grid.Row="1" />
 
+                <controls:FlatTextBlock Foreground="{StaticResource TextBrushUnimportant}"
+                                        Text="{Binding FileReport}"
+                                        TextWrapping="Wrap"
+                                        Grid.Row="2" />
+
             </Grid>
 
             <controls:CloseButton VerticalAlignment="Stretch"

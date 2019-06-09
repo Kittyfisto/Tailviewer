@@ -103,6 +103,7 @@
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
+    <Compile Include="Language.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
