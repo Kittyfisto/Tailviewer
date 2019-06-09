@@ -43,6 +43,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private IFilesystemWatcher _watchdog;
 		private Predicate<string> _filter;
 		private int _unfilteredFileCount;
+		private int _filteredFileCount;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
 								ILogFileFactory logFileFactory,
@@ -337,7 +338,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public int UnfilteredFileCount => _unfilteredFileCount;
 
-		public int FilteredFileCount => OriginalSources.Count;
+		public int FilteredFileCount => _filteredFileCount;
 
 		public void Change(string folderPath, string searchPattern, bool recursive)
 		{
@@ -374,7 +375,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private void OnFolderChanged()
 		{
 			var unfilteredFiles = _watchdog.Files;
-			var files = FilterFiles(unfilteredFiles, _filter, out _unfilteredFileCount);
+			var files = FilterFiles(unfilteredFiles, _filter, 
+			                        out _unfilteredFileCount,
+			                        out _filteredFileCount);
 			var dataSources = SynchronizeDataSources(files);
 			_mergedDataSource.SetDataSources(dataSources);
 		}
@@ -389,25 +392,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			{
 				lock (_syncRoot)
 				{
-					foreach (var file in files)
-					{
-						if (!_dataSources.TryGetValue(file, out var dataSource))
-						{
-							var settings = new DataSource(file.FullPath)
-							{
-								Id = DataSourceId.CreateNew()
-							};
-							dataSource = new SingleDataSource(_logFileFactory,
-															  _taskScheduler,
-															  settings);
-							_dataSources.Add(file, dataSource);
-							newFiles.Add(file);
-
-						}
-
-						dataSources.Add(dataSource);
-					}
-
 					foreach (var file in _dataSources.Keys)
 					{
 						if (!files.Contains(file))
@@ -421,6 +405,28 @@ namespace Tailviewer.BusinessLogic.DataSources
 						_dataSources.TryGetValue(file, out var dataSource);
 						_dataSources.Remove(file);
 						dataSource?.Dispose();
+					}
+
+					foreach (var file in files)
+					{
+						if (!_dataSources.TryGetValue(file, out var dataSource))
+						{
+							// We'll print a nice warning to the user if this happens
+							if (_dataSources.Count >= LogLineSourceId.MaxSources)
+								break;
+
+							var settings = new DataSource(file.FullPath)
+							{
+								Id = DataSourceId.CreateNew()
+							};
+							dataSource = new SingleDataSource(_logFileFactory,
+															  _taskScheduler,
+															  settings);
+							_dataSources.Add(file, dataSource);
+							newFiles.Add(file);
+						}
+
+						dataSources.Add(dataSource);
 					}
 				}
 			}
@@ -447,18 +453,24 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		[Pure]
 		private static IReadOnlyList<IFileInfoAsync> FilterFiles(IEnumerable<IFileInfoAsync> files, Predicate<string> filter,
-		                                                         out int unfilteredFileCount)
+		                                                         out int unfilteredFileCount,
+		                                                         out int filteredFileCount)
 		{
-			int count = 0;
+			int unfilteredCount = 0;
+			int filteredCount = 0;
 			var matches = new List<IFileInfoAsync>();
 			foreach (var file in files)
 			{
 				if (filter(file.Name))
+				{
 					matches.Add(file);
-				++count;
+					++filteredCount;
+				}
+				++unfilteredCount;
 			}
 
-			unfilteredFileCount = count;
+			unfilteredFileCount = unfilteredCount;
+			filteredFileCount = filteredCount;
 			return matches;
 		}
 

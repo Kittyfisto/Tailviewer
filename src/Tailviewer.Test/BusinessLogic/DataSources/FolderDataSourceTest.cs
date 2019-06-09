@@ -149,5 +149,30 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			dataSource.OriginalSources[0].FullFileName.Should().Be(Path.Combine(path, "foo.log"));
 			dataSource.OriginalSources[1].FullFileName.Should().Be(Path.Combine(path, "foo.txt"));
 		}
+
+		[Test]
+		public void TestTooManySources()
+		{
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			_filesystem.CreateDirectory(path);
+			for (int i = 0; i < 257; ++i)
+			{
+				_filesystem.WriteAllBytes(Path.Combine(path, $"{i}.txt"), new byte[0]).Wait();
+			}
+
+			dataSource.Change(path, "*.log;*.txt", false);
+			_taskScheduler.RunOnce();
+
+			dataSource.Property(x => (IEnumerable<IDataSource>)x.OriginalSources).ShouldEventually().HaveCount(255,
+			                                                                                                   "because merged log file cannot merge more than 256 logs");
+			dataSource.UnfilteredFileCount.Should().Be(257);
+			dataSource.FilteredFileCount.Should().Be(257);
+		}
 	}
 }
