@@ -248,6 +248,7 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateNoEntriesExplanation()
 		{
 			IDataSource dataSource = _dataSource.DataSource;
+			var folderDataSource = dataSource as IFolderDataSource;
 			ILogFile source = dataSource.UnfilteredLogFile;
 			ILogFile filtered = dataSource.FilteredLogFile;
 
@@ -264,6 +265,16 @@ namespace Tailviewer.Ui.ViewModels
 				{
 					NoEntriesExplanation = string.Format("Unable to access \"{0}\"", Path.GetFileName(dataSource.FullFileName));
 					NoEntriesSubtext = "The file may be opened exclusively by another process or you are not authorized to view it";
+				}
+				else if (folderDataSource != null && folderDataSource.UnfilteredFileCount == 0)
+				{
+					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file", Path.GetFileName(dataSource.FullFileName));
+					NoEntriesSubtext = dataSource.FullFileName;
+				}
+				else if (folderDataSource != null && folderDataSource.FilteredFileCount == 0)
+				{
+					NoEntriesExplanation = string.Format("The folder \"{0}\" does not contain any file matching \"{1}\"", Path.GetFileName(dataSource.FullFileName), folderDataSource.LogFileSearchPattern);
+					NoEntriesSubtext = dataSource.FullFileName;
 				}
 				else if (source.GetValue(LogFileProperties.Size) == Size.Zero)
 				{

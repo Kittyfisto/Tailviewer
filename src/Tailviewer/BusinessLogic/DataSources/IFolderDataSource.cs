@@ -25,6 +25,16 @@
 		bool Recursive { get; }
 
 		/// <summary>
+		///     The number of files in the folder of this data source.
+		/// </summary>
+		int UnfilteredFileCount { get; }
+
+		/// <summary>
+		///     The number of files matching <see cref="LogFileSearchPattern"/>.
+		/// </summary>
+		int FilteredFileCount { get; }
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="folderPath"></param>

@@ -206,5 +206,42 @@ namespace Tailviewer.Test.Ui
 			model.NoEntriesExplanation.Should().Be("Not a single log entry matches the log file filter");
 			model.NoEntriesSubtext.Should().BeNull();
 		}
+
+		[Test]
+		public void TestDataSourceNoFiles()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			var logFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredFileCount).Returns(0);
+			dataSource.Setup(x => x.FilteredFileCount).Returns(0);
+			dataSource.Setup(x => x.FullFileName).Returns(@"F:\logs\today");
+
+			var dataSourceModel = new FolderDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("The folder \"today\" does not contain any file");
+			model.NoEntriesSubtext.Should().Be(@"F:\logs\today");
+		}
+
+		[Test]
+		public void TestDataSourceNoMatchingFiles()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			var logFile = new Mock<ILogFile>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.FilteredLogFile).Returns(logFile.Object);
+			dataSource.Setup(x => x.UnfilteredFileCount).Returns(1);
+			dataSource.Setup(x => x.FilteredFileCount).Returns(0);
+			dataSource.Setup(x => x.FullFileName).Returns(@"C:\logs\yesterday");
+			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.foo");
+
+			var dataSourceModel = new FolderDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings.Object, TimeSpan.Zero);
+			model.LogEntryCount.Should().Be(0);
+			model.NoEntriesExplanation.Should().Be("The folder \"yesterday\" does not contain any file matching \"*.foo\"");
+			model.NoEntriesSubtext.Should().Be(@"C:\logs\yesterday");
+		}
 	}
 }

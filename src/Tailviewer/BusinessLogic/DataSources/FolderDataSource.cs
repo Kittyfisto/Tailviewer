@@ -42,6 +42,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly object _syncRoot;
 		private IFilesystemWatcher _watchdog;
 		private Predicate<string> _filter;
+		private int _unfilteredFileCount;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
 								ILogFileFactory logFileFactory,
@@ -334,6 +335,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _settings.Recursive; }
 		}
 
+		public int UnfilteredFileCount => _unfilteredFileCount;
+
+		public int FilteredFileCount => OriginalSources.Count;
+
 		public void Change(string folderPath, string searchPattern, bool recursive)
 		{
 			if (folderPath == LogFileFolderPath &&
@@ -368,8 +373,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void OnFolderChanged()
 		{
-			var files = FilterFiles(_watchdog.Files, _filter);
-			var dataSources = SynchronizeDataSources(files.ToList());
+			var unfilteredFiles = _watchdog.Files;
+			var files = FilterFiles(unfilteredFiles, _filter, out _unfilteredFileCount);
+			var dataSources = SynchronizeDataSources(files);
 			_mergedDataSource.SetDataSources(dataSources);
 		}
 
@@ -440,14 +446,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		[Pure]
-		private static IReadOnlyList<IFileInfoAsync> FilterFiles(IEnumerable<IFileInfoAsync> files, Predicate<string> filter)
+		private static IReadOnlyList<IFileInfoAsync> FilterFiles(IEnumerable<IFileInfoAsync> files, Predicate<string> filter,
+		                                                         out int unfilteredFileCount)
 		{
+			int count = 0;
 			var matches = new List<IFileInfoAsync>();
 			foreach (var file in files)
 			{
 				if (filter(file.Name))
 					matches.Add(file);
+				++count;
 			}
+
+			unfilteredFileCount = count;
 			return matches;
 		}
 
