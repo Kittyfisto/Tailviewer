@@ -14,10 +14,12 @@ namespace Tailviewer.Test.Ui
 	public sealed class FolderDataSourceViewModelTest
 	{
 		[Test]
-		public void TestConstruction1()
+		public void TestConstruction1([Values(true, false)] bool recursive)
 		{
 			var dataSource = new Mock<IFolderDataSource>();
 			dataSource.Setup(x => x.LogFileFolderPath).Returns(@"F:\logs\today");
+			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.txt");
+			dataSource.Setup(x => x.Recursive).Returns(recursive);
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
 			var actionCenter = new Mock<IActionCenter>();
@@ -27,6 +29,10 @@ namespace Tailviewer.Test.Ui
 			viewModel.DisplayName.Should().Be("today");
 			viewModel.DataSourceOrigin.Should().Be(@"F:\logs\today");
 			viewModel.FileReport.Should().Be("Monitoring 0 files");
+
+			viewModel.FolderPath.Should().Be(@"F:\logs\today");
+			viewModel.SearchPattern.Should().Be("*.txt");
+			viewModel.Recursive.Should().Be(recursive);
 		}
 
 		[Test]
@@ -204,6 +210,111 @@ namespace Tailviewer.Test.Ui
 
 			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
 			viewModel.FileReport.Should().Be("Monitoring 256 files (40 not matching filter)\r\nSkipping 4 files (due to internal limitation)");
+		}
+
+		[Test]
+		[Description("Verifies that the folder path is applied only when editing is set to false")]
+		public void TestChangeFolderPath()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.FolderPath = @"C:\bla";
+			dataSource.Verify(x => x.Change(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+
+			viewModel.IsEditing = false;
+			dataSource.Verify(x => x.Change(@"C:\bla", It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
+		}
+
+		[Test]
+		[Description("Verifies that the search pattern is applied only when editing is set to false")]
+		public void TestChangeSearchPattern()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.SearchPattern = "*.txt;*.log";
+			dataSource.Verify(x => x.Change(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+
+			viewModel.IsEditing = false;
+			dataSource.Verify(x => x.Change(It.IsAny<string>(), "*.txt;*.log", It.IsAny<bool>()), Times.Once);
+		}
+
+		[Test]
+		[Description("Verifies that the recursive setting is applied only when editing is set to false")]
+		public void TestChangeRecursive([Values(true, false)] bool recursive)
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.Recursive = recursive;
+			dataSource.Verify(x => x.Change(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+
+			viewModel.IsEditing = false;
+			dataSource.Verify(x => x.Change(It.IsAny<string>(), It.IsAny<string>(), recursive), Times.Once);
+		}
+
+		[Test]
+		public void TestRecursiveIsDirty([Values(true, false)] bool recursive)
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			dataSource.Setup(x => x.Recursive).Returns(recursive);
+
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.Recursive = !recursive;
+			viewModel.IsDirty.Should().BeTrue();
+
+			viewModel.Recursive = recursive;
+			viewModel.IsDirty.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestFolderPathIsDirty()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			dataSource.Setup(x => x.LogFileFolderPath).Returns(@"F:\logs");
+
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.FolderPath = @"E:\logs";
+			viewModel.IsDirty.Should().BeTrue();
+
+			viewModel.FolderPath = @"F:\logs";
+			viewModel.IsDirty.Should().BeFalse();
+		}
+
+		[Test]
+		public void TestSearchPatternIsDirty()
+		{
+			var dataSource = new Mock<IFolderDataSource>();
+			dataSource.Setup(x => x.OriginalSources).Returns(new List<ISingleDataSource>());
+			dataSource.Setup(x => x.LogFileSearchPattern).Returns("*.bin");
+
+			var actionCenter = new Mock<IActionCenter>();
+			var viewModel = new FolderDataSourceViewModel(dataSource.Object, actionCenter.Object);
+
+			viewModel.IsEditing = true;
+			viewModel.SearchPattern = "*.txt";
+			viewModel.IsDirty.Should().BeTrue();
+
+			viewModel.SearchPattern = "*.bin";
+			viewModel.IsDirty.Should().BeFalse();
 		}
 	}
 }

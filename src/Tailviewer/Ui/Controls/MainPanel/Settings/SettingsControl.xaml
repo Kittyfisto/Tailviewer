@@ -124,7 +124,7 @@
                                        TextWrapping="Wrap" />
                         </CheckBox>
 
-                        <TextBlock Text="Folder data source pattern"
+                        <TextBlock Text="Folder data source filter"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="1"

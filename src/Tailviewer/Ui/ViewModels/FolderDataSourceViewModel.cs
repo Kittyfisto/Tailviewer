@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
+using Metrolib;
+using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Settings;
@@ -21,6 +23,11 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ObservableCollection<IDataSourceViewModel> _dataSourceViewModels;
 		private readonly string _displayName;
 		private string _fileReport;
+		private string _folderPath;
+		private bool _recursive;
+		private string _searchPattern;
+		private bool _isEditing;
+		private bool _isDirty;
 
 		public FolderDataSourceViewModel(IFolderDataSource folder, IActionCenter actionCenter)
 			: base(folder)
@@ -29,6 +36,9 @@ namespace Tailviewer.Ui.ViewModels
 			var path = folder.LogFileFolderPath;
 			if (!string.IsNullOrEmpty(path))
 				_displayName = Path.GetFileName(path);
+			_folderPath = folder.LogFileFolderPath;
+			_searchPattern = folder.LogFileSearchPattern;
+			_recursive = folder.Recursive;
 
 			_actionCenter = actionCenter;
 			_dataSourceViewModelsByDataSource = new Dictionary<IDataSource, IDataSourceViewModel>();
@@ -41,15 +51,78 @@ namespace Tailviewer.Ui.ViewModels
 
 		public override ICommand OpenInExplorerCommand => null;
 
+		public string FolderPath
+		{
+			get { return _folderPath; }
+			set
+			{
+				if (value == _folderPath)
+					return;
+
+				_folderPath = value;
+				EmitPropertyChanged();
+				UpdateIsDirty();
+			}
+		}
+
+		public bool Recursive
+		{
+			get { return _recursive; }
+			set
+			{
+				if (value == _recursive)
+					return;
+
+				_recursive = value;
+				EmitPropertyChanged();
+				UpdateIsDirty();
+			}
+		}
+
+		public string SearchPattern
+		{
+			get { return _searchPattern; }
+			set
+			{
+				if (value == _searchPattern)
+					return;
+
+				_searchPattern = value;
+				EmitPropertyChanged();
+				UpdateIsDirty();
+			}
+		}
+
 		public override string DisplayName
 		{
 			get => _displayName;
 			set { throw new NotImplementedException(); }
 		}
 
+		public ICommand ChooseFolderCommand => new DelegateCommand2(ChooseFolder);
+
 		public override bool CanBeRenamed => false;
 
 		public override string DataSourceOrigin => _dataSource.LogFileFolderPath;
+
+		public bool IsEditing
+		{
+			get { return _isEditing; }
+			set
+			{
+				if (value == _isEditing)
+					return;
+
+				_isEditing = value;
+				EmitPropertyChanged();
+
+				if (!value)
+				{
+					_dataSource.Change(_folderPath, _searchPattern, _recursive);
+					UpdateIsDirty();
+				}
+			}
+		}
 
 		public string FileReport
 		{
@@ -78,6 +151,19 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public IReadOnlyList<IDataSourceViewModel> Observable => _dataSourceViewModels;
+
+		public bool IsDirty
+		{
+			get { return _isDirty; }
+			private set
+			{
+				if (value == _isDirty)
+					return;
+
+				_isDirty = value;
+				EmitPropertyChanged();
+			}
+		}
 
 		public override void Update()
 		{
@@ -177,6 +263,26 @@ namespace Tailviewer.Ui.ViewModels
 			foreach (var dataSource in _dataSourceViewModels)
 			{
 				dataSource.Update();
+			}
+		}
+
+		private void UpdateIsDirty()
+		{
+			IsDirty = !string.Equals(_folderPath, _dataSource.LogFileFolderPath) ||
+			          !string.Equals(_searchPattern, _dataSource.LogFileSearchPattern) ||
+			          _recursive != _dataSource.Recursive;
+		}
+
+		private void ChooseFolder()
+		{
+			var dlg = new VistaFolderBrowserDialog();
+			dlg.SelectedPath = _folderPath;
+			dlg.Description = "Choose folder to monitor";
+			dlg.UseDescriptionForTitle = true;
+
+			if (dlg.ShowDialog() == true)
+			{
+				FolderPath = dlg.SelectedPath;
 			}
 		}
 
