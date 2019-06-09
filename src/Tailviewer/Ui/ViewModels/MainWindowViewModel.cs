@@ -199,7 +199,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void ShowLog()
 		{
-			_logViewPanel.OpenFile(Constants.ApplicationLogFile);
+			_logViewPanel.GetOrAddPath(Constants.ApplicationLogFile);
 		}
 
 		public LogViewMainPanelViewModel LogViewPanel => _logViewPanel;
@@ -353,17 +353,17 @@ namespace Tailviewer.Ui.ViewModels
 			_actionCenterViewModel.Update();
 		}
 
-		public void OpenFiles(string[] files)
+		public void AddFilesOrDirectories(string[] paths)
 		{
-			foreach (string file in files)
+			foreach (string path in paths)
 			{
-				OpenFile(file);
+				AddFileOrDirectory(path);
 			}
 		}
 
-		public IDataSourceViewModel OpenFile(string file)
+		public IDataSourceViewModel AddFileOrDirectory(string file)
 		{
-			IDataSourceViewModel dataSource = _logViewPanel.OpenFile(file);
+			IDataSourceViewModel dataSource = _logViewPanel.GetOrAddPath(file);
 			return dataSource;
 		}
 		

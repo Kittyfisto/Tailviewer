@@ -134,7 +134,7 @@ namespace Tailviewer.Ui.Controls
 			{
 				Log.InfoFormat("Opening data source because another process asked us to...");
 				var viewModel = DataContext as MainWindowViewModel;
-				viewModel?.OpenFile(dataSourceUri);
+				viewModel?.AddFileOrDirectory(dataSourceUri);
 			}));
 		}
 
@@ -216,7 +216,7 @@ namespace Tailviewer.Ui.Controls
 
 				// Assuming you have one file that you care about, pass it off to whatever
 				// handling code you have defined.
-				((MainWindowViewModel) DataContext).OpenFiles(files);
+				((MainWindowViewModel) DataContext).AddFilesOrDirectories(files);
 			}
 			else
 			{

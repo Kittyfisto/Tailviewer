@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
@@ -283,9 +284,18 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			}
 		}
 
-		public IDataSourceViewModel OpenFile(string file)
+		public IDataSourceViewModel GetOrAddPath(string path)
 		{
-			IDataSourceViewModel dataSource = _dataSources.GetOrAddFile(file);
+			IDataSourceViewModel dataSource;
+			if (Directory.Exists(path))
+			{
+				dataSource = _dataSources.GetOrAddFolder(path);
+			}
+			else
+			{
+				dataSource = _dataSources.GetOrAddFile(path);
+			}
+
 			OpenFile(dataSource);
 			return dataSource;
 		}

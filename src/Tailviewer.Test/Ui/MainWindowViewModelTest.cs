@@ -115,7 +115,7 @@ namespace Tailviewer.Test.Ui
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
 
-			IDataSourceViewModel dataSource = _mainWindow.OpenFile("Foobar");
+			IDataSourceViewModel dataSource = _mainWindow.AddFileOrDirectory("Foobar");
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(dataSource);
 			filter.CurrentDataSource.Should()
 			      .BeSameAs(dataSource.DataSource,
@@ -136,8 +136,8 @@ namespace Tailviewer.Test.Ui
 			QuickFilterViewModel filter = _mainWindow.LogViewPanel.AddQuickFilter();
 			filter.Value = "test";
 
-			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
-			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
+			IDataSourceViewModel dataSource1 = _mainWindow.AddFileOrDirectory("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.AddFileOrDirectory("bar");
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().NotBeNull();
 			_mainWindow.LogViewPanel.CurrentDataSource.Should().BeSameAs(dataSource2);
 
@@ -179,8 +179,8 @@ namespace Tailviewer.Test.Ui
 		{
 			_mainWindow.SelectedTopEntry = _mainWindow.TopEntries.FirstOrDefault(x => x.Id == "raw");
 
-			IDataSourceViewModel dataSource1 = _mainWindow.OpenFile("foo");
-			IDataSourceViewModel dataSource2 = _mainWindow.OpenFile("bar");
+			IDataSourceViewModel dataSource1 = _mainWindow.AddFileOrDirectory("foo");
+			IDataSourceViewModel dataSource2 = _mainWindow.AddFileOrDirectory("bar");
 			var mainWindowChanges = new List<string>();
 			var logViewChanges = new List<string>();
 			_mainWindow.PropertyChanged += (unused, args) => mainWindowChanges.Add(args.PropertyName);

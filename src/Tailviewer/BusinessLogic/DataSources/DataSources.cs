@@ -213,7 +213,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return dataSource;
 		}
 
-		public FolderDataSource AddFolder(string folderPath)
+		public IFolderDataSource AddFolder(string folderPath)
 		{
 			string key = GetKey(folderPath, out var fullFolderPath);
 			FolderDataSource dataSource;

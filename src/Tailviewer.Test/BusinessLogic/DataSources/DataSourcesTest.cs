@@ -65,7 +65,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_settings.FolderDataSourcePattern = pattern;
 			_settings.FolderDataSourceRecursive = recursive;
 
-			FolderDataSource source = _dataSources.AddFolder(@"E:\Code\");
+			var source = _dataSources.AddFolder(@"E:\Code\");
 			source.Should().NotBeNull();
 			source.FullFileName.Should().Be(@"E:\Code\");
 			source.FollowTail.Should().BeFalse();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Metrolib;
@@ -233,6 +234,21 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			model.CurrentDataSource = mergedViewModel;
 			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - My custom merged data source");
 			model.WindowTitleSuffix.Should().Be("My custom merged data source");
+		}
+
+		[Test]
+		public void TestAddFolder()
+		{
+			var path = Path.GetTempPath();
+			var source = new Mock<IFolderDataSource>();
+			source.Setup(x => x.OriginalSources).Returns(new IDataSource[0]);
+			source.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			source.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			_dataSources.Setup(x => x.AddFolder(It.IsAny<string>())).Returns(source.Object);
+
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var dataSource = model.GetOrAddPath(path);
+			dataSource.Should().BeOfType<FolderDataSourceViewModel>();
 		}
 
 		private Mock<IDataSourceViewModel> CreateDataSourceViewModel()
