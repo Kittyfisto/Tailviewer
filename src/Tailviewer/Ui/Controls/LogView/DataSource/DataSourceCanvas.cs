@@ -153,7 +153,8 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 			for (var i = 0; i < dataSources.Count; ++i)
 			{
 				var name = GetDataSourceName(displayMode, dataSources[i]);
-				max = Math.Max(name.Length, max);
+				if (name != null)
+					max = Math.Max(name.Length, max);
 			}
 			return max;
 		}
@@ -224,7 +225,7 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 			}
 
 			var culture = CultureInfo.CurrentUICulture;
-			return new FormattedText(dataSourceName,
+			return new FormattedText(dataSourceName ?? string.Empty,
 			                         culture,
 			                         FlowDirection.LeftToRight,
 			                         _textSettings.Typeface,

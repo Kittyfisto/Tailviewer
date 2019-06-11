@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -103,6 +105,22 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			canvas.DataSources[0].Text.Should().Be("TH");
 			canvas.DataSources[1].Should().NotBeNull();
 			canvas.DataSources[1].Text.Should().Be("FB");
+		}
+
+		[Test]
+		public void TestUpdateNoSources([Values(DataSourceDisplayMode.Filename, DataSourceDisplayMode.CharacterCode)] DataSourceDisplayMode displayMode)
+		{
+			var canvas = new DataSourceCanvas(TextSettings.Default)
+			{
+				DisplayMode = displayMode
+			};
+			var folderDataSource = new Mock<IFolderDataSource>();
+			folderDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			var dataSource = new Mock<IDataSource>();
+			folderDataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>{dataSource.Object});
+
+			new Action(() => canvas.UpdateDataSources(folderDataSource.Object, new LogFileSection(0, 2), 0))
+				.Should().NotThrow();
 		}
 	}
 }
