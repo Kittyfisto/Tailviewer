@@ -18,13 +18,13 @@ Plugins...
 In order to start developing a plugin, you need to install Visual Studio (any version since Visual Studio 2012 will do)
 and create a new Class Library targeting at least .NET 4.5.2:
 
-![Creating a project in Visual Studio](/CreateProject.png?raw=true)
+![Creating a project in Visual Studio](CreateProject.png?raw=true)
 
 Once created, you need to add a reference to Tailviewer.API. You can download this package manually from [nuget.org](https://www.nuget.org/packages/tailviewer.api/) or
 you can install it in Visual Studio by right clicking your project in the Solution Explorer and clicking "Managed Nuget Packages...". Make sure
 to select "Include prerelease".
 
-![Installing the nuget package in Visual Studio](/NugetPackage.png?raw=true)
+![Installing the nuget package in Visual Studio](NugetPackage.png?raw=true)
 
 Your project should now compile, however there's two highly recommended additional steps you should do:
 
@@ -37,7 +37,7 @@ following in the "Post-build event command line" box:
 xcopy "$(MSBuildProjectDirectory)\$(OutDir)MyFirstTailviewerPlugin.*.tvp" "%ProgramW6432%\Tailviewer\Plugins\" /y
 ```
 
-![Configuring the post-build event](/BuildEvents.png?raw=true)
+![Configuring the post-build event](BuildEvents.png?raw=true)
 
 This will cause archive.exe to create a plugin from your assembly and also copies it into Tailviewer's plugin directory. Please note that in order to do the latter, Visual Studio needs to be started
 with administrator privileges because %ProgramW6432% is protected by UAC.  archive.exe will add warnings and errors to the Build output of Visual Studio, if necessary. These should be self-explanatory,
@@ -58,7 +58,7 @@ To do so, right click your project in the Solution Explorer once more, selecting
 C:\Program Files\Tailviewer\Tailviewer.exe
 ```
 
-![Configuration debugger](/DebugSettings.png?raw=true)
+![Configuration debugger](DebugSettings.png?raw=true)
 
 You can now debug your plugin by "Selecting Debug => Start Debugging" (which defaults to F5 on my computer, but ymmv) and it will start Tailviewer which will in turn load your plugin.
 
