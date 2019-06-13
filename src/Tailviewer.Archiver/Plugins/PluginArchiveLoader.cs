@@ -28,21 +28,24 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		/// <param name="filesystem"></param>
 		/// <param name="path"></param>
-		public PluginArchiveLoader(IFilesystem filesystem, string path)
+		public PluginArchiveLoader(IFilesystem filesystem, string path = null)
 		{
 			_filesystem = filesystem;
 			_plugins = new Dictionary<PluginId, PluginGroup>();
 
 			try
 			{
-				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
-				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
-				                      .Result;
-				foreach (var pluginPath in files)
-					TryOpenPlugin(pluginPath);
+				if (path != null)
+				{
+					// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
+					var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
+					                      .Result;
+					foreach (var pluginPath in files)
+						TryOpenPlugin(pluginPath);
 
-				foreach (var plugin in _plugins.Values)
-					plugin.Load();
+					foreach (var plugin in _plugins.Values)
+						plugin.Load();
+				}
 			}
 			catch (DirectoryNotFoundException e)
 			{
@@ -119,19 +122,14 @@ namespace Tailviewer.Archiver.Plugins
 		///     The plugin itself is not loaded until later.
 		/// </summary>
 		/// <param name="pluginPath"></param>
-		private void TryOpenPlugin(string pluginPath)
+		public void TryOpenPlugin(string pluginPath)
 		{
 			Log.DebugFormat("Loading plugin '{0}'...", pluginPath);
 
 			ExtractIdAndVersion(pluginPath, out var id, out var version);
 			try
 			{
-				// DO NOT DISPOSE OF THE STREAM HERE!!!
-				// Ownership transfers to PluginArchive which is disposed of when this class is
-				// disposed of....
-				var stream = _filesystem.OpenRead(pluginPath).Result;
-				var archive = PluginArchive.OpenRead(stream);
-				Add(pluginPath, id, version, archive);
+				OpenPlugin(pluginPath, id, version);
 			}
 			catch (Exception e)
 			{
@@ -140,7 +138,24 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		private void Add(string pluginPath, PluginId id, Version pluginVersion, IPluginArchive archive)
+		public PluginGroup OpenPlugin(string pluginPath, PluginId id, Version version)
+		{
+			var stream = _filesystem.OpenRead(pluginPath).Result;
+			try
+			{
+				// Ownership of the stream transfers to PluginArchive which is disposed of when this class is
+				// disposed of....
+				var archive = PluginArchive.OpenRead(stream);
+				return Add(pluginPath, id, version, archive);
+			}
+			catch (Exception)
+			{
+				stream.Dispose();
+				throw;
+			}
+		}
+
+		private PluginGroup Add(string pluginPath, PluginId id, Version pluginVersion, IPluginArchive archive)
 		{
 			if (!_plugins.TryGetValue(id, out var pluginGroup))
 			{
@@ -149,6 +164,7 @@ namespace Tailviewer.Archiver.Plugins
 			}
 
 			pluginGroup.Add(pluginPath, pluginVersion, archive);
+			return pluginGroup;
 		}
 
 		public static void ExtractIdAndVersion(string pluginPath, out PluginId id, out Version version)

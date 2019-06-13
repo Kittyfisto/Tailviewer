@@ -14,6 +14,9 @@ using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.Ui.Controls;
 using Tailviewer.Ui.ViewModels;
 using log4net;
+using log4net.Appender;
+using log4net.Layout;
+using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -61,6 +64,69 @@ namespace Tailviewer
 			Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 			LogEnvironment();
 
+			var arguments = ArgumentParser.TryParse(args);
+			switch (arguments.Mode)
+			{
+				case ArgumentParser.Modes.TestLoadPlugin:
+					return TestLoadPlugin(arguments.FileToOpen, arguments.PluginInterface);
+
+				default:
+					return StartApplication(mutex, arguments.FileToOpen);
+			}
+		}
+
+		private static int TestLoadPlugin(string pluginToLoad, string pluginInterfaceToLoad)
+		{
+			InstallConsoleLogger();
+
+			var pluginInterface = typeof(IPlugin).Assembly.GetType(pluginInterfaceToLoad);
+
+			if (pluginToLoad.EndsWith(".tvp", StringComparison.InvariantCultureIgnoreCase))
+			{
+				var ioScheduler = new SerialTaskScheduler();
+				var taskScheduler = new DefaultTaskScheduler();
+				var filesystem = new Filesystem(ioScheduler, taskScheduler);
+				using (var loader = new PluginArchiveLoader(filesystem))
+				{
+					PluginArchiveLoader.ExtractIdAndVersion(pluginToLoad, out var id, out var version);
+					var group = loader.OpenPlugin(pluginToLoad, id, version);
+					group.Load();
+					if (!group.Status.IsLoaded)
+						return -1;
+
+					var plugins = group.LoadAllOfType(pluginInterface);
+					if (plugins.Count == 0)
+						return -2;
+
+					return 0;
+				}
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		private static void InstallConsoleLogger()
+		{
+			var hierarchy = (Hierarchy) LogManager.GetRepository();
+
+			var patternLayout = new PatternLayout
+			{
+				ConversionPattern = "%-5level: %message%newline"
+			};
+			patternLayout.ActivateOptions();
+
+			var appender = new ConsoleAppender
+			{
+				Layout = patternLayout
+			};
+			appender.ActivateOptions();
+			hierarchy.Root.AddAppender(appender);
+		}
+
+		private static int StartApplication(SingleApplicationHelper.IMutex mutex, string fileToOpen)
+		{
 			ApplicationSettings settings = ApplicationSettings.Create();
 			settings.Restore(out var neededPatching);
 
@@ -91,20 +157,19 @@ namespace Tailviewer
 					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(taskScheduler, logAnalyserEngine, pluginSystem))
 					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem)))
 					{
-						var arguments = ArgumentParser.TryParse(args);
-						if (arguments.FileToOpen != null)
+						if (fileToOpen != null)
 						{
-							if (File.Exists(arguments.FileToOpen))
+							if (File.Exists(fileToOpen))
 							{
 								// Not only do we want to add this file to the list of data sources,
 								// but we also want to select it so the user can view it immediately, regardless
 								// of what was selected previously.
-								var dataSource = dataSources.AddFile(arguments.FileToOpen);
+								var dataSource = dataSources.AddFile(fileToOpen);
 									settings.DataSources.SelectedItem = dataSource.Id;
 								}
 								else
 								{
-									Log.ErrorFormat("File '{0}' does not exist, won't open it!", arguments.FileToOpen);
+									Log.ErrorFormat("File '{0}' does not exist, won't open it!", fileToOpen);
 								}
 							}
 

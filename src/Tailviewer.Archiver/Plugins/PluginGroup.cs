@@ -89,8 +89,6 @@ namespace Tailviewer.Archiver.Plugins
 			                                          .OrderByDescending(x => x.Key)
 			                                          .Select(x => x.Value).ToList();
 
-			
-
 			if (compatiblePlugins.Any())
 			{
 				Log.DebugFormat("Found {0} compatible version(s) of plugin '{1}', loading newest...", _pluginsByVersion.Count, _id);
@@ -144,26 +142,31 @@ namespace Tailviewer.Archiver.Plugins
 
 		public IEnumerable<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
+			return LoadAllOfType(typeof(T)).Cast<T>().ToList();
+		}
+
+		public IReadOnlyList<IPlugin> LoadAllOfType(Type pluginType)
+		{
 			var preferredPlugin = _selectedPlugin;
 			if (preferredPlugin == null)
-				return Enumerable.Empty<T>();
+				return new List<IPlugin>();
 
-			var types = new List<T>();
+			var types = new List<IPlugin>();
 			foreach (var implementation in preferredPlugin.PluginImplementations)
 			{
-				if (implementation.InterfaceType == typeof(T))
+				if (implementation.InterfaceType == pluginType)
 				{
 					try
 					{
 						var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
 						var type = assembly.GetType(implementation.FullTypeName);
 						var pluginObject = Activator.CreateInstance(type);
-						types.Add((T) pluginObject);
+						types.Add((IPlugin) pluginObject);
 					}
 					catch (Exception e)
 					{
 						Log.ErrorFormat("Unable to load plugin of interface '{0}' from '{1}': {2}",
-						                typeof(T).FullName,
+						                pluginType.FullName,
 						                preferredPlugin,
 						                e);
 					}
