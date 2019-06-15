@@ -158,10 +158,16 @@ namespace Tailviewer.Archiver.Plugins
 				{
 					try
 					{
+						Log.DebugFormat("Creating instance of plugin '{0}' from '{1}'...", implementation.FullTypeName,
+						               preferredPlugin.FilePath);
+
 						var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
 						var type = assembly.GetType(implementation.FullTypeName);
 						var pluginObject = Activator.CreateInstance(type);
 						types.Add((IPlugin) pluginObject);
+
+						Log.InfoFormat("Created instance of plugin '{0}' from '{1}'", implementation.FullTypeName,
+						               preferredPlugin.FilePath);
 					}
 					catch (Exception e)
 					{

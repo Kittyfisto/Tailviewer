@@ -35,6 +35,12 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>../../sig/key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\WpfUnit.0.1.0.14-alpha\lib\net45\0Harmony.dll</HintPath>

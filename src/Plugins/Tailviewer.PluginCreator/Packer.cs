@@ -10,6 +10,8 @@ namespace Tailviewer.PluginCreator
 	{
 		public string Pack(string folder, string assembly, string pluginName)
 		{
+			DeleteOldPlugins(folder);
+
 			var argumentBuilder = new StringBuilder();
 			argumentBuilder.AppendFormat("pack \"{0}\"", assembly);
 
@@ -47,6 +49,13 @@ namespace Tailviewer.PluginCreator
 
 			return pluginFiles[0];
 
+		}
+
+		private void DeleteOldPlugins(string folder)
+		{
+			var pluginFiles = Directory.EnumerateFiles(folder, "*.tvp", SearchOption.AllDirectories);
+			foreach(var file in pluginFiles)
+				File.Delete(file);
 		}
 	}
 }

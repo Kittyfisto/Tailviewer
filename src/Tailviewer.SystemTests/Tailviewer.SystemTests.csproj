@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Plugins\v0.8.0.680\FileFormatPlugin.0.8.0.680.tvp" />
+    <None Include="Plugins\v0.8.0.680\FileFormatPlugin.0.0.tvp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">

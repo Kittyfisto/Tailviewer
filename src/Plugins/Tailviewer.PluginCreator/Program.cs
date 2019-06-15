@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.PluginCreator
@@ -68,6 +69,10 @@ namespace Tailviewer.PluginCreator
 			{
 				files.AddRange(new FileFormatPluginCreator().CreateSourceFiles(folder, pluginName));
 			}
+			else if (pluginInterface == typeof(IDataSourceAnalyserPlugin))
+			{
+				
+			}
 			else
 			{
 				throw new ArgumentNullException();
@@ -112,13 +117,7 @@ namespace Tailviewer.PluginCreator
 			builder.AppendFormat("[assembly: PluginId(\"Tailviewer.Systemtest\", \"{0}\")]", pluginName);
 			builder.AppendLine();
 
-			int i = tailviewerVersion.IndexOf("-");
-			var version = Version.Parse(tailviewerVersion.Substring(0, i));
-			builder.AppendFormat("[assembly: PluginVersion({0}, {1}, {2}, {3})]", version.Major,
-			                     version.Minor,
-			                     version.Build,
-			                     version.Revision);
-			builder.AppendLine();
+			builder.AppendLine("[assembly: PluginVersion(0, 0)]");
 
 			var fileName = Path.Combine(folder, "AssemblyInfo.cs");
 			File.WriteAllText(fileName, builder.ToString());
