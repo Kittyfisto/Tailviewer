@@ -96,7 +96,15 @@ namespace Tailviewer
 
 					var plugins = group.LoadAllOfType(pluginInterface);
 					if (plugins.Count == 0)
+					{
+						Log.ErrorFormat("The plugin '{0}' doesn't appear to implement '{1}' or there was a problem loading it",
+						                pluginToLoad,
+						                pluginInterfaceToLoad);
 						return -2;
+					}
+
+					if (!group.TryLoadAllTypes())
+						return -3;
 
 					return 0;
 				}

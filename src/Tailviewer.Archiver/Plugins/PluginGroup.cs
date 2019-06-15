@@ -183,6 +183,38 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <summary>
+		/// Only used in conjunction with 
+		/// </summary>
+		/// <returns></returns>
+		public bool TryLoadAllTypes()
+		{
+			var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
+			try
+			{
+				var types = assembly.GetExportedTypes();
+				foreach (var type in types)
+				{
+					try
+					{
+						Activator.CreateInstance(type);
+					}
+					catch (Exception e)
+					{
+						Log.ErrorFormat("Unable to load '{0}':\r\n{1}", type, e);
+						return false;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught exception while trying to load all exported types:\r\n{0}", e);
+				return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		///     Tests if a plugin with the given index is actually usable (or if the plugin is too old, or too new).
 		/// </summary>
 		/// <param name="index"></param>

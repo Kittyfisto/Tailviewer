@@ -18,16 +18,25 @@ namespace Tailviewer.SystemTests.Plugins.v0._8._0._680
 			Load<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin.0.0.tvp");
 		}
 
+		[Test]
+		public void TestLoadFileFormatPluginAndLogFileImplementation()
+		{
+			Load<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin+LogFile.0.0.tvp");
+		}
+
 		private static void Load<T>(Version tailviewerVersion, string pluginName) where T : IPlugin
 		{
-			var pluginPath = Path.Combine(PluginsDirectory, "v"+tailviewerVersion.ToString(), pluginName);
+			var pluginPath = Path.Combine(PluginsDirectory, "v"+tailviewerVersion, pluginName);
 
+			const string executable = "Tailviewer.exe";
 			var argumentBuilder = new StringBuilder();
 			argumentBuilder.AppendFormat("/testloadplugin \"{0}\" {1}", pluginPath, typeof(T).FullName);
 
+			TestContext.Progress.WriteLine("{0} {1}", executable, argumentBuilder);
+
 			using (var process = new Process())
 			{
-				process.StartInfo = new ProcessStartInfo("Tailviewer.exe")
+				process.StartInfo = new ProcessStartInfo(executable)
 				{
 					Arguments = argumentBuilder.ToString(),
 					RedirectStandardOutput = true,
@@ -39,11 +48,11 @@ namespace Tailviewer.SystemTests.Plugins.v0._8._0._680
 
 				var output = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
+				TestContext.Progress.WriteLine(output);
 
 				var exitCode = process.ExitCode;
 				if (exitCode != 0)
 				{
-					TestContext.Progress.WriteLine(output);
 					exitCode.Should().Be(0);
 				}
 

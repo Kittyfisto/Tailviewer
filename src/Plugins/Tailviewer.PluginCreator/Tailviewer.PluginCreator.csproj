@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileFormatPluginCreator.cs" />
+    <Compile Include="LogFileCreator.cs" />
     <Compile Include="MsBuild.cs" />
     <Compile Include="Nuget.cs" />
     <Compile Include="Packer.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.PluginCreator
@@ -29,7 +30,7 @@ namespace Tailviewer.PluginCreator
 			Console.WriteLine("Used in order to quickly create dummy plugins for the system test");
 
 			var pluginName = args[0];
-			var pluginInterface = ResolveInterfaceType(args[1]);
+			var interfaces = ResolveInterfaceType(args[1]);
 			var tailviewerVersion = args[2];
 			var folder = Directory.GetCurrentDirectory();
 
@@ -37,7 +38,7 @@ namespace Tailviewer.PluginCreator
 			var dependencies = DownloadDependencies(folder, tailviewerVersion);
 
 			Console.WriteLine("Writing source files....");
-			var sourceFiles = GenerateSourceCode(folder, pluginName, pluginInterface, tailviewerVersion);
+			var sourceFiles = GenerateSourceCode(folder, pluginName, interfaces, tailviewerVersion);
 
 			Console.WriteLine("Writing package config");
 			var packageConfig = GeneratePackagesConfig(folder);
@@ -58,24 +59,31 @@ namespace Tailviewer.PluginCreator
 
 		private static IReadOnlyList<string> GenerateSourceCode(string folder,
 		                                                        string pluginName,
-		                                                        Type pluginInterface,
+		                                                        IEnumerable<Type> implementedTypes,
 		                                                        string tailviewerVersion)
 		{
 			var files = new List<string>();
 
 			files.Add(CreateAssemblyInfo(folder, pluginName, tailviewerVersion));
 
-			if (pluginInterface == typeof(IFileFormatPlugin))
+			foreach (var type in implementedTypes)
 			{
-				files.AddRange(new FileFormatPluginCreator().CreateSourceFiles(folder, pluginName));
-			}
-			else if (pluginInterface == typeof(IDataSourceAnalyserPlugin))
-			{
+				if (type == typeof(IFileFormatPlugin))
+				{
+					files.AddRange(new FileFormatPluginCreator().CreateSourceFiles(folder));
+				}
+				else if (type == typeof(ILogFile))
+				{
+					files.AddRange(new LogFileCreator().CreateSourceFiles(folder));
+				}
+				else if (type == typeof(IDataSourceAnalyserPlugin))
+				{
 				
-			}
-			else
-			{
-				throw new ArgumentNullException();
+				}
+				else
+				{
+					throw new ArgumentNullException();
+				}
 			}
 
 			return files;
@@ -203,9 +211,16 @@ namespace Tailviewer.PluginCreator
 			return new Packer().Pack(folder, assembly, pluginName);
 		}
 
-		private static Type ResolveInterfaceType(string pluginName)
+		private static IReadOnlyList<Type> ResolveInterfaceType(string pluginNames)
 		{
-			return typeof(IPlugin).Assembly.GetType(pluginName);
+			var typeNames = pluginNames.Split(',');
+			var types = new List<Type>();
+			foreach (var name in typeNames)
+			{
+				types.Add(typeof(IPlugin).Assembly.GetType(name));
+			}
+
+			return types;
 		}
 	}
 }
