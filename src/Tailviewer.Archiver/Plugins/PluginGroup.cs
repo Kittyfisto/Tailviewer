@@ -197,6 +197,7 @@ namespace Tailviewer.Archiver.Plugins
 					try
 					{
 						Activator.CreateInstance(type);
+						Log.InfoFormat("Created instance of '{0}'", type);
 					}
 					catch (Exception e)
 					{

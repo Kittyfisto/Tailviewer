@@ -55,7 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Plugins\v0.8.0.680\DataSourceAnalyserPlugin+DataSourceAnalyser.0.0.tvp" />
+    <None Include="Plugins\v0.8.0.680\DataSourceAnalyserPlugin.0.0.tvp" />
+    <None Include="Plugins\v0.8.0.680\FileFormatPlugin+LogFile.0.0.tvp" />
     <None Include="Plugins\v0.8.0.680\FileFormatPlugin.0.0.tvp" />
+    <None Include="Plugins\v0.8.0.680\LogAnalyserPlugin+LogAnalyser.0.0.tvp" />
+    <None Include="Plugins\v0.8.0.680\LogAnalyserPlugin.0.0.tvp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">

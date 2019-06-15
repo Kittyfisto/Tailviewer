@@ -42,7 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSourceAnalyserCreator.cs" />
+    <Compile Include="DataSourceAnalyserPluginCreator.cs" />
     <Compile Include="FileFormatPluginCreator.cs" />
+    <Compile Include="LogAnalyserCreator.cs" />
+    <Compile Include="LogAnalyserPluginCreator.cs" />
     <Compile Include="LogFileCreator.cs" />
     <Compile Include="MsBuild.cs" />
     <Compile Include="Nuget.cs" />

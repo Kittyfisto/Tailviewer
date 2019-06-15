@@ -78,7 +78,19 @@ namespace Tailviewer.PluginCreator
 				}
 				else if (type == typeof(IDataSourceAnalyserPlugin))
 				{
-				
+					files.AddRange(new DataSourceAnalyserPluginCreator().CreateSourceFiles(folder));
+				}
+				else if (type == typeof(IDataSourceAnalyser))
+				{
+					files.AddRange(new DataSourceAnalyserCreator().CreateSourceFiles(folder));
+				}
+				else if (type == typeof(ILogAnalyserPlugin))
+				{
+					files.AddRange(new LogAnalyserPluginCreator().CreateSourceFiles(folder));
+				}
+				else if (type == typeof(ILogAnalyser))
+				{
+					files.AddRange(new LogAnalyserCreator().CreateSourceFiles(folder));
 				}
 				else
 				{
