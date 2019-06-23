@@ -33,6 +33,7 @@ namespace Tailviewer.Archiver.Plugins
 			PluginInterfaces = new[]
 			{
 				typeof(IFileFormatPlugin),
+				typeof(IFileFormatPlugin2),
 				typeof(ILogAnalyserPlugin),
 				typeof(IDataSourceAnalyserPlugin),
 				typeof(IWidgetPlugin)

@@ -8,8 +8,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Creates a new log file to represents the given file.
 		/// </summary>
-		/// <param name="fileName">The full file path to the file to be opened.</param>
+		/// <param name="filePath">The full file path to the file to be opened.</param>
 		/// <returns></returns>
-		ILogFile Open(string fileName);
+		ILogFile Open(string filePath);
 	}
 }

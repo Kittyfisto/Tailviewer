@@ -72,6 +72,7 @@
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntries.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntrySectionExtensions.cs" />
     <Compile Include="BusinessLogic\LogLineSourceId.cs" />
+    <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin2.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersion.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersionAttribute.cs" />
     <Compile Include="ColumnNotRetrievedException.cs" />

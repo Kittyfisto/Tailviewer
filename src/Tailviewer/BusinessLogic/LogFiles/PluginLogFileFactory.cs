@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Plugins;
@@ -37,12 +39,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{}
 
 		/// <inheritdoc />
-		public ILogFile Open(string fileName)
+		public ILogFile Open(string filePath)
 		{
-			var plugin = FindSupportingPlugin(fileName);
+			var plugin = FindSupportingPlugin(filePath);
 			if (plugin != null)
 			{
-				var logFile = OpenWith(fileName, plugin);
+				var logFile = OpenWith(filePath, plugin);
 				if (logFile != null)
 				{
 					var pluginName = plugin.GetType().Assembly.FullName;
@@ -50,11 +52,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
-			return new TextLogFile(_taskScheduler, fileName);
+			return new TextLogFile(_taskScheduler, filePath);
 		}
 
-		private IFileFormatPlugin FindSupportingPlugin(string fileName)
+		private IFileFormatPlugin FindSupportingPlugin(string filePath)
 		{
+			var fileName = Path.GetFileName(filePath);
 			foreach (var plugin in _plugins)
 			{
 				if (Supports(plugin, fileName))
@@ -69,9 +72,38 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		[Pure]
 		private static bool Supports(IFileFormatPlugin plugin, string fileName)
 		{
+			return SupportsByRegex(plugin, fileName) ||
+			       SupportsByFileExtension(plugin, fileName);
+		}
+
+		private static bool SupportsByRegex(IFileFormatPlugin plugin, string fileName)
+		{
 			try
 			{
-				var extensions = plugin.SupportedExtensions;
+				var regexes = (plugin as IFileFormatPlugin2)?.SupportedFileNames ?? Enumerable.Empty<Regex>();
+				foreach (var regex in regexes)
+				{
+					if (regex.IsMatch(fileName))
+					{
+						Log.DebugFormat("Plugin {0} claims that it supports {1}...", plugin, fileName);
+						return true;
+					}
+				}
+
+				return false;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Plugin {0} threw an unexpected exception: {1}", plugin, e);
+				return false;
+			}
+		}
+
+		private static bool SupportsByFileExtension(IFileFormatPlugin plugin, string fileName)
+		{
+			try
+			{
+				var extensions = plugin.SupportedExtensions ?? Enumerable.Empty<string>();
 				foreach (var extension in extensions)
 				{
 					if (fileName.EndsWith(extension, StringComparison.InvariantCultureIgnoreCase))
