@@ -48,6 +48,31 @@ namespace Tailviewer
 			AddV070();
 			AddV071();
 			AddV080();
+			AddV081();
+		}
+
+		private static void AddV081()
+		{
+			var features = new[]
+			{
+				"Added folder data sources", // https://github.com/Kittyfisto/Tailviewer/issues/125
+				"The font size is now configurable", // https://github.com/Kittyfisto/Tailviewer/issues/53
+			};
+			var bugfixes = new[]
+			{
+				"The proxy password box allows the user to change focus away from it", // https://github.com/Kittyfisto/Tailviewer/issues/188
+				"Fixed installer license display" // https://github.com/Kittyfisto/Tailviewer/issues/194
+			};
+			var misc = new[]
+			{
+				"Bookmarks are stored/restored in between sessions", // https://github.com/Kittyfisto/Tailviewer/issues/66
+				"Titlebar contains more information about selected files", // https://github.com/Kittyfisto/Tailviewer/issues/127
+				"Installer now stops tailviewer if necessary" // https://github.com/Kittyfisto/Tailviewer/issues/150
+			};
+			var releaseDate = new DateTime(2019, 06, 23);
+			var version = new Version(0, 8, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV080()
