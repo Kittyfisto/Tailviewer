@@ -234,6 +234,40 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.Count\Tailviewer.Analysis.Count.csproj">
+      <Project>{7e386963-e599-43b4-9856-486c87536416}</Project>
+      <Name>Tailviewer.Analysis.Count</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.DataSources\Tailviewer.Analysis.DataSources.csproj">
+      <Project>{91e9a698-b458-40f6-acfe-715bfe9832bd}</Project>
+      <Name>Tailviewer.Analysis.DataSources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.Events\Tailviewer.Analysis.Events.csproj">
+      <Project>{a26c1ecf-d3a8-4826-910b-4ba59e2a248e}</Project>
+      <Name>Tailviewer.Analysis.Events</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.QuickInfo\Tailviewer.Analysis.QuickInfo.csproj">
+      <Project>{04577417-8ff7-4583-aa9d-c2e92ca7ee6f}</Project>
+      <Name>Tailviewer.Analysis.QuickInfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">
+      <Project>{c667eb8a-6781-4623-ac7c-d3fba2f6e7d4}</Project>
+      <Name>Tailviewer.Archiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62c60d20-180e-4a59-9ef3-30161e1e31cb}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tailviewer\Tailviewer.csproj">
+      <Project>{799f74c7-6de8-455d-936d-e11d7525ab36}</Project>
+      <Name>Tailviewer</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
