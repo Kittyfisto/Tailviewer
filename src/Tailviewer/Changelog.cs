@@ -56,11 +56,11 @@ namespace Tailviewer
 			var features = new[]
 			{
 				"Added folder data sources", // https://github.com/Kittyfisto/Tailviewer/issues/125
-				"The font size is now configurable", // https://github.com/Kittyfisto/Tailviewer/issues/53
+				"Font size is now configurable", // https://github.com/Kittyfisto/Tailviewer/issues/53
 			};
 			var bugfixes = new[]
 			{
-				"The proxy password box allows the user to change focus away from it", // https://github.com/Kittyfisto/Tailviewer/issues/188
+				"Proxy password box no longer captures focus indefinitely", // https://github.com/Kittyfisto/Tailviewer/issues/188
 				"Fixed installer license display" // https://github.com/Kittyfisto/Tailviewer/issues/194
 			};
 			var misc = new[]
