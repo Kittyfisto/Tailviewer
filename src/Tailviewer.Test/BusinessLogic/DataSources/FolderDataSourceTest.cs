@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources
@@ -173,6 +175,72 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                                                                                   "because merged log file cannot merge more than 256 logs");
 			dataSource.UnfilteredFileCount.Should().Be(257);
 			dataSource.FilteredFileCount.Should().Be(257);
+		}
+
+		[Test]
+		[Description("Verifies that the FolderDataSource always exposes the same Unfiltered- and FilteredLogFile object")]
+		public void TestChangeFilter()
+		{
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var unfiltered = dataSource.UnfilteredLogFile;
+			var filtered = dataSource.FilteredLogFile;
+
+			dataSource.QuickFilterChain = new List<ILogEntryFilter>();
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+
+			dataSource.QuickFilterChain = null;
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+		}
+
+		[Test]
+		[Description("Verifies that the FolderDataSource always exposes the same Unfiltered- and FilteredLogFile object")]
+		public void TestChangeSingleLine()
+		{
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var unfiltered = dataSource.UnfilteredLogFile;
+			var filtered = dataSource.FilteredLogFile;
+
+			dataSource.IsSingleLine = !dataSource.IsSingleLine;
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+
+			dataSource.IsSingleLine = !dataSource.IsSingleLine;
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+		}
+
+		[Test]
+		[Description("Verifies that the FolderDataSource always exposes the same Unfiltered- and FilteredLogFile object")]
+		public void TestChangeLevelFilter()
+		{
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var unfiltered = dataSource.UnfilteredLogFile;
+			var filtered = dataSource.FilteredLogFile;
+
+			dataSource.LevelFilter = LevelFlags.Error;
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+
+			dataSource.LevelFilter = LevelFlags.All;
+			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
+			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
 		}
 	}
 }

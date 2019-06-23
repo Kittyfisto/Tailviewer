@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.BusinessLogic.DataSources
@@ -39,6 +40,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ILogFileFactory _logFileFactory;
 		private readonly DataSource _settings;
+		private readonly LogFileProxy _unfilteredLogFileProxy;
+		private readonly LogFileProxy _filteredLogFileProxy;
 		private readonly object _syncRoot;
 		private IFilesystemWatcher _watchdog;
 		private Predicate<string> _filter;
@@ -66,6 +69,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_syncRoot = new object();
 			_dataSources = new Dictionary<IFileInfoAsync, SingleDataSource>();
 			_mergedDataSource = new MergedDataSource(taskScheduler, settings, maximumWaitTime);
+			_unfilteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
+			_filteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
 
 			DoChange();
 		}
@@ -74,6 +79,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Dispose()
 		{
+			_unfilteredLogFileProxy?.Dispose();
 			_mergedDataSource.Dispose();
 		}
 
@@ -84,7 +90,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
 			get { return _mergedDataSource.QuickFilterChain; }
-			set { _mergedDataSource.QuickFilterChain = value; }
+			set
+			{
+				_mergedDataSource.QuickFilterChain = value;
+				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			}
 		}
 
 		public ILogFile OriginalLogFile
@@ -94,7 +104,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public ILogFile UnfilteredLogFile
 		{
-			get { return _mergedDataSource.UnfilteredLogFile; }
+			get { return _unfilteredLogFileProxy; }
 		}
 
 		public ILogFile FilteredLogFile
@@ -156,7 +166,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public LevelFlags LevelFilter
 		{
 			get { return _mergedDataSource.LevelFilter; }
-			set { _mergedDataSource.LevelFilter = value; }
+			set
+			{
+				_mergedDataSource.LevelFilter = value;
+				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			}
 		}
 
 		public HashSet<LogLineIndex> SelectedLogLines
@@ -201,13 +215,21 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public bool HideEmptyLines
 		{
 			get { return _mergedDataSource.HideEmptyLines; }
-			set { _mergedDataSource.HideEmptyLines = value; }
+			set
+			{
+				_mergedDataSource.HideEmptyLines = value;
+				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			}
 		}
 
 		public bool IsSingleLine
 		{
 			get { return _mergedDataSource.IsSingleLine; }
-			set { _mergedDataSource.IsSingleLine = value; }
+			set
+			{
+				_mergedDataSource.IsSingleLine = value;
+				_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+			}
 		}
 
 		public DataSourceId Id
@@ -380,6 +402,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			                        out _filteredFileCount);
 			var dataSources = SynchronizeDataSources(files);
 			_mergedDataSource.SetDataSources(dataSources);
+			_unfilteredLogFileProxy.InnerLogFile = _mergedDataSource.UnfilteredLogFile;
+			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
 		}
 
 		private IReadOnlyList<IDataSource> SynchronizeDataSources(IReadOnlyList<IFileInfoAsync> files)
