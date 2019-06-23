@@ -277,13 +277,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestDisposeChildDataSources()
 		{
+			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			_settings.LogFileFolderPath = path;
+			_settings.LogFileSearchPattern = "*.log";
+
 			var folderDataSource = new FolderDataSource(_taskScheduler,
 			                                      _logFileFactory,
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
 			_filesystem.CreateDirectory(path);
 			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]).Wait();
 			_taskScheduler.RunOnce();
@@ -294,7 +297,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			childDataSource.IsDisposed.Should().BeFalse();
 
 			folderDataSource.Dispose();
-			folderDataSource.OriginalSources.Should().BeEmpty();
 			childDataSource.IsDisposed.Should().BeTrue("because the folder data source should dispose of its children upon being disposed of itself");
 		}
 	}
