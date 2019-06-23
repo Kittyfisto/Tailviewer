@@ -307,6 +307,13 @@ namespace Tailviewer.Ui.Controls.SidePanel
 
 		public bool CanBeDragged(IDataSourceViewModel source)
 		{
+			if (source is FolderDataSourceViewModel)
+				return false; //< see https://github.com/Kittyfisto/Tailviewer/issues/125
+
+			var sourceParent = source?.Parent;
+			if (sourceParent is FolderDataSourceViewModel)
+				return false; //< see https://github.com/Kittyfisto/Tailviewer/issues/125
+
 			return true;
 		}
 
@@ -347,6 +354,9 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				finalDest = single.Parent ?? dest;
 			else
 				finalDest = dest;
+
+			if (finalDest is FolderDataSourceViewModel)
+				return false; //< https://github.com/Kittyfisto/Tailviewer/issues/125
 
 			var group = dest as IMergedDataSourceViewModel;
 			if (group != null)

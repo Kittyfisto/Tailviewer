@@ -44,7 +44,7 @@ namespace Tailviewer.Test.Ui
 		public void SetUp()
 		{
 			_settingsMock = new Mock<IApplicationSettings>();
-			_settingsMock.Setup(x => x.DataSources).Returns(new Tailviewer.Settings.DataSourceSettings());
+			_settingsMock.Setup(x => x.DataSources).Returns(new DataSourceSettings());
 			_settings = _settingsMock.Object;
 			_bookmarks = new Mock<IBookmarks>();
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks.Object);
@@ -746,6 +746,24 @@ namespace Tailviewer.Test.Ui
 			new Action(() => _model.SelectedItem = null).Should().NotThrow();
 			_model.SelectedItem.Should().BeNull();
 			model.IsVisible.Should().BeFalse();
+		}
+
+		[Test]
+		[Description("Verifies that folder data source cannot be used as a drag source")]
+		public void TestFolderDataSourceCannotBeDragged()
+		{
+			var folder = _model.GetOrAddFolder("bar");
+			_model.CanBeDragged(folder).Should().BeFalse("because folder data sources do not partake in drag 'n drop operations");
+		}
+
+		[Test]
+		[Description("Verifies that folder data source cannot be used as a drop target")]
+		public void TestFolderDataSourceCannotBeDroppedOnto()
+		{
+			var file = _model.GetOrAddFile("foo");
+			var folder = _model.GetOrAddFolder("bar");
+			_model.CanBeDropped(file, folder, DataSourceDropType.Group, out var unused)
+			      .Should().BeFalse("because folder data sources do not partake in drag 'n drop operations");
 		}
 	}
 }
