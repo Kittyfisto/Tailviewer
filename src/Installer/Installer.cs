@@ -174,11 +174,11 @@ namespace Installer
 
 				return true;
 			}
-			catch (DirectoryNotFoundException e)
+			catch (DirectoryNotFoundException)
 			{
 				return true;
 			}
-			catch (FileNotFoundException e)
+			catch (FileNotFoundException)
 			{
 				return true;
 			}

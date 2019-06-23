@@ -240,8 +240,7 @@ namespace Tailviewer
 				while (!_isDisposed)
 					try
 					{
-						byte[] message;
-						if (_consumer.TryDequeue(out message))
+						if (_consumer.TryDequeue(out var message))
 							Dispatch(message);
 					}
 					catch (ObjectDisposedException)

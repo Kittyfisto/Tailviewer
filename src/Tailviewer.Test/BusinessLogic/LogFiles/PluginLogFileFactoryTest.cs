@@ -41,7 +41,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				.Returns(() => logFile.Object);
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
-			var actualLogFile = factory.Open(fname);
+			var actualLogFile = factory.Open(fname, out _);
 			actualLogFile.Should().BeOfType<NoThrowLogFile>("because PluginLogFileFactory should protect us from buggy plugin implementations");
 
 			actualLogFile.GetLine(42);
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\logs\sfa_12345.log";
-			var actualLogFile = factory.Open(filename);
+			var actualLogFile = factory.Open(filename, out _);
 
 			plugin.Verify(x => x.Open(filename, It.IsAny<ITaskScheduler>()), Times.Once);
 			actualLogFile.GetLine(42);
@@ -93,7 +93,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\sfa_12345.log\.db\txt\foo.log";
-			factory.Open(filename);
+			factory.Open(filename, out _);
 			plugin.Verify(x => x.Open(filename, It.IsAny<ITaskScheduler>()), Times.Never,
 			              "because neither regex nor file extension match (only the filename should be matched, not the path) and therefore the plugin may not have been used");
 		}

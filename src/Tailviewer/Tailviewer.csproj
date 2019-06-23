@@ -61,8 +61,8 @@
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.119, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.119\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.124, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.124\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
@@ -198,6 +198,9 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
+      <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
@@ -362,6 +365,10 @@
     <Page Include="Ui\Controls\DataSourceTree\FolderDataSourceTemplate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Ui\Controls\LogView\PluginDescriptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\QuickFilter\FilterToggleButton.xaml">
       <SubType>Designer</SubType>

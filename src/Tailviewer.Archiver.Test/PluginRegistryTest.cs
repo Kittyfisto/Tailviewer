@@ -39,6 +39,12 @@ namespace Tailviewer.Archiver.Test
 			plugins.Should().NotBeNull();
 			plugins.Should().HaveCount(1);
 			plugins.First().Should().BeSameAs(plugin);
+
+			var plugins2 = registry.LoadAllOfTypeWithDescription<IWidgetPlugin>();
+			plugins2.Should().NotBeNull();
+			plugins2.Should().HaveCount(1);
+			plugins2[0].Plugin.Should().BeSameAs(plugin);
+			plugins2[0].Description.Should().BeNull();
 		}
 
 		private IWidgetPlugin CreateWidgetPlugin()

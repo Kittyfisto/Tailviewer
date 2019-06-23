@@ -61,13 +61,12 @@ namespace Tailviewer
 			var bugfixes = new[]
 			{
 				"Proxy password box no longer captures focus indefinitely", // https://github.com/Kittyfisto/Tailviewer/issues/188
-				"Fixed installer license display" // https://github.com/Kittyfisto/Tailviewer/issues/194
 			};
 			var misc = new[]
 			{
+				"A notification becomes visible when a plugin is used to display a log file", // https://github.com/Kittyfisto/Tailviewer/issues/172
 				"Bookmarks are stored/restored in between sessions", // https://github.com/Kittyfisto/Tailviewer/issues/66
 				"Titlebar contains more information about selected files", // https://github.com/Kittyfisto/Tailviewer/issues/127
-				"Installer now stops tailviewer if necessary" // https://github.com/Kittyfisto/Tailviewer/issues/150
 			};
 			var releaseDate = new DateTime(2019, 06, 23);
 			var version = new Version(0, 8, 1);
@@ -87,15 +86,11 @@ namespace Tailviewer
 				"Fixed bug where merged data source sometimes displayed the wrong source file name",
 				"Fixed multi line detection for log files without log levels",
 				"Merged data source appear in data source quick chooser (ctrl+t)",
-				"Plugin archiver no longer adds dependencies multiple times"
 			};
 			var misc = new []
 			{
 				"Improved performance of merged data sources",
 				"Opening the quick filter panel ensures that there is always at least one empty quick filter present for quick access",
-				"Plugins can implemented multiple interfaces at the same time",
-				"Plugins no longer need to manually declare serializable types",
-				"Plugin archiver enforces DataContract rules"
 			};
 			var releaseDate = new DateTime(2019, 05, 29);
 			var version = new Version(0, 8, 0);

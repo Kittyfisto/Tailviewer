@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Filters;
@@ -94,6 +95,8 @@ namespace Tailviewer.Ui.ViewModels
 		}
 
 		public abstract ICommand OpenInExplorerCommand { get; }
+
+		public IPluginDescription TranslationPlugin => _dataSource.TranslationPlugin;
 
 		public abstract string DisplayName { get; set; }
 		public abstract bool CanBeRenamed { get; }

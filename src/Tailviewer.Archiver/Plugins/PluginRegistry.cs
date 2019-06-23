@@ -75,6 +75,11 @@ namespace Tailviewer.Archiver.Plugins
 			return plugins.OfType<T>().ToList();
 		}
 
+		public IReadOnlyList<IPluginWithDescription<T>> LoadAllOfTypeWithDescription<T>() where T : class, IPlugin
+		{
+			return LoadAllOfType<T>().Select(x => new PluginWithDescription<T>(x, null)).ToList();
+		}
+
 		#endregion
 	}
 }

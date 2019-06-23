@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.Filters;
@@ -13,6 +14,8 @@ namespace Tailviewer.Ui.ViewModels
 		: INotifyPropertyChanged
 	{
 		ICommand OpenInExplorerCommand { get; }
+
+		IPluginDescription TranslationPlugin { get; }
 
 		/// <summary>
 		///     The name of this data source as presented to the user.

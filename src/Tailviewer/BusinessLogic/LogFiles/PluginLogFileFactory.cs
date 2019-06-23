@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
+using Tailviewer.Archiver.Plugins;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 
@@ -20,28 +22,32 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IReadOnlyList<IFileFormatPlugin> _plugins;
+		private readonly IReadOnlyList<IPluginWithDescription<IFileFormatPlugin>> _plugins;
 		private readonly ITaskScheduler _taskScheduler;
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler, params IFileFormatPlugin[] plugins)
+		public PluginLogFileFactory(ITaskScheduler taskScheduler, IPluginWithDescription<IFileFormatPlugin>[] plugins)
 		{
 			if (taskScheduler == null)
 				throw new ArgumentNullException(nameof(taskScheduler));
 			if (plugins == null)
 				throw new ArgumentNullException(nameof(plugins));
 
-			_plugins = new List<IFileFormatPlugin>(plugins);
+			_plugins = new List<IPluginWithDescription<IFileFormatPlugin>>(plugins);
 			_taskScheduler = taskScheduler;
 		}
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler, IEnumerable<IFileFormatPlugin> plugins)
+		public PluginLogFileFactory(ITaskScheduler taskScheduler, params IFileFormatPlugin[] plugins)
+			: this(taskScheduler, plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)))
+		{}
+
+		public PluginLogFileFactory(ITaskScheduler taskScheduler, IEnumerable<IPluginWithDescription<IFileFormatPlugin>> plugins)
 			: this(taskScheduler, plugins?.ToArray())
 		{}
 
 		/// <inheritdoc />
-		public ILogFile Open(string filePath)
+		public ILogFile Open(string filePath, out IPluginDescription pluginDescription)
 		{
-			var plugin = FindSupportingPlugin(filePath);
+			var plugin = FindSupportingPlugin(filePath, out pluginDescription);
 			if (plugin != null)
 			{
 				var logFile = OpenWith(filePath, plugin);
@@ -55,17 +61,19 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			return new TextLogFile(_taskScheduler, filePath);
 		}
 
-		private IFileFormatPlugin FindSupportingPlugin(string filePath)
+		private IFileFormatPlugin FindSupportingPlugin(string filePath, out IPluginDescription pluginDescription)
 		{
 			var fileName = Path.GetFileName(filePath);
-			foreach (var plugin in _plugins)
+			foreach (var pair in _plugins)
 			{
-				if (Supports(plugin, fileName))
+				if (Supports(pair.Plugin, fileName))
 				{
-					return plugin;
+					pluginDescription = pair.Description;
+					return pair.Plugin;
 				}
 			}
 
+			pluginDescription = null;
 			return null;
 		}
 

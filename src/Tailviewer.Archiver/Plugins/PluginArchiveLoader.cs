@@ -17,7 +17,7 @@ namespace Tailviewer.Archiver.Plugins
 	/// </summary>
 	public sealed class PluginArchiveLoader
 		: IPluginLoader
-			, IDisposable
+		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -96,10 +96,15 @@ namespace Tailviewer.Archiver.Plugins
 		/// <inheritdoc />
 		public IReadOnlyList<T> LoadAllOfType<T>() where T : class, IPlugin
 		{
+			return LoadAllOfTypeWithDescription<T>().Select(x => x.Plugin).ToList();
+		}
+
+		public IReadOnlyList<IPluginWithDescription<T>> LoadAllOfTypeWithDescription<T>() where T : class, IPlugin
+		{
 			var interfaceType = typeof(T);
 			Log.InfoFormat("Loading plugins implementing '{0}'...", interfaceType.Name);
 
-			var ret = new List<T>();
+			var ret = new List<IPluginWithDescription<T>>();
 			foreach (var id in _plugins.Keys) ret.AddRange(LoadAllOfTypeFrom<T>(id));
 
 			Log.InfoFormat("Loaded #{0} plugins", ret.Count);
@@ -108,10 +113,10 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		[Pure]
-		public IEnumerable<T> LoadAllOfTypeFrom<T>(PluginId id) where T : class, IPlugin
+		public IEnumerable<IPluginWithDescription<T>> LoadAllOfTypeFrom<T>(PluginId id) where T : class, IPlugin
 		{
 			if (!_plugins.TryGetValue(id, out var plugin))
-				return Enumerable.Empty<T>();
+				return Enumerable.Empty<PluginWithDescription<T>>();
 
 			return plugin.LoadAllOfType<T>();
 		}

@@ -31,6 +31,7 @@
             <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
             <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
+            <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <logView:NonMergedDataSourceToVisibilityCollapsedConverter x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
             <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
 
@@ -216,13 +217,33 @@
             <controls:SearchTextBox
                 x:Name="PART_SearchBox"
                 Margin="0,0,8,8"
-                Padding="4,4,4,4"
+                Padding="4"
                 Width="200"
                 RequiresExplicitSearchStart="False"
                 Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
                 OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
                 CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
                 Watermark="Search log file (Ctrl+F)" />
+
+            <controls:PluginToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                Width="26"
+                Height="26"
+                ToolTip="A plugin is responsible for translating the contents of this log file - click here for details"
+                Visibility="{Binding DataSource.TranslationPlugin, Converter={StaticResource NullToCollapsedConverter}, ElementName=This}">
+                <controls:FlatToggleButton.ContextMenu>
+                    <controls:FlatContextMenu AnchorAlignment="Center"
+                                              HorizontalOffset="-150"
+                                              Placement="Bottom"
+                                              IsFirstItemHovered="True"
+                                              VerticalOffset="-2">
+                        <controls:MenuItemContentControl Padding="0">
+                            <logView:PluginDescriptionControl DataContext="{Binding CurrentDataSource.TranslationPlugin}" />
+                        </controls:MenuItemContentControl>
+                    </controls:FlatContextMenu>
+                </controls:FlatToggleButton.ContextMenu>
+            </controls:PluginToggleButton>
         </WrapPanel>
 
         <Grid Grid.Row="1"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
@@ -12,6 +13,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 	public interface IDataSource
 		: IDisposable
 	{
+		/// <summary>
+		///     The description of the plugin (if any) which is used
+		///     to translate this data source PRIOR to being displayed.
+		///     When set to null, then no translation is being performed.
+		/// </summary>
+		IPluginDescription TranslationPlugin { get; }
+
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.
 		/// </summary>

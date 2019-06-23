@@ -4,6 +4,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -253,6 +254,18 @@ namespace Tailviewer.Test.Ui
 				singleViewModel.Folder.Should().Be(@"C:\Users\Simon\AppData\Local\Tailviewer\");
 				monitor.Should().RaisePropertyChangeFor(x => x.Folder);
 			}
+		}
+
+		[Test]
+		public void TestPluginDescription()
+		{
+			var single = new Mock<ISingleDataSource>();
+			single.Setup(x => x.Settings).Returns(new DataSource());
+			var pluginDescription = new PluginDescription();
+			single.Setup(x => x.TranslationPlugin).Returns(pluginDescription);
+			var singleViewModel = new SingleDataSourceViewModel(single.Object, _actionCenter.Object);
+			singleViewModel.TranslationPlugin.Should().NotBeNull();
+			singleViewModel.TranslationPlugin.Should().BeSameAs(pluginDescription);
 		}
 	}
 }

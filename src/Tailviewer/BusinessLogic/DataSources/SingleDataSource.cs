@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -12,6 +13,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 	{
 		private readonly ILogFile _originalLogFile;
 		private readonly LogFileProxy _unfilteredLogFile;
+		private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogFile _multiLineLogFile;
 
 		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
@@ -26,7 +28,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (logFileFactory == null)
 				throw new ArgumentNullException(nameof(logFileFactory));
 
-			_originalLogFile = logFileFactory.Open(settings.File);
+			_originalLogFile = logFileFactory.Open(settings.File, out _pluginDescription);
 			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
@@ -44,6 +46,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
 		}
+
+		public override IPluginDescription TranslationPlugin => _pluginDescription;
 
 		public override ILogFile OriginalLogFile => _originalLogFile;
 

@@ -175,12 +175,10 @@ namespace Tailviewer.Archiver.Test
 				description.PluginImplementations[1].InterfaceType.Should().Be<IFileFormatPlugin>();
 				description.PluginImplementations[1].FullTypeName.Should().Be("B");
 			}
-
-			var assemblyLoader = new PluginAssemblyLoader();
 		}
 
 		[Test]
-		public void TestLoad1()
+		public void TestLoadAllOfType()
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -201,6 +199,36 @@ namespace Tailviewer.Archiver.Test
 				{
 					var plugins = loader.LoadAllOfType<IFileFormatPlugin>();
 					plugins.Should().HaveCount(1, "because we've added one plugin which implements the IFileFormatPlugin interface");
+				}
+			}
+		}
+
+		[Test]
+		public void TestLoadAllOfTypeWithDescription()
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var packer = PluginPacker.Create(stream, true))
+				{
+					var builder = new PluginBuilder("Kittyfisto", "Simon", "none of your business", "get of my lawn");
+					builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin");
+					builder.Save();
+
+					packer.AddPluginAssembly(builder.FileName);
+				}
+
+				stream.Position = 0;
+				var path = Path.Combine(Constants.PluginPath, "Kittyfisto.Simon.1.0.tvp");
+				_filesystem.WriteAllBytes(path, stream.ToArray());
+
+				using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
+				{
+					var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+					pluginsWithDescription.Should().HaveCount(1, "because we've added one plugin which implements the IFileFormatPlugin interface");
+					var description = pluginsWithDescription[0].Description;
+					description.Should().NotBeNull();
+					description.Id.Should().Be(new PluginId("Kittyfisto.Simon"));
+					description.Author.Should().Be("get of my lawn");
 				}
 			}
 		}

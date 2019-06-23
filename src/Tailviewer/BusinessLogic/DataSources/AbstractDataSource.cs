@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
@@ -55,6 +56,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public ILogFile FilteredLogFile => _logFile;
 
 		public ILogFileSearch Search => _search;
+
+		public abstract IPluginDescription TranslationPlugin { get; }
 
 		/// <summary>
 		///     The list of filters as produced by the "quick filter" panel.

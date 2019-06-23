@@ -140,18 +140,18 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		public IEnumerable<T> LoadAllOfType<T>() where T : class, IPlugin
+		public IEnumerable<PluginWithDescription<T>> LoadAllOfType<T>() where T : class, IPlugin
 		{
-			return LoadAllOfType(typeof(T)).Cast<T>().ToList();
+			return LoadAllOfType(typeof(T)).Select(pair => new PluginWithDescription<T>((T) pair.Plugin, pair.Description));
 		}
 
-		public IReadOnlyList<IPlugin> LoadAllOfType(Type pluginType)
+		public IReadOnlyList<PluginWithDescription<IPlugin>> LoadAllOfType(Type pluginType)
 		{
 			var preferredPlugin = _selectedPlugin;
 			if (preferredPlugin == null)
-				return new List<IPlugin>();
+				return new List<PluginWithDescription<IPlugin>>();
 
-			var types = new List<IPlugin>();
+			var types = new List<PluginWithDescription<IPlugin>>();
 			foreach (var implementation in preferredPlugin.PluginImplementations)
 			{
 				if (implementation.InterfaceType == pluginType)
@@ -164,7 +164,7 @@ namespace Tailviewer.Archiver.Plugins
 						var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
 						var type = assembly.GetType(implementation.FullTypeName);
 						var pluginObject = Activator.CreateInstance(type);
-						types.Add((IPlugin) pluginObject);
+						types.Add(new PluginWithDescription<IPlugin>((IPlugin) pluginObject, preferredPlugin));
 
 						Log.InfoFormat("Created instance of plugin '{0}' from '{1}'", implementation.FullTypeName,
 						               preferredPlugin.FilePath);

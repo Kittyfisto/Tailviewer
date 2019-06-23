@@ -72,6 +72,11 @@ namespace Tailviewer.Archiver.Plugins
 			return ret;
 		}
 
+		public IReadOnlyList<IPluginWithDescription<T>> LoadAllOfTypeWithDescription<T>() where T : class, IPlugin
+		{
+			throw new NotImplementedException();
+		}
+
 		protected void Add(params IPluginDescription[] plugins)
 		{
 			lock (_syncRoot)

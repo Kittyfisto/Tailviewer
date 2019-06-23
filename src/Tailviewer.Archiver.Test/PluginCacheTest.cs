@@ -22,12 +22,12 @@ namespace Tailviewer.Archiver.Test
 		{
 			var cache = new PluginCache(_pluginLoader.Object);
 			cache.LoadAllOfType<IWidgetPlugin>();
-			_pluginLoader.Verify(x => x.LoadAllOfType<IWidgetPlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfType<ILogAnalyserPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IWidgetPlugin>(), Times.Once);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogAnalyserPlugin>(), Times.Never);
 
 			cache.LoadAllOfType<ILogAnalyserPlugin>();
-			_pluginLoader.Verify(x => x.LoadAllOfType<IWidgetPlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfType<ILogAnalyserPlugin>(), Times.Once);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IWidgetPlugin>(), Times.Once);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogAnalyserPlugin>(), Times.Once);
 		}
 
 		[Test]
@@ -35,13 +35,13 @@ namespace Tailviewer.Archiver.Test
 		{
 			var cache = new PluginCache(_pluginLoader.Object);
 			cache.LoadAllOfType<IWidgetPlugin>();
-			_pluginLoader.Verify(x => x.LoadAllOfType<IWidgetPlugin>(), Times.Once);
-			_pluginLoader.Verify(x => x.LoadAllOfType<ILogAnalyserPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IWidgetPlugin>(), Times.Once);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogAnalyserPlugin>(), Times.Never);
 
 			cache.LoadAllOfType<IWidgetPlugin>();
-			_pluginLoader.Verify(x => x.LoadAllOfType<IWidgetPlugin>(), Times.Once,
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<IWidgetPlugin>(), Times.Once,
 			                     "because the cache should not have queried the plugin loader again");
-			_pluginLoader.Verify(x => x.LoadAllOfType<ILogAnalyserPlugin>(), Times.Never);
+			_pluginLoader.Verify(x => x.LoadAllOfTypeWithDescription<ILogAnalyserPlugin>(), Times.Never);
 		}
 	}
 }

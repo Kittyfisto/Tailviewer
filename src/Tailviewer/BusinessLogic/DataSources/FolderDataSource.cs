@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using log4net;
 using Metrolib;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using Tailviewer.Core;
@@ -98,6 +99,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		#endregion
 
 		#region Implementation of IDataSource
+
+		public IPluginDescription TranslationPlugin => null;
 
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{

@@ -156,7 +156,7 @@ namespace Tailviewer
 				{
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
 
-					var fileFormatPlugins = pluginSystem.LoadAllOfType<IFileFormatPlugin>();
+					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 
 					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))

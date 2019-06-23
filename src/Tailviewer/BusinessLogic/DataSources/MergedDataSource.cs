@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
@@ -32,6 +33,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public int DataSourceCount => _dataSources.Count;
 
 		public IReadOnlyList<IDataSource> OriginalSources { get; private set; }
+
+		public override IPluginDescription TranslationPlugin => null;
 
 		public override ILogFile OriginalLogFile
 		{
