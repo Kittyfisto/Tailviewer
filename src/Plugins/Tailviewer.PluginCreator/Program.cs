@@ -72,6 +72,10 @@ namespace Tailviewer.PluginCreator
 				{
 					files.AddRange(new FileFormatPluginCreator().CreateSourceFiles(folder));
 				}
+				if (type == typeof(IFileFormatPlugin2))
+				{
+					files.AddRange(new FileFormatPlugin2Creator().CreateSourceFiles(folder));
+				}
 				else if (type == typeof(ILogFile))
 				{
 					files.AddRange(new LogFileCreator().CreateSourceFiles(folder));

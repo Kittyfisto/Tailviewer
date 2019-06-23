@@ -50,7 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="Plugins\AbstractPluginCompatabilityTest.cs" />
     <Compile Include="Plugins\v0.8.0.680\PluginCompatibilityTest.cs" />
+    <Compile Include="Plugins\v0.8.0.685\PluginCompatabilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +63,7 @@
     <None Include="Plugins\v0.8.0.680\FileFormatPlugin.0.0.tvp" />
     <None Include="Plugins\v0.8.0.680\LogAnalyserPlugin+LogAnalyser.0.0.tvp" />
     <None Include="Plugins\v0.8.0.680\LogAnalyserPlugin.0.0.tvp" />
+    <None Include="Plugins\v0.8.0.685\FileFormatPlugin2.0.0.tvp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">

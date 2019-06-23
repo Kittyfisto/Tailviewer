@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DataSourceAnalyserCreator.cs" />
     <Compile Include="DataSourceAnalyserPluginCreator.cs" />
+    <Compile Include="FileFormatPlugin2Creator.cs" />
     <Compile Include="FileFormatPluginCreator.cs" />
     <Compile Include="LogAnalyserCreator.cs" />
     <Compile Include="LogAnalyserPluginCreator.cs" />
