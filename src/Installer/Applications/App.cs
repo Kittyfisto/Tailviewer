@@ -61,6 +61,18 @@ namespace Installer.Applications
 			fileAppender.ActivateOptions();
 			hierarchy.Root.AddAppender(fileAppender);
 
+			var consoleLayout = new PatternLayout
+			{
+				ConversionPattern = "%-5level: %message%newline"
+			};
+			consoleLayout.ActivateOptions();
+			var consoleAppender = new ConsoleAppender
+			{
+				Layout = consoleLayout
+			};
+			consoleAppender.ActivateOptions();
+			hierarchy.Root.AddAppender(consoleAppender);
+
 			hierarchy.Root.Level = Level.Info;
 			hierarchy.Configured = true;
 		}

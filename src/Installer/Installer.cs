@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -61,6 +62,7 @@ namespace Installer
 
 			try
 			{
+				ExitTailviewer(installationPath);
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
@@ -81,6 +83,116 @@ namespace Installer
 				var remaining = TimeSpan.FromMilliseconds(500) - elapsed;
 				if (remaining > TimeSpan.Zero)
 					Thread.Sleep(remaining);
+			}
+		}
+
+		private void ExitTailviewer(string installationPath)
+		{
+			try
+			{
+				// We'll first try to be nice and ask Tailviewer to exit...
+				var executableFilePath = Path.Combine(installationPath, Constants.ApplicationExecutable);
+				var process = TryGetProcess(executableFilePath);
+				if (process != null)
+				{
+					Log.InfoFormat("Found running tailviewer process, closing it...");
+
+					using (process)
+					{
+						if (!process.CloseMainWindow())
+						{
+							Log.WarnFormat("Process (PID {0}) refuses to be closed, killing it...", process.Id);
+						}
+
+						process.Kill();
+
+						// Yes, we might have killed the process, for but reasons unknown,
+						// it takes some time until the operating system allows us actually
+						// access the files in question, so we'll just have to busy wait for
+						// a while...
+						foreach (var file in _files)
+						{
+							var destFilePath = DestFilePath(installationPath, file);
+							WaitUntilFileCanBeAccessed(destFilePath);
+						}
+					}
+				}
+				else
+				{
+					Log.InfoFormat("Did not find running tailviewer process");
+				}
+			}
+			catch (Exception e)
+			{
+				Log.WarnFormat("Caught exception while trying to find running Tailviewer process, assuming there is none...\r\n{0}", e);
+			}
+		}
+
+		private static Process TryGetProcess(string executableFilePath)
+		{
+			var fileName = Path.GetFileNameWithoutExtension(executableFilePath);
+			var processes = Process.GetProcessesByName(fileName);
+			foreach (var process in processes)
+			{
+				var fullFilePath = process?.MainModule?.FileName;
+				if (fullFilePath == executableFilePath)
+				{
+					return process;
+				}
+			}
+
+			return null;
+		}
+
+		private static void WaitUntilFileCanBeAccessed(string filePath)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			var timeout = TimeSpan.FromSeconds(5);
+			while (stopwatch.Elapsed < timeout
+			       && !CanAccessFile(filePath))
+			{
+				Thread.Sleep(TimeSpan.FromMilliseconds(100));
+			}
+
+			if (!CanAccessFile(filePath))
+			{
+				Log.ErrorFormat("Still unable to open '{0}' for writing, even after waiting for {1}s!",
+				                filePath, (int) timeout.TotalSeconds);
+			}
+			else
+			{
+				Log.InfoFormat("{0} can be accessed", filePath);
+			}
+		}
+
+		private static bool CanAccessFile(string file)
+		{
+			try
+			{
+				using (File.OpenWrite(file))
+				{}
+
+				return true;
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				return true;
+			}
+			catch (FileNotFoundException e)
+			{
+				return true;
+			}
+			catch (IOException e)
+			{
+				// We expect this exception type to be thrown in case the file cannot be accessed because it's
+				// still in use...
+				Log.DebugFormat("Unable to access '{0}': {1}", file, e);
+				return false;
+			}
+			catch (Exception e)
+			{
+				Log.WarnFormat("Unable to access '{0}' for an unexpected reason: {1}", file, e);
+				return false;
 			}
 		}
 

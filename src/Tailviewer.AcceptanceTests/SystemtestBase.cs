@@ -48,11 +48,20 @@ namespace Tailviewer.AcceptanceTests
 			var arguments = new StringBuilder();
 			arguments.Append("silentinstall ");
 			arguments.AppendFormat("\"{0}\"", installationPath);
-			var startInfo = new ProcessStartInfo(_installerPath, arguments.ToString());
+			var startInfo = new ProcessStartInfo(_installerPath, arguments.ToString())
+			{
+				RedirectStandardOutput = true,
+				UseShellExecute = false,
+				CreateNoWindow = true
+			};
 			var process = Process.Start(startInfo);
+
+			var output = process.StandardOutput.ReadToEnd();
 			process.WaitForExit();
+
 			if (process.ExitCode != 0)
 			{
+				TestContext.Progress.WriteLine(output);
 				Assert.Fail("Installation failed with exit code {0}", process.ExitCode);
 			}
 		}

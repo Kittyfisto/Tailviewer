@@ -67,6 +67,37 @@ namespace Tailviewer.AcceptanceTests
 			Execute(_installationPath);
 		}
 
+		[Test]
+		public void TestInstallWhileApplicationIsRunning()
+		{
+			Delete(_installationPath);
+			InstallInto(_installationPath);
+			using (var process = Start(_installationPath))
+			{
+				try
+				{
+					process.HasExited.Should().BeFalse();
+					InstallInto(_installationPath);
+					process.HasExited.Should()
+					       .BeTrue("becuase the installer should've automatically killed TV prior to installing");
+				}
+				finally
+				{
+					TryKill(process);
+				}
+			}
+		}
+
+		private void TryKill(Process process)
+		{
+			try
+			{
+				process.Kill();
+			}
+			catch (Exception)
+			{}
+		}
+
 		private void Delete(string installationPath)
 		{
 			if (Directory.Exists(installationPath))
@@ -122,6 +153,27 @@ namespace Tailviewer.AcceptanceTests
 					Console.WriteLine(e);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Starts Tailviewer and waits until it has fully started.
+		/// Tailviewer will NOT be closed by the end of this method.
+		/// </summary>
+		/// <param name="installationPath"></param>
+		private static Process Start(string installationPath)
+		{
+			var path = Path.Combine(installationPath, "Tailviewer.exe");
+			var process = Process.Start(path);
+			const string reason = "because the application shouldn't exit within the first five seconds";
+			process.WaitForExit(5000);
+
+			if (process.HasExited)
+			{
+				PrintLogFile();
+				process.HasExited.Should().BeFalse(reason);
+			}
+
+			return process;
 		}
 
 		private static void PrintLogFile()

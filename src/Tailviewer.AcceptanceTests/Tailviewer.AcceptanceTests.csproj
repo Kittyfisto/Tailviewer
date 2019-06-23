@@ -121,6 +121,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Installer\Installer.csproj">
+      <Project>{0a1431f6-8548-44d4-b82b-049b94a7f57d}</Project>
+      <Name>Installer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
       <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
       <Name>Tailviewer.Api</Name>

@@ -7,6 +7,7 @@ namespace Installer
 	public static class Constants
 	{
 		public const string ApplicationTitle = "Tailviewer";
+		public static readonly string ApplicationExecutable = $"{ApplicationTitle}.exe";
 		public static readonly Version ApplicationVersion;
 		public static readonly string MainWindowTitle;
 		public static readonly string InstallationLog;
