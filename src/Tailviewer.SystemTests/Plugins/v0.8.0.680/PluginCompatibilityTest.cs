@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
@@ -13,6 +14,15 @@ namespace Tailviewer.SystemTests.Plugins.v0._8._0._680
 	[TestFixture]
 	public sealed class PluginCompatibilityTest
 	{
+		[SetUp]
+		public void Setup()
+		{
+			// Tests which execute Tailviewer.exe interefere with each other:
+			// We introduce some timeout in between those tests so they are more likely
+			// to succeed (until a proper fix has been implemented).
+			Thread.Sleep(TimeSpan.FromMilliseconds(500));
+		}
+
 		[Test]
 		public void TestLoadFileFormatPlugin()
 		{

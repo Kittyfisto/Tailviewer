@@ -39,18 +39,30 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{BC0C0BBB-9D4C-47CE-9888-EB956F4A4562}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.QuickInfo", "src\Plugins\Tailviewer.Analysis.QuickInfo\Tailviewer.Analysis.QuickInfo.csproj", "{04577417-8FF7-4583-AA9D-C2E92CA7EE6F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.QuickInfo.Test", "src\Plugins\Tailviewer.Analysis.QuickInfo.Test\Tailviewer.Analysis.QuickInfo.Test.csproj", "{5511968B-07E5-44F2-9901-AE25D4B78A9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Count", "src\Plugins\Tailviewer.Analysis.Count\Tailviewer.Analysis.Count.csproj", "{7E386963-E599-43B4-9856-486C87536416}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Count.Test", "src\Plugins\Tailviewer.Analysis.Count.Test\Tailviewer.Analysis.Count.Test.csproj", "{B4DA371D-E41B-4D91-84E3-50F41A925686}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Events", "src\Plugins\Tailviewer.Analysis.Events\Tailviewer.Analysis.Events.csproj", "{A26C1ECF-D3A8-4826-910B-4BA59E2A248E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.Events.Test", "src\Plugins\Tailviewer.Analysis.Events.Test\Tailviewer.Analysis.Events.Test.csproj", "{05244FBF-D94D-473B-A102-AC7623A93E15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.DataSources", "src\Plugins\Tailviewer.Analysis.DataSources\Tailviewer.Analysis.DataSources.csproj", "{91E9A698-B458-40F6-ACFE-715BFE9832BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4} = {C667EB8A-6781-4623-AC7C-D3FBA2F6E7D4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Analysis.DataSources.Test", "src\Plugins\Tailviewer.Analysis.DataSources.Test\Tailviewer.Analysis.DataSources.Test.csproj", "{D5968F15-12E5-4DB3-B073-86802DAAE37B}"
 EndProject

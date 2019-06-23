@@ -12,7 +12,7 @@ namespace Installer.Applications.Install
 		{
 			try
 			{
-				var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Installer.InstallationFiles.LICENSE");
+				var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("InstallationFiles\\LICENSE");
 				using (var reader = new StreamReader(stream))
 				{
 					_licenseText = reader.ReadToEnd();

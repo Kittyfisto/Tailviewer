@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -16,6 +17,11 @@ namespace Tailviewer.AcceptanceTests
 		[SetUp]
 		public void Setup()
 		{
+			// Tests which execute Tailviewer.exe interefere with each other:
+			// We introduce some timeout in between those tests so they are more likely
+			// to succeed (until a proper fix has been implemented).
+			Thread.Sleep(TimeSpan.FromMilliseconds(500));
+
 			var dir = TestContext.CurrentContext.TestDirectory;
 			var testName = TestContext.CurrentContext.Test.Name;
 			_installationPath = Path.Combine(dir, testName);
