@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
@@ -241,6 +242,60 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			dataSource.LevelFilter = LevelFlags.All;
 			dataSource.UnfilteredLogFile.Should().BeSameAs(unfiltered);
 			dataSource.FilteredLogFile.Should().BeSameAs(filtered);
+		}
+
+		[Test]
+		public void TestDisposeFilesystemWatcher()
+		{
+			var filesystem = new Mock<IFilesystem>();
+			var watchdog = new Mock<IFilesystemWatchdog>();
+			var watchers = new List<Mock<IFilesystemWatcher>>();
+			watchdog.Setup(x => x.StartDirectoryWatch(It.IsAny<string>(),
+			                                          It.IsAny<TimeSpan>(),
+			                                          It.IsAny<string>(),
+			                                          It.IsAny<SearchOption>()))
+			        .Returns(() =>
+			        {
+				        var watcher = new Mock<IFilesystemWatcher>();
+				        watchers.Add(watcher);
+				        return watcher.Object;
+			        });
+			filesystem.Setup(x => x.Watchdog).Returns(watchdog.Object);
+
+			var dataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      filesystem.Object,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+			watchers.Should().HaveCount(1, "because the data source should've created one filesystem watcher");
+
+			dataSource.Dispose();
+			watchers.Should().HaveCount(1, "because the data source should not have created anymore watchers");
+			watchers[0].Verify(x => x.Dispose(), Times.Once, "because the data source should've disposed of the watcher");
+		}
+
+		[Test]
+		public void TestDisposeChildDataSources()
+		{
+			var folderDataSource = new FolderDataSource(_taskScheduler,
+			                                      _logFileFactory,
+			                                      _filesystem,
+			                                      _settings,
+			                                      TimeSpan.Zero);
+
+			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			_filesystem.CreateDirectory(path);
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]).Wait();
+			_taskScheduler.RunOnce();
+
+			var children = folderDataSource.OriginalSources;
+			children.Should().HaveCount(1);
+			var childDataSource = children[0];
+			childDataSource.IsDisposed.Should().BeFalse();
+
+			folderDataSource.Dispose();
+			folderDataSource.OriginalSources.Should().BeEmpty();
+			childDataSource.IsDisposed.Should().BeTrue("because the folder data source should dispose of its children upon being disposed of itself");
 		}
 	}
 }

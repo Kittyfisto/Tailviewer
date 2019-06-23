@@ -41,6 +41,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		DateTime? LastModified { get; }
 		DateTime LastViewed { get; set; }
 
+		/// <summary>
+		/// When set to true, then <see cref="IDisposable.Dispose()"/> has been called at least once.
+		/// </summary>
+		bool IsDisposed { get; }
+
 		string FullFileName { get; }
 		bool FollowTail { get; set; }
 		bool ShowLineNumbers { get; set; }

@@ -43,10 +43,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly LogFileProxy _unfilteredLogFileProxy;
 		private readonly LogFileProxy _filteredLogFileProxy;
 		private readonly object _syncRoot;
-		private IFilesystemWatcher _watchdog;
+		private IFilesystemWatcher _watcher;
 		private Predicate<string> _filter;
 		private int _unfilteredFileCount;
 		private int _filteredFileCount;
+		private bool _isDisposed;
 
 		public FolderDataSource(ITaskScheduler taskScheduler,
 								ILogFileFactory logFileFactory,
@@ -79,8 +80,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void Dispose()
 		{
+			// Technically, MergedDataSource holds this list of data sources, however it does NOT
+			// own them and therefore doesn't dispose of them. In this case
+			// we (the folder data source) own those child data sources and thus we must dispose
+			// of them!
+			foreach (var child in OriginalSources)
+			{
+				child.Dispose();
+			}
+
+			_watcher?.Dispose();
 			_unfilteredLogFileProxy?.Dispose();
 			_mergedDataSource.Dispose();
+			_isDisposed = true;
 		}
 
 		#endregion
@@ -127,6 +139,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _mergedDataSource.LastViewed; }
 			set { _mergedDataSource.LastViewed = value; }
 		}
+
+		public bool IsDisposed => _isDisposed;
 
 		public string FullFileName
 		{
@@ -381,14 +395,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private void DoChange()
 		{
 			_filter = CreateFilter(_settings.LogFileSearchPattern);
-			_watchdog?.Dispose();
-			_watchdog = _filesystem.Watchdog.StartDirectoryWatch(_settings.LogFileFolderPath,
+			_watcher?.Dispose();
+			_watcher = _filesystem.Watchdog.StartDirectoryWatch(_settings.LogFileFolderPath,
 			                                                     TimeSpan.FromMilliseconds(500),
 			                                                     null,
 			                                                     _settings.Recursive
 				                                                     ? SearchOption.AllDirectories
 				                                                     : SearchOption.TopDirectoryOnly);
-			_watchdog.Changed += OnFolderChanged;
+			_watcher.Changed += OnFolderChanged;
 			OnFolderChanged();
 		}
 
@@ -396,7 +410,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void OnFolderChanged()
 		{
-			var unfilteredFiles = _watchdog.Files;
+			var unfilteredFiles = _watcher.Files;
 			var files = FilterFiles(unfilteredFiles, _filter, 
 			                        out _unfilteredFileCount,
 			                        out _filteredFileCount);
