@@ -221,18 +221,18 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			var dataSource1ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource1.Object);
 			model.CurrentDataSource = dataSource1ViewModel;
-			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - log1.txt");
+			model.WindowTitle.Should().Be($"{Constants.MainWindowTitle} - log1.txt");
 			model.WindowTitleSuffix.Should().Be("My custom merged data source -> [A] log1.txt",
 			                                    "because the titlebar shall mention the parent's name, if available as well as the character code of the selected data source");
 
 			var dataSource2ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource2.Object);
 			model.CurrentDataSource = dataSource2ViewModel;
-			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - log2.csv");
+			model.WindowTitle.Should().Be($"{Constants.MainWindowTitle} - log2.csv");
 			model.WindowTitleSuffix.Should().Be("log2.csv");
 
 			var mergedViewModel = dataSources.DataSources.First(x => x.DataSource == mergedDataSource.Object);
 			model.CurrentDataSource = mergedViewModel;
-			model.WindowTitle.Should().Be("Tailviewer, v0.8.0 - My custom merged data source");
+			model.WindowTitle.Should().Be($"{Constants.MainWindowTitle} - My custom merged data source");
 			model.WindowTitleSuffix.Should().Be("My custom merged data source");
 		}
 
