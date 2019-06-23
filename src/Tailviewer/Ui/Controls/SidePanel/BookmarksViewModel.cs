@@ -189,8 +189,6 @@ namespace Tailviewer.Ui.Controls.SidePanel
 				return;
 
 			var originalIndices = dataSource.FilteredLogFile.GetColumn(lines.ToList(), LogFileColumns.OriginalIndex);
-			//var originalIndices = new LogLineIndex[lines.Count];
-			//dataSource.FilteredLogFile.GetOriginalIndicesFrom(lines.ToList(), originalIndices);
 
 			foreach (var line in originalIndices)
 			{

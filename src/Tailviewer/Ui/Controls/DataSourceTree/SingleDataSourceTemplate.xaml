@@ -85,6 +85,7 @@
                                   HorizontalAlignment="Right"
                                   Command="{Binding RemoveCommand}"
                                   ToolTip="Close this file"
+                                  Visibility="{Binding CanBeRemoved, Converter={StaticResource BoolFalseToHiddenConverter}}"
                                   Grid.Column="2" />
         </Grid>
     </DataTemplate>

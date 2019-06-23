@@ -23,6 +23,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _openInExplorerCommand;
 		private string _folder;
 		private bool _displayNoTimestampCount;
+		private bool _canBeRemoved;
 
 		public SingleDataSourceViewModel(ISingleDataSource dataSource,
 							IActionCenter actionCenter)
@@ -34,6 +35,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
+			_canBeRemoved = true;
 
 			Update();
 			UpdateFolder();
@@ -71,6 +73,19 @@ namespace Tailviewer.Ui.ViewModels
 
 		public string FullName => _dataSource.FullFileName;
 
+		public bool CanBeRemoved
+		{
+			get { return _canBeRemoved; }
+			private set
+			{
+				if (value == _canBeRemoved)
+					return;
+
+				_canBeRemoved = value;
+				EmitPropertyChanged();
+			}
+		}
+
 		public string CharacterCode
 		{
 			get { return _dataSource.CharacterCode; }
@@ -91,6 +106,7 @@ namespace Tailviewer.Ui.ViewModels
 				case "IsGrouped":
 					UpdateDisplayNoTimestampCount();
 					UpdateFolder();
+					UpdateCanBeRemoved();
 					break;
 
 				case "NoTimestampCount":
@@ -118,6 +134,11 @@ namespace Tailviewer.Ui.ViewModels
 
 			_folder = path;
 			EmitPropertyChanged(nameof(Folder));
+		}
+
+		private void UpdateCanBeRemoved()
+		{
+			CanBeRemoved = !(Parent is FolderDataSourceViewModel);
 		}
 
 		[Pure]

@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
@@ -51,6 +52,60 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				model.Update();
 				model.SearchResultCount.Should().Be(334);
 				model.CurrentSearchResultIndex.Should().Be(0);
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/125")]
+		[Description("This is a temporary requirement until #195 is implemented in which case this test must be removed once more")]
+		public void TestCannotBeRemovedAsPartOfFolder()
+		{
+			var actionCenter = new Mock<IActionCenter>();
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.Setup(x => x.Settings).Returns(new DataSource());
+			var model = new SingleDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			using (var monitor = model.Monitor())
+			{
+				model.CanBeRemoved.Should().BeTrue();
+
+				var folderDataSource = new Mock<IFolderDataSource>();
+				folderDataSource.Setup(x => x.Settings).Returns(new DataSource());
+				var folder = new FolderDataSourceViewModel(folderDataSource.Object, actionCenter.Object);
+				model.Parent = folder;
+				model.CanBeRemoved.Should().BeFalse();
+				monitor.Should().RaisePropertyChangeFor(x => x.CanBeRemoved);
+
+				monitor.Clear();
+				model.Parent = null;
+				model.CanBeRemoved.Should().BeTrue();
+				monitor.Should().RaisePropertyChangeFor(x => x.CanBeRemoved);
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/125")]
+		[Description("This is a temporary requirement until #195 is implemented in which case this test must be removed once more")]
+		public void TestCanBeRemovedAsPartOfMergedDataSource()
+		{
+			var actionCenter = new Mock<IActionCenter>();
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.Setup(x => x.Settings).Returns(new DataSource());
+			var model = new SingleDataSourceViewModel(dataSource.Object, actionCenter.Object);
+			using (var monitor = model.Monitor())
+			{
+				model.CanBeRemoved.Should().BeTrue();
+
+				var mergedDataSource = new Mock<IMergedDataSource>();
+				mergedDataSource.Setup(x => x.Settings).Returns(new DataSource());
+				var merged = new MergedDataSourceViewModel(mergedDataSource.Object, actionCenter.Object);
+				model.Parent = merged;
+				model.CanBeRemoved.Should().BeTrue();
+				monitor.Should().NotRaisePropertyChangeFor(x => x.CanBeRemoved);
+
+				monitor.Clear();
+				model.Parent = null;
+				model.CanBeRemoved.Should().BeTrue();
+				monitor.Should().NotRaisePropertyChangeFor(x => x.CanBeRemoved);
 			}
 		}
 	}

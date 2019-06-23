@@ -238,7 +238,7 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			var unfilteredCount = _dataSource.UnfilteredFileCount;
 			var filteredCount = _dataSource.FilteredFileCount;
-			var actualCount = _dataSource.OriginalSources.Count;
+			var actualCount = _dataSource.OriginalSources?.Count ?? 0;
 
 			var reportBuilder = new StringBuilder();
 
