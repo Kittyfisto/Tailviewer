@@ -13,8 +13,8 @@ namespace Tailviewer.Analysis.Count.Ui
 		private readonly FiltersViewModel _quickFilters;
 		private long? _count;
 
-		public LogEntryCountWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
-			: base(template, dataSourceAnalyser)
+		public LogEntryCountWidgetViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+			: base(services, template, dataSourceAnalyser)
 		{
 			_analyserConfiguration = AnalyserConfiguration as LogEntryCountAnalyserConfiguration ?? new LogEntryCountAnalyserConfiguration();
 			_widgetConfiguration = ViewConfiguration as LogEntryCountWidgetConfiguration ?? new LogEntryCountWidgetConfiguration();

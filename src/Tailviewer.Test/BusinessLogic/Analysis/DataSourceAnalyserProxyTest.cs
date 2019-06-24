@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 
 namespace Tailviewer.Test.BusinessLogic.Analysis
 {
@@ -14,21 +15,24 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		private Mock<IDataSourceAnalyserPlugin> _plugin;
 		private Mock<IDataSourceAnalyser> _actualAnalyser;
 		private ManualTaskScheduler _scheduler;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
 		{
 			_plugin = new Mock<IDataSourceAnalyserPlugin>();
 			_actualAnalyser = new Mock<IDataSourceAnalyser>();
-			_plugin.Setup(x => x.Create(It.IsAny<AnalyserId>(), It.IsAny<ITaskScheduler>(), It.IsAny<ILogFile>(), It.IsAny<ILogAnalyserConfiguration>()))
+			_plugin.Setup(x => x.Create(It.IsAny<IServiceContainer>(), It.IsAny<AnalyserId>(), It.IsAny<ILogFile>(), It.IsAny<ILogAnalyserConfiguration>()))
 				.Returns(() => _actualAnalyser.Object);
 			_scheduler = new ManualTaskScheduler();
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_scheduler);
 		}
 
 		[Test]
 		public void TestDispose()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 
 			_actualAnalyser.Setup(x => x.Dispose()).Throws<NullReferenceException>();
 			new Action(() => analyser.Dispose()).Should().NotThrow("because the proxy is supposed to handle failures of its plugin");
@@ -38,7 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestAddLogFile()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 
 			_actualAnalyser.Setup(x => x.OnLogFileAdded(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>())).Throws<NullReferenceException>();
 			var id = DataSourceId.CreateNew();
@@ -50,7 +54,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestRemoveLogFile()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 
 			_actualAnalyser.Setup(x => x.OnLogFileRemoved(It.IsAny<DataSourceId>(), It.IsAny<ILogFile>())).Throws<NullReferenceException>();
 			var id = DataSourceId.CreateNew();
@@ -63,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Description("Verifies that the proxy handles exceptions thrown by the inner analyser")]
 		public void TestSetConfiguration1()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 			_actualAnalyser.SetupSet(x => x.Configuration).Throws<NullReferenceException>();
 
 			var config = new TestLogAnalyserConfiguration();
@@ -75,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Description("Verifies that the proxy forwards the configuration to the ")]
 		public void TestSetConfiguration2()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 			_actualAnalyser.SetupProperty(x => x.Configuration);
 
 			var config = new TestLogAnalyserConfiguration();
@@ -87,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Description("Verifies that the proxy handles exceptions thrown by the inner analyser")]
 		public void TestGetConfiguration1()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 			_actualAnalyser.Setup(x => x.Configuration).Throws<NullReferenceException>();
 
 			analyser.Configuration.Should().BeNull();
@@ -97,7 +101,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		[Test]
 		public void TestGetConfiguration2()
 		{
-			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _scheduler, null, null);
+			var analyser = new DataSourceAnalyserProxy(_plugin.Object, AnalyserId.CreateNew(), _services, null, null);
 			_actualAnalyser.Setup(x => x.Configuration).Throws<NullReferenceException>();
 
 			var config = new TestLogAnalyserConfiguration();

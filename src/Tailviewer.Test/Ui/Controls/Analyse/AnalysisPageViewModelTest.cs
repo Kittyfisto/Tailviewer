@@ -4,12 +4,12 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Templates.Analysis;
 using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Column;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.HorizontalWrap;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Layouts.Row;
@@ -24,6 +24,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		private Mock<IAnalysisStorage> _analysisStorage;
 		private AnalysisId _id;
 		private PluginRegistry _pluginRegistry;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
@@ -35,12 +36,14 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 			_analysisStorage = new Mock<IAnalysisStorage>();
 
 			_pluginRegistry = new PluginRegistry();
+			_services = new ServiceContainer();
+			_services.RegisterInstance<IPluginLoader>(_pluginRegistry);
 		}
 
 		[Test]
 		public void TestConstructionEmptyTemplate()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.PageLayout.Should().Be(PageLayout.WrapHorizontal);
 			model.Layout.Should().NotBeNull();
@@ -64,7 +67,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				AnalyserPluginId = plugin.AnalyserId
 			});
 
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
 
@@ -94,7 +97,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				AnalyserPluginId = plugin.AnalyserId
 			});
 
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
 
@@ -124,7 +127,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				AnalyserPluginId = plugin.AnalyserId
 			});
 
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
 
@@ -152,7 +155,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 				AnalyserPluginId = plugin.AnalyserId
 			});
 
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			model.Name.Should().NotBeEmpty();
 			model.HasWidgets.Should().BeTrue("because we've created this page using a template with one widget");
 
@@ -171,12 +174,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Description("Verifies that if a layout requests that a widget be added, the page does so")]
 		public void TestRequestAddWidget1()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWrapWidgetLayoutViewModel) model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget);
 
 			layout.Widgets.Should().NotContain(x => x.InnerViewModel == widget);
@@ -188,10 +191,10 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRequestAddWidget2()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns((IWidgetTemplate template, IDataSourceAnalyser analyser) =>
 				{
 					var widget = new Mock<IWidgetViewModel>();
@@ -209,12 +212,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRequestAddWidget3()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget);
 
 			layout.RaiseRequestAdd(factory.Object);
@@ -230,12 +233,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Description("Verifies that once a widget is added, the analysis is saved once more")]
 		public void TestRequestAddWidget4()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget);
 
 
@@ -249,12 +252,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRemoveWidget1()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget.Object);
 
 			layout.RaiseRequestAdd(factory.Object);
@@ -270,12 +273,12 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Test]
 		public void TestRemoveWidget2()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var layout = (HorizontalWrapWidgetLayoutViewModel)model.Layout;
 
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget.Object);
 
 			_analysisStorage.Verify(x => x.SaveAsync(It.IsAny<AnalysisId>()), Times.Never);
@@ -294,7 +297,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Description("Verifies that changing the layout is stored in the template")]
 		public void TestChangeLayout()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 
 			model.PageLayout = PageLayout.Columns;
 			model.Layout.Should().BeOfType<ColumnWidgetLayoutViewModel>();
@@ -316,7 +319,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		[Description("Verifies that the page causes the analysis to be saved whenever a widget says it has modified the configuration")]
 		public void TestOnTemplateModified()
 		{
-			var model = new AnalysisPageViewModel(_id, _template, _analyser.Object, _analysisStorage.Object, _pluginRegistry);
+			var model = new AnalysisPageViewModel(_services, _id, _template, _analyser.Object, _analysisStorage.Object);
 			var widget = AddWidget(model);
 
 			_analysisStorage.Verify(x => x.SaveAsync(It.Is<AnalysisId>(y => y == _id)), Times.Once, "because we've added a new widget");
@@ -332,7 +335,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		{
 			var widget = new Mock<IWidgetViewModel>();
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 				.Returns(widget.Object);
 
 			var layout = (HorizontalWrapWidgetLayoutViewModel) model.Layout;
@@ -345,7 +348,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse
 		{
 			var widget = new Mock<IWidgetViewModel>().Object;
 			var factory = new Mock<IWidgetPlugin>();
-			factory.Setup(x => x.CreateViewModel(It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
+			factory.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<IWidgetTemplate>(), It.IsAny<IDataSourceAnalyser>()))
 			       .Returns(widget);
 			factory.Setup(x => x.AnalyserId).Returns(new AnalyserPluginId("Test Widget Plugin"));
 			return factory.Object;

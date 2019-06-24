@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 
@@ -12,8 +13,13 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     A <see cref="ILogFile" /> implementation which offers a filtered view onto a log file.
 	/// </summary>
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateFilteredLogFile"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class FilteredLogFile
+	internal sealed class FilteredLogFile
 		: AbstractLogFile
 		, ILogFileListener
 	{

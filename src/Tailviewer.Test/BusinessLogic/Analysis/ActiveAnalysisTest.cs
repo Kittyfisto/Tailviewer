@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Test.BusinessLogic.Analysis
@@ -18,6 +19,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 		private Mock<ILogAnalyserEngine> _logAnalyserEngine;
 		private DataSourceAnalyserEngine _dataSourceAnalyserEngine;
 		private AnalysisTemplate _template;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
@@ -28,7 +30,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 					It.IsAny<DataSourceAnalysisConfiguration>(),
 					It.IsAny<IDataSourceAnalysisListener>()))
 				.Returns(() => new Mock<IDataSourceAnalysisHandle>().Object);
-			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object);
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
+			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_services, _logAnalyserEngine.Object);
 
 			_template = new AnalysisTemplate();
 		}
@@ -174,7 +178,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var plugin = new Mock<IDataSourceAnalyserPlugin>();
 			plugin.Setup(x => x.Id).Returns(id);
 			pluginLoader.Register(plugin.Object);
-			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object, pluginLoader);
+
+			_services.RegisterInstance<IPluginLoader>(pluginLoader);
+			_dataSourceAnalyserEngine = new DataSourceAnalyserEngine(_services, _logAnalyserEngine.Object);
 			var activeAnalysis = new ActiveAnalysis(AnalysisId.CreateNew(), _template, _taskScheduler, _dataSourceAnalyserEngine, TimeSpan.Zero);
 			_template.Analysers.Should().BeEmpty();
 

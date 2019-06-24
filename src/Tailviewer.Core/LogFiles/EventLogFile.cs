@@ -15,7 +15,12 @@ namespace Tailviewer.Core.LogFiles
 	///     This <see cref="ILogFile" /> implementation is responsible for exposing the windows event log
 	///     via tailviewer's API.
 	/// </summary>
-	public sealed class EventLogFile
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateEventLogFile"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
+	internal sealed class EventLogFile
 		: ILogFile
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -49,7 +54,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="scheduler"></param>
 		/// <param name="fileName"></param>
-		public EventLogFile(ITaskScheduler scheduler, string fileName)
+		internal EventLogFile(ITaskScheduler scheduler, string fileName)
 		{
 			_scheduler = scheduler;
 			_fileName = fileName;

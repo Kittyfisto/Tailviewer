@@ -10,6 +10,7 @@ using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -23,25 +24,32 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IReadOnlyList<IPluginWithDescription<IFileFormatPlugin>> _plugins;
-		private readonly ITaskScheduler _taskScheduler;
+		private readonly IServiceContainer _services;
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler, IPluginWithDescription<IFileFormatPlugin>[] plugins)
+		public PluginLogFileFactory(IServiceContainer services, IPluginWithDescription<IFileFormatPlugin>[] plugins)
 		{
-			if (taskScheduler == null)
-				throw new ArgumentNullException(nameof(taskScheduler));
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
 			if (plugins == null)
 				throw new ArgumentNullException(nameof(plugins));
 
 			_plugins = new List<IPluginWithDescription<IFileFormatPlugin>>(plugins);
-			_taskScheduler = taskScheduler;
+			_services = services;
 		}
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler, params IFileFormatPlugin[] plugins)
-			: this(taskScheduler, plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)))
+		public PluginLogFileFactory(ITaskScheduler scheduler, params IFileFormatPlugin[] plugins)
+			: this(CreateServiceContainer(scheduler), plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)))
 		{}
 
-		public PluginLogFileFactory(ITaskScheduler taskScheduler, IEnumerable<IPluginWithDescription<IFileFormatPlugin>> plugins)
-			: this(taskScheduler, plugins?.ToArray())
+		private static IServiceContainer CreateServiceContainer(ITaskScheduler scheduler)
+		{
+			var container = new ServiceContainer();
+			container.RegisterInstance<ITaskScheduler>(scheduler);
+			return container;
+		}
+
+		public PluginLogFileFactory(IServiceContainer services, IEnumerable<IPluginWithDescription<IFileFormatPlugin>> plugins)
+			: this(services, plugins?.ToArray())
 		{}
 
 		/// <inheritdoc />
@@ -58,7 +66,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
-			return new TextLogFile(_taskScheduler, filePath);
+			return new TextLogFile(_services.Retrieve<ITaskScheduler>(), filePath);
 		}
 
 		private IFileFormatPlugin FindSupportingPlugin(string filePath, out IPluginDescription pluginDescription)
@@ -134,7 +142,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			try
 			{
-				return plugin.Open(fileName, _taskScheduler);
+				// We do NOT want plugins to mess with the global service container
+				// so they get a little clone to play with :)
+				var clonedContainer = _services.CreateChildContainer();
+				return plugin.Open(clonedContainer, fileName);
 			}
 			catch (Exception e)
 			{

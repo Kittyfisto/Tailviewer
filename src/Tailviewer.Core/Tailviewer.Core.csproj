@@ -78,7 +78,7 @@
     <Compile Include="Analysis\IAnalysisTemplate.cs" />
     <Compile Include="Analysis\IDataSourceDescriptor.cs" />
     <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\LogAnalyser.cs" />
+    <Compile Include="Analysis\AbstractLogAnalyser.cs" />
     <Compile Include="Analysis\WidgetTemplate.cs" />
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
@@ -133,8 +133,6 @@
     <Compile Include="Filters\EmptyLogLineFilter.cs" />
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="Filters\AndFilter.cs" />
-    <Compile Include="Filters\ILogEntryFilter.cs" />
-    <Compile Include="Filters\ILogLineFilter.cs" />
     <Compile Include="Filters\InvertFilter.cs" />
     <Compile Include="Filters\LevelFilter.cs" />
     <Compile Include="Filters\NoFilter.cs" />
@@ -151,7 +149,6 @@
     <Compile Include="LogFiles\CustomLogFileColumn.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
     <Compile Include="LogFiles\IColumnData.cs" />
-    <Compile Include="LogFiles\IMergedLogFile.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogEntry2.cs" />
     <Compile Include="LogFiles\LogEntryBuffer.cs" />
@@ -177,7 +174,6 @@
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
     <Compile Include="LogFiles\TextLogFile.cs" />
     <Compile Include="LogFiles\WellKnownLogFilePropertyDescriptor.cs" />
-    <Compile Include="LogLineMatch.cs" />
     <Compile Include="LogTables\ColumnType.cs" />
     <Compile Include="LogTables\IColumnHeader.cs" />
     <Compile Include="LogTables\ILogTable.cs" />
@@ -209,7 +205,6 @@
     <Compile Include="MathEx.cs" />
     <Compile Include="NullToNotAvailableConverter.cs" />
     <Compile Include="Parsers\DateTimeParser.cs" />
-    <Compile Include="Parsers\ITimestampParser.cs" />
     <Compile Include="Parsers\NoThrowTimestampParser.cs" />
     <Compile Include="Parsers\TimeOfDaySecondsSinceStartParser.cs" />
     <Compile Include="Parsers\TimestampParser.cs" />

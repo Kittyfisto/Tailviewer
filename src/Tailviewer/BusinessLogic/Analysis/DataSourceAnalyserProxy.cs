@@ -21,24 +21,24 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly IDataSourceAnalyser _analyser;
 
 		public DataSourceAnalyserProxy(IDataSourceAnalyserPlugin plugin,
-			AnalyserId id,
-			ITaskScheduler scheduler,
-			ILogFile logFile,
-			ILogAnalyserConfiguration configuration)
+		                               AnalyserId id,
+		                               IServiceContainer services,
+		                               ILogFile logFile,
+		                               ILogAnalyserConfiguration configuration)
 		{
 			_plugin = plugin;
 			_id = id;
 			_logFile = logFile;
 			_configuration = configuration;
 
-			_analyser = TryCreateAnalyser(scheduler);
+			_analyser = TryCreateAnalyser(services);
 		}
 
-		private IDataSourceAnalyser TryCreateAnalyser(ITaskScheduler scheduler)
+		private IDataSourceAnalyser TryCreateAnalyser(IServiceContainer services)
 		{
 			try
 			{
-				var analyser = _plugin.Create(_id, scheduler, _logFile, _configuration);
+				var analyser = _plugin.Create(services, _id, _logFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)

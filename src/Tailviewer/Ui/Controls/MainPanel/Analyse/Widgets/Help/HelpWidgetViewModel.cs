@@ -7,8 +7,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 	public sealed class HelpWidgetViewModel
 		: AbstractWidgetViewModel
 	{
-		public HelpWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
-			: base(template, dataSourceAnalyser)
+		public HelpWidgetViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+			: base(services, template, dataSourceAnalyser)
 		{
 			Title = "Help";
 		}

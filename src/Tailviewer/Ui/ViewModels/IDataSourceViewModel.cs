@@ -6,6 +6,7 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.ViewModels

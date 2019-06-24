@@ -13,9 +13,10 @@ namespace Tailviewer.Core.Analysis
 	///     Base class for <see cref="ILogAnalyser" /> implementations.
 	///     Suitable for most implementations.
 	/// </summary>
-	public abstract class LogAnalyser
+	public abstract class AbstractLogAnalyser
 		: ILogAnalyser
 	{
+		private readonly IServiceContainer _services;
 		private const int MaxExceptions = 10;
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly Queue<Exception> _exceptions;
@@ -26,8 +27,12 @@ namespace Tailviewer.Core.Analysis
 		/// <summary>
 		///     Initializes this analyser.
 		/// </summary>
-		protected LogAnalyser()
+		protected AbstractLogAnalyser(IServiceContainer services)
 		{
+			// Yes, we do NOT yet make use of this container. However
+			// there WILL come a time when we need to inject a dependency into this base class
+			// and we want to preserve binary compatibility to plugins which make use of this class.
+			_services = services ?? throw new ArgumentNullException(nameof(services));
 			_syncRoot = new object();
 			_exceptions = new Queue<Exception>();
 			_stopwatch = new Stopwatch();

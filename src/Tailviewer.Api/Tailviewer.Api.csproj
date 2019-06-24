@@ -63,13 +63,18 @@
     <Compile Include="BusinessLogic\Analysis\ILogAnalyserPlugin.cs" />
     <Compile Include="BusinessLogic\Analysis\ILogAnalysisResult.cs" />
     <Compile Include="BusinessLogic\Analysis\AnalyserPluginId.cs" />
+    <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
+    <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFilePropertyDescriptor.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileProxy.cs" />
+    <Compile Include="BusinessLogic\LogFiles\IMergedLogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntries.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileColumn.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntries.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntrySectionExtensions.cs" />
     <Compile Include="BusinessLogic\LogLineSourceId.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin2.cs" />
@@ -99,6 +104,7 @@
     <Compile Include="IWriter.cs" />
     <Compile Include="AnalyserId.cs" />
     <Compile Include="LogEntryIndex.cs" />
+    <Compile Include="LogLineMatch.cs" />
     <Compile Include="NoSuchColumnException.cs" />
     <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="Percentage.cs" />

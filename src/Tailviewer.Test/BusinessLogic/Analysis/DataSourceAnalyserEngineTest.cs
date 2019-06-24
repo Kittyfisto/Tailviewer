@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Test.BusinessLogic.Analysis
@@ -14,6 +15,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 	{
 		private Mock<ILogAnalyserEngine> _logAnalyserEngine;
 		private ManualTaskScheduler _taskScheduler;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
@@ -24,12 +26,14 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			                                               It.IsAny<IDataSourceAnalysisListener>()))
 			                  .Returns(() => new TestLogAnalyser());
 			_taskScheduler = new ManualTaskScheduler();
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
 		}
 
 		[Test]
 		public void TestCreateAnalyser()
 		{
-			var engine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object);
+			var engine = new DataSourceAnalyserEngine(_services, _logAnalyserEngine.Object);
 			var logFile = new Mock<ILogFile>();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
 			{
@@ -46,7 +50,9 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var id = new AnalyserPluginId("Some Data Source Analyser Plugin");
 			var plugin = new Mock<IDataSourceAnalyserPlugin>();
 			plugin.Setup(x => x.Id).Returns(id);
-			var engine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object, CreatePluginLoader(plugin.Object));
+
+			_services.RegisterInstance<IPluginLoader>(CreatePluginLoader(plugin.Object));
+			var engine = new DataSourceAnalyserEngine(_services, _logAnalyserEngine.Object);
 			var logFile = new Mock<ILogFile>();
 			var configuration = new TestLogAnalyserConfiguration();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate
@@ -58,7 +64,7 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 
 			_logAnalyserEngine.Verify(x => x.CreateAnalysis(It.IsAny<ILogFile>(), It.IsAny<DataSourceAnalysisConfiguration>(), It.IsAny<IDataSourceAnalysisListener>()),
 			                          Times.Never, "because we have specified a DataSourceAnalyserPluginId and thus the corresponding plugin should've been used to create the data source analyser");
-			plugin.Verify(x => x.Create(It.IsAny<AnalyserId>(), It.IsAny<ITaskScheduler>(), logFile.Object, configuration),
+			plugin.Verify(x => x.Create(It.IsAny<IServiceContainer>(), It.IsAny<AnalyserId>(), logFile.Object, configuration),
 			              Times.Once, "because we have specified a DataSourceAnalyserPluginId and thus its plugin should've been loaded and used to create the analyser");
 		}
 
@@ -69,12 +75,14 @@ namespace Tailviewer.Test.BusinessLogic.Analysis
 			var plugin = new Mock<IDataSourceAnalyserPlugin>();
 			plugin.Setup(x => x.Id).Returns(id);
 			var pluginAnalyser = new Mock<IDataSourceAnalyser>();
-			plugin.Setup(x => x.Create(It.IsAny<AnalyserId>(),
-			                                    It.IsAny<ITaskScheduler>(),
-			                                    It.IsAny<ILogFile>(),
-			                                    It.IsAny<ILogAnalyserConfiguration>()))
+			plugin.Setup(x => x.Create(It.IsAny<IServiceContainer>(),
+			                           It.IsAny<AnalyserId>(),
+			                           It.IsAny<ILogFile>(),
+			                           It.IsAny<ILogAnalyserConfiguration>()))
 			      .Returns(pluginAnalyser.Object);
-			var engine = new DataSourceAnalyserEngine(_taskScheduler, _logAnalyserEngine.Object, CreatePluginLoader(plugin.Object));
+
+			_services.RegisterInstance<IPluginLoader>(CreatePluginLoader(plugin.Object));
+			var engine = new DataSourceAnalyserEngine(_services, _logAnalyserEngine.Object);
 			var logFile = new Mock<ILogFile>();
 			var configuration = new TestLogAnalyserConfiguration();
 			var analyser = engine.CreateAnalyser(logFile.Object, new AnalyserTemplate

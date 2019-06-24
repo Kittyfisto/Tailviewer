@@ -17,8 +17,8 @@ namespace Tailviewer.Analysis.DataSources.Ui
 		private readonly Dictionary<DataSourceId, DataSourceViewModel> _dataSourcesById;
 		private int _dataSourceCount;
 
-		public DataSourcesWidgetViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
-			: base(template, dataSourceAnalyser)
+		public DataSourcesWidgetViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+			: base(services, template, dataSourceAnalyser)
 		{
 			_dataSources = new ObservableCollection<DataSourceViewModel>();
 			_dataSourcesById = new Dictionary<DataSourceId, DataSourceViewModel>();

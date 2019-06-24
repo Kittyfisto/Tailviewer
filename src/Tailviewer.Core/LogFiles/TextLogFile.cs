@@ -20,7 +20,7 @@ namespace Tailviewer.Core.LogFiles
 	///     them to its <see cref="ILogFileListener"/>s.
 	/// </summary>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class TextLogFile
+	internal sealed class TextLogFile
 		: AbstractLogFile
 	{
 		private static readonly ILog Log =
@@ -58,18 +58,22 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <summary>
-		/// Initializes this text log file.
+		///    Initializes this text log file.
 		/// </summary>
+		/// <remarks>
+		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
+		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateTextLogFile"/>.
+		/// </remarks>
 		/// <param name="scheduler"></param>
 		/// <param name="fileName"></param>
 		/// <param name="timestampParser">An optional timestamp parser that is used to find timestamps in log messages. If none is specified, then <see cref="TimestampParser"/> is used</param>
 		/// <param name="translator">An optional translator that is used to translate each log line in memory. If none is specified, then log lines are displayed as they are in the file on disk</param>
 		/// <param name="encoding">The encoding to use to interpet the file, if none is specified, then <see cref="Encoding.UTF8"/> is used</param>
-		public TextLogFile(ITaskScheduler scheduler,
-		                   string fileName,
-		                   ITimestampParser timestampParser = null,
-		                   ILogLineTranslator translator = null,
-		                   Encoding encoding = null)
+		internal TextLogFile(ITaskScheduler scheduler,
+		                     string fileName,
+		                     ITimestampParser timestampParser = null,
+		                     ILogLineTranslator translator = null,
+		                     Encoding encoding = null)
 			: base(scheduler)
 		{
 			if (fileName == null) throw new ArgumentNullException(nameof(fileName));

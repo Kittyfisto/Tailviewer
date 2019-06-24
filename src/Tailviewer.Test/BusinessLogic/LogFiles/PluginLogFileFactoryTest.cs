@@ -37,7 +37,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var plugin = new Mock<IFileFormatPlugin>();
 			var logFile = new Mock<ILogFile>();
 			plugin.Setup(x => x.SupportedExtensions).Returns(new[] {".db"});
-			plugin.Setup(x => x.Open(It.Is<string>(y => y == fname), It.IsAny<ITaskScheduler>()))
+			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.Is<string>(y => y == fname)))
 				.Returns(() => logFile.Object);
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
@@ -62,14 +62,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Regex("sfa_[^\\.]*\\.log")
 			});
 			plugin.Setup(x => x.SupportedExtensions).Returns(new[] {".db"});
-			plugin.Setup(x => x.Open(It.IsAny<string>(), It.IsAny<ITaskScheduler>()))
+			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.IsAny<string>()))
 			      .Returns(() => logFile.Object);
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\logs\sfa_12345.log";
 			var actualLogFile = factory.Open(filename, out _);
 
-			plugin.Verify(x => x.Open(filename, It.IsAny<ITaskScheduler>()), Times.Once);
+			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Once);
 			actualLogFile.GetLine(42);
 			logFile.Verify(x => x.GetLine(It.Is<int>(y => y == 42)), Times.Once,
 			               "because even though we've been given a proxy, it should nevertheless forward all calls to the actual implementation");
@@ -88,13 +88,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new Regex("sfa_[^\\.]*\\.log")
 			});
 			plugin.Setup(x => x.SupportedExtensions).Returns(new[] {".db"});
-			plugin.Setup(x => x.Open(It.IsAny<string>(), It.IsAny<ITaskScheduler>()))
+			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.IsAny<string>()))
 			      .Returns(() => logFile.Object);
 
 			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\sfa_12345.log\.db\txt\foo.log";
 			factory.Open(filename, out _);
-			plugin.Verify(x => x.Open(filename, It.IsAny<ITaskScheduler>()), Times.Never,
+			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Never,
 			              "because neither regex nor file extension match (only the filename should be matched, not the path) and therefore the plugin may not have been used");
 		}
 	}

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;

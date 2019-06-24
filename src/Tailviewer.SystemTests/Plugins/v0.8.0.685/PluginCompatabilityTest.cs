@@ -22,7 +22,7 @@ namespace Tailviewer.SystemTests.Plugins.v0._8._0._685
 		public void TestLoadFileFormatPlugin2()
 		{
 			// CMD> Tailviewer.PluginCreator.exe FileFormatPlugin  Tailviewer.BusinessLogic.Plugins.IFileFormatPlugin 0.8.0.680-beta
-			Load<IFileFormatPlugin2>(new Version(0, 8, 0, 685), "FileFormatPlugin2.0.0.tvp");
+			ShouldNotBeLoaded<IFileFormatPlugin2>(new Version(0, 8, 0, 685), "FileFormatPlugin2.0.0.tvp");
 		}
 	}
 }

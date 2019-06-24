@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestGetLogAnalyserPluginVersion()
 		{
-			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(ILogAnalyserPlugin)).Should().Be(PluginInterfaceVersion.First);
+			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(ILogAnalyserPlugin)).Should().Be(new PluginInterfaceVersion(2), "because this interface has been broken once");
 		}
 	}
 }

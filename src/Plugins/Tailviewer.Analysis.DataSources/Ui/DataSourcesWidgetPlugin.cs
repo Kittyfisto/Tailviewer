@@ -22,12 +22,12 @@ namespace Tailviewer.Analysis.DataSources.Ui
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel CreateViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new DataSourcesWidgetViewModel(template, dataSourceAnalyser);
+			return new DataSourcesWidgetViewModel(services, template, dataSourceAnalyser);
 		}
 
-		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		public FrameworkElement CreateContentPresenterFor(IServiceContainer services, IWidgetViewModel viewModel)
 		{
 			return new DataSourcesWidget
 			{

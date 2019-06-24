@@ -23,9 +23,14 @@ namespace Tailviewer.Core.Analysis
 
 		/// <summary>
 		/// </summary>
-		protected AbstractWidgetViewModel(IWidgetTemplate template,
-			IDataSourceAnalyser dataSourceAnalyser)
+		protected AbstractWidgetViewModel(IServiceContainer services,
+		                                  IWidgetTemplate template,
+		                                  IDataSourceAnalyser dataSourceAnalyser)
 		{
+			// Yes, we do NOT yet make use of this container. However
+			// there WILL come a time when we need to inject a dependency into this base class
+			// and we want to preserve binary compatibility to plugins which make use of this class.
+
 			if (dataSourceAnalyser == null)
 				throw new ArgumentNullException(nameof(dataSourceAnalyser));
 

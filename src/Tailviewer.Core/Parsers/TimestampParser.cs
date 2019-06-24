@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using log4net;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Parsers
 {

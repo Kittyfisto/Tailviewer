@@ -120,7 +120,7 @@ namespace Tailviewer.Archiver.Plugins
 			}
 			else
 			{
-				Log.DebugFormat("Found 0 compatible version(s) of plugin '{0}'", _id);
+				Log.ErrorFormat("Found 0 compatible version(s) of plugin '{0}' (tried all {1} version(s) of this plugin)", _id, _pluginsByVersion.Count);
 
 				_selectedPlugin = new PluginDescription
 				{

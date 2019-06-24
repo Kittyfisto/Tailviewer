@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses;
 
@@ -21,6 +22,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		private List<IAnalysis> _analyses;
 		private Dictionary<AnalysisId, ActiveAnalysisConfiguration> _templates;
 		private PluginRegistry _pluginRegistry;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
@@ -35,6 +37,11 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 			_analysisStorage.Setup(x => x.CreateAnalysis(It.IsAny<AnalysisTemplate>(), It.IsAny<AnalysisViewTemplate>()))
 				.Returns((AnalysisTemplate templates, AnalysisViewTemplate viewTemplate) => AddAnalysis());
 			_pluginRegistry = new PluginRegistry();
+
+			_services = new ServiceContainer();
+			_services.RegisterInstance<IDispatcher>(_dispatcher);
+			_services.RegisterInstance<ITaskScheduler>(_taskScheduler);
+			_services.RegisterInstance<IPluginLoader>(_pluginRegistry);
 		}
 
 		private IAnalysis AddAnalysis()
@@ -56,7 +63,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestCreateNew()
 		{
-			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object, _pluginRegistry);
+			var sidePanel = new AnalysesSidePanel(_services, _analysisStorage.Object);
 			sidePanel.HasActiveAnalyses.Should().BeFalse();
 			sidePanel.Active.Should().BeEmpty();
 			sidePanel.CreateNewAnalysis();
@@ -67,7 +74,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestRemoveAnalysis1()
 		{
-			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object, _pluginRegistry);
+			var sidePanel = new AnalysesSidePanel(_services, _analysisStorage.Object);
 			var viewModel = sidePanel.CreateNewAnalysis();
 			sidePanel.Active.Should().HaveCount(1);
 
@@ -78,7 +85,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestRemoveAnalysis2()
 		{
-			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object, _pluginRegistry);
+			var sidePanel = new AnalysesSidePanel(_services, _analysisStorage.Object);
 			var viewModel = sidePanel.CreateNewAnalysis();
 			sidePanel.Active.Should().HaveCount(1);
 
@@ -93,7 +100,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		{
 			AddAnalysis();
 
-			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object, _pluginRegistry);
+			var sidePanel = new AnalysesSidePanel(_services, _analysisStorage.Object);
 			sidePanel.Update();
 
 			sidePanel.Active.Should().HaveCount(1);
@@ -108,7 +115,7 @@ namespace Tailviewer.Test.Ui.Controls.Analyse.SidePanels
 		[Test]
 		public void TestUpdateSelectAnalysis()
 		{
-			var sidePanel = new AnalysesSidePanel(_dispatcher, _taskScheduler, _analysisStorage.Object, _pluginRegistry);
+			var sidePanel = new AnalysesSidePanel(_services, _analysisStorage.Object);
 			sidePanel.SelectedAnalysis.Should().BeNull();
 
 			sidePanel.Update();

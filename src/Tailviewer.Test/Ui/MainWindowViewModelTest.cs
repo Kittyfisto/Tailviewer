@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
@@ -41,15 +42,18 @@ namespace Tailviewer.Test.Ui
 			_updater = new Mock<IAutoUpdater>();
 			_analysisStorage = new Mock<IAnalysisStorage>();
 
-			_mainWindow = new MainWindowViewModel(_settings,
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_scheduler);
+			_services.RegisterInstance<IDispatcher>(_dispatcher);
+			_services.RegisterInstance<IPluginLoader>(new PluginRegistry());
+
+			_mainWindow = new MainWindowViewModel(_services,
+			                                      _settings,
 			                                      _dataSources,
 			                                      _quickFilters,
 			                                      _actionCenter,
 			                                      _updater.Object,
-			                                      _scheduler,
-			                                      _analysisStorage.Object,
-			                                      _dispatcher,
-			                                      new PluginRegistry());
+			                                      _analysisStorage.Object);
 		}
 
 		[TearDown]
@@ -70,6 +74,7 @@ namespace Tailviewer.Test.Ui
 		private Mock<IAnalysisStorage> _analysisStorage;
 		private Bookmarks _bookmarks;
 		private InMemoryFilesystem _filesystem;
+		private ServiceContainer _services;
 
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/76")]
@@ -78,15 +83,13 @@ namespace Tailviewer.Test.Ui
 			var dataSource = _dataSources.AddFile(@"F:\logs\foo.log");
 			_settings.DataSources.SelectedItem = dataSource.Id;
 
-			_mainWindow = new MainWindowViewModel(_settings,
-				_dataSources,
-				_quickFilters,
-				_actionCenter,
-				_updater.Object,
-				_scheduler,
-				_analysisStorage.Object,
-				_dispatcher,
-				new PluginRegistry());
+			_mainWindow = new MainWindowViewModel(_services,
+			                                      _settings,
+			                                      _dataSources,
+			                                      _quickFilters,
+			                                      _actionCenter,
+			                                      _updater.Object,
+			                                      _analysisStorage.Object);
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
 			_mainWindow.WindowTitleSuffix.Should().Be(@"F:\logs\foo.log");

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     The interface for a log file which aggregates the contents of one or more individual <see cref="ILogFile" />s.

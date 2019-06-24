@@ -30,7 +30,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 		private double _progress;
 		private string _progressTooltip;
 
-		public WidgetViewModelProxy(IWidgetPlugin plugin, IWidgetTemplate widgetTemplate, IDataSourceAnalyser analyser)
+		public WidgetViewModelProxy(IServiceContainer services, IWidgetPlugin plugin, IWidgetTemplate widgetTemplate, IDataSourceAnalyser analyser)
 		{
 			_plugin = plugin;
 			_widgetTemplate = widgetTemplate;
@@ -39,7 +39,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 			try
 			{
-				InnerViewModel = plugin.CreateViewModel(widgetTemplate, analyser);
+				InnerViewModel = plugin.CreateViewModel(services, widgetTemplate, analyser);
 			}
 			catch (Exception e)
 			{
@@ -54,7 +54,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets
 
 				try
 				{
-					Content = plugin.CreateContentPresenterFor(InnerViewModel);
+					Content = plugin.CreateContentPresenterFor(services, InnerViewModel);
 				}
 				catch (Exception e)
 				{

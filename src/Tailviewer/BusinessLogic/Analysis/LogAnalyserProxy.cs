@@ -21,6 +21,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private ILogAnalyser _analyser;
 		private readonly ILogAnalyserConfiguration _configuration;
 		private readonly ILogFile _logFile;
+		private readonly IServiceContainer _services;
 		private readonly ITaskScheduler _scheduler;
 		private readonly ILogAnalyserPlugin _plugin;
 		private readonly IDataSourceAnalysisListener _listener;
@@ -30,14 +31,14 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private bool _isDisposed;
 		private Percentage _progress;
 
-		public LogAnalyserProxy(ITaskScheduler scheduler,
+		public LogAnalyserProxy(IServiceContainer services,
 			ILogFile logFile,
 			ILogAnalyserPlugin plugin,
 			ILogAnalyserConfiguration configuration,
 			IDataSourceAnalysisListener listener)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
 			if (logFile == null)
 				throw new ArgumentNullException(nameof(logFile));
 			if (plugin == null)
@@ -46,7 +47,8 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw new ArgumentNullException(nameof(listener));
 
 			_syncRoot = new object();
-			_scheduler = scheduler;
+			_services = services;
+			_scheduler = services.Retrieve<ITaskScheduler>();
 			_logFile = logFile;
 			_plugin = plugin;
 			_configuration = configuration;
@@ -107,7 +109,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		{
 			try
 			{
-				var analyser = _plugin.Create(_scheduler, _logFile, _configuration);
+				var analyser = _plugin.Create(_services, _logFile, _configuration);
 				return analyser;
 			}
 			catch (Exception e)

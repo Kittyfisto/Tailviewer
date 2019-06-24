@@ -148,6 +148,8 @@ namespace Tailviewer
 			bookmarks.Restore();
 
 			var services = new ServiceContainer();
+			RegisterFactories(services);
+
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
@@ -161,14 +163,15 @@ namespace Tailviewer
 				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath))
 				{
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
+					services.RegisterInstance<IPluginLoader>(pluginSystem);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 
-					var logFileFactory = new PluginLogFileFactory(taskScheduler, fileFormatPlugins);
+					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-					using (var logAnalyserEngine = new LogAnalyserEngine(taskScheduler, pluginSystem))
-					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(taskScheduler, logAnalyserEngine, pluginSystem))
+					using (var logAnalyserEngine = new LogAnalyserEngine(services, pluginSystem))
+					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(services, logAnalyserEngine))
 					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem)))
 					{
 						if (fileToOpen != null)
@@ -201,20 +204,20 @@ namespace Tailviewer
 						var application = new App();
 						var dispatcher = Dispatcher.CurrentDispatcher;
 						var uiDispatcher = new UiDispatcher(dispatcher);
+						services.RegisterInstance<IDispatcher>(uiDispatcher);
+
 						dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
 						TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
 
 						var window = new MainWindow(settings)
 						{
-							DataContext = new MainWindowViewModel(settings,
+							DataContext = new MainWindowViewModel(services,
+							                                      settings,
 							                                      dataSources,
 							                                      quickFilters,
 							                                      actionCenter,
 							                                      updater,
-							                                      taskScheduler,
-							                                      analysisStorage,
-							                                      uiDispatcher,
-							                                      pluginSystem)
+							                                      analysisStorage)
 						};
 
 						settings.MainWindow.RestoreTo(window);
@@ -226,6 +229,11 @@ namespace Tailviewer
 					}
 				}
 			}
+		}
+
+		private static void RegisterFactories(ServiceContainer services)
+		{
+			
 		}
 
 		private static IPluginLoader CreatePluginSystem(params IPluginLoader[] pluginLoaders)

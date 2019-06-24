@@ -21,13 +21,8 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		{ }
 
 		class TestlogAnalyserPlugin
-			: ILogAnalyserPlugin
+			: ITestPlugin
 		{
-			public AnalyserPluginId Id { get; }
-			public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)
-			{
-				throw new System.NotImplementedException();
-			}
 		}
 
 		[Test]
@@ -39,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestGetLogAnalyserPluginVersionFromImplementation()
 		{
-			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(TestlogAnalyserPlugin)).Should().Be(PluginInterfaceVersion.First);
+			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(TestlogAnalyserPlugin)).Should().Be(new PluginInterfaceVersion(42));
 		}
 
 		[Test]

@@ -5,15 +5,15 @@ using System.Reflection;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 {
 	public sealed class QuickInfoAnalyser
-		: LogAnalyser
+		: AbstractLogAnalyser
 	{
 		private const int MaximumLineCount = 10000;
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -26,17 +26,18 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 		private readonly IPeriodicTask _task;
 		private QuickInfoResult _currentResult;
 
-		public QuickInfoAnalyser(ITaskScheduler scheduler,
-			ILogFile source,
-			TimeSpan maximumWaitTime,
-			QuickInfoAnalyserConfiguration configuration)
+		public QuickInfoAnalyser(IServiceContainer services,
+		                         ILogFile source,
+		                         TimeSpan maximumWaitTime,
+		                         QuickInfoAnalyserConfiguration configuration)
+			: base(services)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
-			_scheduler = scheduler;
+			_scheduler = services.Retrieve<ITaskScheduler>();
 			_pendingChanges = new ConcurrentQueue<PendingChange>();
 			_lastMatchingLines = new Dictionary<Guid, LogLine?>();
 			var logFiles = new Dictionary<ILogFile, Guid>();
@@ -46,7 +47,7 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 				foreach (var config in configuration.QuickInfos)
 				{
 					var filter = CreateFilter(config);
-					var filteredLogFile = source.AsFiltered(scheduler, filter, logEntryFilter: null);
+					var filteredLogFile = services.CreateFilteredLogFile(maximumWaitTime, source, filter);
 					logFiles.Add(filteredLogFile, config.Id);
 					_lastMatchingLines.Add(config.Id, value: null);
 					filteredLogFile.AddListener(this, maximumWaitTime, MaximumLineCount);
@@ -58,7 +59,7 @@ namespace Tailviewer.Analysis.QuickInfo.BusinessLogic
 				throw;
 			}
 
-			_task = scheduler.StartPeriodic(OnUpdate, maximumWaitTime, "Quick Info Analyser");
+			_task = _scheduler.StartPeriodic(OnUpdate, maximumWaitTime, "Quick Info Analyser");
 		}
 
 		public override ILogAnalysisResult Result => _currentResult;

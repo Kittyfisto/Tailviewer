@@ -22,12 +22,12 @@ namespace Tailviewer.Analysis.QuickInfo.Ui
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel CreateViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new QuickInfoWidgetViewModel(template, dataSourceAnalyser);
+			return new QuickInfoWidgetViewModel(services, template, dataSourceAnalyser);
 		}
 
-		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		public FrameworkElement CreateContentPresenterFor(IServiceContainer services, IWidgetViewModel viewModel)
 		{
 			return new QuickInfoWidgetControl
 			{

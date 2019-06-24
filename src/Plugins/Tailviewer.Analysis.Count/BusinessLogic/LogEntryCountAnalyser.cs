@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Filters;
-using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Analysis.Count.BusinessLogic
 {
 	public sealed class LogEntryCountAnalyser
-		: LogAnalyser
+		: AbstractLogAnalyser
 	{
 		private const int MaximumLineCount = 10000;
 
@@ -19,10 +18,11 @@ namespace Tailviewer.Analysis.Count.BusinessLogic
 		private readonly ILogFile _logFile;
 		private readonly bool _ownsLogFile;
 
-		public LogEntryCountAnalyser(ITaskScheduler scheduler, ILogFile logFile, TimeSpan maximumWaitTime, LogEntryCountAnalyserConfiguration configuration)
+		public LogEntryCountAnalyser(IServiceContainer services, ILogFile logFile, TimeSpan maximumWaitTime, LogEntryCountAnalyserConfiguration configuration)
+			: base(services)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
+			if (services == null)
+				throw new ArgumentNullException(nameof(services));
 			if (logFile == null)
 				throw new ArgumentNullException(nameof(logFile));
 			if (configuration == null)
@@ -31,9 +31,7 @@ namespace Tailviewer.Analysis.Count.BusinessLogic
 			var filter = CreateFilter(configuration.QuickFilters);
 			if (filter != null)
 			{
-				_logFile = new FilteredLogFile(scheduler, maximumWaitTime, logFile,
-					null,
-					filter);
+				_logFile = services.CreateFilteredLogFile(maximumWaitTime, logFile, filter);
 				_ownsLogFile = true;
 			}
 			else

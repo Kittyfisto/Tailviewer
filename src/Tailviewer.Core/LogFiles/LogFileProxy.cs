@@ -18,9 +18,14 @@ namespace Tailviewer.Core.LogFiles
 	///     Exists so that specialized <see cref="ILogFile" /> implementations don't need to be concerned about re-use
 	///     or certain changes (i.e. <see cref="FilteredLogFile" /> doesn't need to implement the change of a filter).
 	/// </remarks>
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateLogFileProxy"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class LogFileProxy
-		: ILogFile
+	internal sealed class LogFileProxy
+		: ILogFileProxy
 		, ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -54,10 +59,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
+		/// <remarks>
+		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
+		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateLogFileProxy"/>.
+		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="innerLogFile"></param>
-		public LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogFile innerLogFile)
+		internal LogFileProxy(ITaskScheduler taskScheduler, TimeSpan maximumWaitTime, ILogFile innerLogFile)
 			: this(taskScheduler, maximumWaitTime)
 		{
 			InnerLogFile = innerLogFile;
@@ -111,9 +120,7 @@ namespace Tailviewer.Core.LogFiles
 			return TimeSpan.FromMilliseconds(10);
 		}
 
-		/// <summary>
-		///     The log file represented by this proxy.
-		/// </summary>
+		/// <inheritdoc />
 		public ILogFile InnerLogFile
 		{
 			get { return _innerLogFile; }

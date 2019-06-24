@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Analysis;
@@ -29,23 +28,22 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private readonly DelegateCommand _removeCommand;
 		private readonly ObservableCollection<AnalysisPageViewModel> _pages;
 		private readonly DelegateCommand2 _captureSnapshotCommand;
+		private readonly IServiceContainer _services;
 		private AnalysisPageViewModel _selectedPage;
 		private bool _isSelected;
-		private IPluginLoader _pluginLoader;
 		private double _progress;
 		private Task _saveSnapshotTask;
 
-		public AnalysisViewModel(IDispatcher dispatcher,
-			AnalysisViewTemplate viewTemplate,
-			IAnalysis analyser,
-			IAnalysisStorage analysisStorage,
-		                         IPluginLoader pluginLoader)
+		public AnalysisViewModel(IServiceContainer services,
+			                     AnalysisViewTemplate viewTemplate,
+			                     IAnalysis analyser,
+			                     IAnalysisStorage analysisStorage)
 		{
-			_dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+			_services = services ?? throw new ArgumentNullException(nameof(services));
+			_dispatcher = services.Retrieve<IDispatcher>();
 			_analyser = analyser ?? throw new ArgumentNullException(nameof(analyser));
 			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
 			_viewTemplate = viewTemplate ?? throw new ArgumentNullException(nameof(viewTemplate));
-			_pluginLoader = pluginLoader ?? throw new ArgumentNullException(nameof(pluginLoader));
 			_pages = new ObservableCollection<AnalysisPageViewModel>();
 			_addPageCommand = new DelegateCommand(AddNewPage);
 			_removeCommand = new DelegateCommand(RemoveThis);
@@ -194,7 +192,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 		private void AddPage(PageTemplate template)
 		{
-			var page = new AnalysisPageViewModel(Id, template, _analyser, _analysisStorage, _pluginLoader);
+			var page = new AnalysisPageViewModel(_services, Id, template, _analyser, _analysisStorage);
 			page.OnDelete += PageOnOnDelete;
 
 			_pages.Add(page);

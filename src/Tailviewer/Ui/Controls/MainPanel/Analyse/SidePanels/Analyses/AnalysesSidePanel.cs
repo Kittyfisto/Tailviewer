@@ -9,7 +9,6 @@ using System.Threading;
 using System.Windows.Media;
 using log4net;
 using Metrolib;
-using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Controls.SidePanel;
@@ -30,7 +29,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 		private readonly IDispatcher _dispatcher;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly PathComparer _pathComparer;
-		private readonly IPluginLoader _pluginLoader;
+		private readonly IServiceContainer _services;
 		private bool _hasActiveAnalyses;
 		private bool _hasAvailableAnalyses;
 		private AnalysisViewModel _selectedAnalysis;
@@ -52,15 +51,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		#endregion
 
-		public AnalysesSidePanel(IDispatcher dispatcher,
-		                         ITaskScheduler taskScheduler,
-		                         IAnalysisStorage analysisStorage,
-		                         IPluginLoader pluginLoader)
+		public AnalysesSidePanel(IServiceContainer services,
+		                         IAnalysisStorage analysisStorage)
 		{
-			_dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
-			_taskScheduler = taskScheduler ?? throw new ArgumentNullException(nameof(taskScheduler));
+			_services = services ?? throw new ArgumentNullException(nameof(services));
+			_dispatcher = services.Retrieve<IDispatcher>();
+			_taskScheduler = services.Retrieve<ITaskScheduler>();
 			_analysisStorage = analysisStorage ?? throw new ArgumentNullException(nameof(analysisStorage));
-			_pluginLoader = pluginLoader ?? throw new ArgumentNullException(nameof(pluginLoader));
 			_pathComparer = new PathComparer();
 
 			_activeById = new Dictionary<AnalysisId, AnalysisViewModel>();
@@ -254,7 +251,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 
 		private AnalysisViewModel CreateAnalysisViewModel(AnalysisViewTemplate viewTemplate, IAnalysis analysis)
 		{
-			var viewModel = new AnalysisViewModel(_dispatcher, viewTemplate, analysis, _analysisStorage, _pluginLoader);
+			var viewModel = new AnalysisViewModel(_services, viewTemplate, analysis, _analysisStorage);
 			_active.Add(viewModel);
 			_activeById.Add(viewModel.Id, viewModel);
 			viewModel.OnRemove += AnalysisOnOnRemove;

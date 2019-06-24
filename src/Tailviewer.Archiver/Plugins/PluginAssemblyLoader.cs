@@ -11,6 +11,7 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Analysis;
 
@@ -194,7 +195,7 @@ namespace Tailviewer.Archiver.Plugins
 				{"Metrolib,", typeof(AbstractBootstrapper).Assembly},
 				{"System.Threading.Extensions,", typeof(ITaskScheduler).Assembly},
 				{"Tailviewer.Api,", typeof(ILogFile).Assembly},
-				{"Tailviewer.Core,", typeof(TextLogFile).Assembly}
+				{"Tailviewer.Core,", typeof(ServiceContainer).Assembly}
 			};
 
 			// TODO: This feature most certainly needs proper tests. Go write them!

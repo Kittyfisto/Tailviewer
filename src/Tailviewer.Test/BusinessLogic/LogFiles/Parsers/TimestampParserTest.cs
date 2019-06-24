@@ -2,8 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic;
-using Tailviewer.Core;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Parsers;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers

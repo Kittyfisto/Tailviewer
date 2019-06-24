@@ -11,7 +11,28 @@ namespace Tailviewer.SystemTests.Plugins
 {
 	public abstract class AbstractPluginCompatabilityTest
 	{
-		protected static void Load<T>(Version tailviewerVersion, string pluginName) where T : IPlugin
+		protected static void ShouldBeLoaded<T>(Version tailviewerVersion, string pluginName) where T : IPlugin
+		{
+			var exitCode = LoadPlugin<T>(tailviewerVersion, pluginName, out var output);
+			if (exitCode != 0)
+			{
+				exitCode.Should().Be(0);
+			}
+			output.Should().NotContain("ERROR");
+		}
+
+		protected static void ShouldNotBeLoaded<T>(Version tailviewerVersion, string pluginName) where T : IPlugin
+		{
+			var exitCode = LoadPlugin<T>(tailviewerVersion, pluginName, out var output);
+			if (exitCode == 0)
+			{
+				exitCode.Should().NotBe(0);
+			}
+			output.Should().Contain("ERROR");
+			output.Should().Contain("Found 0 compatible version(s) of plugin");
+		}
+
+		private static int LoadPlugin<T>(Version tailviewerVersion, string pluginName, out string output) where T : IPlugin
 		{
 			var pluginPath = Path.Combine(PluginsDirectory, "v"+tailviewerVersion, pluginName);
 
@@ -33,17 +54,10 @@ namespace Tailviewer.SystemTests.Plugins
 
 				process.Start().Should().BeTrue();
 
-				var output = process.StandardOutput.ReadToEnd();
+				output = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
 				TestContext.Progress.WriteLine(output);
-
-				var exitCode = process.ExitCode;
-				if (exitCode != 0)
-				{
-					exitCode.Should().Be(0);
-				}
-
-				output.Should().NotContain("Error");
+				return process.ExitCode;
 			}
 		}
 

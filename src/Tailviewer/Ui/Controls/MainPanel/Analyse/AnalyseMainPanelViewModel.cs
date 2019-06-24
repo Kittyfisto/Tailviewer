@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
@@ -35,29 +34,23 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private string _windowTitle;
 		private string _windowTitleSuffix;
 
-		public AnalyseMainPanelViewModel(IApplicationSettings applicationSettings,
+		public AnalyseMainPanelViewModel(IServiceContainer services,
+		                                 IApplicationSettings applicationSettings,
 		                                 IDataSources dataSources,
-		                                 IDispatcher dispatcher,
-		                                 ITaskScheduler taskScheduler,
-		                                 IAnalysisStorage analysisStorage,
-		                                 IPluginLoader pluginLoader)
+		                                 IAnalysisStorage analysisStorage)
 			: base(applicationSettings)
 		{
 			if (dataSources == null)
 				throw new ArgumentNullException(nameof(dataSources));
-			if (dispatcher == null)
-				throw new ArgumentNullException(nameof(dispatcher));
-			if (taskScheduler == null)
-				throw new ArgumentNullException(nameof(taskScheduler));
 			if (analysisStorage == null)
 				throw new ArgumentNullException(nameof(analysisStorage));
 
-			_dispatcher = dispatcher;
+			_dispatcher = services.Retrieve<IDispatcher>();
 			_sidePanels = new ISidePanelViewModel[]
 			{
-				_analysesSidePanel = new AnalysesSidePanel(dispatcher, taskScheduler, analysisStorage, pluginLoader),
+				_analysesSidePanel = new AnalysesSidePanel(services, analysisStorage),
 				_dataSelectionSidePanel = new AnalysisDataSelectionSidePanel(applicationSettings, dataSources),
-				_widgetsSidePanel = new WidgetsSidePanel(pluginLoader)
+				_widgetsSidePanel = new WidgetsSidePanel(services.Retrieve<IPluginLoader>())
 			};
 			_createAnalysisCommand = new DelegateCommand(CreateAnalysis);
 			_analysesSidePanel.PropertyChanged += AnalysesSidePanelOnPropertyChanged;

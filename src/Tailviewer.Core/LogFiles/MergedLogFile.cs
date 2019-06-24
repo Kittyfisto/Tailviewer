@@ -18,8 +18,13 @@ namespace Tailviewer.Core.LogFiles
 	///     <see cref="LogLine" />s which have no <see cref="LogLine.Timestamp" /> set (or who's parent doesn't)
 	///     are discarded from this representation.
 	/// </summary>
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMergedLogFile"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class MergedLogFile
+	internal sealed class MergedLogFile
 		: AbstractLogFile
 		, IMergedLogFile
 		, ILogFileListener
@@ -43,7 +48,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="scheduler"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="sources"></param>
-		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
+		internal MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
 			: this(scheduler, maximumWaitTime, sources.ToArray())
 		{
 		}
@@ -51,10 +56,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
+		/// <remarks>
+		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
+		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMergedLogFile"/>.
+		/// </remarks>
 		/// <param name="scheduler"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <param name="sources"></param>
-		public MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, params ILogFile[] sources)
+		internal MergedLogFile(ITaskScheduler scheduler, TimeSpan maximumWaitTime, params ILogFile[] sources)
 			: base(scheduler)
 		{
 			if (sources == null) throw new ArgumentNullException(nameof(sources));

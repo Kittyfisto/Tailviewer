@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -12,9 +11,9 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 
 		AnalyserPluginId ILogAnalyserPlugin.Id => Id;
 
-		public ILogAnalyser Create(ITaskScheduler scheduler, ILogFile source, ILogAnalyserConfiguration configuration)
+		public ILogAnalyser Create(IServiceContainer services, ILogFile source, ILogAnalyserConfiguration configuration)
 		{
-			return new EventsLogAnalyser(scheduler,
+			return new EventsLogAnalyser(services,
 				source,
 				TimeSpan.FromMilliseconds(500),
 				(EventsLogAnalyserConfiguration) configuration);

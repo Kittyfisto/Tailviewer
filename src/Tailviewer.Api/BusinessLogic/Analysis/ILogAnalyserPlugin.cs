@@ -8,6 +8,16 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///     The interface for a factory to create <see cref="ILogAnalyser" /> instances that perform
 	///     a specific analysis on a log file.
 	/// </summary>
+	/// <remarks>
+	///    Version 1
+	///    Initial definition
+	/// </remarks>
+	/// <remarks>
+	///    Version 2
+	///    Breaking changes:
+	///    - Changed Create() signature to accept an <see cref="IServiceContainer"/> instead of a <see cref="ITaskScheduler"/>
+	/// </remarks>
+	[PluginInterfaceVersion(2)]
 	public interface ILogAnalyserPlugin
 		: IPlugin
 	{
@@ -27,11 +37,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     An implementation should throw appropriate exceptions if the given <paramref name="configuration" />
 		///     is unacceptable (for example because the type doesn't fit, or some value is completely out of range).
 		/// </remarks>
-		/// <param name="scheduler"></param>
+		/// <param name="services">A service container which may be used to construct types required by this plugin and to inject custom parameters if necessary</param>
 		/// <param name="source"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		ILogAnalyser Create(ITaskScheduler scheduler,
+		ILogAnalyser Create(IServiceContainer services,
 			ILogFile source,
 			ILogAnalyserConfiguration configuration);
 	}

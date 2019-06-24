@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Core.Filters
+namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
 	/// The interface for a filter that is responsible for deciding whether or not a <see cref="LogLine"/> shall be visible

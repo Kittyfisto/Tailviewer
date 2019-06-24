@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using Tailviewer.Core.Parsers;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {

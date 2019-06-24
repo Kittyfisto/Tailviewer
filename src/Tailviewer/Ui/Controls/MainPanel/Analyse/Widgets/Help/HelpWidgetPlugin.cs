@@ -21,12 +21,12 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel CreateViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new HelpWidgetViewModel(template, dataSourceAnalyser);
+			return new HelpWidgetViewModel(services, template, dataSourceAnalyser);
 		}
 
-		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		public FrameworkElement CreateContentPresenterFor(IServiceContainer services, IWidgetViewModel viewModel)
 		{
 			return new HelpWidgetControl
 			{

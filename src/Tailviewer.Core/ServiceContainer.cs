@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+using System.Threading;
 using log4net;
+using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Core
 {
@@ -23,7 +28,28 @@ namespace Tailviewer.Core
 			_servicesByInterface = new Dictionary<Type, IServiceFactory>();
 		}
 
+		private ServiceContainer(Dictionary<Type, IServiceFactory> servicesByInterface)
+		{
+			_syncRoot = new object();
+			_servicesByInterface = servicesByInterface;
+		}
+
 		#region Implementation of IServiceContainer
+
+		/// <inheritdoc />
+		public IServiceContainer CreateChildContainer()
+		{
+			Dictionary<Type, IServiceFactory> services;
+			lock (_syncRoot)
+			{
+				services = new Dictionary<Type, IServiceFactory>(_servicesByInterface.Count);
+				foreach (var pair in _servicesByInterface)
+				{
+					services.Add(pair.Key, pair.Value);
+				}
+			}
+			return new ServiceContainer(services);
+		}
 
 		/// <inheritdoc />
 		public T Retrieve<T>() where T : class
@@ -48,7 +74,7 @@ namespace Tailviewer.Core
 					return false;
 				}
 			}
-			service = (T) factory.Retrieve();
+			service = (T) factory.Retrieve(this);
 
 			if (Log.IsDebugEnabled)
 				Log.DebugFormat("Retrieved service {0}: {1}", interfaceType, factory.ImplementationType);
@@ -56,13 +82,66 @@ namespace Tailviewer.Core
 			return true;
 		}
 
-		#endregion
+		/// <inheritdoc />
+		public T TryRetrieve<T>() where T : class
+		{
+			if (!TryRetrieve(out T service))
+				return null;
 
-		/// <summary>
-		///    Registers an object as an implementation of a particular service interface <typeparamref name="T"/>.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="service"></param>
+			return service;
+		}
+
+		/// <inheritdoc />
+		public ILogFile CreateEventLogFile(string fileName)
+		{
+			return new EventLogFile(Retrieve<ITaskScheduler>(), fileName);
+		}
+
+		/// <inheritdoc />
+		public ILogFile CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
+		{
+			return new FilteredLogFile(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
+			                           null,
+			                           filter);
+		}
+
+		/// <inheritdoc />
+		public ILogFileProxy CreateLogFileProxy(TimeSpan maximumWaitTime, ILogFile source)
+		{
+			return new LogFileProxy(Retrieve<ITaskScheduler>(), maximumWaitTime, source);
+		}
+
+		/// <inheritdoc />
+		public IMergedLogFile CreateMergedLogFile(TimeSpan maximumWaitTime, IEnumerable<ILogFile> sources)
+		{
+			return new MergedLogFile(Retrieve<ITaskScheduler>(),
+			                         maximumWaitTime,
+			                         sources);
+		}
+
+		/// <inheritdoc />
+		public ILogFile CreateMultiLineLogFile(TimeSpan maximumWaitTime, ILogFile source)
+		{
+			return new MultiLineLogFile(Retrieve<ITaskScheduler>(), source, maximumWaitTime);
+		}
+
+		/// <inheritdoc />
+		public ILogFile CreateNoThrowLogFile(string pluginName, ILogFile source)
+		{
+			return new NoThrowLogFile(source, pluginName);
+		}
+
+		/// <inheritdoc />
+		public ILogFile CreateTextLogFile(string fileName)
+		{
+			return new TextLogFile(Retrieve<ITaskScheduler>(),
+			                       fileName,
+			                       TryRetrieve<ITimestampParser>(),
+			                       TryRetrieve<ILogLineTranslator>(),
+			                       TryRetrieve<Encoding>());
+		}
+
+		/// <inheritdoc />
 		public void RegisterInstance<T>(T service)
 			where T : class
 		{
@@ -70,19 +149,7 @@ namespace Tailviewer.Core
 				throw new ArgumentNullException(nameof(service));
 
 			var interfaceType = typeof(T);
-			IServiceFactory existingFactory;
-
-			lock (_syncRoot)
-			{
-				if (_servicesByInterface.TryGetValue(interfaceType, out existingFactory))
-				{
-					_servicesByInterface[interfaceType] = new Singleton<T>(service);
-				}
-				else
-				{
-					_servicesByInterface.Add(interfaceType, new Singleton<T>(service));
-				}
-			}
+			RegisterFactory(interfaceType, new Singleton<T>(service), out var existingFactory);
 
 			if (Log.IsDebugEnabled)
 			{
@@ -102,11 +169,65 @@ namespace Tailviewer.Core
 			}
 		}
 
+		#endregion
+
+		/// <summary>
+		///     Registers a factory which creates new objects whenever <see cref="Retrieve{T}" /> is called.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="factory"></param>
+		public void RegisterType<T>(Func<IServiceContainer, T> factory) where T : class
+		{
+			if (factory == null)
+				throw new ArgumentNullException(nameof(factory));
+
+			RegisterFactory(typeof(T), new Factory<T>(factory), out _);
+
+			// TODO: Log
+		}
+
+		private void RegisterFactory(Type interfaceType, IServiceFactory newFactory, out IServiceFactory existingFactory)
+		{
+			lock (_syncRoot)
+			{
+				if (_servicesByInterface.TryGetValue(interfaceType, out existingFactory))
+				{
+					_servicesByInterface[interfaceType] = newFactory;
+				}
+				else
+				{
+					_servicesByInterface.Add(interfaceType, newFactory);
+				}
+			}
+		}
+
 		private interface IServiceFactory
 		{
 			Type ImplementationType { get; }
 
-			object Retrieve();
+			object Retrieve(ServiceContainer container);
+		}
+
+		private sealed class Factory<T>
+			: IServiceFactory
+		{
+			private readonly Func<IServiceContainer, T> _factory;
+
+			public Factory(Func<IServiceContainer, T> factory)
+			{
+				_factory = factory;
+			}
+
+			#region Implementation of IServiceFactory
+
+			public Type ImplementationType => null;
+
+			public object Retrieve(ServiceContainer container)
+			{
+				return _factory(container);
+			}
+
+			#endregion
 		}
 
 		private sealed class Singleton<T>
@@ -126,7 +247,7 @@ namespace Tailviewer.Core
 				get { return _instance.GetType(); }
 			}
 
-			public object Retrieve()
+			public object Retrieve(ServiceContainer _)
 			{
 				return _instance;
 			}

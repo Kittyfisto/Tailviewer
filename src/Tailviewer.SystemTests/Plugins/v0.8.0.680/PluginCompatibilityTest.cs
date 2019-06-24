@@ -23,42 +23,42 @@ namespace Tailviewer.SystemTests.Plugins.v0._8._0._680
 		public void TestLoadFileFormatPlugin()
 		{
 			// CMD> Tailviewer.PluginCreator.exe FileFormatPlugin  Tailviewer.BusinessLogic.Plugins.IFileFormatPlugin 0.8.0.680-beta
-			Load<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin.0.0.tvp");
+			ShouldNotBeLoaded<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin.0.0.tvp");
 		}
 
 		[Test]
 		public void TestLoadFileFormatPluginAndLogFileImplementation()
 		{
 			// CMD> Tailviewer.PluginCreator.exe FileFormatPlugin+LogFile  Tailviewer.BusinessLogic.Plugins.IFileFormatPlugin,Tailviewer.BusinessLogic.LogFiles.ILogFile 0.8.0.680-beta
-			Load<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin+LogFile.0.0.tvp");
+			ShouldNotBeLoaded<IFileFormatPlugin>(new Version(0, 8, 0, 680), "FileFormatPlugin+LogFile.0.0.tvp");
 		}
 
 		[Test]
 		public void TestLoadDataSourceAnalyserPlugin()
 		{
 			// CMD> Tailviewer.PluginCreator.exe DataSourceAnalyserPlugin Tailviewer.BusinessLogic.Analysis.IDataSourceAnalyserPlugin 0.8.0.680-beta
-			Load<IDataSourceAnalyserPlugin>(new Version(0, 8, 0, 680), "DataSourceAnalyserPlugin.0.0.tvp");
+			ShouldNotBeLoaded<IDataSourceAnalyserPlugin>(new Version(0, 8, 0, 680), "DataSourceAnalyserPlugin.0.0.tvp");
 		}
 
 		[Test]
 		public void TestLoadDataSourceAnalyserPluginAndDataSourceAnalyserImplementation()
 		{
 			// CMD> Tailviewer.PluginCreator.exe DataSourceAnalyserPlugin+DataSourceAnalyser  Tailviewer.BusinessLogic.Analysis.IDataSourceAnalyserPlugin,Tailviewer.BusinessLogic.Analysis.IDataSourceAnalyser 0.8.0.680-beta
-			Load<IDataSourceAnalyserPlugin>(new Version(0, 8, 0, 680), "DataSourceAnalyserPlugin+DataSourceAnalyser.0.0.tvp");
+			ShouldNotBeLoaded<IDataSourceAnalyserPlugin>(new Version(0, 8, 0, 680), "DataSourceAnalyserPlugin+DataSourceAnalyser.0.0.tvp");
 		}
 
 		[Test]
 		public void TestLoadLogAnalyserPlugin()
 		{
 			// CMD> LogAnalyserPlugin  Tailviewer.BusinessLogic.Analysis.ILogAnalyserPlugin 0.8.0.680-beta
-			Load<ILogAnalyserPlugin>(new Version(0, 8, 0, 680), "LogAnalyserPlugin.0.0.tvp");
+			ShouldNotBeLoaded<ILogAnalyserPlugin>(new Version(0, 8, 0, 680), "LogAnalyserPlugin.0.0.tvp");
 		}
 
 		[Test]
 		public void TestLoadLogAnalyserPluginAndLogAnalyserImplementation()
 		{
 			// CMD> LogAnalyserPlugin  Tailviewer.BusinessLogic.Analysis.ILogAnalyserPlugin 0.8.0.680-beta
-			Load<ILogAnalyserPlugin>(new Version(0, 8, 0, 680), "LogAnalyserPlugin+LogAnalyser.0.0.tvp");
+			ShouldNotBeLoaded<ILogAnalyserPlugin>(new Version(0, 8, 0, 680), "LogAnalyserPlugin+LogAnalyser.0.0.tvp");
 		}
 	}
 }

@@ -11,8 +11,8 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestPluginVersion()
 		{
-			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IWidgetPlugin)).Should().Be(PluginInterfaceVersion.First,
-			                                                                                       "because the widget plugin hasn't been changed yet");
+			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IWidgetPlugin)).Should().Be(new PluginInterfaceVersion(2),
+			                                                                                       "because the widget plugin been broken once");
 		}
 	}
 }

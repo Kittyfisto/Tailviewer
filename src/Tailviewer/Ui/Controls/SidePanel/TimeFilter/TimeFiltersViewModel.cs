@@ -4,6 +4,7 @@
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.CompilerServices;
+	using Tailviewer.BusinessLogic.Filters;
 	using Tailviewer.Core.Filters;
 	using Tailviewer.Core.Settings;
 

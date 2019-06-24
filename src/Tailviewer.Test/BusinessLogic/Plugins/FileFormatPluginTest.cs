@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestFileFormatPluginVersion()
 		{
-			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)).Should().Be(PluginInterfaceVersion.First);
+			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(IFileFormatPlugin)).Should().Be(new PluginInterfaceVersion(2), "because this interface has been broken once");
 		}
 	}
 }

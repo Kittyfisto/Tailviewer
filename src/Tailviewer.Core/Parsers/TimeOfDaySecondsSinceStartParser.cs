@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Parsers
 {

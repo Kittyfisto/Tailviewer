@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.Analysis.QuickInfo.BusinessLogic;
 using Tailviewer.Analysis.QuickInfo.Ui;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 
 namespace Tailviewer.Analysis.QuickInfo.Test.Ui
@@ -13,6 +14,14 @@ namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 	[TestFixture]
 	public sealed class QuickInfoWidgetViewModelTest
 	{
+		private ServiceContainer _services;
+
+		[SetUp]
+		public void Setup()
+		{
+			_services = new ServiceContainer();
+		}
+
 		[Test]
 		public void TestConstructionFromTemplate()
 		{
@@ -34,7 +43,7 @@ namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 			});
 			analyser.Setup(x => x.Configuration).Returns(analyserConfiguration);
 
-			var viewModel = new QuickInfoWidgetViewModel(template, analyser.Object);
+			var viewModel = new QuickInfoWidgetViewModel(_services, template, analyser.Object);
 			viewModel.QuickInfos.Should().HaveCount(1);
 			var quickInfo = viewModel.QuickInfos.First();
 			quickInfo.Should().NotBeNull();
@@ -54,7 +63,7 @@ namespace Tailviewer.Analysis.QuickInfo.Test.Ui
 			var analyser = new Mock<IDataSourceAnalyser>();
 			var analyserConfiguration = new QuickInfoAnalyserConfiguration();
 			analyser.Setup(x => x.Configuration).Returns(analyserConfiguration);
-			var viewModel = new QuickInfoWidgetViewModel(template, analyser.Object);
+			var viewModel = new QuickInfoWidgetViewModel(_services, template, analyser.Object);
 			using (var monitor = viewModel.Monitor())
 			{
 				viewModel.AddQuickInfoCommand.Execute(null);

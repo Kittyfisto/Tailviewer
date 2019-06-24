@@ -22,12 +22,12 @@ namespace Tailviewer.Analysis.Count.Ui
 
 		public Geometry Icon => null;
 
-		public IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
+		public IWidgetViewModel CreateViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser)
 		{
-			return new LogEntryCountWidgetViewModel(template, dataSourceAnalyser);
+			return new LogEntryCountWidgetViewModel(services, template, dataSourceAnalyser);
 		}
 
-		public FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel)
+		public FrameworkElement CreateContentPresenterFor(IServiceContainer services, IWidgetViewModel viewModel)
 		{
 			return new LogEntryCountWidgetControl
 			{

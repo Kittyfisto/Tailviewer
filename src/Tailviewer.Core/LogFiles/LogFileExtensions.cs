@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 
@@ -213,10 +214,10 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="logLineFilter"></param>
 		/// <param name="logEntryFilter"></param>
 		/// <returns></returns>
-		public static FilteredLogFile AsFiltered(this ILogFile logFile,
-		                                         ITaskScheduler scheduler,
-		                                         ILogLineFilter logLineFilter,
-		                                         ILogEntryFilter logEntryFilter)
+		internal static FilteredLogFile AsFiltered(this ILogFile logFile,
+		                                           ITaskScheduler scheduler,
+		                                           ILogLineFilter logLineFilter,
+		                                           ILogEntryFilter logEntryFilter)
 		{
 			return AsFiltered(logFile, scheduler, logLineFilter, logEntryFilter, TimeSpan.FromMilliseconds(value: 10));
 		}
@@ -230,11 +231,11 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="logEntryFilter"></param>
 		/// <param name="maximumWaitTime"></param>
 		/// <returns></returns>
-		public static FilteredLogFile AsFiltered(this ILogFile logFile,
-		                                         ITaskScheduler scheduler,
-		                                         ILogLineFilter logLineFilter,
-		                                         ILogEntryFilter logEntryFilter,
-		                                         TimeSpan maximumWaitTime)
+		internal static FilteredLogFile AsFiltered(this ILogFile logFile,
+		                                           ITaskScheduler scheduler,
+		                                           ILogLineFilter logLineFilter,
+		                                           ILogEntryFilter logEntryFilter,
+		                                           TimeSpan maximumWaitTime)
 		{
 			var file = new FilteredLogFile(scheduler, maximumWaitTime, logFile, logLineFilter, logEntryFilter);
 			return file;

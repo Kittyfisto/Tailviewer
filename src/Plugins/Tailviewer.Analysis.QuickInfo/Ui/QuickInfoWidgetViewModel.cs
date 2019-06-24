@@ -22,9 +22,10 @@ namespace Tailviewer.Analysis.QuickInfo.Ui
 		private readonly ObservableCollection<QuickInfoViewModel> _quickInfos;
 		private readonly DelegateCommand2 _addQuickInfoCommand;
 
-		public QuickInfoWidgetViewModel(IWidgetTemplate template,
-			IDataSourceAnalyser dataSourceAnalyser)
-			: base(template, dataSourceAnalyser)
+		public QuickInfoWidgetViewModel(IServiceContainer services,
+		                                IWidgetTemplate template,
+		                                IDataSourceAnalyser dataSourceAnalyser)
+			: base(services, template, dataSourceAnalyser)
 		{
 			_viewConfiguration = template.Configuration as QuickInfoWidgetConfiguration ?? new QuickInfoWidgetConfiguration();
 			_analyserConfiguration = AnalyserConfiguration as QuickInfoAnalyserConfiguration ?? new QuickInfoAnalyserConfiguration();

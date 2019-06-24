@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.Events.BusinessLogic;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.LogTables;
 
@@ -17,6 +18,8 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 		{
 			_scheduler = new ManualTaskScheduler();
 			_source = new InMemoryLogFile();
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_scheduler);
 		}
 
 		[TearDown]
@@ -26,11 +29,12 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 
 		private ManualTaskScheduler _scheduler;
 		private InMemoryLogFile _source;
+		private ServiceContainer _services;
 
 		[Test]
 		public void TestConstruction1()
 		{
-			using (var analyser = new EventsLogAnalyser(_scheduler,
+			using (var analyser = new EventsLogAnalyser(_services,
 				_source,
 				TimeSpan.Zero,
 				new EventsLogAnalyserConfiguration()
@@ -57,7 +61,7 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 					}
 				}
 			};
-			new Action(() => new EventsLogAnalyser(_scheduler,
+			new Action(() => new EventsLogAnalyser(_services,
 				_source,
 				TimeSpan.Zero,
 				settings)).Should().NotThrow("becuase the analyser should just ignore invalid event definitions");
@@ -75,7 +79,7 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 			};
 			_source.AddEntry("Found 42 things", LevelFlags.None);
 
-			using (var analyser = new EventsLogAnalyser(_scheduler,
+			using (var analyser = new EventsLogAnalyser(_services,
 				_source,
 				TimeSpan.Zero,
 				settings
@@ -98,7 +102,7 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 			};
 			_source.AddEntry("Found tmp things", LevelFlags.None);
 
-			using (var analyser = new EventsLogAnalyser(_scheduler,
+			using (var analyser = new EventsLogAnalyser(_services,
 				_source,
 				TimeSpan.Zero,
 				settings
@@ -119,7 +123,7 @@ namespace Tailviewer.Analysis.Events.Test.BusinessLogic
 					new EventConfiguration {FilterExpression = @"Found (\d+) things"}
 				}
 			};
-			using (var analyser = new EventsLogAnalyser(_scheduler,
+			using (var analyser = new EventsLogAnalyser(_services,
 				_source,
 				TimeSpan.Zero,
 				settings

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
@@ -15,6 +14,16 @@ namespace Tailviewer.Ui.Analysis
 	///     A widget usually works in conjunction with an analyser: This can be either a <see cref="ILogAnalyser"/>
 	///     or <see cref="IDataSourceAnalyser"/>.
 	/// </remarks>
+	/// <remarks>
+	///    Version 1
+	///    Initial definition
+	/// </remarks>
+	/// <remarks>
+	///    Version 2
+	///    Breaking changes:
+	///    - Changed CreateViewModel() and CreateContentPresenterFor() signature to accept an <see cref="IServiceContainer"/>
+	/// </remarks>
+	[PluginInterfaceVersion(2)]
 	public interface IWidgetPlugin
 		: IPlugin
 	{
@@ -56,16 +65,18 @@ namespace Tailviewer.Ui.Analysis
 		///     <see cref="IDataSourceAnalyser.Configuration" /> if the user made changes to
 		///     the configuration as well as to present results from <see cref="IDataSourceAnalyser.Result" />.
 		/// </summary>
+		/// <param name="services">A service container which may be used to construct types required by this plugin and to inject custom parameters if necessary</param>
 		/// <param name="template"></param>
 		/// <param name="dataSourceAnalyser"></param>
 		/// <returns></returns>
-		IWidgetViewModel CreateViewModel(IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser);
+		IWidgetViewModel CreateViewModel(IServiceContainer services, IWidgetTemplate template, IDataSourceAnalyser dataSourceAnalyser);
 
 		/// <summary>
 		///     Creates a new control which presents the given view model.
 		/// </summary>
+		/// <param name="services">A service container which may be used to construct types required by this plugin and to inject custom parameters if necessary</param>
 		/// <param name="viewModel"></param>
 		/// <returns></returns>
-		FrameworkElement CreateContentPresenterFor(IWidgetViewModel viewModel);
+		FrameworkElement CreateContentPresenterFor(IServiceContainer services, IWidgetViewModel viewModel);
 	}
 }

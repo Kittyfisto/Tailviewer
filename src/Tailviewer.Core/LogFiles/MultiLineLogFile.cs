@@ -19,10 +19,15 @@ namespace Tailviewer.Core.LogFiles
 	///     Two lines are defined to belong together if the first line contains a log
 	///     level and the next one does not.
 	/// </remarks>
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMultiLineLogFile"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class MultiLineLogFile
+	internal sealed class MultiLineLogFile
 		: AbstractLogFile
-			, ILogFileListener
+		, ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -45,6 +50,10 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
+		/// <remarks>
+		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
+		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateMultiLineLogFile"/>.
+		/// </remarks>
 		/// <param name="taskScheduler"></param>
 		/// <param name="source"></param>
 		/// <param name="maximumWaitTime"></param>

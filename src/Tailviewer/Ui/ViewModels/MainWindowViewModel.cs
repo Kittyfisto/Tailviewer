@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Metrolib;
@@ -70,28 +69,25 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly ICommand _goToPreviousDataSourceCommand;
 		private readonly ICommand _goToNextDataSourceCommand;
 
-		public MainWindowViewModel(IApplicationSettings settings,
+		public MainWindowViewModel(IServiceContainer services,
+		                           IApplicationSettings settings,
 		                           DataSources dataSources,
 		                           QuickFilters quickFilters,
 		                           IActionCenter actionCenter,
 		                           IAutoUpdater updater,
-		                           ITaskScheduler taskScheduler,
-		                           IAnalysisStorage analysisStorage,
-		                           IDispatcher dispatcher,
-		                           IPluginLoader pluginLoader)
+		                           IAnalysisStorage analysisStorage)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 			if (updater == null) throw new ArgumentNullException(nameof(updater));
-			if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
 
 			_applicationSettings = settings;
 
-			_plugins = pluginLoader.Plugins;
+			_plugins = services.Retrieve<IPluginLoader>().Plugins;
 			_settings = new SettingsMainPanelViewModel(settings);
-			_actionCenterViewModel = new ActionCenterViewModel(dispatcher, actionCenter);
+			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
 
-			_analysePanel = new AnalyseMainPanelViewModel(_applicationSettings, dataSources, dispatcher, taskScheduler, analysisStorage, pluginLoader);
+			_analysePanel = new AnalyseMainPanelViewModel(services, _applicationSettings, dataSources, analysisStorage);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
@@ -107,7 +103,7 @@ namespace Tailviewer.Ui.ViewModels
 			_timer.Tick += TimerOnTick;
 			_timer.Start();
 
-			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, dispatcher);
+			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
 			_showLogCommand = new DelegateCommand(ShowLog);
 			_showGoToLineCommand = new DelegateCommand2(ShowGoToLine);
 			_showQuickNavigationCommand = new DelegateCommand2(ShowQuickNavigation);

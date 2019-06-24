@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogTables;
 
-namespace Tailviewer.Core.Filters
+namespace Tailviewer.BusinessLogic.Filters
 {
 	/// <summary>
-	/// The interface for a filter that is responsible for deciding whether or not an entire <see cref="LogEntry"/> shall be visible
+	/// The interface for a filter that is responsible for deciding whether or not an entire log entry shall be visible
 	/// or not.
 	/// </summary>
 	public interface ILogEntryFilter

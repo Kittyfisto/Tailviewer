@@ -24,7 +24,7 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 	///     one LogLine, but not more).
 	/// </remarks>
 	public sealed class EventsLogAnalyser
-		: LogAnalyser
+		: AbstractLogAnalyser
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -39,17 +39,16 @@ namespace Tailviewer.Analysis.Events.BusinessLogic
 		private readonly ILogFile _source;
 		private readonly IPeriodicTask _task;
 
-		public EventsLogAnalyser(ITaskScheduler scheduler,
+		public EventsLogAnalyser(IServiceContainer services,
 			ILogFile source,
 			TimeSpan maximumWaitTime,
 			EventsLogAnalyserConfiguration configuration)
+			: base(services)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
 			if (configuration == null)
 				throw new ArgumentNullException(nameof(configuration));
 
-			_scheduler = scheduler;
+			_scheduler = services.Retrieve<ITaskScheduler>();
 			_source = source;
 			_buffer = new LogLine[MaximumLineCount];
 			_events = new InMemoryLogTable();

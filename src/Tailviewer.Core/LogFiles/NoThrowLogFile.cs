@@ -14,8 +14,13 @@ namespace Tailviewer.Core.LogFiles
 	///     rely on that to never happen. This implementation guarantuees the nothrow contract and also
 	///     writes warnings to the log file.
 	/// </summary>
+	/// <remarks>
+	///    Plugin authors are deliberately prevented from instantiating this type directly because it's constructor signature may change
+	///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateNoThrowLogFile"/>
+	///    who's signature is guaranteed to never change.
+	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	public sealed class NoThrowLogFile
+	internal sealed class NoThrowLogFile
 		: ILogFile
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

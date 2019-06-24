@@ -12,7 +12,7 @@ namespace Tailviewer.Analysis.DataSources.BusinessLogic
 
 		AnalyserPluginId IDataSourceAnalyserPlugin.Id => Id;
 
-		public IDataSourceAnalyser Create(AnalyserId id, ITaskScheduler scheduler, ILogFile logFile,
+		public IDataSourceAnalyser Create(IServiceContainer services, AnalyserId id, ILogFile logFile,
 			ILogAnalyserConfiguration configuration)
 		{
 			return new DataSourcesAnalyser(id, TimeSpan.FromMilliseconds(100));

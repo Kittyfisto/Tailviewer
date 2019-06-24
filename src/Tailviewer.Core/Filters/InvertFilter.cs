@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.Filters

@@ -45,13 +45,15 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		private IWidgetLayoutViewModel _layout;
 		private PageLayout _pageLayout;
 		private bool _hasWidgets;
+		private readonly IServiceContainer _services;
 
-		public AnalysisPageViewModel(AnalysisId id,
+		public AnalysisPageViewModel(IServiceContainer services,
+		                             AnalysisId id,
 		                             PageTemplate template,
 		                             IAnalysis analysis,
-		                             IAnalysisStorage analysisStorage,
-		                             IPluginLoader pluginLoader)
+		                             IAnalysisStorage analysisStorage)
 		{
+			_services = services ?? throw new ArgumentNullException(nameof(services));
 			_id = id;
 			_template = template ?? throw new ArgumentNullException(nameof(template));
 			_analysis = analysis ?? throw new ArgumentNullException(nameof(analysis));
@@ -62,7 +64,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 
 			PageLayout = template.Layout?.PageLayout ?? PageLayout.WrapHorizontal;
 
-			var widgetPlugins = LoadRelevantPlugins(pluginLoader);
+			var widgetPlugins = LoadRelevantPlugins(services.Retrieve<IPluginLoader>());
 			foreach (var widgetTemplate in template.Widgets)
 			{
 				if (TryGetAnalyser(widgetTemplate.AnalyserId, out var analyser))
@@ -252,7 +254,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse
 		/// <param name="analyser"></param>
 		private void AddExistingWidget(IWidgetPlugin plugin, IWidgetTemplate widgetTemplate, IDataSourceAnalyser analyser)
 		{
-			var widgetViewModel = new WidgetViewModelProxy(plugin, widgetTemplate, analyser);
+			var widgetViewModel = new WidgetViewModelProxy(_services, plugin, widgetTemplate, analyser);
 			_analysersPerWidget.Add(widgetViewModel, analyser);
 
 			Add(widgetViewModel);

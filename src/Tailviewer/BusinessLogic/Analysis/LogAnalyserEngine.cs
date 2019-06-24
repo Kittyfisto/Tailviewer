@@ -21,15 +21,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 		private readonly List<IDataSourceAnalysisHandle> _analyses;
 		private readonly Dictionary<AnalyserPluginId, ILogAnalyserPlugin> _factoriesById;
-		private readonly ITaskScheduler _scheduler;
 		private readonly object _syncRoot;
+		private readonly IServiceContainer _services;
 
-		public LogAnalyserEngine(ITaskScheduler scheduler, IPluginLoader pluginLoader = null)
+		public LogAnalyserEngine(IServiceContainer services, IPluginLoader pluginLoader = null)
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException(nameof(scheduler));
-
-			_scheduler = scheduler;
+			_services = services ?? throw new ArgumentNullException(nameof(services));
 			_analyses = new List<IDataSourceAnalysisHandle>();
 			_syncRoot = new object();
 			_factoriesById = new Dictionary<AnalyserPluginId, ILogAnalyserPlugin>();
@@ -114,7 +111,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			ILogAnalyserPlugin plugin;
 			if (_factoriesById.TryGetValue(id, out plugin))
 			{
-				analysis = new LogAnalyserProxy(_scheduler, logFile, plugin, configuration, listener);
+				analysis = new LogAnalyserProxy(_services, logFile, plugin, configuration, listener);
 			}
 			else
 			{

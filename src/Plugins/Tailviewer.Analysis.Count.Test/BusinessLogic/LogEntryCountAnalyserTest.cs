@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Analysis.Count.BusinessLogic;
 using Tailviewer.BusinessLogic;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Settings;
 
@@ -14,18 +15,21 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 	{
 		private ManualTaskScheduler _scheduler;
 		private InMemoryLogFile _logFile;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
 		{
 			_scheduler = new ManualTaskScheduler();
+			_services = new ServiceContainer();
+			_services.RegisterInstance<ITaskScheduler>(_scheduler);
 			_logFile = new InMemoryLogFile();
 		}
 
 		[Test]
 		public void TestAnalyseEmpty()
 		{
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration());
@@ -40,7 +44,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 		public void TestAnalyseOneEntry()
 		{
 			_logFile.AddEntry("foobar", LevelFlags.All);
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration());
@@ -53,7 +57,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 		[Test]
 		public void TestAnalyseAddEntry()
 		{
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration());
@@ -74,7 +78,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 		{
 			_logFile.AddEntry("foobar", LevelFlags.All);
 
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration
@@ -96,7 +100,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 		[Test]
 		public void TestDispose1()
 		{
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration());
@@ -112,7 +116,7 @@ namespace Tailviewer.Analysis.Count.Test.BusinessLogic
 		[Test]
 		public void TestDispose2()
 		{
-			var analyser = new LogEntryCountAnalyser(_scheduler,
+			var analyser = new LogEntryCountAnalyser(_services,
 				_logFile,
 				TimeSpan.Zero,
 				new LogEntryCountAnalyserConfiguration

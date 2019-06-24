@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -26,18 +25,19 @@ namespace Tailviewer.BusinessLogic.Analysis
 		private readonly List<IDataSourceAnalyser> _dataSourceAnalysers;
 		private readonly Dictionary<AnalyserPluginId, IDataSourceAnalyserPlugin> _factoriesById;
 		private readonly ILogAnalyserEngine _logAnalyserEngine;
+		private readonly IServiceContainer _services;
 
 		private readonly object _syncRoot;
-		private readonly ITaskScheduler _scheduler;
 
-		public DataSourceAnalyserEngine(ITaskScheduler scheduler, ILogAnalyserEngine logAnalyserEngine, IPluginLoader pluginLoader = null)
+		public DataSourceAnalyserEngine(IServiceContainer services, ILogAnalyserEngine logAnalyserEngine)
 		{
-			_scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+			_services = services ?? throw new ArgumentNullException(nameof(services));
 			_logAnalyserEngine = logAnalyserEngine ?? throw new ArgumentNullException(nameof(logAnalyserEngine));
 			_syncRoot = new object();
 			_dataSourceAnalysers = new List<IDataSourceAnalyser>();
 			_factoriesById = new Dictionary<AnalyserPluginId, IDataSourceAnalyserPlugin>();
 
+			var pluginLoader = services.TryRetrieve<IPluginLoader>();
 			if (pluginLoader != null)
 				foreach (var plugin in pluginLoader.LoadAllOfType<IDataSourceAnalyserPlugin>())
 					RegisterFactory(plugin);
@@ -50,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 				// As usual, we don't trust plugins to behave nice and therefore we wrap them in a proxy
 				// which handles all exceptions thrown by the plugin.
-				var analyser = new DataSourceAnalyserProxy(plugin, template.Id, _scheduler, logFile, template.Configuration);
+				var analyser = new DataSourceAnalyserProxy(plugin, template.Id, _services, logFile, template.Configuration);
 				Add(analyser);
 				return analyser;
 			}

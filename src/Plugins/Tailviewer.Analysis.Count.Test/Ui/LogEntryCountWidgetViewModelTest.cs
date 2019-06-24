@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Analysis.Count.Ui;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.Core;
 using Tailviewer.Core.Analysis;
 using Tailviewer.Ui.Analysis;
 
@@ -12,11 +13,13 @@ namespace Tailviewer.Analysis.Count.Test.Ui
 	public sealed class LogEntryCountWidgetViewModelTest
 	{
 		private Mock<IDataSourceAnalyser> _analyser;
+		private ServiceContainer _services;
 
 		[SetUp]
 		public void Setup()
 		{
 			_analyser = new Mock<IDataSourceAnalyser>();
+			_services = new ServiceContainer();
 		}
 
 		[Test]
@@ -25,7 +28,7 @@ namespace Tailviewer.Analysis.Count.Test.Ui
 		{
 			var template = new WidgetTemplate
 			{};
-			var model = new LogEntryCountWidgetViewModel(template, _analyser.Object);
+			var model = new LogEntryCountWidgetViewModel(_services, template, _analyser.Object);
 			using (var monitor = model.Monitor())
 			{
 				model.Title = "Hello there...";
@@ -47,7 +50,7 @@ namespace Tailviewer.Analysis.Count.Test.Ui
 			{
 				Configuration = widgetConfiguration
 			};
-			var model = new LogEntryCountWidgetViewModel(template, _analyser.Object);
+			var model = new LogEntryCountWidgetViewModel(_services, template, _analyser.Object);
 			using (var monitor = model.Monitor())
 			{
 				model.Caption = "Hello there...";

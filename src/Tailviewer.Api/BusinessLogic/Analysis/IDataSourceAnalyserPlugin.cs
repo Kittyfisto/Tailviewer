@@ -15,7 +15,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 	///    Breaking changes:
 	///    - Added ITaskScheduler parameter to Create method
 	/// </remarks>
-	[PluginInterfaceVersion(2)]
+	/// <remarks>
+	///    Version 3
+	///    Breaking changes:
+	///    - Changed Create() signature to accept an <see cref="IServiceContainer"/> instead of a <see cref="ITaskScheduler"/>
+	/// </remarks>
+	[PluginInterfaceVersion(3)]
 	public interface IDataSourceAnalyserPlugin
 		: IPlugin
 	{
@@ -35,11 +40,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 		///     <see cref="ILogAnalyser" />
 		///     (which is why the latter exists), but allows analysis data to be carried over in between changes.
 		/// </remarks>
+		/// <param name="services">A service container which may be used to construct types required by this plugin and to inject custom parameters if necessary</param>
 		/// <param name="id">TODO: Remove this parameter</param>
-		/// <param name="scheduler"></param>
 		/// <param name="logFile"/>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		IDataSourceAnalyser Create(AnalyserId id, ITaskScheduler scheduler, ILogFile logFile, ILogAnalyserConfiguration configuration);
+		IDataSourceAnalyser Create(IServiceContainer services, AnalyserId id, ILogFile logFile, ILogAnalyserConfiguration configuration);
 	}
 }

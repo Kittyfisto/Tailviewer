@@ -8,6 +8,16 @@ namespace Tailviewer.BusinessLogic.Plugins
 	///     This interface may be implemented to add support for custom log file formats which are not simple
 	///     text based files.
 	/// </summary>
+	/// <remarks>
+	///    Version 1
+	///    Initial definition
+	/// </remarks>
+	/// <remarks>
+	///    Version 2
+	///    Breaking changes:
+	///    - Changed Open() signature to accept an <see cref="IServiceContainer"/> instead of a <see cref="ITaskScheduler"/>
+	/// </remarks>
+	[PluginInterfaceVersion(2)]
 	public interface IFileFormatPlugin
 		: IPlugin
 	{
@@ -39,9 +49,9 @@ namespace Tailviewer.BusinessLogic.Plugins
 		///     If this method throws, then it is assumed that an error occured, which is reported to the user.
 		///     If this method returns null, then no error is shown the user.
 		/// </remarks>
+		/// <param name="services">A service container which may be used to construct types required by this plugin and to inject custom parameters if necessary</param>
 		/// <param name="fileName">The full file path to the file to be opened.</param>
-		/// <param name="taskScheduler">A task scheduler that may be used to perform </param>
 		/// <returns></returns>
-		ILogFile Open(string fileName, ITaskScheduler taskScheduler);
+		ILogFile Open(IServiceContainer services, string fileName);
 	}
 }
