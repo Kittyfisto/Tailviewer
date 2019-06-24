@@ -147,11 +147,17 @@ namespace Tailviewer
 			var bookmarks = Bookmarks.Create();
 			bookmarks.Restore();
 
+			var services = new ServiceContainer();
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
 			using (var serialTaskScheduler = new SerialTaskScheduler())
 			{
+				services.RegisterInstance<ITaskScheduler>(taskScheduler);
+				services.RegisterInstance<ISerialTaskScheduler>(serialTaskScheduler);
+
 				var filesystem = new Filesystem(serialTaskScheduler, taskScheduler);
+				services.RegisterInstance<IFilesystem>(filesystem);
+
 				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath))
 				{
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
@@ -173,25 +179,25 @@ namespace Tailviewer
 								// but we also want to select it so the user can view it immediately, regardless
 								// of what was selected previously.
 								var dataSource = dataSources.AddFile(fileToOpen);
-									settings.DataSources.SelectedItem = dataSource.Id;
-								}
-								else
-								{
-									Log.ErrorFormat("File '{0}' does not exist, won't open it!", fileToOpen);
-								}
+								settings.DataSources.SelectedItem = dataSource.Id;
 							}
-
-							if (settings.AutoUpdate.CheckForUpdates)
+							else
 							{
-								// Our initial check for updates is not due to a user action
-								// and therefore we don't need to show a notification when the
-								// application is up-to-date.
-								updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+								Log.ErrorFormat("File '{0}' does not exist, won't open it!", fileToOpen);
 							}
+						}
 
-							var quickFilters = new QuickFilters(settings.QuickFilters);
-							actionCenter.Add(Build.Current);
-							actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
+						if (settings.AutoUpdate.CheckForUpdates)
+						{
+							// Our initial check for updates is not due to a user action
+							// and therefore we don't need to show a notification when the
+							// application is up-to-date.
+							updater.CheckForUpdates(addNotificationWhenUpToDate: false);
+						}
+
+						var quickFilters = new QuickFilters(settings.QuickFilters);
+						actionCenter.Add(Build.Current);
+						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
 						var application = new App();
 						var dispatcher = Dispatcher.CurrentDispatcher;
 						var uiDispatcher = new UiDispatcher(dispatcher);

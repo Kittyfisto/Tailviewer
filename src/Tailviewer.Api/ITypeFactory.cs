@@ -5,6 +5,7 @@ namespace Tailviewer
 	/// <summary>
 	///     Responsible for creating serializable types from their type name.
 	/// </summary>
+	[Service]
 	public interface ITypeFactory
 	{
 		/// <summary>

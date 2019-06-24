@@ -94,6 +94,7 @@
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin.cs" />
     <Compile Include="IReader.cs" />
     <Compile Include="ISerializableType.cs" />
+    <Compile Include="IServiceContainer.cs" />
     <Compile Include="ITypeFactory.cs" />
     <Compile Include="IWriter.cs" />
     <Compile Include="AnalyserId.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceAttribute.cs" />
     <Compile Include="WillBeRemoved.cs" />
     <Compile Include="Templates\Analysis\IWidgetTemplate.cs" />
     <Compile Include="Ui\Analysis\IWidgetConfiguration.cs" />

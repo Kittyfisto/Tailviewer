@@ -102,6 +102,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
+    <Compile Include="ServiceContainer.cs" />
     <Compile Include="Settings\SpecialDateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeIntervalLiteral.cs" />
     <Compile Include="Filters\ExpressionEngine\ExpressionParser.cs" />
