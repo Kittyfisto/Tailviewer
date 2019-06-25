@@ -4,7 +4,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Exporter;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Export

@@ -15,7 +15,6 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
-using Tailviewer.Core;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView

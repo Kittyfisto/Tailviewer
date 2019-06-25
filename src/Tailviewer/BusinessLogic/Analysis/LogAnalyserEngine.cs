@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;

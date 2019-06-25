@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;

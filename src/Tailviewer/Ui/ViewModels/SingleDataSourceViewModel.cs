@@ -4,7 +4,6 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.FileExplorer;

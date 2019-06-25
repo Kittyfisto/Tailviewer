@@ -12,7 +12,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui.Controls.DataSourceTree;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.DataSources;
 using Tailviewer.Ui.ViewModels;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 

@@ -10,7 +10,6 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Test.BusinessLogic.DataSources

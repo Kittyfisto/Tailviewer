@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Tailviewer.Core;
-using Tailviewer.Core.Filters;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.BusinessLogic.Filters

@@ -7,9 +7,8 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 
 namespace Tailviewer.Test.Ui.Controls.SidePanel
 {

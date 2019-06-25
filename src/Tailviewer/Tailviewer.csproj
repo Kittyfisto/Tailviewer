@@ -279,8 +279,8 @@
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\BookmarksViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\BookmarkViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
@@ -313,12 +313,12 @@
     </Compile>
     <Compile Include="Ui\Controls\SidePanel\ISidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\SidePanelControl.cs" />
-    <Compile Include="Ui\Controls\SidePanel\TimeFilter\IChoseTimeRangeViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\TimeFilter\SpecialTimeRangeViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml.cs">
+    <Compile Include="Ui\Controls\SidePanel\QuickFilters\TimeFilter\IChoseTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFilters\TimeFilter\SpecialTimeRangeViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFilters\TimeFilter\TimeChooserControl.xaml.cs">
       <DependentUpon>TimeChooserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFilters\TimeFilter\TimeFiltersViewModel.cs" />
     <Compile Include="Ui\Converters\ShowAllToContentConverter.cs" />
     <Compile Include="Ui\Converters\SkippedDueToTimestampConverter.cs" />
     <Compile Include="Ui\Converters\VersionConverter.cs" />
@@ -337,14 +337,14 @@
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\QuickFiltersSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\QuickFiltersViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\QuickFilterViewModel.cs" />
     <Compile Include="Ui\Converters\BrushType.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\DataSourceSettings.cs" />
     <Compile Include="Ui\Converters\CountConverter.cs" />
-    <Compile Include="Ui\Controls\SidePanel\DataSourcesViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\DataSources\DataSourcesViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
     <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
@@ -510,11 +510,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\BookmarksDataTemplate.xaml">
+    <Page Include="Ui\Controls\SidePanel\Bookmarks\BookmarksDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\DataSourcesDataTemplate.xaml">
+    <Page Include="Ui\Controls\SidePanel\DataSources\DataSourcesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -538,7 +538,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\QuickFiltersSidePanelDataTemplate.xaml">
+    <Page Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -583,7 +583,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\TimeFilter\TimeChooserControl.xaml">
+    <Page Include="Ui\Controls\SidePanel\QuickFilters\TimeFilter\TimeChooserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -663,6 +663,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
+    <Folder Include="Ui\Controls\SidePanel\Highlighter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

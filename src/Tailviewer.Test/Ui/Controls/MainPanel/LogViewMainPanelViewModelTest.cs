@@ -16,7 +16,8 @@ using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.DataSources;
+using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
 using Tailviewer.Ui.ViewModels;
 using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 

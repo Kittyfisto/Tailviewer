@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using FluentAssertions;
-using Metrolib.Controls;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Settings;

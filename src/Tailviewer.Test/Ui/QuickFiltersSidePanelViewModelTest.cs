@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
 using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
 using Tailviewer.Ui.ViewModels;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;

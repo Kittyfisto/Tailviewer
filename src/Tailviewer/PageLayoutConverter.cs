@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 using Tailviewer.Core.Analysis;
-using Tailviewer.Ui.Controls.MainPanel.Analyse;
 
 namespace Tailviewer
 {

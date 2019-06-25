@@ -12,7 +12,7 @@ using System.Windows.Media;
 using Metrolib.Controls;
 using Tailviewer.Ui.ViewModels;
 using log4net;
-using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.DataSources;
 
 namespace Tailviewer.Ui.Controls.DataSourceTree
 {

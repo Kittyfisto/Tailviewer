@@ -9,7 +9,6 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 

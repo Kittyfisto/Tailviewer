@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
-                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel">
+                    xmlns:dataSources="clr-namespace:Tailviewer.Ui.Controls.SidePanel.DataSources">
     
-    <DataTemplate DataType="{x:Type sidePanel:DataSourcesViewModel}">
+    <DataTemplate DataType="{x:Type dataSources:DataSourcesViewModel}">
         <dataSourceTree:DataSourcesControl
             x:Name="PART_DataSources"
             ItemsSource="{Binding Observable}"

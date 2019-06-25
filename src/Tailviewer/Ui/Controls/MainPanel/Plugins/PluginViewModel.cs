@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Security.RightsManagement;
 using System.Windows.Input;
 using System.Windows.Media;
-using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Plugins

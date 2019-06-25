@@ -2,8 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
-                    xmlns:timeFilter="clr-namespace:Tailviewer.Ui.Controls.SidePanel.TimeFilter">
+                    xmlns:timeFilter="clr-namespace:Tailviewer.Ui.Controls.SidePanel.TimeFilter"
+                    xmlns:quickFilters="clr-namespace:Tailviewer.Ui.Controls.SidePanel.QuickFilters">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
@@ -14,7 +14,7 @@
     <converters:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
-    <DataTemplate DataType="{x:Type sidePanel:QuickFiltersSidePanelViewModel}">
+    <DataTemplate DataType="{x:Type quickFilters:QuickFiltersSidePanelViewModel}">
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>

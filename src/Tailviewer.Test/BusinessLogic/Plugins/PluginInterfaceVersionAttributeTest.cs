@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Test.BusinessLogic.Plugins

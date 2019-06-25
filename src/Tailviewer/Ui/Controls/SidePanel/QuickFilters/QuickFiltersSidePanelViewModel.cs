@@ -6,13 +6,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Metrolib;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.Controls.SidePanel.TimeFilter;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.Controls.SidePanel
+namespace Tailviewer.Ui.Controls.SidePanel.QuickFilters
 {
 	/// <summary>
 	///     Represents the list of all quick filters.

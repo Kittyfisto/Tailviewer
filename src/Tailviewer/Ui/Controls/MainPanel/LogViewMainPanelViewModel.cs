@@ -16,6 +16,9 @@ using Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine;
 using Tailviewer.Ui.Controls.MainPanel.Raw.QuickNavigation;
 using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.Controls.SidePanel;
+using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
+using Tailviewer.Ui.Controls.SidePanel.DataSources;
+using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.MainPanel

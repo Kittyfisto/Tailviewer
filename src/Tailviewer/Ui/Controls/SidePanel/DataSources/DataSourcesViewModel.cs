@@ -17,7 +17,7 @@ using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
 
-namespace Tailviewer.Ui.Controls.SidePanel
+namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 {
 	public sealed class DataSourcesViewModel
 		: AbstractSidePanelViewModel

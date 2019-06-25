@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Tailviewer.BusinessLogic.FileExplorer
+﻿namespace Tailviewer.BusinessLogic.FileExplorer
 {
 	public interface IFileExplorer
 	{

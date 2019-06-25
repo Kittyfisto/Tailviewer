@@ -1,5 +1,4 @@
 ﻿using System;
-using Tailviewer.Core;
 
 namespace Tailviewer.BusinessLogic.Searches
 {

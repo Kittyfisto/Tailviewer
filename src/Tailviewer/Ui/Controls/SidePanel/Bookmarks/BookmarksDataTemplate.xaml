@@ -2,9 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
                     xmlns:metrolib="clr-namespace:Metrolib;assembly=Metrolib"
-                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
+                    xmlns:bookmarks="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Bookmarks">
 
-    <DataTemplate DataType="{x:Type local:BookmarksViewModel}">
+    <DataTemplate DataType="{x:Type bookmarks:BookmarksViewModel}">
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>
@@ -52,7 +53,7 @@
                     Grid.Row="1">
                     <ItemsControl ItemsSource="{Binding Bookmarks}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type local:BookmarkViewModel}">
+                            <DataTemplate DataType="{x:Type bookmarks:BookmarkViewModel}">
                                 <Grid Height="20"
                                       Width="240">
                                     <Grid.ColumnDefinitions>

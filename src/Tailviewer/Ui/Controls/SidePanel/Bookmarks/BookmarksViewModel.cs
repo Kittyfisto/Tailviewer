@@ -12,7 +12,7 @@ using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Ui.Controls.SidePanel
+namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 {
 	public sealed class BookmarksViewModel
 		: AbstractSidePanelViewModel

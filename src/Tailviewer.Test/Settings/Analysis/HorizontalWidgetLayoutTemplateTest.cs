@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Analysis.Layouts;
 
 namespace Tailviewer.Test.Settings.Analysis

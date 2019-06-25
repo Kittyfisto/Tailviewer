@@ -15,7 +15,6 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
-using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.DataSource;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;

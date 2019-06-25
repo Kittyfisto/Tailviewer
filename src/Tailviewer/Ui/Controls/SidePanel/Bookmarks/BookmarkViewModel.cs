@@ -5,7 +5,7 @@ using Metrolib;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 
-namespace Tailviewer.Ui.Controls.SidePanel
+namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 {
 	public sealed class BookmarkViewModel
 	{

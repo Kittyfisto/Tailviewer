@@ -9,7 +9,6 @@ using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.Core.Filters;
 
 namespace Tailviewer.Ui.Controls.QuickFilter
 {
