@@ -21,9 +21,9 @@ The following is an example implementation to support files with a *.foo extensi
 public class FooFileFormatPlugin : IFileFormatPlugin
 {
    public IReadOnlyList<string> SupportedExtensions => new[]{".foo"};
-   public ILogFile Open(string fileName, ITaskScheduler taskScheduler)
+   public ILogFile Open(IServiceContainer services, string fileName)
    {
-       return new FooLogFile(fileName, taskScheduler);
+       return new FooLogFile(services.Retrieve<ITaskScheduler>, fileName);
    }
 }
 ```
