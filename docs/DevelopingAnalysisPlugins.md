@@ -23,12 +23,12 @@ The first serves as a factory to create new analysers for a particular data sour
 public class MyLogAnalyserPlugin : ILogAnalyserPlugin
 {
    public LogAnalyserFactoryId Id => new LogAnalyserFactoryId("MyLogAnalyserPlugin");
-   public IEnumerable<KeyValuePair<string, Type>> SerializableTypes => new Dictionary<string, Type>{ { "MyLogAnalyserConfiguration", typeof(MyLogAnalyserConfiguration) } };
-   public ILogAnalyser Create(ITaskScheduler scheduler,
-			ILogFile source,
-			ILogAnalyserConfiguration configuration)
+
+   public ILogAnalyser Create(IServiceContainer services,
+			      ILogFile source,
+			      ILogAnalyserConfiguration configuration)
    {
-      return new MyLogAnalyser(scheduler, source, (MyLogAnalyserConfiguration)configuration);
+      return new MyLogAnalyser(services.Retrieve<ITaskScheduler>(), source, (MyLogAnalyserConfiguration)configuration);
    }
 }
 ```
