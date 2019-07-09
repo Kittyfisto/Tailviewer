@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
@@ -30,6 +31,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		private Mock<IApplicationSettings> _settings;
 		private Mock<IDataSources> _dataSources;
 		private Mock<IQuickFilters> _quickFilters;
+		private Mock<IHighlighters> _highlighters;
 
 		[SetUp]
 		public void Setup()
@@ -46,26 +48,28 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			_settings.Setup(x => x.DataSources).Returns(new Mock<IDataSourcesSettings>().Object);
 			_settings.Setup(x => x.MainWindow).Returns(new Mock<IMainWindowSettings>().Object);
 			_settings.Setup(x => x.LogViewer).Returns(new Mock<ILogViewerSettings>().Object);
+
+			_highlighters = new Mock<IHighlighters>();
 		}
 
 		[Test]
 		public void TestConstruction()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			model.Settings.Should().BeSameAs(_settings.Object.LogViewer);
 		}
 
 		[Test]
 		public void TestUpdate1()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			new Action(() => model.Update()).Should().NotThrow();
 		}
 
 		[Test]
 		public void TestUpdate2()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new InMemoryLogFile();
@@ -93,7 +97,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource2.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
 
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {dataSource1.Object, dataSource2.Object});
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			model.RecentFiles.Should().HaveCount(2);
 
 			dataSource1.Setup(x => x.NoTimestampCount).Returns(42);
@@ -110,7 +114,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[NUnit.Framework.Description("Verifies that changing an active filter is automatically applied to the currently selected data source")]
 		public void TestChangeFilter1()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			dataSourceViewModel.SetupProperty(x => x.QuickFilterChain);
 
@@ -136,7 +140,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[Test]
 		public void TestShowQuickFilters()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var quickFilterSidePanel = model.SidePanels.OfType<QuickFiltersSidePanelViewModel>().First();
 			model.SelectedSidePanel.Should().NotBe(quickFilterSidePanel);
 
@@ -147,7 +151,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[Test]
 		public void TestRenameMergedDataSource()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 
 			var dataSourceViewModel = new Mock<IDataSourceViewModel>();
 			var dataSource = new Mock<IDataSource>();
@@ -173,7 +177,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[Test]
 		public void TestGoToNextDataSource1()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			model.CurrentDataSource.Should().BeNull();
 			new Action(() => model.GoToNextDataSource()).Should().NotThrow();
 			model.CurrentDataSource.Should().BeNull();
@@ -182,7 +186,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 		[Test]
 		public void TestGoToPreviousDataSource1()
 		{
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			model.CurrentDataSource.Should().BeNull();
 			new Action(() => model.GoToPreviousDataSource()).Should().NotThrow();
 			model.CurrentDataSource.Should().BeNull();
@@ -217,7 +221,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			dataSource2.SetupProperty(x => x.CharacterCode);
 
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {mergedDataSource.Object, dataSource1.Object, dataSource2.Object});
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var dataSources = model.SidePanels.OfType<DataSourcesViewModel>().First();
 
 			var dataSource1ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource1.Object);
@@ -247,7 +251,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 			source.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			_dataSources.Setup(x => x.AddFolder(It.IsAny<string>())).Returns(source.Object);
 
-			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _settings.Object);
+			var model = new LogViewMainPanelViewModel(_actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
 			var dataSource = model.GetOrAddPath(path);
 			dataSource.Should().BeOfType<FolderDataSourceViewModel>();
 		}

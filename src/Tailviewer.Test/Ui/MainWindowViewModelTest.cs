@@ -11,6 +11,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
@@ -46,6 +47,7 @@ namespace Tailviewer.Test.Ui
 			_services.RegisterInstance<ITaskScheduler>(_scheduler);
 			_services.RegisterInstance<IDispatcher>(_dispatcher);
 			_services.RegisterInstance<IPluginLoader>(new PluginRegistry());
+			_services.RegisterInstance<IHighlighters>(new HighlighterCollection());
 
 			_mainWindow = new MainWindowViewModel(_services,
 			                                      _settings,

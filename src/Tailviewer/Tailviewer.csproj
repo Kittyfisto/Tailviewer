@@ -61,8 +61,8 @@
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.124, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.124\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.125, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.125\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
@@ -106,6 +106,10 @@
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
     <Compile Include="BusinessLogic\Filters\TimeFilter.cs" />
+    <Compile Include="BusinessLogic\Highlighters\Highlighter.cs" />
+    <Compile Include="BusinessLogic\Highlighters\HighlighterCollection.cs" />
+    <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
+    <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="Int32RangeRule.cs" />
@@ -281,6 +285,8 @@
     <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlighterViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
@@ -538,6 +544,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\SidePanel\Highlighters\HighlighterDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -663,7 +677,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
-    <Folder Include="Ui\Controls\SidePanel\Highlighter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

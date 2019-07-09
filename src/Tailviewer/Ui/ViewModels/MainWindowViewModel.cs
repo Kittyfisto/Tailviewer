@@ -11,6 +11,7 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -91,9 +92,10 @@ namespace Tailviewer.Ui.ViewModels
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
-				dataSources,
-				quickFilters,
-				_applicationSettings);
+			                                              dataSources,
+			                                              quickFilters,
+			                                              services.Retrieve<IHighlighters>(),
+			                                              _applicationSettings);
 			_logViewPanel.PropertyChanged += LogViewPanelOnPropertyChanged;
 
 			_timer = new DispatcherTimer

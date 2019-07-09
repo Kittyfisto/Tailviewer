@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Test.BusinessLogic
@@ -13,6 +14,8 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestCtor()
 		{
 			var quickFilter = new QuickFilter();
+			quickFilter.Id.Should().NotBe(QuickFilterId.Empty);
+			quickFilter.Value.Should().BeNullOrEmpty();
 			quickFilter.IgnoreCase.Should().BeTrue();
 			quickFilter.IsInverted.Should().BeFalse();
 		}

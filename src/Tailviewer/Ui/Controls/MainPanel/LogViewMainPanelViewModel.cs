@@ -10,6 +10,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
+using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel.Raw.GoToLine;
@@ -18,6 +19,7 @@ using Tailviewer.Ui.Controls.QuickFilter;
 using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
+using Tailviewer.Ui.Controls.SidePanel.Highlighters;
 using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
 using Tailviewer.Ui.ViewModels;
 
@@ -33,6 +35,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersSidePanelViewModel _quickFilters;
+		private HighlightersSidePanelViewModel _highlighters;
 
 		private readonly IActionCenter _actionCenter;
 		private readonly IApplicationSettings _applicationSettings;
@@ -45,9 +48,10 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private bool _showQuickNavigation;
 
 		public LogViewMainPanelViewModel(IActionCenter actionCenter,
-			IDataSources dataSources,
-			IQuickFilters quickFilters,
-			IApplicationSettings applicationSettings)
+		                                 IDataSources dataSources,
+		                                 IQuickFilters quickFilters,
+		                                 IHighlighters highlighters,
+		                                 IApplicationSettings applicationSettings)
 			: base(applicationSettings)
 		{
 			if (actionCenter == null)
@@ -61,6 +65,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickFilters = new QuickFiltersSidePanelViewModel(applicationSettings, quickFilters);
 			_quickFilters.OnFiltersChanged += OnFiltersChanged;
 
+			_highlighters = new HighlightersSidePanelViewModel(highlighters);
+
 			_goToLine = new GoToLineViewModel();
 			_goToLine.LineNumberChosen += GoToLineOnLineNumberChosen;
 
@@ -73,6 +79,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			{
 				_dataSources,
 				_quickFilters,
+				//_highlighters,
 				_bookmarks
 			};
 

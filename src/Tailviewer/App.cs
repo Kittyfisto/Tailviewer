@@ -19,6 +19,7 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Analysis;
+using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
@@ -199,6 +200,9 @@ namespace Tailviewer
 						}
 
 						var quickFilters = new QuickFilters(settings.QuickFilters);
+						var highlighters = new HighlighterCollection();
+						services.RegisterInstance<IHighlighters>(highlighters);
+
 						actionCenter.Add(Build.Current);
 						actionCenter.Add(Change.Merge(Changelog.MostRecentPatches));
 						var application = new App();
