@@ -30,6 +30,16 @@
                                                VerticalContentAlignment="Center"
                                                ToolTip="Open plugin folder"
                                                Command="{Binding OpenPluginFolderCommand}" />
+
+                    <controls:DownloadButton Margin="0,0,0,4"
+                                             Padding="0"
+                                             Width="26"
+                                             Height="26"
+                                             Command="{Binding UpdatePluginsCommand}"
+                                             ToolTip="Update all plugins"
+                                             Visibility="{Binding CanUpdatePlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
+
+                    <TextBlock Text="{Binding PluginUpdateMessage}" />
                 </WrapPanel>
 
                 <!-- List of installed plugins, if any -->

@@ -27,7 +27,7 @@ namespace Tailviewer.Archiver.Plugins
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private static readonly IReadOnlyList<Type> PluginInterfaces;
+		public static readonly IReadOnlyList<Type> PluginInterfaces;
 
 		static PluginAssemblyLoader()
 		{

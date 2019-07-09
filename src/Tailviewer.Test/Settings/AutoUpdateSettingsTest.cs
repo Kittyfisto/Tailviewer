@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Xml;
@@ -12,6 +13,13 @@ namespace Tailviewer.Test.Settings
 	public sealed class AutoUpdateSettingsTest
 	{
 		private AutoUpdateSettings _settings;
+
+		public static IEnumerable<IReadOnlyList<string>> PluginRepositories =>
+			new IReadOnlyList<string>[]
+			{
+				new string[0],
+				new[] {"tvpr://blabla.com"}
+			};
 
 		[SetUp]
 		public void Setup()
@@ -100,13 +108,14 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestStoreRestore()
+		public void TestStoreRestore([ValueSource(nameof(PluginRepositories))] IReadOnlyList<string> repositories)
 		{
 			_settings.ProxyServer = "http://eumex.ip";
 			_settings.ProxyUsername = "foo";
 			_settings.ProxyPassword = "bar";
 			_settings.AutomaticallyInstallUpdates = true;
 			_settings.CheckForUpdates = true;
+			_settings.PluginRepositories = repositories;
 
 			using (var stream = new MemoryStream())
 			{
@@ -134,6 +143,7 @@ namespace Tailviewer.Test.Settings
 					settings.ProxyServer.Should().Be("http://eumex.ip");
 					settings.ProxyUsername.Should().Be("foo");
 					settings.ProxyPassword.Should().Be("bar");
+					settings.PluginRepositories.Should().Equal(repositories);
 				}
 			}
 		}
@@ -148,7 +158,8 @@ namespace Tailviewer.Test.Settings
 				LastChecked = new DateTime(2017, 5, 1, 17, 30, 0),
 				ProxyUsername = "user",
 				ProxyPassword = "password",
-				ProxyServer = "myproxy"
+				ProxyServer = "myproxy",
+				PluginRepositories = new []{"tvpr://foobar:1241"}
 			};
 			var clone = settings.Clone();
 			clone.Should().NotBeNull();
@@ -157,6 +168,10 @@ namespace Tailviewer.Test.Settings
 			clone.ProxyUsername.Should().Be("user");
 			clone.ProxyPassword.Should().Be("password");
 			clone.ProxyServer.Should().Be("myproxy");
+			clone.PluginRepositories.Should().Equal(new object[]
+			{
+				"tvpr://foobar:1241"
+			});
 		}
 	}
 }

@@ -169,33 +169,49 @@
                             <TextBlock FontSize="22" Text="{Binding}" />
                         </DataTemplate>
                     </controls:FlatGroupBox.HeaderTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <CheckBox x:Name="PART_CheckForUpdates" IsChecked="{Binding CheckForUpdates, Mode=TwoWay}"
-                                  Content="Notify me when an update becomes available" Margin="0,4,4,4" />
-                        <!--<CheckBox Grid.Row="1" IsChecked="{Binding AutomaticallyInstallUpdates, Mode=TwoWay}" Content="Automatically install the newest versions" IsEnabled="{Binding IsChecked,ElementName=PART_CheckForUpdates}"></CheckBox>-->
-                        <TextBlock Grid.Row="2" TextWrapping="Wrap" Margin="0,4,0,0"
-                                   Text="If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available." />
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
-                            <controls:EditorTextBox Watermark="Proxy username" Width="110"
-                                                       Text="{Binding ProxyUsername}" Margin="0,0,4,0"
-                                                       IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                            <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
-                                                      x:Name="PART_ProxyPassword"
-                                                      PasswordChanged="OnPasswordChanged"
-                                                      Margin="0,0,4,0"
-                                                      IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                            <controls:EditorTextBox Watermark="Proxy server" Width="150"
-                                                       Text="{Binding ProxyServer}" Margin="0"
-                                                       IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
-                        </StackPanel>
-                    </Grid>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <CheckBox x:Name="PART_CheckForUpdates" IsChecked="{Binding CheckForUpdates, Mode=TwoWay}"
+                                      Content="Notify me when an update becomes available" Margin="0,4,4,4" />
+                            <!--<CheckBox Grid.Row="1" IsChecked="{Binding AutomaticallyInstallUpdates, Mode=TwoWay}" Content="Automatically install the newest versions" IsEnabled="{Binding IsChecked,ElementName=PART_CheckForUpdates}"></CheckBox>-->
+                            <TextBlock Grid.Row="2" TextWrapping="Wrap" Margin="0,4,0,0"
+                                       Text="If you're behind a proxy server, then you might need to fill out these fields in order to be automatically notified when an update becomes available." />
+                            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,4,0,4">
+                                <controls:EditorTextBox Watermark="Proxy username" Width="110"
+                                                           Text="{Binding ProxyUsername}" Margin="0,0,4,0"
+                                                           IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                                <controls:FlatPasswordBox Watermark="Proxy password" Width="110"
+                                                          x:Name="PART_ProxyPassword"
+                                                          PasswordChanged="OnPasswordChanged"
+                                                          Margin="0,0,4,0"
+                                                          IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                                <controls:EditorTextBox Watermark="Proxy server" Width="150"
+                                                           Text="{Binding ProxyServer}" Margin="0"
+                                                           IsEnabled="{Binding IsChecked, ElementName=PART_CheckForUpdates}" />
+                            </StackPanel>
+                            
+                        </Grid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Margin="4"
+                                       Text="Third party plugins will be automatically updated from the following repositories:"/>
+
+                            <controls:EditorTextBox Grid.Row="1" Text="{Binding PluginRepositories}"
+                                                    TextWrapping="Wrap"
+                                                    AcceptsReturn="True" />
+                        </Grid>
+                    </StackPanel>
                 </controls:FlatGroupBox>
 
             </Grid>

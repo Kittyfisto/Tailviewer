@@ -61,7 +61,7 @@ namespace Tailviewer
 		private static int StartInternal(SingleApplicationHelper.IMutex mutex, string[] args)
 		{
 			InstallExceptionHandlers();
-			Log.InfoFormat("Starting tailviewer...");
+			Log.InfoFormat("Starting {0}...", Constants.ApplicationTitle);
 			Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 			LogEnvironment();
 
@@ -161,8 +161,11 @@ namespace Tailviewer
 				var filesystem = new Filesystem(serialTaskScheduler, taskScheduler);
 				services.RegisterInstance<IFilesystem>(filesystem);
 
-				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath))
+				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath, Constants.DownloadedPluginsPath))
 				{
+					var pluginUpdater = new PluginUpdater(pluginArchiveLoader);
+					services.RegisterInstance<IPluginUpdater>(pluginUpdater);
+
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
 					services.RegisterInstance<IPluginLoader>(pluginSystem);
 
@@ -293,13 +296,22 @@ namespace Tailviewer
 		{
 			var builder = new StringBuilder();
 			builder.AppendLine();
-			builder.AppendFormat("Tailviewer: v{0}, {1}\r\n",
+			builder.AppendFormat("Tailviewer: v{0}, {1}",
 			                     FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
 			                     Environment.Is64BitProcess ? "64bit" : "32bit");
-			builder.AppendFormat(".NET Environment: {0}\r\n", Environment.Version);
-			builder.AppendFormat("Operating System: {0}, {1}\r\n",
+			builder.AppendLine();
+
+			builder.AppendFormat("Build date: {0}", Constants.BuildDate);
+			builder.AppendLine();
+
+			builder.AppendFormat(".NET Environment: {0}", Environment.Version);
+			builder.AppendLine();
+
+			builder.AppendFormat("Operating System: {0}, {1}",
 			                     Environment.OSVersion,
 			                     Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
+			builder.AppendLine();
+
 			builder.AppendFormat("Current directory: {0}", Directory.GetCurrentDirectory());
 
 			Log.InfoFormat("Environment: {0}", builder);

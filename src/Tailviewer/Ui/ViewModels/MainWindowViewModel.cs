@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
@@ -34,6 +35,7 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
+		private readonly IServiceContainer _services;
 		private readonly IApplicationSettings _applicationSettings;
 		private readonly DelegateCommand _showLogCommand;
 
@@ -82,6 +84,7 @@ namespace Tailviewer.Ui.ViewModels
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
 			if (updater == null) throw new ArgumentNullException(nameof(updater));
 
+			_services = services;
 			_applicationSettings = settings;
 
 			_plugins = services.Retrieve<IPluginLoader>().Plugins;
@@ -322,7 +325,10 @@ namespace Tailviewer.Ui.ViewModels
 				}
 				else if (value == _pluginsEntry)
 				{
-					SelectedMainPanel = new PluginsMainPanelViewModel(_applicationSettings, _plugins);
+					SelectedMainPanel = new PluginsMainPanelViewModel(_applicationSettings,
+					                                                  _services.Retrieve<IDispatcher>(),
+					                                                  _services.Retrieve<IPluginUpdater>(),
+					                                                  _plugins);
 					WindowTitle = Constants.MainWindowTitle;
 					WindowTitleSuffix = "Plugins";
 				}

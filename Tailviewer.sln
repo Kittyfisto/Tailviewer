@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.SystemTests", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginCreator", "src\Plugins\Tailviewer.PluginCreator\Tailviewer.PluginCreator.csproj", "{A251BAFB-A13C-4749-B38E-B183DA32BF21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRegistry", "src\Tailviewer.PluginRegistry\Tailviewer.PluginRegistry.csproj", "{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +150,10 @@ Global
 		{A251BAFB-A13C-4749-B38E-B183DA32BF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A251BAFB-A13C-4749-B38E-B183DA32BF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A251BAFB-A13C-4749-B38E-B183DA32BF21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

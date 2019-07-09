@@ -194,6 +194,10 @@
       <Link>InstallationFiles\archive.exe</Link>
       <LogicalName>InstallationFiles\archive.exe</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\SharpRemote.dll">
+      <Link>InstallationFiles\SharpRemote.dll</Link>
+      <LogicalName>InstallationFiles\SharpRemote.dll</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\..\bin\System.Extensions.dll">
       <Link>InstallationFiles\System.Extensions.dll</Link>
       <LogicalName>InstallationFiles\System.Extensions.dll</LogicalName>

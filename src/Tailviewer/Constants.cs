@@ -21,6 +21,12 @@ namespace Tailviewer
 		public static readonly string DownloadFolder;
 		public static readonly string PluginPath;
 
+		/// <summary>
+		///    Plugins which have been automatically updated are
+		///    stored in this folder.
+		/// </summary>
+		public static readonly string DownloadedPluginsPath;
+
 		public static readonly string SnapshotDirectory;
 		public static readonly string SnapshotExtension;
 
@@ -53,6 +59,7 @@ namespace Tailviewer
 
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
 			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationTitle);
+			DownloadedPluginsPath = Path.Combine(MyDocumentsFolder, "DownloadedPlugins");
 			ExportDirectory = Path.Combine(MyDocumentsFolder, "Export");
 
 			SnapshotDirectory = Path.Combine(MyDocumentsFolder, "Snapshots");

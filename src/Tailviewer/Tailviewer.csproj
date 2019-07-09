@@ -71,6 +71,9 @@
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Ookii.Dialogs.Wpf.1.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="SharpRemote, Version=0.5.172.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.172\lib\net45\SharpRemote.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
@@ -112,6 +115,8 @@
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
+    <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />

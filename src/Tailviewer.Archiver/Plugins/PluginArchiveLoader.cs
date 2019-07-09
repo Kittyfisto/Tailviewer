@@ -27,33 +27,26 @@ namespace Tailviewer.Archiver.Plugins
 		/// <summary>
 		/// </summary>
 		/// <param name="filesystem"></param>
-		/// <param name="path"></param>
-		public PluginArchiveLoader(IFilesystem filesystem, string path = null)
+		/// <param name="pluginPaths"></param>
+		public PluginArchiveLoader(IFilesystem filesystem, params string[] pluginPaths)
 		{
 			_filesystem = filesystem;
 			_plugins = new Dictionary<PluginId, PluginGroup>();
 
 			try
 			{
-				if (path != null)
+				// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
+				foreach (var path in pluginPaths)
 				{
-					// TODO: How would we make this truly async? Currently the app has to block until all plugins are loaded wich is sad
-					var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
-					                      .Result;
-					foreach (var pluginPath in files)
-						TryOpenPlugin(pluginPath);
-
-					foreach (var plugin in _plugins.Values)
-						plugin.Load();
+					TryLoadPluginsFrom(filesystem, path);
 				}
-			}
-			catch (DirectoryNotFoundException e)
-			{
-				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
+
+				foreach (var plugin in _plugins.Values)
+					plugin.Load();
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("Unable to find plugins in '{0}': {1}", path, e);
+				Log.ErrorFormat("Caught exception while trying to load plugins:\r\n{0}", e);
 			}
 		}
 
@@ -157,6 +150,25 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				stream.Dispose();
 				throw;
+			}
+		}
+
+		private void TryLoadPluginsFrom(IFilesystem filesystem, string path)
+		{
+			try
+			{
+				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
+				                      .Result;
+				foreach (var pluginPath in files)
+					TryOpenPlugin(pluginPath);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Log.WarnFormat("Unable to find plugins in '{0}': {1}", path, e);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to find plugins in '{0}': {1}", path, e);
 			}
 		}
 

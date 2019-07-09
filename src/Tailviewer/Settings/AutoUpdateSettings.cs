@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,7 @@ namespace Tailviewer.Settings
 		public bool AutomaticallyInstallUpdates { get; set; }
 		public string ProxyServer { get; set; }
 		public string ProxyUsername { get; set; }
+		public IReadOnlyList<string> PluginRepositories { get; set; }
 
 		public string ProxyPassword
 		{
@@ -79,6 +81,11 @@ namespace Tailviewer.Settings
 		private byte[] _passwordSalt;
 		private bool _passwordIsEmpty;
 
+		public AutoUpdateSettings()
+		{
+			PluginRepositories = new string[0];
+		}
+
 		public void Save(XmlWriter writer)
 		{
 			writer.WriteAttributeBool("checkforupdates", CheckForUpdates);
@@ -87,6 +94,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("proxyserver", ProxyServer);
 			writer.WriteAttributeString("proxyusername", ProxyUsername);
 			writer.WriteAttributeBase64("proxypassword", _password);
+			writer.WriteAttributeString("pluginrepositories", string.Join(";", PluginRepositories));
 		}
 
 		public void Restore(XmlReader reader)
@@ -118,6 +126,10 @@ namespace Tailviewer.Settings
 
 					case "proxypassword":
 						_password = reader.ReadContentAsBase64();
+						break;
+
+					case "pluginrepositories":
+						PluginRepositories = reader.ReadContentAsString().Split(new[]{';'}, StringSplitOptions.RemoveEmptyEntries);
 						break;
 
 					default:
@@ -190,7 +202,8 @@ namespace Tailviewer.Settings
 				ProxyUsername = ProxyUsername,
 				_password = _password?.ToArray(),
 				_passwordIsEmpty = _passwordIsEmpty,
-				_passwordSalt = _passwordSalt?.ToArray()
+				_passwordSalt = _passwordSalt?.ToArray(),
+				PluginRepositories = PluginRepositories?.ToArray()
 			};
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -13,10 +14,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 		: AbstractMainPanelViewModel
 	{
 		private readonly IApplicationSettings _settings;
+		private string _pluginRepositories;
 
 		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings) : base(applicationSettings)
 		{
 			_settings = applicationSettings;
+
+			var repos = applicationSettings.AutoUpdate.PluginRepositories;
+			_pluginRepositories = repos != null ? string.Join(Environment.NewLine, repos) : string.Empty;
 		}
 
 		public bool CheckForUpdates
@@ -103,6 +108,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 					return;
 
 				_settings.Export.ExportFolder = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
+
+		public string PluginRepositories
+		{
+			get { return _pluginRepositories; }
+			set
+			{
+				_pluginRepositories = value;
+				_settings.AutoUpdate.PluginRepositories =
+					_pluginRepositories?.Split(new[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
 				EmitPropertyChanged();
 
 				_settings.SaveAsync();
