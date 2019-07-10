@@ -136,6 +136,8 @@ namespace Tailviewer
 
 		private static int StartApplication(SingleApplicationHelper.IMutex mutex, string fileToOpen)
 		{
+			var stopwatch = Stopwatch.StartNew();
+
 			ApplicationSettings settings = ApplicationSettings.Create();
 			settings.Restore(out var neededPatching);
 
@@ -228,6 +230,9 @@ namespace Tailviewer
 						};
 
 						settings.MainWindow.RestoreTo(window);
+
+						stopwatch.Stop();
+						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);
 
 						window.Show();
 						mutex.SetListener(window);
