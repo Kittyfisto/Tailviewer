@@ -15,6 +15,8 @@ namespace Tailviewer
 		[STAThread]
 		public static int Main(string[] args)
 		{
+			var stopwatch = Stopwatch.StartNew();
+
 			// The following code ensures that only one Tailviewer window is shown to the user.
 			// The code tries to find out if an already running process can still be used
 			// (after all the user might have started tailviewer again because it froze or because
@@ -65,7 +67,7 @@ namespace Tailviewer
 				}
 
 				SetupLoggers();
-				return App.Start(mutex, args);
+				return App.Start(mutex, args, stopwatch);
 			}
 			finally
 			{

@@ -45,11 +45,11 @@ namespace Tailviewer
 			Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/Metrolib;component/Themes/Generic.xaml") });
 		}
 
-		public static int Start(SingleApplicationHelper.IMutex mutex, string[] args)
+		public static int Start(SingleApplicationHelper.IMutex mutex, string[] args, Stopwatch stopwatch)
 		{
 			try
 			{
-				return StartInternal(mutex, args);
+				return StartInternal(mutex, args, stopwatch);
 			}
 			catch (Exception e)
 			{
@@ -58,7 +58,7 @@ namespace Tailviewer
 			}
 		}
 
-		private static int StartInternal(SingleApplicationHelper.IMutex mutex, string[] args)
+		private static int StartInternal(SingleApplicationHelper.IMutex mutex, string[] args, Stopwatch stopwatch)
 		{
 			InstallExceptionHandlers();
 			Log.InfoFormat("Starting {0}...", Constants.ApplicationTitle);
@@ -72,7 +72,7 @@ namespace Tailviewer
 					return TestLoadPlugin(arguments.FileToOpen, arguments.PluginInterface);
 
 				default:
-					return StartApplication(mutex, arguments.FileToOpen);
+					return StartApplication(mutex, arguments.FileToOpen, stopwatch);
 			}
 		}
 
@@ -134,10 +134,8 @@ namespace Tailviewer
 			hierarchy.Root.AddAppender(appender);
 		}
 
-		private static int StartApplication(SingleApplicationHelper.IMutex mutex, string fileToOpen)
+		private static int StartApplication(SingleApplicationHelper.IMutex mutex, string fileToOpen, Stopwatch stopwatch)
 		{
-			var stopwatch = Stopwatch.StartNew();
-
 			ApplicationSettings settings = ApplicationSettings.Create();
 			settings.Restore(out var neededPatching);
 
