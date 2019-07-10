@@ -62,9 +62,6 @@
     <Reference Include="SharpRemote, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll</HintPath>
     </Reference>
-    <Reference Include="SharpRemote.Host, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.Host.exe</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -146,6 +143,7 @@
 mkdir "$(OutputDir)\x64"
 mkdir "$(OutputDir)\x86"
 copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x64\SQLite.Interop.dll" "$(OutputDir)\x64\SQLite.Interop.dll"
-copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x86\SQLite.Interop.dll" "$(OutputDir)\x86\SQLite.Interop.dll"</PreBuildEvent>
+copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x86\SQLite.Interop.dll" "$(OutputDir)\x86\SQLite.Interop.dll"
+copy "$(OutputDir)..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll" "$(OutputDir)\SharpRemote.dll"</PreBuildEvent>
   </PropertyGroup>
 </Project>
