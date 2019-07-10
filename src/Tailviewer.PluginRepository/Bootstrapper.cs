@@ -13,7 +13,7 @@ namespace Tailviewer.PluginRepository
 		{
 			try
 			{
-				SetupLoggers();
+				SetupConsoleLogger();
 
 				return App.Run(args);
 			}
@@ -26,28 +26,9 @@ namespace Tailviewer.PluginRepository
 			}
 		}
 
-		private static void SetupLoggers()
+		private static void SetupConsoleLogger()
 		{
 			var hierarchy = (Hierarchy) LogManager.GetRepository();
-
-			var patternLayout = new PatternLayout
-			{
-				ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
-			};
-			patternLayout.ActivateOptions();
-
-			var fileAppender = new RollingFileAppender
-			{
-				AppendToFile = false,
-				File = Constants.ApplicationLogFile,
-				Layout = patternLayout,
-				MaxSizeRollBackups = 20,
-				MaximumFileSize = "1GB",
-				RollingStyle = RollingFileAppender.RollingMode.Size,
-				StaticLogFileName = false
-			};
-			fileAppender.ActivateOptions();
-			hierarchy.Root.AddAppender(fileAppender);
 
 			var consoleLayout = new PatternLayout
 			{

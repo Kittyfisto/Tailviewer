@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading;
 using CommandLine;
 using log4net;
+using log4net.Appender;
+using log4net.Layout;
+using log4net.Repository.Hierarchy;
 using Tailviewer.PluginRepository.Applications;
 
 namespace Tailviewer.PluginRepository
@@ -29,7 +32,7 @@ namespace Tailviewer.PluginRepository
 				>(args);
 
 				return result.MapResult(
-				                        (RunServerOptions options) => Run<RunServer, RunServerOptions>(options),
+				                        (RunServerOptions options) => Run<RunServer, RunServerOptions>(options, logToFile: true),
 				                        (AddPluginOptions options) => Run<AddPlugin, AddPluginOptions>(options),
 				                        (ListPluginsOptions options) => Run<ListPlugins, ListPluginsOptions>(options),
 										(RemovePluginOptions options) => Run<RemovePlugin, RemovePluginOptions>(options),
@@ -45,8 +48,11 @@ namespace Tailviewer.PluginRepository
 			}
 		}
 
-		private static int Run<TApp, TOptions>(TOptions options) where TApp : class, IApplication<TOptions>, new()
+		private static int Run<TApp, TOptions>(TOptions options, bool logToFile = false) where TApp : class, IApplication<TOptions>, new()
 		{
+			if (logToFile)
+				SetupFileAppender();
+
 			using (var taskScheduler = new DefaultTaskScheduler())
 			{
 				var filesystem = new Filesystem(taskScheduler);
@@ -56,6 +62,30 @@ namespace Tailviewer.PluginRepository
 					return app.Run(repo, options);
 				}
 			}
+		}
+
+		private static void SetupFileAppender()
+		{
+			var patternLayout = new PatternLayout
+			{
+				ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
+			};
+			patternLayout.ActivateOptions();
+
+			var fileAppender = new RollingFileAppender
+			{
+				AppendToFile = false,
+				File = Constants.ApplicationLogFile,
+				Layout = patternLayout,
+				MaxSizeRollBackups = 20,
+				MaximumFileSize = "1GB",
+				RollingStyle = RollingFileAppender.RollingMode.Size,
+				StaticLogFileName = false
+			};
+			fileAppender.ActivateOptions();
+
+			var hierarchy = (Hierarchy) LogManager.GetRepository();
+			hierarchy.Root.AddAppender(fileAppender);
 		}
 
 		private static void LogEnvironment()

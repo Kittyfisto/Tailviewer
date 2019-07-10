@@ -17,8 +17,9 @@ namespace Tailviewer.PluginRepository.Test
 		private IDatabase _database;
 		private IDictionary<string, User> _users;
 		private IDictionary<Guid, string> _usernamesByAccessToken;
-		private IDictionary<PluginIdentifier, byte[]> _pluginsById;
+		private IDictionary<PluginIdentifier, byte[]> _plugins;
 		private IDictionary<PluginIdentifier, PublishedPlugin> _pluginRequirements;
+		private IDictionary<PluginIdentifier, byte[]> _pluginIcons;
 
 		[SetUp]
 		public void Setup()
@@ -27,10 +28,11 @@ namespace Tailviewer.PluginRepository.Test
 			_database = Database.CreateInMemory(PluginRepository.CustomTypes);
 			_repository = new PluginRepository(_filesystem, _database);
 
-			_users = _database.GetOrCreateDictionary<string, User>("Users");
-			_usernamesByAccessToken = _database.GetOrCreateDictionary<Guid, string>("UsersByAccessToken");
-			_pluginsById = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("PluginsById");
-			_pluginRequirements = _database.GetOrCreateDictionary<PluginIdentifier, PublishedPlugin>("PluginRequirements");
+			_users = _database.GetDictionary<string, User>("Users");
+			_usernamesByAccessToken = _database.GetDictionary<Guid, string>("UsersByAccessToken");
+			_plugins = _database.GetDictionary<PluginIdentifier, byte[]>("Plugins");
+			_pluginIcons = _database.GetDictionary<PluginIdentifier, byte[]>("PluginIcons");
+			_pluginRequirements = _database.GetDictionary<PluginIdentifier, PublishedPlugin>("PluginDescriptions");
 		}
 
 		[TearDown]
@@ -92,7 +94,8 @@ namespace Tailviewer.PluginRepository.Test
 			_users.GetAll().Should().BeEmpty();
 			_usernamesByAccessToken.GetAll().Should().BeEmpty();
 			_pluginRequirements.GetAll().Should().BeEmpty();
-			_pluginsById.GetAll().Should().BeEmpty();
+			_pluginIcons.GetAll().Should().BeEmpty();
+			_plugins.GetAll().Should().BeEmpty();
 		}
 	}
 }

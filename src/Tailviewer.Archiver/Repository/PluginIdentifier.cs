@@ -6,6 +6,14 @@ namespace Tailviewer.Archiver.Repository
 	/// <summary>
 	///    Identifies a plugin as part of a plugin repository.
 	/// </summary>
+	/// <remarks>
+	///     Used during transport between repository and tailviewer client.
+	/// </remarks>
+	/// <remarks>
+	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALISED.
+	///     Doing so will break the communication between tailviewer client
+	///     and the repository.
+	/// </remarks>
 	[DataContract]
 	public class PluginIdentifier : IEquatable<PluginIdentifier>
 	{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -23,8 +24,9 @@ namespace Tailviewer.PluginRepository
 
 		private readonly IFilesystem _filesystem;
 		private readonly IDatabase _database;
-		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _pluginsById;
-		private readonly IsabelDb.IDictionary<PluginIdentifier, PublishedPlugin> _pluginRequirements;
+		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _plugins;
+		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _pluginIcons;
+		private readonly IsabelDb.IDictionary<PluginIdentifier, PublishedPlugin> _pluginDescriptions;
 		private readonly IsabelDb.IDictionary<string, User> _users;
 		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
@@ -44,8 +46,9 @@ namespace Tailviewer.PluginRepository
 			_database = database;
 			_users = _database.GetOrCreateDictionary<string, User>("Users");
 			_usernamesByAccessToken = _database.GetOrCreateDictionary<Guid, string>("UsersByAccessToken");
-			_pluginsById = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("PluginsById");
-			_pluginRequirements = _database.GetOrCreateDictionary<PluginIdentifier, PublishedPlugin>("PluginRequirements");
+			_plugins = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("Plugins");
+			_pluginIcons = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("PluginIcons");
+			_pluginDescriptions = _database.GetOrCreateDictionary<PluginIdentifier, PublishedPlugin>("PluginDescriptions");
 		}
 
 		public Guid AddUser(string username, string email)
@@ -132,7 +135,16 @@ namespace Tailviewer.PluginRepository
 				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
 			}
 
-			var pluginIndex = ReadDescription(plugin);
+			IPluginPackageIndex pluginIndex;
+			DateTime builtTime;
+			byte[] icon;
+			using (var stream = new MemoryStream(plugin))
+			using (var archive = PluginArchive.OpenRead(stream))
+			{
+				pluginIndex = archive.Index;
+				builtTime = GetBuildTime(archive.ReadAssembly());
+				icon = archive.ReadIcon()?.ReadToEnd();
+			}
 			var id = new PluginIdentifier(pluginIndex.Id, pluginIndex.Version);
 
 			if (!Guid.TryParse(accessToken, out var token))
@@ -144,18 +156,22 @@ namespace Tailviewer.PluginRepository
 					throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
 
 				// TODO: Only throw a temper tantrum in case the plugin to be added differs from the plugin stored in this repository
-				if (_pluginRequirements.ContainsKey(id) || _pluginsById.ContainsKey(id))
+				if (_pluginDescriptions.ContainsKey(id) || _plugins.ContainsKey(id))
 					throw new CannotAddPluginException($"The plugin '{id}' already exists and cannot be modified.");
 
-				var publishedPlugin = new PublishedPlugin
+				var publishedPlugin = new PublishedPlugin(pluginIndex)
 				{
-					User = userName,
+					Publisher = userName,
 					Identifier = id,
+					BuildDate = builtTime,
+					SizeInBytes = plugin.Length,
+					PublishDate = DateTime.UtcNow,
 					RequiredInterfaces = pluginIndex.ImplementedPluginInterfaces
 						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList()
 				};
-				_pluginRequirements.Put(id, publishedPlugin);
-				_pluginsById.Put(id, plugin);
+				_pluginDescriptions.Put(id, publishedPlugin);
+				_plugins.Put(id, plugin);
+				_pluginIcons.Put(id, icon);
 
 				transaction.Commit();
 				Log.InfoFormat("Added plugin '{0}' to repository!", fileName);
@@ -164,7 +180,7 @@ namespace Tailviewer.PluginRepository
 
 		public long CountPlugins()
 		{
-			return _pluginsById.Count();
+			return _plugins.Count();
 		}
 
 		public void RemovePlugin(string id, string version)
@@ -177,10 +193,11 @@ namespace Tailviewer.PluginRepository
 			using (var transaction = _database.BeginTransaction())
 			{
 				var identifier = new PluginIdentifier(id, v);
-				if (!_pluginsById.Remove(identifier))
+				if (!_plugins.Remove(identifier))
 					throw new CannotRemovePluginException($"No plugin {id} v{version} exists.");
 
-				_pluginRequirements.Remove(identifier);
+				_pluginDescriptions.Remove(identifier);
+				_pluginIcons.Remove(identifier);
 
 				transaction.Commit();
 
@@ -192,12 +209,14 @@ namespace Tailviewer.PluginRepository
 
 		public IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces)
 		{
+			var stopwatch = Stopwatch.StartNew();
 			Log.InfoFormat("Retrieving all plugins implementing '{0}'...", string.Join(", ", interfaces));
 
 			var interfacesByName = CreateInterfaceMap(interfaces);
 
+			// TODO: Use proper indices when necessary...
 			var plugins = new List<PluginIdentifier>();
-			foreach (var pair in _pluginRequirements.GetAll())
+			foreach (var pair in _pluginDescriptions.GetAll())
 			{
 				if (IsSupported(pair.Value, interfacesByName))
 				{
@@ -205,32 +224,67 @@ namespace Tailviewer.PluginRepository
 				}
 			}
 
-			Log.InfoFormat("Found {0} plugins, sending to client...", plugins.Count);
+			stopwatch.Stop();
+			Log.InfoFormat("Found {0} plugins (took {1}ms), sending to client...", plugins.Count, stopwatch.ElapsedMilliseconds);
 
 			return plugins;
 		}
 
 		public IReadOnlyList<PluginIdentifier> FindAllPlugins()
 		{
+			var stopwatch = Stopwatch.StartNew();
 			Log.InfoFormat("Retrieving all plugins...");
 
-			var plugins = _pluginsById.GetAllKeys().ToList();
+			var plugins = _plugins.GetAllKeys().ToList();
 
-			Log.InfoFormat("Found {0} plugins, sending to client...", plugins.Count);
+			stopwatch.Stop();
+			Log.InfoFormat("Found {0} plugins (took {1}ms), sending to client...", plugins.Count, stopwatch.ElapsedMilliseconds);
 
 			return plugins;
 		}
 
+		public IReadOnlyList<PublishedPluginDescription> GetDescriptions(IReadOnlyList<PluginIdentifier> plugins)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			Log.InfoFormat("Retrieving description(s) for {0} plugin(s)...", plugins.Count);
+
+			var descriptions = _pluginDescriptions.GetManyValues(plugins)
+			                                      .Select(CreateDescription)
+			                                      .ToList();
+
+			stopwatch.Stop();
+			Log.InfoFormat("Retrieved {0} description(s) from disk, (took {1}ms), sending to client...",
+			               descriptions.Count, stopwatch.ElapsedMilliseconds);
+
+			return descriptions;
+		}
+
+		public IReadOnlyList<byte[]> GetIcons(IReadOnlyList<PluginIdentifier> plugins)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			Log.InfoFormat("Retrieving icons for {0} plugin(s)...", plugins.Count);
+
+			var icons = _pluginIcons.GetManyValues(plugins).ToList();
+
+			stopwatch.Stop();
+			Log.InfoFormat("Retrieved {0} icon(s) from disk, (took {1}ms), sending to client...",
+			               icons.Count, stopwatch.ElapsedMilliseconds);
+
+			return icons;
+		}
+
 		public byte[] DownloadPlugin(PluginIdentifier pluginId)
 		{
+			var stopwatch = Stopwatch.StartNew();
 			Log.InfoFormat("Retrieving plugin '{0}'...", pluginId);
 
 			try
 			{
-				var pluginContent = _pluginsById.Get(pluginId);
+				var pluginContent = _plugins.Get(pluginId);
 
-				Log.InfoFormat("Retrieved plugin '{0}' from disk, {1} bytes, sending to client...",
-				               pluginId, pluginContent.Length);
+				stopwatch.Stop();
+				Log.InfoFormat("Retrieved plugin '{0}' from disk, {1} bytes (took {2}ms), sending to client...",
+				               pluginId, pluginContent.Length, stopwatch.ElapsedMilliseconds);
 
 				return pluginContent;
 			}
@@ -287,6 +341,15 @@ namespace Tailviewer.PluginRepository
 			return true;
 		}
 
+		private static DateTime GetBuildTime(Stream assembly)
+		{
+			using (var memoryStream = new MemoryStream(assembly.ReadToEnd()))
+			{
+				var header = PE.PeHeader.ReadFrom(memoryStream);
+				return header.TimeStamp;
+			}
+		}
+
 		public static IEnumerable<Type> CustomTypes
 		{
 			get
@@ -301,12 +364,18 @@ namespace Tailviewer.PluginRepository
 			}
 		}
 
-		private IPluginPackageIndex ReadDescription(byte[] plugin)
+		[Pure]
+		private static PublishedPluginDescription CreateDescription(PublishedPlugin plugin)
 		{
-			using (var stream = new MemoryStream(plugin))
+			return new PublishedPluginDescription
 			{
-				return PluginArchive.OpenRead(stream).Index;
-			}
+				Identifier = plugin.Identifier,
+				Name = plugin.Name,
+				Author = plugin.Author,
+				Website = plugin.Website,
+				Description = plugin.Description,
+				Publisher = plugin.Publisher
+			};
 		}
 	}
 }

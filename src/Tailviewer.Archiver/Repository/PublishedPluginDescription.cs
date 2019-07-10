@@ -3,7 +3,7 @@
 namespace Tailviewer.Archiver.Repository
 {
 	/// <summary>
-	/// 
+	///     Describes a plugin as part of plugin repository.
 	/// </summary>
 	/// <remarks>
 	///     Used during transport between repository and tailviewer client.
@@ -14,30 +14,27 @@ namespace Tailviewer.Archiver.Repository
 	///     and the repository.
 	/// </remarks>
 	[DataContract]
-	public sealed class PluginInterface
+	public sealed class PublishedPluginDescription
 	{
-		public PluginInterface()
-		{ }
-
-		public PluginInterface(string fullName, int version)
-		{
-			FullName = fullName;
-			Version = version;
-		}
+		[DataMember]
+		public PluginIdentifier Identifier { get; set; }
 
 		[DataMember]
-		public string FullName { get; set; }
+		public string Name { get; set; }
 
 		[DataMember]
-		public int Version { get; set; }
+		public string Author { get; set; }
 
-		#region Overrides of ValueType
+		[DataMember]
+		public string Description { get; set; }
 
-		public override string ToString()
-		{
-			return $"{FullName} v{Version}";
-		}
+		[DataMember]
+		public string Website { get; set; }
 
-		#endregion
+		[DataMember]
+		public string Publisher { get; set; }
+
+		[DataMember]
+		public long SizeInBytes { get; set; }
 	}
 }

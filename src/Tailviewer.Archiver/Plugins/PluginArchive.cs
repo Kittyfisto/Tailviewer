@@ -94,6 +94,15 @@ namespace Tailviewer.Archiver.Plugins
 		}
 
 		/// <summary>
+		///     Returns a stream to read the plugin's main assembly of this archive from.
+		/// </summary>
+		/// <returns>A stream pointing towards the main assembly of the plugin</returns>
+		public Stream ReadAssembly()
+		{
+			return _archive.GetEntry(PluginAssemblyEntryName)?.Open();
+		}
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="entryName"></param>

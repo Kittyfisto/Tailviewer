@@ -6,9 +6,9 @@ namespace Tailviewer.Archiver.Repository
 	///     Provides (remote) access to Tailviewer's plugin repository.
 	/// </summary>
 	/// <remarks>
-	///     This interface defines all methods which are remoted via SharpRemote.
-	///     Do not make backwards-incompatible changes to this interface of its used
-	///     types!
+	///     DO NOT MAKE CHANGES TO THIS CLASS ONCE FINALISED.
+	///     Doing so will break the communication between tailviewer client
+	///     and the repository.
 	/// </remarks>
 	public interface IPluginRepository
 	{
@@ -24,6 +24,34 @@ namespace Tailviewer.Archiver.Repository
 		/// </summary>
 		/// <returns></returns>
 		IReadOnlyList<PluginIdentifier> FindAllPlugins();
+
+		/// <summary>
+		///     Returns descriptions for all of the given plugins.
+		/// </summary>
+		/// <remarks>
+		///     Only returns a description for those plugins which are part of this repository,
+		///     otherwise null is returned in that place of the returned list.
+		/// </remarks>
+		/// <example>
+		///     Suppose plugins a, b and c are queried and only plugin a and c are part of this repository.
+		///     The returned list will contain 3 entries: {description of a}, {null} and {description of b}.
+		/// </example>
+		IReadOnlyList<PublishedPluginDescription> GetDescriptions(IReadOnlyList<PluginIdentifier> plugins);
+
+		/// <summary>
+		///     Returns icons for all of the given plugins.
+		/// </summary>
+		/// <remarks>
+		///     Only returns icons for those plugins which are part of this repository,
+		///     otherwise null is returned in that place of the returned list.
+		/// </remarks>
+		/// <example>
+		///     Suppose plugins a, b and c are queried and only plugin a and c are part of this repository.
+		///     The returned list will contain 3 entries: {icon of a}, {null} and {icon of b}.
+		/// </example>
+		/// <param name="plugins"></param>
+		/// <returns></returns>
+		IReadOnlyList<byte[]> GetIcons(IReadOnlyList<PluginIdentifier> plugins);
 
 		/// <summary>
 		///     Downloads a specific plugin identified by the given name.

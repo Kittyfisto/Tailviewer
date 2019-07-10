@@ -117,6 +117,7 @@
     <Compile Include="Repository\IPluginRepository.cs" />
     <Compile Include="Repository\PluginIdentifier.cs" />
     <Compile Include="Repository\PluginInterface.cs" />
+    <Compile Include="Repository\PublishedPluginDescription.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -161,7 +162,6 @@
     <Content Include="..\..\bin\ImageProcessor.dll">
       <Link>Resources\ImageProcessor.dll</Link>
     </Content>
-    <Content Include="Readme.txt" />
     <EmbeddedResource Include="..\..\bin\System.Extensions.dll">
       <Link>Resources\System.Extensions.dll</Link>
     </EmbeddedResource>
