@@ -140,10 +140,10 @@
   </Target>
   <PropertyGroup>
     <PreBuildEvent>cd $(OutputDir)
-mkdir "$(OutputDir)\x64"
-mkdir "$(OutputDir)\x86"
-copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x64\SQLite.Interop.dll" "$(OutputDir)\x64\SQLite.Interop.dll"
-copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x86\SQLite.Interop.dll" "$(OutputDir)\x86\SQLite.Interop.dll"
-copy "$(OutputDir)..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll" "$(OutputDir)\SharpRemote.dll"</PreBuildEvent>
+mkdir "x64"
+mkdir "x86"
+copy "..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x64\SQLite.Interop.dll" "x64\SQLite.Interop.dll"
+copy "..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x86\SQLite.Interop.dll" "x86\SQLite.Interop.dll"
+</PreBuildEvent>
   </PropertyGroup>
 </Project>
