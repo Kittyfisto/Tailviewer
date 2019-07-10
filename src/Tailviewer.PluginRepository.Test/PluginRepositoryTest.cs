@@ -40,6 +40,26 @@ namespace Tailviewer.PluginRepository.Test
 		}
 
 		[Test]
+		public void TestAddUserInvalidName([Values(null, "", "a b c", "씨엘씨", "micke~4213")] string username)
+		{
+			new Action(() => _repository.AddUser(username, "a@b.c"))
+				.Should()
+				.Throw<CannotAddUserException>();
+
+			DatabaseShouldBeEmpty();
+		}
+
+		[Test]
+		public void TestAddUserInvalidEmail([Values(null, "", "a", "foobar", "씨엘씨", "micky@sutro8)")] string email)
+		{
+			new Action(() => _repository.AddUser("mickey", email))
+				.Should()
+				.Throw<CannotAddUserException>();
+
+			DatabaseShouldBeEmpty();
+		}
+
+		[Test]
 		public void TestAddPluginNoSuchDirectory()
 		{
 			new Action(() => _repository.AddPlugin(@"M:\does\not\exist.tvp", ""))

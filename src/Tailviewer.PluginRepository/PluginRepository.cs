@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using IsabelDb;
@@ -49,15 +50,18 @@ namespace Tailviewer.PluginRepository
 
 		public Guid AddUser(string username, string email)
 		{
+			const string pattern = "^[a-zA-Z_][a-zA-Z0-9_]*$";
+			var regex = new Regex(pattern, RegexOptions.Compiled);
+			if (username == null || !regex.IsMatch(username))
+				throw new CannotAddUserException($"The username '{username}' does not match the expected pattern: {pattern}");
+
+			if (!IsValidEmail(email))
+				throw new CannotAddUserException($"The email '{email}' does not appear to be a valid email address.");
+
 			using (var transaction = _database.BeginTransaction())
 			{
 				if (_users.ContainsKey(username))
 					throw new CannotAddUserException($"The user '{username}' already exists and cannot be modified.");
-
-				const string pattern = "^[a-zA-Z_][a-zA-Z0-9_]*$";
-				var regex = new Regex(pattern, RegexOptions.Compiled);
-				if (!regex.IsMatch(username))
-					throw new CannotAddUserException($"The username '{username}' does not match the expected pattern: {pattern}");
 
 				var accessToken = Guid.NewGuid();
 				var user = new User
@@ -72,6 +76,22 @@ namespace Tailviewer.PluginRepository
 				transaction.Commit();
 
 				return accessToken;
+			}
+		}
+
+		private bool IsValidEmail(string email)
+		{
+			try
+			{
+				// ReSharper disable once ObjectCreationAsStatement
+				new MailAddress(email); //< Throws when the mail is invalid
+
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught exception while parsing email '{0}':\r\n{1}", email, e);
+				return false;
 			}
 		}
 
