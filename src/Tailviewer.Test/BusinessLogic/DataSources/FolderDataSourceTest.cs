@@ -69,7 +69,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _filesystem,
 			                                      _settings,
 			                                      TimeSpan.Zero);
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
 			dataSource.Change(path, "*", false);
 
 			_taskScheduler.RunOnce();
@@ -100,8 +100,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
-			_filesystem.CreateDirectory(path).Wait();
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
+			_filesystem.CreateDirectory(path);
 
 			dataSource.Change(path, "*", false);
 
@@ -117,10 +117,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
 			_filesystem.CreateDirectory(path);
 			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]);
-			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]).Wait();
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]);
 
 			dataSource.Change(path, "*.log", false);
 			_taskScheduler.RunOnce();
@@ -139,11 +139,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
 			_filesystem.CreateDirectory(path);
 			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]);
 			_filesystem.WriteAllBytes(Path.Combine(path, "foo.bar"), new byte[0]);
-			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]).Wait();
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.txt"), new byte[0]);
 
 			dataSource.Change(path, "*.log;*.txt", false);
 			_taskScheduler.RunOnce();
@@ -162,11 +162,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      _settings,
 			                                      TimeSpan.Zero);
 
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
 			_filesystem.CreateDirectory(path);
 			for (int i = 0; i < 257; ++i)
 			{
-				_filesystem.WriteAllBytes(Path.Combine(path, $"{i}.txt"), new byte[0]).Wait();
+				_filesystem.WriteAllBytes(Path.Combine(path, $"{i}.txt"), new byte[0]);
 			}
 
 			dataSource.Change(path, "*.log;*.txt", false);
@@ -277,7 +277,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestDisposeChildDataSources()
 		{
-			var path = Path.Combine(_filesystem.Roots.Result.First().FullName, "logs");
+			var path = Path.Combine(_filesystem.Roots.First().FullName, "logs");
 			_settings.LogFileFolderPath = path;
 			_settings.LogFileSearchPattern = "*.log";
 
@@ -288,7 +288,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                      TimeSpan.Zero);
 
 			_filesystem.CreateDirectory(path);
-			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]).Wait();
+			_filesystem.WriteAllBytes(Path.Combine(path, "foo.log"), new byte[0]);
 			_taskScheduler.RunOnce();
 
 			var children = folderDataSource.OriginalSources;

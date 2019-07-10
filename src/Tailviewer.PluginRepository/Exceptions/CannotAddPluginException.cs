@@ -8,5 +8,9 @@ namespace Tailviewer.PluginRepository.Exceptions
 		public CannotAddPluginException(string message)
 			: base(message)
 		{ }
+
+		public CannotAddPluginException(string message, Exception innerException)
+			: base(message, innerException)
+		{ }
 	}
 }

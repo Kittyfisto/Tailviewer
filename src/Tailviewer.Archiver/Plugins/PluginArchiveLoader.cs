@@ -138,7 +138,7 @@ namespace Tailviewer.Archiver.Plugins
 
 		public PluginGroup OpenPlugin(string pluginPath, PluginId id, Version version)
 		{
-			var stream = _filesystem.OpenRead(pluginPath).Result;
+			var stream = _filesystem.OpenRead(pluginPath);
 			try
 			{
 				// Ownership of the stream transfers to PluginArchive which is disposed of when this class is
@@ -157,8 +157,7 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			try
 			{
-				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension))
-				                      .Result;
+				var files = filesystem.EnumerateFiles(path, string.Format("*.{0}", PluginArchive.PluginExtension));
 				foreach (var pluginPath in files)
 					TryOpenPlugin(pluginPath);
 			}

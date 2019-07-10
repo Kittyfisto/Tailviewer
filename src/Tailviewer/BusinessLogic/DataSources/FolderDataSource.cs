@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private const char PatternSeparator = ';';
 
-		private readonly Dictionary<IFileInfoAsync, SingleDataSource> _dataSources;
+		private readonly Dictionary<IFileInfo, SingleDataSource> _dataSources;
 		private readonly MergedDataSource _mergedDataSource;
 		private readonly IFilesystem _filesystem;
 		private readonly ITaskScheduler _taskScheduler;
@@ -69,7 +69,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_filesystem = filesystem;
 			_settings = settings;
 			_syncRoot = new object();
-			_dataSources = new Dictionary<IFileInfoAsync, SingleDataSource>();
+			_dataSources = new Dictionary<IFileInfo, SingleDataSource>();
 			_mergedDataSource = new MergedDataSource(taskScheduler, settings, maximumWaitTime);
 			_unfilteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_filteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
@@ -423,10 +423,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
 		}
 
-		private IReadOnlyList<IDataSource> SynchronizeDataSources(IReadOnlyList<IFileInfoAsync> files)
+		private IReadOnlyList<IDataSource> SynchronizeDataSources(IReadOnlyList<IFileInfo> files)
 		{
-			var newFiles = new List<IFileInfoAsync>();
-			var oldFiles = new List<IFileInfoAsync>();
+			var newFiles = new List<IFileInfo>();
+			var oldFiles = new List<IFileInfo>();
 			var dataSources = new List<IDataSource>();
 
 			try
@@ -493,13 +493,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 		}
 
 		[Pure]
-		private static IReadOnlyList<IFileInfoAsync> FilterFiles(IEnumerable<IFileInfoAsync> files, Predicate<string> filter,
-		                                                         out int unfilteredFileCount,
-		                                                         out int filteredFileCount)
+		private static IReadOnlyList<IFileInfo> FilterFiles(IEnumerable<IFileInfo> files, Predicate<string> filter,
+		                                                    out int unfilteredFileCount,
+		                                                    out int filteredFileCount)
 		{
 			int unfilteredCount = 0;
 			int filteredCount = 0;
-			var matches = new List<IFileInfoAsync>();
+			var matches = new List<IFileInfo>();
 			foreach (var file in files)
 			{
 				if (filter(file.Name))

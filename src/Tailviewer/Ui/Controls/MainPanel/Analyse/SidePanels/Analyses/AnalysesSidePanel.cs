@@ -126,7 +126,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Analyse.SidePanels.Analyses
 			try
 			{
 				// Blocking the timer task is on purpose so we don't perform more scans than we actually can
-				var files = _analysisStorage.EnumerateSnapshots().AwaitResult().ToList();
+				var files = _analysisStorage.EnumerateSnapshots().ToList();
 				_dispatcher.BeginInvoke(() => Synchronise(files));
 			}
 			catch (IOException e)

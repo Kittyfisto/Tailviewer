@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using CommandLine;
 using log4net;
 using Tailviewer.PluginRepository.Applications;
@@ -22,21 +23,38 @@ namespace Tailviewer.PluginRepository
 				Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 				LogEnvironment();
 
-				var result = Parser.Default.ParseArguments<RunServerOptions, AddPluginOptions, ListPluginsOptions, RemovePluginOptions, AddUserOptions, ListUsersOptions, RemoveUserOptions>(args);
+				var result = Parser.Default.ParseArguments<RunServerOptions,
+					AddPluginOptions, ListPluginsOptions, RemovePluginOptions,
+					AddUserOptions, ListUsersOptions, RemoveUserOptions
+				>(args);
+
 				return result.MapResult(
-				                        (RunServerOptions options) => RunServer.Run(),
-				                        (AddPluginOptions options) => AddPlugin.Run(options),
-				                        (ListPluginsOptions options) => ListPlugins.Run(options),
-										(RemovePluginOptions options) => RemovePlugin.Run(options),
-										(AddUserOptions options) => AddUser.Run(options),
-										(ListUsersOptions options) => ListUsers.Run(options),
-										(RemoveUserOptions options) => RemoveUser.Run(options),
+				                        (RunServerOptions options) => Run<RunServer, RunServerOptions>(options),
+				                        (AddPluginOptions options) => Run<AddPlugin, AddPluginOptions>(options),
+				                        (ListPluginsOptions options) => Run<ListPlugins, ListPluginsOptions>(options),
+										(RemovePluginOptions options) => Run<RemovePlugin, RemovePluginOptions>(options),
+										(AddUserOptions options) => Run<AddUser, AddUserOptions>(options),
+										(ListUsersOptions options) => Run<ListUsers, ListUsersOptions>(options),
+										(RemoveUserOptions options) => Run<RemoveUser, RemoveUserOptions>(options),
 				                        _ => -2);
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Exiting due to unexpected exception: {0}", e);
 				return -1;
+			}
+		}
+
+		private static int Run<TApp, TOptions>(TOptions options) where TApp : class, IApplication<TOptions>, new()
+		{
+			using (var taskScheduler = new DefaultTaskScheduler())
+			{
+				var filesystem = new Filesystem(taskScheduler);
+				using (var repo = new PluginRepository(filesystem))
+				{
+					var app = new TApp();
+					return app.Run(repo, options);
+				}
 			}
 		}
 

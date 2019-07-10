@@ -1,34 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using log4net;
 using Tailviewer.PluginRepository.Exceptions;
 
 namespace Tailviewer.PluginRepository.Applications
 {
 	public sealed class RemovePlugin
+		: IApplication<RemovePluginOptions>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public static int Run(RemovePluginOptions options)
+		public int Run(PluginRepository repository, RemovePluginOptions options)
 		{
-			using (var repo = new PluginRepository())
+			try
 			{
-				try
-				{
-					repo.RemovePlugin(options.Id, options.Version);
-				}
-				catch (CannotRemovePluginException e)
-				{
-					Log.ErrorFormat(e.Message);
-					return -10;
-				}
-
-				return 0;
+				repository.RemovePlugin(options.Id, options.Version);
 			}
+			catch (CannotRemovePluginException e)
+			{
+				Log.ErrorFormat(e.Message);
+				return -10;
+			}
+
+			return 0;
 		}
 	}
 }

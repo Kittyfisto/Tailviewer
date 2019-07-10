@@ -86,7 +86,7 @@ namespace Tailviewer
 			{
 				var ioScheduler = new SerialTaskScheduler();
 				var taskScheduler = new DefaultTaskScheduler();
-				var filesystem = new Filesystem(ioScheduler, taskScheduler);
+				var filesystem = new Filesystem(taskScheduler);
 				using (var loader = new PluginArchiveLoader(filesystem))
 				{
 					PluginArchiveLoader.ExtractIdAndVersion(pluginToLoad, out var id, out var version);
@@ -158,7 +158,7 @@ namespace Tailviewer
 				services.RegisterInstance<ITaskScheduler>(taskScheduler);
 				services.RegisterInstance<ISerialTaskScheduler>(serialTaskScheduler);
 
-				var filesystem = new Filesystem(serialTaskScheduler, taskScheduler);
+				var filesystem = new Filesystem(taskScheduler);
 				services.RegisterInstance<IFilesystem>(filesystem);
 
 				using (var pluginArchiveLoader = new PluginArchiveLoader(filesystem, Constants.PluginPath, Constants.DownloadedPluginsPath))

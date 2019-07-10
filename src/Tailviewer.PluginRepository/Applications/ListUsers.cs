@@ -3,26 +3,24 @@ using System.Linq;
 
 namespace Tailviewer.PluginRepository.Applications
 {
-	public static class ListUsers
+	public sealed class ListUsers
+		: IApplication<ListUsersOptions>
 	{
-		public static int Run(ListUsersOptions options)
+		public int Run(PluginRepository repository, ListUsersOptions options)
 		{
-			using (var repository = new PluginRepository())
-			{
-				var users = repository.GetAllUsers().ToList();
+			var users = repository.GetAllUsers().ToList();
 
-				if (users.Any())
+			if (users.Any())
+			{
+				Console.WriteLine("There are {0} user(s):", users.Count);
+				foreach (var user in users)
 				{
-					Console.WriteLine("There are {0} user(s):", users.Count);
-					foreach (var user in users)
-					{
-						Console.WriteLine("\t{0}, {1}, access token: {2}", user.Username, user.Email, user.AccessToken);
-					}
+					Console.WriteLine("\t{0}, {1}, access token: {2}", user.Username, user.Email, user.AccessToken);
 				}
-				else
-				{
-					Console.WriteLine("No users have been added");
-				}
+			}
+			else
+			{
+				Console.WriteLine("No users have been added");
 			}
 
 			return 0;

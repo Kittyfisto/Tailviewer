@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic
 		public void Setup()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_filesystem = new InMemoryFilesystem(new ImmediateTaskScheduler());
+			_filesystem = new InMemoryFilesystem();
 
 			var root = Path.GetPathRoot(Constants.AnalysisDirectory);
 			_filesystem.AddRoot(root);
@@ -43,14 +43,14 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestCreateAnalysisFolder()
 		{
 			string analysisFolderPath = Constants.AnalysisDirectory;
-			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeFalse();
+			_filesystem.DirectoryExists(analysisFolderPath).Should().BeFalse();
 
 			var storage = new AnalysisStorage(_taskScheduler,
 			                                  _filesystem,
 			                                  _dataSourceAnalyserEngine.Object,
 			                                  _typeFactory);
 
-			_filesystem.DirectoryExists(analysisFolderPath).Result.Should().BeTrue("because the storage should've created the analysis folder");
+			_filesystem.DirectoryExists(analysisFolderPath).Should().BeTrue("because the storage should've created the analysis folder");
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace Tailviewer.Test.BusinessLogic
 
 			var id = analysis.Id;
 			var filename = Path.Combine(Constants.AnalysisDirectory, string.Format("{0}.{1}", id, Constants.AnalysisExtension));
-			_filesystem.FileExists(filename).Result.Should().BeTrue("because the storage should've created a new file on disk");
+			_filesystem.FileExists(filename).Should().BeTrue("because the storage should've created a new file on disk");
 		}
 
 		[Test]
@@ -160,10 +160,10 @@ namespace Tailviewer.Test.BusinessLogic
 			((ActiveAnalysis)analysis).IsDisposed.Should().BeFalse();
 
 			var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
-			file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
+			file.Exists.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
 
 			storage.Remove(analysis.Id);
-			file.Exists.Result.Should().BeFalse("because Remove should've also removed the analysis from disk");
+			file.Exists.Should().BeFalse("because Remove should've also removed the analysis from disk");
 		}
 
 		[Test]
@@ -179,7 +179,7 @@ namespace Tailviewer.Test.BusinessLogic
 				id = analysis.Id;
 
 				var file = _filesystem.GetFileInfo(AnalysisStorage.GetFilename(analysis.Id));
-				file.Exists.Result.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
+				file.Exists.Should().BeTrue("because CreateAnalysis() should've written the analysis to disk");
 			}
 
 			{

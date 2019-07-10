@@ -2,19 +2,17 @@
 
 namespace Tailviewer.PluginRepository.Applications
 {
-	public static class ListPlugins
+	public sealed class ListPlugins
+		: IApplication<ListPluginsOptions>
 	{
-		public static int Run(ListPluginsOptions options)
+		public int Run(PluginRepository repository, ListPluginsOptions options)
 		{
-			using (var repo = new PluginRepository())
+			foreach (var plugin in repository.FindAllPlugins())
 			{
-				foreach (var plugin in repo.FindAllPlugins())
-				{
-					Console.WriteLine("\t{0}", plugin);
-				}
-
-				return 0;
+				Console.WriteLine("\t{0}", plugin);
 			}
+
+			return 0;
 		}
 	}
 }

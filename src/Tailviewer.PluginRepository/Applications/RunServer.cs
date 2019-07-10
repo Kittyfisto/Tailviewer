@@ -7,7 +7,8 @@ using log4net;
 
 namespace Tailviewer.PluginRepository.Applications
 {
-	public static class RunServer
+	public sealed class RunServer
+		: IApplication<RunServerOptions>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private static readonly ManualResetEvent BeginShutdownEvent = new ManualResetEvent(false);
@@ -52,7 +53,7 @@ namespace Tailviewer.PluginRepository.Applications
 			return true;
 		}
 
-		public static int Run()
+		public int Run(PluginRepository repository, RunServerOptions options)
 		{
 			try
 			{
@@ -62,18 +63,15 @@ namespace Tailviewer.PluginRepository.Applications
 					Log.InfoFormat("Could not add console ctrl handler, GetLastError()={0}", error);
 				}
 
-				using (var repository = new PluginRepository())
+				Log.InfoFormat("The repository contains {0} plugin(s)", repository.CountPlugins());
+
+				using (new Server(new IPEndPoint(IPAddress.Any, 1234), repository))
 				{
-					Log.InfoFormat("The repository contains {0} plugin(s)", repository.CountPlugins());
+					Console.WriteLine("Press ctrl+c to exit the application...");
 
-					using (new Server(new IPEndPoint(IPAddress.Any, 1234), repository))
-					{
-						Console.WriteLine("Press ctrl+c to exit the application...");
+					BeginShutdownEvent.WaitOne();
 
-						BeginShutdownEvent.WaitOne();
-
-						return 0;
-					}
+					return 0;
 				}
 			}
 			finally

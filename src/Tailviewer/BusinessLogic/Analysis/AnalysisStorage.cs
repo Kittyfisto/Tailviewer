@@ -49,17 +49,17 @@ namespace Tailviewer.BusinessLogic.Analysis
 
 			// TODO: Maybe don't block in the ctor in the future?
 			// If we do that, the public interface will have to be changed
-			RestoreSavedAnalysesAsync().Wait();
+			RestoreSavedAnalyses();
 		}
 
-		private async Task RestoreSavedAnalysesAsync()
+		private void RestoreSavedAnalyses()
 		{
 			try
 			{
-				var files = await EnumerateAnalysesAsync();
+				var files = EnumerateAnalyses();
 				foreach (var filePath in files)
 				{
-					using (var stream = await _filesystem.OpenRead(filePath))
+					using (var stream = _filesystem.OpenRead(filePath))
 					{
 						var configuration = ReadAnalysis(stream);
 						if (configuration != null)
@@ -93,7 +93,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 			catch (DirectoryNotFoundException e)
 			{
 				Log.DebugFormat("Unable to restore existing analyses: {0}", e);
-				await CreateAnalysisFolderAsync();
+				CreateAnalysisFolder();
 			}
 			catch (Exception e)
 			{
@@ -101,11 +101,11 @@ namespace Tailviewer.BusinessLogic.Analysis
 			}
 		}
 
-		private async Task CreateAnalysisFolderAsync()
+		private void CreateAnalysisFolder()
 		{
 			try
 			{
-				await _filesystem.CreateDirectory(Constants.AnalysisDirectory);
+				_filesystem.CreateDirectory(Constants.AnalysisDirectory);
 			}
 			catch (Exception e)
 			{
@@ -114,10 +114,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		[Pure]
-		private async Task<IReadOnlyList<string>> EnumerateAnalysesAsync()
+		private IReadOnlyList<string> EnumerateAnalyses()
 		{
 			var filter = string.Format("*.{0}", Constants.AnalysisExtension);
-			return await _filesystem.EnumerateFiles(Constants.AnalysisDirectory, filter);
+			return _filesystem.EnumerateFiles(Constants.AnalysisDirectory, filter);
 		}
 
 		public void Dispose()
@@ -157,7 +157,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				return Task.FromResult(42);
 			}
 
-			return SaveAsync(config);
+			return _taskScheduler.Start(() => Save(config));
 		}
 
 		public bool TryGetAnalysisFor(AnalysisId id, out IAnalysis analysis)
@@ -211,12 +211,12 @@ namespace Tailviewer.BusinessLogic.Analysis
 				throw;
 			}
 
-			SaveAsync(analysisConfiguration).Wait();
+			Save(analysisConfiguration);
 
 			return analysis;
 		}
 
-		public Task SaveAsync(ActiveAnalysisConfiguration analysisConfiguration)
+		public void Save(ActiveAnalysisConfiguration analysisConfiguration)
 		{
 			var filename = GetFilename(analysisConfiguration.Id);
 			var directory = Path.GetDirectoryName(filename);
@@ -225,7 +225,10 @@ namespace Tailviewer.BusinessLogic.Analysis
 			// it beforehand...
 			_filesystem.CreateDirectory(directory);
 			// TODO: Clone the analysis
-			return _filesystem.OpenWrite(filename).ContinueWith(x => WriteAnalysis(x, analysisConfiguration), TaskContinuationOptions.AttachedToParent);
+			using (var analysis = _filesystem.OpenWrite(filename))
+			{
+				WriteAnalysis(analysis, analysisConfiguration);
+			}
 		}
 
 		public void Remove(AnalysisId id)
@@ -257,16 +260,13 @@ namespace Tailviewer.BusinessLogic.Analysis
 			return filename;
 		}
 
-		private void WriteAnalysis(Task<Stream> task, ActiveAnalysisConfiguration analysisConfiguration)
+		private void WriteAnalysis(Stream stream, ActiveAnalysisConfiguration analysisConfiguration)
 		{
-			using (var stream = task.Result)
+			// Just in case we're writing over an existing file...
+			stream.SetLength(0);
+			using (var writer = new Writer(stream, _typeFactory))
 			{
-				// Just in case we're writing over an existing file...
-				stream.SetLength(0);
-				using (var writer = new Writer(stream, _typeFactory))
-				{
-					writer.WriteAttribute("Analysis", analysisConfiguration);
-				}
+				writer.WriteAttribute("Analysis", analysisConfiguration);
 			}
 		}
 
@@ -278,7 +278,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		}
 
 		/// <inheritdoc />
-		public Task<IReadOnlyList<string>> EnumerateSnapshots()
+		public IReadOnlyList<string> EnumerateSnapshots()
 		{
 			return _snapshots.EnumerateSnapshots();
 		}
@@ -305,7 +305,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 				Result = x.Result
 			}).ToList();
 			var snapshot = new Core.Analysis.AnalysisSnapshot(template, clone, results);
-			return _snapshots.Save(snapshot);
+			return _taskScheduler.Start(() => _snapshots.Save(snapshot));
 		}
 
 		private sealed class SnapshotsWatchdog
@@ -335,32 +335,34 @@ namespace Tailviewer.BusinessLogic.Analysis
 			{
 			}
 
-			public Task<IReadOnlyList<string>> EnumerateSnapshots()
+			public IReadOnlyList<string> EnumerateSnapshots()
 			{
 				var pattern = string.Format("*.{0}", Constants.SnapshotExtension);
 				return _filesystem.EnumerateFiles(Constants.SnapshotDirectory, pattern);
 			}
 
-			public Task Save(Core.Analysis.AnalysisSnapshot snapshot)
+			public void Save(Core.Analysis.AnalysisSnapshot snapshot)
 			{
 				var fileName = DetermineFilename(snapshot);
-				return SaveAsync(fileName, snapshot);
+				Save(fileName, snapshot);
 			}
 
-			private Task SaveAsync(string filePath, Core.Analysis.AnalysisSnapshot snapshot)
+			private void Save(string filePath, Core.Analysis.AnalysisSnapshot snapshot)
 			{
 				var directory = Path.GetDirectoryName(filePath);
 
 				// 
 				_filesystem.CreateDirectory(directory);
-				return _filesystem.OpenWrite(filePath).ContinueWith(x => WriteAnalysisSnapshot(x, snapshot));
+				using (var stream = _filesystem.OpenWrite(filePath))
+				{
+					WriteAnalysisSnapshot(stream, snapshot);
+				}
 			}
 
-			private void WriteAnalysisSnapshot(Task<Stream> task, Core.Analysis.AnalysisSnapshot snapshot)
+			private void WriteAnalysisSnapshot(Stream stream, Core.Analysis.AnalysisSnapshot snapshot)
 			{
 				try
 				{
-					using (var stream = task.Result)
 					using (var writer = new Writer(stream, _typeFactory))
 					{
 						writer.WriteAttribute("Snapshot", snapshot);

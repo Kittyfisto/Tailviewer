@@ -20,14 +20,15 @@ namespace Tailviewer.PluginRepository
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly IFilesystem _filesystem;
 		private readonly IDatabase _database;
 		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _pluginsById;
 		private readonly IsabelDb.IDictionary<PluginIdentifier, PublishedPlugin> _pluginRequirements;
 		private readonly IsabelDb.IDictionary<string, User> _users;
 		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
-		public PluginRepository()
-			: this(OpenDatabase(Constants.PluginDatabaseFilePath))
+		public PluginRepository(IFilesystem filesystem)
+			: this(filesystem, OpenDatabase(Constants.PluginDatabaseFilePath))
 		{}
 
 		private static IDatabase OpenDatabase(string fileName)
@@ -36,8 +37,9 @@ namespace Tailviewer.PluginRepository
 			return Database.OpenOrCreate(fileName, CustomTypes);
 		}
 
-		public PluginRepository(IDatabase database)
+		public PluginRepository(IFilesystem filesystem, IDatabase database)
 		{
+			_filesystem = filesystem;
 			_database = database;
 			_users = _database.GetOrCreateDictionary<string, User>("Users");
 			_usernamesByAccessToken = _database.GetOrCreateDictionary<Guid, string>("UsersByAccessToken");
@@ -96,7 +98,16 @@ namespace Tailviewer.PluginRepository
 		{
 			Log.InfoFormat("Adding plugin '{0}' to repository...", fileName);
 
-			var plugin = File.ReadAllBytes(fileName);
+			byte[] plugin;
+			try
+			{
+				plugin = _filesystem.ReadAllBytes(fileName);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+			}
+
 			var pluginIndex = ReadDescription(plugin);
 			var id = new PluginIdentifier(pluginIndex.Id, pluginIndex.Version);
 

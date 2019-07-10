@@ -4,26 +4,24 @@ using Tailviewer.PluginRepository.Exceptions;
 
 namespace Tailviewer.PluginRepository.Applications
 {
-	public static class AddPlugin
+	public sealed class AddPlugin
+		: IApplication<AddPluginOptions>
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public static int Run(AddPluginOptions options)
+		public int Run(PluginRepository repository, AddPluginOptions options)
 		{
-			using (var repo = new PluginRepository())
+			try
 			{
-				try
-				{
-					repo.AddPlugin(options.PluginFileName, options.AccessToken);
-				}
-				catch (CannotAddPluginException e)
-				{
-					Log.ErrorFormat(e.Message);
-					return -10;
-				}
-
-				return 0;
+				repository.AddPlugin(options.PluginFileName, options.AccessToken);
 			}
+			catch (CannotAddPluginException e)
+			{
+				Log.ErrorFormat(e.Message);
+				return -10;
+			}
+
+			return 0;
 		}
 	}
 }

@@ -59,7 +59,7 @@ namespace Tailviewer.BusinessLogic.Analysis
 		/// <summary>
 		/// </summary>
 		/// <returns></returns>
-		Task<IReadOnlyList<string>> EnumerateSnapshots();
+		IReadOnlyList<string> EnumerateSnapshots();
 
 		/// <summary>
 		///     Creates a new snapshot from the current state of the given analysis.
