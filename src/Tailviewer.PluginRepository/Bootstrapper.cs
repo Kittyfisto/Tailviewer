@@ -5,7 +5,7 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	public static class Bootstrapper
 	{

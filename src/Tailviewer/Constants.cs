@@ -58,8 +58,9 @@ namespace Tailviewer
 			#endif
 
 			DownloadFolder = Path.Combine(AppDataLocalFolder, "Downloads");
+			DownloadedPluginsPath = Path.Combine(DownloadFolder, "Plugins");
+
 			MyDocumentsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), ApplicationTitle);
-			DownloadedPluginsPath = Path.Combine(MyDocumentsFolder, "DownloadedPlugins");
 			ExportDirectory = Path.Combine(MyDocumentsFolder, "Export");
 
 			SnapshotDirectory = Path.Combine(MyDocumentsFolder, "Snapshots");

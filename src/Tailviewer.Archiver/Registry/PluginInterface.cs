@@ -5,6 +5,9 @@ namespace Tailviewer.Archiver.Registry
 	[DataContract]
 	public sealed class PluginInterface
 	{
+		public PluginInterface()
+		{ }
+
 		public PluginInterface(string fullName, int version)
 		{
 			FullName = fullName;

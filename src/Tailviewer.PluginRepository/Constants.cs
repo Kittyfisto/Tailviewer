@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	public static class Constants
 	{
@@ -15,7 +15,7 @@ namespace Tailviewer.PluginRegistry
 
 		static Constants()
 		{
-			ApplicationTitle = "Tailviewer.PluginRegistry";
+			ApplicationTitle = "Tailviewer.PluginRepository";
 			ApplicationVersion = Core.Constants.ApplicationVersion;
 			BuildDate = Core.Constants.BuildDate;
 			ApplicationFolder = Core.Constants.ApplicationFolder;

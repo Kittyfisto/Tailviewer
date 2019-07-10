@@ -1,9 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using log4net;
-using Tailviewer.PluginRegistry.Exceptions;
+using Tailviewer.PluginRepository.Exceptions;
 
-namespace Tailviewer.PluginRegistry.Applications
+namespace Tailviewer.PluginRepository.Applications
 {
 	public static class AddPlugin
 	{

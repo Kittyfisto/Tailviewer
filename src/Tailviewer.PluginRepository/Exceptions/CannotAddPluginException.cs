@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Tailviewer.PluginRegistry.Exceptions
+namespace Tailviewer.PluginRepository.Exceptions
 {
 	public class CannotAddPluginException
 		: Exception

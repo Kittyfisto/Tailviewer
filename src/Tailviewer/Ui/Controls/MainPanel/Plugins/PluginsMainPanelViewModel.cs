@@ -97,7 +97,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 				}
 				else
 				{
-					PluginUpdateMessage = $"{numPluginsUpdated} were updated. Please restart {Constants.ApplicationTitle}!";
+					PluginUpdateMessage = $"{numPluginsUpdated} plugin(s) were updated. Please restart {Constants.ApplicationTitle}!";
 				}
 			}
 			catch (AggregateException e)

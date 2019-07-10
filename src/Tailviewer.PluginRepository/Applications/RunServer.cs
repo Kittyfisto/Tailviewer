@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using log4net;
 
-namespace Tailviewer.PluginRegistry.Applications
+namespace Tailviewer.PluginRepository.Applications
 {
 	public static class RunServer
 	{

@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace Tailviewer.PluginRegistry.Applications
+namespace Tailviewer.PluginRepository.Applications
 {
 	[Verb("add", HelpText = "Add a tailviewer plugin to the repository")]
 	public sealed class AddPluginOptions

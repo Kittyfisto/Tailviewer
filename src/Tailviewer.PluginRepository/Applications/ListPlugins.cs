@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tailviewer.PluginRegistry.Applications
+namespace Tailviewer.PluginRepository.Applications
 {
 	public static class ListPlugins
 	{

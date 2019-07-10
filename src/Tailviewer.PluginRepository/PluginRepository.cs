@@ -8,9 +8,9 @@ using IsabelDb;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Registry;
-using Tailviewer.PluginRegistry.Exceptions;
+using Tailviewer.PluginRepository.Exceptions;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	public sealed class PluginRepository
 		: IPluginRepository
@@ -52,7 +52,7 @@ namespace Tailviewer.PluginRegistry
 			{
 				// TODO: Only throw a temper tantrum in case the plugin to be added differs from the plugin stored in this repository
 				if (_pluginRequirements.ContainsKey(id) || _pluginsById.ContainsKey(id))
-					throw new CannotAddPluginException($"The plugin '{id}' is already part of this repository and should not be added a second time!");
+					throw new CannotAddPluginException($"The plugin '{id}' already exists and cannot be modified.");
 
 				_pluginRequirements.Put(id, requirements);
 				_pluginsById.Put(id, plugin);

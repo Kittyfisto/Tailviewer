@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BA02A61B-2615-4CEF-8B7E-289A8E7CD204}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Tailviewer.PluginRegistry</RootNamespace>
-    <AssemblyName>Tailviewer.PluginRegistry</AssemblyName>
+    <RootNamespace>Tailviewer.PluginRepository</RootNamespace>
+    <AssemblyName>Tailviewer.PluginRepository</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,8 +59,11 @@
     <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\..\packages\protobuf-net.2.4.0\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="SharpRemote, Version=0.5.172.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpRemote.0.5.172\lib\net45\SharpRemote.dll</HintPath>
+    <Reference Include="SharpRemote, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpRemote.Host, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.Host.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -104,7 +107,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tailviewer.Archiver\Tailviewer.Archiver.csproj">

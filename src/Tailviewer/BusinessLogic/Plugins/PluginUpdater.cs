@@ -152,6 +152,8 @@ namespace Tailviewer.BusinessLogic.Plugins
 			var content = repository.DownloadPlugin(id);
 			var fileName = $"{id.Id}.{id.Version}.tvp";
 			var filePath = Path.Combine(Constants.DownloadedPluginsPath, fileName);
+			var folder = Path.GetDirectoryName(filePath);
+			Directory.CreateDirectory(folder);
 			File.WriteAllBytes(filePath, content);
 		}
 	}

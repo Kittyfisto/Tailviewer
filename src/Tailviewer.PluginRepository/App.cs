@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Text;
 using CommandLine;
 using log4net;
-using Tailviewer.PluginRegistry.Applications;
+using Tailviewer.PluginRepository.Applications;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	internal sealed class App
 	{

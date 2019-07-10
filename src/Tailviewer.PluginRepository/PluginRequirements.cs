@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Registry;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	[DataContract]
 	public sealed class PluginRequirements

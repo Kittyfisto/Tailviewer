@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Net;
 using SharpRemote;
-using SharpRemote.CodeGeneration;
 using Tailviewer.Archiver.Registry;
 
-namespace Tailviewer.PluginRegistry
+namespace Tailviewer.PluginRepository
 {
 	public sealed class Server
 		: IDisposable

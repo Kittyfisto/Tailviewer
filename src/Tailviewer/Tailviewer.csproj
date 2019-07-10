@@ -71,8 +71,11 @@
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Ookii.Dialogs.Wpf.1.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="SharpRemote, Version=0.5.172.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpRemote.0.5.172\lib\net45\SharpRemote.dll</HintPath>
+    <Reference Include="SharpRemote, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpRemote.Host, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.Host.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Design" />
