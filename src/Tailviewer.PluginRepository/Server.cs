@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using SharpRemote;
-using Tailviewer.Archiver.Registry;
+using Tailviewer.Archiver.Repository;
 
 namespace Tailviewer.PluginRepository
 {
@@ -16,7 +16,7 @@ namespace Tailviewer.PluginRepository
 			_repository = repository;
 
 			_socket = new SocketServer($"{Constants.ApplicationTitle} Socket");
-			_socket.RegisterSubject(Archiver.Registry.Constants.PluginRegistryV1Id, _repository);
+			_socket.RegisterSubject(Archiver.Repository.Constants.PluginRepositoryV1Id, _repository);
 			_socket.Bind(endPoint);
 		}
 

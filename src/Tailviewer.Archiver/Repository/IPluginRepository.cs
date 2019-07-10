@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tailviewer.Archiver.Registry
+namespace Tailviewer.Archiver.Repository
 {
 	/// <summary>
 	///     Provides (remote) access to Tailviewer's plugin repository.
@@ -17,19 +17,19 @@ namespace Tailviewer.Archiver.Registry
 		/// </summary>
 		/// <param name="interfaces"></param>
 		/// <returns></returns>
-		IReadOnlyList<PluginRegistryId> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces);
+		IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces);
 
 		/// <summary>
 		///     Enumerates all plugins in this repository.
 		/// </summary>
 		/// <returns></returns>
-		IReadOnlyList<PluginRegistryId> FindAllPlugins();
+		IReadOnlyList<PluginIdentifier> FindAllPlugins();
 
 		/// <summary>
 		///     Downloads a specific plugin identified by the given name.
 		/// </summary>
 		/// <param name="pluginId"></param>
 		/// <returns></returns>
-		byte[] DownloadPlugin(PluginRegistryId pluginId);
+		byte[] DownloadPlugin(PluginIdentifier pluginId);
 	}
 }

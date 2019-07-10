@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Tailviewer.Archiver.Registry
+namespace Tailviewer.Archiver.Repository
 {
 	/// <summary>
+	///    Identifies a plugin as part of a plugin repository.
 	/// </summary>
 	[DataContract]
-	public struct PluginRegistryId : IEquatable<PluginRegistryId>
+	public class PluginIdentifier : IEquatable<PluginIdentifier>
 	{
-		public PluginRegistryId(string id, Version version)
+		public PluginIdentifier()
+		{ }
+
+		public PluginIdentifier(string id, Version version)
 		{
 			Id = id;
 			Version = version;
@@ -16,7 +20,7 @@ namespace Tailviewer.Archiver.Registry
 
 		#region Equality members
 
-		public bool Equals(PluginRegistryId other)
+		public bool Equals(PluginIdentifier other)
 		{
 			return string.Equals(Id, other.Id) && Equals(Version, other.Version);
 		}
@@ -24,7 +28,7 @@ namespace Tailviewer.Archiver.Registry
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is PluginRegistryId && Equals((PluginRegistryId) obj);
+			return obj is PluginIdentifier && Equals((PluginIdentifier) obj);
 		}
 
 		public override int GetHashCode()
@@ -35,12 +39,12 @@ namespace Tailviewer.Archiver.Registry
 			}
 		}
 
-		public static bool operator ==(PluginRegistryId left, PluginRegistryId right)
+		public static bool operator ==(PluginIdentifier left, PluginIdentifier right)
 		{
 			return left.Equals(right);
 		}
 
-		public static bool operator !=(PluginRegistryId left, PluginRegistryId right)
+		public static bool operator !=(PluginIdentifier left, PluginIdentifier right)
 		{
 			return !left.Equals(right);
 		}

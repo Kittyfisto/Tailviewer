@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Tailviewer.Archiver.Registry
+namespace Tailviewer.Archiver.Repository
 {
 	[DataContract]
 	public sealed class PluginInterface

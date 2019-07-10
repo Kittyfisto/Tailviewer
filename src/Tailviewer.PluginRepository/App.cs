@@ -22,11 +22,15 @@ namespace Tailviewer.PluginRepository
 				Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 				LogEnvironment();
 
-				var result = Parser.Default.ParseArguments<RunServerOptions, AddPluginOptions, ListPluginsOptions>(args);
+				var result = Parser.Default.ParseArguments<RunServerOptions, AddPluginOptions, ListPluginsOptions, RemovePluginOptions, AddUserOptions, ListUsersOptions, RemoveUserOptions>(args);
 				return result.MapResult(
 				                        (RunServerOptions options) => RunServer.Run(),
 				                        (AddPluginOptions options) => AddPlugin.Run(options),
 				                        (ListPluginsOptions options) => ListPlugins.Run(options),
+										(RemovePluginOptions options) => RemovePlugin.Run(options),
+										(AddUserOptions options) => AddUser.Run(options),
+										(ListUsersOptions options) => ListUsers.Run(options),
+										(RemoveUserOptions options) => RemoveUser.Run(options),
 				                        _ => -2);
 			}
 			catch (Exception e)

@@ -4,10 +4,12 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using IsabelDb;
 using log4net;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.Archiver.Registry;
+using Tailviewer.Archiver.Repository;
+using Tailviewer.PluginRepository.Entities;
 using Tailviewer.PluginRepository.Exceptions;
 
 namespace Tailviewer.PluginRepository
@@ -19,8 +21,10 @@ namespace Tailviewer.PluginRepository
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IDatabase _database;
-		private readonly IsabelDb.IDictionary<PluginRegistryId, byte[]> _pluginsById;
-		private readonly IsabelDb.IDictionary<PluginRegistryId, PluginRequirements> _pluginRequirements;
+		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _pluginsById;
+		private readonly IsabelDb.IDictionary<PluginIdentifier, PublishedPlugin> _pluginRequirements;
+		private readonly IsabelDb.IDictionary<string, User> _users;
+		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
 		public PluginRepository()
 			: this(OpenDatabase(Constants.PluginDatabaseFilePath))
@@ -35,50 +39,129 @@ namespace Tailviewer.PluginRepository
 		public PluginRepository(IDatabase database)
 		{
 			_database = database;
-			_pluginsById = _database.GetOrCreateDictionary<PluginRegistryId, byte[]>("PluginsById");
-			_pluginRequirements = _database.GetOrCreateDictionary<PluginRegistryId, PluginRequirements>("PluginRequirements");
+			_users = _database.GetOrCreateDictionary<string, User>("Users");
+			_usernamesByAccessToken = _database.GetOrCreateDictionary<Guid, string>("UsersByAccessToken");
+			_pluginsById = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("PluginsById");
+			_pluginRequirements = _database.GetOrCreateDictionary<PluginIdentifier, PublishedPlugin>("PluginRequirements");
 		}
 
-		public void AddPlugin(string fileName)
+		public Guid AddUser(string username, string email)
+		{
+			using (var transaction = _database.BeginTransaction())
+			{
+				if (_users.ContainsKey(username))
+					throw new CannotAddUserException($"The user '{username}' already exists and cannot be modified.");
+
+				const string pattern = "^[a-zA-Z_][a-zA-Z0-9_]*$";
+				var regex = new Regex(pattern, RegexOptions.Compiled);
+				if (!regex.IsMatch(username))
+					throw new CannotAddUserException($"The username '{username}' does not match the expected pattern: {pattern}");
+
+				var accessToken = Guid.NewGuid();
+				var user = new User
+				{
+					Username = username,
+					Email = email,
+					AccessToken = accessToken
+				};
+				_users.Put(username, user);
+				_usernamesByAccessToken.Put(accessToken, username);
+
+				transaction.Commit();
+
+				return accessToken;
+			}
+		}
+
+		public void RemoveUser(string username)
+		{
+			using (var transaction = _database.BeginTransaction())
+			{
+				if (!_users.TryGet(username, out var user))
+					throw new CannotRemoveUserException($"The user '{username}' does not exist.");
+
+				_users.Remove(username);
+				_usernamesByAccessToken.Remove(user.AccessToken);
+
+				transaction.Commit();
+			}
+		}
+
+		public IEnumerable<User> GetAllUsers()
+		{
+			return _users.GetAllValues();
+		}
+
+		public void AddPlugin(string fileName, string accessToken)
 		{
 			Log.InfoFormat("Adding plugin '{0}' to repository...", fileName);
 
 			var plugin = File.ReadAllBytes(fileName);
 			var pluginIndex = ReadDescription(plugin);
-			var id = new PluginRegistryId(pluginIndex.Id, pluginIndex.Version);
-			var requirements = new PluginRequirements(pluginIndex.ImplementedPluginInterfaces);
+			var id = new PluginIdentifier(pluginIndex.Id, pluginIndex.Version);
+
+			if (!Guid.TryParse(accessToken, out var token))
+				throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
 
 			using (var transaction = _database.BeginTransaction())
 			{
+				if (!_usernamesByAccessToken.TryGet(token, out var userName))
+					throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
+
 				// TODO: Only throw a temper tantrum in case the plugin to be added differs from the plugin stored in this repository
 				if (_pluginRequirements.ContainsKey(id) || _pluginsById.ContainsKey(id))
 					throw new CannotAddPluginException($"The plugin '{id}' already exists and cannot be modified.");
 
-				_pluginRequirements.Put(id, requirements);
+				var publishedPlugin = new PublishedPlugin
+				{
+					User = userName,
+					Identifier = id,
+					RequiredInterfaces = pluginIndex.ImplementedPluginInterfaces
+						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList()
+				};
+				_pluginRequirements.Put(id, publishedPlugin);
 				_pluginsById.Put(id, plugin);
 
 				transaction.Commit();
-				Log.InfoFormat("Successfully added plugin '{0}' to repository!", fileName);
+				Log.InfoFormat("Added plugin '{0}' to repository!", fileName);
 			}
 		}
 
-		private IPluginPackageIndex ReadDescription(byte[] plugin)
+		public long CountPlugins()
 		{
-			using (var stream = new MemoryStream(plugin))
+			return _pluginsById.Count();
+		}
+
+		public void RemovePlugin(string id, string version)
+		{
+			Log.InfoFormat("Removing plugin {0} v{1}...", id, version);
+
+			if (!Version.TryParse(version, out var v))
+				throw new CannotRemovePluginException($"'{version}' is not a valid version.");
+
+			using (var transaction = _database.BeginTransaction())
 			{
-				return PluginArchive.OpenRead(stream).Index;
+				var identifier = new PluginIdentifier(id, v);
+				if (!_pluginsById.Remove(identifier))
+					throw new CannotRemovePluginException($"No plugin {id} v{version} exists.");
+
+				_pluginRequirements.Remove(identifier);
+
+				transaction.Commit();
+
+				Log.InfoFormat("Removed plugin {0} v{1}", id, version);
 			}
 		}
 
 		#region Implementation of IPluginRepository
 
-		public IReadOnlyList<PluginRegistryId> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces)
+		public IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces)
 		{
 			Log.InfoFormat("Retrieving all plugins implementing '{0}'...", string.Join(", ", interfaces));
 
 			var interfacesByName = CreateInterfaceMap(interfaces);
 
-			var plugins = new List<PluginRegistryId>();
+			var plugins = new List<PluginIdentifier>();
 			foreach (var pair in _pluginRequirements.GetAll())
 			{
 				if (IsSupported(pair.Value, interfacesByName))
@@ -92,7 +175,7 @@ namespace Tailviewer.PluginRepository
 			return plugins;
 		}
 
-		public IReadOnlyList<PluginRegistryId> FindAllPlugins()
+		public IReadOnlyList<PluginIdentifier> FindAllPlugins()
 		{
 			Log.InfoFormat("Retrieving all plugins...");
 
@@ -103,7 +186,7 @@ namespace Tailviewer.PluginRepository
 			return plugins;
 		}
 
-		public byte[] DownloadPlugin(PluginRegistryId pluginId)
+		public byte[] DownloadPlugin(PluginIdentifier pluginId)
 		{
 			Log.InfoFormat("Retrieving plugin '{0}'...", pluginId);
 
@@ -150,7 +233,7 @@ namespace Tailviewer.PluginRepository
 		}
 
 		[Pure]
-		private static bool IsSupported(PluginRequirements pluginRequirements,
+		private static bool IsSupported(PublishedPlugin pluginRequirements,
 		                                System.Collections.Generic.IReadOnlyDictionary<string, int> interfaces)
 		{
 			var requirements = pluginRequirements.RequiredInterfaces;
@@ -175,16 +258,20 @@ namespace Tailviewer.PluginRepository
 			{
 				return new[]
 				{
-					typeof(PluginRegistryId),
-					typeof(PluginRequirements),
-					typeof(PluginInterface)
+					typeof(User),
+					typeof(PluginIdentifier),
+					typeof(PluginInterface),
+					typeof(PublishedPlugin)
 				};
 			}
 		}
 
-		public long Count()
+		private IPluginPackageIndex ReadDescription(byte[] plugin)
 		{
-			return _pluginsById.Count();
+			using (var stream = new MemoryStream(plugin))
+			{
+				return PluginArchive.OpenRead(stream).Index;
+			}
 		}
 	}
 }

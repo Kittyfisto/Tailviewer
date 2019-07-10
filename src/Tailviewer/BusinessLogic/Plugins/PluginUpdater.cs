@@ -9,7 +9,7 @@ using log4net;
 using SharpRemote;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.Archiver.Registry;
+using Tailviewer.Archiver.Repository;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {
@@ -70,7 +70,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 			{
 				Connect(client, endPoint);
 
-				var repository = client.CreateProxy<IPluginRepository>(Archiver.Registry.Constants.PluginRegistryV1Id);
+				var repository = client.CreateProxy<IPluginRepository>(Archiver.Repository.Constants.PluginRepositoryV1Id);
 				return UpdatePlugins(repository);
 			}
 		}
@@ -115,8 +115,8 @@ namespace Tailviewer.BusinessLogic.Plugins
 			return numUpdated;
 		}
 
-		private bool TryFindNewestPlugin(IPluginDescription installedPlugin, IReadOnlyList<PluginRegistryId> allPlugins,
-		                                 out PluginRegistryId id)
+		private bool TryFindNewestPlugin(IPluginDescription installedPlugin, IReadOnlyList<PluginIdentifier> allPlugins,
+		                                 out PluginIdentifier id)
 		{
 			var candidates = allPlugins.Where(x => x.Id == installedPlugin.Id.Value)
 			                           .OrderByDescending(x => x.Version)
@@ -125,7 +125,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 			{
 				Log.DebugFormat("No newer version for plugin '{0}' available", installedPlugin.Id);
 
-				id = new PluginRegistryId();
+				id = null;
 				return false;
 			}
 
@@ -133,7 +133,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 			return true;
 		}
 
-		private bool TryDownloadAndInstall(IPluginRepository repository, PluginRegistryId id)
+		private bool TryDownloadAndInstall(IPluginRepository repository, PluginIdentifier id)
 		{
 			try
 			{
@@ -147,7 +147,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 			}
 		}
 
-		private void DownloadAndInstall(IPluginRepository repository, PluginRegistryId id)
+		private void DownloadAndInstall(IPluginRepository repository, PluginIdentifier id)
 		{
 			var content = repository.DownloadPlugin(id);
 			var fileName = $"{id.Id}.{id.Version}.tvp";

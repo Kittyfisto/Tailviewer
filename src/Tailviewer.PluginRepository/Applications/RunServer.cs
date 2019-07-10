@@ -64,7 +64,7 @@ namespace Tailviewer.PluginRepository.Applications
 
 				using (var repository = new PluginRepository())
 				{
-					Log.InfoFormat("The repository contains {0} plugin(s)", repository.Count());
+					Log.InfoFormat("The repository contains {0} plugin(s)", repository.CountPlugins());
 
 					using (new Server(new IPEndPoint(IPAddress.Any, 1234), repository))
 					{
