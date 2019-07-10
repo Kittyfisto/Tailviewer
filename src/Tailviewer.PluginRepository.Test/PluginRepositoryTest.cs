@@ -50,6 +50,23 @@ namespace Tailviewer.PluginRepository.Test
 			DatabaseShouldBeEmpty();
 		}
 
+		[Test]
+		[Ignore("Not working yet, InMemoryFilesystem throws the wrong exception type")]
+		public void TestAddPluginNoSuchFile()
+		{
+			var path = @"M:\does\not\exist\";
+			_filesystem.CreateDirectory(path);
+			TestContext.WriteLine(_filesystem.Print());
+
+			var file = Path.Combine(path, "plugin.tvp");
+			new Action(() => _repository.AddPlugin(file, ""))
+				.Should()
+				.Throw<CannotAddPluginException>()
+				.WithInnerException<FileNotFoundException>();
+
+			DatabaseShouldBeEmpty();
+		}
+
 		private void DatabaseShouldBeEmpty()
 		{
 			_users.GetAll().Should().BeEmpty();

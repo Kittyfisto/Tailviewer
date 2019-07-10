@@ -107,6 +107,10 @@ namespace Tailviewer.PluginRepository
 			{
 				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
 			}
+			catch (FileNotFoundException e)
+			{
+				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+			}
 
 			var pluginIndex = ReadDescription(plugin);
 			var id = new PluginIdentifier(pluginIndex.Id, pluginIndex.Version);

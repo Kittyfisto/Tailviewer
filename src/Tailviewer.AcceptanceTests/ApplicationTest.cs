@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests
 {
@@ -24,6 +25,7 @@ namespace Tailviewer.AcceptanceTests
 		private string ExecutableName => Path.Combine(_installationPath, "Tailviewer.exe");
 
 		[Test]
+		[LocalTest("Doesn't work on AppVeyor yet")]
 		[Description("Verifies that Tailviewer only allows one instance to be executed at the same time")]
 		public void TestOnlyOneApplication1()
 		{

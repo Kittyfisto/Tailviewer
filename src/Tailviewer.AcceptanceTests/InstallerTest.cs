@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests
 {
@@ -28,6 +29,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[LocalTest("Doesn't work on AppVeyor yet")]
 		[Description("Verifies that the graphical installer can start and doesn't exit on its own - also verifies that the log doesn't contain any errors")]
 		public void TestRunGraphicalInstaller()
 		{
@@ -55,6 +57,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[LocalTest("Doesn't work on AppVeyor yet")]
 		[Description(
 			"Verifies that a fresh install into a completely empty directory yields a runnable tailviewer application")]
 		public void TestFreshInstall()
@@ -65,6 +68,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[LocalTest("Doesn't work on AppVeyor yet")]
 		public void TestOverwriteInstall()
 		{
 			Delete(_installationPath);
@@ -74,6 +78,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
+		[LocalTest("Doesn't work on AppVeyor yet")]
 		public void TestInstallWhileApplicationIsRunning()
 		{
 			Delete(_installationPath);
