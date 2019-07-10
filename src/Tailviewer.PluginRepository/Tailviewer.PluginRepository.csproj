@@ -121,4 +121,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\System.Data.SQLite.Core.1.0.111.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\System.Data.SQLite.Core.1.0.111.0\build\net451\System.Data.SQLite.Core.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>cd $(OutputDir)
+mkdir "$(OutputDir)\x64"
+mkdir "$(OutputDir)\x86"
+copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x64\SQLite.Interop.dll" "$(OutputDir)\x64\SQLite.Interop.dll"
+copy "$(OutputDir)..\packages\System.Data.SQLite.Core.1.0.111.0\build\net45\x86\SQLite.Interop.dll" "$(OutputDir)\x86\SQLite.Interop.dll"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using SharpRemote;
+using SharpRemote.CodeGeneration;
 using Tailviewer.Archiver.Registry;
 
 namespace Tailviewer.PluginRegistry
