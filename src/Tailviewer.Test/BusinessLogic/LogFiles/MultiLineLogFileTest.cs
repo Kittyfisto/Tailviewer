@@ -843,6 +843,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			line.RawContent.Should().Be("World!");
 		}
 
+		[Test]
+		public void TestFuck()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeClass::FooBar()] [Session 1337] [FW]", LevelFlags.None, new DateTime(2019, 7, 8, 16, 19, 13, 546));
+			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeClass::FooBar()] [Session 1337] [FW] [IND_ERROR] [The test case had to be terminated.] [The stack has indicated an UNKNOWN error.SAP Name = 'EM', AppName = 'lte-l1c-phy.elf', StatusInfo = '<missing>']", LevelFlags.None, new DateTime(2019, 7, 8, 16, 19, 13, 546));
+			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeOtherClass::Ooopsie()][Whoops] [to] [eTC_STOP_EVENT_SUSPEND_IND]", LevelFlags.None, new DateTime(2019, 7, 8, 16, 19, 13, 546));
+
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(3);
+			var entries = logFile.GetEntries(new LogFileSection(0, 3), LogFileColumns.LogEntryIndex);
+			entries[0].LogEntryIndex.Should().Be(new LogEntryIndex(0));
+			entries[1].LogEntryIndex.Should().Be(new LogEntryIndex(1));
+			entries[2].LogEntryIndex.Should().Be(new LogEntryIndex(2));
+		}
+
 		protected override ILogFile CreateEmpty()
 		{
 			var source = new InMemoryLogFile();

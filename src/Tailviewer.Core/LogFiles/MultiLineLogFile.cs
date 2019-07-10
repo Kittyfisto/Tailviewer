@@ -297,6 +297,13 @@ namespace Tailviewer.Core.LogFiles
 				for (var i = 0; i < section.Count; ++i)
 				{
 					var line = buffer[i];
+
+
+					if (line.LineIndex == 151)
+					{
+						Console.WriteLine("Fuck");
+					}
+
 					if (_currentLogEntry.EntryIndex.IsInvalid ||
 					    !AppendToCurrentLogEntry(line))
 					{

@@ -22,10 +22,11 @@ namespace Tailviewer.PluginRegistry
 				Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 				LogEnvironment();
 
-				var result = Parser.Default.ParseArguments<RunServerOptions, AddPluginOptions>(args);
+				var result = Parser.Default.ParseArguments<RunServerOptions, AddPluginOptions, ListPluginsOptions>(args);
 				return result.MapResult(
 				                        (RunServerOptions options) => RunServer.Run(),
 				                        (AddPluginOptions options) => AddPlugin.Run(options),
+				                        (ListPluginsOptions options) => ListPlugins.Run(options),
 				                        _ => -2);
 			}
 			catch (Exception e)

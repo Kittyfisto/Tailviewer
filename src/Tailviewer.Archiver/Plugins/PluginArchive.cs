@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Text;
+using log4net;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -14,6 +15,8 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class PluginArchive
 		: IPluginArchive
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private readonly Dictionary<ZipArchiveEntry, Assembly> _assemblyCache;
@@ -75,7 +78,8 @@ namespace Tailviewer.Archiver.Plugins
 				_index = PluginPackageIndex.Deserialize(stream);
 			}
 			sw.Stop();
-			Console.WriteLine("Deserialize index: {0}ms", sw.ElapsedMilliseconds);
+
+			Log.DebugFormat("Deserialize index took: {0}ms", sw.ElapsedMilliseconds);
 		}
 
 		public IPluginPackageIndex Index => _index;

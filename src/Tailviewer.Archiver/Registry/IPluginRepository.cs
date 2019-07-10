@@ -20,6 +20,12 @@ namespace Tailviewer.Archiver.Registry
 		IReadOnlyList<PluginRegistryId> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces);
 
 		/// <summary>
+		///     Enumerates all plugins in this repository.
+		/// </summary>
+		/// <returns></returns>
+		IReadOnlyList<PluginRegistryId> FindAllPlugins();
+
+		/// <summary>
 		///     Downloads a specific plugin identified by the given name.
 		/// </summary>
 		/// <param name="pluginId"></param>

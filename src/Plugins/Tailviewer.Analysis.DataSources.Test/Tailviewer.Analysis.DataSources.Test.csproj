@@ -82,7 +82,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Analysis.DataSources\Tailviewer.Analysis.DataSources.csproj">
       <Project>{91E9A698-B458-40F6-ACFE-715BFE9832BD}</Project>
-      <Name>Tailviewer.DataSources</Name>
+      <Name>Tailviewer.Analysis.DataSources</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,7 +3,7 @@
 namespace Tailviewer.Archiver.Registry
 {
 	[DataContract]
-	public struct PluginInterface
+	public sealed class PluginInterface
 	{
 		public PluginInterface(string fullName, int version)
 		{

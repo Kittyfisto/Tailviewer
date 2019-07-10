@@ -218,5 +218,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
 		}
+
+		[Test]
+		public void TestTryParse13()
+		{
+			var parser = new TimestampParser();
+			DateTime timestamp;
+			parser
+				.TryParse(
+					"2019-07-08 16:18:58.381",
+					out timestamp)
+				.Should()
+				.BeTrue();
+			timestamp.Should().Be(new DateTime(2019, 7, 8, 16, 18, 58, 381));
+		}
 	}
 }

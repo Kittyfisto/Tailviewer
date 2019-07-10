@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using IsabelDb;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Registry;
+using Tailviewer.PluginRegistry.Exceptions;
 
 namespace Tailviewer.PluginRegistry
 {
@@ -33,8 +35,8 @@ namespace Tailviewer.PluginRegistry
 		public PluginRepository(IDatabase database)
 		{
 			_database = database;
-			_pluginsById = _database.GetDictionary<PluginRegistryId, byte[]>("PluginsById");
-			_pluginRequirements = _database.GetDictionary<PluginRegistryId, PluginRequirements>("PluginRequirements");
+			_pluginsById = _database.GetOrCreateDictionary<PluginRegistryId, byte[]>("PluginsById");
+			_pluginRequirements = _database.GetOrCreateDictionary<PluginRegistryId, PluginRequirements>("PluginRequirements");
 		}
 
 		public void AddPlugin(string fileName)
@@ -46,10 +48,18 @@ namespace Tailviewer.PluginRegistry
 			var id = new PluginRegistryId(pluginIndex.Id, pluginIndex.Version);
 			var requirements = new PluginRequirements(pluginIndex.ImplementedPluginInterfaces);
 
-			_pluginRequirements.Put(id, requirements);
-			_pluginsById.Put(id, plugin);
+			using (var transaction = _database.BeginTransaction())
+			{
+				// TODO: Only throw a temper tantrum in case the plugin to be added differs from the plugin stored in this repository
+				if (_pluginRequirements.ContainsKey(id) || _pluginsById.ContainsKey(id))
+					throw new CannotAddPluginException($"The plugin '{id}' is already part of this repository and should not be added a second time!");
 
-			Log.InfoFormat("Successfully added plugin '{0}' to repository!", fileName);
+				_pluginRequirements.Put(id, requirements);
+				_pluginsById.Put(id, plugin);
+
+				transaction.Commit();
+				Log.InfoFormat("Successfully added plugin '{0}' to repository!", fileName);
+			}
 		}
 
 		private IPluginPackageIndex ReadDescription(byte[] plugin)
@@ -76,6 +86,17 @@ namespace Tailviewer.PluginRegistry
 					plugins.Add(pair.Key);
 				}
 			}
+
+			Log.InfoFormat("Found {0} plugins, sending to client...", plugins.Count);
+
+			return plugins;
+		}
+
+		public IReadOnlyList<PluginRegistryId> FindAllPlugins()
+		{
+			Log.InfoFormat("Retrieving all plugins...");
+
+			var plugins = _pluginsById.GetAllKeys().ToList();
 
 			Log.InfoFormat("Found {0} plugins, sending to client...", plugins.Count);
 
@@ -155,7 +176,8 @@ namespace Tailviewer.PluginRegistry
 				return new[]
 				{
 					typeof(PluginRegistryId),
-					typeof(PluginRequirements)
+					typeof(PluginRequirements),
+					typeof(PluginInterface)
 				};
 			}
 		}

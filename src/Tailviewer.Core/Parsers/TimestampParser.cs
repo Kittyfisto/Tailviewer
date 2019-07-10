@@ -35,6 +35,8 @@ namespace Tailviewer.Core.Parsers
 				// Request by abani1986 (https://github.com/Kittyfisto/Tailviewer/issues/182)
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss:fff"),
 
+				new DateTimeParser("yyyy-MM-dd HH:mm:ss.fff"),
+
 				new DateTimeParser("yyyy-MM-dd HH:mm:ss"),
 
 				// Request by abani1986 (https://github.com/Kittyfisto/Tailviewer/issues/182)
