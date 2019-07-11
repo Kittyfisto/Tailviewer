@@ -277,15 +277,18 @@
         </StackPanel>
 
         <Border Grid.Row="3"
-                Background="#D8D8D8">
+                Background="{StaticResource TitleBarBrush}">
             <Grid Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
                 <Grid.ColumnDefinitions>
+                    <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
+                    <ColumnDefinition Width="25" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
-                
-                <StackPanel Orientation="Horizontal">
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="1">
                     <TextBlock
                         Margin="4"
                         Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
@@ -300,7 +303,7 @@
                         Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
                 </StackPanel>
 
-                <Grid Grid.Column="2"
+                <Grid Grid.Column="3"
                       Margin="4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

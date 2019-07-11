@@ -44,11 +44,14 @@ namespace Tailviewer.Settings
 
 		public string SelectedSidePanel { get; set; }
 
+		public bool IsLeftSidePanelVisible { get; set; }
+
 		public string SelectedMainPanel { get; set; }
 
 		public MainWindowSettings()
 		{
 			_window = new WindowSettings();
+			IsLeftSidePanelVisible = true;
 		}
 
 		private MainWindowSettings(MainWindowSettings other)
@@ -57,6 +60,7 @@ namespace Tailviewer.Settings
 			SelectedMainPanel = other.SelectedMainPanel;
 			SelectedSidePanel = other.SelectedSidePanel;
 			AlwaysOnTop = other.AlwaysOnTop;
+			IsLeftSidePanelVisible = other.IsLeftSidePanelVisible;
 		}
 
 		private readonly WindowSettings _window;
@@ -71,6 +75,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("selectedmainpanel", SelectedMainPanel);
 			writer.WriteAttributeString("selectedsidepanel", SelectedSidePanel);
 			writer.WriteAttributeBool("alwaysontop", AlwaysOnTop);
+			writer.WriteAttributeBool("isleftsidepanelvisible", IsLeftSidePanelVisible);
 			_window.Save(writer);
 		}
 
@@ -83,6 +88,10 @@ namespace Tailviewer.Settings
 				{
 					case "alwaysontop":
 						AlwaysOnTop = reader.ReadContentAsBool();
+						break;
+
+					case "isleftsidepanelvisible":
+						IsLeftSidePanelVisible = reader.ReadContentAsBool();
 						break;
 
 					case "selectedmainpanel":

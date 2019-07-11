@@ -29,12 +29,6 @@ namespace Tailviewer.Ui.ViewModels
 	public sealed class MainWindowViewModel
 		: INotifyPropertyChanged
 	{
-		#region Dispatching
-
-		private readonly DispatcherTimer _timer;
-
-		#endregion
-
 		private readonly IServiceContainer _services;
 		private readonly IApplicationSettings _applicationSettings;
 		private readonly DelegateCommand _showLogCommand;
@@ -71,6 +65,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly DelegateCommand2 _showGoToLineCommand;
 		private readonly ICommand _goToPreviousDataSourceCommand;
 		private readonly ICommand _goToNextDataSourceCommand;
+		private bool _isLeftSidePanelVisible;
 
 		public MainWindowViewModel(IServiceContainer services,
 		                           IApplicationSettings settings,
@@ -101,12 +96,12 @@ namespace Tailviewer.Ui.ViewModels
 			                                              _applicationSettings);
 			_logViewPanel.PropertyChanged += LogViewPanelOnPropertyChanged;
 
-			_timer = new DispatcherTimer
-				{
-					Interval = TimeSpan.FromMilliseconds(100)
-				};
-			_timer.Tick += TimerOnTick;
-			_timer.Start();
+			var timer = new DispatcherTimer
+			{
+				Interval = TimeSpan.FromMilliseconds(100)
+			};
+			timer.Tick += TimerOnTick;
+			timer.Start();
 
 			_autoUpdater = new AutoUpdateViewModel(updater, settings.AutoUpdate, services.Retrieve<IDispatcher>());
 			_showLogCommand = new DelegateCommand(ShowLog);
@@ -148,6 +143,9 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				SelectedTopEntry = _rawEntry;
 			}
+
+			_isLeftSidePanelVisible = settings.MainWindow.IsLeftSidePanelVisible;
+			UpdateLeftSidePanelExpanderTooltip();
 		}
 
 		private void GoToNextDataSource()
@@ -239,6 +237,46 @@ namespace Tailviewer.Ui.ViewModels
 					return;
 
 				_windowTitle = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsLeftSidePanelVisible
+		{
+			get => _isLeftSidePanelVisible;
+			set
+			{
+				if (value == _isLeftSidePanelVisible)
+					return;
+
+				_isLeftSidePanelVisible = value;
+				EmitPropertyChanged();
+
+				UpdateLeftSidePanelExpanderTooltip();
+
+				_applicationSettings.MainWindow.IsLeftSidePanelVisible = value;
+				_applicationSettings.SaveAsync();
+			}
+		}
+
+		private void UpdateLeftSidePanelExpanderTooltip()
+		{
+			LeftSidePanelExpanderTooltip = IsLeftSidePanelVisible
+				? "Hide icons"
+				: "Show hidden icons";
+		}
+
+		private string _leftSidePanelExpanderTooltip;
+
+		public string LeftSidePanelExpanderTooltip
+		{
+			get { return _leftSidePanelExpanderTooltip; }
+			set
+			{
+				if (value == _leftSidePanelExpanderTooltip)
+					return;
+
+				_leftSidePanelExpanderTooltip = value;
 				EmitPropertyChanged();
 			}
 		}

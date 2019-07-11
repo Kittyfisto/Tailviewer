@@ -16,6 +16,7 @@ namespace Tailviewer.Test.Settings
 		{
 			var settings = new MainWindowSettings();
 			settings.AlwaysOnTop.Should().BeFalse();
+			settings.IsLeftSidePanelVisible.Should().BeTrue();
 		}
 
 		[Test]
@@ -36,7 +37,8 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
-		public void TestClone([Values(true, false)] bool alwaysOnTop)
+		public void TestClone([Values(true, false)] bool alwaysOnTop,
+		                      [Values(true, false)] bool isLeftSidePanelCollapsed)
 		{
 			var settings = new MainWindowSettings();
 			settings.SelectedMainPanel = "Bar";
@@ -46,6 +48,7 @@ namespace Tailviewer.Test.Settings
 			settings.Left = 42;
 			settings.Top = 101;
 			settings.AlwaysOnTop = alwaysOnTop;
+			settings.IsLeftSidePanelVisible = isLeftSidePanelCollapsed;
 
 			var cloned = settings.Clone();
 			cloned.Should().NotBeNull();
@@ -57,10 +60,12 @@ namespace Tailviewer.Test.Settings
 			cloned.Left.Should().Be(42);
 			cloned.Top.Should().Be(101);
 			cloned.AlwaysOnTop.Should().Be(alwaysOnTop);
+			cloned.IsLeftSidePanelVisible.Should().Be(isLeftSidePanelCollapsed);
 		}
 
 		[Test]
-		public void TestSaveRestore([Values(true, false)]bool alwaysOnTop)
+		public void TestSaveRestore([Values(true, false)]bool alwaysOnTop,
+		                            [Values(true, false)]bool isLeftSidePanelCollapsed)
 		{
 			using (var stream = new MemoryStream())
 			{
@@ -76,6 +81,7 @@ namespace Tailviewer.Test.Settings
 					settings.Left = 42;
 					settings.Top = 101;
 					settings.AlwaysOnTop = alwaysOnTop;
+					settings.IsLeftSidePanelVisible = isLeftSidePanelCollapsed;
 					settings.Save(writer);
 				}
 				stream.Position = 0;
@@ -94,6 +100,7 @@ namespace Tailviewer.Test.Settings
 					settings.Left.Should().Be(42);
 					settings.Top.Should().Be(101);
 					settings.AlwaysOnTop.Should().Be(alwaysOnTop);
+					settings.IsLeftSidePanelVisible.Should().Be(isLeftSidePanelCollapsed);
 				}
 			}
 		}

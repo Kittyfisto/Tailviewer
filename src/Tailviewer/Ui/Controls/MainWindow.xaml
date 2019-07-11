@@ -160,15 +160,22 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Grid Background="{StaticResource PrimaryBrush}">
+
+                        <Grid Background="{StaticResource PrimaryBrush}"
+                              Grid.Column="0"
+                              Visibility="{Binding IsLeftSidePanelVisible, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                              Width="100">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="24" Name="Spacer" />
                             </Grid.RowDefinitions>
+
+                            <!-- Top selector: Raw, Analysis, etc... -->
                             <metrolib:FlatListView ItemsSource="{Binding TopEntries}"
                                                    SelectedItem="{Binding SelectedTopEntry, Mode=TwoWay}"
                                                    Background="{StaticResource PrimaryBrush}"
@@ -207,6 +214,7 @@
                                 </ListView.ItemTemplate>
                             </metrolib:FlatListView>
 
+                            <!-- Bottom selector: Settings, Plugins, About -->
                             <metrolib:FlatListView ItemsSource="{Binding BottomEntries}"
                                                    SelectedItem="{Binding SelectedBottomEntry, Mode=TwoWay}"
                                                    Background="{StaticResource PrimaryBrush}"
@@ -250,6 +258,17 @@
                         <ContentPresenter Grid.Column="1"
                                           Content="{Binding SelectedMainPanel}"
                                           x:Name="PART_Content"/>
+
+                        <metrolib:ExpanderToggleButton Grid.Column="0"
+                                                       Grid.ColumnSpan="2"
+                                                       Height="24"
+                                                       Width="24"
+                                                       Margin="3,3,2,2"
+                                                       VerticalAlignment="Bottom"
+                                                       HorizontalAlignment="Left"
+                                                       metrolib:Properties.IsInverted="{Binding IsLeftSidePanelVisible}"
+                                                       IsChecked="{Binding IsLeftSidePanelVisible, Mode=TwoWay}"
+                                                       ToolTip="{Binding LeftSidePanelExpanderTooltip}"/>
                     </Grid>
 
                     <Grid Grid.Column="1"

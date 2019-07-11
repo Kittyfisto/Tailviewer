@@ -98,6 +98,58 @@ namespace Tailviewer.Test.Ui
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
+		public void TestConstructionCollapseSidePanel([Values(true, false)] bool isLeftSidePanelVisible)
+		{
+			_settings.MainWindow.IsLeftSidePanelVisible = isLeftSidePanelVisible;
+
+			_mainWindow = new MainWindowViewModel(_services,
+			                                      _settings,
+			                                      _dataSources,
+			                                      _quickFilters,
+			                                      _actionCenter,
+			                                      _updater.Object,
+			                                      _analysisStorage.Object);
+
+			_mainWindow.IsLeftSidePanelVisible.Should().Be(isLeftSidePanelVisible);
+		}
+
+		[Test]
+		[Description("Verifies that the tooltip of the chevron changes based on whether the panel is collapsed or not")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
+		public void TestLeftSidePanelTooltip()
+		{
+			using (var monitor = _mainWindow.Monitor())
+			{
+				_mainWindow.IsLeftSidePanelVisible.Should().BeTrue();
+				_mainWindow.LeftSidePanelExpanderTooltip.Should().Be("Hide icons");
+				monitor.Should().NotRaisePropertyChangeFor(x => x.IsLeftSidePanelVisible);
+				monitor.Should().NotRaisePropertyChangeFor(x => x.LeftSidePanelExpanderTooltip);
+
+				_mainWindow.IsLeftSidePanelVisible = false;
+				_mainWindow.LeftSidePanelExpanderTooltip.Should().Be("Show hidden icons");
+				monitor.Should().RaisePropertyChangeFor(x => x.IsLeftSidePanelVisible);
+				monitor.Should().RaisePropertyChangeFor(x => x.LeftSidePanelExpanderTooltip);
+			}
+		}
+
+		[Test]
+		[Description("Verifies that changing the collapsed chevron causes the setting to be persisted on disk.")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/201")]
+		public void TestSaveIsLeftSidePanelVisible()
+		{
+			_mainWindow.IsLeftSidePanelVisible.Should().BeTrue();
+
+			_mainWindow.IsLeftSidePanelVisible = false;
+			_settings.MainWindow.IsLeftSidePanelVisible.Should().BeFalse();
+			_settings.NumSaved.Should().Be(1);
+
+			_mainWindow.IsLeftSidePanelVisible = true;
+			_settings.MainWindow.IsLeftSidePanelVisible.Should().BeTrue();
+			_settings.NumSaved.Should().Be(2);
+		}
+
+		[Test]
 		[Enhancement("https://github.com/Kittyfisto/Tailviewer/issues/75")]
 		public void TestShowLog()
 		{

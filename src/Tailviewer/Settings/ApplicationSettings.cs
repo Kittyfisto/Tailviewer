@@ -25,6 +25,15 @@ namespace Tailviewer.Settings
 		private readonly QuickFilters _quickFilters;
 		private readonly ExportSettings _export;
 		private readonly LogViewerSettings _logViewer;
+		private int _numSaved;
+
+		/// <summary>
+		///    How often <see cref=" SaveAsync"/> was called.
+		/// </summary>
+		public int NumSaved
+		{
+			get { return _numSaved; }
+		}
 
 		static ApplicationSettings()
 		{
@@ -79,6 +88,7 @@ namespace Tailviewer.Settings
 		{
 			var config = Clone();
 			_saveTask = _saveTask.ContinueWith(unused => config.Save());
+			++_numSaved;
 		}
 
 		public bool Save()

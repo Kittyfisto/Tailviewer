@@ -37,6 +37,12 @@ namespace Tailviewer.Settings
 
 		string SelectedSidePanel { get; set; }
 
+		/// <summary>
+		///    When set to true, then the left-side panel is collapsed to
+		///    reduce space requirements.
+		/// </summary>
+		bool IsLeftSidePanelVisible { get; set; }
+
 		string SelectedMainPanel { get; set; }
 
 		void Save(XmlWriter writer);
