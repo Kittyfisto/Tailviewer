@@ -59,6 +59,10 @@
         </ResourceDictionary>
     </Window.Resources>
 
+    <Window.Background>
+        <StaticResource ResourceKey="TitleBarBrush" />
+    </Window.Background>
+
     <metrolib:ChromelessWindow.Header>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -67,22 +71,21 @@
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <Border Background="{StaticResource PrimaryBrush}"
-                    IsHitTestVisible="False">
-                <StackPanel Orientation="Horizontal"
-                            Height="20"
-                            Margin="4,0,0,0">
-                    <Image Source="pack://application:,,,/Resources/Tailviewer.png"
-                           RenderOptions.BitmapScalingMode="HighQuality"
-                           VerticalAlignment="Center" />
-                    <TextBlock Text="Tailviewer"
-                               Margin="0,0,0,2"
-                               Foreground="White"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               FontSize="16" />
-                </StackPanel>
-            </Border>
+
+            <StackPanel Orientation="Horizontal"
+                        IsHitTestVisible="False"
+                        Height="20"
+                        Margin="4,0,0,0">
+                <Image Source="pack://application:,,,/Resources/Tailviewer.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       VerticalAlignment="Center" />
+                <TextBlock Text="Tailviewer"
+                           Margin="0,0,0,2"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           FontSize="16" />
+            </StackPanel>
 
             <TextBlock Grid.Column="1"
                        Margin="8,0,0,0"

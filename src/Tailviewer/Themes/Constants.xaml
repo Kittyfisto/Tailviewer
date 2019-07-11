@@ -14,6 +14,9 @@
     <Color x:Key="PrimaryForeground">#FFFFFF</Color>
     -->
 
+    <Color x:Key="UnfocusedOverlay">#30FFFFFF</Color>
+    <Color x:Key="TitleBar">#EAEDF2</Color>
+
     <Color x:Key="Primary">#2196f3</Color>
     <Color x:Key="PrimaryLight">#6ec6ff</Color>
     <Color x:Key="PrimaryLighter">#89D2FF</Color>
@@ -25,6 +28,9 @@
     <Color x:Key="SecondaryLighter">#89D2FF</Color>
     <Color x:Key="SecondaryDark">#0069c0</Color>
     <Color x:Key="SecondaryForeground">#000000</Color>
+
+    <SolidColorBrush x:Key="UnfocusedOverlayBrush" Color="{StaticResource UnfocusedOverlay}" />
+    <SolidColorBrush x:Key="TitleBarBrush" Color="{StaticResource TitleBar}" />
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}" />
