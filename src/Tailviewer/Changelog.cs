@@ -49,6 +49,28 @@ namespace Tailviewer
 			AddV071();
 			AddV080();
 			AddV081();
+			AddV090();
+		}
+
+		private static void AddV090()
+		{
+			var features = new[]
+			{
+				"Introduced plugin browser which works on conjunction with self hosted repositories" // https://github.com/Kittyfisto/Tailviewer/issues/90
+			};
+			var bugfixes = new string[]
+			{
+				
+			};
+			var misc = new[]
+			{
+				"The titlebar properly reacts to losing focus", // https://github.com/Kittyfisto/Tailviewer/issues/202
+				"The left side panel can be collapsed", // https://github.com/Kittyfisto/Tailviewer/issues/201
+			};
+			var releaseDate = new DateTime(2019, 09, 1);
+			var version = new Version(0, 9, 0);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV081()
