@@ -86,7 +86,7 @@ namespace Tailviewer.Archiver.Applications
 
 						if (!string.IsNullOrEmpty(_options.ChangeListFileName))
 						{
-							packer.SetChanges(ReadChanges(_options.ChangeListFileName));
+							packer.SetChanges(_options.ChangeListFileName);
 						}
 
 						pluginVersion = packer.Version;
@@ -112,14 +112,6 @@ namespace Tailviewer.Archiver.Applications
 			{
 				Log.Error(e.Message);
 				return -1;
-			}
-		}
-
-		private IReadOnlyList<SerializableChange> ReadChanges(string fileName)
-		{
-			using (var stream = File.OpenRead(fileName))
-			{
-				throw new NotImplementedException();
 			}
 		}
 

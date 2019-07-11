@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using log4net;
 using PE;
@@ -155,9 +156,47 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		public void SetChanges(IEnumerable<SerializableChange> changes)
+		public void SetChanges(string changesFileName)
 		{
-			_index.Changes.AddRange(changes);
+			_index.Changes.AddRange(ReadChanges(changesFileName));
+		}
+
+		private IReadOnlyList<SerializableChange> ReadChanges(string fileName)
+		{
+			using(var reader = XmlReader.Create(fileName))
+			{
+				var changes = new List<SerializableChange>();
+
+				while (reader.Read())
+				{
+					switch (reader.Name)
+					{
+						case "change":
+							changes.Add(ReadChange(reader.ReadSubtree()));
+							break;
+					}
+				}
+
+				return changes;
+			}
+		}
+
+		private static SerializableChange ReadChange(XmlReader reader)
+		{
+			reader.Read();
+
+			var summary = reader.GetAttribute("summary");
+			string description = null;
+			if (reader.Read())
+			{
+				description = reader.ReadContentAsString();
+			}
+
+			return new SerializableChange
+			{
+				Summary = summary,
+				Description = description
+			};
 		}
 
 		/// <summary>

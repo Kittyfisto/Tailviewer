@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
@@ -244,6 +245,43 @@ namespace Tailviewer.Archiver.Test
 					image.Width.Should().Be(16);
 					image.Height.Should().Be(16);
 				}
+			}
+		}
+
+		[Test]
+		public void TestAddChanges()
+		{
+			using (var packer = CreatePacker(_fname))
+			{
+				var fileName = Path.GetTempFileName();
+				using (var writer = XmlWriter.Create(fileName))
+				{
+					writer.WriteStartElement("changes");
+
+					writer.WriteStartElement("change");
+					writer.WriteAttributeString("summary", "foo");
+					writer.WriteEndElement();
+
+					writer.WriteStartElement("change");
+					writer.WriteAttributeString("summary", "bar");
+					writer.WriteString("A very detailed\ndescription");
+					writer.WriteEndElement();
+
+					writer.WriteEndElement();
+				}
+
+				packer.SetChanges(fileName);
+			}
+
+			using (var reader = PluginArchive.OpenRead(_fname))
+			{
+				var changes = reader.Index.Changes;
+				changes.Should().HaveCount(2);
+				changes[0].Summary.Should().Be("foo");
+				changes[0].Description.Should().BeNullOrEmpty();
+
+				changes[1].Summary.Should().Be("bar");
+				changes[1].Description.Should().Be("A very detailed\ndescription");
 			}
 		}
 
