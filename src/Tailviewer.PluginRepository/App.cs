@@ -56,7 +56,7 @@ namespace Tailviewer.PluginRepository
 			using (var taskScheduler = new DefaultTaskScheduler())
 			{
 				var filesystem = new Filesystem(taskScheduler);
-				using (var repo = new PluginRepository(filesystem))
+				using (var repo = PluginRepository.Create(filesystem))
 				{
 					var app = new TApp();
 					return app.Run(repo, options);

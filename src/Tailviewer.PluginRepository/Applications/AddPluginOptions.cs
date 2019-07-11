@@ -10,10 +10,14 @@ namespace Tailviewer.PluginRepository.Applications
 			Required = true)]
 		public string PluginFileName { get; set; }
 
+		[Option('u', "user",
+			Default = null,
+			HelpText = "The username under which to publish the plugin")]
+		public string Username { get; set; }
+
 		[Option('a', "access-token",
 			Default = null,
-			HelpText = "The access token of the user under which the plugin should be published",
-			Required = true)]
+			HelpText = "The access token of the user under which the plugin should be published")]
 		public string AccessToken { get; set; }
 	}
 }

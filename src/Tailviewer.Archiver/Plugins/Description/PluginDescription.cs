@@ -63,6 +63,9 @@ namespace Tailviewer.Archiver.Plugins.Description
 		/// <inheritdoc />
 		public IReadOnlyDictionary<string, string> SerializableTypes { get; set; }
 
+		/// <inheritdoc />
+		public IReadOnlyList<IChange> Changes { get; set; }
+
 		#region Overrides of Object
 
 		public override string ToString()

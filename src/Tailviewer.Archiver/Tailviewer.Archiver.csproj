@@ -81,6 +81,8 @@
     <Compile Include="Plugins\AssemblyReference.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Plugins\CorruptPluginException.cs" />
+    <Compile Include="Plugins\Description\Change.cs" />
+    <Compile Include="Plugins\Description\IChange.cs" />
     <Compile Include="Plugins\Description\PluginError.cs" />
     <Compile Include="Plugins\EmptyPluginArchive.cs" />
     <Compile Include="Plugins\IAssemblyDescription.cs" />
@@ -109,10 +111,12 @@
     <Compile Include="Plugins\PluginPacker.cs" />
     <Compile Include="Plugins\PluginRegistry.cs" />
     <Compile Include="Plugins\PluginWithDescription.cs" />
+    <Compile Include="Plugins\SerializableChange.cs" />
     <Compile Include="Plugins\SerializableTypeDescription.cs" />
     <Compile Include="Plugins\PluginStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Change.cs" />
     <Compile Include="Repository\Constants.cs" />
     <Compile Include="Repository\IPluginRepository.cs" />
     <Compile Include="Repository\PluginIdentifier.cs" />

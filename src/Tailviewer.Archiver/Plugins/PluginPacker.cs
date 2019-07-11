@@ -46,6 +46,7 @@ namespace Tailviewer.Archiver.Plugins
 				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
 				Assemblies = new List<AssemblyDescription>(),
 				NativeImages = new List<NativeImageDescription>(),
+				Changes = new List<SerializableChange>(),
 				Version = new Version(0, 0, 0).ToString()
 			};
 		}
@@ -152,6 +153,11 @@ namespace Tailviewer.Archiver.Plugins
 				// TODO: Include rescaling the icon if we don't like its size...
 				AddFile(PluginArchive.IconEntryName, icon);
 			}
+		}
+
+		public void SetChanges(IEnumerable<SerializableChange> changes)
+		{
+			_index.Changes.AddRange(changes);
 		}
 
 		/// <summary>

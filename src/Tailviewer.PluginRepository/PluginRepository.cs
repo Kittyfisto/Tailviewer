@@ -13,6 +13,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Repository;
 using Tailviewer.PluginRepository.Entities;
 using Tailviewer.PluginRepository.Exceptions;
+using Change = Tailviewer.PluginRepository.Entities.Change;
 
 namespace Tailviewer.PluginRepository
 {
@@ -30,17 +31,26 @@ namespace Tailviewer.PluginRepository
 		private readonly IsabelDb.IDictionary<string, User> _users;
 		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
-		public PluginRepository(IFilesystem filesystem)
-			: this(filesystem, OpenDatabase(Constants.PluginDatabaseFilePath))
-		{}
-
-		private static IDatabase OpenDatabase(string fileName)
+		public static PluginRepository Create(IFilesystem filesystem)
 		{
-			Log.InfoFormat("Opening plugin database '{0}'...", fileName);
-			return Database.OpenOrCreate(fileName, CustomTypes);
+			var database = OpenDatabase(Constants.PluginDatabaseFilePath, out var created);
+			return new PluginRepository(filesystem, database, created);
 		}
 
-		public PluginRepository(IFilesystem filesystem, IDatabase database)
+		private static IDatabase OpenDatabase(string fileName, out bool created)
+		{
+			Log.InfoFormat("Opening plugin database '{0}'...", fileName);
+			if (!File.Exists(fileName))
+			{
+				created = true;
+				return Database.OpenOrCreate(fileName, CustomTypes);
+			}
+
+			created = false;
+			return Database.Open(fileName, CustomTypes);
+		}
+
+		public PluginRepository(IFilesystem filesystem, IDatabase database, bool newlyCreated)
 		{
 			_filesystem = filesystem;
 			_database = database;
@@ -49,6 +59,11 @@ namespace Tailviewer.PluginRepository
 			_plugins = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("Plugins");
 			_pluginIcons = _database.GetOrCreateDictionary<PluginIdentifier, byte[]>("PluginIcons");
 			_pluginDescriptions = _database.GetOrCreateDictionary<PluginIdentifier, PublishedPlugin>("PluginDescriptions");
+
+			if (newlyCreated)
+			{
+				AddUser("root", "root@home");
+			}
 		}
 
 		public Guid AddUser(string username, string email)
@@ -167,7 +182,8 @@ namespace Tailviewer.PluginRepository
 					SizeInBytes = plugin.Length,
 					PublishDate = DateTime.UtcNow,
 					RequiredInterfaces = pluginIndex.ImplementedPluginInterfaces
-						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList()
+						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList(),
+					Changes = pluginIndex.Changes.Select(x => new Change(x)).ToList()
 				};
 				_pluginDescriptions.Put(id, publishedPlugin);
 				_plugins.Put(id, plugin);
@@ -309,6 +325,18 @@ namespace Tailviewer.PluginRepository
 
 		#endregion
 
+		public bool TryGetAccessToken(string username, out Guid accessToken)
+		{
+			if (!_users.TryGet(username, out var user))
+			{
+				accessToken = Guid.Empty;
+				return false;
+			}
+
+			accessToken = user.AccessToken;
+			return true;
+		}
+
 		[Pure]
 		private static Dictionary<string, int> CreateInterfaceMap(IReadOnlyList<PluginInterface> interfaces)
 		{
@@ -359,6 +387,7 @@ namespace Tailviewer.PluginRepository
 					typeof(User),
 					typeof(PluginIdentifier),
 					typeof(PluginInterface),
+					typeof(Change),
 					typeof(PublishedPlugin)
 				};
 			}

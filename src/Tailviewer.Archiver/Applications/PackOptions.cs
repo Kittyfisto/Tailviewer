@@ -22,7 +22,11 @@ namespace Tailviewer.Archiver.Applications
 		public IEnumerable<string> Files { get; set; }
 
 		[Option('i', "icon",
-			HelpText = "Additonal ")]
+			HelpText = "The file path to an icon file which represents the plugin")]
 		public string IconFileName { get; set; }
+
+		[Option('l', "change-list",
+			HelpText = "The file path to a changelist file which contains all of the changes (relevant to user) since the last plugin version")]
+		public string ChangeListFileName { get; set; }
 	}
 }

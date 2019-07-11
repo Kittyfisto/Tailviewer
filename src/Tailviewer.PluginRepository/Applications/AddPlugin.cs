@@ -13,7 +13,21 @@ namespace Tailviewer.PluginRepository.Applications
 		{
 			try
 			{
-				repository.AddPlugin(options.PluginFileName, options.AccessToken);
+				if (!string.IsNullOrEmpty(options.Username))
+				{
+					if (!repository.TryGetAccessToken(options.Username, out var token))
+						throw new CannotAddPluginException($"'{options.Username}' is not a valid username.");
+
+					repository.AddPlugin(options.PluginFileName, token.ToString());
+				}
+				else if (!string.IsNullOrEmpty(options.AccessToken))
+				{
+					repository.AddPlugin(options.PluginFileName, options.AccessToken);
+				}
+				else
+				{
+					throw new CannotAddPluginException("Either a username or an access-token must be specified");
+				}
 			}
 			catch (CannotAddPluginException e)
 			{

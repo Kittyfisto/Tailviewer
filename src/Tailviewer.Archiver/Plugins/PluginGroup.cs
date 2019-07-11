@@ -389,6 +389,10 @@ namespace Tailviewer.Archiver.Plugins
 			var serializableTypes = new Dictionary<string, string>();
 			foreach (var pair in archiveIndex.SerializableTypes) serializableTypes.Add(pair.Name, pair.FullName);
 
+			var changes = new List<Change>(archiveIndex.Changes.Count);
+			foreach(var serializableChange in archiveIndex.Changes)
+				changes.Add(new Change(serializableChange));
+
 			var desc = new PluginDescription
 			{
 				Id = new PluginId(archiveIndex.Id),
@@ -400,7 +404,8 @@ namespace Tailviewer.Archiver.Plugins
 				Description = archiveIndex.Description,
 				Website = website,
 				PluginImplementations = plugins,
-				SerializableTypes = serializableTypes
+				SerializableTypes = serializableTypes,
+				Changes = changes
 			};
 
 			return desc;

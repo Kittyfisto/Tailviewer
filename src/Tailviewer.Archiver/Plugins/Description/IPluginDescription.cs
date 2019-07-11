@@ -75,5 +75,10 @@ namespace Tailviewer.Archiver.Plugins.Description
 		///     A map from an immutable name to a .NET assembly qualified typename of a serializable type.
 		/// </summary>
 		IReadOnlyDictionary<string, string> SerializableTypes { get; }
+
+		/// <summary>
+		///     The list of changes made to this plugin compared to the last version.
+		/// </summary>
+		IReadOnlyList<IChange> Changes { get; }
 	}
 }

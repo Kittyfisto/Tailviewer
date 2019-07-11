@@ -26,7 +26,7 @@ namespace Tailviewer.PluginRepository.Test
 		{
 			_filesystem = new InMemoryFilesystem();
 			_database = Database.CreateInMemory(PluginRepository.CustomTypes);
-			_repository = new PluginRepository(_filesystem, _database);
+			_repository = new PluginRepository(_filesystem, _database, newlyCreated: false);
 
 			_users = _database.GetDictionary<string, User>("Users");
 			_usernamesByAccessToken = _database.GetDictionary<Guid, string>("UsersByAccessToken");
