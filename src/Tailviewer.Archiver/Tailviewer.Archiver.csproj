@@ -64,6 +64,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
@@ -122,6 +123,7 @@
     <Compile Include="Repository\PluginIdentifier.cs" />
     <Compile Include="Repository\PluginInterface.cs" />
     <Compile Include="Repository\PublishedPluginDescription.cs" />
+    <Compile Include="Repository\RemotePublishDisabledException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

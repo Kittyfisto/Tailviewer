@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using log4net;
 using Tailviewer.PluginRepository.Exceptions;
 
@@ -9,7 +10,7 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(PluginRepository repository, RemoveUserOptions options)
+		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, RemoveUserOptions options)
 		{
 			try
 			{

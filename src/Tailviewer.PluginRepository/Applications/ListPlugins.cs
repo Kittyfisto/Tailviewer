@@ -1,11 +1,12 @@
 ﻿using System;
+using System.IO;
 
 namespace Tailviewer.PluginRepository.Applications
 {
 	public sealed class ListPlugins
 		: IApplication<ListPluginsOptions>
 	{
-		public int Run(PluginRepository repository, ListPluginsOptions options)
+		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, ListPluginsOptions options)
 		{
 			foreach (var plugin in repository.FindAllPlugins())
 			{

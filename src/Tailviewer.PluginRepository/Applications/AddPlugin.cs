@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using log4net;
 using Tailviewer.PluginRepository.Exceptions;
 
@@ -9,20 +10,22 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(PluginRepository repository, AddPluginOptions options)
+		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, AddPluginOptions options)
 		{
 			try
 			{
+				var plugin = LoadPlugin(filesystem, options.PluginFileName);
+
 				if (!string.IsNullOrEmpty(options.Username))
 				{
 					if (!repository.TryGetAccessToken(options.Username, out var token))
 						throw new CannotAddPluginException($"'{options.Username}' is not a valid username.");
 
-					repository.AddPlugin(options.PluginFileName, token.ToString(), options.PublishTimestamp);
+					repository.PublishPlugin(plugin, token.ToString(), options.PublishTimestamp);
 				}
 				else if (!string.IsNullOrEmpty(options.AccessToken))
 				{
-					repository.AddPlugin(options.PluginFileName, options.AccessToken, options.PublishTimestamp);
+					repository.PublishPlugin(plugin, options.AccessToken, options.PublishTimestamp);
 				}
 				else
 				{
@@ -36,6 +39,22 @@ namespace Tailviewer.PluginRepository.Applications
 			}
 
 			return 0;
+		}
+
+		private static byte[] LoadPlugin(IFilesystem filesystem, string fileName)
+		{
+			try
+			{
+				return filesystem.ReadAllBytes(fileName);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+			}
+			catch (FileNotFoundException e)
+			{
+				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+			}
 		}
 	}
 }

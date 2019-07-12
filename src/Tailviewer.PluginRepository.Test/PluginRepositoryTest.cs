@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using FluentAssertions;
 using IsabelDb;
 using NUnit.Framework;
@@ -13,7 +12,6 @@ namespace Tailviewer.PluginRepository.Test
 	public class PluginRepositoryTest
 	{
 		private PluginRepository _repository;
-		private InMemoryFilesystem _filesystem;
 		private IDatabase _database;
 		private IDictionary<string, User> _users;
 		private IDictionary<Guid, string> _usernamesByAccessToken;
@@ -24,9 +22,8 @@ namespace Tailviewer.PluginRepository.Test
 		[SetUp]
 		public void Setup()
 		{
-			_filesystem = new InMemoryFilesystem();
 			_database = Database.CreateInMemory(PluginRepository.CustomTypes);
-			_repository = new PluginRepository(_filesystem, _database, newlyCreated: false);
+			_repository = new PluginRepository(_database, newlyCreated: false);
 
 			_users = _database.GetDictionary<string, User>("Users");
 			_usernamesByAccessToken = _database.GetDictionary<Guid, string>("UsersByAccessToken");
@@ -57,34 +54,6 @@ namespace Tailviewer.PluginRepository.Test
 			new Action(() => _repository.AddUser("mickey", email))
 				.Should()
 				.Throw<CannotAddUserException>();
-
-			DatabaseShouldBeEmpty();
-		}
-
-		[Test]
-		public void TestAddPluginNoSuchDirectory()
-		{
-			new Action(() => _repository.AddPlugin(@"M:\does\not\exist.tvp", ""))
-				.Should()
-				.Throw<CannotAddPluginException>()
-				.WithInnerException<DirectoryNotFoundException>();
-
-			DatabaseShouldBeEmpty();
-		}
-
-		[Test]
-		[Ignore("Not working yet, InMemoryFilesystem throws the wrong exception type")]
-		public void TestAddPluginNoSuchFile()
-		{
-			var path = @"M:\does\not\exist\";
-			_filesystem.CreateDirectory(path);
-			TestContext.WriteLine(_filesystem.Print());
-
-			var file = Path.Combine(path, "plugin.tvp");
-			new Action(() => _repository.AddPlugin(file, ""))
-				.Should()
-				.Throw<CannotAddPluginException>()
-				.WithInnerException<FileNotFoundException>();
 
 			DatabaseShouldBeEmpty();
 		}

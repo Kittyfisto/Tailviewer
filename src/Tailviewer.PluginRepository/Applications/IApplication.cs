@@ -1,7 +1,9 @@
-﻿namespace Tailviewer.PluginRepository.Applications
+﻿using System.IO;
+
+namespace Tailviewer.PluginRepository.Applications
 {
 	public interface IApplication<in T>
 	{
-		int Run(PluginRepository repository, T options);
+		int Run(IFilesystem filesystem, IInternalPluginRepository repository, T options);
 	}
 }

@@ -10,7 +10,7 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(PluginRepository repository, ExportOptions options)
+		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, ExportOptions options)
 		{
 			var folder = options.ExportFolder;
 			Directory.CreateDirectory(folder);
@@ -32,7 +32,7 @@ namespace Tailviewer.PluginRepository.Applications
 				file.WriteLine();
 				file.WriteLine("rem Add plugins");
 
-				foreach (var plugin in repository.GetAllDescriptions())
+				foreach (var plugin in repository.GetAllPlugins())
 				{
 					var content = repository.DownloadPlugin(plugin.Identifier);
 					var pluginFileName = $"{plugin.Identifier.Id}.{plugin.Identifier.Version}.tvp";

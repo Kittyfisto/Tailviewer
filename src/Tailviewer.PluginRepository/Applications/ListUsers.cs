@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace Tailviewer.PluginRepository.Applications
@@ -6,7 +7,7 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class ListUsers
 		: IApplication<ListUsersOptions>
 	{
-		public int Run(PluginRepository repository, ListUsersOptions options)
+		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, ListUsersOptions options)
 		{
 			var users = repository.GetAllUsers().ToList();
 

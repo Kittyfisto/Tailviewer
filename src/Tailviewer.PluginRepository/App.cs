@@ -7,6 +7,7 @@ using System.Threading;
 using CommandLine;
 using log4net;
 using log4net.Appender;
+using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.PluginRepository.Applications;
@@ -29,11 +30,11 @@ namespace Tailviewer.PluginRepository
 				var result = Parser.Default.ParseArguments<RunServerOptions,
 					AddPluginOptions, ListPluginsOptions, RemovePluginOptions,
 					AddUserOptions, ListUsersOptions, RemoveUserOptions,
-					ExportOptions
+					ExportOptions, WriteConfigurationOptions
 				>(args);
 
 				return result.MapResult(
-				                        (RunServerOptions options) => Run<RunServer, RunServerOptions>(options, logToFile: true),
+				                        (RunServerOptions options) => Run<RunServer, RunServerOptions>(options, logTimestamps: true, logToFile: true),
 				                        (AddPluginOptions options) => Run<AddPlugin, AddPluginOptions>(options),
 				                        (ListPluginsOptions options) => Run<ListPlugins, ListPluginsOptions>(options),
 										(RemovePluginOptions options) => Run<RemovePlugin, RemovePluginOptions>(options),
@@ -41,6 +42,7 @@ namespace Tailviewer.PluginRepository
 										(ListUsersOptions options) => Run<ListUsers, ListUsersOptions>(options),
 										(RemoveUserOptions options) => Run<RemoveUser, RemoveUserOptions>(options),
 										(ExportOptions options) => Run<Export, ExportOptions>(options),
+										(WriteConfigurationOptions options) => Run<WriteConfiguration, WriteConfigurationOptions>(options),
 				                        _ => -2);
 			}
 			catch (Exception e)
@@ -50,20 +52,31 @@ namespace Tailviewer.PluginRepository
 			}
 		}
 
-		private static int Run<TApp, TOptions>(TOptions options, bool logToFile = false) where TApp : class, IApplication<TOptions>, new()
+		private static int Run<TApp, TOptions>(TOptions options, bool logTimestamps = false, bool logToFile = false) where TApp : class, IApplication<TOptions>, new()
 		{
+			SetupConsoleLogger(logTimestamps);
+
 			if (logToFile)
 				SetupFileAppender();
 
 			using (var taskScheduler = new DefaultTaskScheduler())
 			{
 				var filesystem = new Filesystem(taskScheduler);
-				using (var repo = PluginRepository.Create(filesystem))
+				using (var repo = PluginRepository.Create())
 				{
 					var app = new TApp();
-					return app.Run(repo, options);
+					return app.Run(filesystem, repo, options);
 				}
 			}
+		}
+
+		private static void SetupConsoleLogger(bool logTimestamps)
+		{
+			var hierarchy = (Hierarchy) LogManager.GetRepository();
+
+			hierarchy.Root.AddAppender(new ColoringConsoleAppender(logTimestamps));
+			hierarchy.Root.Level = Level.Info;
+			hierarchy.Configured = true;
 		}
 
 		private static void SetupFileAppender()

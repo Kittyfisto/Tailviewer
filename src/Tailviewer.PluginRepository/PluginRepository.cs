@@ -19,12 +19,11 @@ using Change = Tailviewer.PluginRepository.Entities.Change;
 namespace Tailviewer.PluginRepository
 {
 	public sealed class PluginRepository
-		: IPluginRepository
+		: IInternalPluginRepository
 		, IDisposable
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IFilesystem _filesystem;
 		private readonly IDatabase _database;
 		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _plugins;
 		private readonly IsabelDb.IDictionary<PluginIdentifier, byte[]> _pluginIcons;
@@ -32,15 +31,15 @@ namespace Tailviewer.PluginRepository
 		private readonly IsabelDb.IDictionary<string, User> _users;
 		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
-		public static PluginRepository Create(IFilesystem filesystem)
+		public static PluginRepository Create()
 		{
 			var database = OpenDatabase(Constants.PluginDatabaseFilePath, out var created);
-			return new PluginRepository(filesystem, database, created);
+			return new PluginRepository(database, created);
 		}
 
 		private static IDatabase OpenDatabase(string fileName, out bool created)
 		{
-			Log.InfoFormat("Opening plugin database '{0}'...", fileName);
+			Log.DebugFormat("Opening plugin database '{0}'...", fileName);
 			if (!File.Exists(fileName))
 			{
 				created = true;
@@ -51,9 +50,8 @@ namespace Tailviewer.PluginRepository
 			return Database.Open(fileName, CustomTypes);
 		}
 
-		public PluginRepository(IFilesystem filesystem, IDatabase database, bool newlyCreated)
+		public PluginRepository(IDatabase database, bool newlyCreated)
 		{
-			_filesystem = filesystem;
 			_database = database;
 			_users = _database.GetOrCreateDictionary<string, User>("Users");
 			_usernamesByAccessToken = _database.GetOrCreateDictionary<Guid, string>("UsersByAccessToken");
@@ -69,6 +67,8 @@ namespace Tailviewer.PluginRepository
 
 		public Guid AddUser(string username, string email)
 		{
+			Log.DebugFormat("Adding user '{0}, {1}' to repository...", username, email);
+
 			const string pattern = "^[a-zA-Z_][a-zA-Z0-9_]*$";
 			var regex = new Regex(pattern, RegexOptions.Compiled);
 			if (username == null || !regex.IsMatch(username))
@@ -98,22 +98,6 @@ namespace Tailviewer.PluginRepository
 			}
 		}
 
-		private bool IsValidEmail(string email)
-		{
-			try
-			{
-				// ReSharper disable once ObjectCreationAsStatement
-				new MailAddress(email); //< Throws when the mail is invalid
-
-				return true;
-			}
-			catch (Exception e)
-			{
-				Log.DebugFormat("Caught exception while parsing email '{0}':\r\n{1}", email, e);
-				return false;
-			}
-		}
-
 		public void RemoveUser(string username)
 		{
 			using (var transaction = _database.BeginTransaction())
@@ -133,23 +117,20 @@ namespace Tailviewer.PluginRepository
 			return _users.GetAllValues();
 		}
 
-		public void AddPlugin(string fileName, string accessToken, string publishTimestamp = null)
+		public void PublishPlugin(byte[] plugin, string accessToken, string publishTimestamp)
 		{
-			Log.InfoFormat("Adding plugin '{0}' to repository...", fileName);
+			DateTime publishDate;
+			if (!string.IsNullOrEmpty(publishTimestamp))
+				publishDate = DateTime.Parse(publishTimestamp, CultureInfo.InvariantCulture);
+			else
+				publishDate = DateTime.UtcNow;
 
-			byte[] plugin;
-			try
-			{
-				plugin = _filesystem.ReadAllBytes(fileName);
-			}
-			catch (DirectoryNotFoundException e)
-			{
-				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
-			}
-			catch (FileNotFoundException e)
-			{
-				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
-			}
+			PublishPlugin(plugin, accessToken, publishDate);
+		}
+
+		public void PublishPlugin(byte[] plugin, string accessToken, DateTime publishDate)
+		{
+			Log.DebugFormat("Adding plugin ({0} bytes) to repository...", plugin.Length);
 
 			IPluginPackageIndex pluginIndex;
 			DateTime builtTime;
@@ -165,12 +146,6 @@ namespace Tailviewer.PluginRepository
 
 			if (!Guid.TryParse(accessToken, out var token))
 				throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
-
-			DateTime publishDate;
-			if (!string.IsNullOrEmpty(publishTimestamp))
-				publishDate = DateTime.Parse(publishTimestamp, CultureInfo.InvariantCulture);
-			else
-				publishDate = DateTime.UtcNow;
 
 			using (var transaction = _database.BeginTransaction())
 			{
@@ -197,7 +172,7 @@ namespace Tailviewer.PluginRepository
 				_pluginIcons.Put(id, icon);
 
 				transaction.Commit();
-				Log.InfoFormat("Added plugin '{0}' to repository!", fileName);
+				Log.InfoFormat("Added plugin '{0}' to repository!", id);
 			}
 		}
 
@@ -208,7 +183,7 @@ namespace Tailviewer.PluginRepository
 
 		public void RemovePlugin(string id, string version)
 		{
-			Log.InfoFormat("Removing plugin {0} v{1}...", id, version);
+			Log.DebugFormat("Removing plugin {0} v{1}...", id, version);
 
 			if (!Version.TryParse(version, out var v))
 				throw new CannotRemovePluginException($"'{version}' is not a valid version.");
@@ -230,10 +205,15 @@ namespace Tailviewer.PluginRepository
 
 		#region Implementation of IPluginRepository
 
+		public void PublishPlugin(byte[] plugin, string accessToken)
+		{
+			PublishPlugin(plugin, accessToken, DateTime.UtcNow);
+		}
+
 		public IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving all plugins compatible to '{0}'...", string.Join(", ", interfaces));
+			Log.DebugFormat("Retrieving all plugins compatible to '{0}'...", string.Join(", ", interfaces));
 
 			var interfacesByName = CreateInterfaceMap(interfaces);
 
@@ -258,7 +238,7 @@ namespace Tailviewer.PluginRepository
 		public IReadOnlyList<PluginIdentifier> FindUpdatesFor(IReadOnlyList<PluginIdentifier> plugins, IReadOnlyList<PluginInterface> interfaces)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving newer versions of {0} plugin(s) ({1}) compatible to '{2}'...", plugins.Count,
+			Log.DebugFormat("Retrieving newer versions of {0} plugin(s) ({1}) compatible to '{2}'...", plugins.Count,
 				string.Join(", ", plugins),
 				string.Join(", ", interfaces));
 
@@ -288,7 +268,7 @@ namespace Tailviewer.PluginRepository
 		public IReadOnlyList<PluginIdentifier> FindAllPlugins()
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving all plugins...");
+			Log.DebugFormat("Retrieving all plugins...");
 
 			var plugins = _plugins.GetAllKeys().ToList();
 
@@ -301,7 +281,7 @@ namespace Tailviewer.PluginRepository
 		public IReadOnlyList<PublishedPluginDescription> GetDescriptions(IReadOnlyList<PluginIdentifier> plugins)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving description(s) for {0} plugin(s)...", plugins.Count);
+			Log.DebugFormat("Retrieving description(s) for {0} plugin(s)...", plugins.Count);
 
 			var descriptions = _pluginDescriptions.GetManyValues(plugins)
 			                                      .Select(CreateDescription)
@@ -314,10 +294,10 @@ namespace Tailviewer.PluginRepository
 			return descriptions;
 		}
 
-		public IReadOnlyList<PublishedPluginDescription> GetAllDescriptions()
+		public IReadOnlyList<PublishedPluginDescription> GetAllPlugins()
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving description(s) for all plugin(s)...");
+			Log.DebugFormat("Retrieving description(s) for all plugin(s)...");
 
 			var descriptions = _pluginDescriptions.GetAllValues()
 				.Select(CreateDescription)
@@ -333,7 +313,7 @@ namespace Tailviewer.PluginRepository
 		public IReadOnlyList<byte[]> GetIcons(IReadOnlyList<PluginIdentifier> plugins)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving icons for {0} plugin(s)...", plugins.Count);
+			Log.DebugFormat("Retrieving icons for {0} plugin(s)...", plugins.Count);
 
 			var icons = _pluginIcons.GetManyValues(plugins).ToList();
 
@@ -347,7 +327,7 @@ namespace Tailviewer.PluginRepository
 		public byte[] DownloadPlugin(PluginIdentifier pluginId)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving plugin '{0}'...", pluginId);
+			Log.DebugFormat("Retrieving plugin '{0}'...", pluginId);
 
 			try
 			{
@@ -379,6 +359,22 @@ namespace Tailviewer.PluginRepository
 		}
 
 		#endregion
+
+		private bool IsValidEmail(string email)
+		{
+			try
+			{
+				// ReSharper disable once ObjectCreationAsStatement
+				new MailAddress(email); //< Throws when the mail is invalid
+
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught exception while parsing email '{0}':\r\n{1}", email, e);
+				return false;
+			}
+		}
 
 		public bool TryGetAccessToken(string username, out Guid accessToken)
 		{

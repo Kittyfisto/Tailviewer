@@ -13,6 +13,13 @@ namespace Tailviewer.Archiver.Repository
 	public interface IPluginRepository
 	{
 		/// <summary>
+		///     Published the given plugin in this repository.
+		/// </summary>
+		/// <param name="plugin"></param>
+		/// <param name="accessToken"></param>
+		void PublishPlugin(byte[] plugin, string accessToken);
+
+		/// <summary>
 		///     Enumerates all plugins in this repository which are compatible with the given interfaces.
 		/// </summary>
 		/// <param name="interfaces"></param>
