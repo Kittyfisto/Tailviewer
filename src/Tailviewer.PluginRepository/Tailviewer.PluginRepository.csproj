@@ -91,6 +91,7 @@
     <Compile Include="Applications\Export.cs" />
     <Compile Include="Applications\ExportOptions.cs" />
     <Compile Include="Applications\IApplication.cs" />
+    <Compile Include="Applications\IPEndPointExtensions.cs" />
     <Compile Include="Applications\ListPluginsOptions.cs" />
     <Compile Include="Applications\ListPlugins.cs" />
     <Compile Include="Applications\ListUsers.cs" />
@@ -111,10 +112,10 @@
     <Compile Include="Entities\Change.cs" />
     <Compile Include="Entities\PublishedPlugin.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Exceptions\CannotAddPluginException.cs" />
     <Compile Include="Exceptions\CannotAddUserException.cs" />
     <Compile Include="Exceptions\CannotRemovePluginException.cs" />
     <Compile Include="Exceptions\CannotRemoveUserException.cs" />
+    <Compile Include="ExitCode.cs" />
     <Compile Include="IInternalPluginRepository.cs" />
     <Compile Include="PluginRepository.cs" />
     <Compile Include="App.cs" />

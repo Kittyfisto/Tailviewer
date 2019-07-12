@@ -11,7 +11,7 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, AddUserOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, AddUserOptions options)
 		{
 			try
 			{
@@ -22,12 +22,12 @@ namespace Tailviewer.PluginRepository.Applications
 				Log.InfoFormat("DO NOT SHARE THIS TOKEN WITH ANYONE AS IT CAN BE USED TO PUSH PLUGINS TO THIS REPOSITORY");
 				Log.InfoFormat("\t{0}", accessToken);
 
-				return 0;
+				return ExitCode.Success;
 			}
 			catch (CannotAddUserException e)
 			{
 				Log.ErrorFormat(e.Message);
-				return -1;
+				return ExitCode.GenericFailure;
 			}
 		}
 	}

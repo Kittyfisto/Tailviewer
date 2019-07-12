@@ -10,7 +10,7 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, RemovePluginOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RemovePluginOptions options)
 		{
 			try
 			{
@@ -19,10 +19,10 @@ namespace Tailviewer.PluginRepository.Applications
 			catch (CannotRemovePluginException e)
 			{
 				Log.ErrorFormat(e.Message);
-				return -10;
+				return ExitCode.GenericFailure;
 			}
 
-			return 0;
+			return ExitCode.Success;
 		}
 	}
 }

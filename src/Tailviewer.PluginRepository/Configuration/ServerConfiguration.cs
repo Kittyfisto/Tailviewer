@@ -7,8 +7,12 @@ namespace Tailviewer.PluginRepository.Configuration
 	{
 		public ServerConfiguration()
 		{
+			Address = "0.0.0.0:1234";
 			Publishing = new Publishing();
 		}
+
+		[XmlElement(ElementName = "address")]
+		public string Address { get; set; }
 
 		[XmlElement(ElementName = "publishing")]
 		public Publishing Publishing { get; set; }

@@ -13,7 +13,7 @@ namespace Tailviewer.PluginRepository.Applications
 
 		#region Implementation of IApplication<in WriteConfigurationOptions>
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, WriteConfigurationOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, WriteConfigurationOptions options)
 		{
 			var filePath = MakeAbsolute(options.Filename);
 			Log.DebugFormat("Writing configuration to '{0}'...", filePath);
@@ -28,7 +28,7 @@ namespace Tailviewer.PluginRepository.Applications
 
 			Log.InfoFormat("Configuration file written to '{0}'", filePath);
 
-			return 0;
+			return ExitCode.Success;
 		}
 
 		#endregion

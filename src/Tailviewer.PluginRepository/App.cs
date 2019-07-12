@@ -66,7 +66,7 @@ namespace Tailviewer.PluginRepository
 				using (var repo = PluginRepository.Create())
 				{
 					var app = new TApp();
-					return app.Run(filesystem, repo, options);
+					return (int) app.Run(filesystem, repo, options);
 				}
 			}
 		}

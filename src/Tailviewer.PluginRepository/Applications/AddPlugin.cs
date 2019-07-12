@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
 using log4net;
-using Tailviewer.Archiver;
 using Tailviewer.Archiver.Repository;
 using Tailviewer.PluginRepository.Exceptions;
 
@@ -12,16 +11,22 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, AddPluginOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, AddPluginOptions options)
 		{
 			try
 			{
-				var plugin = LoadPlugin(filesystem, options.PluginFileName);
+				if (!TryLoadPlugin(filesystem, options.PluginFileName,
+				                   out var plugin,
+				                   out var exitCode))
+					return exitCode;
 
 				if (!string.IsNullOrEmpty(options.Username))
 				{
 					if (!repository.TryGetAccessToken(options.Username, out var token))
-						throw new CannotAddPluginException($"'{options.Username}' is not a valid username.");
+					{
+						Log.InfoFormat("'{0}' is not a valid username.", options.Username);
+						return ExitCode.InvalidUserName;
+					}
 
 					repository.PublishPlugin(plugin, token.ToString(), options.PublishTimestamp);
 				}
@@ -31,36 +36,42 @@ namespace Tailviewer.PluginRepository.Applications
 				}
 				else
 				{
-					throw new CannotAddPluginException("Either a username or an access-token must be specified");
+					Log.ErrorFormat("Either a username or an access-token must be specified");
+					return ExitCode.GenericFailure;
 				}
 			}
 			catch (InvalidUserTokenException e)
 			{
 				Log.ErrorFormat(e.Message);
-				return (int) ExitCode.InvalidUserToken;
-			}
-			catch (CannotAddPluginException e)
-			{
-				Log.ErrorFormat(e.Message);
-				return -10;
+				return ExitCode.InvalidUserToken;
 			}
 
-			return 0;
+			return ExitCode.Success;
 		}
 
-		private static byte[] LoadPlugin(IFilesystem filesystem, string fileName)
+		private static bool TryLoadPlugin(IFilesystem filesystem, string fileName,
+		                                  out byte[] plugin,
+		                                  out ExitCode exitCode)
 		{
 			try
 			{
-				return filesystem.ReadAllBytes(fileName);
+				plugin = filesystem.ReadAllBytes(fileName);
+				exitCode = ExitCode.Success;
+				return true;
 			}
 			catch (DirectoryNotFoundException e)
 			{
-				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+				Log.ErrorFormat("Unable to add plugin: {0}", e.Message);
+				plugin = null;
+				exitCode = ExitCode.DirectoryNotFound;
+				return false;
 			}
 			catch (FileNotFoundException e)
 			{
-				throw new CannotAddPluginException($"Unable to add plugin: {e.Message}", e);
+				Log.ErrorFormat("Unable to add plugin: {0}", e.Message);
+				plugin = null;
+				exitCode = ExitCode.FileNotFound;
+				return false;
 			}
 		}
 	}

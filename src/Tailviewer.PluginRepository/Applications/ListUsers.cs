@@ -7,7 +7,7 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class ListUsers
 		: IApplication<ListUsersOptions>
 	{
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, ListUsersOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ListUsersOptions options)
 		{
 			var users = repository.GetAllUsers().ToList();
 
@@ -24,7 +24,7 @@ namespace Tailviewer.PluginRepository.Applications
 				Console.WriteLine("No users have been added");
 			}
 
-			return 0;
+			return ExitCode.GenericFailure;
 		}
 	}
 }

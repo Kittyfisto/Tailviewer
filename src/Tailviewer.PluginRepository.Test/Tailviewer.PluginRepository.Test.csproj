@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="Applications\AddPluginTest.cs" />
     <Compile Include="BinarySerializerTest.cs" />
+    <Compile Include="IPEndPointExtensionsTest.cs" />
     <Compile Include="PluginIdentifierTest.cs" />
     <Compile Include="PluginRepositoryProxyTest.cs" />
     <Compile Include="PluginRepositoryTest.cs" />

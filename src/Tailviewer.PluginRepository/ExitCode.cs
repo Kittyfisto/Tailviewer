@@ -1,4 +1,4 @@
-﻿namespace Tailviewer.Archiver
+﻿namespace Tailviewer.PluginRepository
 {
 	public enum ExitCode
 	{
@@ -6,13 +6,13 @@
 
 		GenericFailure = -1,
 
-		RemotePublishDisabled = -10,
-		CorruptPlugin = -11,
+		InvalidUserName = -10,
 		InvalidUserToken = -12,
-		PluginAlreadyPublished = -13,
 
 		FileNotFound = -20,
 		DirectoryNotFound = -21,
+
+		InvalidAddress = -30,
 
 		UnhandledException = int.MinValue
 	}

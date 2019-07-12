@@ -10,19 +10,19 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, RemoveUserOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RemoveUserOptions options)
 		{
 			try
 			{
 				repository.RemoveUser(options.Username);
 				Log.InfoFormat("Removed user '{0}'", options.Username);
 
-				return 0;
+				return ExitCode.Success;
 			}
 			catch (CannotRemoveUserException e)
 			{
 				Log.ErrorFormat(e.Message);
-				return -1;
+				return ExitCode.GenericFailure;
 			}
 		}
 	}

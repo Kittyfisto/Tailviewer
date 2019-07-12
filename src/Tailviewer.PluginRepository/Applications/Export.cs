@@ -8,9 +8,7 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class Export
 		: IApplication<ExportOptions>
 	{
-		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, ExportOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ExportOptions options)
 		{
 			var folder = options.ExportFolder;
 			Directory.CreateDirectory(folder);
@@ -26,7 +24,7 @@ namespace Tailviewer.PluginRepository.Applications
 
 				foreach (var user in repository.GetAllUsers())
 				{
-					file.WriteLine("repository.exe add-user {0} {1}", user.Username, user.Email);
+					file.WriteLine("repository.exe add-user \"{0}\" \"{1}\"", user.Username, user.Email);
 				}
 
 				file.WriteLine();
@@ -39,13 +37,13 @@ namespace Tailviewer.PluginRepository.Applications
 					var pluginFilePath = Path.Combine(folder, pluginFileName);
 					File.WriteAllBytes(pluginFilePath, content);
 
-					file.WriteLine("repository.exe add-plugin \"%SCRIPT_PATH%\\{0}\" --user {1} --publish-timestamp {2}", pluginFileName, plugin.Publisher, plugin.PublishTimestamp.ToString(CultureInfo.InvariantCulture));
+					file.WriteLine("repository.exe add-plugin \"%SCRIPT_PATH%\\{0}\" --user \"{1}\" --publish-timestamp {2}", pluginFileName, plugin.Publisher, plugin.PublishTimestamp.ToString(CultureInfo.InvariantCulture));
 				}
 
 				file.WriteLine("endlocal");
 			}
 
-			return 0;
+			return ExitCode.Success;
 		}
 	}
 }

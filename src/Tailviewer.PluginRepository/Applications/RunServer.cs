@@ -57,7 +57,7 @@ namespace Tailviewer.PluginRepository.Applications
 			return true;
 		}
 
-		public int Run(IFilesystem filesystem, IInternalPluginRepository repository, RunServerOptions options)
+		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RunServerOptions options)
 		{
 			try
 			{
@@ -83,13 +83,16 @@ namespace Tailviewer.PluginRepository.Applications
 				Log.InfoFormat("Starting server...");
 
 				var repositoryProxy = new PluginRepositoryProxy(repository, configuration);
-				using (new Server(new IPEndPoint(IPAddress.Any, 1234), repositoryProxy))
+				if (!TryParseEndPoint(configuration.Address, out var ep))
+					return ExitCode.InvalidAddress;
+
+				using (new Server(ep, repositoryProxy))
 				{
 					Console.WriteLine("Press ctrl+c to exit the application...");
 
 					BeginShutdownEvent.WaitOne();
 
-					return 0;
+					return ExitCode.Success;
 				}
 			}
 			finally
@@ -98,9 +101,26 @@ namespace Tailviewer.PluginRepository.Applications
 			}
 		}
 
+		private bool TryParseEndPoint(string address, out IPEndPoint endPoint)
+		{
+			try
+			{
+				endPoint = IPEndPointExtensions.Parse(address);
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("{0} is an invalid address", address);
+				Log.Debug(e);
+
+				endPoint = null;
+				return false;
+			}
+		}
+
 		private ServerConfiguration ReadConfiguration(string fileName)
 		{
-			var serializer = new System.Xml.Serialization.XmlSerializer(typeof(ServerConfiguration));
+			var serializer = new XmlSerializer(typeof(ServerConfiguration));
 			serializer.UnknownNode+= UnknownNode;
 			serializer.UnknownAttribute+= UnknownAttribute;
 
