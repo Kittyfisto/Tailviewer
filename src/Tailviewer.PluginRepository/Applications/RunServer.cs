@@ -64,13 +64,12 @@ namespace Tailviewer.PluginRepository.Applications
 				ServerConfiguration configuration;
 				if (!string.IsNullOrEmpty(options.Configuration))
 				{
-					Log.DebugFormat("Loading configuration file '{0}'...", options.Configuration);
+					Log.InfoFormat("Using configuration file '{0}'", options.Configuration);
 					configuration = ReadConfiguration(options.Configuration);
-					Log.DebugFormat("Loaded configuration file '{0}'", options.Configuration);
 				}
 				else
 				{
-					Log.InfoFormat("No configuration file specified, using hardcoded defaults");
+					Log.InfoFormat("No configuration file specified, using hardcoded default values instead");
 					configuration = new ServerConfiguration();
 				}
 

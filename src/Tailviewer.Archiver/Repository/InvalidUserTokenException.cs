@@ -5,30 +5,29 @@ using System.Security.Permissions;
 namespace Tailviewer.Archiver.Repository
 {
 	/// <summary>
-	///     This exception is thrown when a plugin is published to a repository and the repository
-	///     has remote publishing disabled.
+	///     This exception is thrown when the given user token is invalid.
 	/// </summary>
 	[Serializable]
-	public class RemotePublishDisabledException
+	public class InvalidUserTokenException
 		: Exception
 	{
-		public RemotePublishDisabledException()
-			: base("Remote publishing is disabled in this repository")
+		public InvalidUserTokenException()
+			: base("The given user token is invalid")
 		{
 		}
 
-		public RemotePublishDisabledException(string message)
+		public InvalidUserTokenException(string message)
 			: base(message)
 		{
 		}
 
-		public RemotePublishDisabledException(string message, Exception inner)
+		public InvalidUserTokenException(string message, Exception inner)
 			: base(message, inner)
 		{
 		}
 
 		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-		protected RemotePublishDisabledException(SerializationInfo info, StreamingContext context) : base(info, context)
+		protected InvalidUserTokenException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 

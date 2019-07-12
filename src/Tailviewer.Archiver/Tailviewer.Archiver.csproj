@@ -55,6 +55,12 @@
       <HintPath>..\..\packages\PE.0.1.10\lib\net45\PE.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="SharpRemote, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpRemote.Host, Version=0.5.173.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.Host.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -75,6 +81,7 @@
     <Compile Include="Applications\PublishOptions.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="ExitCode.cs" />
     <Compile Include="PackException.cs" />
     <Compile Include="Plugins\AbstractPluginLoader.cs" />
     <Compile Include="Plugins\AggregatedPluginLoader.cs" />
@@ -119,7 +126,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Change.cs" />
     <Compile Include="Repository\Constants.cs" />
+    <Compile Include="Repository\InvalidUserTokenException.cs" />
     <Compile Include="Repository\IPluginRepository.cs" />
+    <Compile Include="Repository\PluginAlreadyPublishedException.cs" />
     <Compile Include="Repository\PluginIdentifier.cs" />
     <Compile Include="Repository\PluginInterface.cs" />
     <Compile Include="Repository\PublishedPluginDescription.cs" />

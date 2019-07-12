@@ -2,13 +2,20 @@
 using log4net.Appender;
 using log4net.Core;
 
-namespace Tailviewer.PluginRepository
+namespace Tailviewer.Core
 {
-	sealed class ColoringConsoleAppender
+	/// <summary>
+	/// 
+	/// </summary>
+	public sealed class ColoringConsoleAppender
 		: AppenderSkeleton
 	{
 		private readonly bool _logTimestamps;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="logTimestamps"></param>
 		public ColoringConsoleAppender(bool logTimestamps)
 		{
 			_logTimestamps = logTimestamps;
@@ -16,6 +23,7 @@ namespace Tailviewer.PluginRepository
 
 		#region Overrides of AppenderSkeleton
 
+		/// <inheritdoc />
 		protected override void Append(LoggingEvent loggingEvent)
 		{
 			var previous = Console.ForegroundColor;

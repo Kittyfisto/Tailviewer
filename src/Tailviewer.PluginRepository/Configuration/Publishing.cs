@@ -18,6 +18,7 @@ namespace Tailviewer.PluginRepository.Configuration
 			set { }
 		}
 
+		[XmlElement(ElementName = "allow-remote-publish")]
 		public bool AllowRemotePublish { get; set; }
 
 		[XmlAnyElement("PublishComment")]

@@ -15,15 +15,14 @@ namespace Tailviewer.Archiver
 	{
 		public static int Run(string[] args)
 		{
-			var result = Parser.Default.ParseArguments<PackOptions, ListOptions>(args);
+			var result = Parser.Default.ParseArguments<PackOptions, ListOptions, PublishOptions>(args);
 			try
 			{
-				result.MapResult(
-					(PackOptions options) => new Pack(options).Run(),
-					(ListOptions options) => List(options),
-					_ => MakeError());
-
-				return 0;
+				return result.MapResult(
+				                        (PackOptions options) => new Pack(options).Run(),
+				                        (ListOptions options) => List(options),
+				                        (PublishOptions options) => (int)new Publish().Run(options),
+				                        _ => -2);
 			}
 			catch (IOException e)
 			{
@@ -37,14 +36,9 @@ namespace Tailviewer.Archiver
 			}
 		}
 		
-		private static object List(ListOptions opts)
+		private static int List(ListOptions opts)
 		{
-			return null;
-		}
-
-		private static Tuple<string, string> MakeError()
-		{
-			return Tuple.Create("\0", "\0");
+			return 0;
 		}
 	}
 }

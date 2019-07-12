@@ -49,7 +49,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 		{
 			// TODO: This would be the proper place to add support for more protocols, if necessary
 
-			const string prefix = "tvpr://";
+			string prefix = $"{Archiver.Repository.Constants.Protocol}://";
 			if (!repository.StartsWith(prefix))
 				throw new Exception($"Unsupported protocol: {repository}");
 

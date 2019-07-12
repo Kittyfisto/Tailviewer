@@ -136,7 +136,7 @@ namespace Tailviewer.PluginRepository
 			DateTime builtTime;
 			byte[] icon;
 			using (var stream = new MemoryStream(plugin))
-			using (var archive = PluginArchive.OpenRead(stream))
+			using (var archive = OpenPlugin(stream))
 			{
 				pluginIndex = archive.Index;
 				builtTime = GetBuildTime(archive.ReadAssembly());
@@ -145,16 +145,16 @@ namespace Tailviewer.PluginRepository
 			var id = new PluginIdentifier(pluginIndex.Id, pluginIndex.Version);
 
 			if (!Guid.TryParse(accessToken, out var token))
-				throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
+				throw new InvalidUserTokenException($"'{accessToken}' is not a valid access token.");
 
 			using (var transaction = _database.BeginTransaction())
 			{
 				if (!_usernamesByAccessToken.TryGet(token, out var userName))
-					throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
+					throw new InvalidUserTokenException($"'{accessToken}' is not a valid access token.");
 
 				// TODO: Only throw a temper tantrum in case the plugin to be added differs from the plugin stored in this repository
 				if (_pluginDescriptions.ContainsKey(id) || _plugins.ContainsKey(id))
-					throw new CannotAddPluginException($"The plugin '{id}' already exists and cannot be modified.");
+					throw new PluginAlreadyPublishedException($"The plugin '{id}' already exists and cannot be modified.");
 
 				var publishedPlugin = new PublishedPlugin(pluginIndex)
 				{
@@ -173,6 +173,19 @@ namespace Tailviewer.PluginRepository
 
 				transaction.Commit();
 				Log.InfoFormat("Added plugin '{0}' to repository!", id);
+			}
+		}
+
+		private static PluginArchive OpenPlugin(MemoryStream stream)
+		{
+			try
+			{
+				return PluginArchive.OpenRead(stream);
+			}
+			catch (Exception e)
+			{
+				Log.WarnFormat("Unable to open plugin: {0}", e);
+				throw new CorruptPluginException(e);
 			}
 		}
 

@@ -82,6 +82,7 @@
     <Compile Include="Analysis\WidgetTemplate.cs" />
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
+    <Compile Include="ColoringConsoleAppender.cs" />
     <Compile Include="ConcurrentQueueExtensions.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DateTimeExtensions.cs" />

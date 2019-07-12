@@ -108,7 +108,6 @@
     <Compile Include="Configuration\Publishing.cs" />
     <Compile Include="Configuration\ServerConfiguration.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="ColoringConsoleAppender.cs" />
     <Compile Include="Entities\Change.cs" />
     <Compile Include="Entities\PublishedPlugin.cs" />
     <Compile Include="Entities\User.cs" />

@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Reflection;
 using log4net;
+using Tailviewer.Archiver;
+using Tailviewer.Archiver.Repository;
 using Tailviewer.PluginRepository.Exceptions;
 
 namespace Tailviewer.PluginRepository.Applications
@@ -31,6 +33,11 @@ namespace Tailviewer.PluginRepository.Applications
 				{
 					throw new CannotAddPluginException("Either a username or an access-token must be specified");
 				}
+			}
+			catch (InvalidUserTokenException e)
+			{
+				Log.ErrorFormat(e.Message);
+				return (int) ExitCode.InvalidUserToken;
 			}
 			catch (CannotAddPluginException e)
 			{
