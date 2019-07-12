@@ -95,6 +95,8 @@
     <Compile Include="Applications\AddPluginOptions.cs" />
     <Compile Include="Applications\AddUser.cs" />
     <Compile Include="Applications\AddUserOptions.cs" />
+    <Compile Include="Applications\Export.cs" />
+    <Compile Include="Applications\ExportOptions.cs" />
     <Compile Include="Applications\IApplication.cs" />
     <Compile Include="Applications\ListPluginsOptions.cs" />
     <Compile Include="Applications\ListPlugins.cs" />

@@ -19,5 +19,10 @@ namespace Tailviewer.PluginRepository.Applications
 			Default = null,
 			HelpText = "The access token of the user under which the plugin should be published")]
 		public string AccessToken { get; set; }
+
+		[Option('p', "publish-timestamp",
+			Default = null,
+			HelpText = "When specified, the given timestamp will be used as the publish date instead of the current timestamp")]
+		public string PublishTimestamp { get; set; }
 	}
 }

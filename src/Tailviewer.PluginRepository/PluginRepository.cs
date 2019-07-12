@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -132,7 +133,7 @@ namespace Tailviewer.PluginRepository
 			return _users.GetAllValues();
 		}
 
-		public void AddPlugin(string fileName, string accessToken)
+		public void AddPlugin(string fileName, string accessToken, string publishTimestamp = null)
 		{
 			Log.InfoFormat("Adding plugin '{0}' to repository...", fileName);
 
@@ -165,6 +166,12 @@ namespace Tailviewer.PluginRepository
 			if (!Guid.TryParse(accessToken, out var token))
 				throw new CannotAddPluginException($"'{accessToken}' is not a valid access token.");
 
+			DateTime publishDate;
+			if (!string.IsNullOrEmpty(publishTimestamp))
+				publishDate = DateTime.Parse(publishTimestamp, CultureInfo.InvariantCulture);
+			else
+				publishDate = DateTime.UtcNow;
+
 			using (var transaction = _database.BeginTransaction())
 			{
 				if (!_usernamesByAccessToken.TryGet(token, out var userName))
@@ -180,7 +187,7 @@ namespace Tailviewer.PluginRepository
 					Identifier = id,
 					BuildDate = builtTime,
 					SizeInBytes = plugin.Length,
-					PublishDate = DateTime.UtcNow,
+					PublishDate = publishDate,
 					RequiredInterfaces = pluginIndex.ImplementedPluginInterfaces
 						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList(),
 					Changes = pluginIndex.Changes.Select(x => new Change(x)).ToList()
@@ -226,7 +233,7 @@ namespace Tailviewer.PluginRepository
 		public IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces)
 		{
 			var stopwatch = Stopwatch.StartNew();
-			Log.InfoFormat("Retrieving all plugins implementing '{0}'...", string.Join(", ", interfaces));
+			Log.InfoFormat("Retrieving all plugins compatible to '{0}'...", string.Join(", ", interfaces));
 
 			var interfacesByName = CreateInterfaceMap(interfaces);
 
@@ -241,9 +248,41 @@ namespace Tailviewer.PluginRepository
 			}
 
 			stopwatch.Stop();
-			Log.InfoFormat("Found {0} plugins (took {1}ms), sending to client...", plugins.Count, stopwatch.ElapsedMilliseconds);
+			Log.InfoFormat("Found {0} plugins ({1}) (took {2}ms)", plugins.Count,
+				string.Join(", ", plugins),
+				stopwatch.ElapsedMilliseconds);
 
 			return plugins;
+		}
+
+		public IReadOnlyList<PluginIdentifier> FindUpdatesFor(IReadOnlyList<PluginIdentifier> plugins, IReadOnlyList<PluginInterface> interfaces)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			Log.InfoFormat("Retrieving newer versions of {0} plugin(s) ({1}) compatible to '{2}'...", plugins.Count,
+				string.Join(", ", plugins),
+				string.Join(", ", interfaces));
+
+			var interfacesByName = CreateInterfaceMap(interfaces);
+
+			// TODO: Use proper indices when necessary...
+			var ids = plugins.ToDictionary(x => x.Id, x => x.Version);
+			var foundPlugins = new List<PluginIdentifier>();
+			foreach (var pair in _pluginDescriptions.GetAll())
+			{
+				if (ids.TryGetValue(pair.Key.Id, out var currentVersion) &&
+					currentVersion < pair.Key.Version &&
+				    IsSupported(pair.Value, interfacesByName))
+				{
+					foundPlugins.Add(pair.Key);
+				}
+			}
+
+			stopwatch.Stop();
+			Log.InfoFormat("Found {0} updated plugin(s) ({1}) (took {2}ms)", foundPlugins.Count,
+				string.Join(", ", foundPlugins),
+				stopwatch.ElapsedMilliseconds);
+
+			return foundPlugins;
 		}
 
 		public IReadOnlyList<PluginIdentifier> FindAllPlugins()
@@ -254,7 +293,7 @@ namespace Tailviewer.PluginRepository
 			var plugins = _plugins.GetAllKeys().ToList();
 
 			stopwatch.Stop();
-			Log.InfoFormat("Found {0} plugins (took {1}ms), sending to client...", plugins.Count, stopwatch.ElapsedMilliseconds);
+			Log.InfoFormat("Found {0} plugins (took {1}ms)", plugins.Count, stopwatch.ElapsedMilliseconds);
 
 			return plugins;
 		}
@@ -269,8 +308,24 @@ namespace Tailviewer.PluginRepository
 			                                      .ToList();
 
 			stopwatch.Stop();
-			Log.InfoFormat("Retrieved {0} description(s) from disk, (took {1}ms), sending to client...",
+			Log.InfoFormat("Retrieved {0} description(s) from disk, (took {1}ms)",
 			               descriptions.Count, stopwatch.ElapsedMilliseconds);
+
+			return descriptions;
+		}
+
+		public IReadOnlyList<PublishedPluginDescription> GetAllDescriptions()
+		{
+			var stopwatch = Stopwatch.StartNew();
+			Log.InfoFormat("Retrieving description(s) for all plugin(s)...");
+
+			var descriptions = _pluginDescriptions.GetAllValues()
+				.Select(CreateDescription)
+				.ToList();
+
+			stopwatch.Stop();
+			Log.InfoFormat("Retrieved {0} description(s) from disk, (took {1}ms)",
+				descriptions.Count, stopwatch.ElapsedMilliseconds);
 
 			return descriptions;
 		}
@@ -283,7 +338,7 @@ namespace Tailviewer.PluginRepository
 			var icons = _pluginIcons.GetManyValues(plugins).ToList();
 
 			stopwatch.Stop();
-			Log.InfoFormat("Retrieved {0} icon(s) from disk, (took {1}ms), sending to client...",
+			Log.InfoFormat("Retrieved {0} icon(s) from disk, (took {1}ms)",
 			               icons.Count, stopwatch.ElapsedMilliseconds);
 
 			return icons;
@@ -299,7 +354,7 @@ namespace Tailviewer.PluginRepository
 				var pluginContent = _plugins.Get(pluginId);
 
 				stopwatch.Stop();
-				Log.InfoFormat("Retrieved plugin '{0}' from disk, {1} bytes (took {2}ms), sending to client...",
+				Log.InfoFormat("Retrieved plugin '{0}' from disk, {1} bytes (took {2}ms)",
 				               pluginId, pluginContent.Length, stopwatch.ElapsedMilliseconds);
 
 				return pluginContent;
@@ -403,7 +458,8 @@ namespace Tailviewer.PluginRepository
 				Author = plugin.Author,
 				Website = plugin.Website,
 				Description = plugin.Description,
-				Publisher = plugin.Publisher
+				Publisher = plugin.Publisher,
+				PublishTimestamp = plugin.PublishDate
 			};
 		}
 	}

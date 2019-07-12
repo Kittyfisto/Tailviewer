@@ -99,7 +99,8 @@ namespace Tailviewer.BusinessLogic.Plugins
 			                                                           PluginInterfaceVersionAttribute
 				                                                           .GetInterfaceVersion(x).Value)).ToList();
 
-			var allPlugins = repository.FindAllPluginsFor(supportedInterfaces);
+			var currentPlugins = _pluginLoader.Plugins.Select(x => new PluginIdentifier(x.Id.Value, x.Version)).ToList();
+			var allPlugins = repository.FindUpdatesFor(currentPlugins, supportedInterfaces);
 			int numUpdated = 0;
 			foreach (var installedPlugin in _pluginLoader.Plugins)
 			{

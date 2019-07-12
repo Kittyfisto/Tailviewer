@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace Tailviewer.Archiver.Repository
 {
@@ -33,6 +34,9 @@ namespace Tailviewer.Archiver.Repository
 
 		[DataMember]
 		public string Publisher { get; set; }
+
+		[DataMember]
+		public DateTime PublishTimestamp { get; set; }
 
 		[DataMember]
 		public long SizeInBytes { get; set; }

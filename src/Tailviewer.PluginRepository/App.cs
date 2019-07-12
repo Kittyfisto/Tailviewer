@@ -28,7 +28,8 @@ namespace Tailviewer.PluginRepository
 
 				var result = Parser.Default.ParseArguments<RunServerOptions,
 					AddPluginOptions, ListPluginsOptions, RemovePluginOptions,
-					AddUserOptions, ListUsersOptions, RemoveUserOptions
+					AddUserOptions, ListUsersOptions, RemoveUserOptions,
+					ExportOptions
 				>(args);
 
 				return result.MapResult(
@@ -39,6 +40,7 @@ namespace Tailviewer.PluginRepository
 										(AddUserOptions options) => Run<AddUser, AddUserOptions>(options),
 										(ListUsersOptions options) => Run<ListUsers, ListUsersOptions>(options),
 										(RemoveUserOptions options) => Run<RemoveUser, RemoveUserOptions>(options),
+										(ExportOptions options) => Run<Export, ExportOptions>(options),
 				                        _ => -2);
 			}
 			catch (Exception e)

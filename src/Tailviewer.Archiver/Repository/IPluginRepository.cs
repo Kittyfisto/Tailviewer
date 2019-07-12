@@ -13,11 +13,19 @@ namespace Tailviewer.Archiver.Repository
 	public interface IPluginRepository
 	{
 		/// <summary>
-		///     Enumerates all plugins in this repository which are implemented against the given list of interfaces.
+		///     Enumerates all plugins in this repository which are compatible with the given interfaces.
 		/// </summary>
 		/// <param name="interfaces"></param>
 		/// <returns></returns>
 		IReadOnlyList<PluginIdentifier> FindAllPluginsFor(IReadOnlyList<PluginInterface> interfaces);
+
+		/// <summary>
+		///     Enumerates newer versions of the given plugins which are compatible with the given interfaces.
+		/// </summary>
+		/// <param name="plugins"></param>
+		/// <param name="interfaces"></param>
+		/// <returns></returns>
+		IReadOnlyList<PluginIdentifier> FindUpdatesFor(IReadOnlyList<PluginIdentifier> plugins, IReadOnlyList<PluginInterface> interfaces);
 
 		/// <summary>
 		///     Enumerates all plugins in this repository.
