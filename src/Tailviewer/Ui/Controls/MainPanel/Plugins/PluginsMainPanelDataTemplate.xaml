@@ -13,7 +13,7 @@
 
     <DataTemplate DataType="{x:Type local:PluginsMainPanelViewModel}">
 
-        <Grid>
+        <Grid Background="White">
 
             <Grid>
                 <Grid.RowDefinitions>
