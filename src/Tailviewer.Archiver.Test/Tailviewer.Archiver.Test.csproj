@@ -90,6 +90,7 @@
     <Compile Include="Plugins\PluginIdTest.cs" />
     <Compile Include="PluginRegistryTest.cs" />
     <Compile Include="Plugins\PluginPackageIndexTest.cs" />
+    <Compile Include="Plugins\SerializableChangesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryFormatterExtensions.cs" />
     <Compile Include="Repository\RemotePublishDisabledExceptionTest.cs" />

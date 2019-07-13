@@ -40,10 +40,10 @@ namespace Tailviewer.PluginRepository.Applications
 				case CtrlTypes.CTRL_CLOSE_EVENT:
 				case CtrlTypes.CTRL_LOGOFF_EVENT:
 				case CtrlTypes.CTRL_SHUTDOWN_EVENT:
-					Log.InfoFormat("Beginning shutdown due to {0}...", ctrlType);
+					Log.DebugFormat("Beginning shutdown due to {0}...", ctrlType);
 					BeginShutdownEvent.Set();
 
-					Log.InfoFormat("Waiting for shutdown...");
+					Log.InfoFormat("Shutting down...");
 					FinishedShutdownEvent.WaitOne();
 
 					Log.InfoFormat("Done, goodbye!");
@@ -110,7 +110,7 @@ namespace Tailviewer.PluginRepository.Applications
 			}
 			catch (Exception e)
 			{
-				Log.ErrorFormat("{0} is an invalid address", address);
+				Log.ErrorFormat("{0} is not a valid address", address);
 				Log.Debug(e);
 
 				endPoint = null;
@@ -140,14 +140,13 @@ namespace Tailviewer.PluginRepository.Applications
 
 		private static void UnknownNode(object sender, XmlNodeEventArgs e)
 		{
-			Console.WriteLine("Unknown Node:" +   e.Name + "\t" + e.Text);
+			Log.WarnFormat("Unknown Node:{0}\t{1}", e.Name, e.Text);
 		}
 
 		private static void UnknownAttribute(object sender, XmlAttributeEventArgs e)
 		{
 			System.Xml.XmlAttribute attr = e.Attr;
-			Console.WriteLine("Unknown attribute " + 
-			                  attr.Name + "='" + attr.Value + "'");
+			Log.WarnFormat("Unknown attribute: {0}={1}", attr.Name, attr.Value);
 		}
 	}
 }

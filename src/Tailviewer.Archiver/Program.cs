@@ -15,13 +15,14 @@ namespace Tailviewer.Archiver
 	{
 		public static int Run(string[] args)
 		{
-			var result = Parser.Default.ParseArguments<PackOptions, ListOptions, PublishOptions>(args);
+			var result = Parser.Default.ParseArguments<PackOptions, ListOptions, PublishOptions, GitGetChangesOptions>(args);
 			try
 			{
 				return result.MapResult(
 				                        (PackOptions options) => new Pack(options).Run(),
 				                        (ListOptions options) => List(options),
-				                        (PublishOptions options) => (int)new Publish().Run(options),
+				                        (PublishOptions options) => (int) new Publish().Run(options),
+				                        (GitGetChangesOptions options) => (int)new GitGetChanges().Run(options),
 				                        _ => -2);
 			}
 			catch (IOException e)

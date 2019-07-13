@@ -163,40 +163,10 @@ namespace Tailviewer.Archiver.Plugins
 
 		private IReadOnlyList<SerializableChange> ReadChanges(string fileName)
 		{
-			using(var reader = XmlReader.Create(fileName))
+			using (var stream = File.OpenRead(fileName))
 			{
-				var changes = new List<SerializableChange>();
-
-				while (reader.Read())
-				{
-					switch (reader.Name)
-					{
-						case "change":
-							changes.Add(ReadChange(reader.ReadSubtree()));
-							break;
-					}
-				}
-
-				return changes;
+				return SerializableChanges.Deserialize(stream).Changes;
 			}
-		}
-
-		private static SerializableChange ReadChange(XmlReader reader)
-		{
-			reader.Read();
-
-			var summary = reader.GetAttribute("summary");
-			string description = null;
-			if (reader.Read())
-			{
-				description = reader.ReadContentAsString();
-			}
-
-			return new SerializableChange
-			{
-				Summary = summary,
-				Description = description
-			};
 		}
 
 		/// <summary>

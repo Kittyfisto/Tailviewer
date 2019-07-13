@@ -76,6 +76,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\GitGetChanges.cs" />
+    <Compile Include="Applications\GitGetChangesOptions.cs" />
     <Compile Include="Applications\Pack.cs" />
     <Compile Include="Applications\Publish.cs" />
     <Compile Include="Applications\PublishOptions.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Plugins\PluginRegistry.cs" />
     <Compile Include="Plugins\PluginWithDescription.cs" />
     <Compile Include="Plugins\SerializableChange.cs" />
+    <Compile Include="Plugins\SerializableChanges.cs" />
     <Compile Include="Plugins\SerializableTypeDescription.cs" />
     <Compile Include="Plugins\PluginStatus.cs" />
     <Compile Include="Program.cs" />
