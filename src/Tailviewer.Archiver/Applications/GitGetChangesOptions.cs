@@ -17,11 +17,17 @@ namespace Tailviewer.Archiver.Applications
 			HelpText = "Get only changes which were made in between the last tag and HEAD")]
 		public bool SinceLastTag { get; set; }
 
-		[Option('f', "filter",
+		[Option('i', "include",
 			Default = null,
 			Required = false,
 			HelpText = "Only include commit messages in the output which contain the given filter phrase. If none is specified, all commits are included.")]
-		public string Filter { get; set; }
+		public string Include { get; set; }
+
+		[Option('e', "exclude",
+			Default = null,
+			Required = false,
+			HelpText = "Exclude commit messages in the output which contain the given filter phrase (EVEN if they match the specified include phrase).")]
+		public string Exclude { get; set; }
 
 		[Option('o', "output",
 			Default = "master",

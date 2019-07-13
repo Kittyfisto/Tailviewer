@@ -38,7 +38,7 @@ namespace Tailviewer.Archiver.Applications
 
 				var output = GetGitLog(options, start);
 				var changes = Parse(output);
-				var filtered = Filter(changes, options.Filter);
+				var filtered = Filter(changes, options.Include, options.Exclude);
 				WriteToDisk(options.Output, filtered);
 			}
 			catch (Exception e)
@@ -177,26 +177,35 @@ namespace Tailviewer.Archiver.Applications
 		}
 
 		[Pure]
-		private static SerializableChanges Filter(SerializableChanges changes, string filter)
+		public static SerializableChanges Filter(SerializableChanges changes, string include, string exclude)
 		{
-			if (string.IsNullOrWhiteSpace(filter))
-				return changes;
-
 			var filtered = new SerializableChanges();
-			filtered.Changes.AddRange(changes.Changes.Where(x => MatchesFilter(x, filter)));
+			filtered.Changes.AddRange(changes.Changes.Where(x => Matches(x, include, exclude)));
 			return filtered;
 		}
 
 		[Pure]
-		private static bool MatchesFilter(SerializableChange serializableChange, string filter)
+		private static bool Matches(SerializableChange serializableChange, string include, string exclude)
 		{
-			if (serializableChange.Summary.Contains(filter))
+			if (!string.IsNullOrEmpty(include) && !Matches(serializableChange, include))
+				return false;
+
+			if (!string.IsNullOrEmpty(exclude) && Matches(serializableChange, exclude))
+				return false;
+
+			return true;
+		}
+
+		[Pure]
+		private static bool Matches(SerializableChange serializableChange, string phrase)
+		{
+			if (serializableChange.Summary.IndexOf(phrase, StringComparison.InvariantCultureIgnoreCase) != -1)
 				return true;
 
 			if (string.IsNullOrEmpty(serializableChange.Description))
 				return false;
 
-			return serializableChange.Description.Contains(filter);
+			return serializableChange.Description.IndexOf(phrase, StringComparison.InvariantCultureIgnoreCase) != -1;
 		}
 
 		private void WriteToDisk(string outputFileName, SerializableChanges changes)
