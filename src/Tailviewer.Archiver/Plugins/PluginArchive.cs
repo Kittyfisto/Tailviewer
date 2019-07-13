@@ -50,12 +50,16 @@ namespace Tailviewer.Archiver.Plugins
 		/// <remarks>
 		///     Version 4: PluginPackageIndex stores list of serializable types the plugin implements
 		/// </remarks>
-		public const int CurrentPluginArchiveVersion = 4;
+		/// <remarks>
+		///     Version 5: PluginPackageIndex stores list of changes made in this plugin version.
+		///                This change is backwards compatible with v4.
+		/// </remarks>
+		public const int CurrentPluginArchiveVersion = 5;
 
 		/// <summary>
 		///     The currently minimum plugin-archive-version supported by this software.
 		/// </summary>
-		public const int MinimumSupportedPluginArchiveVersion = CurrentPluginArchiveVersion;
+		public const int MinimumSupportedPluginArchiveVersion = 4;
 
 		private PluginArchive(ZipArchive archive)
 		{

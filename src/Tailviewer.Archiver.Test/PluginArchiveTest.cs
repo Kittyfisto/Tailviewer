@@ -12,6 +12,16 @@ namespace Tailviewer.Archiver.Test
 	public sealed class PluginArchiveTest
 	{
 		[Test]
+		[Description("Ensures that changing the minimum supported plugin index version is always a conscious decision")]
+		public void TestMinimumSupported()
+		{
+			// If this test fails here then please take a minute and think about whether or not you want to BREAK
+			// compatibility with ALL plugins of the previous versions. If no incompatibility was introduced,
+			// then it makes no sense to increase this version...
+			PluginArchive.MinimumSupportedPluginArchiveVersion.Should().Be(4);
+		}
+
+		[Test]
 		public void TestLoadAssembly1()
 		{
 			using (var stream = new MemoryStream())
