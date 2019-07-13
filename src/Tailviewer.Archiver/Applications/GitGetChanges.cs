@@ -32,7 +32,11 @@ namespace Tailviewer.Archiver.Applications
 		{
 			try
 			{
-				var output = RunGitLog(options);
+				string start = null;
+				if (options.SinceLastTag)
+					start = FindFirstCommit(options);
+
+				var output = GetGitLog(options, start);
 				var changes = Parse(output);
 				var filtered = Filter(changes, options.Filter);
 				WriteToDisk(options.Output, filtered);
@@ -48,14 +52,58 @@ namespace Tailviewer.Archiver.Applications
 		}
 
 		[Pure]
-		private static string RunGitLog(GitGetChangesOptions options)
+		private static string FindFirstCommit(GitGetChangesOptions options)
+		{
+			using (var process = new Process())
+			{
+				var argumentBuilder = new StringBuilder();
+				argumentBuilder.Append("describe --tags --long");
+				process.StartInfo = new ProcessStartInfo
+				{
+					CreateNoWindow = true,
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					RedirectStandardError = true,
+					FileName = "git.exe",
+					WorkingDirectory = options.Repository,
+					Arguments = argumentBuilder.ToString()
+				};
+
+				process.Start();
+
+				var output = process.StandardOutput.ReadToEnd();
+				var error = process.StandardError.ReadToEnd();
+
+				process.WaitForExit();
+				var exitCode = process.ExitCode;
+				if (exitCode != 0)
+					throw new Exception($"git describe returned {exitCode}");
+
+				return GetCommitAfterLastTag(output);
+			}
+		}
+
+		[Pure]
+		public static string GetCommitAfterLastTag(string output)
+		{
+			var regex = new Regex(@"-(\d+)-g[0-9a-f]{6,40}");
+			var match = regex.Match(output);
+			if (match.Groups.Count != 2)
+				throw new Exception($"Unable to parse git describe output: {output}");
+
+			var distance = int.Parse(match.Groups[1].Value) - 2;
+			return $"HEAD~{distance}";
+		}
+
+		[Pure]
+		private static string GetGitLog(GitGetChangesOptions options, string startCommit)
 		{
 			using (var process = new Process())
 			{
 				var argumentBuilder = new StringBuilder();
 				argumentBuilder.Append("log");
-				/*if (!string.IsNullOrEmpty(options.Branch))
-					argumentBuilder.AppendFormat(" --branches={0}", options.Branch);*/
+				if (!string.IsNullOrEmpty(startCommit))
+					argumentBuilder.AppendFormat(" {0}..HEAD", startCommit);
 				argumentBuilder.Append(" --pretty=medium");
 
 				process.StartInfo = new ProcessStartInfo
@@ -86,7 +134,7 @@ namespace Tailviewer.Archiver.Applications
 		[Pure]
 		private static SerializableChanges Parse(string output)
 		{
-			var regex = new Regex(@"commit [0-9a-f]{40}\nAuthor:[^\n]+\nDate:[^\n]+", RegexOptions.Multiline);
+			var regex = new Regex(@"commit [0-9a-f]{40}\s*(\(tag:\s+([^)]+)\)){0,1}\nAuthor:[^\n]+\nDate:[^\n]+", RegexOptions.Multiline);
 			var matches = regex.Matches(output);
 			var changes = new SerializableChanges();
 
@@ -98,20 +146,34 @@ namespace Tailviewer.Archiver.Applications
 				var start = match.Index + match.Length;
 				var end = nextMatch.Index;
 				var message = output.Substring(start, end - start);
-				var split = message.Split(new[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
+				TryAddChange(message, changes);
+			}
 
-				if (split.Length > 0)
-				{
-					var change = new SerializableChange
-					{
-						Summary = split[0].Trim()
-					};
-					change.Description = string.Join(Environment.NewLine, split.Skip(1).Select(x => x.Trim()));
-					changes.Changes.Add(change);
-				}
+			if (matches.Count > 0)
+			{
+				var lastMatch = matches[matches.Count - 1];
+				var start = lastMatch.Index + lastMatch.Length;
+				var message = output.Substring(start);
+				TryAddChange(message, changes);
 			}
 
 			return changes;
+		}
+
+		private static void TryAddChange(string message, SerializableChanges changes)
+		{
+			var split = message.Split(new[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
+
+			if (split.Length > 0)
+			{
+				var change = new SerializableChange
+				{
+					Summary = split[0].Trim()
+				};
+				change.Description = string.Join(Environment.NewLine, split.Skip(1).Select(x => x.Trim()));
+
+				changes.Changes.Add(change);
+			}
 		}
 
 		[Pure]

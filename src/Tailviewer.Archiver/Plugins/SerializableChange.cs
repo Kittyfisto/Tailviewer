@@ -10,14 +10,14 @@ namespace Tailviewer.Archiver.Plugins
 		///     A required short one sentence summary of the change.
 		/// </summary>
 		[DataMember]
-		[XmlElement(ElementName = "summary")]
+		[XmlAttribute(AttributeName = "summary")]
 		public string Summary { get; set; }
 
 		/// <summary>
 		///     An optional (possibly longer) description of the change.
 		/// </summary>
 		[DataMember]
-		[XmlElement(ElementName = "description")]
+		[XmlAttribute(AttributeName = "description")]
 		public string Description { get; set; }
 	}
 }

@@ -256,6 +256,8 @@ namespace Tailviewer.Archiver.Test
 				var fileName = Path.GetTempFileName();
 				using (var writer = XmlWriter.Create(fileName))
 				{
+					writer.WriteStartDocument();
+					writer.WriteStartElement("changelist");
 					writer.WriteStartElement("changes");
 
 					writer.WriteStartElement("change");
@@ -264,9 +266,10 @@ namespace Tailviewer.Archiver.Test
 
 					writer.WriteStartElement("change");
 					writer.WriteAttributeString("summary", "bar");
-					writer.WriteString("A very detailed\ndescription");
+					writer.WriteAttributeString("description", "A very detailed\ndescription");
 					writer.WriteEndElement();
 
+					writer.WriteEndElement();
 					writer.WriteEndElement();
 				}
 

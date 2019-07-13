@@ -78,6 +78,7 @@
     <Compile Include="AbstractPluginTest.cs" />
     <Compile Include="AggregatedPluginLoaderTest.cs" />
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="GitGetChangesTest.cs" />
     <Compile Include="PluginArchiveLoaderTest.cs" />
     <Compile Include="PluginArchiveTest.cs" />
     <Compile Include="PluginAssemblyLoaderTest.cs" />

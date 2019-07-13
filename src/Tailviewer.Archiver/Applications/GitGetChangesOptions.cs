@@ -11,6 +11,12 @@ namespace Tailviewer.Archiver.Applications
 			HelpText = "The git repository from which changes should be extracted")]
 		public string Repository { get; set; }
 
+		[Option('s', "since-last-tag",
+			Default = false,
+			Required = false,
+			HelpText = "Get only changes which were made in between the last tag and HEAD")]
+		public bool SinceLastTag { get; set; }
+
 		[Option('f', "filter",
 			Default = null,
 			Required = false,
