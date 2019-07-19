@@ -64,9 +64,8 @@
     <Reference Include="Metrolib, Version=0.3.0.128, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Metrolib.0.3.0.128\lib\net45\Metrolib.dll</HintPath>
     </Reference>
-    <Reference Include="MMQ, Version=1.0.8.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MMQ.1.0.8\lib\net45\MMQ.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MMQ.1.0.15\lib\net45\MMQ.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Ookii.Dialogs.Wpf.1.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
@@ -623,7 +622,9 @@
     <Resource Include="Licenses\MMQ\LICENSE" />
     <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
     <Resource Include="Licenses\Ookii.Dialogs.Wpf\LICENSE" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\Fonts\Inconsolata-Bold.ttf" />
     <Resource Include="Resources\Fonts\Inconsolata-Regular.ttf" />
