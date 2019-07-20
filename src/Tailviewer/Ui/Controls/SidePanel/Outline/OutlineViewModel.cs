@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -10,9 +9,7 @@ using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Ui.Outline;
-using Exception = System.Exception;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -27,6 +24,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		private IDataSource _currentDataSource;
 		private FrameworkElement _currentContent;
+		private LogFileOutlineViewModelProxy _currentViewModel;
 
 		public OutlineViewModel(IServiceContainer services)
 		{
@@ -57,14 +55,29 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 					return;
 
 				_currentDataSource = value;
-				CurrentContent = GetContentFor(value);
+				CurrentViewModel = GetOrCreateViewModel(value);
+			}
+		}
+
+		private LogFileOutlineViewModelProxy CurrentViewModel
+		{
+			get { return _currentViewModel; }
+			set
+			{
+				if (Equals(value, _currentViewModel))
+					return;
+
+				_currentViewModel = value;
+				EmitPropertyChanged();
+
+				CurrentContent = value?.TryCreateContent();
 			}
 		}
 
 		public FrameworkElement CurrentContent
 		{
 			get { return _currentContent; }
-			set
+			private set
 			{
 				if (Equals(value, _currentContent))
 					return;
@@ -76,12 +89,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public override void Update()
 		{
-			
+			if (IsSelected)
+				CurrentViewModel?.Update();
 		}
 
 		#endregion
 
-		private FrameworkElement GetContentFor(IDataSource dataSource)
+		private LogFileOutlineViewModelProxy GetOrCreateViewModel(IDataSource dataSource)
 		{
 			if (!_viewModelsByDataSource.TryGetValue(dataSource, out var viewModel))
 			{
@@ -89,7 +103,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 				_viewModelsByDataSource.Add(dataSource, viewModel);
 			}
 
-			return viewModel?.TryCreateContent();
+			return viewModel;
 		}
 
 		[Pure]
