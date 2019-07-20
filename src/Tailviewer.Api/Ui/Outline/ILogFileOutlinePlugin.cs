@@ -2,8 +2,9 @@
 using System.Text.RegularExpressions;
 using System.Windows;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.BusinessLogic.Plugins
+namespace Tailviewer.Ui.Outline
 {
 	/// <summary>
 	///     This interface may be implemented to add an outline to a log file which displays custom content.
