@@ -8,8 +8,14 @@ Plugins...
 
 - Are a zip archive containing a description of the plugin (author, website, version, description and all that jazz)
 - Consist of at least one .NET assembly which is loaded by Tailviewer upon startup
-- Implement at least one of the available `IPlugin` interfaces: `IFileFormatPlugin`, `ILogAnalyserPlugin` or `IWidgetPlugin`
+- Implement at least one of the available `IPlugin` interfaces:
+   - `IFileFormatPlugin`
+   - `ILogAnalyserPlugin`
+   - `ILogFileOutlinePlugin`
+   - `IDataSourceAnalyserPlugin`
+   - `IWidgetPlugin`
 - Can add support for custom file formats or even more exotic datasources
+- Can visualize a completely customized overview for your log files
 - Can add new visualizations to Tailviewer's analysis feature
 - Can add new analyses to Tailviewer's analysis feature
 
