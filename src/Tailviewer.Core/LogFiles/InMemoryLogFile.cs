@@ -424,6 +424,8 @@ namespace Tailviewer.Core.LogFiles
 					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 				if (timestamp != null)
 					_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
+				var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
+				_properties.SetValue(LogFileProperties.Duration, duration);
 
 				// The user supplies us with a list of properties to add, however we will
 				// never allow the user to supply us things like index or line number.

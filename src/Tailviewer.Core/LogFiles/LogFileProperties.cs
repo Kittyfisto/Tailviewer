@@ -27,6 +27,11 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<DateTime?> EndTimestamp;
 
 		/// <summary>
+		///     The difference between the first and last timestamp.
+		/// </summary>
+		public static readonly ILogFilePropertyDescriptor<TimeSpan?> Duration;
+
+		/// <summary>
 		///     The timestamp (in local time) the data source has last been modified.
 		///     A modification is meant to be the addition and/or removal of at least one log line.
 		/// </summary>
@@ -61,6 +66,7 @@ namespace Tailviewer.Core.LogFiles
 			Name = new WellKnownLogFilePropertyDescriptor<string>("Name");
 			StartTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("StartTimestamp");
 			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTimestamp");
+			Duration = new WellKnownLogFilePropertyDescriptor<TimeSpan?>("Duration");
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");

@@ -469,6 +469,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties.SetValue(LogFileProperties.Size, size);
 			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
 			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
+			_properties.SetValue(LogFileProperties.Duration, endTimestamp - startTimestamp);
 			_maxCharactersPerLine = maxCharactersPerLine;
 		}
 	}

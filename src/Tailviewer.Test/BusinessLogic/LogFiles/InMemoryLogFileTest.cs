@@ -39,6 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.GetValue(LogFileProperties.LastModified).Should().BeNull();
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.Duration).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
@@ -71,6 +72,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0)));
 			logFile.GetLine(1).Should().Be(new LogLine(1, 1, " World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2)));
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
+			logFile.GetValue(LogFileProperties.Duration).Should().Be(TimeSpan.FromSeconds(2));
 		}
 
 		[Test]
@@ -216,6 +218,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.GetValue(LogFileProperties.LastModified).Should().BeNull();
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetValue(LogFileProperties.Duration).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);

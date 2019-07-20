@@ -11,6 +11,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	public sealed class LogFilePropertiesTest
 	{
 		[Test]
+		public void TestWellKnown()
+		{
+			LogFileProperties.Duration.Should().NotBeNull();
+		}
+
+		[Test]
 		public void TestCombineWithMinimum1()
 		{
 			LogFileProperties.CombineWithMinimum(null).Should().Equal(LogFileProperties.Minimum);

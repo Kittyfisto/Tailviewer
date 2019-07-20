@@ -616,6 +616,7 @@ namespace Tailviewer.Core.LogFiles
 			numberOfLinesRead = 0;
 			_properties.SetValue(LogFileProperties.StartTimestamp, null);
 			_properties.SetValue(LogFileProperties.EndTimestamp, null);
+			_properties.SetValue(LogFileProperties.Duration, null);
 			_maxCharactersPerLine = 0;
 
 			_entries.Clear();
@@ -628,6 +629,10 @@ namespace Tailviewer.Core.LogFiles
 				_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
 			if (timestamp != null)
 				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
+
+			var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
+			_properties.SetValue(LogFileProperties.Duration, duration);
+
 
 			lock (_syncRoot)
 			{
