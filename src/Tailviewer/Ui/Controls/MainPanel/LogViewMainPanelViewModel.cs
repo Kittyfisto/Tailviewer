@@ -212,6 +212,18 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			if (dataSourceViewModel == null)
 				return false;
 
+			var logFile = dataSourceViewModel.DataSource.FilteredLogFile;
+			if (logFile != null)
+			{
+				var actualIndex = logFile.GetLogLineIndexOfOriginalLineIndex(index);
+				if (actualIndex == LogLineIndex.Invalid)
+				{
+					Log.WarnFormat("Unable to find index '{0}' of {1}", index, dataSourceViewModel);
+					return false;
+				}
+
+				index = actualIndex;
+			}
 			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> {index};
 			dataSourceViewModel.RequestBringIntoView(index);
 			return true;
