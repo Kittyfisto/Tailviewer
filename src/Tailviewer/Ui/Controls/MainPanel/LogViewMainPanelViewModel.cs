@@ -196,13 +196,23 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			}
 		}
 
+		public bool RequestBringIntoView(LogLineIndex index)
+		{
+			return RequestBringIntoView(CurrentDataSource, index);
+		}
+
 		public bool RequestBringIntoView(DataSourceId dataSource, LogLineIndex index)
 		{
 			var dataSourceViewModel = _dataSources.DataSources.FirstOrDefault(x => x.DataSource.Id == dataSource);
+			return RequestBringIntoView(dataSourceViewModel, index);
+		}
+
+		private static bool RequestBringIntoView(IDataSourceViewModel dataSourceViewModel, LogLineIndex index)
+		{
 			if (dataSourceViewModel == null)
 				return false;
 
-			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { index };
+			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> {index};
 			dataSourceViewModel.RequestBringIntoView(index);
 			return true;
 		}

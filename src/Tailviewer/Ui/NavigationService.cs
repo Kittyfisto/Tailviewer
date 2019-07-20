@@ -12,6 +12,18 @@ namespace Tailviewer.Ui
 
 		#region Implementation of INavigationService
 
+		public bool NavigateTo(LogLineIndex line)
+		{
+			if (MainWindow == null)
+				return false;
+
+			if (LogViewer == null)
+				return false;
+
+			MainWindow.SelectRawEntry();
+			return LogViewer.RequestBringIntoView(line);
+		}
+
 		public bool NavigateTo(DataSourceId dataSource, LogLineIndex line)
 		{
 			if (MainWindow == null)
