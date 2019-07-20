@@ -21,6 +21,7 @@ using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
 using Tailviewer.Ui.Controls.SidePanel.Highlighters;
 using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
+using Tailviewer.Ui.Controls.SidePanel.Synopsis;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.MainPanel
@@ -32,6 +33,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly BookmarksViewModel _bookmarks;
+		private readonly OutlineViewModel _outline;
 
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersSidePanelViewModel _quickFilters;
@@ -74,13 +76,15 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
+			_outline = new OutlineViewModel();
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
 				_dataSources,
 				_quickFilters,
 				//_highlighters,
-				_bookmarks
+				_bookmarks,
+				_outline
 			};
 
 			SelectedSidePanel = _sidePanels.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow?.SelectedSidePanel);

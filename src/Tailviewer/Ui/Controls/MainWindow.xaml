@@ -54,6 +54,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Highlighters/HighlightersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Outline/OutlineDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
