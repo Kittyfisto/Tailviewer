@@ -196,6 +196,17 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			}
 		}
 
+		public bool RequestBringIntoView(DataSourceId dataSource, LogLineIndex index)
+		{
+			var dataSourceViewModel = _dataSources.DataSources.FirstOrDefault(x => x.DataSource.Id == dataSource);
+			if (dataSourceViewModel == null)
+				return false;
+
+			dataSourceViewModel.SelectedLogLines = new HashSet<LogLineIndex> { index };
+			dataSourceViewModel.RequestBringIntoView(index);
+			return true;
+		}
+
 		public GoToLineViewModel GoToLine => _goToLine;
 		public QuickNavigationViewModel QuickNavigation => _quickNavigation;
 

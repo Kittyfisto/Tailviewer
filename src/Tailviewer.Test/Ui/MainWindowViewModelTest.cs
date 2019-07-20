@@ -15,6 +15,7 @@ using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Settings.Bookmarks;
+using Tailviewer.Ui;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.QuickFilter;
@@ -48,6 +49,7 @@ namespace Tailviewer.Test.Ui
 			_services.RegisterInstance<IDispatcher>(_dispatcher);
 			_services.RegisterInstance<IPluginLoader>(new PluginRegistry());
 			_services.RegisterInstance<IHighlighters>(new HighlighterCollection());
+			_services.RegisterInstance<INavigationService>(new NavigationService());
 
 			_mainWindow = new MainWindowViewModel(_services,
 			                                      _settings,

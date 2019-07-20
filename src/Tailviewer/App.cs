@@ -27,6 +27,7 @@ using Tailviewer.Core.Analysis;
 using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings.Bookmarks;
+using Tailviewer.Ui;
 using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -157,6 +158,8 @@ namespace Tailviewer
 			{
 				services.RegisterInstance<ITaskScheduler>(taskScheduler);
 				services.RegisterInstance<ISerialTaskScheduler>(serialTaskScheduler);
+				var navigationService = new NavigationService();
+				services.RegisterInstance<INavigationService>(navigationService);
 
 				var filesystem = new Filesystem(taskScheduler);
 				services.RegisterInstance<IFilesystem>(filesystem);
@@ -216,15 +219,18 @@ namespace Tailviewer
 						dispatcher.UnhandledException += actionCenter.ReportUnhandledException;
 						TaskScheduler.UnobservedTaskException += actionCenter.ReportUnhandledException;
 
+						var windowViewModel = new MainWindowViewModel(services,
+						                                              settings,
+						                                              dataSources,
+						                                              quickFilters,
+						                                              actionCenter,
+						                                              updater,
+						                                              analysisStorage);
+						navigationService.MainWindow = windowViewModel;
+
 						var window = new MainWindow(settings)
 						{
-							DataContext = new MainWindowViewModel(services,
-							                                      settings,
-							                                      dataSources,
-							                                      quickFilters,
-							                                      actionCenter,
-							                                      updater,
-							                                      analysisStorage)
+							DataContext = windowViewModel
 						};
 
 						settings.MainWindow.RestoreTo(window);

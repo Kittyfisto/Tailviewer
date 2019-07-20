@@ -296,6 +296,7 @@
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlighterViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineViewModel.cs" />
+    <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />

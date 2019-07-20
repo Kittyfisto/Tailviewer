@@ -19,6 +19,7 @@
                 </Grid>
 
                 <ContentPresenter Grid.Row="1"
+                                  Margin="8,0,8,8"
                                   Content="{Binding CurrentContent}" />
             </Grid>
         </Border>

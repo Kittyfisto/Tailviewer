@@ -95,6 +95,8 @@ namespace Tailviewer.Ui.ViewModels
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),
 			                                              _applicationSettings);
+			((NavigationService) services.Retrieve<INavigationService>()).LogViewer = _logViewPanel;
+
 			_logViewPanel.PropertyChanged += LogViewPanelOnPropertyChanged;
 
 			var timer = new DispatcherTimer
@@ -147,6 +149,11 @@ namespace Tailviewer.Ui.ViewModels
 
 			_isLeftSidePanelVisible = settings.MainWindow.IsLeftSidePanelVisible;
 			UpdateLeftSidePanelExpanderTooltip();
+		}
+
+		public void SelectRawEntry()
+		{
+			SelectedTopEntry = _rawEntry;
 		}
 
 		private void GoToNextDataSource()
