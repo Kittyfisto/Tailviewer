@@ -14,6 +14,7 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Analysis;
+using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -37,7 +38,8 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(IFileFormatPlugin2),
 				typeof(ILogAnalyserPlugin),
 				typeof(IDataSourceAnalyserPlugin),
-				typeof(IWidgetPlugin)
+				typeof(IWidgetPlugin),
+				typeof(ILogFileOutlinePlugin)
 			};
 		}
 
