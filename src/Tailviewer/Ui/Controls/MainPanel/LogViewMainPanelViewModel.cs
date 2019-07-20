@@ -367,6 +367,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			CurrentDataSourceLogView?.Update();
 			_dataSources.Update();
 			_bookmarks.Update();
+			_outline.Update();
 		}
 
 		public QuickFilterViewModel AddQuickFilter()
