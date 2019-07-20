@@ -76,8 +76,8 @@
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Data.SQLite.Linq.1.0.111.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
-    <Reference Include="System.Extensions, Version=2.0.45.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Extensions.2.0.45\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />

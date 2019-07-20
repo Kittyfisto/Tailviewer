@@ -50,8 +50,8 @@
     <Reference Include="FluentAssertions, Version=5.6.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\FluentAssertions.5.6.0\lib\net47\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions.Extensions, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.Extensions.1.0.15\lib\net45\FluentAssertions.Extensions.dll</HintPath>
+    <Reference Include="FluentAssertions.Extensions, Version=1.0.18.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.Extensions.1.0.18\lib\net45\FluentAssertions.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -72,8 +72,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Extensions, Version=2.0.45.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Extensions.2.0.45\lib\net45\System.Extensions.dll</HintPath>
+    <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
@@ -118,7 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Installer\Installer.csproj">
