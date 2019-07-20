@@ -27,6 +27,7 @@ using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class MainWindowViewModelTest
 	{
 		[SetUp]

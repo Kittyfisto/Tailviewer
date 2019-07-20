@@ -77,6 +77,7 @@ namespace Tailviewer.Core.LogFiles
 				Name,
 				StartTimestamp,
 				EndTimestamp,
+				Duration,
 				LastModified,
 				Created,
 				Size,

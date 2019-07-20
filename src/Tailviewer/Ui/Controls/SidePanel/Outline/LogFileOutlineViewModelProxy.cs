@@ -13,7 +13,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 	///     exceptions, if necessary.
 	/// </summary>
 	internal sealed class LogFileOutlineViewModelProxy
-		: ILogFileOutlineViewModel
+		: IInternalLogFileOutlineViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly ILogFileOutlineViewModel _innerViewModel;

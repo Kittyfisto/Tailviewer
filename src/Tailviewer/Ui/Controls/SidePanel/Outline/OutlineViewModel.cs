@@ -21,18 +21,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		
 		private readonly IServiceContainer _services;
 		private readonly IReadOnlyList<ILogFileOutlinePlugin> _plugins;
-		private readonly Dictionary<IDataSource, LogFileOutlineViewModelProxy> _viewModelsByDataSource;
+		private readonly Dictionary<IDataSource, IInternalLogFileOutlineViewModel> _viewModelsByDataSource;
 
 		private IDataSource _currentDataSource;
 		private FrameworkElement _currentContent;
-		private LogFileOutlineViewModelProxy _currentViewModel;
+		private IInternalLogFileOutlineViewModel _currentViewModel;
 
 		public OutlineViewModel(IServiceContainer services)
 		{
 			_services = services;
 			_plugins = services.Retrieve<IPluginLoader>().LoadAllOfType<ILogFileOutlinePlugin>();
 			Tooltip = "Show outline of the current log file";
-			_viewModelsByDataSource = new Dictionary<IDataSource, LogFileOutlineViewModelProxy>();
+			_viewModelsByDataSource = new Dictionary<IDataSource, IInternalLogFileOutlineViewModel>();
 		}
 
 		#region Overrides of AbstractSidePanelViewModel
@@ -60,7 +60,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			}
 		}
 
-		private LogFileOutlineViewModelProxy CurrentViewModel
+		private IInternalLogFileOutlineViewModel CurrentViewModel
 		{
 			get { return _currentViewModel; }
 			set
@@ -96,7 +96,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		#endregion
 
-		private LogFileOutlineViewModelProxy GetOrCreateViewModel(IDataSource dataSource)
+		private IInternalLogFileOutlineViewModel GetOrCreateViewModel(IDataSource dataSource)
 		{
 			if (!_viewModelsByDataSource.TryGetValue(dataSource, out var viewModel))
 			{
@@ -108,13 +108,15 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		}
 
 		[Pure]
-		private LogFileOutlineViewModelProxy TryCreateViewModelFor(IDataSource dataSource)
+		private IInternalLogFileOutlineViewModel TryCreateViewModelFor(IDataSource dataSource)
 		{
+			var logFile = dataSource.UnfilteredLogFile;
+
 			var plugin = FindMatchingPlugin(dataSource);
 			if (plugin == null)
-				return null;
+				return new DefaultLogFileOutlineViewModel(logFile);
 
-			return new LogFileOutlineViewModelProxy(plugin, _services, dataSource.UnfilteredLogFile);
+			return new LogFileOutlineViewModelProxy(plugin, _services, logFile);
 		}
 
 		private ILogFileOutlinePlugin FindMatchingPlugin(IDataSource dataSource)

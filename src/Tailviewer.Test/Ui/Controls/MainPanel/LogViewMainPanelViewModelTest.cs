@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -26,6 +27,7 @@ using QuickFilter = Tailviewer.BusinessLogic.Filters.QuickFilter;
 namespace Tailviewer.Test.Ui.Controls.MainPanel
 {
 	[TestFixture]
+	[Apartment(ApartmentState.STA)]
 	public sealed class LogViewMainPanelViewModelTest
 	{
 		private ServiceContainer _services;

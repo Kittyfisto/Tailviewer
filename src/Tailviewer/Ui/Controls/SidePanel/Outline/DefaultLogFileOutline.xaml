@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Tailviewer.Ui.Controls.SidePanel.Outline.DefaultLogFileOutline"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:outline="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid d:DataContext="{d:DesignInstance outline:DefaultLogFileOutlineViewModel}">
+        <ItemsControl Grid.IsSharedSizeScope="True"
+                      ItemsSource="{Binding Properties}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type outline:ILogFilePropertyViewModel}">
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="Name" />
+                            <ColumnDefinition SharedSizeGroup="Value" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Title}"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Bold"
+                                   Margin="0,0,4,0"
+                                   Grid.Column="0" />
+                        <TextBlock Text="{Binding Value}"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,0"
+                                   Grid.Column="1" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

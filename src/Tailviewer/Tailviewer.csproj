@@ -64,6 +64,7 @@
     <Reference Include="Metrolib, Version=0.3.0.129, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Metrolib.0.3.0.129\lib\net45\Metrolib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MMQ.1.0.15\lib\net45\MMQ.dll</HintPath>
     </Reference>
@@ -294,7 +295,14 @@
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlighterViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutline.xaml.cs">
+      <DependentUpon>DefaultLogFileOutline.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutlineViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
@@ -559,6 +567,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutline.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
