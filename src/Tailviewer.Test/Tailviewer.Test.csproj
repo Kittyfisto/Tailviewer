@@ -249,6 +249,7 @@
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\OutlineViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModelTest.cs" />
     <Compile Include="Ui\Controls\TextCanvasTest.cs" />
     <Compile Include="Ui\Controls\TextLineTest.cs" />

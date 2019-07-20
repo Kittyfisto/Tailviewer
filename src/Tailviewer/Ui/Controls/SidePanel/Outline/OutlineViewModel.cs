@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -109,24 +110,34 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		[Pure]
 		private LogFileOutlineViewModelProxy TryCreateViewModelFor(IDataSource dataSource)
 		{
-			var fileName = Path.GetFileName(dataSource.FullFileName);
-			var plugin = FindMatchingPlugin(fileName);
+			var plugin = FindMatchingPlugin(dataSource);
 			if (plugin == null)
 				return null;
 
 			return new LogFileOutlineViewModelProxy(plugin, _services, dataSource.UnfilteredLogFile);
 		}
 
-		private ILogFileOutlinePlugin FindMatchingPlugin(string fileName)
+		private ILogFileOutlinePlugin FindMatchingPlugin(IDataSource dataSource)
 		{
-			var plugins = FindMatchingPlugins(fileName);
+			IReadOnlyList<ILogFileOutlinePlugin> plugins;
+			if (dataSource is IMultiDataSource multi)
+			{
+				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.FullFileName)).ToList();
+			}
+			else
+			{
+				var fileName = Path.GetFileName(dataSource.FullFileName);
+				plugins = FindMatchingPlugins(fileName);
+			}
+
 			if (plugins.Count == 0)
 				return null;
 
 			if (plugins.Count > 1)
 			{
 				Log.WarnFormat("There are multiple plugins which claim to provide an outline for '{0}', selecting the first one:\r\n{1}",
-				               fileName,
+				               dataSource.FullFileName,
 				               string.Join("\r\n", plugins.Select(x => string.Format("    {0}", x.GetType().FullName))));
 			}
 
@@ -140,7 +151,15 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		private bool Matches(ILogFileOutlinePlugin plugin, string fileName)
 		{
-			return plugin.SupportedFileNames.Any(x => x.IsMatch(fileName));
+			try
+			{
+				return plugin.SupportedFileNames.Any(x => x.IsMatch(fileName));
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+				return false;
+			}
 		}
 	}
 }

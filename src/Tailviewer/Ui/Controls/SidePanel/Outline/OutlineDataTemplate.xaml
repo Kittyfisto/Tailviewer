@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline">
+                    xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline"
+                    xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
     <DataTemplate DataType="{x:Type local:OutlineViewModel}">
         <Border Background="White">
@@ -18,9 +19,10 @@
                                Margin="8,0,0,0" />
                 </Grid>
 
-                <ContentPresenter Grid.Row="1"
-                                  Margin="8,0,8,8"
-                                  Content="{Binding CurrentContent}" />
+                <controls:FlatScrollViewer Grid.Row="1">
+                    <ContentPresenter Margin="8,0,8,8"
+                                      Content="{Binding CurrentContent}" />
+                </controls:FlatScrollViewer>
             </Grid>
         </Border>
     </DataTemplate>
