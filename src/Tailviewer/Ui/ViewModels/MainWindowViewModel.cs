@@ -89,7 +89,8 @@ namespace Tailviewer.Ui.ViewModels
 			_analysePanel = new AnalyseMainPanelViewModel(services, _applicationSettings, dataSources, analysisStorage);
 			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
-			_logViewPanel = new LogViewMainPanelViewModel(actionCenter,
+			_logViewPanel = new LogViewMainPanelViewModel(services,
+			                                              actionCenter,
 			                                              dataSources,
 			                                              quickFilters,
 			                                              services.Retrieve<IHighlighters>(),

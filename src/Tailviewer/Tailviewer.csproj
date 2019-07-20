@@ -294,6 +294,7 @@
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlighterViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />

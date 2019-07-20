@@ -20,8 +20,8 @@ using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
 using Tailviewer.Ui.Controls.SidePanel.Highlighters;
+using Tailviewer.Ui.Controls.SidePanel.Outline;
 using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
-using Tailviewer.Ui.Controls.SidePanel.Synopsis;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.Ui.Controls.MainPanel
@@ -49,7 +49,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 		private string _windowTitleSuffix;
 		private bool _showQuickNavigation;
 
-		public LogViewMainPanelViewModel(IActionCenter actionCenter,
+		public LogViewMainPanelViewModel(IServiceContainer services,
+		                                 IActionCenter actionCenter,
 		                                 IDataSources dataSources,
 		                                 IQuickFilters quickFilters,
 		                                 IHighlighters highlighters,
@@ -76,7 +77,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
-			_outline = new OutlineViewModel();
+			_outline = new OutlineViewModel(services);
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -165,6 +166,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_dataSources.SelectedItem = value;
 			_quickFilters.CurrentDataSource = value;
 			_bookmarks.CurrentDataSource = value?.DataSource;
+			_outline.CurrentDataSource = value?.DataSource;
 			OpenFile(value);
 		}
 
