@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Tailviewer.Ui.Outline
 {
@@ -7,7 +8,16 @@ namespace Tailviewer.Ui.Outline
 	///     Used in conjunction with <see cref="ILogFileOutlinePlugin" />.
 	/// </summary>
 	public interface ILogFileOutlineViewModel
-		: IDisposable
+		: INotifyPropertyChanged
+		, IDisposable
 	{
+		/// <summary>
+		///     This method is called periodically to allow the view model to update itself.
+		/// </summary>
+		/// <remarks>
+		///     This method is ALWAYS called on the UI thread which means that this method should
+		///     execute as quick as possible and not perform any I/O!
+		/// </remarks>
+		void Update();
 	}
 }
