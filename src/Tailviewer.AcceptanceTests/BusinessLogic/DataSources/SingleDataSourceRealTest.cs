@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
@@ -78,6 +79,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		}
 
 		[Test]
+		[LocalTest("This test is wonky and needs to be rewritten")]
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
