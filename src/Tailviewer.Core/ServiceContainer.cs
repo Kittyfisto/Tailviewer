@@ -6,6 +6,7 @@ using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Core
@@ -138,7 +139,8 @@ namespace Tailviewer.Core
 			                       fileName,
 			                       TryRetrieve<ITimestampParser>(),
 			                       TryRetrieve<ILogLineTranslator>(),
-			                       TryRetrieve<Encoding>());
+			                       TryRetrieve<Encoding>(),
+			                       TryRetrieve<ILogFileFormatMatcher>());
 		}
 
 		/// <inheritdoc />

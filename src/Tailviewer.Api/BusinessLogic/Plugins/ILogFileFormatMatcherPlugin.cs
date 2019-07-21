@@ -9,7 +9,8 @@
 		/// <summary>
 		///     Creates a new matcher which is able to detect log file formats.
 		/// </summary>
+		/// <param name="services"></param>
 		/// <returns></returns>
-		ILogFileFormatMatcher CreateMatcher();
+		ILogFileFormatMatcher CreateMatcher(IServiceContainer services);
 	}
 }

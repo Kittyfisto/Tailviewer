@@ -114,7 +114,7 @@
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcherProxy.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
@@ -253,8 +253,8 @@
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssueViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserDummy.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserProxy.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssuePluginProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssueAnalyser.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\NoThrowLogFileIssuePlugin.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToBrushConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToIconConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutline.xaml.cs">

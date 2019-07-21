@@ -13,26 +13,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	{
 		private readonly IReadOnlyList<ILogFileFormatMatcher> _matchers;
 
-		public LogFileFormatMatcher(IPluginLoader pluginLoader)
+		public LogFileFormatMatcher(IServiceContainer services)
 		{
+			var pluginLoader = services.Retrieve<IPluginLoader>();
 			_matchers = pluginLoader.LoadAllOfType<ILogFileFormatMatcherPlugin>()
-			                        .Select(x => new LogFileFormatMatcherProxy(x.CreateMatcher()))
+			                        .Select(x => new NoThrowLogFileFormatMatcher(x, services))
 			                        .ToList();
 		}
 
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
-		{
-			foreach (var matcher in _matchers)
-				if (matcher.TryMatchFormat(fileName, initialContent, out format))
-					return true;
-
-			format = null;
-			return false;
-		}
-
-		public bool TryMatchFormat(string fileName, IReadOnlyList<string> initialContent, out ILogFileFormat format)
 		{
 			foreach (var matcher in _matchers)
 				if (matcher.TryMatchFormat(fileName, initialContent, out format))

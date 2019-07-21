@@ -5,14 +5,14 @@ using Tailviewer.BusinessLogic.Plugins.Issues;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
-	internal sealed class LogFileIssueAnalyserProxy
+	internal sealed class NoThrowLogFileIssueAnalyser
 		: ILogFileIssueAnalyser
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ILogFileIssueAnalyser _inner;
 
-		public LogFileIssueAnalyserProxy(ILogFileIssueAnalyser inner)
+		public NoThrowLogFileIssueAnalyser(ILogFileIssueAnalyser inner)
 		{
 			_inner = inner;
 		}

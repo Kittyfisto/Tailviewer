@@ -10,6 +10,7 @@ using log4net;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Parsers;
 
 namespace Tailviewer.Core.LogFiles
@@ -29,6 +30,7 @@ namespace Tailviewer.Core.LogFiles
 		#region Data
 
 		private readonly Encoding _encoding;
+		private readonly ILogFileFormatMatcher _formatMatcher;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private readonly ILogFileProperties _properties;
@@ -69,16 +71,16 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="timestampParser">An optional timestamp parser that is used to find timestamps in log messages. If none is specified, then <see cref="TimestampParser"/> is used</param>
 		/// <param name="translator">An optional translator that is used to translate each log line in memory. If none is specified, then log lines are displayed as they are in the file on disk</param>
 		/// <param name="encoding">The encoding to use to interpet the file, if none is specified, then <see cref="Encoding.UTF8"/> is used</param>
+		/// <param name="formatMatcher"></param>
 		internal TextLogFile(ITaskScheduler scheduler,
 		                     string fileName,
 		                     ITimestampParser timestampParser = null,
 		                     ILogLineTranslator translator = null,
-		                     Encoding encoding = null)
+		                     Encoding encoding = null,
+		                     ILogFileFormatMatcher formatMatcher = null)
 			: base(scheduler)
 		{
-			if (fileName == null) throw new ArgumentNullException(nameof(fileName));
-
-			_fileName = fileName;
+			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_fullFilename = fileName;
 			if (!Path.IsPathRooted(_fullFilename))
 				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
@@ -86,6 +88,7 @@ namespace Tailviewer.Core.LogFiles
 			if (translator != null)
 				_translator = new NoThrowLogLineTranslator(translator);
 
+			_formatMatcher = formatMatcher;
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
@@ -352,55 +355,66 @@ namespace Tailviewer.Core.LogFiles
 						FileMode.Open,
 						FileAccess.Read,
 						FileShare.ReadWrite))
-					using (var reader = new StreamReaderEx(stream, _encoding))
 					{
-						// We change the error flag explicitly AFTER opening
-						// the stream because that operation might throw if we're
-						// not allowed to access the file (in which case a different
-						// error must be set).
-
-						_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
-						if (stream.Length >= _lastPosition)
+						var format = _properties.GetValue(LogFileProperties.Format);
+						if (format == null)
 						{
-							stream.Position = _lastPosition;
-						}
-						else
-						{
-							OnReset(stream, out _numberOfLinesRead, out _lastPosition);
+							format = TryFindFormat(stream);
+							_properties.SetValue(LogFileProperties.Format, format);
 						}
 
-						string currentLine;
-						while ((currentLine = reader.ReadLine()) != null)
+						var encoding = format?.Encoding ?? _encoding;
+						_properties.SetValue(LogFileProperties.Encoding, encoding);
+						using (var reader = new StreamReaderEx(stream, encoding))
 						{
-							token.ThrowIfCancellationRequested();
+							// We change the error flag explicitly AFTER opening
+							// the stream because that operation might throw if we're
+							// not allowed to access the file (in which case a different
+							// error must be set).
 
-							ResetEndOfSourceReached();
-
-							LevelFlags level = LogLine.DetermineLevelFromLine(currentLine);
-
-							bool lastLineHadNewline = _lastLineHadNewline;
-							var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
-							var entryCount = _entries.Count;
-							if (entryCount > 0 && !lastLineHadNewline)
+							_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
+							if (stream.Length >= _lastPosition)
 							{
-								// We need to remove the last line and create a new line
-								// that consists of the entire content.
-								RemoveLast();
-								trimmedLine = _untrimmedLastLine + trimmedLine;
-								_untrimmedLastLine = _untrimmedLastLine + currentLine;
+								stream.Position = _lastPosition;
 							}
 							else
 							{
-								_untrimmedLastLine = currentLine;
-								++_numberOfLinesRead;
-								read = true;
+								OnReset(stream, out _numberOfLinesRead, out _lastPosition);
 							}
 
-							var timestamp = ParseTimestamp(trimmedLine);
-							Add(trimmedLine, level, _numberOfLinesRead, timestamp);
-						}
+							string currentLine;
+							while ((currentLine = reader.ReadLine()) != null)
+							{
+								token.ThrowIfCancellationRequested();
 
-						_lastPosition = stream.Position;
+								ResetEndOfSourceReached();
+
+								LevelFlags level = LogLine.DetermineLevelFromLine(currentLine);
+
+								bool lastLineHadNewline = _lastLineHadNewline;
+								var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
+								var entryCount = _entries.Count;
+								if (entryCount > 0 && !lastLineHadNewline)
+								{
+									// We need to remove the last line and create a new line
+									// that consists of the entire content.
+									RemoveLast();
+									trimmedLine = _untrimmedLastLine + trimmedLine;
+									_untrimmedLastLine = _untrimmedLastLine + currentLine;
+								}
+								else
+								{
+									_untrimmedLastLine = currentLine;
+									++_numberOfLinesRead;
+									read = true;
+								}
+
+								var timestamp = ParseTimestamp(trimmedLine);
+								Add(trimmedLine, level, _numberOfLinesRead, timestamp);
+							}
+
+							_lastPosition = stream.Position;
+						}
 					}
 
 					Listeners.OnRead(_numberOfLinesRead);
@@ -440,6 +454,18 @@ namespace Tailviewer.Core.LogFiles
 				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
+		}
+
+		private ILogFileFormat TryFindFormat(FileStream stream)
+		{
+			var pos = stream.Position;
+			var length = Math.Min(512, stream.Length - pos);
+			var header = new byte[length];
+			stream.Read(header, 0, header.Length);
+
+			ILogFileFormat format = null;
+			_formatMatcher?.TryMatchFormat(_fullFilename, header, out format);
+			return format;
 		}
 
 		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)
@@ -596,6 +622,8 @@ namespace Tailviewer.Core.LogFiles
 			OnReset(null, out _numberOfLinesRead, out _lastPosition);
 			_properties.SetValue(LogFileProperties.Created, null);
 			_properties.SetValue(LogFileProperties.Size, null);
+			_properties.SetValue(LogFileProperties.Format, null);
+			_properties.SetValue(LogFileProperties.Encoding, null);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 

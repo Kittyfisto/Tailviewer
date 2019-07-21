@@ -30,7 +30,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			_services = services;
 			_plugins = services.Retrieve<IPluginLoader>()
 			                   .LoadAllOfType<ILogFileIssuesPlugin>()
-			                   .Select(x => new LogFileIssuePluginProxy(x)).ToList();
+			                   .Select(x => new NoThrowLogFileIssuePlugin(x)).ToList();
 			_viewModels = new Dictionary<IDataSource, IssuesViewModel>();
 		}
 

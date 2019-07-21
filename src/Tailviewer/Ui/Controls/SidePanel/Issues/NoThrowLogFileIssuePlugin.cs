@@ -7,14 +7,14 @@ using Tailviewer.BusinessLogic.Plugins.Issues;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
 {
-	internal sealed class LogFileIssuePluginProxy
+	internal sealed class NoThrowLogFileIssuePlugin
 		: ILogFileIssuesPlugin
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ILogFileIssuesPlugin _inner;
 
-		public LogFileIssuePluginProxy(ILogFileIssuesPlugin inner)
+		public NoThrowLogFileIssuePlugin(ILogFileIssuesPlugin inner)
 		{
 			_inner = inner;
 		}
@@ -42,7 +42,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			try
 			{
 				var analyser = _inner.CreateAnalyser(services, logFile);
-				return new LogFileIssueAnalyserProxy(analyser);
+				return new NoThrowLogFileIssueAnalyser(analyser);
 			}
 			catch (Exception e)
 			{
