@@ -22,7 +22,8 @@
                                Margin="8,0,0,0" />
                 </Grid>
 
-                <controls:FlatScrollViewer Grid.Row="1">
+                <controls:FlatScrollViewer Grid.Row="1"
+                                           Margin="8">
                     <ItemsControl ItemsSource="{Binding CurrentIssues.Issues}"
                                   Grid.IsSharedSizeScope="True">
                         <ItemsControl.ItemTemplate>
@@ -36,15 +37,23 @@
                                         <ColumnDefinition SharedSizeGroup="Summary" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Viewbox Width="48" Height="48">
+                                    <Viewbox Width="20" Height="20">
                                         <Canvas Width="24" Height="24">
-                                            <Path Data="{Binding Severity, Converter={StaticResource SeverityToIconConverter}}"
-                                                  Fill="{Binding Severity, Converter={StaticResource SeverityToBrushConverter}}"/>
+                                            <Path
+                                                Data="{Binding Severity, Converter={StaticResource SeverityToIconConverter}}"
+                                                Fill="{Binding Severity, Converter={StaticResource SeverityToBrushConverter}}" />
                                         </Canvas>
                                     </Viewbox>
-                                    <TextBlock Text="{Binding Timestamp}"
-                                               Grid.Column="1" />
+                                    <TextBlock Margin="4"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="1">
+                                        <Hyperlink Command="{Binding GoToCommand}">
+                                            <TextBlock Text="{Binding Timestamp, StringFormat=T}" />
+                                        </Hyperlink>
+                                    </TextBlock>
                                     <TextBlock Text="{Binding Summary}"
+                                               Margin="0,4,4,4"
+                                               VerticalAlignment="Center"
                                                Grid.Column="2" />
                                 </Grid>
                             </DataTemplate>

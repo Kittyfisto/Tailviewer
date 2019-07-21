@@ -406,6 +406,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_dataSources.Update();
 			_bookmarks.Update();
 			_outline.Update();
+			_issues.Update();
 		}
 
 		public QuickFilterViewModel AddQuickFilter()

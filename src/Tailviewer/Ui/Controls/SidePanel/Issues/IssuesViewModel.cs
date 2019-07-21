@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Plugins.Issues;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Issues
@@ -16,14 +17,17 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		private readonly ObservableCollection<IssueViewModel> _issues;
 		private readonly Dictionary<LogFileIssue, IssueViewModel> _viewModelsByIssue;
 		private readonly ILogFileIssueAnalyser _analyser;
+		private readonly INavigationService _navigationService;
 		private IReadOnlyList<LogFileIssue> _currentIssues;
 
-		public IssuesViewModel(ILogFileIssueAnalyser analyser)
+		public IssuesViewModel(ILogFileIssueAnalyser analyser,
+		                       INavigationService navigationService)
 		{
 			_issues = new ObservableCollection<IssueViewModel>();
 			_viewModelsByIssue = new Dictionary<LogFileIssue, IssueViewModel>();
 
 			_analyser = analyser;
+			_navigationService = navigationService;
 			_analyser.AddListener(this);
 			_analyser.Start();
 		}
@@ -57,12 +61,17 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		private void AddNewIssues(IReadOnlyList<LogFileIssue> currentIssues)
 		{
 			foreach (var issue in currentIssues)
-				if (_viewModelsByIssue.ContainsKey(issue))
+				if (!_viewModelsByIssue.ContainsKey(issue))
 				{
-					var viewModel = new IssueViewModel(issue);
+						var viewModel = new IssueViewModel(issue, GoToIssue);
 					_viewModelsByIssue.Add(issue, viewModel);
 					_issues.Add(viewModel);
 				}
+		}
+
+		private void GoToIssue(LogLineIndex line)
+		{
+			_navigationService.NavigateTo(line);
 		}
 
 		private void RemoveOldIssues(IReadOnlyList<LogFileIssue> currentIssues)

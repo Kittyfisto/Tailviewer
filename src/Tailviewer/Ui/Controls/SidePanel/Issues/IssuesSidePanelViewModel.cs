@@ -99,7 +99,8 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			if (plugin == null)
 				return null;
 
-			return new IssuesViewModel(plugin.CreateAnalyser(_services, dataSource.UnfilteredLogFile));
+			return new IssuesViewModel(plugin.CreateAnalyser(_services, dataSource.UnfilteredLogFile),
+			                           _services.Retrieve<INavigationService>());
 		}
 
 		private ILogFileIssuesPlugin FindMatchingPlugin(IDataSource dataSource)

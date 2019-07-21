@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		/// <param name="severity">The severity of the issue - more severe issues are presented to the user with more urgency</param>
 		/// <param name="summary">A very short summary of the issue, should fit into one line.</param>
 		/// <param name="description">An optional (very detailed) description of the issue. May span multiple lines.</param>
-		public LogFileIssue(LogLineIndex line, DateTime timestamp, Severity severity, string summary, string description)
+		public LogFileIssue(LogLineIndex line, DateTime? timestamp, Severity severity, string summary, string description)
 		{
 			Line = line;
 			Timestamp = timestamp;
@@ -32,7 +32,7 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		/// <summary>
 		///     The timestamp of when the issue occured.
 		/// </summary>
-		public DateTime Timestamp { get; } 
+		public DateTime? Timestamp { get; } 
 
 		/// <summary>
 		///     The severity of the issue - more severe issues are presented to the user with more urgency
