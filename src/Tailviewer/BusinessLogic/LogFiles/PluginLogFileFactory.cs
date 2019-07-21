@@ -66,7 +66,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
-			return new TextLogFile(_services.Retrieve<ITaskScheduler>(), filePath);
+			return _services.CreateTextLogFile(filePath);
 		}
 
 		private IFileFormatPlugin FindSupportingPlugin(string filePath, out IPluginDescription pluginDescription)

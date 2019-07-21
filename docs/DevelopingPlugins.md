@@ -9,11 +9,11 @@ Plugins...
 - Are a zip archive containing a description of the plugin (author, website, version, description and all that jazz)
 - Consist of at least one .NET assembly which is loaded by Tailviewer upon startup
 - Implement at least one of the available `IPlugin` interfaces:
-   - `IFileFormatPlugin`
-   - `ILogAnalyserPlugin`
+   - `ILogFileFormatMatcherPlugin`
+   - `ITextLogFileParserPlugin`
    - `ILogFileOutlinePlugin`
-   - `IDataSourceAnalyserPlugin`
-   - `IWidgetPlugin`
+   - `ILogFileIssuesPlugin`
+   - `IFileFormatPlugin`
 - Can add support for custom file formats or even more exotic datasources
 - Can visualize a completely customized overview for your log files
 - Can add new visualizations to Tailviewer's analysis feature
@@ -68,14 +68,6 @@ C:\Program Files\Tailviewer\Tailviewer.exe
 
 You can now debug your plugin by "Selecting Debug => Start Debugging" (which defaults to F5 on my computer, but ymmv) and it will start Tailviewer which will in turn load your plugin.
 
-## Adding support for a custom file format
+## Adding support for a custom (binary) file format
 
 See [developing file format plugins](DevelopingFileFormatPlugins.md).
-
-## Adding new analyses for a Tailviewer analysis
-
-See [developing analysis plugins](DevelopingAnalysisPlugins.md).
-
-## Adding new visualizations for a Tailviewer analysis
-
-See [developing widget plugins](DevelopingWidgetPlugins.md).

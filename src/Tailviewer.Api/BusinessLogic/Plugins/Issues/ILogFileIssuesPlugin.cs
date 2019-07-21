@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Plugins.Issues
@@ -29,6 +28,12 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		/// <summary>
 		///     A list of log file formats supported by this plugin.
 		/// </summary>
+		/// <remarks>
+		///     This can be a well known format known by tailviewer,
+		///     a custom format introduced to tailviewer by implementing
+		///     <see cref="ILogFileFormatMatcherPlugin" /> or a combination
+		///     of the two.
+		/// </remarks>
 		IReadOnlyList<ILogFileFormat> SupportedFormats { get; }
 
 		/// <summary>

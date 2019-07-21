@@ -1,8 +1,17 @@
-﻿namespace Tailviewer.BusinessLogic.Plugins
+﻿using Tailviewer.BusinessLogic.Plugins.Issues;
+using Tailviewer.Ui.Outline;
+
+namespace Tailviewer.BusinessLogic.Plugins
 {
 	/// <summary>
 	///     Responsible for allowing tailviewer to detect additional log file formats.
 	/// </summary>
+	/// <remarks>
+	///     This plugin should be implemented in order to:
+	///     - Change encoding a text log file is opened with
+	///     - Implement <see cref="ILogFileOutlinePlugin"/> for a specific type of log file NOT known to tailviewer already
+	///     - Implement <see cref="ILogFileIssuesPlugin"/> for a specific type of log file NOT known to tailviewer already
+	/// </remarks>
 	public interface ILogFileFormatMatcherPlugin
 		: IPlugin
 	{

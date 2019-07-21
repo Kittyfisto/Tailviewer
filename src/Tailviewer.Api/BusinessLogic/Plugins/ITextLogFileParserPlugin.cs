@@ -12,6 +12,12 @@ namespace Tailviewer.BusinessLogic.Plugins
 		/// <summary>
 		///     The list of log file formats this plugin supports.
 		/// </summary>
+		/// <remarks>
+		///     This can be a well known format known by tailviewer,
+		///     a custom format introduced to tailviewer by implementing
+		///     <see cref="ILogFileFormatMatcherPlugin" /> or a combination
+		///     of the two.
+		/// </remarks>
 		IReadOnlyList<ILogFileFormat> SupportedFormats { get; }
 
 		/// <summary>

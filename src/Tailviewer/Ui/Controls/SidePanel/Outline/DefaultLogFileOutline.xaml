@@ -4,8 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:outline="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline"
+             xmlns:core="clr-namespace:Tailviewer.Core;assembly=Tailviewer.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <core:NullToNotAvailableConverter x:Key="NullToNotAvailableConverter" />
+    </UserControl.Resources>
+
     <Grid d:DataContext="{d:DesignInstance outline:DefaultLogFileOutlineViewModel}">
         <ItemsControl Grid.IsSharedSizeScope="True"
                       ItemsSource="{Binding Properties}">
@@ -21,7 +27,7 @@
                                    FontWeight="Bold"
                                    Margin="0,0,4,0"
                                    Grid.Column="0" />
-                        <TextBlock Text="{Binding Value}"
+                        <TextBlock Text="{Binding Value, Converter={StaticResource NullToNotAvailableConverter}}"
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"
                                    Margin="0,0,0,0"

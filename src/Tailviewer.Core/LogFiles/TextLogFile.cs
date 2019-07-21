@@ -459,12 +459,18 @@ namespace Tailviewer.Core.LogFiles
 		private ILogFileFormat TryFindFormat(FileStream stream)
 		{
 			var pos = stream.Position;
-			var length = Math.Min(512, stream.Length - pos);
+
+			const int maxHeaderLength = 512;
+			var length = Math.Min(maxHeaderLength, stream.Length - pos);
 			var header = new byte[length];
 			stream.Read(header, 0, header.Length);
 
 			ILogFileFormat format = null;
 			_formatMatcher?.TryMatchFormat(_fullFilename, header, out format);
+
+			if (format == null && length == maxHeaderLength)
+				return LogFileFormats.GenericText;
+
 			return format;
 		}
 

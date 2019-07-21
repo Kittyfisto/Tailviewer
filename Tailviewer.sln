@@ -11,7 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{790E58D1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4875D242-F178-48B4-B86D-397650126A32}"
 	ProjectSection(SolutionItems) = preProject
+		docs\BuildEvents.png = docs\BuildEvents.png
+		docs\CreateProject.png = docs\CreateProject.png
+		docs\DebugSettings.png = docs\DebugSettings.png
+		docs\DevelopingFileFormatPlugins.md = docs\DevelopingFileFormatPlugins.md
+		docs\DevelopingPlugins.md = docs\DevelopingPlugins.md
+		docs\issue_template.md = docs\issue_template.md
 		LICENSE = LICENSE
+		docs\NugetPackage.png = docs\NugetPackage.png
+		docs\PULL_REQUEST_TEMPLATE.md = docs\PULL_REQUEST_TEMPLATE.md
 		README.md = README.md
 	EndProjectSection
 EndProject
