@@ -113,6 +113,8 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcherProxy.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />

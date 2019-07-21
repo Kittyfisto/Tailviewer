@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Core.LogFiles
 {
@@ -57,6 +58,11 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<ErrorFlags> EmptyReason;
 
 		/// <summary>
+		///     The format of the log file, as determined by a <see cref="ILogFileFormatMatcher"/>.
+		/// </summary>
+		public static readonly ILogFilePropertyDescriptor<ILogFileFormat> Format;
+
+		/// <summary>
 		///     The minimum set of properties a log file is expected to provide.
 		/// </summary>
 		public static readonly IReadOnlyList<ILogFilePropertyDescriptor> Minimum;
@@ -71,6 +77,7 @@ namespace Tailviewer.Core.LogFiles
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
+			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");
 
 			Minimum = new ILogFilePropertyDescriptor[]
 			{
@@ -81,7 +88,8 @@ namespace Tailviewer.Core.LogFiles
 				LastModified,
 				Created,
 				Size,
-				EmptyReason
+				EmptyReason,
+				Format
 			};
 		}
 

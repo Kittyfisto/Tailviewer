@@ -57,6 +57,9 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
+    <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcherPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
