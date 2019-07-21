@@ -23,6 +23,15 @@ namespace Tailviewer.BusinessLogic.Plugins
 		/// <summary>
 		///     Initializes this attribute.
 		/// </summary>
+		/// <param name="version"></param>
+		public PluginVersionAttribute(Version version)
+		{
+			Version = version;
+		}
+
+		/// <summary>
+		///     Initializes this attribute.
+		/// </summary>
 		/// <param name="majorVersion"></param>
 		/// <param name="minorVersion"></param>
 		public PluginVersionAttribute(int majorVersion, int minorVersion)

@@ -294,6 +294,100 @@ namespace Tailviewer.Archiver.Test
 			version.Should().Be(new Version(3, 2));
 		}
 
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/205")]
+		[Description("Verifies that the plugin archive loader will use the plugin id of the archive over the id extracted from the file name, when possible")]
+		public void TestUsePluginIdFromArchive()
+		{
+			CreatePlugin<IFileFormatPlugin>(new PluginId("Kittyfisto.Simon"),
+			                                new Version(4, 3, 2),
+			                                fakeId: new PluginId("Another.Plugin"),
+			                                fakeVersion: new Version(2, 5, 42, 421));
+
+			CreatePlugin<IFileFormatPlugin>(new PluginId("Another.Plugin"),
+			                                new Version(2, 4, 12));
+
+			using (var loader = new PluginArchiveLoader(_filesystem, Constants.PluginPath))
+			{
+				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+				pluginsWithDescription.Should().HaveCount(2, "because there a two different plugins implementing that interface");
+
+				var plugin1 =
+					pluginsWithDescription.FirstOrDefault(x => x.Description.Id == new PluginId("Another.Plugin"));
+				plugin1.Should().NotBeNull();
+				plugin1.Description.Version.Should().Be(new Version(2, 4, 12));
+
+				var plugin2 =
+					pluginsWithDescription.FirstOrDefault(x => x.Description.Id == new PluginId("Kittyfisto.Simon"));
+				plugin2.Should().NotBeNull();
+				plugin2.Description.Version.Should().Be(new Version(4, 3, 2));
+			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/205")]
+		[Description("Verifies that the plugin archive loader will ignore a plugin which has already been loaded before")]
+		public void TestIgnoreIdenticalPlugin()
+		{
+			var id = new PluginId("Kittyfisto.Simon");
+			var version = new Version(4, 3, 2);
+			CreatePlugin<IFileFormatPlugin>(Constants.PluginPath, id, version);
+			CreatePlugin<IFileFormatPlugin>(Constants.DownloadedPluginsPath, id, version);
+
+			using (var loader = new PluginArchiveLoader(_filesystem, new []
+			{
+				Constants.PluginPath,
+				Constants.DownloadedPluginsPath
+			}))
+			{
+				var pluginsWithDescription = loader.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+				pluginsWithDescription.Should().HaveCount(1, "because only one instance of that plugin should've been loaded");
+
+				var plugin1 =
+					pluginsWithDescription.FirstOrDefault(x => x.Description.Id == new PluginId("Kittyfisto.Simon"));
+				plugin1.Should().NotBeNull();
+				plugin1.Description.Version.Should().Be(new Version(4, 3, 2));
+			}
+		}
+
+		private void CreatePlugin<T>(PluginId actualId, Version actualVersion) where T : IPlugin
+		{
+			CreatePlugin<T>(actualId, actualVersion, actualId, actualVersion);
+		}
+
+		private void CreatePlugin<T>(string pluginFolder, PluginId actualId, Version actualVersion) where T : IPlugin
+		{
+			CreatePlugin<T>(pluginFolder, actualId, actualVersion, actualId, actualVersion);
+		}
+
+		private void CreatePlugin<T>(PluginId actualId, Version actualVersion, PluginId fakeId, Version fakeVersion) where T : IPlugin
+		{
+			CreatePlugin<T>(Constants.PluginPath, actualId, actualVersion, fakeId, fakeVersion);
+		}
+
+		private void CreatePlugin<T>(string pluginFolder, PluginId actualId, Version actualVersion, PluginId fakeId, Version fakeVersion) where T : IPlugin
+		{
+			using (var stream = new MemoryStream())
+			{
+				using (var packer = PluginPacker.Create(stream, true))
+				{
+					var idx = actualId.Value.LastIndexOf(".");
+					var actualNamespace = actualId.Value.Substring(0, idx);
+					var actualName = actualId.Value.Substring(idx + 1);
+					var builder = new PluginBuilder(actualNamespace, actualName, "none of your business", "get of my lawn", version: actualVersion);
+					builder.ImplementInterface<T>("Plugin.FileFormatPlugin");
+					builder.Save();
+
+					packer.AddPluginAssembly(builder.FileName);
+				}
+				stream.Position = 0;
+
+				var path = Path.Combine(pluginFolder, $"{fakeId.Value}.{fakeVersion}.tvp");
+				_filesystem.CreateDirectory(pluginFolder);
+				_filesystem.WriteAllBytes(path, stream.ToArray());
+			}
+		}
+
 		private static PluginId CreatePlugin(MemoryStream stream)
 		{
 			var @namespace = "Kittyfisto";

@@ -73,6 +73,14 @@ namespace Tailviewer.Archiver.Plugins
 
 		public void Add(string pluginPath, Version pluginVersion, IPluginArchive archive)
 		{
+			if (_pluginsByVersion.TryGetValue(pluginVersion, out var existingPlugin))
+			{
+				Log.WarnFormat("Ignoring plugin '{0}', an identical version has already been loaded from '{1}'!",
+				               pluginPath,
+				               existingPlugin.FilePath);
+				return;
+			}
+
 			_pluginsByVersion.Add(pluginVersion, new Plugin(archive, pluginPath));
 			_status.IsInstalled = true;
 		}

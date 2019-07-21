@@ -13,10 +13,11 @@ namespace Tailviewer.Archiver.Plugins
 	{
 		private readonly PluginPackageIndex _index;
 
-		public EmptyPluginArchive(Version pluginVersion)
+		public EmptyPluginArchive(PluginId id, Version pluginVersion)
 		{
 			_index = new PluginPackageIndex
 			{
+				Id = id.Value,
 				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
 				Version = pluginVersion.ToString()
 			};

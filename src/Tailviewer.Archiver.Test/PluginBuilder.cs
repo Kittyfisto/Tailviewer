@@ -23,10 +23,11 @@ namespace Tailviewer.Archiver.Test
 			string pluginName,
 			string author = null,
 			string website = null,
-			string description = null)
+			string description = null,
+			Version version = null)
 		{
 			_pluginName = pluginName;
-			_fileName = String.Format("{0}.dll", pluginName);
+			_fileName = $"{pluginName}.dll";
 			var assemblyName = new AssemblyName(pluginName);
 			var attributes = new List<CustomAttributeBuilder>();
 			if (pluginIdNamespace != null && pluginIdName != null)
@@ -37,6 +38,15 @@ namespace Tailviewer.Archiver.Test
 				attributes.Add(CreateAttribute<PluginWebsiteAttribute>(website));
 			if (website != null)
 				attributes.Add(CreateAttribute<PluginDescriptionAttribute>(description));
+			if (version != null)
+			{
+				if (version.Build == -1)
+					attributes.Add(CreateAttribute<PluginVersionAttribute>(version.Major, version.Minor));
+				else if (version.Revision == -1)
+					attributes.Add(CreateAttribute<PluginVersionAttribute>(version.Major, version.Minor, version.Build));
+				else
+					attributes.Add(CreateAttribute<PluginVersionAttribute>(version.Major, version.Minor, version.Build, version.Revision));
+			}
 			_assembly = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save, attributes);
 			_module = _assembly.DefineDynamicModule(pluginName, _fileName);
 
@@ -206,11 +216,12 @@ namespace Tailviewer.Archiver.Test
 			}
 		}
 
-		private static CustomAttributeBuilder CreateAttribute<T>(params object[] parameters) where T : Attribute
+		private static CustomAttributeBuilder CreateAttribute<T>(params object[] arguments) where T : Attribute
 		{
 			var type = typeof(T);
 			var ctors = type.GetConstructors();
-			var builder = new CustomAttributeBuilder(ctors.First(), parameters);
+			var ctor = ctors.First(x => x.GetParameters().Length == arguments.Length);
+			var builder = new CustomAttributeBuilder(ctor, arguments);
 			return builder;
 		}
 

@@ -124,19 +124,22 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			Log.DebugFormat("Loading plugin '{0}'...", pluginPath);
 
-			ExtractIdAndVersion(pluginPath, out var id, out var version);
 			try
 			{
-				OpenPlugin(pluginPath, id, version);
+				OpenPlugin(pluginPath);
 			}
 			catch (Exception e)
 			{
 				Log.ErrorFormat("Unable to load '{0}': {1}", pluginPath, e);
-				Add(pluginPath, id, version, new EmptyPluginArchive(version));
+
+				// We might be unable to open the plugin and extract ids id and version.
+				// As a fallback, we'll use the filename to extract that info.
+				ExtractIdAndVersion(pluginPath, out var id, out var version);
+				Add(pluginPath, new EmptyPluginArchive(id, version));
 			}
 		}
 
-		public PluginGroup OpenPlugin(string pluginPath, PluginId id, Version version)
+		public PluginGroup OpenPlugin(string pluginPath)
 		{
 			var stream = _filesystem.OpenRead(pluginPath);
 			try
@@ -144,7 +147,7 @@ namespace Tailviewer.Archiver.Plugins
 				// Ownership of the stream transfers to PluginArchive which is disposed of when this class is
 				// disposed of....
 				var archive = PluginArchive.OpenRead(stream);
-				return Add(pluginPath, id, version, archive);
+				return Add(pluginPath, archive);
 			}
 			catch (Exception)
 			{
@@ -171,15 +174,17 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
-		private PluginGroup Add(string pluginPath, PluginId id, Version pluginVersion, IPluginArchive archive)
+		private PluginGroup Add(string pluginPath, IPluginArchive archive)
 		{
+			var id = new PluginId(archive.Index.Id);
 			if (!_plugins.TryGetValue(id, out var pluginGroup))
 			{
 				pluginGroup = new PluginGroup(id);
 				_plugins.Add(id, pluginGroup);
 			}
 
-			pluginGroup.Add(pluginPath, pluginVersion, archive);
+			var version = archive.Index.Version;
+			pluginGroup.Add(pluginPath, version, archive);
 			return pluginGroup;
 		}
 

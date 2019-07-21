@@ -85,13 +85,11 @@ namespace Tailviewer
 
 			if (pluginToLoad.EndsWith(".tvp", StringComparison.InvariantCultureIgnoreCase))
 			{
-				var ioScheduler = new SerialTaskScheduler();
 				var taskScheduler = new DefaultTaskScheduler();
 				var filesystem = new Filesystem(taskScheduler);
 				using (var loader = new PluginArchiveLoader(filesystem))
 				{
-					PluginArchiveLoader.ExtractIdAndVersion(pluginToLoad, out var id, out var version);
-					var group = loader.OpenPlugin(pluginToLoad, id, version);
+					var group = loader.OpenPlugin(pluginToLoad);
 					group.Load();
 					if (!group.Status.IsLoaded)
 						return -1;
