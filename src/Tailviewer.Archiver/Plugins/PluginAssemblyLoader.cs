@@ -35,7 +35,9 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(IFileFormatPlugin),
 				typeof(IFileFormatPlugin2),
 				typeof(ILogFileOutlinePlugin),
-				typeof(ILogFileIssuesPlugin)
+				typeof(ILogFileIssuesPlugin),
+				typeof(ILogFileFormatMatcherPlugin),
+				typeof(ITextLogFileParserPlugin)
 			};
 		}
 

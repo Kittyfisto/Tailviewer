@@ -29,6 +29,16 @@ namespace Tailviewer.Core.LogFiles
 
 		#region Overrides of Object
 
+		public override bool Equals(object obj)
+		{
+			return ReferenceEquals(this, obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return 42;
+		}
+
 		public override string ToString()
 		{
 			return Name;

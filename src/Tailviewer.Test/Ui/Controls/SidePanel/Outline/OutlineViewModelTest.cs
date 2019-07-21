@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows;
 using FluentAssertions;
 using Moq;
@@ -9,6 +7,7 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Controls.SidePanel.Outline;
 using Tailviewer.Ui.Outline;
 
@@ -33,7 +32,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 		public void TestMultiSource()
 		{
 			var plugin = new Mock<ILogFileOutlinePlugin>();
-			plugin.Setup(x => x.SupportedFileNames).Returns(new[] {new Regex(@"Apache\.log"),});
+			plugin.Setup(x => x.SupportedFormats).Returns(new[] {LogFileFormats.ExtendedLogFormat});
 			plugin.Setup(x => x.CreateViewModel(It.IsAny<IServiceContainer>(), It.IsAny<ILogFile>()))
 			      .Returns(new Mock<ILogFileOutlineViewModel>().Object);
 
@@ -48,7 +47,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			var dataSource = new Mock<IMultiDataSource>();
 			var logFile = new Mock<ILogFile>();
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
-			dataSource.Setup(x => x.OriginalSources).Returns(new[]{CreateDataSource(fileName: "Foo"), CreateDataSource(fileName: "Apache.log")});
+			dataSource.Setup(x => x.OriginalSources).Returns(new[]{CreateDataSource(LogFileFormats.CommonLogFormat), CreateDataSource(LogFileFormats.ExtendedLogFormat)});
 
 			viewModel.CurrentContent.Should().BeNull();
 			viewModel.CurrentDataSource.Should().BeNull();
@@ -58,10 +57,12 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			viewModel.CurrentContent.Should().BeSameAs(pluginContent);
 		}
 
-		private IDataSource CreateDataSource(string fileName)
+		private IDataSource CreateDataSource(ILogFileFormat format)
 		{
 			var dataSource = new Mock<IDataSource>();
-			dataSource.Setup(x => x.FullFileName).Returns(fileName);
+			var logFile = new Mock<ILogFile>();
+			logFile.Setup(x => x.GetValue(LogFileProperties.Format)).Returns(format);
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			return dataSource.Object;
 		}
 	}

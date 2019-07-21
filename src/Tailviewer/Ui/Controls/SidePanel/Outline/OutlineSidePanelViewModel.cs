@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -10,6 +9,8 @@ using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
@@ -125,12 +126,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			if (dataSource is IMultiDataSource multi)
 			{
 				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
-				plugins = children.SelectMany(x => FindMatchingPlugins(x.FullFileName)).ToList();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogFile.GetValue(LogFileProperties.Format))).ToList();
 			}
 			else
 			{
-				var fileName = Path.GetFileName(dataSource.FullFileName);
-				plugins = FindMatchingPlugins(fileName);
+				plugins = FindMatchingPlugins(dataSource.UnfilteredLogFile.GetValue(LogFileProperties.Format));
 			}
 
 			if (plugins.Count == 0)
@@ -146,16 +146,16 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			return plugins[0];
 		}
 
-		private IReadOnlyList<ILogFileOutlinePlugin> FindMatchingPlugins(string fileName)
+		private IReadOnlyList<ILogFileOutlinePlugin> FindMatchingPlugins(ILogFileFormat format)
 		{
-			return _plugins.Where(x => Matches(x, fileName)).ToList();
+			return _plugins.Where(x => Matches(x, format)).ToList();
 		}
 
-		private bool Matches(ILogFileOutlinePlugin plugin, string fileName)
+		private bool Matches(ILogFileOutlinePlugin plugin, ILogFileFormat format)
 		{
 			try
 			{
-				return plugin.SupportedFileNames.Any(x => x.IsMatch(fileName));
+				return plugin.SupportedFormats.Any(x => Equals(x, format));
 			}
 			catch (Exception e)
 			{

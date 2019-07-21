@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic.Plugins
 		[Test]
 		public void TestFileFormatPluginVersion()
 		{
-			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(ILogFileOutlinePlugin)).Should().Be(new PluginInterfaceVersion(1), "because this interface hasn't been changed yet");
+			PluginInterfaceVersionAttribute.GetInterfaceVersion(typeof(ILogFileOutlinePlugin)).Should().Be(new PluginInterfaceVersion(2), "because this interface has been broken once");
 		}
 	}
 }

@@ -18,15 +18,18 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 	///     Version 1
 	///     Initial definition
 	/// </remarks>
-	[PluginInterfaceVersion(version: 1)]
+	/// <remarks>
+	///     Version 2
+	///     Replaced SupportedFileNames regex with list of supported file formats.
+	/// </remarks>
+	[PluginInterfaceVersion(version: 2)]
 	public interface ILogFileIssuesPlugin
 		: IPlugin
 	{
 		/// <summary>
-		///     A list of regular expressions which may be used to select which log files use this plugin
-		///     to analyse issues.
+		///     A list of log file formats supported by this plugin.
 		/// </summary>
-		IReadOnlyList<Regex> SupportedFileNames { get; }
+		IReadOnlyList<ILogFileFormat> SupportedFormats { get; }
 
 		/// <summary>
 		/// 

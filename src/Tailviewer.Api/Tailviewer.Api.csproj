@@ -61,6 +61,8 @@
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcherPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
+    <Compile Include="BusinessLogic\Plugins\ITextLogFileParser.cs" />
+    <Compile Include="BusinessLogic\Plugins\ITextLogFileParserPlugin.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />

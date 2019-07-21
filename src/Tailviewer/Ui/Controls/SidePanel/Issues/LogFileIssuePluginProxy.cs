@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins.Issues;
@@ -22,18 +21,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 
 		#region Implementation of ILogFileIssuesPlugin
 
-		public IReadOnlyList<Regex> SupportedFileNames
+		public IReadOnlyList<ILogFileFormat> SupportedFormats
 		{
 			get
 			{
 				try
 				{
-					return _inner.SupportedFileNames;
+					return _inner.SupportedFormats;
 				}
 				catch (Exception e)
 				{
 					Log.ErrorFormat("Caught unexpected exception: {0}", e);
-					return new Regex[0];
+					return new ILogFileFormat[0];
 				}
 			}
 		}
