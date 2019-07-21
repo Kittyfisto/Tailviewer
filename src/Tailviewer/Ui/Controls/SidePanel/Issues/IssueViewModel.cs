@@ -22,6 +22,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		public Geometry Icon => Icons.Alert;
 		public LogLineIndex Line => _issue.Line;
 		public string Summary => _issue.Summary;
+		public string Description => _issue.Description;
 		public DateTime? Timestamp => _issue.Timestamp;
 		public Severity Severity => _issue.Severity;
 		public LogFileIssue Issue => _issue;

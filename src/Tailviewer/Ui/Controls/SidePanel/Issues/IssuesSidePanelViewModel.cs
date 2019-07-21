@@ -22,6 +22,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		private readonly IServiceContainer _services;
 		private IDataSource _currentDataSource;
 		private IssuesViewModel _currentIssues;
+		private int _issueCount;
 
 		public IssuesSidePanelViewModel(IServiceContainer services)
 		{
@@ -72,12 +73,24 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			}
 		}
 
+		private int IssueCount
+		{
+			set
+			{
+				if (value == _issueCount)
+					return;
+
+				_issueCount = value;
+				QuickInfo = $"{_issueCount} issue(s)";
+			}
+		}
+
 		public override void Update()
 		{
-			if (!IsSelected)
-				return;
+			if (_currentIssues != null && IsSelected)
+				_currentIssues.Update();
 
-			CurrentIssues?.Update();
+			IssueCount = _currentIssues?.Count ?? 0;
 		}
 
 		#endregion

@@ -1,15 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
-                    xmlns:issues="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Issues">
+                    xmlns:issues="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Issues"
+                    xmlns:converters="clr-namespace:Metrolib.Converters;assembly=Metrolib">
 
     <issues:SeverityToIconConverter x:Key="SeverityToIconConverter" />
     <issues:SeverityToBrushConverter x:Key="SeverityToBrushConverter" />
+    <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type issues:IssuesSidePanelViewModel}">
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
@@ -22,13 +25,34 @@
                                Margin="8,0,0,0" />
                 </Grid>
 
-                <controls:FlatScrollViewer Grid.Row="1"
+                <StackPanel Grid.Row="1" Orientation="Horizontal"
+                            Margin="8,8,8,0">
+                    <controls:FlatToggleButton IsChecked="{Binding CurrentIssues.ShowCritical, Mode=TwoWay}"
+                                               Padding="4">
+                        <TextBlock Text="{Binding CurrentIssues.CriticalCount, StringFormat={}{0} Critical}" />
+                    </controls:FlatToggleButton>
+                    <controls:FlatToggleButton IsChecked="{Binding CurrentIssues.ShowMajor, Mode=TwoWay}"
+                                               Padding="4">
+                        <TextBlock Text="{Binding CurrentIssues.MajorCount, StringFormat={}{0} Major}" />
+                    </controls:FlatToggleButton>
+                    <controls:FlatToggleButton IsChecked="{Binding CurrentIssues.ShowMinor, Mode=TwoWay}"
+                                               Padding="4">
+                        <TextBlock Text="{Binding CurrentIssues.MinorCount, StringFormat={}{0} Minor}" />
+                    </controls:FlatToggleButton>
+                </StackPanel>
+
+                <controls:FlatScrollViewer Grid.Row="2"
+                                           HorizontalScrollBarVisibility="Hidden"
                                            Margin="8">
                     <ItemsControl ItemsSource="{Binding CurrentIssues.Issues}"
                                   Grid.IsSharedSizeScope="True">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type issues:IssueViewModel}">
                                 <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"
                                                           SharedSizeGroup="Severity" />
@@ -46,15 +70,27 @@
                                     </Viewbox>
                                     <TextBlock Margin="4"
                                                VerticalAlignment="Center"
+                                               Grid.Row="0"
                                                Grid.Column="1">
                                         <Hyperlink Command="{Binding GoToCommand}">
                                             <TextBlock Text="{Binding Timestamp, StringFormat=T}" />
                                         </Hyperlink>
                                     </TextBlock>
                                     <TextBlock Text="{Binding Summary}"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Summary}"
                                                Margin="0,4,4,4"
                                                VerticalAlignment="Center"
+                                               Grid.Row="0"
                                                Grid.Column="2" />
+                                    <TextBlock Text="{Binding Description}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,4,4"
+                                               MaxWidth="265"
+                                               Visibility="{Binding Description, Converter={StaticResource NullToCollapsedConverter}}"
+                                               Grid.Row="1"
+                                               Grid.Column="1"
+                                               Grid.ColumnSpan="2" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
