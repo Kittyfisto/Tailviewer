@@ -10,6 +10,7 @@
 		CorruptPlugin = -11,
 		InvalidUserToken = -12,
 		PluginAlreadyPublished = -13,
+		ConnectionError = -14,
 
 		FileNotFound = -20,
 		DirectoryNotFound = -21,

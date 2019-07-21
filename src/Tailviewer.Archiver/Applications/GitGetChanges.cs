@@ -134,7 +134,7 @@ namespace Tailviewer.Archiver.Applications
 		[Pure]
 		private static SerializableChanges Parse(string output)
 		{
-			var regex = new Regex(@"commit [0-9a-f]{40}\s*(\(tag:\s+([^)]+)\)){0,1}\nAuthor:[^\n]+\nDate:[^\n]+", RegexOptions.Multiline);
+			var regex = new Regex(@"commit ([0-9a-f]{40})\s*(\(tag:\s+([^)]+)\)){0,1}\nAuthor:[^\n]+\nDate:[^\n]+", RegexOptions.Multiline);
 			var matches = regex.Matches(output);
 			var changes = new SerializableChanges();
 
@@ -143,24 +143,26 @@ namespace Tailviewer.Archiver.Applications
 				var match = matches[i];
 				var nextMatch = matches[i + 1];
 
+				var id = match.Groups[1].Value;
 				var start = match.Index + match.Length;
 				var end = nextMatch.Index;
 				var message = output.Substring(start, end - start);
-				TryAddChange(message, changes);
+				TryAddChange(id, message, changes);
 			}
 
 			if (matches.Count > 0)
 			{
 				var lastMatch = matches[matches.Count - 1];
+				var id = lastMatch.Groups[1].Value;
 				var start = lastMatch.Index + lastMatch.Length;
 				var message = output.Substring(start);
-				TryAddChange(message, changes);
+				TryAddChange(id, message, changes);
 			}
 
 			return changes;
 		}
 
-		private static void TryAddChange(string message, SerializableChanges changes)
+		private static void TryAddChange(string id, string message, SerializableChanges changes)
 		{
 			var split = message.Split(new[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -168,6 +170,7 @@ namespace Tailviewer.Archiver.Applications
 			{
 				var change = new SerializableChange
 				{
+					Id = id,
 					Summary = split[0].Trim()
 				};
 				change.Description = string.Join(Environment.NewLine, split.Skip(1).Select(x => x.Trim()));

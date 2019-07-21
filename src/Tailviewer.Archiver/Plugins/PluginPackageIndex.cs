@@ -36,12 +36,6 @@ namespace Tailviewer.Archiver.Plugins
 		[DataMember]
 		public List<SerializableTypeDescription> SerializableTypes { get; set; }
 
-		/// <summary>
-		///     The list of changes made to this plugin compared to the last version.
-		/// </summary>
-		[DataMember]
-		public List<SerializableChange> Changes { get; set; }
-
 		/// <inheritdoc />
 		public int PluginArchiveVersion { get; set; }
 
@@ -86,8 +80,6 @@ namespace Tailviewer.Archiver.Plugins
 		IReadOnlyList<IAssemblyDescription> IPluginPackageIndex.Assemblies => Assemblies;
 
 		IReadOnlyList<INativeImageDescription> IPluginPackageIndex.NativeImages => NativeImages;
-
-		IReadOnlyList<SerializableChange> IPluginPackageIndex.Changes => Changes;
 
 		/// <summary>
 		/// 

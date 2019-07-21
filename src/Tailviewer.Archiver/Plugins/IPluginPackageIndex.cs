@@ -67,10 +67,5 @@ namespace Tailviewer.Archiver.Plugins
 		///     The list of serializable types implemented by the plugin.
 		/// </summary>
 		IEnumerable<SerializableTypeDescription> SerializableTypes { get; }
-
-		/// <summary>
-		///     The list of changes made to this plugin compared to the last version.
-		/// </summary>
-		IReadOnlyList<SerializableChange> Changes { get; }
 	}
 }

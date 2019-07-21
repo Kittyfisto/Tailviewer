@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
@@ -32,66 +34,92 @@ namespace Tailviewer.Archiver.Applications
 
 		public ExitCode Run(PublishOptions options)
 		{
-			if (!TryLoadPlugin(options, out var plugin, out var exitCode))
-				return exitCode;
-
-			var exceptions = new Dictionary<Type, ExitCode>
+			var warnings = new Dictionary<Type, ExitCode>
+			{
+				{typeof(PluginAlreadyPublishedException), ExitCode.PluginAlreadyPublished}
+			};
+			var errors = new Dictionary<Type, ExitCode>
 			{
 				{typeof(RemotePublishDisabledException), ExitCode.RemotePublishDisabled},
 				{typeof(CorruptPluginException), ExitCode.CorruptPlugin},
 				{typeof(InvalidUserTokenException), ExitCode.InvalidUserToken},
-				{typeof(PluginAlreadyPublishedException), ExitCode.PluginAlreadyPublished}
+				{typeof(DirectoryNotFoundException), ExitCode.DirectoryNotFound },
+				{typeof(FileNotFoundException), ExitCode.FileNotFound },
+				{typeof(NoSuchIPEndPointException), ExitCode.ConnectionError }
 			};
 
-			using (var client = new SocketEndPoint(EndPointType.Client))
+			try
 			{
-				try
+				var fileNames = ResolveFileNames(options.Plugin);
+				if (fileNames.Count == 0)
 				{
-					Connect(client, options.ServerAddress);
+					Log.ErrorFormat("Did not find any file matching '{0}'!", options.Plugin);
+					return ExitCode.FileNotFound;
+				}
+
+				LogFileNamesToPublish(fileNames);
+
+				using (var client = new SocketEndPoint(EndPointType.Client))
+				{
+					Connect(client, options.Repository);
 
 					var repository = client.CreateProxy<IPluginRepository>(Constants.PluginRepositoryV1Id);
-					repository.PublishPlugin(plugin, options.AccessToken);
+
+					foreach (var fileName in fileNames)
+					{
+						var plugin = File.ReadAllBytes(fileName);
+						repository.PublishPlugin(plugin, options.AccessToken);
+					}
 
 					Log.InfoFormat("Plugin successfully published!");
 					return ExitCode.Success;
 				}
-				catch (Exception e)
+			}
+			catch (Exception e)
+			{
+				if (warnings.TryGetValue(e.GetType(), out var exitCode))
 				{
-					if (exceptions.TryGetValue(e.GetType(), out exitCode))
-					{
-						Log.ErrorFormat(e.Message);
-						Log.Debug(e); //< Stacktrace is literally of no interest to anyone unless something needs to be debugged
-						return exitCode;
-					}
-
-					Log.Error(e);
-					return ExitCode.UnhandledException;
+					Log.WarnFormat(e.Message);
+					Log.Debug(e); //< Stacktrace is literally of no interest to anyone unless something needs to be debugged
+					return exitCode;
 				}
+
+				if (errors.TryGetValue(e.GetType(), out exitCode))
+				{
+					Log.ErrorFormat(e.Message);
+					Log.Debug(e); //< Stacktrace is literally of no interest to anyone unless something needs to be debugged
+					return exitCode;
+				}
+
+				Log.Error(e);
+				return ExitCode.UnhandledException;
 			}
 		}
 
-		private static bool TryLoadPlugin(PublishOptions options, out byte[] plugin, out ExitCode exitCode)
+		private static void LogFileNamesToPublish(IReadOnlyList<string> fileNames)
 		{
-			try
+			var builder = new StringBuilder();
+			builder.AppendFormat("Publishing {0} plugin(s):", fileNames.Count);
+			foreach (var fileName in fileNames)
 			{
-				plugin = File.ReadAllBytes(options.Plugin);
-				exitCode = ExitCode.Success;
-				return true;
+				builder.AppendLine();
+				builder.AppendFormat("\t{0}", fileName);
 			}
-			catch (FileNotFoundException e)
-			{
-				Log.ErrorFormat(e.Message);
-				plugin = null;
-				exitCode = ExitCode.FileNotFound;
-				return false;
-			}
-			catch (DirectoryNotFoundException e)
-			{
-				Log.ErrorFormat(e.Message);
-				plugin = null;
-				exitCode = ExitCode.DirectoryNotFound;
-				return false;
-			}
+
+			Log.Info(builder);
+		}
+
+		private IReadOnlyList<string> ResolveFileNames(string pluginPathOrPattern)
+		{
+			if (!pluginPathOrPattern.Contains("*"))
+				return new[] {pluginPathOrPattern};
+
+			var path = Path.GetDirectoryName(pluginPathOrPattern);
+			if (string.IsNullOrWhiteSpace(path))
+				path = Directory.GetCurrentDirectory();
+
+			var pattern = Path.GetFileName(pluginPathOrPattern);
+			return Directory.EnumerateFiles(path, pattern, SearchOption.TopDirectoryOnly).ToList();
 		}
 
 		private void Connect(SocketEndPoint client, string address)

@@ -278,7 +278,7 @@ namespace Tailviewer.Archiver.Test
 
 			using (var reader = PluginArchive.OpenRead(_fname))
 			{
-				var changes = reader.Index.Changes;
+				var changes = reader.LoadChanges();
 				changes.Should().HaveCount(2);
 				changes[0].Summary.Should().Be("foo");
 				changes[0].Description.Should().BeNullOrEmpty();

@@ -7,6 +7,17 @@ namespace Tailviewer.Archiver.Plugins
 	public sealed class SerializableChange
 	{
 		/// <summary>
+		///     The unique id of this change. There should never be another change (for the same plugin)
+		///     with that id.
+		/// </summary>
+		/// <remarks>
+		///     This field exists to allow tailviewer to easily compare two plugin versions for changes made.
+		/// </remarks>
+		[DataMember]
+		[XmlAttribute(AttributeName = "id")]
+		public string Id { get; set; }
+
+		/// <summary>
 		///     A required short one sentence summary of the change.
 		/// </summary>
 		[DataMember]

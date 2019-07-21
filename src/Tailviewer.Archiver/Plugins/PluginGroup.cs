@@ -376,6 +376,7 @@ namespace Tailviewer.Archiver.Plugins
 		[Pure]
 		private static PluginDescription CreateDescription(Plugin plugin)
 		{
+			var archive = plugin.Archive;
 			var archiveIndex = plugin.Archive.Index;
 
 			Uri.TryCreate(archiveIndex.Website, UriKind.Absolute, out var website);
@@ -397,8 +398,8 @@ namespace Tailviewer.Archiver.Plugins
 			var serializableTypes = new Dictionary<string, string>();
 			foreach (var pair in archiveIndex.SerializableTypes) serializableTypes.Add(pair.Name, pair.FullName);
 
-			var changes = new List<Change>(archiveIndex.Changes.Count);
-			foreach(var serializableChange in archiveIndex.Changes)
+			var changes = new List<Change>();
+			foreach(var serializableChange in archive.LoadChanges())
 				changes.Add(new Change(serializableChange));
 
 			var desc = new PluginDescription

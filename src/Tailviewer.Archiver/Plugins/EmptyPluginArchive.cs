@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -38,6 +39,11 @@ namespace Tailviewer.Archiver.Plugins
 		public Assembly LoadPlugin()
 		{
 			return null;
+		}
+
+		public IReadOnlyList<SerializableChange> LoadChanges()
+		{
+			return new SerializableChange[0];
 		}
 
 		public void Dispose()

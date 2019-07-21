@@ -30,13 +30,17 @@ namespace Tailviewer.Archiver.Repository
 
 		public bool Equals(PluginIdentifier other)
 		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
 			return string.Equals(Id, other.Id) && Equals(Version, other.Version);
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(objA: null, objB: obj)) return false;
-			return obj is PluginIdentifier && Equals((PluginIdentifier) obj);
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((PluginIdentifier) obj);
 		}
 
 		public override int GetHashCode()
@@ -45,16 +49,6 @@ namespace Tailviewer.Archiver.Repository
 			{
 				return ((Id != null ? Id.GetHashCode() : 0) * 397) ^ (Version != null ? Version.GetHashCode() : 0);
 			}
-		}
-
-		public static bool operator ==(PluginIdentifier left, PluginIdentifier right)
-		{
-			return left.Equals(right);
-		}
-
-		public static bool operator !=(PluginIdentifier left, PluginIdentifier right)
-		{
-			return !left.Equals(right);
 		}
 
 		#endregion

@@ -94,11 +94,5 @@ namespace Tailviewer.PluginRepository.Entities
 		/// </summary>
 		[DataMember]
 		public List<PluginInterface> RequiredInterfaces { get; set; }
-
-		/// <summary>
-		///     The list of changes made in this version of the plugin, compared to the last version.
-		/// </summary>
-		[DataMember]
-		public List<Change> Changes { get; set; }
 	}
 }

@@ -47,7 +47,6 @@ namespace Tailviewer.Archiver.Plugins
 				PluginArchiveVersion = PluginArchive.CurrentPluginArchiveVersion,
 				Assemblies = new List<AssemblyDescription>(),
 				NativeImages = new List<NativeImageDescription>(),
-				Changes = new List<SerializableChange>(),
 				Version = new Version(0, 0, 0).ToString()
 			};
 		}
@@ -158,14 +157,20 @@ namespace Tailviewer.Archiver.Plugins
 
 		public void SetChanges(string changesFileName)
 		{
-			_index.Changes.AddRange(ReadChanges(changesFileName));
-		}
-
-		private IReadOnlyList<SerializableChange> ReadChanges(string fileName)
-		{
-			using (var stream = File.OpenRead(fileName))
+			try
 			{
-				return SerializableChanges.Deserialize(stream).Changes;
+				var content = File.ReadAllBytes(changesFileName);
+				var stream = new MemoryStream(content);
+				var changes = SerializableChanges.Deserialize(stream); //< We want to make sure that the file is legit..
+				if (!changes.Changes.Any())
+					Log.WarnFormat("The changelist file '{0}' doesn't contain any changes!", changesFileName);
+
+				stream.Position = 0;
+				AddFile(PluginArchive.ChangesName, stream);
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Unable to read changelist: {e.Message}", e);
 			}
 		}
 

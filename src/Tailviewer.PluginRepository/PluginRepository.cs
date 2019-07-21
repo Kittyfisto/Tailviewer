@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using IsabelDb;
 using log4net;
@@ -134,11 +135,13 @@ namespace Tailviewer.PluginRepository
 
 			IPluginPackageIndex pluginIndex;
 			DateTime builtTime;
+			IReadOnlyList<SerializableChange> changes;
 			byte[] icon;
 			using (var stream = new MemoryStream(plugin))
 			using (var archive = OpenPlugin(stream))
 			{
 				pluginIndex = archive.Index;
+				changes = archive.LoadChanges();
 				builtTime = GetBuildTime(archive.ReadAssembly());
 				icon = archive.ReadIcon()?.ReadToEnd();
 			}
@@ -165,7 +168,6 @@ namespace Tailviewer.PluginRepository
 					PublishDate = publishDate,
 					RequiredInterfaces = pluginIndex.ImplementedPluginInterfaces
 						.Select(x => new PluginInterface(x.InterfaceTypename, x.InterfaceVersion)).ToList(),
-					Changes = pluginIndex.Changes.Select(x => new Change(x)).ToList()
 				};
 				_pluginDescriptions.Put(id, publishedPlugin);
 				_plugins.Put(id, plugin);
@@ -259,23 +261,41 @@ namespace Tailviewer.PluginRepository
 
 			// TODO: Use proper indices when necessary...
 			var ids = plugins.ToDictionary(x => x.Id, x => x.Version);
-			var foundPlugins = new List<PluginIdentifier>();
+			var newerPlugins = new List<PluginIdentifier>();
 			foreach (var pair in _pluginDescriptions.GetAll())
 			{
 				if (ids.TryGetValue(pair.Key.Id, out var currentVersion) &&
 					currentVersion < pair.Key.Version &&
 				    IsSupported(pair.Value, interfacesByName))
 				{
-					foundPlugins.Add(pair.Key);
+					newerPlugins.Add(pair.Key);
 				}
 			}
 
 			stopwatch.Stop();
-			Log.InfoFormat("Found {0} updated plugin(s) ({1}) (took {2}ms)", foundPlugins.Count,
-				string.Join(", ", foundPlugins),
-				stopwatch.ElapsedMilliseconds);
 
-			return foundPlugins;
+			LogNewerPlugins(plugins, newerPlugins, stopwatch);
+
+			return newerPlugins;
+		}
+
+		private static void LogNewerPlugins(IReadOnlyList<PluginIdentifier> plugins, List<PluginIdentifier> newerPlugins, Stopwatch stopwatch)
+		{
+			var builder = new StringBuilder();
+			builder.AppendFormat("Found {0} newer plugin(s) (took {1}ms):", newerPlugins.Count,
+				stopwatch.ElapsedMilliseconds);
+			foreach (var plugin in plugins)
+			{
+				builder.AppendLine();
+
+				var updatedPlugin = newerPlugins.FirstOrDefault(x => x.Id == plugin.Id);
+				if (updatedPlugin != null)
+					builder.AppendFormat("\t{0} => {1}", plugin, updatedPlugin);
+				else
+					builder.AppendFormat("\t{0}: No update found", plugin);
+			}
+
+			Log.Info(builder);
 		}
 
 		public IReadOnlyList<PluginIdentifier> FindAllPlugins()

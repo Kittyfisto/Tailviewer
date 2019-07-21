@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using log4net;
 
@@ -24,6 +25,7 @@ namespace Tailviewer.Archiver.Plugins
 		public const string PluginAssemblyEntryName = "Plugin.dll";
 		public const string IndexEntryName = "Index.xml";
 		public const string IconEntryName = "Icon";
+		public const string ChangesName = "Changes.xml";
 
 		/// <summary>
 		///     The file-extension of the plugin, excluding the dot.
@@ -146,6 +148,26 @@ namespace Tailviewer.Archiver.Plugins
 		public Assembly LoadPlugin()
 		{
 			return LoadAssembly(PluginAssemblyEntryName);
+		}
+
+		public IReadOnlyList<SerializableChange> LoadChanges()
+		{
+			var entry = _archive.GetEntry(PluginArchive.ChangesName);
+			if (entry == null)
+				return new SerializableChange[0];
+
+			using (var stream = entry.Open())
+			{
+				try
+				{
+					return SerializableChanges.Deserialize(stream).Changes;
+				}
+				catch (Exception e)
+				{
+					Log.ErrorFormat("Unable to load changes: {0}", e);
+					return new SerializableChange[0];
+				}
+			}
 		}
 
 		/// <inheritdoc />
