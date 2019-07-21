@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Core
 {
@@ -123,31 +122,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public void WriteAttribute(string name, WidgetId value)
-		{
-			WriteAttribute(name, value.ToString());
-		}
-
-		/// <inheritdoc />
-		public void WriteAttribute(string name, AnalyserPluginId value)
-		{
-			WriteAttribute(name, value.ToString());
-		}
-
-		/// <inheritdoc />
 		public void WriteAttribute(string name, DataSourceId value)
-		{
-			WriteAttribute(name, value.ToString());
-		}
-
-		/// <inheritdoc />
-		public void WriteAttribute(string name, AnalysisId value)
-		{
-			WriteAttribute(name, value.ToString());
-		}
-
-		/// <inheritdoc />
-		public void WriteAttribute(string name, AnalyserId value)
 		{
 			WriteAttribute(name, value.ToString());
 		}

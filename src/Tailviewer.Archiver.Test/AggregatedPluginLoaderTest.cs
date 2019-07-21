@@ -2,8 +2,8 @@
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Analysis;
-using Tailviewer.Ui.Analysis;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Archiver.Test
 {
@@ -14,8 +14,8 @@ namespace Tailviewer.Archiver.Test
 		public void TestLoadPluginEmpty()
 		{
 			var loader = new AggregatedPluginLoader();
-			loader.LoadAllOfType<IWidgetPlugin>().Should().BeEmpty();
-			loader.LoadAllOfType<ILogAnalyserPlugin>().Should().BeEmpty();
+			loader.LoadAllOfType<ILogFileOutlinePlugin>().Should().BeEmpty();
+			loader.LoadAllOfType<IFileFormatPlugin>().Should().BeEmpty();
 		}
 
 		[Test]
@@ -30,13 +30,13 @@ namespace Tailviewer.Archiver.Test
 			loader2.Register(plugin2);
 
 			var aggregatedLoader = new  AggregatedPluginLoader(loader1, loader2);
-			var plugins = aggregatedLoader.LoadAllOfType<IWidgetPlugin>();
+			var plugins = aggregatedLoader.LoadAllOfType<IFileFormatPlugin>();
 			plugins.Should().BeEquivalentTo(plugin1, plugin2);
 		}
 
-		private IWidgetPlugin CreateWidgetPlugin()
+		private IFileFormatPlugin CreateWidgetPlugin()
 		{
-			var plugin = new Mock<IWidgetPlugin>();
+			var plugin = new Mock<IFileFormatPlugin>();
 			return plugin.Object;
 		}
 	}

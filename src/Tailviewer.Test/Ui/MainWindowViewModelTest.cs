@@ -9,7 +9,6 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -43,7 +42,6 @@ namespace Tailviewer.Test.Ui
 			_quickFilters = new QuickFilters(_settings.QuickFilters);
 			_actionCenter = new ActionCenter();
 			_updater = new Mock<IAutoUpdater>();
-			_analysisStorage = new Mock<IAnalysisStorage>();
 
 			_services = new ServiceContainer();
 			_services.RegisterInstance<ITaskScheduler>(_scheduler);
@@ -57,8 +55,7 @@ namespace Tailviewer.Test.Ui
 			                                      _dataSources,
 			                                      _quickFilters,
 			                                      _actionCenter,
-			                                      _updater.Object,
-			                                      _analysisStorage.Object);
+			                                      _updater.Object);
 		}
 
 		[TearDown]
@@ -76,7 +73,6 @@ namespace Tailviewer.Test.Ui
 		private ManualTaskScheduler _scheduler;
 		private ActionCenter _actionCenter;
 		private ILogFileFactory _logFileFactory;
-		private Mock<IAnalysisStorage> _analysisStorage;
 		private Bookmarks _bookmarks;
 		private InMemoryFilesystem _filesystem;
 		private ServiceContainer _services;
@@ -93,8 +89,7 @@ namespace Tailviewer.Test.Ui
 			                                      _dataSources,
 			                                      _quickFilters,
 			                                      _actionCenter,
-			                                      _updater.Object,
-			                                      _analysisStorage.Object);
+			                                      _updater.Object);
 
 			_mainWindow.WindowTitle.Should().Be(string.Format(@"{0} - foo.log", Constants.MainWindowTitle));
 			_mainWindow.WindowTitleSuffix.Should().Be(@"F:\logs\foo.log");
@@ -111,8 +106,7 @@ namespace Tailviewer.Test.Ui
 			                                      _dataSources,
 			                                      _quickFilters,
 			                                      _actionCenter,
-			                                      _updater.Object,
-			                                      _analysisStorage.Object);
+			                                      _updater.Object);
 
 			_mainWindow.IsLeftSidePanelVisible.Should().Be(isLeftSidePanelVisible);
 		}

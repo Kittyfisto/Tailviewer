@@ -3,7 +3,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Archiver.Test.Plugins
@@ -49,13 +48,13 @@ namespace Tailviewer.Archiver.Test.Plugins
 					new PluginInterfaceImplementation
 					{
 						InterfaceVersion = 1, // It's an older code, sir, and doesn't check out
-						InterfaceTypename = typeof(IDataSourceAnalyserPlugin).FullName
+						InterfaceTypename = typeof(IFileFormatPlugin).FullName
 					}
 				}
 			};
 			PluginGroup.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
 			{
-				new PluginError($"The plugin implements an older version of '{typeof(IDataSourceAnalyserPlugin).FullName}'. It must target the current version in order to be usable!")
+				new PluginError($"The plugin implements an older version of '{typeof(IFileFormatPlugin).FullName}'. It must target the current version in order to be usable!")
 			});
 		}
 
@@ -71,13 +70,13 @@ namespace Tailviewer.Archiver.Test.Plugins
 					new PluginInterfaceImplementation
 					{
 						InterfaceVersion = 11, // It's a newer code, sir, and doesn't check out
-						InterfaceTypename = typeof(IDataSourceAnalyserPlugin).FullName
+						InterfaceTypename = typeof(IFileFormatPlugin).FullName
 					}
 				}
 			};
 			PluginGroup.FindCompatibilityErrors(index).Should().BeEquivalentTo(new object[]
 			{
-				new PluginError($"The plugin implements a newer version of '{typeof(IDataSourceAnalyserPlugin).FullName}'. It must target the current version in order to be usable!")
+				new PluginError($"The plugin implements a newer version of '{typeof(IFileFormatPlugin).FullName}'. It must target the current version in order to be usable!")
 			});
 		}
 

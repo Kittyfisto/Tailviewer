@@ -23,8 +23,6 @@ namespace Tailviewer.Test.Settings
 
 			dataSource.ActivatedQuickFilters.Should().NotBeNull();
 			dataSource.ActivatedQuickFilters.Should().BeEmpty();
-			dataSource.Analyses.Should().NotBeNull();
-			dataSource.Analyses.Should().BeEmpty();
 
 			dataSource.LevelFilter.Should().Be(LevelFlags.All);
 			dataSource.File.Should().BeNull();

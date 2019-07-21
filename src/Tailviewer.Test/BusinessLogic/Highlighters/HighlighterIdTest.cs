@@ -26,7 +26,7 @@ namespace Tailviewer.Test.BusinessLogic.Highlighters
 		public void TestCtor()
 		{
 			var guid = Guid.NewGuid();
-			var id = new WidgetId(guid);
+			var id = new HighlighterId(guid);
 			id.Value.Should().Be(guid);
 		}
 

@@ -18,17 +18,13 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.Analysis;
-using Tailviewer.Core.Analysis.Layouts;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
-using Tailviewer.Ui.Controls.MainPanel.Analyse.Widgets.Help;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
 using QuickFilters = Tailviewer.BusinessLogic.Filters.QuickFilters;
@@ -175,9 +171,6 @@ namespace Tailviewer
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
-					using (var logAnalyserEngine = new LogAnalyserEngine(services, pluginSystem))
-					using (var dataSourceAnalyserEngine = new DataSourceAnalyserEngine(services, logAnalyserEngine))
-					using (var analysisStorage = new AnalysisStorage(taskScheduler, filesystem, dataSourceAnalyserEngine, CreateTypeFactory(pluginSystem)))
 					{
 						if (fileToOpen != null)
 						{
@@ -222,8 +215,7 @@ namespace Tailviewer
 						                                              dataSources,
 						                                              quickFilters,
 						                                              actionCenter,
-						                                              updater,
-						                                              analysisStorage);
+						                                              updater);
 						navigationService.MainWindow = windowViewModel;
 
 						var window = new MainWindow(settings)
@@ -273,7 +265,6 @@ namespace Tailviewer
 		private static IPluginLoader LoadWellKnownPlugins()
 		{
 			var registry = new PluginRegistry();
-			registry.Register(new HelpWidgetPlugin());
 			return registry;
 		}
 
@@ -284,15 +275,6 @@ namespace Tailviewer
 			{
 				factory.Add(pair.Key, pair.Value);
 			}
-			factory.Add<AnalysisTemplate>();
-			factory.Add<AnalysisViewTemplate>();
-			factory.Add<ActiveAnalysisConfiguration>();
-			factory.Add<AnalyserTemplate>();
-			factory.Add<PageTemplate>();
-			factory.Add<HorizontalWidgetLayoutTemplate>();
-			factory.Add<ColumnWidgetLayoutTemplate>();
-			factory.Add<RowWidgetLayoutTemplate>();
-			factory.Add<WidgetTemplate>();
 			factory.Add<Core.Settings.QuickFilters>();
 			factory.Add<QuickFilter>();
 			factory.Add<QuickFilterId>();

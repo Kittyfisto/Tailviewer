@@ -98,13 +98,5 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool IsQuickFilterActive(QuickFilterId id);
 
 		#endregion
-
-		#region Ananlyses
-
-		void EnableAnalysis(AnalysisId id);
-		void DisableAnalysis(AnalysisId id);
-		bool IsAnalysisActive(AnalysisId id);
-
-		#endregion
 	}
 }

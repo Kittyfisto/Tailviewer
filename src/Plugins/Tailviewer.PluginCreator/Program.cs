@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
@@ -79,22 +78,6 @@ namespace Tailviewer.PluginCreator
 				else if (type == typeof(ILogFile))
 				{
 					files.AddRange(new LogFileCreator().CreateSourceFiles(folder));
-				}
-				else if (type == typeof(IDataSourceAnalyserPlugin))
-				{
-					files.AddRange(new DataSourceAnalyserPluginCreator().CreateSourceFiles(folder));
-				}
-				else if (type == typeof(IDataSourceAnalyser))
-				{
-					files.AddRange(new DataSourceAnalyserCreator().CreateSourceFiles(folder));
-				}
-				else if (type == typeof(ILogAnalyserPlugin))
-				{
-					files.AddRange(new LogAnalyserPluginCreator().CreateSourceFiles(folder));
-				}
-				else if (type == typeof(ILogAnalyser))
-				{
-					files.AddRange(new LogAnalyserCreator().CreateSourceFiles(folder));
 				}
 				else
 				{

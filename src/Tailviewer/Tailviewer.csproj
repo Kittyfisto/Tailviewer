@@ -100,10 +100,6 @@
     <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserEngine.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserProxy.cs" />
-    <Compile Include="BusinessLogic\Analysis\IAnalysisStorage.cs" />
-    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalyserEngine.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
@@ -140,24 +136,11 @@
     <Compile Include="BusinessLogic\ActionCenter\IActionCenter.cs" />
     <Compile Include="BusinessLogic\ActionCenter\INotification.cs" />
     <Compile Include="BusinessLogic\ActionCenter\Notification.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshot.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalysisStorage.cs" />
-    <Compile Include="BusinessLogic\Analysis\AnalysisSnapshotHandle.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalyserSnapshot.cs" />
-    <Compile Include="BusinessLogic\Analysis\DataSourceAnalysisConfiguration.cs" />
-    <Compile Include="BusinessLogic\Analysis\LogAnalyserEngine.cs" />
-    <Compile Include="BusinessLogic\Analysis\ILogAnalyserEngine.cs" />
-    <Compile Include="BusinessLogic\Analysis\IAnalysis.cs" />
-    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisListener.cs" />
-    <Compile Include="BusinessLogic\Analysis\NoAnalyser.cs" />
-    <Compile Include="BusinessLogic\Analysis\ActiveAnalysis.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\AutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\IAutoUpdater.cs" />
     <Compile Include="BusinessLogic\AutoUpdates\VersionInfo.cs" />
     <Compile Include="BusinessLogic\Bookmarks\Bookmark.cs" />
     <Compile Include="BusinessLogic\Bookmarks\BookmarkCollection.cs" />
-    <Compile Include="BusinessLogic\Analysis\IDataSourceAnalysisHandle.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSources.cs" />
     <Compile Include="BusinessLogic\DataSources\ISingleDataSource.cs" />
     <Compile Include="BusinessLogic\Exporter\ILogFileExporter.cs" />
@@ -165,7 +148,6 @@
     <Compile Include="BusinessLogic\Exporter\LogFileToFileExporter.cs" />
     <Compile Include="BusinessLogic\Exporter\LogFileToStreamExporter.cs" />
     <Compile Include="BusinessLogic\Filters\IQuickFilters.cs" />
-    <Compile Include="BusinessLogic\Analysis\LogAnalyserProxy.cs" />
     <Compile Include="BusinessLogic\DataSources\AbstractDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\Count.cs" />
     <Compile Include="BusinessLogic\DataSources\IDataSource.cs" />
@@ -190,12 +172,10 @@
     <Compile Include="Changelog.cs" />
     <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="HashSetExtensions.cs" />
-    <Compile Include="PageLayoutConverter.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Settings\AutoUpdateSettings.cs" />
     <Compile Include="Settings\Bookmarks\BookmarkSettings.cs" />
     <Compile Include="Settings\Bookmarks\Bookmarks.cs" />
-    <Compile Include="Settings\Dashboard\DashboardSettings.cs" />
     <Compile Include="Settings\Dashboard\LayoutSettings.cs" />
     <Compile Include="Settings\Dashboard\Widgets\WidgetSettings.cs" />
     <Compile Include="Settings\DataSource.cs" />
@@ -222,16 +202,6 @@
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\AbstractWidgetLayoutViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml.cs">
-      <DependentUpon>HelpWidgetControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetViewModelProxy.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLineViewModel.cs" />
@@ -265,23 +235,6 @@
     <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\About\AboutMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\AbstractMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelEntry.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisPageViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisPageViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\IAnalysisViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\SimpleWidgetLayoutControl.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisItemViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\IItemViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateItemViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotItemViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetFactoryViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsControl.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsSidePanel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetPlugin.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
@@ -290,7 +243,6 @@
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalysisTemplateViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelViewModel.cs" />
@@ -307,13 +259,8 @@
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesSidePanel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapWidgetLayoutViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Widgets\Widget.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\Layouts\IWidgetLayoutViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceArrangeAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDragAdorner.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourceDropAdorner.cs" />
@@ -450,62 +397,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\AnalyseMainPanelDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageContentDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\AnalysisPageHeaderDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Column\ColumnWidgetLayoutDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\Row\RowWidgetLayoutDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisSnapshotDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysisTemplateDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSelectionSidePanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\AnalysisDataSourceDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\WidgetsDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\Help\HelpWidgetControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHost.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetHostTitleBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Ui\Controls\MainPanel\LogViewMainPanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -519,10 +410,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelDataTemplate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\ActiveAnalysisDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -555,10 +442,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\ImageLabel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\SidePanels\Analyses\AnalysesDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -608,14 +491,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Ui\Controls\SidePanel\SidePanelControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Layouts\HorizontalWrap\HorizontalWrapLayoutDataTemplate.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Ui\Controls\MainPanel\Analyse\Widgets\WidgetStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

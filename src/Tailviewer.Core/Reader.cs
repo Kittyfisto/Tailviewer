@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using log4net;
-using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer.Core
 {
@@ -117,31 +116,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <inheritdoc />
-		public bool TryReadAttribute(string name, out WidgetId value)
-		{
-			return _documentReader.TryReadAttribute(name, out value);
-		}
-
-		/// <inheritdoc />
-		public bool TryReadAttribute(string name, out AnalyserPluginId value)
-		{
-			return _documentReader.TryReadAttribute(name, out value);
-		}
-
-		/// <inheritdoc />
 		public bool TryReadAttribute(string name, out DataSourceId value)
-		{
-			return _documentReader.TryReadAttribute(name, out value);
-		}
-
-		/// <inheritdoc />
-		public bool TryReadAttribute(string name, out AnalysisId value)
-		{
-			return _documentReader.TryReadAttribute(name, out value);
-		}
-
-		/// <inheritdoc />
-		public bool TryReadAttribute(string name, out AnalyserId value)
 		{
 			return _documentReader.TryReadAttribute(name, out value);
 		}
@@ -337,32 +312,6 @@ namespace Tailviewer.Core
 				return true;
 			}
 
-			public bool TryReadAttribute(string name, out WidgetId value)
-			{
-				Guid tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(WidgetId);
-					return false;
-				}
-
-				value = new WidgetId(tmp);
-				return true;
-			}
-
-			public bool TryReadAttribute(string name, out AnalyserPluginId value)
-			{
-				string tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(AnalyserPluginId);
-					return false;
-				}
-
-				value = new AnalyserPluginId(tmp);
-				return true;
-			}
-
 			public bool TryReadAttribute(string name, out DataSourceId value)
 			{
 				Guid tmp;
@@ -373,32 +322,6 @@ namespace Tailviewer.Core
 				}
 
 				value = new DataSourceId(tmp);
-				return true;
-			}
-
-			public bool TryReadAttribute(string name, out AnalysisId value)
-			{
-				Guid tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(AnalysisId);
-					return false;
-				}
-
-				value = new AnalysisId(tmp);
-				return true;
-			}
-
-			public bool TryReadAttribute(string name, out AnalyserId value)
-			{
-				Guid tmp;
-				if (!TryReadAttribute(name, out tmp))
-				{
-					value = default(AnalyserId);
-					return false;
-				}
-
-				value = new AnalyserId(tmp);
 				return true;
 			}
 

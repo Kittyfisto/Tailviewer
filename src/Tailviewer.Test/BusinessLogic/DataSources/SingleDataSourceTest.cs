@@ -231,23 +231,6 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			}
 		}
 
-		[Test]
-		public void TestAnalyse()
-		{
-			var settings = CreateDataSource();
-			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile.Object, TimeSpan.Zero))
-			{
-				var analysisId = AnalysisId.CreateNew();
-				dataSource.IsAnalysisActive(analysisId).Should().BeFalse("because the file isn't part of any analysis");
-
-				dataSource.EnableAnalysis(analysisId);
-				dataSource.IsAnalysisActive(analysisId).Should().BeTrue("because we've just activated that");
-
-				dataSource.DisableAnalysis(analysisId);
-				dataSource.IsAnalysisActive(analysisId).Should().BeFalse("because we've just disabled that");
-			}
-		}
-
 		private DataSource CreateDataSource()
 		{
 			return new DataSource("ffff") {Id = DataSourceId.CreateNew()};

@@ -320,21 +320,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return _mergedDataSource.IsQuickFilterActive(id);
 		}
 
-		public void EnableAnalysis(AnalysisId id)
-		{
-			_mergedDataSource.EnableAnalysis(id);
-		}
-
-		public void DisableAnalysis(AnalysisId id)
-		{
-			_mergedDataSource.DisableAnalysis(id);
-		}
-
-		public bool IsAnalysisActive(AnalysisId id)
-		{
-			return _mergedDataSource.IsAnalysisActive(id);
-		}
-
 		#endregion
 
 		#region Implementation of IMultiDataSource

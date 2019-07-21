@@ -60,27 +60,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\AbstractWidgetViewModel.cs" />
-    <Compile Include="Analysis\ActiveAnalysisConfiguration.cs" />
-    <Compile Include="Analysis\AnalyserResult.cs" />
-    <Compile Include="Analysis\AnalyserTemplate.cs" />
-    <Compile Include="Analysis\AnalysisViewTemplate.cs" />
-    <Compile Include="Analysis\Layouts\ColumnWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\IAnalyserTemplate.cs" />
-    <Compile Include="Analysis\IAnalysisViewTemplate.cs" />
-    <Compile Include="Analysis\Layouts\RowWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\PageLayout.cs" />
-    <Compile Include="Analysis\PageTemplate.cs" />
-    <Compile Include="Analysis\AnalysisSnapshot.cs" />
-    <Compile Include="Analysis\AnalysisTemplate.cs" />
-    <Compile Include="Analysis\FileDescriptor.cs" />
-    <Compile Include="Analysis\Layouts\HorizontalWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\IPageTemplate.cs" />
-    <Compile Include="Analysis\IAnalysisTemplate.cs" />
-    <Compile Include="Analysis\IDataSourceDescriptor.cs" />
-    <Compile Include="Analysis\IWidgetLayoutTemplate.cs" />
-    <Compile Include="Analysis\AbstractLogAnalyser.cs" />
-    <Compile Include="Analysis\WidgetTemplate.cs" />
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="ColoringConsoleAppender.cs" />

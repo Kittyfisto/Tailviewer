@@ -9,7 +9,6 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.AutoUpdates;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Plugins;
@@ -18,7 +17,6 @@ using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.MainPanel.About;
-using Tailviewer.Ui.Controls.MainPanel.Analyse;
 using Tailviewer.Ui.Controls.MainPanel.Plugins;
 using Tailviewer.Ui.Controls.MainPanel.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -43,12 +41,10 @@ namespace Tailviewer.Ui.ViewModels
 
 		#region Main Panel
 
-		private readonly AnalyseMainPanelEntry _analyseEntry;
 		private readonly LogViewMainPanelEntry _rawEntry;
 		private readonly IMainPanelEntry _pluginsEntry;
 		private readonly IMainPanelEntry _settingsEntry;
 		private readonly IMainPanelEntry _aboutEntry;
-		private readonly AnalyseMainPanelViewModel _analysePanel;
 		private readonly LogViewMainPanelViewModel _logViewPanel;
 		private readonly IMainPanelEntry[] _topEntries;
 		private IMainPanelEntry _selectedTopEntry;
@@ -72,8 +68,7 @@ namespace Tailviewer.Ui.ViewModels
 		                           DataSources dataSources,
 		                           QuickFilters quickFilters,
 		                           IActionCenter actionCenter,
-		                           IAutoUpdater updater,
-		                           IAnalysisStorage analysisStorage)
+		                           IAutoUpdater updater)
 		{
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
 			if (quickFilters == null) throw new ArgumentNullException(nameof(quickFilters));
@@ -85,9 +80,6 @@ namespace Tailviewer.Ui.ViewModels
 			_plugins = services.Retrieve<IPluginLoader>().Plugins;
 			_settings = new SettingsMainPanelViewModel(settings);
 			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
-
-			_analysePanel = new AnalyseMainPanelViewModel(services, _applicationSettings, dataSources, analysisStorage);
-			_analysePanel.PropertyChanged += AnalysePanelOnPropertyChanged;
 
 			_logViewPanel = new LogViewMainPanelViewModel(services,
 			                                              actionCenter,
@@ -113,12 +105,10 @@ namespace Tailviewer.Ui.ViewModels
 			_goToNextDataSourceCommand = new DelegateCommand2(GoToNextDataSource);
 			_goToPreviousDataSourceCommand = new DelegateCommand2(GoToPreviousDataSource);
 
-			_analyseEntry = new AnalyseMainPanelEntry();
 			_rawEntry = new LogViewMainPanelEntry();
 			_topEntries = new IMainPanelEntry[]
 			{
-				_rawEntry,
-				_analyseEntry
+				_rawEntry
 			};
 
 			_settingsEntry = new SettingsMainPanelEntry();
@@ -185,22 +175,6 @@ namespace Tailviewer.Ui.ViewModels
 			if (SelectedMainPanel == _logViewPanel)
 			{
 				_logViewPanel.ShowQuickNavigation = true;
-			}
-		}
-
-		private void AnalysePanelOnPropertyChanged(object sender, PropertyChangedEventArgs args)
-		{
-			switch (args.PropertyName)
-			{
-				case nameof(AnalyseMainPanelViewModel.WindowTitle):
-					if (SelectedMainPanel == _analysePanel)
-						WindowTitle = _analysePanel.WindowTitle;
-					break;
-
-				case nameof(AnalyseMainPanelViewModel.WindowTitleSuffix):
-					if (SelectedMainPanel == _analysePanel)
-						WindowTitleSuffix = _analysePanel.WindowTitleSuffix;
-					break;
 			}
 		}
 
@@ -331,13 +305,7 @@ namespace Tailviewer.Ui.ViewModels
 				_selectedTopEntry = value;
 				EmitPropertyChanged();
 
-				if (value == _analyseEntry)
-				{
-					SelectedMainPanel = _analysePanel;
-					WindowTitle = _analysePanel.WindowTitle;
-					WindowTitleSuffix = _analysePanel.WindowTitleSuffix;
-				}
-				else if (value == _rawEntry)
+				if (value == _rawEntry)
 				{
 					SelectedMainPanel = _logViewPanel;
 					WindowTitle = _logViewPanel.WindowTitle;

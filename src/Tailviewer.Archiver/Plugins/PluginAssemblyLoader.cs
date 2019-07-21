@@ -8,12 +8,9 @@ using System.Threading;
 using log4net;
 using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
-using Tailviewer.BusinessLogic.Analysis;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
-using Tailviewer.Core.LogFiles;
-using Tailviewer.Ui.Analysis;
 using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Archiver.Plugins
@@ -36,9 +33,6 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				typeof(IFileFormatPlugin),
 				typeof(IFileFormatPlugin2),
-				typeof(ILogAnalyserPlugin),
-				typeof(IDataSourceAnalyserPlugin),
-				typeof(IWidgetPlugin),
 				typeof(ILogFileOutlinePlugin)
 			};
 		}

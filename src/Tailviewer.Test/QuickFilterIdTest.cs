@@ -24,7 +24,7 @@ namespace Tailviewer.Test
 		public void TestCtor()
 		{
 			var guid = Guid.NewGuid();
-			var id = new WidgetId(guid);
+			var id = new QuickFilterId(guid);
 			id.Value.Should().Be(guid);
 		}
 

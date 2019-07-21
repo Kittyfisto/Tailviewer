@@ -16,7 +16,6 @@ namespace Tailviewer.Settings
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly List<QuickFilterId> _activatedQuickFilters;
-		private readonly HashSet<AnalysisId> _analyses;
 
 		public bool ColorByLevel;
 		public bool HideEmptyLines;
@@ -74,8 +73,6 @@ namespace Tailviewer.Settings
 
 		public List<QuickFilterId> ActivatedQuickFilters => _activatedQuickFilters;
 
-		public HashSet<AnalysisId> Analyses => _analyses;
-
 		/// <summary>
 		///     A user defined name for this data source.
 		/// </summary>
@@ -86,7 +83,6 @@ namespace Tailviewer.Settings
 			Order = -1;
 
 			_activatedQuickFilters = new List<QuickFilterId>();
-			_analyses = new HashSet<AnalysisId>();
 
 			LevelFilter = LevelFlags.All;
 			ColorByLevel = true;

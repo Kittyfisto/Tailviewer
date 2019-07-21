@@ -147,22 +147,6 @@
       <Link>InstallationFiles\Tailviewer.exe.config</Link>
       <LogicalName>InstallationFiles\Tailviewer.exe.config</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Analysis.Count.0.7.tvp">
-      <Link>InstallationFiles\Plugins\Tailviewer.Analysis.Count.0.7.tvp</Link>
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Analysis.Count.0.7.tvp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Analysis.DataSources.0.7.tvp">
-      <Link>InstallationFiles\Plugins\Tailviewer.Analysis.DataSources.0.7.tvp</Link>
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Analysis.DataSources.0.7.tvp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Analysis.Events.0.7.tvp">
-      <Link>InstallationFiles\Plugins\Tailviewer.Analysis.Events.0.7.tvp</Link>
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Analysis.Events.0.7.tvp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Analysis.QuickInfo.0.7.tvp">
-      <Link>InstallationFiles\Plugins\Tailviewer.Analysis.QuickInfo.0.7.tvp</Link>
-      <LogicalName>InstallationFiles\Plugins\Tailviewer.Analysis.QuickInfo.0.7.tvp</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\..\bin\log4net.dll">
       <Link>InstallationFiles\log4net.dll</Link>
       <LogicalName>InstallationFiles\log4net.dll</LogicalName>
@@ -241,22 +225,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.Count\Tailviewer.Analysis.Count.csproj">
-      <Project>{7e386963-e599-43b4-9856-486c87536416}</Project>
-      <Name>Tailviewer.Analysis.Count</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.DataSources\Tailviewer.Analysis.DataSources.csproj">
-      <Project>{91e9a698-b458-40f6-acfe-715bfe9832bd}</Project>
-      <Name>Tailviewer.Analysis.DataSources</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.Events\Tailviewer.Analysis.Events.csproj">
-      <Project>{a26c1ecf-d3a8-4826-910b-4ba59e2a248e}</Project>
-      <Name>Tailviewer.Analysis.Events</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Tailviewer.Analysis.QuickInfo\Tailviewer.Analysis.QuickInfo.csproj">
-      <Project>{04577417-8ff7-4583-aa9d-c2e92ca7ee6f}</Project>
-      <Name>Tailviewer.Analysis.QuickInfo</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tailviewer.Api\Tailviewer.Api.csproj">
       <Project>{0c18b216-9ff4-4dcf-88c0-4b1448892f43}</Project>
       <Name>Tailviewer.Api</Name>

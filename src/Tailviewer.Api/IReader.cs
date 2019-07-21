@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Tailviewer.BusinessLogic.Analysis;
 
 namespace Tailviewer
 {
@@ -108,47 +107,7 @@ namespace Tailviewer
 		/// <param name="name"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryReadAttribute(string name, out WidgetId value);
-
-		/// <summary>
-		///     Tries to read the attribute with the given name.
-		///     Returns false if there is no such attribute or some other prevented
-		///     reading back the value.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		bool TryReadAttribute(string name, out AnalyserPluginId value);
-
-		/// <summary>
-		///     Tries to read the attribute with the given name.
-		///     Returns false if there is no such attribute or some other prevented
-		///     reading back the value.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
 		bool TryReadAttribute(string name, out DataSourceId value);
-
-		/// <summary>
-		///     Tries to read the attribute with the given name.
-		///     Returns false if there is no such attribute or some other prevented
-		///     reading back the value.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		bool TryReadAttribute(string name, out AnalysisId value);
-
-		/// <summary>
-		///     Tries to read the attribute with the given name.
-		///     Returns false if there is no such attribute or some other prevented
-		///     reading back the value.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		bool TryReadAttribute(string name, out AnalyserId value);
 
 		/// <summary>
 		///     Tries to read the attribute with the given name.
