@@ -61,8 +61,8 @@
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Metrolib, Version=0.3.0.129, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Metrolib.0.3.0.129\lib\net45\Metrolib.dll</HintPath>
+    <Reference Include="Metrolib, Version=0.3.0.131, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Metrolib.0.3.0.131\lib\net45\Metrolib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MMQ, Version=1.0.15.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
@@ -247,6 +247,14 @@
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlightersSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Highlighters\HighlighterViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\IssuesViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\IssueViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserDummy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssueAnalyserProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\LogFileIssuePluginProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToBrushConverter.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Issues\SeverityToIconConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutline.xaml.cs">
       <DependentUpon>DefaultLogFileOutline.xaml</DependentUpon>
     </Compile>
@@ -255,7 +263,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
-    <Compile Include="Ui\Controls\SidePanel\Outline\OutlineViewModel.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
@@ -453,6 +461,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Controls\SidePanel\Outline\DefaultLogFileOutline.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -498,7 +510,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\SidePanel\Outline\OutlineDataTemplate.xaml">
+    <Page Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

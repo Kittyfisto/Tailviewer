@@ -10,6 +10,7 @@ using Metrolib;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.BusinessLogic.Plugins.Issues;
 using Tailviewer.Core;
 using Tailviewer.Ui.Outline;
 
@@ -33,7 +34,8 @@ namespace Tailviewer.Archiver.Plugins
 			{
 				typeof(IFileFormatPlugin),
 				typeof(IFileFormatPlugin2),
-				typeof(ILogFileOutlinePlugin)
+				typeof(ILogFileOutlinePlugin),
+				typeof(ILogFileIssuesPlugin)
 			};
 		}
 

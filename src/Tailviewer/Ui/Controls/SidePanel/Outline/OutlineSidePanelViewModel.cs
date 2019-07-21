@@ -14,7 +14,7 @@ using Tailviewer.Ui.Outline;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
-	public sealed class OutlineViewModel
+	public sealed class OutlineSidePanelViewModel
 		: AbstractSidePanelViewModel
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -27,7 +27,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private FrameworkElement _currentContent;
 		private IInternalLogFileOutlineViewModel _currentViewModel;
 
-		public OutlineViewModel(IServiceContainer services)
+		public OutlineSidePanelViewModel(IServiceContainer services)
 		{
 			_services = services;
 			_plugins = services.Retrieve<IPluginLoader>().LoadAllOfType<ILogFileOutlinePlugin>();
@@ -44,7 +44,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public override string Id
 		{
-			get { return "synopsis"; }
+			get { return "outline"; }
 		}
 
 		public IDataSource CurrentDataSource

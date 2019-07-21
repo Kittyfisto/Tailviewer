@@ -40,11 +40,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Converters.xaml" />
-                
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/AnalyseMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/Analyses/AnalysesDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/AnalysisDataSelectionSidePanel.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Analyse/SidePanels/WidgetsDataTemplate.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/LogViewMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
@@ -54,7 +49,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Highlighters/HighlightersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Outline/OutlineDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Outline/OutlineSidePanelDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Issues/IssuesSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

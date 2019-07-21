@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />
@@ -71,6 +72,10 @@
     <Compile Include="BusinessLogic\LogFiles\LogEntrySectionExtensions.cs" />
     <Compile Include="BusinessLogic\LogLineSourceId.cs" />
     <Compile Include="BusinessLogic\Plugins\IFileFormatPlugin2.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueAnalyser.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueListener.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssuesPlugin.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\LogFileIssue.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlinePlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlineViewModel.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersion.cs" />

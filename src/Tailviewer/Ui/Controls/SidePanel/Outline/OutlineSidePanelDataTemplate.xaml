@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:Tailviewer.Ui.Controls.SidePanel.Outline"
                     xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib">
 
-    <DataTemplate DataType="{x:Type local:OutlineViewModel}">
+    <DataTemplate DataType="{x:Type local:OutlineSidePanelViewModel}">
         <Border Background="White">
             <Grid>
                 <Grid.RowDefinitions>

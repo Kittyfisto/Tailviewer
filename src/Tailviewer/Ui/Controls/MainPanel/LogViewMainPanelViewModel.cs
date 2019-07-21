@@ -20,6 +20,7 @@ using Tailviewer.Ui.Controls.SidePanel;
 using Tailviewer.Ui.Controls.SidePanel.Bookmarks;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
 using Tailviewer.Ui.Controls.SidePanel.Highlighters;
+using Tailviewer.Ui.Controls.SidePanel.Issues;
 using Tailviewer.Ui.Controls.SidePanel.Outline;
 using Tailviewer.Ui.Controls.SidePanel.QuickFilters;
 using Tailviewer.Ui.ViewModels;
@@ -33,7 +34,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 		private readonly ISidePanelViewModel[] _sidePanels;
 		private readonly BookmarksViewModel _bookmarks;
-		private readonly OutlineViewModel _outline;
+		private readonly OutlineSidePanelViewModel _outline;
+		private readonly IssuesSidePanelViewModel _issues;
 
 		private readonly DataSourcesViewModel _dataSources;
 		private readonly QuickFiltersSidePanelViewModel _quickFilters;
@@ -77,7 +79,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickNavigation.DataSourceChosen += QuickNavigationOnDataSourceChosen;
 
 			_bookmarks = new BookmarksViewModel(dataSources, OnNavigateToBookmark);
-			_outline = new OutlineViewModel(services);
+			_outline = new OutlineSidePanelViewModel(services);
+			_issues = new IssuesSidePanelViewModel(services);
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
@@ -85,7 +88,8 @@ namespace Tailviewer.Ui.Controls.MainPanel
 				_quickFilters,
 				//_highlighters,
 				_bookmarks,
-				_outline
+				_outline,
+				_issues
 			};
 
 			SelectedSidePanel = _sidePanels.FirstOrDefault(x => x.Id == _applicationSettings.MainWindow?.SelectedSidePanel);
@@ -167,6 +171,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			_quickFilters.CurrentDataSource = value;
 			_bookmarks.CurrentDataSource = value?.DataSource;
 			_outline.CurrentDataSource = value?.DataSource;
+			_issues.CurrentDataSource = value?.DataSource;
 			OpenFile(value);
 		}
 

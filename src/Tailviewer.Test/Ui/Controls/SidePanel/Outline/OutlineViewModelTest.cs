@@ -43,7 +43,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			      .Returns(pluginContent);
 			_pluginLoader.Register(plugin.Object);
 
-			var viewModel = new OutlineViewModel(_services);
+			var viewModel = new OutlineSidePanelViewModel(_services);
 
 			var dataSource = new Mock<IMultiDataSource>();
 			var logFile = new Mock<ILogFile>();
