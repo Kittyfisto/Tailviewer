@@ -31,6 +31,11 @@
                                                ToolTip="Open plugin folder"
                                                Command="{Binding OpenPluginFolderCommand}" />
 
+                    <controls:OneWayToggle Content="Installed"
+                                           IsChecked="{Binding ShowInstalledPlugins, Mode=TwoWay}" />
+                    <controls:OneWayToggle Content="All"
+                                           IsChecked="{Binding ShowAllPlugins, Mode=TwoWay}"/>
+
                     <controls:DownloadButton Margin="0,0,0,4"
                                              Padding="0"
                                              Width="26"
@@ -42,37 +47,45 @@
                     <TextBlock Text="{Binding PluginUpdateMessage}" />
                 </WrapPanel>
 
-                <!-- List of installed plugins, if any -->
                 <Grid Margin="8,0,8,8"
                       Width="473"
                       HorizontalAlignment="Left"
                       Grid.Row="1">
 
-                    <ItemsControl ItemsSource="{Binding Plugins}"
-                                  ItemTemplate="{StaticResource PluginDataTemplate}" />
+                    <!-- List of installed plugins, if any -->
+                    <Grid Visibility="{Binding ShowInstalledPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                        <ItemsControl ItemsSource="{Binding Plugins}"
+                                      ItemTemplate="{StaticResource PluginDataTemplate}" />
+
+                        <!-- Message to tell the user that there are no plugins -->
+                        <Grid Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="No plugins installed!"
+                                       FontSize="20"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding PluginPath, StringFormat='You have to place plugins in the &quot;{0}&quot; folder'}"
+                                       TextWrapping="Wrap"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </Grid>
+                    </Grid>
+
+                    <Grid Visibility="{Binding ShowAllPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                        <ItemsControl ItemsSource="{Binding AllPlugins}"
+                                      ItemTemplate="{StaticResource PluginDataTemplate}" />
+                    </Grid>
 
                 </Grid>
             </Grid>
 
-            <!-- Message to tell the user that there are no plugins -->
-            <Grid Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock Text="No plugins installed!"
-                           FontSize="20"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
-                <TextBlock Grid.Row="1"
-                           Text="{Binding PluginPath, StringFormat='You have to place plugins in the &quot;{0}&quot; folder'}"
-                           TextWrapping="Wrap"
-                           FontSize="14"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center" />
-            </Grid>
         </Grid>
     </DataTemplate>
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tailviewer.Archiver.Repository;
 
 namespace Tailviewer.BusinessLogic.Plugins
 {
@@ -12,5 +13,20 @@ namespace Tailviewer.BusinessLogic.Plugins
 		/// <param name="repositories"></param>
 		/// <returns>A task which eventually returns the number of updated plugins.</returns>
 		Task<int> UpdatePluginsAsync(IReadOnlyList<string> repositories);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="repositories"></param>
+		/// <returns></returns>
+		Task<IReadOnlyList<PublishedPluginDescription>> GetAllPluginsAsync(IReadOnlyList<string> repositories);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="repositories"></param>
+		/// <param name="plugin"></param>
+		/// <returns></returns>
+		Task DownloadPluginAsync(IReadOnlyList<string> repositories, PluginIdentifier plugin);
 	}
 }

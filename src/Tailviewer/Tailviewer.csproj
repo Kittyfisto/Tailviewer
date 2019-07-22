@@ -195,6 +195,8 @@
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
@@ -242,7 +244,7 @@
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginsMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelEntry.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Plugins\InstalledPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\QuickNavigation\QuickNavigationPopup.cs" />
     <Compile Include="Ui\Controls\SidePanel\AbstractSidePanelViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModel.cs" />

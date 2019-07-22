@@ -17,7 +17,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel.Plugins
 				Id = new PluginId("SomeOrg.SomePlugin"),
 				Name = emptyName
 			};
-			var viewModel = new PluginViewModel(description);
+			var viewModel = new InstalledPluginViewModel(description);
 			viewModel.Name.Should().Be("SomeOrg.SomePlugin",
 				"because absent of a name, the id should be presented to the user as the plugin's name");
 		}
@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel.Plugins
 			{
 				Error = "Someone screwed up"
 			};
-			var viewModel = new PluginViewModel(description);
+			var viewModel = new InstalledPluginViewModel(description);
 			viewModel.HasError.Should().BeTrue();
 			viewModel.Error.Should().Be("Someone screwed up");
 		}

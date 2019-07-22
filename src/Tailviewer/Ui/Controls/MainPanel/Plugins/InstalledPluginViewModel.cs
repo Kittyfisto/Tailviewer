@@ -5,12 +5,13 @@ using Tailviewer.Archiver.Plugins.Description;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 {
-	public sealed class PluginViewModel
+	public sealed class InstalledPluginViewModel
+		: IPluginViewModel
 	{
 		private readonly IPluginDescription _description;
 		//private readonly DelegateCommand _deleteCommand;
 
-		public PluginViewModel(IPluginDescription description)
+		public InstalledPluginViewModel(IPluginDescription description)
 		{
 			_description = description;
 
@@ -31,6 +32,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		public Uri Website => _description.Website;
 		public ImageSource Icon => _description.Icon;
 		public ICommand DeleteCommand => null;
+		public ICommand DownloadCommand => null;
+
 		public bool HasError => !string.IsNullOrEmpty(_description.Error);
 	}
 }

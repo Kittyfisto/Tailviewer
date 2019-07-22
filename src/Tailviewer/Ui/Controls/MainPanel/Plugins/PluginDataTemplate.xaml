@@ -9,7 +9,7 @@
     <converters:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
-    <DataTemplate x:Key="PluginDataTemplate" DataType="{x:Type local:PluginViewModel}">
+    <DataTemplate x:Key="PluginDataTemplate" DataType="{x:Type local:IPluginViewModel}">
         <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -27,7 +27,7 @@
                     <Image Source="{Binding Icon}"
                            MaxWidth="48"
                            MaxHeight="48"
-                           Stretch="UniformToFill"/>
+                           Stretch="UniformToFill" />
 
                     <TextBlock Text="No icon!"
                                VerticalAlignment="Center"
@@ -88,9 +88,15 @@
                        VerticalAlignment="Center"
                        Text="{Binding Version, StringFormat='v{0}'}" />
 
-            <!--<controls:TrashButton Grid.Column="3"
+            <controls:TrashButton Grid.Column="3"
                                   VerticalAlignment="Center"
-                                  Command="{Binding DeleteCommand}" />-->
+                                  Visibility="{Binding DeleteCommand, Converter={StaticResource NullToCollapsedConverter}}"
+                                  Command="{Binding DeleteCommand}" />
+            
+            <controls:DownloadButton Grid.Column="3"
+                                     VerticalAlignment="Center"
+                                     Visibility="{Binding DownloadCommand, Converter={StaticResource NullToCollapsedConverter}}"
+                                     Command="{Binding DownloadCommand}" />
 
         </Grid>
     </DataTemplate>
