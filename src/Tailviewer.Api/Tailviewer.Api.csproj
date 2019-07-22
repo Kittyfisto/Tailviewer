@@ -60,6 +60,7 @@
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcherPlugin.cs" />
+    <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssue.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParser.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParserPlugin.cs" />
@@ -80,7 +81,6 @@
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueAnalyser.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueListener.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssuesPlugin.cs" />
-    <Compile Include="BusinessLogic\Plugins\Issues\LogFileIssue.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlinePlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlineViewModel.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersion.cs" />

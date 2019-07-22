@@ -17,14 +17,14 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 	/// </summary>
 	internal sealed class IssuesViewModel
 		: ILogFileIssueListener
-			, INotifyPropertyChanged
+		, INotifyPropertyChanged
 	{
 		private readonly ILogFileIssueAnalyser _analyser;
 		private readonly INavigationService _navigationService;
-		private readonly Dictionary<LogFileIssue, IssueViewModel> _viewModelsByIssue;
+		private readonly Dictionary<ILogFileIssue, IssueViewModel> _viewModelsByIssue;
 		private readonly List<IssueViewModel> _allIssues;
 
-		private IReadOnlyList<LogFileIssue> _currentIssues;
+		private IReadOnlyList<ILogFileIssue> _currentIssues;
 		private ObservableCollection<IssueViewModel> _filteredIssues;
 
 		private int _criticalCount;
@@ -39,7 +39,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 		{
 			_allIssues = new List<IssueViewModel>();
 			_filteredIssues = new ObservableCollection<IssueViewModel>();
-			_viewModelsByIssue = new Dictionary<LogFileIssue, IssueViewModel>();
+			_viewModelsByIssue = new Dictionary<ILogFileIssue, IssueViewModel>();
 
 			_showCritical = true;
 			_showMajor = true;
@@ -153,7 +153,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 
 		#region Implementation of ILogFileIssueListener
 
-		public void OnIssuesChanged(IEnumerable<LogFileIssue> issues)
+		public void OnIssuesChanged(IEnumerable<ILogFileIssue> issues)
 		{
 			_currentIssues = issues.ToList();
 		}
@@ -200,7 +200,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			MinorCount = minor;
 		}
 
-		private void AddNewIssues(IReadOnlyList<LogFileIssue> currentIssues)
+		private void AddNewIssues(IReadOnlyList<ILogFileIssue> currentIssues)
 		{
 			foreach (var issue in currentIssues)
 				if (!_viewModelsByIssue.ContainsKey(issue))
@@ -220,7 +220,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 			_navigationService.NavigateTo(line);
 		}
 
-		private void RemoveOldIssues(IReadOnlyList<LogFileIssue> currentIssues)
+		private void RemoveOldIssues(IReadOnlyList<ILogFileIssue> currentIssues)
 		{
 			for (var i = _allIssues.Count - 1; i >= 0; --i)
 			{

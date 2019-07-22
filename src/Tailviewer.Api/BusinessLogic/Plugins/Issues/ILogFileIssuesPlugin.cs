@@ -21,7 +21,11 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 	///     Version 2
 	///     Replaced SupportedFileNames regex with list of supported file formats.
 	/// </remarks>
-	[PluginInterfaceVersion(version: 2)]
+	/// <remarks>
+	///     Version 3
+	///     Added <see cref="ILogFileIssue"/> interface so plugins can use their own implementations (and store more information internally, for example).
+	/// </remarks>
+	[PluginInterfaceVersion(version: 3)]
 	public interface ILogFileIssuesPlugin
 		: IPlugin
 	{

@@ -17,6 +17,6 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		///    a reference to their internal list here in order to minimize total the number of copies.
 		/// </remarks>
 		/// <param name="issues">The complete list of issues</param>
-		void OnIssuesChanged(IEnumerable<LogFileIssue> issues);
+		void OnIssuesChanged(IEnumerable<ILogFileIssue> issues);
 	}
 }

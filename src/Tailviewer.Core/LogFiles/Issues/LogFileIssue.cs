@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Tailviewer.BusinessLogic.Plugins.Issues
 {
@@ -6,6 +7,7 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 	///     Represents an issue a <see cref="ILogFileIssueAnalyser" /> has found in a log file.
 	/// </summary>
 	public sealed class LogFileIssue
+		: ILogFileIssue
 	{
 		/// <summary>
 		///     Initializes this issue.
@@ -17,7 +19,7 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		/// <param name="description">An optional (very detailed) description of the issue. May span multiple lines.</param>
 		public LogFileIssue(LogLineIndex line, DateTime? timestamp, Severity severity, string summary, string description)
 		{
-			Line = line;
+			OriginalLineIndex = line;
 			Timestamp = timestamp;
 			Severity = severity;
 			Summary = summary;
@@ -27,7 +29,7 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		/// <summary>
 		///     The **original** log line the issue was found at.
 		/// </summary>
-		public LogLineIndex Line { get; }
+		public LogLineIndex OriginalLineIndex { get; }
 
 		/// <summary>
 		///     The timestamp of when the issue occured.
@@ -48,5 +50,16 @@ namespace Tailviewer.BusinessLogic.Plugins.Issues
 		///     An optional (very detailed) description of the issue. May span multiple lines.
 		/// </summary>
 		public string Description { get; }
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			var builder = new StringBuilder();
+			builder.Append(OriginalLineIndex);
+			if (Timestamp != null)
+				builder.AppendFormat(" {0}", Timestamp);
+			builder.AppendFormat(" {0} {1}", Severity, Summary);
+			return builder.ToString();
+		}
 	}
 }
