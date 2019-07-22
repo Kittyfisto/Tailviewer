@@ -8,9 +8,10 @@
     <converters:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <DataTemplate x:Key="BulletinPoint" DataType="{x:Type system:String}">
-        <TextBlock Text="{Binding}"
-                   TextWrapping="Wrap"
-                   FontSize="12" />
+        <controls:MarkdownPresenter Markdown="{Binding}"
+                                    Background="Transparent"
+                                    TextWrapping="Wrap"
+                                    FontSize="12" />
     </DataTemplate>
 
     <DataTemplate x:Key="FeatureListTemplate">

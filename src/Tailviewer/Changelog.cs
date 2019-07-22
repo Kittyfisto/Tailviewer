@@ -56,7 +56,9 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Introduced plugin browser which works on conjunction with self hosted repositories" // https://github.com/Kittyfisto/Tailviewer/issues/90
+				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
+				"Introduced overview side panel for a condensed view onto the log file [#207](https://github.com/Kittyfisto/Tailviewer/issues/207)",
+				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)"
 			};
 			var bugfixes = new string[]
 			{
@@ -64,8 +66,8 @@ namespace Tailviewer
 			};
 			var misc = new[]
 			{
-				"The titlebar properly reacts to losing focus", // https://github.com/Kittyfisto/Tailviewer/issues/202
-				"The left side panel can be collapsed", // https://github.com/Kittyfisto/Tailviewer/issues/201
+				"The titlebar properly reacts to losing focus [#202](https://github.com/Kittyfisto/Tailviewer/issues/202)", // 
+				"The left side panel can be collapsed [#201](https://github.com/Kittyfisto/Tailviewer/issues/201)"
 			};
 			var releaseDate = new DateTime(2019, 09, 1);
 			var version = new Version(0, 9, 0);
@@ -77,18 +79,18 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Added folder data sources", // https://github.com/Kittyfisto/Tailviewer/issues/125
-				"Font size is now configurable", // https://github.com/Kittyfisto/Tailviewer/issues/53
+				"Added folder data sources [#125](https://github.com/Kittyfisto/Tailviewer/issues/125)",
+				"Font size is now configurable [#53](https://github.com/Kittyfisto/Tailviewer/issues/53)",
 			};
 			var bugfixes = new[]
 			{
-				"Proxy password box no longer captures focus indefinitely", // https://github.com/Kittyfisto/Tailviewer/issues/188
+				"Proxy password box no longer captures focus indefinitely [#188](https://github.com/Kittyfisto/Tailviewer/issues/188)",
 			};
 			var misc = new[]
 			{
-				"A notification becomes visible when a plugin is used to display a log file", // https://github.com/Kittyfisto/Tailviewer/issues/172
-				"Bookmarks are stored/restored in between sessions", // https://github.com/Kittyfisto/Tailviewer/issues/66
-				"Titlebar contains more information about selected files", // https://github.com/Kittyfisto/Tailviewer/issues/127
+				"A notification becomes visible when a plugin is used to display a log file [#172](https://github.com/Kittyfisto/Tailviewer/issues/172)",
+				"Bookmarks are stored/restored in between sessions [#66](https://github.com/Kittyfisto/Tailviewer/issues/66)",
+				"Titlebar contains more information about selected files [#127](https://github.com/Kittyfisto/Tailviewer/issues/127)",
 			};
 			var releaseDate = new DateTime(2019, 06, 23);
 			var version = new Version(0, 8, 1);

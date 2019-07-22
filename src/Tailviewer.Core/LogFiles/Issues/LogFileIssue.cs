@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
+using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Plugins.Issues;
 
-namespace Tailviewer.BusinessLogic.Plugins.Issues
+namespace Tailviewer.Core.LogFiles.Issues
 {
 	/// <summary>
 	///     Represents an issue a <see cref="ILogFileIssueAnalyser" /> has found in a log file.
