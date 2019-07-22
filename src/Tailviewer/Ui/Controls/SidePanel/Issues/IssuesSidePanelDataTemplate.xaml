@@ -76,21 +76,21 @@
                                             <TextBlock Text="{Binding Timestamp, StringFormat=T}" />
                                         </Hyperlink>
                                     </TextBlock>
-                                    <TextBlock Text="{Binding Summary}"
-                                               TextTrimming="CharacterEllipsis"
-                                               ToolTip="{Binding Summary}"
-                                               Margin="0,4,4,4"
-                                               VerticalAlignment="Center"
-                                               Grid.Row="0"
-                                               Grid.Column="2" />
-                                    <TextBlock Text="{Binding Description}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,0,4,4"
-                                               MaxWidth="265"
-                                               Visibility="{Binding Description, Converter={StaticResource NullToCollapsedConverter}}"
-                                               Grid.Row="1"
-                                               Grid.Column="1"
-                                               Grid.ColumnSpan="2" />
+                                    <controls:MarkdownPresenter Markdown="{Binding Summary}"
+                                                                TextTrimming="CharacterEllipsis"
+                                                                ToolTip="{Binding Summary}"
+                                                                Margin="0,4,4,4"
+                                                                VerticalAlignment="Center"
+                                                                Grid.Row="0"
+                                                                Grid.Column="2" />
+                                    <controls:MarkdownPresenter Markdown="{Binding Description}"
+                                                                TextWrapping="Wrap"
+                                                                Margin="0,0,4,4"
+                                                                MaxWidth="265"
+                                                                Visibility="{Binding Description, Converter={StaticResource NullToCollapsedConverter}}"
+                                                                Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                Grid.ColumnSpan="2" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
