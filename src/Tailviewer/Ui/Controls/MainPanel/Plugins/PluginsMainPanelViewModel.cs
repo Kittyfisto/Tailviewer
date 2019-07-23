@@ -27,8 +27,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		private readonly ObservableCollection<IPluginViewModel> _allPlugins;
 		private readonly DelegateCommand2 _openPluginFolderCommand;
 		private readonly DelegateCommand2 _updatePluginsCommand;
+		private readonly DelegateCommand2 _refreshPluginsCommand;
 		private bool _showInstalledPlugins;
 		private bool _showAllPlugins;
+		private bool _isRefreshingPlugins;
+		private string _showAllPluginsError;
+		private string _showAllPluginsErrorDescription;
+		private string _pluginUpdateMessage;
 
 		public PluginsMainPanelViewModel(IApplicationSettings applicationSettings,
 										 IDispatcher dispatcher,
@@ -45,6 +50,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 			_allPlugins = new ObservableCollection<IPluginViewModel>();
 			_openPluginFolderCommand = new DelegateCommand2(OpenPluginFolder);
 			_updatePluginsCommand = new DelegateCommand2(UpdatePlugins);
+			_refreshPluginsCommand = new DelegateCommand2(RefreshPlugins);
 		}
 
 		public bool ShowInstalledPlugins
@@ -78,21 +84,31 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 
 				if (value)
 				{
-					QueryAllPlugins();
+					if (!HasPluginRepositoryConfigured)
+					{
+						ShowAllPluginsError = "No plugin repository configured!";
+						ShowAllPluginsErrorDescription = "In order to download/update plugins, you have to configure tailviewer to use a plugin repository. Please note that there is no globally available plugin repository. This feature is currently intended for organizations to deploy their own private repositories.";
+					}
+					else
+					{
+						ShowAllPluginsError = null;
+						ShowAllPluginsErrorDescription = null;
+						RefreshPlugins();
+					}
 				}
 			}
 		}
 
 		public override IEnumerable<ISidePanelViewModel> SidePanels => Enumerable.Empty<ISidePanelViewModel>();
 		public ICommand UpdatePluginsCommand => _updatePluginsCommand;
+		public ICommand RefreshPluginsCommand => _refreshPluginsCommand;
 		public IEnumerable<IPluginViewModel> Plugins => _installedPlugins;
 		public IEnumerable<IPluginViewModel> AllPlugins => _allPlugins;
 		public string PluginPath => Constants.PluginPath;
 		public bool HasPlugins => _installedPlugins.Count > 0;
 
-		public bool CanUpdatePlugins => HasPlugins && _applicationSettings.AutoUpdate.PluginRepositories.Any();
+		public bool HasPluginRepositoryConfigured => HasPlugins && _applicationSettings.AutoUpdate.PluginRepositories.Any();
 		public ICommand OpenPluginFolderCommand => _openPluginFolderCommand;
-		private string _pluginUpdateMessage;
 
 		public string PluginUpdateMessage
 		{
@@ -100,6 +116,47 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 			set
 			{
 				_pluginUpdateMessage = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsRefreshingPlugins
+		{
+			get { return _isRefreshingPlugins; }
+			private set
+			{
+				if (value == _isRefreshingPlugins)
+					return;
+
+				_isRefreshingPlugins = value;
+				EmitPropertyChanged();
+			}
+		}
+
+
+		public string ShowAllPluginsError
+		{
+			get { return _showAllPluginsError; }
+			private set
+			{
+				if (value == _showAllPluginsError)
+					return;
+
+				_showAllPluginsError = value;
+				EmitPropertyChanged();
+			}
+		}
+
+
+		public string ShowAllPluginsErrorDescription
+		{
+			get { return _showAllPluginsErrorDescription; }
+			private set
+			{
+				if (value == _showAllPluginsErrorDescription)
+					return;
+
+				_showAllPluginsErrorDescription = value;
 				EmitPropertyChanged();
 			}
 		}
@@ -159,11 +216,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 			}
 		}
 
-		private void QueryAllPlugins()
+		private void RefreshPlugins()
 		{
 			_allPlugins.Clear();
 			var repositories = _applicationSettings.AutoUpdate.PluginRepositories;
 			var allPlugins = _pluginUpdater.GetAllPluginsAsync(repositories);
+
+			// Note: Ordering is important here!
+			IsRefreshingPlugins = true;
+			ShowAllPluginsError = null;
+			ShowAllPluginsErrorDescription = null;
 			allPlugins.ContinueWith(task => _dispatcher.BeginInvoke(() => OnPluginsQueried(task)));
 		}
 
@@ -177,10 +239,20 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 				{
 					_allPlugins.Add(new AvailablePluginViewModel(plugin, () => DownloadPlugin(plugin.Identifier)));
 				}
+
+				ShowAllPluginsError = null;
+				ShowAllPluginsErrorDescription = null;
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				
+				ShowAllPluginsError = "Could not retrieve plugins from repository :(";
+
+				var description = e is AggregateException a ? a.InnerException.Message : e.Message;
+				ShowAllPluginsErrorDescription = description;
+			}
+			finally
+			{
+				IsRefreshingPlugins = false;
 			}
 		}
 

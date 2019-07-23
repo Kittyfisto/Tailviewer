@@ -23,8 +23,7 @@
 
                 <!-- Toolbar -->
                 <WrapPanel Orientation="Horizontal" Margin="8,8,8,0">
-                    <controls:FolderOpenButton Margin="0,0,0,4"
-                                               Padding="0"
+                    <controls:FolderOpenButton Padding="0"
                                                Width="26"
                                                Height="26"
                                                VerticalContentAlignment="Center"
@@ -32,19 +31,32 @@
                                                Command="{Binding OpenPluginFolderCommand}" />
 
                     <controls:OneWayToggle Content="Installed"
+                                           Margin="8,0,0,0"
+                                           Padding="8,4,8,4"
                                            IsChecked="{Binding ShowInstalledPlugins, Mode=TwoWay}" />
                     <controls:OneWayToggle Content="All"
-                                           IsChecked="{Binding ShowAllPlugins, Mode=TwoWay}"/>
+                                           Padding="8,4,8,4"
+                                           IsChecked="{Binding ShowAllPlugins, Mode=TwoWay}" />
 
-                    <controls:DownloadButton Margin="0,0,0,4"
-                                             Padding="0"
+                    <controls:DownloadButton Padding="0"
+                                             Margin="4,0,0,0"
                                              Width="26"
                                              Height="26"
                                              Command="{Binding UpdatePluginsCommand}"
                                              ToolTip="Update all plugins"
-                                             Visibility="{Binding CanUpdatePlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
+                                             IsEnabled="{Binding HasPluginRepositoryConfigured}" />
 
-                    <TextBlock Text="{Binding PluginUpdateMessage}" />
+                    <controls:RefreshButton Padding="0"
+                                            Margin="0,0,0,0"
+                                            Visibility="{Binding ShowAllPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                                            IsEnabled="{Binding HasPluginRepositoryConfigured}"
+                                            Command="{Binding RefreshPluginsCommand}"
+                                            Width="26"
+                                            Height="26" />
+
+                    <TextBlock Text="{Binding PluginUpdateMessage}"
+                               VerticalAlignment="Center"
+                               Margin="4,0,0,0" />
                 </WrapPanel>
 
                 <Grid Margin="8,0,8,8"
@@ -78,9 +90,31 @@
                         </Grid>
                     </Grid>
 
+                    <!-- List of all (installed + available) plugins -->
                     <Grid Visibility="{Binding ShowAllPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
                         <ItemsControl ItemsSource="{Binding AllPlugins}"
                                       ItemTemplate="{StaticResource PluginDataTemplate}" />
+                        <controls:CircularProgressBar Visibility="{Binding IsRefreshingPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                                                      Content="Refreshing..."
+                                                      IsIndeterminate="True" />
+                        <Grid Visibility="{Binding ShowAllPluginsError, Converter={StaticResource NullToCollapsedConverter}}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding ShowAllPluginsError}"
+                                       FontSize="20"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding ShowAllPluginsErrorDescription}"
+                                       TextWrapping="Wrap"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </Grid>
                     </Grid>
 
                 </Grid>
