@@ -28,8 +28,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 		private readonly DelegateCommand2 _openPluginFolderCommand;
 		private readonly DelegateCommand2 _updatePluginsCommand;
 		private readonly DelegateCommand2 _refreshPluginsCommand;
-		private bool _showInstalledPlugins;
-		private bool _showAllPlugins;
 		private bool _isRefreshingPlugins;
 		private string _showAllPluginsError;
 		private string _showAllPluginsErrorDescription;
@@ -41,8 +39,6 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 										 IEnumerable<IPluginDescription> plugins)
 			: base(applicationSettings)
 		{
-			_showInstalledPlugins = true;
-
 			_applicationSettings = applicationSettings;
 			_dispatcher = dispatcher;
 			_pluginUpdater = pluginUpdater;
@@ -51,51 +47,17 @@ namespace Tailviewer.Ui.Controls.MainPanel.Plugins
 			_openPluginFolderCommand = new DelegateCommand2(OpenPluginFolder);
 			_updatePluginsCommand = new DelegateCommand2(UpdatePlugins);
 			_refreshPluginsCommand = new DelegateCommand2(RefreshPlugins);
-		}
 
-		public bool ShowInstalledPlugins
-		{
-			get { return _showInstalledPlugins; }
-			set
+			if (!HasPluginRepositoryConfigured)
 			{
-				if (value == _showInstalledPlugins)
-					return;
-
-				_showInstalledPlugins = value;
-				EmitPropertyChanged();
-
-				ShowAllPlugins = !value;
+				ShowAllPluginsError = "No plugin repository configured!";
+				ShowAllPluginsErrorDescription = "In order to download/update plugins, you have to configure tailviewer to use a plugin repository. Please note that there is no globally available plugin repository. This feature is currently intended for organizations to deploy their own private repositories.";
 			}
-		}
-
-
-		public bool ShowAllPlugins
-		{
-			get { return _showAllPlugins; }
-			set
+			else
 			{
-				if (value == _showAllPlugins)
-					return;
-
-				_showAllPlugins = value;
-				EmitPropertyChanged();
-
-				ShowInstalledPlugins = !value;
-
-				if (value)
-				{
-					if (!HasPluginRepositoryConfigured)
-					{
-						ShowAllPluginsError = "No plugin repository configured!";
-						ShowAllPluginsErrorDescription = "In order to download/update plugins, you have to configure tailviewer to use a plugin repository. Please note that there is no globally available plugin repository. This feature is currently intended for organizations to deploy their own private repositories.";
-					}
-					else
-					{
-						ShowAllPluginsError = null;
-						ShowAllPluginsErrorDescription = null;
-						RefreshPlugins();
-					}
-				}
+				ShowAllPluginsError = null;
+				ShowAllPluginsErrorDescription = null;
+				RefreshPlugins();
 			}
 		}
 

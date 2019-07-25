@@ -30,14 +30,6 @@
                                                ToolTip="Open plugin folder"
                                                Command="{Binding OpenPluginFolderCommand}" />
 
-                    <controls:OneWayToggle Content="Installed"
-                                           Margin="8,0,0,0"
-                                           Padding="8,4,8,4"
-                                           IsChecked="{Binding ShowInstalledPlugins, Mode=TwoWay}" />
-                    <controls:OneWayToggle Content="All"
-                                           Padding="8,4,8,4"
-                                           IsChecked="{Binding ShowAllPlugins, Mode=TwoWay}" />
-
                     <controls:DownloadButton Padding="0"
                                              Margin="4,0,0,0"
                                              Width="26"
@@ -48,7 +40,6 @@
 
                     <controls:RefreshButton Padding="0"
                                             Margin="0,0,0,0"
-                                            Visibility="{Binding ShowAllPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
                                             IsEnabled="{Binding HasPluginRepositoryConfigured}"
                                             Command="{Binding RefreshPluginsCommand}"
                                             Width="26"
@@ -59,20 +50,40 @@
                                Margin="4,0,0,0" />
                 </WrapPanel>
 
-                <Grid Margin="8,0,8,8"
-                      Width="473"
-                      HorizontalAlignment="Left"
-                      Grid.Row="1">
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Installed"
+                               FontSize="14"
+                               Foreground="DarkGray"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="All"
+                               FontSize="14"
+                               Foreground="DarkGray"
+                               HorizontalAlignment="Center"
+                               Grid.Column="2"
+                               Grid.Row="0" />
 
                     <!-- List of installed plugins, if any -->
-                    <Grid Visibility="{Binding ShowInstalledPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                        <ItemsControl ItemsSource="{Binding Plugins}"
-                                      ItemTemplate="{StaticResource PluginDataTemplate}" />
+                    <Grid Grid.Row="1">
+                        <controls:FlatScrollViewer>
+                            <ItemsControl ItemsSource="{Binding Plugins}"
+                                          ItemTemplate="{StaticResource PluginDataTemplate}" />
+                        </controls:FlatScrollViewer>
 
                         <!-- Message to tell the user that there are no plugins -->
-                        <Grid Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Center">
+                        <Grid
+                            Visibility="{Binding HasPlugins, Converter={StaticResource BoolTrueToCollapsedConverter}}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
@@ -90,16 +101,26 @@
                         </Grid>
                     </Grid>
 
+                    <Rectangle Grid.Row="1"
+                               Grid.Column="1"
+                               Width="1"
+                               Fill="Black"
+                               Margin="8" />
+
                     <!-- List of all (installed + available) plugins -->
-                    <Grid Visibility="{Binding ShowAllPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                        <ItemsControl ItemsSource="{Binding AllPlugins}"
-                                      ItemTemplate="{StaticResource PluginDataTemplate}" />
-                        <controls:CircularProgressBar Visibility="{Binding IsRefreshingPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
-                                                      Content="Refreshing..."
-                                                      IsIndeterminate="True" />
-                        <Grid Visibility="{Binding ShowAllPluginsError, Converter={StaticResource NullToCollapsedConverter}}"
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Center">
+                    <Grid Grid.Column="2" Grid.Row="1">
+                        <controls:FlatScrollViewer>
+                            <ItemsControl ItemsSource="{Binding AllPlugins}"
+                                          ItemTemplate="{StaticResource PluginDataTemplate}" />
+                        </controls:FlatScrollViewer>
+                        <controls:CircularProgressBar
+                            Visibility="{Binding IsRefreshingPlugins, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                            Content="Refreshing..."
+                            IsIndeterminate="True" />
+                        <Grid
+                            Visibility="{Binding ShowAllPluginsError, Converter={StaticResource NullToCollapsedConverter}}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />
@@ -116,7 +137,6 @@
                                        HorizontalAlignment="Center" />
                         </Grid>
                     </Grid>
-
                 </Grid>
             </Grid>
 
