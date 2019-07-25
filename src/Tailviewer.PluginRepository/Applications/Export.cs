@@ -8,6 +8,8 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class Export
 		: IApplication<ExportOptions>
 	{
+		public bool RequiresRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ExportOptions options)
 		{
 			var folder = options.ExportFolder;

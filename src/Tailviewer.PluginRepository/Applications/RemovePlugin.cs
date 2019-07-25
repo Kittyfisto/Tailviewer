@@ -10,6 +10,8 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		public bool RequiresRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RemovePluginOptions options)
 		{
 			try

@@ -7,6 +7,8 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class ListUsers
 		: IApplication<ListUsersOptions>
 	{
+		public bool RequiresRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ListUsersOptions options)
 		{
 			var users = repository.GetAllUsers().ToList();

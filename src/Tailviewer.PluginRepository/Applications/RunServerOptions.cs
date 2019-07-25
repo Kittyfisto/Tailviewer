@@ -10,5 +10,9 @@ namespace Tailviewer.PluginRepository.Applications
 			HelpText = "The filename of the configuration file to use")]
 		public string Configuration { get; set; }
 
+		[Option("allow-remote-publish",
+			Default = null,
+			HelpText = "Allow remote publishing via archive.exe. When both a configuration file and this option is specified, then this setting wil overwrite any value of the configuration file.")]
+		public bool? AllowRemotePublish { get; set; }
 	}
 }

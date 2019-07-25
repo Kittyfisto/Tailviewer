@@ -6,6 +6,8 @@ namespace Tailviewer.PluginRepository.Applications
 	public sealed class ListPlugins
 		: IApplication<ListPluginsOptions>
 	{
+		public bool RequiresRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ListPluginsOptions options)
 		{
 			foreach (var plugin in repository.FindAllPlugins())

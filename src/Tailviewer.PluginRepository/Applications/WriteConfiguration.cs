@@ -13,6 +13,8 @@ namespace Tailviewer.PluginRepository.Applications
 
 		#region Implementation of IApplication<in WriteConfigurationOptions>
 
+		public bool RequiresRepository => false;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, WriteConfigurationOptions options)
 		{
 			var filePath = MakeAbsolute(options.Filename);

@@ -57,6 +57,8 @@ namespace Tailviewer.PluginRepository.Applications
 			return true;
 		}
 
+		public bool RequiresRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RunServerOptions options)
 		{
 			try
@@ -72,6 +74,10 @@ namespace Tailviewer.PluginRepository.Applications
 					Log.InfoFormat("No configuration file specified, using hardcoded default values instead");
 					configuration = new ServerConfiguration();
 				}
+
+				if (options.AllowRemotePublish != null)
+					configuration.Publishing.AllowRemotePublish = options.AllowRemotePublish.Value;
+				Log.InfoFormat("Remote publishing is {0}", configuration.Publishing.AllowRemotePublish ? "allowed" : "not allowed");
 
 				if (!SetConsoleCtrlHandler(ConsoleCtrlCheck, add: true))
 				{
