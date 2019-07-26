@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -15,6 +16,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView.DataSource;
 using Tailviewer.Ui.Controls.LogView.DeltaTimes;
@@ -68,6 +70,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly DependencyProperty MergedDataSourceDisplayModeProperty = DependencyProperty.Register(
 			"MergedDataSourceDisplayMode", typeof(DataSourceDisplayMode), typeof(LogEntryListView),
 			new PropertyMetadata(default(DataSourceDisplayMode), OnMergedDataSourceDisplayModeChanged));
+
+		public static readonly DependencyProperty SelectedIndicesProperty = DependencyProperty.Register(
+			"SelectedIndices", typeof(IEnumerable<LogLineIndex>), typeof(LogEntryListView), new PropertyMetadata(new LogLineIndex[0], OnSelectedIndicesChanged));
 
 		public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
 		                                                "Settings", typeof(ILogViewerSettings), typeof(LogEntryListView), new PropertyMetadata(null, OnSettingsChanged));
@@ -259,8 +264,8 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public IEnumerable<LogLineIndex> SelectedIndices
 		{
-			get { return PartTextCanvas.SelectedIndices; }
-			set { PartTextCanvas.SelectedIndices = value; }
+			get { return (IEnumerable<LogLineIndex>)GetValue(SelectedIndicesProperty); }
+			set { SetValue(SelectedIndicesProperty, value); }
 		}
 
 		public TextCanvas PartTextCanvas { get; }
@@ -396,6 +401,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnOnSelectionChanged(HashSet<LogLineIndex> selectedIndices)
 		{
+			SelectedIndices = selectedIndices.ToList();
 			SelectionChanged?.Invoke(selectedIndices);
 		}
 
@@ -691,6 +697,16 @@ namespace Tailviewer.Ui.Controls.LogView
 				OldValue = args.OldValue,
 				NewValue = args.NewValue
 			};
+		}
+
+		private static void OnSelectedIndicesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((LogEntryListView) d).OnSelectedIndicesChanged((IEnumerable<LogLineIndex>) e.NewValue);
+		}
+
+		private void OnSelectedIndicesChanged(IEnumerable<LogLineIndex> selectedIndices)
+		{
+			PartTextCanvas.SelectedIndices = selectedIndices;
 		}
 
 		public void Select(LogLineIndex index)

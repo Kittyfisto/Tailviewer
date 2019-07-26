@@ -20,6 +20,12 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("LogFile", typeof(ILogFile), typeof(LogViewerControl),
 				new PropertyMetadata(default(ILogFile)));
 
+		public static readonly DependencyProperty FindAllLogFileProperty = DependencyProperty.Register(
+		                                                "FindAllLogFile", typeof(ILogFile), typeof(LogViewerControl), new PropertyMetadata(default(ILogFile)));
+
+		public static readonly DependencyProperty ShowFindAllProperty = DependencyProperty.Register(
+		                                                "ShowFindAll", typeof(bool), typeof(LogViewerControl), new PropertyMetadata(default(bool)));
+
 		public static readonly DependencyProperty SearchProperty =
 			DependencyProperty.Register("Search", typeof(ILogFileSearch), typeof(LogViewerControl),
 				new PropertyMetadata(default(ILogFileSearch)));
@@ -141,6 +147,18 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (ILogFile) GetValue(LogFileProperty); }
 			set { SetValue(LogFileProperty, value); }
+		}
+
+		public ILogFile FindAllLogFile
+		{
+			get { return (ILogFile) GetValue(FindAllLogFileProperty); }
+			set { SetValue(FindAllLogFileProperty, value); }
+		}
+
+		public bool ShowFindAll
+		{
+			get { return (bool) GetValue(ShowFindAllProperty); }
+			set { SetValue(ShowFindAllProperty, value); }
 		}
 
 		public ILogFileSearch Search
@@ -278,6 +296,8 @@ namespace Tailviewer.Ui.Controls.LogView
 					newView.PropertyChanged += LogViewOnPropertyChanged;
 					DataSource = newView.DataSource;
 					LogFile = newView.LogFile;
+					FindAllLogFile = newView.DataSource.DataSource.FindAllLogFile;
+					ShowFindAll = newView.DataSource.ShowFindAll;
 					Search = newView.Search;
 					CurrentLogLine = newView.DataSource.VisibleLogLine;
 					Select(newView.DataSource.SelectedLogLines);
@@ -287,6 +307,8 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					DataSource = null;
 					LogFile = null;
+					FindAllLogFile = null;
+					ShowFindAll = false;
 				}
 			}
 			finally
@@ -327,7 +349,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			switch (args.PropertyName)
 			{
-				case "LogFile":
+				case nameof(LogViewerViewModel.LogFile):
 					LogFile = LogView.LogFile;
 					break;
 			}

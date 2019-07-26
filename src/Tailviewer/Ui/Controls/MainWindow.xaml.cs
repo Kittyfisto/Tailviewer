@@ -34,7 +34,8 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
-
+		public static readonly DependencyProperty FocusLogFileSearchAllCommandProperty = DependencyProperty.Register(
+			"FocusLogFileSearchAllCommand", typeof(ICommand), typeof(MainWindow), new PropertyMetadata(default(ICommand)));
 
 		public static readonly DependencyProperty NewQuickFilterCommandProperty = DependencyProperty.Register(
 		                                                                                                      "NewQuickFilterCommand",
@@ -56,9 +57,9 @@ namespace Tailviewer.Ui.Controls
 
 			_settings = settings;
 			FocusLogFileSearchCommand = new DelegateCommand(FocusLogFileSearch);
+			FocusLogFileSearchAllCommand = new DelegateCommand(FocusLogFileSearchAll);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
-			
 
 			InitializeComponent();
 			SizeChanged += OnSizeChanged;
@@ -82,6 +83,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ICommand) GetValue(FocusLogFileSearchCommandProperty); }
 			set { SetValue(FocusLogFileSearchCommandProperty, value); }
+		}
+
+		public ICommand FocusLogFileSearchAllCommand
+		{
+			get { return (ICommand)GetValue(FocusLogFileSearchAllCommandProperty); }
+			set { SetValue(FocusLogFileSearchAllCommandProperty, value); }
 		}
 
 		public ICommand NewQuickFilterCommand
@@ -160,6 +167,16 @@ namespace Tailviewer.Ui.Controls
 			{
 				var logViewerControl = VisualTreeHelper.GetChild(grid, childIndex: 1) as LogViewerControl;
 				logViewerControl?.PART_SearchBox.Focus();
+			}
+		}
+
+		private void FocusLogFileSearchAll()
+		{
+			var grid = VisualTreeHelper.GetChild(PART_Content, childIndex: 0) as Grid;
+			if (grid != null)
+			{
+				var logViewerControl = VisualTreeHelper.GetChild(grid, childIndex: 1) as LogViewerControl;
+				logViewerControl?.PART_FindAllBox.Focus();
 			}
 		}
 

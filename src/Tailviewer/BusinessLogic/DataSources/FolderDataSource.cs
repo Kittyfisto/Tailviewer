@@ -127,6 +127,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _mergedDataSource.FilteredLogFile; }
 		}
 
+		public ILogFile FindAllLogFile
+		{
+			get { return _mergedDataSource.FindAllLogFile; }
+		}
+
 		public ILogFileSearch Search
 		{
 			get { return _mergedDataSource.Search; }
@@ -178,6 +183,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			get { return _mergedDataSource.SearchTerm; }
 			set { _mergedDataSource.SearchTerm = value; }
+		}
+
+		public string FindAllFilter
+		{
+			get { return _mergedDataSource.FindAllFilter; }
+			set { _mergedDataSource.FindAllFilter = value; }
 		}
 
 		public LevelFlags LevelFilter

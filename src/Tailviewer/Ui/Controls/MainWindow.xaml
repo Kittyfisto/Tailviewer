@@ -22,6 +22,8 @@
     <Window.InputBindings>
         <KeyBinding Modifiers="Control" Key="F"
                     Command="{Binding FocusLogFileSearchCommand, ElementName=This}" />
+        <KeyBinding Gesture="Ctrl+Shift+F"
+                    Command="{Binding FocusLogFileSearchAllCommand, ElementName=This}" />
         <KeyBinding Modifiers="Control" Key="E"
                     Command="{Binding FocusDataSourceSearchCommand, ElementName=This}" />
         <KeyBinding Gesture="Ctrl+Shift+N"

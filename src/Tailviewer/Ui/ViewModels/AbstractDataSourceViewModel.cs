@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
@@ -38,6 +39,15 @@ namespace Tailviewer.Ui.ViewModels
 		private int _currentSearchResultIndex;
 		private int _searchResultCount;
 		private double _progress;
+
+		#region Find all
+
+		private bool _showFindAll;
+		private bool _isFindAllEmpty;
+		private string _findAllErrorMessage;
+		private IEnumerable<LogLineIndex> _selectedFindAllLogLines;
+
+		#endregion
 
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
@@ -277,6 +287,31 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public IEnumerable<LogLineIndex> SelectedFindAllLogLines
+		{
+			get { return _selectedFindAllLogLines; }
+			set
+			{
+				if (ReferenceEquals(value, _selectedFindAllLogLines))
+					return;
+
+				_selectedFindAllLogLines = value;
+				EmitPropertyChanged();
+
+				var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
+				if (index.IsValid)
+				{
+					var entry = _dataSource.FindAllLogFile.GetEntries(new[] {index}, LogFileColumns.OriginalIndex);
+					var originalIndex = entry[0].OriginalIndex;
+					if (originalIndex.IsValid)
+					{
+						VisibleLogLine = Math.Max(originalIndex - 5, 0);
+						SelectedLogLines = new HashSet<LogLineIndex> {originalIndex};
+					}
+				}
+			}
+		}
+
 		public TimeSpan? LastWrittenAge
 		{
 			get { return _lastWrittenAge; }
@@ -459,6 +494,72 @@ namespace Tailviewer.Ui.ViewModels
 				_currentSearchResultIndex = value;
 				EmitPropertyChanged();
 			}
+		}
+
+		#endregion
+
+		#region Find all
+
+		public string FindAllSearchTerm
+		{
+			get { return _dataSource.FindAllFilter; }
+			set
+			{
+				if (value == _dataSource.FindAllFilter)
+					return;
+
+				_dataSource.FindAllFilter = value;
+				EmitPropertyChanged();
+
+				ShowFindAll = !string.IsNullOrEmpty(value);
+			}
+		}
+
+		public bool ShowFindAll
+		{
+			get { return _showFindAll; }
+			private set
+			{
+				if (value == _showFindAll)
+					return;
+
+				_showFindAll = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public bool IsFindAllEmpty
+		{
+			get { return _isFindAllEmpty; }
+			private set
+			{
+				if (value == _isFindAllEmpty)
+					return;
+
+				_isFindAllEmpty = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public string FindAllErrorMessage
+		{
+			get { return _findAllErrorMessage; }
+			private set
+			{
+				if (value == _findAllErrorMessage)
+					return;
+
+				_findAllErrorMessage = value;
+				EmitPropertyChanged();
+			}
+		}
+
+		public ICommand CloseFindAllCommand => new DelegateCommand2(CloseFindAll);
+
+		private void CloseFindAll()
+		{
+			FindAllSearchTerm = null;
+			ShowFindAll = false;
 		}
 
 		#endregion

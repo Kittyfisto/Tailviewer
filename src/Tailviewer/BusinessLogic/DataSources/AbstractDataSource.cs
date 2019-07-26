@@ -26,12 +26,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly DataSource _settings;
 		private readonly LogFileProxy _logFile;
 		private readonly LogFileSearchProxy _search;
+		private readonly LogFileProxy _findAllLogFile;
 
 		private LogFileSearch _currentSearch;
 		private ILogFile _filteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
 		private ILogFile _previousUnfilteredLogFile;
+		private string _findAllFilter;
 
 		protected AbstractDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
@@ -47,6 +49,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
+
+			_findAllLogFile = new LogFileProxy(_taskScheduler, maximumWaitTime);
+
 			CreateSearch();
 		}
 
@@ -55,6 +60,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		protected TimeSpan MaximumWaitTime => _maximumWaitTime;
 
 		public ILogFile FilteredLogFile => _logFile;
+
+		public ILogFile FindAllLogFile => _findAllLogFile;
 
 		public ILogFileSearch Search => _search;
 
@@ -86,6 +93,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 				_settings.SearchTerm = value;
 				CreateSearch();
+			}
+		}
+
+		public string FindAllFilter
+		{
+			get { return _findAllFilter; }
+			set
+			{
+				if (value == _findAllFilter)
+					return;
+
+				_findAllFilter = value;
+				UpdateFindAllLogFile();
 			}
 		}
 
@@ -244,6 +264,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_logFile.Dispose();
 			_search.Dispose();
 
+			_findAllLogFile.Dispose();
+
 			DisposeCurrentSearch();
 			_logFile?.Dispose();
 
@@ -321,6 +343,25 @@ namespace Tailviewer.BusinessLogic.DataSources
 			{
 				_currentSearch.Dispose();
 				_currentSearch = null;
+			}
+		}
+
+		private void UpdateFindAllLogFile()
+		{
+			var previous = _findAllLogFile.InnerLogFile;
+			previous?.Dispose();
+
+			if (!string.IsNullOrEmpty(_findAllFilter))
+			{
+				_findAllLogFile.InnerLogFile = new FilteredLogFile(_taskScheduler,
+				                                                   MaximumWaitTime,
+				                                                   this.UnfilteredLogFile,
+				                                                   null,
+				                                                   new SubstringFilter(_findAllFilter, ignoreCase: true));
+			}
+			else
+			{
+				_findAllLogFile.InnerLogFile = null;
 			}
 		}
 

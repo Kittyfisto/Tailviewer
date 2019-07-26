@@ -44,6 +44,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		ILogFile FilteredLogFile { get; }
 
+		/// <summary>
+		///     The log file filtered to display only those entries matching
+		///     <see cref="FindAllFilter"/>.
+		/// </summary>
+		ILogFile FindAllLogFile { get; }
+
 		ILogFileSearch Search { get; }
 
 		DateTime? LastModified { get; }
@@ -60,6 +66,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool ShowDeltaTimes { get; set; }
 		bool ShowElapsedTime { get; set; }
 		string SearchTerm { get; set; }
+		string FindAllFilter { get; set; }
 		LevelFlags LevelFilter { get; set; }
 		HashSet<LogLineIndex> SelectedLogLines { get; set; }
 		LogLineIndex VisibleLogLine { get; set; }

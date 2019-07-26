@@ -141,9 +141,10 @@ namespace Tailviewer.Ui.ViewModels
 			UpdateLeftSidePanelExpanderTooltip();
 		}
 
-		public void SelectRawEntry()
+		public LogViewMainPanelViewModel SelectRawEntry()
 		{
 			SelectedTopEntry = _rawEntry;
+			return _logViewPanel;
 		}
 
 		private void GoToNextDataSource()
