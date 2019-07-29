@@ -26,15 +26,14 @@ are sent every week. By using a private plugin repository instead, plugin publis
 
 Running a repository requires nothing more but ```> repository run```.
 The newly started process will bind to 0.0.0.0:1234 by default and serve requests to every client.
-The repository allows several options to be configured.
-An example configuration can be created with ```> repository write-configuration``` and to use a particular file, simply use
-```> repository run --configuration <configuration file path>```.
+The application will use the configuration file under ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\configuration.xml``` and create
+one if none exists. Users can change this file to their needs (for example binding the repository to a custom adapter / port).
 
 ## Running the repository as a windows service
 
 Alternatively it's possible to run the repository as a windows service.
 Simply call `start_service.cmd` to create (if necessary) and then start the repository. The service is started automatically and restarted
-in case it crashes.
+in case it crashes. Just like ```repository.exe```, the service can be configured via the same configuration file under ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\configuration.xml```.
 
 ## User management
 
