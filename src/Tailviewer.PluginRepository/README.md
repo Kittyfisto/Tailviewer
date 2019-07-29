@@ -24,31 +24,44 @@ are sent every week. By using a private plugin repository instead, plugin publis
 
 ## Running the repository
 
+There are currently two different ways to run the repository. You can chose either of them (whichever floats your boat).
+
+### Running the repository as a command-line application
+
 Running a repository requires nothing more but ```> repository run```.
 The newly started process will bind to 0.0.0.0:1234 by default and serve requests to every client.
 The application will use the configuration file under ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\configuration.xml``` and create
 one if none exists. Users can change this file to their needs (for example binding the repository to a custom adapter / port).
+```> repository run``` logs to ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\repository.log```.
 
-## Running the repository as a windows service
+### Running the repository as a windows service
 
 Alternatively it's possible to run the repository as a windows service.
-Simply call `start_service.cmd` to create (if necessary) and then start the repository. The service is started automatically and restarted
-in case it crashes. Just like ```repository.exe```, the service can be configured via the same configuration file under ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\configuration.xml```.
+Simply call `start_service.cmd` to create (if necessary) and then start the repository.
+The service is started automatically and restarted in case it crashes.
+Just like ```repository.exe```, the newly started service will bind to 0.0.0.0:1234 by default and serve requests to every client
+and can be configured via the same configuration file under ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\configuration.xml```.
+```repository-svc``` logs to ```%ALLUSERSPROFILE%\Tailviewer.PluginRepository\repository-svc.log```.
 
-## User management
+## Maintaining the repository
+
+The following section shows you how to maintain the repository (user & plugin management). All of the following steps work
+regardless of which method was chosen to run the repository.
+
+### User management
 
 Publishing plugins (via command-line or remote via archive.exe) to a repository requires an access token of a user of said repository.
 The list of users can be obtained via ```> repository list-users```
 New users can be added via ```> repository add-user <username> <email>```
 Users can be removed via ```> repository remove-user <username>```
 
-Once a new user is added, a unique access token will be generated for said user. This token will then have to be used to publish plugins to the repository.
+Once a new user is added, a unique access token will be generated for said user. This token will then have to be used to publish plugins to the repository.  
 
 ## Publishing plugins
 
 There are currently two ways to publish plugins to a repository:
 
-### Publishing on the repository machine itself
+#### Publishing on the repository machine itself
 
 ```> repository.exe add-plugin MyPlugin.0.1.tvp --user <username>```
 OR
