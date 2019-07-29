@@ -25,7 +25,7 @@ namespace Tailviewer.PluginRepository
 			ProgramDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), ApplicationTitle);
 			ApplicationLogFile = Path.Combine(AppDataLocalFolder, "repository.log");
 			ServiceLogFile = Path.Combine(AppDataLocalFolder, "repository-svc.log");
-			PluginDatabaseFilePath = Path.Combine(AppDataLocalFolder, "Plugins.isdb");
+			PluginDatabaseFilePath = Path.Combine(ProgramDataFolder, "Plugins.isdb");
 		}
 	}
 }
