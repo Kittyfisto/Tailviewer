@@ -72,6 +72,9 @@
     <None Include="delete_service.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="install.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="start_service.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
