@@ -16,6 +16,12 @@ if exist "%ZIP_FILE%" del "%ZIP_FILE%"
 "%ZIP%" --output "%ZIP_FILE%" --append --input "%BIN_DIR%\repository.exe" ^
  "%BIN_DIR%\repository.exe.config" ^
  "%BIN_DIR%\example-configuration.xml" ^
+ "%BIN_DIR%\repository-svc.exe" ^
+ "%BIN_DIR%\repository-svc.exe.config" ^
+ "%BIN_DIR%\create_service.cmd" ^
+ "%BIN_DIR%\delete_service.cmd" ^
+ "%BIN_DIR%\start_service.cmd" ^
+ "%BIN_DIR%\stop_service.cmd" ^
  "%PLUGIN_REPO_SRC_DIR%\README.md" ^
  "%BIN_DIR%\Tailviewer.Api.dll" ^
  "%BIN_DIR%\Tailviewer.Core.dll" ^

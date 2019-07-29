@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository.Test", "src\Tailviewer.PluginRepository.Test\Tailviewer.PluginRepository.Test.csproj", "{1A2286EE-866B-487F-98E7-C05CC4100107}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.PluginRepository.Service", "src\Tailviewer.PluginRepository.Service\Tailviewer.PluginRepository.Service.csproj", "{2AB7F119-2DC7-476B-829C-DB291DFEA973}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{1A2286EE-866B-487F-98E7-C05CC4100107}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A2286EE-866B-487F-98E7-C05CC4100107}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A2286EE-866B-487F-98E7-C05CC4100107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AB7F119-2DC7-476B-829C-DB291DFEA973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AB7F119-2DC7-476B-829C-DB291DFEA973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AB7F119-2DC7-476B-829C-DB291DFEA973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AB7F119-2DC7-476B-829C-DB291DFEA973}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

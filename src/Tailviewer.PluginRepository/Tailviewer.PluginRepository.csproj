@@ -117,6 +117,7 @@
     <Compile Include="Exceptions\CannotRemoveUserException.cs" />
     <Compile Include="ExitCode.cs" />
     <Compile Include="IInternalPluginRepository.cs" />
+    <Compile Include="Logging.cs" />
     <Compile Include="PluginRepository.cs" />
     <Compile Include="App.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,6 +130,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="pack_repository.cmd" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>

@@ -23,10 +23,10 @@ namespace Tailviewer.PluginRepository
 		{
 			try
 			{
-				InstallExceptionHandlers();
+				Logging.InstallExceptionHandlers();
 				Log.InfoFormat("Starting {0}...", Constants.ApplicationTitle);
 				Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
-				LogEnvironment();
+				Logging.LogEnvironment();
 
 				var result = Parser.Default.ParseArguments<RunServerOptions,
 					AddPluginOptions, ListPluginsOptions, RemovePluginOptions,
@@ -55,10 +55,10 @@ namespace Tailviewer.PluginRepository
 
 		private static int Run<TApp, TOptions>(TOptions options, bool logTimestamps = false, bool logToFile = false) where TApp : class, IApplication<TOptions>, new()
 		{
-			SetupConsoleLogger(logTimestamps);
+			Logging.SetupConsoleLogger(logTimestamps);
 
 			if (logToFile)
-				SetupFileAppender();
+				Logging.SetupFileAppender(Constants.ApplicationLogFile);
 
 			using (var taskScheduler = new DefaultTaskScheduler())
 			{
@@ -77,76 +77,6 @@ namespace Tailviewer.PluginRepository
 					return (int)app.Run(filesystem, null, options);
 				}
 			}
-		}
-
-		private static void SetupConsoleLogger(bool logTimestamps)
-		{
-			var hierarchy = (Hierarchy) LogManager.GetRepository();
-
-			hierarchy.Root.AddAppender(new ColoringConsoleAppender(logTimestamps));
-			hierarchy.Root.Level = Level.Info;
-			hierarchy.Configured = true;
-		}
-
-		private static void SetupFileAppender()
-		{
-			var patternLayout = new PatternLayout
-			{
-				ConversionPattern = "%date [%thread] %-5level %logger - %message%newline"
-			};
-			patternLayout.ActivateOptions();
-
-			var fileAppender = new RollingFileAppender
-			{
-				AppendToFile = false,
-				File = Constants.ApplicationLogFile,
-				Layout = patternLayout,
-				MaxSizeRollBackups = 20,
-				MaximumFileSize = "1GB",
-				RollingStyle = RollingFileAppender.RollingMode.Size,
-				StaticLogFileName = false
-			};
-			fileAppender.ActivateOptions();
-
-			var hierarchy = (Hierarchy) LogManager.GetRepository();
-			hierarchy.Root.AddAppender(fileAppender);
-		}
-
-		private static void LogEnvironment()
-		{
-			var builder = new StringBuilder();
-			builder.AppendLine();
-			builder.AppendFormat("{0}: v{1}, {2}",
-			                     Constants.ApplicationTitle,
-			                     FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location)
-			                                    .ProductVersion,
-			                     Environment.Is64BitProcess ? "64bit" : "32bit");
-			builder.AppendLine();
-
-			builder.AppendFormat("Build date: {0}", Constants.BuildDate);
-			builder.AppendLine();
-
-			builder.AppendFormat(".NET Environment: {0}", Environment.Version);
-			builder.AppendLine();
-
-			builder.AppendFormat("Operating System: {0}, {1}\r\n",
-			                     Environment.OSVersion,
-			                     Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
-			builder.AppendFormat("Current directory: {0}", Directory.GetCurrentDirectory());
-
-			Log.InfoFormat("Environment: {0}", builder);
-		}
-
-		private static void InstallExceptionHandlers()
-		{
-			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-		}
-
-		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
-		{
-			object exception = args.ExceptionObject;
-
-			Log.ErrorFormat("Caught unhandled exception in AppDomain: {0}", exception);
 		}
 	}
 }
