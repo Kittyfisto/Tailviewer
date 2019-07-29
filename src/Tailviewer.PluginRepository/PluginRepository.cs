@@ -43,6 +43,8 @@ namespace Tailviewer.PluginRepository
 			Log.DebugFormat("Opening plugin database '{0}'...", fileName);
 			if (!File.Exists(fileName))
 			{
+				Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+
 				created = true;
 				return Database.OpenOrCreate(fileName, CustomTypes);
 			}
