@@ -28,6 +28,12 @@ namespace Tailviewer.PluginRepository.Applications
 			}
 			catch (CannotAddUserException e)
 			{
+				if (!e.IsError)
+				{
+					Log.WarnFormat(e.Message);
+					return ExitCode.Success;
+				}
+
 				Log.ErrorFormat(e.Message);
 				return ExitCode.GenericFailure;
 			}

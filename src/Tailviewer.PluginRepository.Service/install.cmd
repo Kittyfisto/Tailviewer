@@ -1,10 +1,9 @@
 @echo off
 setlocal
 
-net session >nul 2>&1
-if not %errorLevel% == 0 goto :NOADMIN
+call set_environment.cmd
+call require_admin.cmd || exit /b 1
 
-set SCRIPT_DIR=%~dp0
 set INSTALL_PATH=%ProgramFiles%\Tailviewer.PluginRepository
 set OLD_REPO=%INSTALL_PATH%\repository.exe
 set DATABASE_FOLDER=%ALLUSERSPROFILE%\Tailviewer.PluginRepository
@@ -13,7 +12,9 @@ set DATABASE_EXPORT_PATH=%temp%\tailviewer.pluginrepository\upgrade
 set DATABASE_IMPORT_SCRIPT=%DATABASE_EXPORT_PATH%\import.cmd
 
 if exist "%OLD_REPO%" (
-    call "%INSTALL_PATH%\stop_service.cmd" || goto :ERROR
+    pushd "%INSTALL_PATH%"
+    call "delete_service.cmd" || goto :ERROR
+    popd
 
     echo Exporting database...
     "%OLD_REPO%" export "%DATABASE_EXPORT_PATH%" || goto :ERROR
@@ -32,16 +33,20 @@ if exist "%DATABASE_PATH%" (
 
 echo Installing...
 if not exist "%INSTALL_PATH%" mkdir "%INSTALL_PATH%"
-xcopy "%SCRIPT_DIR%*" "%INSTALL_PATH%" /i /s || goto :ERROR
+xcopy "%ScriptDir%*" "%INSTALL_PATH%" /i /s || goto :ERROR
 
 if exist "%DATABASE_IMPORT_SCRIPT%" (
+    pushd "%INSTALL_PATH%
     echo Import database...
     call "%DATABASE_IMPORT_SCRIPT%" || goto :ERROR
+    popd
 )
 
 echo Starting service...
-call "%INSTALL_PATH%\create_service.cmd" || goto :ERROR
-call "%INSTALL_PATH%\start_service.cmd" || goto :ERROR
+pushd %INSTALL_PATH%
+call "create_service.cmd" || goto :ERROR
+call "start_service.cmd" || goto :ERROR
+popd
 
 goto :SUCCESS
 

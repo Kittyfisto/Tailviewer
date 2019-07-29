@@ -1,14 +1,29 @@
+@setlocal
 @echo off
-setlocal
 
-set SCRIPT_DIR=%~dp0
+call set_environment.cmd
+call require_admin.cmd || exit /b 1
 
-sc delete "Tailviewer.PluginRepository"
-set RET=%ERRORLEVEL%
+call stop_service.cmd
 
-rem The service doesn't exist
-if %RET% == 1060 exit /b 0
+sc delete "%ServiceName%" > nul 2>&1
+set ret=%errorlevel%
+if %ret% == 1060 goto :NOTCREATED
+if %ret% == 0 goto :SUCCESS
+goto :ERROR
 
-exit /b  %RET%
+:NOTCREATED
+echo Service "%ServiceName%" doesn't exist, nothing needs to be done
+exit /b 0
+
+:ERROR
+echo Error: Unable to delete service "%ServiceName%"
+echo sc returned %ret%
+net helpmsg %ret%
+exit /b %ret%
+
+:SUCCESS
+echo Service "%servicename%" deleted
+exit /b 0
 
 endlocal

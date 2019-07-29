@@ -41,6 +41,7 @@ namespace Tailviewer.PluginRepository
 
 			var hierarchy = (Hierarchy)LogManager.GetRepository();
 			hierarchy.Root.AddAppender(fileAppender);
+			hierarchy.Configured = true;
 		}
 
 		public static void InstallExceptionHandlers()

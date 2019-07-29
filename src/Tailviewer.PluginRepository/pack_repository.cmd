@@ -18,6 +18,9 @@ if exist "%ZIP_FILE%" del "%ZIP_FILE%"
  "%BIN_DIR%\example-configuration.xml" ^
  "%BIN_DIR%\repository-svc.exe" ^
  "%BIN_DIR%\repository-svc.exe.config" ^
+ "%BIN_DIR%\set_environment.cmd" ^
+ "%BIN_DIR%\require_admin.cmd" ^
+ "%BIN_DIR%\install.cmd" ^
  "%BIN_DIR%\create_service.cmd" ^
  "%BIN_DIR%\delete_service.cmd" ^
  "%BIN_DIR%\start_service.cmd" ^

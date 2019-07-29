@@ -24,8 +24,46 @@ namespace Tailviewer.PluginRepository.Configuration
 		[XmlElement(ElementName = "publishing")]
 		public Publishing Publishing { get; set; }
 
+		public void WriteTo(string fileName)
+		{
+			var serializer = new XmlSerializer(typeof(ServerConfiguration));
+			using (var fileStream = File.Create(fileName))
+			{
+				XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+				namespaces.Add("", "");
+				serializer.Serialize(fileStream, new ServerConfiguration(), namespaces);
+			}
+		}
+
+		public static ServerConfiguration ReadOrCreate(string fileName)
+		{
+			if (!File.Exists(fileName))
+			{
+				var config = new ServerConfiguration();
+
+				TryWriteTo(fileName, config);
+
+				return config;
+			}
+
+			return TryRead(fileName);
+		}
+
+		private static void TryWriteTo(string fileName, ServerConfiguration config)
+		{
+			try
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+				config.WriteTo(fileName);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Unable to write configuration to disk: {0}", e);
+			}
+		}
+
 		[Pure]
-		public static ServerConfiguration Read(string fileName)
+		public static ServerConfiguration TryRead(string fileName)
 		{
 			var serializer = new XmlSerializer(typeof(ServerConfiguration));
 			serializer.UnknownNode += UnknownNode;

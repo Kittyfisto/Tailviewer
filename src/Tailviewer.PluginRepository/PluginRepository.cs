@@ -83,7 +83,7 @@ namespace Tailviewer.PluginRepository
 			using (var transaction = _database.BeginTransaction())
 			{
 				if (_users.ContainsKey(username))
-					throw new CannotAddUserException($"The user '{username}' already exists and cannot be modified.");
+					throw new CannotAddUserException($"The user '{username}' already exists and cannot be modified.", isError: false);
 
 				var accessToken = Guid.NewGuid();
 				var user = new User

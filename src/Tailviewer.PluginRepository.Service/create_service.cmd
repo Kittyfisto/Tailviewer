@@ -1,21 +1,37 @@
+@setlocal
 @echo off
-setlocal
 
-set SCRIPT_DIR=%~dp0
-set SERVICE_PATH=%SCRIPT_DIR%repository-svc.exe
+call set_environment.cmd
+call require_admin.cmd || exit /b 1
 
-if not exist "%SERVICE_PATH%" goto :NOSERVICE
+if not exist "%ServicePath%" goto :NOSERVICE
 
-sc create "Tailviewer.PluginRepository" binPath= "%SERVICE_PATH%" start= auto
-set RET=%errorlevel%
+echo %ScriptDir%
+echo %ServicePath%
 
-rem The service already exists => Not a problem
-if %RET% == 1073 exit /b 0
+sc create "%ServiceName%" binPath= "%ServicePath%" start= auto > nul 2>&1
+set ret=%errorlevel%
 
-exit /b %RET%
+if %ret% == 1073 goto :ALREADYCREATED
+if %ret% == 0 goto :SUCCESS
+goto :ERROR
 
 :NOSERVICE
-echo Error: Unable to find %SERVICE_PATH%
+echo Error: Unable to find %ServicePath%
 exit /b -1
+
+:ALREADYCREATED
+echo Service "%ServiceName%" is already created, nothing needs to be done
+exit /b 0
+
+:ERROR
+echo Error: Unable to create service "%ServiceName%"
+echo sc returned %ret%
+net helpmsg %ret%
+exit /b %ret%
+
+:SUCCESS
+echo Service "%ServiceName%" created
+exit /b 0
 
 endlocal

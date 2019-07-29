@@ -1,17 +1,33 @@
+@setlocal
 @echo off
-setlocal
 
-set SCRIPT_DIR=%~dp0
+call set_environment.cmd
 
-sc stop "Tailviewer.PluginRepository"
-set RET=%ERRORLEVEL%
+sc stop "%ServiceName%" > nul 2>&1
+set ret=%errorlevel%
 
 rem The service isn't installed
-if %RET% == 1060 exit /b 0
+if %ret% == 1060 goto :NOTINSTALLED
+if %ret% == 1062 goto :NOTRUNNING
+if %ret% == 0 goto :SUCCESS
+goto :ERROR
 
-rem The service isn't running
-if %RET% == 1062 exit /b 0
+:NOTINSTALLED
+echo Service "%ServiceName%" isn't installed, nothing needs to be done
+exit /b 0
 
-exit /b %RET%
+:NOTRUNNING
+echo Service "%ServiceName%" isn't running, nothing needs to be done
+exit /b 0
+
+:ERROR
+echo Error: Unable to stop service "%ServiceName%"
+echo sc returned %ret%
+net helpmsg %ret%
+exit /b %ret%
+
+:SUCCESS
+echo Service "%servicename%" stopped
+exit /b 0
 
 endlocal

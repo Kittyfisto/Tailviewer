@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Reflection;
-using System.Xml.Serialization;
 using log4net;
 using Tailviewer.PluginRepository.Configuration;
 
@@ -20,13 +19,7 @@ namespace Tailviewer.PluginRepository.Applications
 			var filePath = MakeAbsolute(options.Filename);
 			Log.DebugFormat("Writing configuration to '{0}'...", filePath);
 
-			XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
-			namespaces.Add("", "");
-			var serializer = new XmlSerializer(typeof(ServerConfiguration));
-			using (var fileStream = File.Create(options.Filename))
-			{
-				serializer.Serialize(fileStream, new ServerConfiguration(), namespaces);
-			}
+			new ServerConfiguration().WriteTo(filePath);
 
 			Log.InfoFormat("Configuration file written to '{0}'", filePath);
 

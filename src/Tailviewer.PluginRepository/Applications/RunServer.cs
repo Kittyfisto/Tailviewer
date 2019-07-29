@@ -63,17 +63,9 @@ namespace Tailviewer.PluginRepository.Applications
 		{
 			try
 			{
-				ServerConfiguration configuration;
-				if (!string.IsNullOrEmpty(options.Configuration))
-				{
-					Log.InfoFormat("Using configuration file '{0}'", options.Configuration);
-					configuration = ServerConfiguration.Read(options.Configuration);
-				}
-				else
-				{
-					Log.InfoFormat("No configuration file specified, using hardcoded default values instead");
-					configuration = new ServerConfiguration();
-				}
+				var fileName = Constants.ApplicationConfigurationFile;
+				Log.InfoFormat("Using configuration file '{0}'", fileName);
+				var configuration = ServerConfiguration.ReadOrCreate(fileName);
 
 				if (options.AllowRemotePublish != null)
 					configuration.Publishing.AllowRemotePublish = options.AllowRemotePublish.Value;

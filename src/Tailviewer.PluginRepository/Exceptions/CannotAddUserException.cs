@@ -5,8 +5,12 @@ namespace Tailviewer.PluginRepository.Exceptions
 	public sealed class CannotAddUserException
 		: Exception
 	{
-		public CannotAddUserException(string message)
+		public bool IsError { get; }
+
+		public CannotAddUserException(string message, bool isError = true)
 			: base(message)
-		{ }
+		{
+			IsError = isError;
+		}
 	}
 }

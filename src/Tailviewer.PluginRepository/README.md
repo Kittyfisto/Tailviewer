@@ -1,6 +1,6 @@
 # Tailviewer Plugin Repository
 
-This application is a standalone command-line application which which can be used to distribute tailviewer plugins.
+This application is a standalone command-line application as well as a windows service which which can be used to distribute tailviewer plugins.
 
 ## Example
 
@@ -29,6 +29,12 @@ The newly started process will bind to 0.0.0.0:1234 by default and serve request
 The repository allows several options to be configured.
 An example configuration can be created with ```> repository write-configuration``` and to use a particular file, simply use
 ```> repository run --configuration <configuration file path>```.
+
+## Running the repository as a windows service
+
+Alternatively it's possible to run the repository as a windows service.
+Simply call `start_service.cmd` to create (if necessary) and then start the repository. The service is started automatically and restarted
+in case it crashes.
 
 ## User management
 
@@ -69,7 +75,9 @@ as well as users.
 The following steps need to be performed when updating to a new major version or when a breaking change
 during the beta phase was performed:
 
-1. Export the repository (using the OLD repository.exe) ```> repository export C:\SomeFolder```
-2. Delete (or move) the existing repository `%LocalAppData%\Tailviewer.PluginRepository\Plugins.isdb`
-3. Install the newer plugin repository version
-4. Execute the batch file in `C:\SomeFolder` to re-create the database
+1. Download the newest repository 'Tailviewer-Repository.x.y.z.zip'
+2. Unzip the entire contents into a temporary directory
+3. Start a shell in that directory **with administrator rights**
+4. Execute install.cmd
+5. Enjoy a beverage of your choice
+6. Delete the temporarily created folder
