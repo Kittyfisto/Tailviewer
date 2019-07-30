@@ -127,7 +127,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)..\packages\SharpRemote.0.5.173\lib\net45\SharpRemote.dll" "$(ProjectDir)$(OutDir)SharpRemote.dll"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)..\packages\SharpRemote.0.6.184\lib\net45\SharpRemote.dll" "$(ProjectDir)$(OutDir)SharpRemote.dll"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
