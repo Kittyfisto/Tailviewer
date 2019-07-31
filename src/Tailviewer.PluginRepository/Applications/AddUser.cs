@@ -13,11 +13,13 @@ namespace Tailviewer.PluginRepository.Applications
 
 		public bool RequiresRepository => true;
 
+		public bool ReadOnlyRepository => false;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, AddUserOptions options)
 		{
 			try
 			{
-				var accessToken = repository.AddUser(options.Username, options.Email);
+				var accessToken = repository.AddUser(options.Username, options.Email, options.AccessToken);
 				Log.InfoFormat("Added user {0}, {1}", options.Username, options.Email);
 
 				Log.InfoFormat("The following access token has been generated for this user");

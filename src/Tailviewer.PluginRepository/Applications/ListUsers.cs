@@ -9,6 +9,8 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		public bool RequiresRepository => true;
 
+		public bool ReadOnlyRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ListUsersOptions options)
 		{
 			var users = repository.GetAllUsers().ToList();

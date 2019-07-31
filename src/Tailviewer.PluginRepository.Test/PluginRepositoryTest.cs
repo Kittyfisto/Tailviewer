@@ -41,7 +41,7 @@ namespace Tailviewer.PluginRepository.Test
 		[Test]
 		public void TestAddUserInvalidName([Values(null, "", "a b c", "씨엘씨", "micke~4213")] string username)
 		{
-			new Action(() => _repository.AddUser(username, "a@b.c"))
+			new Action(() => _repository.AddUser(username, "a@b.c", null))
 				.Should()
 				.Throw<CannotAddUserException>();
 
@@ -51,7 +51,7 @@ namespace Tailviewer.PluginRepository.Test
 		[Test]
 		public void TestAddUserInvalidEmail([Values(null, "", "a", "foobar", "씨엘씨", "micky@sutro8)")] string email)
 		{
-			new Action(() => _repository.AddUser("mickey", email))
+			new Action(() => _repository.AddUser("mickey", email, null))
 				.Should()
 				.Throw<CannotAddUserException>();
 

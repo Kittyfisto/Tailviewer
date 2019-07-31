@@ -8,6 +8,8 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		public bool RequiresRepository => true;
 
+		public bool ReadOnlyRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ListPluginsOptions options)
 		{
 			foreach (var plugin in repository.FindAllPlugins())

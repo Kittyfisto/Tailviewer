@@ -32,13 +32,13 @@ namespace Tailviewer.PluginRepository
 		private readonly IsabelDb.IDictionary<string, User> _users;
 		private readonly IsabelDb.IDictionary<Guid, string> _usernamesByAccessToken;
 
-		public static PluginRepository Create()
+		public static PluginRepository Create(bool isReadOnly = false)
 		{
-			var database = OpenDatabase(Constants.PluginDatabaseFilePath, out var created);
+			var database = OpenDatabase(Constants.PluginDatabaseFilePath, out var created, isReadOnly);
 			return new PluginRepository(database, created);
 		}
 
-		private static IDatabase OpenDatabase(string fileName, out bool created)
+		private static IDatabase OpenDatabase(string fileName, out bool created, bool isReadOnly)
 		{
 			Log.DebugFormat("Opening plugin database '{0}'...", fileName);
 			if (!File.Exists(fileName))
@@ -50,6 +50,9 @@ namespace Tailviewer.PluginRepository
 			}
 
 			created = false;
+			if (isReadOnly)
+				return (IDatabase) Database.OpenRead(fileName, CustomTypes);
+
 			return Database.Open(fileName, CustomTypes);
 		}
 
@@ -64,11 +67,11 @@ namespace Tailviewer.PluginRepository
 
 			if (newlyCreated)
 			{
-				AddUser("root", "root@home");
+				AddUser("root", "root@home", null);
 			}
 		}
 
-		public Guid AddUser(string username, string email)
+		public Guid AddUser(string username, string email, string accessToken)
 		{
 			Log.DebugFormat("Adding user '{0}, {1}' to repository...", username, email);
 
@@ -85,19 +88,29 @@ namespace Tailviewer.PluginRepository
 				if (_users.ContainsKey(username))
 					throw new CannotAddUserException($"The user '{username}' already exists and cannot be modified.", isError: false);
 
-				var accessToken = Guid.NewGuid();
+				Guid token;
+				if (!string.IsNullOrEmpty(accessToken))
+				{
+					if (!Guid.TryParse(accessToken, out token))
+						throw new CannotAddUserException($"The access-token '{accessToken}' is not a valid GUID");
+				}
+				else
+				{
+					token = Guid.NewGuid();
+				}
+
 				var user = new User
 				{
 					Username = username,
 					Email = email,
-					AccessToken = accessToken
+					AccessToken = token
 				};
 				_users.Put(username, user);
-				_usernamesByAccessToken.Put(accessToken, username);
+				_usernamesByAccessToken.Put(token, username);
 
 				transaction.Commit();
 
-				return accessToken;
+				return token;
 			}
 		}
 

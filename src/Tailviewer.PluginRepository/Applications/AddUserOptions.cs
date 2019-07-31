@@ -14,5 +14,10 @@ namespace Tailviewer.PluginRepository.Applications
 			HelpText = "The email of the user",
 			Required = true)]
 		public string Email { get; set; }
+
+		[Option('a', "access-token",
+			Default = null,
+			HelpText = "The access token (in the form of a GUID) of the user. If none is specified, then a new access token is generated.")]
+		public string AccessToken { get; set; }
 	}
 }

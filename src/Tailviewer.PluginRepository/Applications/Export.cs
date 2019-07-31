@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.IO;
-using System.Reflection;
-using log4net;
 
 namespace Tailviewer.PluginRepository.Applications
 {
@@ -10,27 +8,30 @@ namespace Tailviewer.PluginRepository.Applications
 	{
 		public bool RequiresRepository => true;
 
+		public bool ReadOnlyRepository => true;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, ExportOptions options)
 		{
 			var folder = options.ExportFolder;
 			Directory.CreateDirectory(folder);
 
-			using (var file = File.CreateText(Path.Combine(folder, "import.cmd")))
+			using (var file = filesystem.CreateFile(Path.Combine(folder, "import.cmd")))
+			using (var writer = new StreamWriter(file))
 			{
-				file.WriteLine("@echo off");
-				file.WriteLine("setlocal");
-				file.WriteLine();
-				file.WriteLine("set SCRIPT_PATH=%~dp0");
-				file.WriteLine();
-				file.WriteLine("rem Add users");
+				writer.WriteLine("@echo off");
+				writer.WriteLine("setlocal");
+				writer.WriteLine();
+				writer.WriteLine("set SCRIPT_PATH=%~dp0");
+				writer.WriteLine();
+				writer.WriteLine("rem Add users");
 
 				foreach (var user in repository.GetAllUsers())
 				{
-					file.WriteLine("repository.exe add-user \"{0}\" \"{1}\"", user.Username, user.Email);
+					writer.WriteLine("repository.exe add-user \"{0}\" \"{1}\" --access-token \"{2}\"", user.Username, user.Email, user.AccessToken);
 				}
 
-				file.WriteLine();
-				file.WriteLine("rem Add plugins");
+				writer.WriteLine();
+				writer.WriteLine("rem Add plugins");
 
 				foreach (var plugin in repository.GetAllPlugins())
 				{
@@ -39,10 +40,10 @@ namespace Tailviewer.PluginRepository.Applications
 					var pluginFilePath = Path.Combine(folder, pluginFileName);
 					File.WriteAllBytes(pluginFilePath, content);
 
-					file.WriteLine("repository.exe add-plugin \"%SCRIPT_PATH%\\{0}\" --user \"{1}\" --publish-timestamp {2}", pluginFileName, plugin.Publisher, plugin.PublishTimestamp.ToString(CultureInfo.InvariantCulture));
+					writer.WriteLine("repository.exe add-plugin \"%SCRIPT_PATH%\\{0}\" --user \"{1}\" --publish-timestamp {2}", pluginFileName, plugin.Publisher, plugin.PublishTimestamp.ToString(CultureInfo.InvariantCulture));
 				}
 
-				file.WriteLine("endlocal");
+				writer.WriteLine("endlocal");
 			}
 
 			return ExitCode.Success;

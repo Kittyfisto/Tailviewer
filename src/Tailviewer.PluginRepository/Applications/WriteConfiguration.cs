@@ -14,6 +14,8 @@ namespace Tailviewer.PluginRepository.Applications
 
 		public bool RequiresRepository => false;
 
+		public bool ReadOnlyRepository => false;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, WriteConfigurationOptions options)
 		{
 			var filePath = MakeAbsolute(options.Filename);

@@ -59,6 +59,8 @@ namespace Tailviewer.PluginRepository.Applications
 
 		public bool RequiresRepository => true;
 
+		public bool ReadOnlyRepository => false;
+
 		public ExitCode Run(IFilesystem filesystem, IInternalPluginRepository repository, RunServerOptions options)
 		{
 			try

@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using CommandLine;
 using log4net;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
-using Tailviewer.Core;
 using Tailviewer.PluginRepository.Applications;
 
 namespace Tailviewer.PluginRepository
@@ -67,15 +60,13 @@ namespace Tailviewer.PluginRepository
 
 				if (app.RequiresRepository)
 				{
-					using (var repo = PluginRepository.Create())
+					using (var repo = PluginRepository.Create(app.ReadOnlyRepository))
 					{
 						return (int)app.Run(filesystem, repo, options);
 					}
 				}
-				else
-				{
-					return (int)app.Run(filesystem, null, options);
-				}
+
+				return (int)app.Run(filesystem, null, options);
 			}
 		}
 	}

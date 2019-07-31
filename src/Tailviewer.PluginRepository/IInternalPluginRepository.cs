@@ -8,7 +8,7 @@ namespace Tailviewer.PluginRepository
 	public interface IInternalPluginRepository
 		: IPluginRepository
 	{
-		Guid AddUser(string username, string email);
+		Guid AddUser(string username, string email, string accessToken);
 		void RemoveUser(string username);
 		IEnumerable<User> GetAllUsers();
 		bool TryGetAccessToken(string username, out Guid accessToken);
