@@ -7,7 +7,8 @@ call require_admin.cmd || exit /b 1
 set INSTALL_PATH=%ProgramFiles%\Tailviewer.PluginRepository
 set OLD_REPO=%INSTALL_PATH%\repository.exe
 set DATABASE_FOLDER=%ALLUSERSPROFILE%\Tailviewer.PluginRepository
-set DATABASE_PATH=%DATABASE_FOLDER%\Plugins.isdb
+set DATABASE_PATH=%DATABASE_FOLDER%\Database.isdb
+set DATABASE_OLD_PATH=%DATABASE_FOLDER%\Database.old.isdb
 set DATABASE_EXPORT_PATH=%temp%\tailviewer.pluginrepository\upgrade
 set DATABASE_IMPORT_SCRIPT=%DATABASE_EXPORT_PATH%\import.cmd
 
@@ -25,9 +26,9 @@ if exist "%OLD_REPO%" (
 
 if exist "%DATABASE_PATH%" (
     echo Renaming old database...
-    if exist "%DATABASE_FOLDER%\Plugins.isdb.old" del "%DATABASE_FOLDER%\Plugins.isdb.old"
+    if exist "%DATABASE_OLD_PATH%" del "%DATABASE_OLD_PATH%"
 
-    ren "%DATABASE_PATH%" "Plugins.isdb.old"
+    ren "%DATABASE_PATH%" "Database.isdb.old" || goto :ERROR
     timeout /t 1 /nobreak > NUL
 )
 
