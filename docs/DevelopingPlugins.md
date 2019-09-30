@@ -68,6 +68,10 @@ C:\Program Files\Tailviewer\Tailviewer.exe
 
 You can now debug your plugin by "Selecting Debug => Start Debugging" (which defaults to F5 on my computer, but ymmv) and it will start Tailviewer which will in turn load your plugin.
 
+## Identifying custom file formats
+
+See [identifying file formats](IdentifyingFileFormats.md)
+
 ## Adding support for a custom (binary) file format
 
 See [developing file format plugins](DevelopingFileFormatPlugins.md).
