@@ -62,5 +62,17 @@ sealed class MyCustomFormat
   public string Description => "Format developed by my company to log messages";
   public bool IsText => true;
   public Encoding Encoding => Encoding.GetEncoding("CP895");
+  public override bool Equals(object other)
+  {
+  	return other is MyCustomFormat;
+  }
 }
 ```
+
+Please note that in case `ILogFileFormatMatcher.TryMatchFormat` returns true,
+the value of the `format` parameter will be stored as the log file's `LogFileProperties.Format` property and be used
+to find out which plugins are applicable for this log file.
+
+Newer plugin interfaces, such as `ITextLogFileParserPlugin`, usually provide a `SupportedFormats` property which returns a list
+of `ILogFileFormat` objects. When the time comes to use a particular plugin, tailviewer queries all implementation sof that plugin and tries to find the best match, i.e. a plugin which purports to support that particular format.
+Two formats are compared for equality by using `Object.Equals(Object, Object)`.
