@@ -50,7 +50,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 
 		public override string ToString()
 		{
-			return string.Format("Bookmark at {0}", Index);
+			return string.Format("Bookmark at {0} ({1})", Index, DataSource);
 		}
 
 		[Pure]

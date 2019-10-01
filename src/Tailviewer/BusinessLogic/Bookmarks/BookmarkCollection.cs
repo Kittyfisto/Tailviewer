@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
+using log4net;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings.Bookmarks;
@@ -12,6 +14,8 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 		: ILogFileListener
 		, IDisposable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly Dictionary<Bookmark, BookmarkSettings> _bookmarks;
 		private IReadOnlyList<Bookmark> _roBookmarks;
@@ -43,7 +47,14 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 					foreach (var setting in _settings.All.Where(x => x.DataSourceId == dataSource.Id))
 					{
 						var bookmark = new Bookmark(dataSource, setting.Index);
-						_bookmarks.Add(bookmark, setting);
+						if (_bookmarks.ContainsKey(bookmark))
+						{
+							Log.WarnFormat("Skipping duplicate {0}!", bookmark); // bookmark.ToString() already prints "Bookmark at .... " hence the strange log statement
+						}
+						else
+						{
+							_bookmarks.Add(bookmark, setting);
+						}
 					}
 
 					Update();

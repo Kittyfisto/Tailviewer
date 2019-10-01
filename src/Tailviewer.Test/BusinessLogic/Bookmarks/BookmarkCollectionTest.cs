@@ -97,6 +97,28 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/214")]
+		[Description("Verifies that AddDataSource properly handles having the same bookmark present multiple times gracefully (i.e. no crash, no data corruption, etc...)")]
+		public void TestAddDataSourceDuplicateBookmarks()
+		{
+			var dataSourceId = DataSourceId.CreateNew();
+			_bookmarks.Setup(x => x.All).Returns(new[]
+			{
+				new BookmarkSettings(dataSourceId, new LogLineIndex(42)),
+				new BookmarkSettings(dataSourceId, new LogLineIndex(42)),
+			});
+			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
+			var dataSource = new Mock<IDataSource>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new InMemoryLogFile());
+			dataSource.Setup(x => x.Id).Returns(dataSourceId);
+			new Action(() => collection.AddDataSource(dataSource.Object)).Should().NotThrow();
+			collection.Bookmarks.Should().Equal(new object[]
+			{
+				new Bookmark(dataSource.Object, new LogLineIndex(42))
+			}, "because even though there are two bookmarks in the settings object, they describe the same log line and thus only one bookmark should have been added in the end");
+		}
+
+		[Test]
 		public void TestAddSameBookmarkTwice()
 		{
 			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
