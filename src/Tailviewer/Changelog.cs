@@ -60,9 +60,10 @@ namespace Tailviewer
 				"Introduced overview side panel for a condensed view onto the log file [#207](https://github.com/Kittyfisto/Tailviewer/issues/207)",
 				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)"
 			};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
-				
+				"Fixed crash upon startup when bookmarks.xml was corrupted [#214](https://github.com/Kittyfisto/Tailviewer/issues/214)",
+				"Fixed merged log file data source name in case filters are used [#154](https://github.com/Kittyfisto/Tailviewer/issues/154)"
 			};
 			var misc = new[]
 			{
