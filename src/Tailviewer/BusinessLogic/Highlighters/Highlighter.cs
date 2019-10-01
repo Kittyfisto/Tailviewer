@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.Highlighters
 		public HighlighterId Id;
 
 		/// <summary>
-		///     How <see cref="Value" /> is to be intepreted.
+		///     How <see cref="Value" /> is to be interpreted.
 		/// </summary>
 		public FilterMatchType MatchType;
 

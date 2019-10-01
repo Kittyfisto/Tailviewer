@@ -77,6 +77,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		bool ShowDeltaTimes { get; set; }
 
+		bool ShowElapsedTime { get; set; }
+
 		bool ColorByLevel { get; set; }
 
 		bool HideEmptyLines { get; set; }

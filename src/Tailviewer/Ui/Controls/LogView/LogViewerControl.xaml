@@ -354,6 +354,7 @@
                 Height="300"
                 Grid.Row="1"
                 LogFile="{Binding FindAllLogFile, ElementName=This}"
+                Search="{Binding FindAllSearch, ElementName=This}"
                 SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
                 ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
                 ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"

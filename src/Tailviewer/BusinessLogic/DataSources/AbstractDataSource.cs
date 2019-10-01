@@ -26,9 +26,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private readonly DataSource _settings;
 		private readonly LogFileProxy _logFile;
 		private readonly LogFileSearchProxy _search;
-		private readonly LogFileProxy _findAllLogFile;
 
-		private LogFileSearch _currentSearch;
+		private readonly LogFileProxy _findAllLogFile;
+		private readonly LogFileSearchProxy _findAllSearch;
+
 		private ILogFile _filteredLogFile;
 		private IEnumerable<ILogEntryFilter> _quickFilterChain;
 		private bool _isDisposed;
@@ -50,9 +51,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_logFile = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_search = new LogFileSearchProxy(taskScheduler, _logFile, maximumWaitTime);
 
-			_findAllLogFile = new LogFileProxy(_taskScheduler, maximumWaitTime);
+			_findAllLogFile = new LogFileProxy(taskScheduler, maximumWaitTime);
+			_findAllSearch = new LogFileSearchProxy(taskScheduler, _findAllLogFile, maximumWaitTime);
 
-			CreateSearch();
+			UpdateSearch();
+			UpdateFindAllSearch();
 		}
 
 		protected ITaskScheduler TaskScheduler => _taskScheduler;
@@ -63,13 +66,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public ILogFile FindAllLogFile => _findAllLogFile;
 
+		public ILogFileSearch FindAllSearch => _findAllSearch;
+
 		public ILogFileSearch Search => _search;
 
 		public abstract IPluginDescription TranslationPlugin { get; }
 
-		/// <summary>
-		///     The list of filters as produced by the "quick filter" panel.
-		/// </summary>
 		public IEnumerable<ILogEntryFilter> QuickFilterChain
 		{
 			get { return _quickFilterChain; }
@@ -92,7 +94,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 					return;
 
 				_settings.SearchTerm = value;
-				CreateSearch();
+				UpdateSearch();
 			}
 		}
 
@@ -106,6 +108,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 				_findAllFilter = value;
 				UpdateFindAllLogFile();
+				UpdateFindAllSearch();
 			}
 		}
 
@@ -265,8 +268,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_search.Dispose();
 
 			_findAllLogFile.Dispose();
+			_findAllSearch.Dispose();
 
-			DisposeCurrentSearch();
 			_logFile?.Dispose();
 
 			try
@@ -328,22 +331,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		private void CreateSearch()
+		private void UpdateSearch()
 		{
-			DisposeCurrentSearch();
-
-			var term = SearchTerm;
-			_currentSearch = !string.IsNullOrEmpty(term) ? new LogFileSearch(_taskScheduler, _logFile, term, _maximumWaitTime) : null;
 			_search.SearchTerm = SearchTerm;
 		}
 
-		private void DisposeCurrentSearch()
+		private void UpdateFindAllSearch()
 		{
-			if (_currentSearch != null)
-			{
-				_currentSearch.Dispose();
-				_currentSearch = null;
-			}
+			_findAllSearch.SearchTerm = FindAllFilter;
 		}
 
 		private void UpdateFindAllLogFile()

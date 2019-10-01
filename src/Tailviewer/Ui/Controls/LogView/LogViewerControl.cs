@@ -23,6 +23,9 @@ namespace Tailviewer.Ui.Controls.LogView
 		public static readonly DependencyProperty FindAllLogFileProperty = DependencyProperty.Register(
 		                                                "FindAllLogFile", typeof(ILogFile), typeof(LogViewerControl), new PropertyMetadata(default(ILogFile)));
 
+		public static readonly DependencyProperty FindAllSearchProperty = DependencyProperty.Register(
+		                                                "FindAllSearch", typeof(ILogFileSearch), typeof(LogViewerControl), new PropertyMetadata(default(ILogFileSearch)));
+
 		public static readonly DependencyProperty ShowFindAllProperty = DependencyProperty.Register(
 		                                                "ShowFindAll", typeof(bool), typeof(LogViewerControl), new PropertyMetadata(default(bool)));
 
@@ -153,6 +156,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (ILogFile) GetValue(FindAllLogFileProperty); }
 			set { SetValue(FindAllLogFileProperty, value); }
+		}
+
+		public ILogFileSearch FindAllSearch
+		{
+			get { return (ILogFileSearch) GetValue(FindAllSearchProperty); }
+			set { SetValue(FindAllSearchProperty, value); }
 		}
 
 		public bool ShowFindAll
@@ -297,6 +306,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					DataSource = newView.DataSource;
 					LogFile = newView.LogFile;
 					FindAllLogFile = newView.DataSource.DataSource.FindAllLogFile;
+					FindAllSearch = newView.DataSource.DataSource.FindAllSearch;
 					ShowFindAll = newView.DataSource.ShowFindAll;
 					Search = newView.Search;
 					CurrentLogLine = newView.DataSource.VisibleLogLine;

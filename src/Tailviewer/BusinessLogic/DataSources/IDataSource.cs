@@ -50,6 +50,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// </summary>
 		ILogFile FindAllLogFile { get; }
 
+		ILogFileSearch FindAllSearch { get; }
+
 		ILogFileSearch Search { get; }
 
 		DateTime? LastModified { get; }

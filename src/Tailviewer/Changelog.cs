@@ -56,6 +56,7 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
+				"Introduced find all search (ctrl+shift+f) [#210](https://github.com/Kittyfisto/Tailviewer/issues/210)",
 				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
 				"Introduced overview side panel for a condensed view onto the log file [#207](https://github.com/Kittyfisto/Tailviewer/issues/207)",
 				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)"
