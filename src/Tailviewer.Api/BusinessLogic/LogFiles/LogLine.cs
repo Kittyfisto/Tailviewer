@@ -17,22 +17,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		/// <summary>
 		/// </summary>
-		public readonly LevelFlags Level;
+		public LevelFlags Level;
 
 		/// <summary>
 		///     The index of this line in its data source.
 		/// </summary>
-		public readonly int LineIndex;
+		public int LineIndex;
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public readonly int OriginalLineIndex;
+		public int OriginalLineIndex;
 
 		/// <summary>
 		///     The index of the log entry this line belongs to.
 		/// </summary>
-		public readonly int LogEntryIndex;
+		public int LogEntryIndex;
 
 		/// <summary>
 		///     The message belonging to this log line.
@@ -40,12 +40,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <remarks>
 		///     Will never contain more than one line.
 		/// </remarks>
-		public readonly string Message;
+		public string Message;
 
 		/// <summary>
 		///     The timestamp associated with this log-entry.
 		/// </summary>
-		public readonly DateTime? Timestamp;
+		public DateTime? Timestamp;
 
 		/// <summary>
 		///     A bitmask which describes the filters that caused this log line to be visible.
@@ -53,7 +53,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <remarks>
 		///     As a result, only up to 32 filters may be used at one time.
 		/// </remarks>
-		public readonly int MatchedFilters;
+		public int MatchedFilters;
 
 		/// <summary>
 		///     An id which describes the source of this log line.
@@ -61,7 +61,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <remarks>
 		///     As a result, only up to 256 different sources may be used at once.
 		/// </remarks>
-		public readonly LogLineSourceId SourceId;
+		public LogLineSourceId SourceId;
 
 		/// <summary>
 		///     Initializes this log line.

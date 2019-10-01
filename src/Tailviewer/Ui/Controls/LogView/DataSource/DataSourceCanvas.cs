@@ -9,6 +9,7 @@ using System.Windows.Media;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.DataSource
@@ -114,7 +115,7 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 
 				_dataSourcesPerLogLine.Clear();
 				var logLines = new LogLine[visibleSection.Count];
-				multi.UnfilteredLogFile.GetSection(visibleSection, logLines);
+				multi.FilteredLogFile.GetSection(visibleSection, logLines);
 				foreach (var logLine in logLines)
 				{
 					var dataSourceId = (int) logLine.SourceId;

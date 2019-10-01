@@ -208,7 +208,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                   TimeSpan.Zero);
 
 			var logFile2 = new InMemoryLogFile();
-			var source2Id = new LogLineSourceId(0);
+			var source2Id = new LogLineSourceId(1);
 			var source2 = new SingleDataSource(_taskScheduler,
 			                                   new DataSource { Id = DataSourceId.CreateNew() },
 			                                   logFile2,

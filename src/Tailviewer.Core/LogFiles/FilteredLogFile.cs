@@ -356,10 +356,11 @@ namespace Tailviewer.Core.LogFiles
 		private LogLine GetLineNoLock(int lineIndex)
 		{
 			int sourceLineIndex = _indices[lineIndex];
-			int logEntryIndex;
-			_logEntryIndices.TryGetValue(sourceLineIndex, out logEntryIndex);
+			_logEntryIndices.TryGetValue(sourceLineIndex, out var logEntryIndex);
 			var line = _source.GetLine(sourceLineIndex);
-			return new LogLine(lineIndex, sourceLineIndex, logEntryIndex, line.Message, line.Level, line.Timestamp);
+			line.LineIndex = lineIndex;
+			line.LogEntryIndex = logEntryIndex;
+			return line;
 		}
 
 		/// <inheritdoc />

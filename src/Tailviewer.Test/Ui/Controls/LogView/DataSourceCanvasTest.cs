@@ -62,7 +62,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 					lines[0] = new LogLine(0, 0, 0, new LogLineSourceId(1), "foo", LevelFlags.Trace, null);
 					lines[1] = new LogLine(1, 1, 1, new LogLineSourceId(0), "bar", LevelFlags.Trace, null);
 				});
-			multiDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
+			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile.Object);
 
 			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
@@ -97,7 +97,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 					lines[0] = new LogLine(0, 0, 0, new LogLineSourceId(1), "foo", LevelFlags.Trace, null);
 					lines[1] = new LogLine(1, 1, 1, new LogLineSourceId(0), "bar", LevelFlags.Trace, null);
 				});
-			multiDataSource.Setup(x => x.UnfilteredLogFile).Returns(mergedLogFile.Object);
+			multiDataSource.Setup(x => x.FilteredLogFile).Returns(mergedLogFile.Object);
 
 			canvas.UpdateDataSources(multiDataSource.Object, new LogFileSection(0, 2), 0);
 			canvas.DataSources.Should().HaveCount(2);
@@ -115,7 +115,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 				DisplayMode = displayMode
 			};
 			var folderDataSource = new Mock<IFolderDataSource>();
-			folderDataSource.Setup(x => x.UnfilteredLogFile).Returns(new Mock<ILogFile>().Object);
+			folderDataSource.Setup(x => x.FilteredLogFile).Returns(new Mock<ILogFile>().Object);
 			var dataSource = new Mock<IDataSource>();
 			folderDataSource.Setup(x => x.OriginalSources).Returns(new List<IDataSource>{dataSource.Object});
 

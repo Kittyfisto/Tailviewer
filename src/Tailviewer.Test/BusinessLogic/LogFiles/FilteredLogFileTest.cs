@@ -450,6 +450,29 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/154")]
+		[Description("Verifies that filtered log file actually returns the correct source id")]
+		public void TestGetLine2()
+		{
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(LevelFlags.Error)))
+			{
+				_entries.Add(new LogLine(0, 0, new LogLineSourceId(0), "DEBUG: This is a test", LevelFlags.Debug, null));
+				_entries.Add(new LogLine(1, 1, new LogLineSourceId(42), "ERROR: I feel a disturbance in the source", LevelFlags.Error, null));
+				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+
+				_taskScheduler.RunOnce();
+				file.EndOfSourceReached.Should().BeTrue();
+				file.Count.Should().Be(1, "because only one line matches the filter");
+				var line = file.GetLine(0);
+				line.LineIndex.Should().Be(0);
+				line.LogEntryIndex.Should().Be(0);
+				line.OriginalLineIndex.Should().Be(1);
+				line.Message.Should().Be("ERROR: I feel a disturbance in the source");
+				line.SourceId.Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
+			}
+		}
+
+		[Test]
 		[Description("Verifies that the log file queries the LogLineFilter for each added entry")]
 		public void TestSingleLineFilter1()
 		{
