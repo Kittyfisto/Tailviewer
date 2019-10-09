@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Settings;
@@ -10,7 +12,7 @@ namespace Tailviewer.Test.Ui
 	public sealed class SettingsMainPanelViewModelTest
 	{
 		[Test]
-		public void TestConstruction([Values(true, false)] bool recursive)
+		public void TestConstruction1([Values(true, false)] bool recursive)
 		{
 			var settings = new ApplicationSettings("foo");
 			settings.DataSources.FolderDataSourceRecursive = recursive;
@@ -20,6 +22,20 @@ namespace Tailviewer.Test.Ui
 
 			model.FolderDataSourceRecursive.Should().Be(recursive);
 			model.FolderDataSourcePatterns.Should().Be("*.log;*.txt");
+		}
+
+		public static IEnumerable<Encoding> Encodings => new[] {null, Encoding.Default, Encoding.UTF7, Encoding.UTF8};
+
+		[Test]
+		public void TestConstruction2([ValueSource(nameof(Encodings))] Encoding encoding)
+		{
+			var settings = new ApplicationSettings("foo");
+			settings.LogFile.DefaultEncoding = encoding;
+
+			var model = new SettingsMainPanelViewModel(settings);
+
+			model.DefaultTextFileEncoding.Should().NotBeNull();
+			model.DefaultTextFileEncoding.Encoding.Should().BeSameAs(encoding);
 		}
 
 		[Test]
@@ -103,6 +119,21 @@ namespace Tailviewer.Test.Ui
 
 			model.ProxyPassword = string.Empty;
 			settings.AutoUpdate.ProxyPassword.Should().BeEmpty();
+		}
+
+		[Test]
+		public void TestTestChangeDefaultEncoding()
+		{
+			var settings = new ApplicationSettings("foo");
+			var model = new SettingsMainPanelViewModel(settings);
+
+			var newEncoding = model.TextFileEncodings.Last();
+			model.DefaultTextFileEncoding = newEncoding;
+			settings.LogFile.DefaultEncoding.Should().Be(newEncoding.Encoding);
+
+			newEncoding = model.TextFileEncodings.First();
+			model.DefaultTextFileEncoding = newEncoding;
+			settings.LogFile.DefaultEncoding.Should().Be(newEncoding.Encoding);
 		}
 	}
 }

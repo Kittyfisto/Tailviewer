@@ -108,6 +108,8 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -143,6 +145,26 @@
                             <Run Text="'*.txt;*.log' (without quotes) selects files which end in either .txt or .log." />
                             <LineBreak />
                             <Run Text="'*bb*' (without quotes) selects files which have bb in their file name." />
+                        </TextBlock>
+
+                        <TextBlock Text="Default text file encoding"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="3"
+                                   Grid.Column="0" />
+
+                        <ComboBox Grid.Column="1"
+                                  Grid.Row="3"
+                                  Margin="0,6,6,6"
+                                  ItemsSource="{Binding TextFileEncodings}"
+                                  SelectedItem="{Binding DefaultTextFileEncoding}"/>
+                        <TextBlock Grid.Column="1"
+                                   Grid.Row="4"
+                                   Foreground="#6B6B6B"
+                                   TextWrapping="Wrap">
+                            <Run Text="If anything else but 'Auto detect' is selected, then tailviewer will only use the given encoding to decode text-based log files." />
+                            <LineBreak />
+                            <Run Text="Changing this value requires tailviewer to be restarted in order to take effect." />
                         </TextBlock>
 
                     </Grid>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using FluentAssertions;
 using NUnit.Framework;
@@ -20,6 +21,8 @@ namespace Tailviewer.Test.Settings
 		{
 			string fname = Path.GetTempFileName();
 			var settings = new ApplicationSettings(fname);
+			settings.LogFile.DefaultEncoding = Encoding.UTF32;
+
 			var clone = settings.Clone();
 			clone.Should().NotBeNull();
 			clone.Should().NotBeSameAs(settings);
@@ -35,6 +38,9 @@ namespace Tailviewer.Test.Settings
 			clone.Export.Should().NotBeSameAs(settings.Export);
 			clone.LogViewer.Should().NotBeNull();
 			clone.LogViewer.Should().NotBeSameAs(settings.LogViewer);
+			clone.LogFile.Should().NotBeNull();
+			clone.LogFile.Should().NotBeSameAs(settings.LogFile);
+			clone.LogFile.DefaultEncoding.Should().Be(Encoding.UTF32);
 		}
 
 		[Test]
@@ -217,6 +223,7 @@ namespace Tailviewer.Test.Settings
 			QuickFilterId filterId2 = settings.QuickFilters[1].Id;
 			settings.DataSources.SelectedItem = settings.DataSources[0].Id;
 			settings.Export.ExportFolder = @"C:\hello\world";
+			settings.LogFile.DefaultEncoding = Encoding.BigEndianUnicode;
 			settings.Save().Should().BeTrue();
 
 			settings = new ApplicationSettings(fileName);
@@ -260,6 +267,8 @@ namespace Tailviewer.Test.Settings
 
 			settings.Export.Should().NotBeNull();
 			settings.Export.ExportFolder.Should().Be(@"C:\hello\world");
+
+			settings.LogFile.DefaultEncoding.Should().Be(Encoding.BigEndianUnicode);
 		}
 	}
 }

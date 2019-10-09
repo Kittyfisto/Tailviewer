@@ -1,4 +1,6 @@
-﻿namespace Tailviewer.Settings
+﻿using Tailviewer.Core.Settings;
+
+namespace Tailviewer.Settings
 {
 	/// <summary>
 	/// 
@@ -29,6 +31,11 @@
 		/// 
 		/// </summary>
 		IExportSettings Export { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		ILogFileSettings LogFile { get; }
 
 		/// <summary>
 		/// 

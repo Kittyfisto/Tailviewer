@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Text;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.Core;
+using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Settings;
+using Tailviewer.Settings;
 
 namespace Tailviewer.Test
 {
@@ -46,6 +51,21 @@ namespace Tailviewer.Test
 
 			container.TryRetrieve(out ITypeFactory service).Should().BeFalse();
 			service.Should().BeNull();
+		}
+
+		[Test]
+		[Description("Verifies that the encoding of the text log file can be specified via text log file settings")]
+		public void TestCreateTextLogFileOverwriteEncoding()
+		{
+			var container = new ServiceContainer();
+			container.RegisterInstance<ITaskScheduler>(new ManualTaskScheduler());
+
+			var settings = new LogFileSettings();
+			settings.DefaultEncoding = Encoding.UTF32;
+			container.RegisterInstance<ILogFileSettings>(settings);
+
+			var logFile = container.CreateTextLogFile("foo");
+			logFile.GetValue(LogFileProperties.Encoding).Should().Be(Encoding.UTF32);
 		}
 	}
 }

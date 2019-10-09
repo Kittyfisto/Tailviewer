@@ -23,6 +23,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -144,7 +145,7 @@ namespace Tailviewer
 			bookmarks.Restore();
 
 			var services = new ServiceContainer();
-			RegisterFactories(services);
+			services.RegisterInstance<ILogFileSettings>(settings.LogFile);
 
 			var actionCenter = new ActionCenter();
 			using (var taskScheduler = new DefaultTaskScheduler())
@@ -238,11 +239,6 @@ namespace Tailviewer
 					}
 				}
 			}
-		}
-
-		private static void RegisterFactories(ServiceContainer services)
-		{
-			
 		}
 
 		private static IPluginLoader CreatePluginSystem(params IPluginLoader[] pluginLoaders)

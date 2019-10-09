@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using log4net;
 using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
@@ -13,8 +16,11 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 	public sealed class SettingsMainPanelViewModel
 		: AbstractMainPanelViewModel
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private readonly IApplicationSettings _settings;
 		private string _pluginRepositories;
+		private EncodingViewModel _defaultTextFileEncoding;
 
 		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings) : base(applicationSettings)
 		{
@@ -22,6 +28,16 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 
 			var repos = applicationSettings.AutoUpdate.PluginRepositories;
 			_pluginRepositories = repos != null ? string.Join(Environment.NewLine, repos) : string.Empty;
+
+			var defaultEncoding = applicationSettings.LogFile?.DefaultEncoding;
+			_defaultTextFileEncoding = TextFileEncodings.FirstOrDefault(x => Equals(x.Encoding, defaultEncoding));
+			if (_defaultTextFileEncoding == null)
+			{
+				var @default = TextFileEncodings.FirstOrDefault();
+				Log.WarnFormat("Unable to find encoding '{0}', setting default to '{1}'...",  defaultEncoding, @default?.Encoding);
+
+				_defaultTextFileEncoding = @default;
+			}
 		}
 
 		public bool CheckForUpdates
@@ -207,6 +223,34 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 					return;
 
 				_settings.DataSources.FolderDataSourcePattern = value;
+				_settings.SaveAsync();
+			}
+		}
+
+		public IEnumerable<EncodingViewModel> TextFileEncodings => new[]
+		{
+			new EncodingViewModel(null, "Auto detect"),
+			new EncodingViewModel(Encoding.Default),
+			new EncodingViewModel(Encoding.ASCII),
+			new EncodingViewModel(Encoding.UTF8),
+			new EncodingViewModel(Encoding.UTF7),
+			new EncodingViewModel(Encoding.UTF32),
+			new EncodingViewModel(Encoding.BigEndianUnicode),
+			new EncodingViewModel(Encoding.Unicode)
+		};
+
+		public EncodingViewModel DefaultTextFileEncoding
+		{
+			get { return _defaultTextFileEncoding; }
+			set
+			{
+				if (Equals(value, _defaultTextFileEncoding))
+					return;
+
+				_defaultTextFileEncoding = value;
+				EmitPropertyChanged();
+
+				_settings.LogFile.DefaultEncoding = value?.Encoding;
 				_settings.SaveAsync();
 			}
 		}

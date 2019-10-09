@@ -94,6 +94,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties.SetValue(LogFileProperties.Name, _fileName);
 			_syncRoot = new object();
 			_encoding = encoding ?? Encoding.UTF8;
+			_properties.SetValue(LogFileProperties.Encoding, encoding);
 
 			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
 

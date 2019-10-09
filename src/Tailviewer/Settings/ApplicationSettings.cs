@@ -25,6 +25,7 @@ namespace Tailviewer.Settings
 		private readonly QuickFilters _quickFilters;
 		private readonly ExportSettings _export;
 		private readonly LogViewerSettings _logViewer;
+		private readonly LogFileSettings _logFile;
 		private int _numSaved;
 
 		/// <summary>
@@ -50,6 +51,7 @@ namespace Tailviewer.Settings
 			_quickFilters = other._quickFilters.Clone();
 			_export = other._export.Clone();
 			_logViewer = other._logViewer.Clone();
+			_logFile = other._logFile.Clone();
 		}
 
 		public ApplicationSettings(string fileName)
@@ -62,6 +64,7 @@ namespace Tailviewer.Settings
 			_dataSources = new DataSourceSettings();
 			_quickFilters = new QuickFilters();
 			_logViewer = new LogViewerSettings();
+			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
 		}
 
@@ -72,6 +75,8 @@ namespace Tailviewer.Settings
 		public IDataSourcesSettings DataSources => _dataSources;
 
 		public ILogViewerSettings LogViewer => _logViewer;
+
+		public ILogFileSettings LogFile => _logFile;
 
 		public QuickFilters QuickFilters => _quickFilters;
 
@@ -130,6 +135,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("logviewer");
 						_logViewer.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("logfile");
+						_logFile.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -203,6 +212,10 @@ namespace Tailviewer.Settings
 
 							case "logviewer":
 								_logViewer.Restore(reader);
+								break;
+
+							case "logfile":
+								_logFile.Restore(reader);
 								break;
 						}
 					}
