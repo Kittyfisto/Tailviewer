@@ -2,7 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
+using log4net;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -23,6 +25,8 @@ namespace Tailviewer.Core.LogFiles
 		: AbstractLogFile
 		, ILogFileListener
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private const int BatchSize = 10000;
 
 		private readonly ILogLineFilter _logLineFilter;
@@ -122,6 +126,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			Log.DebugFormat("OnLogFileModified({0})", section);
+
 			_pendingModifications.Enqueue(section);
 			ResetEndOfSourceReached();
 		}
@@ -432,6 +438,11 @@ namespace Tailviewer.Core.LogFiles
 						break;
 
 					LogLine line = _buffer[i];
+					Log.DebugFormat("Processing: LineIndex={0}, OriginalLineIndex={1}, LogEntryIndex={2}, Message={3}",
+					                line.LineIndex,
+					                line.OriginalLineIndex,
+					                line.LogEntryIndex,
+					                line.Message);
 					if (_lastLogEntry.Count == 0 || _lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
 					{
 						TryAddLogLine(line);

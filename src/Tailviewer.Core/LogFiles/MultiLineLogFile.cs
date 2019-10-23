@@ -117,6 +117,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
+			Log.DebugFormat("OnLogFileModified({0})", section);
+
 			_pendingModifications.EnqueueMany(section.Split(MaximumBatchSize));
 			ResetEndOfSourceReached();
 		}
@@ -398,12 +400,19 @@ namespace Tailviewer.Core.LogFiles
 
 		private bool AppendToCurrentLogEntry(LogLine logLine)
 		{
-			if (_currentLogEntryTimestamp != null && logLine.Timestamp == null)
+			if (logLine.Timestamp != null)
+				return false; //< A line with a timestamp is never added to a previous log entry
+			if (logLine.Level != LevelFlags.None)
+				return false; //< A line with a log level is never added to a previous log entry
+
+			return true;
+
+			/*if (_currentLogEntryTimestamp != null && logLine.Timestamp == null)
 				return true;
 			if (_currentLogEntryLevel != LevelFlags.None && logLine.Level == LevelFlags.None)
 				return true;
 
-			return false;
+			return false;*/
 		}
 
 		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)

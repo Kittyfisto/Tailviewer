@@ -295,6 +295,47 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/221")]
+		public void TestInvalidate4()
+		{
+			var logFile = new InMemoryLogFile();
+
+			using (var multiLine = new MultiLineLogFile(_taskScheduler, logFile, TimeSpan.Zero))
+			using (var filtered = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, multiLine, null,
+			                                      Filter.Create(null, true, LevelFlags.Info)))
+			{
+				logFile.AddRange(new[]
+				{
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+				});
+
+				_taskScheduler.RunOnce();
+				filtered.Count.Should().Be(3);
+				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
+				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
+				filtered.GetLine(2).OriginalLineIndex.Should().Be(2);
+
+
+				logFile.RemoveFrom(new LogLineIndex(2));
+				logFile.AddRange(new []
+				{
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
+				});
+				_taskScheduler.RunOnce();
+				filtered.Count.Should().Be(5);
+				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
+				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
+				filtered.GetLine(2).OriginalLineIndex.Should().Be(2);
+				filtered.GetLine(3).OriginalLineIndex.Should().Be(3);
+				filtered.GetLine(4).OriginalLineIndex.Should().Be(4);
+			}
+		}
+
+		[Test]
 		[Description(
 			"Verifies that listeners are notified eventually, even when the # of filtered entries is less than the minimum batch size"
 			)]

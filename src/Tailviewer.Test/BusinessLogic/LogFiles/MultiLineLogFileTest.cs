@@ -377,7 +377,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
 			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info, timestamp));
-			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.None, timestamp));
+			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.None, null));
 			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
 
 			_taskScheduler.RunOnce();
@@ -858,6 +858,78 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[0].LogEntryIndex.Should().Be(new LogEntryIndex(0));
 			entries[1].LogEntryIndex.Should().Be(new LogEntryIndex(1));
 			entries[2].LogEntryIndex.Should().Be(new LogEntryIndex(2));
+		}
+
+		[Test]
+		[Description("Verifies that if a log file consistently has timestamps to distinguish log entries, the presence of log levels (or lack thereof) does not cause a misclassification of log entries")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/221")]
+		public void TestTimestampsAndMixedInfos()
+		{
+			var logFile = new InMemoryLogFile();
+
+			using (var multiLine = new MultiLineLogFile(_taskScheduler, logFile, TimeSpan.Zero))
+			{
+				logFile.AddRange(new[]
+				{
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+				});
+
+				_taskScheduler.RunOnce();
+				multiLine.Count.Should().Be(3);
+
+				var line0 = multiLine.GetLine(0);
+				line0.OriginalLineIndex.Should().Be(0);
+				line0.LineIndex.Should().Be(0);
+				line0.LogEntryIndex.Should().Be(0, "because every line is an individual log entry");
+
+				var line1 = multiLine.GetLine(1);
+				line1.OriginalLineIndex.Should().Be(1);
+				line1.LineIndex.Should().Be(1);
+				line1.LogEntryIndex.Should().Be(1, "because every line is an individual log entry");
+
+				var line2 = multiLine.GetLine(2);
+				line2.OriginalLineIndex.Should().Be(2);
+				line2.LineIndex.Should().Be(2);
+				line2.LogEntryIndex.Should().Be(2, "because every line is an individual log entry");
+
+
+				logFile.RemoveFrom(new LogLineIndex(2));
+				logFile.AddRange(new []
+				{
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
+				});
+				_taskScheduler.RunOnce();
+				multiLine.Count.Should().Be(5);
+
+				line0 = multiLine.GetLine(0);
+				line0.OriginalLineIndex.Should().Be(0);
+				line0.LineIndex.Should().Be(0);
+				line0.LogEntryIndex.Should().Be(0, "because every line is an individual log entry");
+
+				line1 = multiLine.GetLine(1);
+				line1.OriginalLineIndex.Should().Be(1);
+				line1.LineIndex.Should().Be(1);
+				line1.LogEntryIndex.Should().Be(1, "because every line is an individual log entry");
+
+				line2 = multiLine.GetLine(2);
+				line2.OriginalLineIndex.Should().Be(2);
+				line2.LineIndex.Should().Be(2);
+				line2.LogEntryIndex.Should().Be(2, "because every line is an individual log entry");
+
+				var line3 = multiLine.GetLine(3);
+				line3.OriginalLineIndex.Should().Be(3);
+				line3.LineIndex.Should().Be(3);
+				line3.LogEntryIndex.Should().Be(3, "because every line is an individual log entry");
+
+				var line4 = multiLine.GetLine(4);
+				line4.OriginalLineIndex.Should().Be(4);
+				line4.LineIndex.Should().Be(4);
+				line4.LogEntryIndex.Should().Be(4, "because every line is an individual log entry");
+			}
 		}
 
 		protected override ILogFile CreateEmpty()
