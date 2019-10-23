@@ -313,6 +313,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			try
 			{
+				// TODO: Should we even do anything when count = 0? Probably not...
 				var data = new LogLine[_currentlyVisibleSection.Count];
 				_logFile.GetSection(_currentlyVisibleSection, data);
 				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)

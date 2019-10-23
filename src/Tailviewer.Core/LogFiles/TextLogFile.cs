@@ -16,7 +16,7 @@ using Tailviewer.Core.Parsers;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     The bead-and-butter <see cref="ILogFile" /> implementation for Tailviewer.
+	///     The bread-and-butter <see cref="ILogFile" /> implementation for Tailviewer.
 	///     Responsible for scanning and reading the content of a file on disk, forwarding
 	///     them to its <see cref="ILogFileListener"/>s.
 	/// </summary>
