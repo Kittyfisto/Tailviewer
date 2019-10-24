@@ -39,14 +39,16 @@ You can make use of it by right clicking your project in the Solution Explorer o
 following in the "Post-build event command line" box:
 
 ```
-"$(MSBuildProjectDirectory)\packages\Tailviewer.Api.0.7.2.630-beta\build\archive.exe" pack "$(MSBuildProjectDirectory)\$(OutDir)MyFirstTailviewerPlugin.dll"
-xcopy "$(MSBuildProjectDirectory)\$(OutDir)MyFirstTailviewerPlugin.*.tvp" "%ProgramW6432%\Tailviewer\Plugins\" /y
+"$(MSBuildProjectDirectory)\packages\Tailviewer.Api.0.9.0.792-beta\build\archive.exe" pack "$(MSBuildProjectDirectory)\$(OutDir)MyFirstTailviewerPlugin.dll"
+xcopy "$(MSBuildProjectDirectory)\$(OutDir)MyFirstTailviewerPlugin.*.tvp" "%LocalAppData%\Tailviewer\Downloads\Plugins\" /y
 ```
 
 ![Configuring the post-build event](BuildEvents.png?raw=true)
 
 This will cause archive.exe to create a plugin from your assembly and also copies it into Tailviewer's plugin directory. Please note that in order to do the latter, Visual Studio needs to be started
-with administrator privileges because %ProgramW6432% is protected by UAC.  archive.exe will add warnings and errors to the Build output of Visual Studio, if necessary. These should be self-explanatory,
+with administrator privileges because %ProgramW6432% is protected by UAC.  
+
+archive.exe will add warnings and errors to the Build output of Visual Studio, if necessary. These should be self-explanatory,
 but if they're not, consider creating an issue for it.
 
 Example warnings:
