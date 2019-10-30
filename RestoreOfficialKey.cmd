@@ -3,7 +3,7 @@
 
 set SCRIPT_DIR=%~dp0
 set SRC_DIR=%SCRIPT_DIR%src
-set ASSEMBLYINFO_TOOL=%SCRIPT_DIR%tools\AssemblyInfo.exe
+set ASSEMBLYINFO_TOOL=%SCRIPT_DIR%tools\BuildTool.exe
 set CRYPT_TOOL=%SCRIPT_DIR%tools\Crypt.exe
 set OFFICIAL_KEY=%SCRIPT_DIR%sig\sns
 set DEVELOPER_KEY=%SCRIPT_DIR%sig\DeveloperKey.snk
