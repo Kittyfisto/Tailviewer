@@ -64,6 +64,8 @@ namespace Tailviewer
 			var bugfixes = new[]
 			{
 				"Fixed crash upon startup when bookmarks.xml was corrupted [#214](https://github.com/Kittyfisto/Tailviewer/issues/214)",
+				"Fixed filtering/searching of text which includes a tab character [#213](https://github.com/Kittyfisto/Tailviewer/issues/213)",
+				"Fixed closing the last data source [#223](https://github.com/Kittyfisto/Tailviewer/issues/223)",
 				"Fixed display of multiline log files [#221](https://github.com/Kittyfisto/Tailviewer/issues/221)",
 				"Fixed merged log file data source name in case filters are used [#154](https://github.com/Kittyfisto/Tailviewer/issues/154)"
 			};
