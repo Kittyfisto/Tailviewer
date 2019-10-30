@@ -64,6 +64,7 @@ namespace Tailviewer
 			var bugfixes = new[]
 			{
 				"Fixed crash upon startup when bookmarks.xml was corrupted [#214](https://github.com/Kittyfisto/Tailviewer/issues/214)",
+				"Fixed display of multiline log files [#221](https://github.com/Kittyfisto/Tailviewer/issues/221)",
 				"Fixed merged log file data source name in case filters are used [#154](https://github.com/Kittyfisto/Tailviewer/issues/154)"
 			};
 			var misc = new[]
@@ -71,7 +72,7 @@ namespace Tailviewer
 				"The titlebar properly reacts to losing focus [#202](https://github.com/Kittyfisto/Tailviewer/issues/202)", // 
 				"The left side panel can be collapsed [#201](https://github.com/Kittyfisto/Tailviewer/issues/201)"
 			};
-			var releaseDate = new DateTime(2019, 09, 1);
+			var releaseDate = new DateTime(2019, 10, 31);
 			var version = new Version(0, 9, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
