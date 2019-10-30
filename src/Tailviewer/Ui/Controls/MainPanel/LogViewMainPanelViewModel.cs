@@ -84,7 +84,6 @@ namespace Tailviewer.Ui.Controls.MainPanel
 
 			_sidePanels = new ISidePanelViewModel[]
 			{
-				_dataSources,
 				_quickFilters,
 				//_highlighters,
 				_bookmarks,
@@ -234,6 +233,7 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			return true;
 		}
 
+		public DataSourcesViewModel DataSources => _dataSources;
 		public GoToLineViewModel GoToLine => _goToLine;
 		public QuickNavigationViewModel QuickNavigation => _quickNavigation;
 

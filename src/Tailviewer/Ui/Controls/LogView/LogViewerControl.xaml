@@ -12,7 +12,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/Tailviewer;component/Ui/Controls/LogView/DataSourceDisplayModeToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:ShowAllToContentConverter x:Key="ShowAllToContentConverter" />
@@ -33,331 +34,252 @@
             <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
-            <logView:NonMergedDataSourceToVisibilityCollapsedConverter x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
+            <logView:NonMergedDataSourceToVisibilityCollapsedConverter
+                x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
             <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="3*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-        <WrapPanel Orientation="Horizontal" Margin="8">
-            <controls:FolderOpenButton Margin="0,0,0,4"
-                                       Padding="0"
-                                       Width="26"
-                                       Height="26"
-                                       VerticalContentAlignment="Center"
-                                       ToolTip="Open file in explorer"
-                                       Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}" />
+        <ContentPresenter Content="{Binding DataSources}" />
 
-            <controls:ExportButton Margin="0,0,0,4"
-                                   Padding="0"
-                                   x:Name="PART_Export"
-                                   Command="{Binding LogView.ExportToFileCommand, ElementName=This}"
-                                   ToolTip="Export to file"
-                                   Width="26"
-                                   Height="26" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                x:Name="PART_FollowTail"
-                Content="Follow Tail"
-                VerticalAlignment="Stretch"
-                ToolTip="(Un)Follow the latest changes"
-                IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                x:Name="PART_View"
-                VerticalAlignment="Stretch"
-                ToolTip="Change the way the log file is displayed"
-                Content="View"
-                DataContext="{Binding Path=., ElementName=This}">
-                <controls:FlatToggleButton.ContextMenu>
-                    <controls:FlatContextMenu AnchorAlignment="Center"
-                                              HorizontalOffset="-60"
-                                              Placement="Bottom"
-                                              IsFirstItemHovered="True"
-                                              VerticalOffset="-2">
-                        <controls:MenuItemContentControl Padding="0">
-                            <StackPanel Margin="8">
-
-                                <controls:FlatToggleButton
-                                    Margin="0,0,0,8"
-                                    Padding="4"
-                                    x:Name="PART_ShowLineNumbers"
-                                    VerticalAlignment="Stretch"
-                                    ToolTip="Show/hide line numbers"
-                                    IsChecked="{Binding ShowLineNumbers, Mode=TwoWay}"
-                                    Content="Line Numbers" />
-
-                                <controls:FlatToggleButton
-                                    Margin="0,0,0,8"
-                                    Padding="4"
-                                    x:Name="PART_ShowDeltaTime"
-                                    VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.ShowDeltaTimes, Mode=TwoWay}"
-                                    ToolTip="Show the amount of time elapsed since the previous entry"
-                                    Content="Time delta" />
-
-                                <controls:FlatToggleButton
-                                    Margin="0,0,0,8"
-                                    Padding="4"
-                                    x:Name="PART_ShowElapsedTime"
-                                    VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.ShowElapsedTime, Mode=TwoWay}"
-                                    ToolTip="Show the amount of time elapsed since the first entry"
-                                    Content="Elapsed time" />
-
-                                <logView:DataSourceDisplayModeToggleButton 
-                                    x:Name="PART_MergedDataSourceDisplayMode"
-                                    DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay}"
-                                    Visibility="{Binding DataSource, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
-                                    VerticalAlignment="Stretch"
-                                    Margin="0,0,0,8"
-                                    Padding="4" />
-
-                                <controls:FlatToggleButton
-                                    Margin="0,0,0,8"
-                                    Padding="4"
-                                    x:Name="PART_ColorByLevel"
-                                    VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay}"
-                                    ToolTip="Color log messages by their log level"
-                                    Content="Color by level" />
-
-                                <controls:FlatToggleButton
-                                    Margin="0,0,0,8"
-                                    Padding="4"
-                                    x:Name="PART_HideEmptyLines"
-                                    VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay}"
-                                    ToolTip="Hide lines which are completely empty"
-                                    Content="Hide empty lines" />
-
-                                <controls:FlatToggleButton
-                                    Margin="0"
-                                    Padding="4"
-                                    x:Name="PART_SingleLine"
-                                    VerticalAlignment="Stretch"
-                                    IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay}"
-                                    ToolTip="Treat every single line as a separate log entry"
-                                    Content="Single line" />
-
-                            </StackPanel>
-                        </controls:MenuItemContentControl>
-                    </controls:FlatContextMenu>
-                </controls:FlatToggleButton.ContextMenu>
-            </controls:FlatToggleButton>
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                Width="41"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide all log messages, regardless of their log level"
-                Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide fatal log messages"
-                Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide errors"
-                Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide warnings"
-                Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide infos"
-                Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,0,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide debug log messages"
-                Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
-
-            <controls:FlatToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                VerticalAlignment="Stretch"
-                IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
-                ToolTip="Show/hide trace log messages"
-                Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
-
-            <controls:SearchTextBox
-                x:Name="PART_SearchBox"
-                Margin="0,0,8,8"
-                Padding="4"
-                Width="200"
-                RequiresExplicitSearchStart="False"
-                AcceptsTab="True"
-                Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
-                CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
-                Watermark="Search log file (Ctrl+F)" />
-
-            <controls:FilterTextBox
-                x:Name="PART_FindAllBox"
-                Margin="0,0,8,8"
-                Padding="4"
-                Width="200"
-                AcceptsTab="True"
-                FilterText="{Binding DataSource.FindAllSearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
-                Watermark="Find all in log file (Ctrl+Shift+F)" />
-
-            <controls:PluginToggleButton
-                Margin="0,0,8,8"
-                Padding="4"
-                Width="26"
-                Height="26"
-                ToolTip="A plugin is responsible for translating the contents of this log file - click here for details"
-                Visibility="{Binding DataSource.TranslationPlugin, Converter={StaticResource NullToCollapsedConverter}, ElementName=This}">
-                <controls:FlatToggleButton.ContextMenu>
-                    <controls:FlatContextMenu AnchorAlignment="Center"
-                                              HorizontalOffset="-150"
-                                              Placement="Bottom"
-                                              IsFirstItemHovered="True"
-                                              VerticalOffset="-2">
-                        <controls:MenuItemContentControl Padding="0">
-                            <logView:PluginDescriptionControl DataContext="{Binding CurrentDataSource.TranslationPlugin}" />
-                        </controls:MenuItemContentControl>
-                    </controls:FlatContextMenu>
-                </controls:FlatToggleButton.ContextMenu>
-            </controls:PluginToggleButton>
-        </WrapPanel>
-
-        <Grid Grid.Row="1"
-              Height="1"
-              Background="{StaticResource SeparatorBrush}" />
-
-        <logView:LogEntryListView
-            x:Name="PART_ListView"
-            Grid.Row="2"
-            DataSource="{Binding DataSource.DataSource, ElementName=This}"
-            LogFile="{Binding LogFile, ElementName=This}"
-            Search="{Binding Search, ElementName=This}"
-            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
-            ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-            ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-            ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-            ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-            MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-            Settings="{Binding Settings, ElementName=This}"
-            SnapsToDevicePixels="True" />
-
-        <StackPanel Grid.Row="2" VerticalAlignment="Center">
-            <TextBlock
-                HorizontalAlignment="Center"
-                FontSize="20"
-                Text="{Binding ErrorMessage, ElementName=This}" />
-            <TextBlock
-                HorizontalAlignment="Center"
-                FontSize="12"
-                Text="{Binding DetailedErrorMessage, ElementName=This}" />
-        </StackPanel>
-
-        <Border Grid.Row="3"
-                Background="{StaticResource TitleBarBrush}">
-            <Grid Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
-                <Grid.ColumnDefinitions>
-                    <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
-                    <ColumnDefinition Width="25" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="200" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal"
-                            Grid.Column="1">
-                    <TextBlock
-                        Margin="4"
-                        Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
-                    <TextBlock
-                        Margin="4"
-                        Text="{Binding TotalLogEntryCount, ElementName=This, StringFormat=of {0}}" />
-                    <TextBlock
-                        Margin="4"
-                        Text="{Binding DataSource.FileSize, ElementName=This, StringFormat=size: {0}}" />
-                    <TextBlock
-                        Margin="4"
-                        Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
-                </StackPanel>
-
-                <Grid Grid.Column="3"
-                      Margin="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Progress: "
-                               VerticalAlignment="Center" />
-                    <controls:FlatProgressBar Grid.Column="1"
-                                              Minimum="0"
-                                              Maximum="1"
-                                              Height="14"
-                                              Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}" />
-                </Grid>
-
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="4"
-              Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Background="{StaticResource PrimaryBrush}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Find all results:"
-                           Foreground="White"
-                           Margin="8,4,8,4"/>
-                <controls:CloseButton Grid.Column="1"
-                                      Height="26"
-                                      Command="{Binding DataSource.CloseFindAllCommand, ElementName=This}"/>
-            </Grid>
+
+            <WrapPanel Orientation="Horizontal" Margin="8">
+                <controls:FolderOpenButton Margin="0,0,0,4"
+                                           Padding="0"
+                                           Width="26"
+                                           Height="26"
+                                           VerticalContentAlignment="Center"
+                                           ToolTip="Open file in explorer"
+                                           Command="{Binding DataSource.OpenInExplorerCommand, ElementName=This}" />
+
+                <controls:ExportButton Margin="0,0,0,4"
+                                       Padding="0"
+                                       x:Name="PART_Export"
+                                       Command="{Binding LogView.ExportToFileCommand, ElementName=This}"
+                                       ToolTip="Export to file"
+                                       Width="26"
+                                       Height="26" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    x:Name="PART_FollowTail"
+                    Content="Follow Tail"
+                    VerticalAlignment="Stretch"
+                    ToolTip="(Un)Follow the latest changes"
+                    IsChecked="{Binding DataSource.FollowTail, Mode=TwoWay, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    x:Name="PART_View"
+                    VerticalAlignment="Stretch"
+                    ToolTip="Change the way the log file is displayed"
+                    Content="View"
+                    DataContext="{Binding Path=., ElementName=This}">
+                    <controls:FlatToggleButton.ContextMenu>
+                        <controls:FlatContextMenu AnchorAlignment="Center"
+                                                  HorizontalOffset="-60"
+                                                  Placement="Bottom"
+                                                  IsFirstItemHovered="True"
+                                                  VerticalOffset="-2">
+                            <controls:MenuItemContentControl Padding="0">
+                                <StackPanel Margin="8">
+
+                                    <controls:FlatToggleButton
+                                        Margin="0,0,0,8"
+                                        Padding="4"
+                                        x:Name="PART_ShowLineNumbers"
+                                        VerticalAlignment="Stretch"
+                                        ToolTip="Show/hide line numbers"
+                                        IsChecked="{Binding ShowLineNumbers, Mode=TwoWay}"
+                                        Content="Line Numbers" />
+
+                                    <controls:FlatToggleButton
+                                        Margin="0,0,0,8"
+                                        Padding="4"
+                                        x:Name="PART_ShowDeltaTime"
+                                        VerticalAlignment="Stretch"
+                                        IsChecked="{Binding DataSource.ShowDeltaTimes, Mode=TwoWay}"
+                                        ToolTip="Show the amount of time elapsed since the previous entry"
+                                        Content="Time delta" />
+
+                                    <controls:FlatToggleButton
+                                        Margin="0,0,0,8"
+                                        Padding="4"
+                                        x:Name="PART_ShowElapsedTime"
+                                        VerticalAlignment="Stretch"
+                                        IsChecked="{Binding DataSource.ShowElapsedTime, Mode=TwoWay}"
+                                        ToolTip="Show the amount of time elapsed since the first entry"
+                                        Content="Elapsed time" />
+
+                                    <logView:DataSourceDisplayModeToggleButton
+                                        x:Name="PART_MergedDataSourceDisplayMode"
+                                        DisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay}"
+                                        Visibility="{Binding DataSource, Converter={StaticResource NonMergedDataSourceToVisibilityCollapsedConverter}}"
+                                        VerticalAlignment="Stretch"
+                                        Margin="0,0,0,8"
+                                        Padding="4" />
+
+                                    <controls:FlatToggleButton
+                                        Margin="0,0,0,8"
+                                        Padding="4"
+                                        x:Name="PART_ColorByLevel"
+                                        VerticalAlignment="Stretch"
+                                        IsChecked="{Binding DataSource.ColorByLevel, Mode=TwoWay}"
+                                        ToolTip="Color log messages by their log level"
+                                        Content="Color by level" />
+
+                                    <controls:FlatToggleButton
+                                        Margin="0,0,0,8"
+                                        Padding="4"
+                                        x:Name="PART_HideEmptyLines"
+                                        VerticalAlignment="Stretch"
+                                        IsChecked="{Binding DataSource.HideEmptyLines, Mode=TwoWay}"
+                                        ToolTip="Hide lines which are completely empty"
+                                        Content="Hide empty lines" />
+
+                                    <controls:FlatToggleButton
+                                        Margin="0"
+                                        Padding="4"
+                                        x:Name="PART_SingleLine"
+                                        VerticalAlignment="Stretch"
+                                        IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay}"
+                                        ToolTip="Treat every single line as a separate log entry"
+                                        Content="Single line" />
+
+                                </StackPanel>
+                            </controls:MenuItemContentControl>
+                        </controls:FlatContextMenu>
+                    </controls:FlatToggleButton.ContextMenu>
+                </controls:FlatToggleButton>
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    Width="41"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowAll, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide all log messages, regardless of their log level"
+                    Content="{Binding ShowAll, Converter={StaticResource ShowAllToContentConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowFatal, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide fatal log messages"
+                    Content="{Binding DataSource.FatalCount, Converter={StaticResource FatalCountConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowError, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide errors"
+                    Content="{Binding DataSource.ErrorCount, Converter={StaticResource ErrorCountConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowWarning, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide warnings"
+                    Content="{Binding DataSource.WarningCount, Converter={StaticResource WarningCountConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowInfo, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide infos"
+                    Content="{Binding DataSource.InfoCount, Converter={StaticResource InfoCountConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,0,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowDebug, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide debug log messages"
+                    Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
+
+                <controls:FlatToggleButton
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    VerticalAlignment="Stretch"
+                    IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
+                    ToolTip="Show/hide trace log messages"
+                    Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
+
+                <controls:SearchTextBox
+                    x:Name="PART_SearchBox"
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    Width="200"
+                    RequiresExplicitSearchStart="False"
+                    AcceptsTab="True"
+                    Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
+                    OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
+                    CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
+                    Watermark="Search log file (Ctrl+F)" />
+
+                <controls:FilterTextBox
+                    x:Name="PART_FindAllBox"
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    Width="200"
+                    AcceptsTab="True"
+                    FilterText="{Binding DataSource.FindAllSearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
+                    Watermark="Find all in log file (Ctrl+Shift+F)" />
+
+                <controls:PluginToggleButton
+                    Margin="0,0,8,8"
+                    Padding="4"
+                    Width="26"
+                    Height="26"
+                    ToolTip="A plugin is responsible for translating the contents of this log file - click here for details"
+                    Visibility="{Binding DataSource.TranslationPlugin, Converter={StaticResource NullToCollapsedConverter}, ElementName=This}">
+                    <controls:FlatToggleButton.ContextMenu>
+                        <controls:FlatContextMenu AnchorAlignment="Center"
+                                                  HorizontalOffset="-150"
+                                                  Placement="Bottom"
+                                                  IsFirstItemHovered="True"
+                                                  VerticalOffset="-2">
+                            <controls:MenuItemContentControl Padding="0">
+                                <logView:PluginDescriptionControl
+                                    DataContext="{Binding CurrentDataSource.TranslationPlugin}" />
+                            </controls:MenuItemContentControl>
+                        </controls:FlatContextMenu>
+                    </controls:FlatToggleButton.ContextMenu>
+                </controls:PluginToggleButton>
+            </WrapPanel>
+
+            <Grid Grid.Row="1"
+                  Height="1"
+                  Background="{StaticResource SeparatorBrush}" />
+
             <logView:LogEntryListView
-                x:Name="PART_FindAllView"
-                Height="300"
-                Grid.Row="1"
-                LogFile="{Binding FindAllLogFile, ElementName=This}"
-                Search="{Binding FindAllSearch, ElementName=This}"
-                SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
+                x:Name="PART_ListView"
+                Grid.Row="2"
+                DataSource="{Binding DataSource.DataSource, ElementName=This}"
+                LogFile="{Binding LogFile, ElementName=This}"
+                Search="{Binding Search, ElementName=This}"
+                CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
                 ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
                 ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
                 ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
@@ -365,8 +287,98 @@
                 MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
                 Settings="{Binding Settings, ElementName=This}"
                 SnapsToDevicePixels="True" />
-        </Grid>
 
+            <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    Text="{Binding ErrorMessage, ElementName=This}" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="12"
+                    Text="{Binding DetailedErrorMessage, ElementName=This}" />
+            </StackPanel>
+
+            <Border Grid.Row="3"
+                    Background="{StaticResource TitleBarBrush}">
+                <Grid
+                    Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
+                        <ColumnDefinition Width="25" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal"
+                                Grid.Column="1">
+                        <TextBlock
+                            Margin="4"
+                            Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
+                        <TextBlock
+                            Margin="4"
+                            Text="{Binding TotalLogEntryCount, ElementName=This, StringFormat=of {0}}" />
+                        <TextBlock
+                            Margin="4"
+                            Text="{Binding DataSource.FileSize, ElementName=This, StringFormat=size: {0}}" />
+                        <TextBlock
+                            Margin="4"
+                            Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
+                    </StackPanel>
+
+                    <Grid Grid.Column="3"
+                          Margin="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Progress: "
+                                   VerticalAlignment="Center" />
+                        <controls:FlatProgressBar Grid.Column="1"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Height="14"
+                                                  Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}" />
+                    </Grid>
+
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="4"
+                  Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid Background="{StaticResource PrimaryBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Find all results:"
+                               Foreground="White"
+                               Margin="8,4,8,4" />
+                    <controls:CloseButton Grid.Column="1"
+                                          Height="26"
+                                          Command="{Binding DataSource.CloseFindAllCommand, ElementName=This}" />
+                </Grid>
+                <logView:LogEntryListView
+                    x:Name="PART_FindAllView"
+                    Height="300"
+                    Grid.Row="1"
+                    LogFile="{Binding FindAllLogFile, ElementName=This}"
+                    Search="{Binding FindAllSearch, ElementName=This}"
+                    SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
+                    ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+                    ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+                    ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+                    ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+                    MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                    Settings="{Binding Settings, ElementName=This}"
+                    SnapsToDevicePixels="True" />
+            </Grid>
+        </Grid>
     </Grid>
 
 </UserControl>
