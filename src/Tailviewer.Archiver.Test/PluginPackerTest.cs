@@ -288,6 +288,24 @@ namespace Tailviewer.Archiver.Test
 			}
 		}
 
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/222")]
+		public void TestPackPrivatePluginImplementation()
+		{
+			using (var packer = CreatePacker(_fname))
+			{
+				var builder = new PluginBuilder("Kittyfisto", "MyPlugin", "My First Plugin");
+				builder.PluginVersion = new Version(1, 4, 12034);
+				builder.ImplementInterface<IFileFormatPlugin>("Plugin.FileFormatPlugin", TypeAttributes.NotPublic | TypeAttributes.Sealed);
+				builder.Save();
+
+				new Action(() => packer.AddPluginAssembly(builder.FileName))
+					.Should()
+					.Throw<PackException>()
+					.WithMessage("Plugin implementations must publicly visible, but 'Plugin.FileFormatPlugin' is not!");
+			}
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>

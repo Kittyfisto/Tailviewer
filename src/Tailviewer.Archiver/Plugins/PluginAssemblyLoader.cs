@@ -265,10 +265,21 @@ namespace Tailviewer.Archiver.Plugins
 		private IReadOnlyList<IPluginImplementationDescription> FindPluginImplementations(Assembly assembly)
 		{
 			var plugins = new List<IPluginImplementationDescription>();
-			foreach (var type in assembly.ExportedTypes)
-			foreach (var @interface in PluginInterfaces)
-				if (type.GetInterface(@interface.FullName) != null)
-					plugins.Add(new PluginImplementationDescription(type.FullName , @interface));
+			foreach (var type in assembly.DefinedTypes)
+			{
+				foreach (var @interface in PluginInterfaces)
+				{
+					if (type.GetInterface(@interface.FullName) != null)
+					{
+						if (!type.IsPublic)
+						{
+							throw new PackException($"Plugin implementations must publicly visible, but '{type.FullName}' is not!");
+						}
+
+						plugins.Add(new PluginImplementationDescription(type.FullName , @interface));
+					}
+				}
+			}
 
 			// TODO: Inspect non-public types and log a warning if one implements the IPlugin interface
 			return plugins;

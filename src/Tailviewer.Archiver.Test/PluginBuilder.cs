@@ -64,10 +64,10 @@ namespace Tailviewer.Archiver.Test
 			_dependencies.Add(filePath);
 		}
 
-		public TypeBuilder ImplementInterface<T>(string fullName) where T : IPlugin
+		public TypeBuilder ImplementInterface<T>(string fullName, TypeAttributes implementationAttributes = TypeAttributes.Public | TypeAttributes.Sealed) where T : IPlugin
 		{
 			var interfaceType = typeof(T);
-			var typeBuilder = _module.DefineType(fullName, TypeAttributes.Public | TypeAttributes.Sealed);
+			var typeBuilder = _module.DefineType(fullName, implementationAttributes);
 			_types.Add(typeBuilder);
 			typeBuilder.AddInterfaceImplementation(interfaceType);
 
