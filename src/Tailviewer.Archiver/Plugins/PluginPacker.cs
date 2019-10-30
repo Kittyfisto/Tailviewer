@@ -31,6 +31,13 @@ namespace Tailviewer.Archiver.Plugins
 		/// </summary>
 		private const int MaximumIconSize = 48;
 
+		/// <summary>
+		///     The maximum supported .NET Framework version a plugin may target.
+		///     This is limited to the same version that Tailviewer.exe is built against.
+		///     Currently, this happens to be .NET Framework 4.7.1
+		/// </summary>
+		private static readonly Version MaximumNetFrameworkVersion = new Version(4, 7, 1);
+
 		private readonly ZipArchive _archive;
 		private readonly PluginPackageIndex _index;
 		private bool _disposed;
@@ -209,8 +216,8 @@ namespace Tailviewer.Archiver.Plugins
 			// support adding assemblies which target older .NET frameworks where this attribute
 			// is obviously missing and therefore we will tolerate assemblies without it.
 			if (version != null)
-				if (version > new Version(4, 5, 2))
-					throw new PackException("Assemblies may only target frameworks of up to .NET 4.5.2");
+				if (version > MaximumNetFrameworkVersion)
+					throw new PackException($"Assemblies may only target frameworks of up to .NET {MaximumNetFrameworkVersion}");
 
 			var assemblyDescription = AssemblyDescription.FromAssembly(assembly);
 			assemblyDescription.EntryName = entryName;

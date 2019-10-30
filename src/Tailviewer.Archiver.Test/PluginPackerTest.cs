@@ -99,25 +99,22 @@ namespace Tailviewer.Archiver.Test
 		}
 
 		[Test]
-		[Description("Verifies that plugins may not target newer frameworks than 4.5.2")]
+		[Description("Verifies that plugins may target newer frameworks up to 4.7.1")]
 		public void TestAddAssembly4()
 		{
 			using (var packer = CreatePacker(_fname))
 			{
 				var fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.Should().Throw<PackException>()
-					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
+					.Should().NotThrow("Assemblies may target frameworks of up to .NET 4.7.1");
 
 				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.1.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.Should().Throw<PackException>()
-					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
+					.Should().NotThrow("Assemblies may target frameworks of up to .NET 4.7.1");
 
 				fname = Path.Combine(_testData, "Managed", "x86", "Targets.NET.4.6.2.dll");
 				new Action(() => packer.AddFile("Foo.dll", fname))
-					.Should().Throw<PackException>()
-					.WithMessage("Assemblies may only target frameworks of up to .NET 4.5.2");
+					.Should().NotThrow("Assemblies may target frameworks of up to .NET 4.7.1");
 			}
 		}
 
