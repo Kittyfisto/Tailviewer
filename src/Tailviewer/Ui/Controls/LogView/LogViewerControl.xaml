@@ -222,6 +222,7 @@
                 Padding="4"
                 Width="200"
                 RequiresExplicitSearchStart="False"
+                AcceptsTab="True"
                 Text="{Binding DataSource.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
                 OccurenceCount="{Binding DataSource.SearchResultCount, ElementName=This}"
                 CurrentOccurenceIndex="{Binding DataSource.CurrentSearchResultIndex, Mode=TwoWay, ElementName=This}"
@@ -232,6 +233,7 @@
                 Margin="0,0,8,8"
                 Padding="4"
                 Width="200"
+                AcceptsTab="True"
                 FilterText="{Binding DataSource.FindAllSearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=This}"
                 Watermark="Find all in log file (Ctrl+Shift+F)" />
 

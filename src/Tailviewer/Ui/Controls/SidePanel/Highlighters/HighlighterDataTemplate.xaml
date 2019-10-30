@@ -38,6 +38,7 @@
                     x:Name="PART_Value"
                     Grid.Column="1"
                     Height="26"
+                    AcceptsTab="True"
                     FilterText="{Binding Value, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                     IsValid="{Binding IsValid, Mode=OneWay}"
                     Watermark="Enter highlighted term" />
