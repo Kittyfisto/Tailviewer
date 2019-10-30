@@ -98,6 +98,9 @@ namespace Tailviewer.Ui.Controls.SidePanel.Issues
 
 		private IssuesViewModel GetOrCreateViewModel(IDataSource dataSource)
 		{
+			if (dataSource == null)
+				return null;
+
 			if (!_viewModels.TryGetValue(dataSource, out var viewModel))
 			{
 				viewModel = CreateViewModel(dataSource);

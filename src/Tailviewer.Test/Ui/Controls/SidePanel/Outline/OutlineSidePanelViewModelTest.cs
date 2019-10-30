@@ -15,7 +15,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 {
 	[TestFixture]
 	[Apartment(ApartmentState.STA)]
-	public sealed class OutlineViewModelTest
+	public sealed class OutlineSidePanelViewModelTest
 	{
 		private ServiceContainer _services;
 		private PluginRegistry _pluginLoader;
@@ -26,6 +26,30 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 			_services = new ServiceContainer();
 			_pluginLoader = new PluginRegistry();
 			_services.RegisterInstance<IPluginLoader>(_pluginLoader);
+		}
+
+		[Test]
+		public void TestConstruction()
+		{
+			var viewModel = new OutlineSidePanelViewModel(_services);
+			viewModel.CurrentDataSource.Should().BeNull();
+			viewModel.CurrentContent.Should().BeNull();
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/223")]
+		public void TestUnsetCurrentDataSource()
+		{
+			var viewModel = new OutlineSidePanelViewModel(_services);
+
+			var dataSource = new Mock<IDataSource>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(new InMemoryLogFile());
+
+			viewModel.CurrentDataSource = dataSource.Object;
+			viewModel.CurrentDataSource.Should().Be(dataSource.Object);
+
+			viewModel.CurrentDataSource = null;
+			viewModel.CurrentDataSource.Should().BeNull();
 		}
 
 		[Test]

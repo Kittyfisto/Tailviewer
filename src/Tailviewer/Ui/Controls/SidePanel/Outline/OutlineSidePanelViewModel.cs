@@ -99,6 +99,9 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		private IInternalLogFileOutlineViewModel GetOrCreateViewModel(IDataSource dataSource)
 		{
+			if (dataSource == null)
+				return null;
+
 			if (!_viewModelsByDataSource.TryGetValue(dataSource, out var viewModel))
 			{
 				viewModel = TryCreateViewModelFor(dataSource);
@@ -126,11 +129,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			if (dataSource is IMultiDataSource multi)
 			{
 				var children = multi.OriginalSources ?? Enumerable.Empty<IDataSource>();
-				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogFile.GetValue(LogFileProperties.Format))).ToList();
+				plugins = children.SelectMany(x => FindMatchingPlugins(x.UnfilteredLogFile?.GetValue(LogFileProperties.Format))).ToList();
 			}
 			else
 			{
-				plugins = FindMatchingPlugins(dataSource.UnfilteredLogFile.GetValue(LogFileProperties.Format));
+				plugins = FindMatchingPlugins(dataSource.UnfilteredLogFile?.GetValue(LogFileProperties.Format));
 			}
 
 			if (plugins.Count == 0)
