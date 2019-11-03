@@ -1,16 +1,20 @@
 @setlocal enabledelayedexpansion
 @echo off
 
-if [%APPVEYOR_BUILD_VERSION%] == [] goto :NO_VERSION
+if not [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
+	set BRANCH_NAME=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%
+	set BRANCH_NAME=%BRANCH_NAME:/=_%
+	set BRANCH_NAME=%BRANCH_NAME:\=_%
+	for /f %%i in ('git rev-parse --short HEAD') do set COMMIT_HASH=%%i
+) else (
+	set BRANCH_NAME=master
+)
 
-for /f %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH_NAME=%%i
-set BRANCH_NAME=%BRANCH_NAME:/=_%
-set BRANCH_NAME=%BRANCH_NAME:\=_%
-for /f %%i in ('git rev-parse --short HEAD') do set COMMIT_HASH=%%i
-
+echo We're on %BRANCH_NAME%
 SET source_installer_name="Tailviewer-setup.exe"
 
 if [%BRANCH_NAME%] == [master] (
+	if [%APPVEYOR_BUILD_VERSION%] == [] goto :NO_VERSION
 	SET dest_installer_name="Tailviewer-setup-%APPVEYOR_BUILD_VERSION%.exe"
 ) else (
 	SET dest_installer_name="Tailviewer-setup-branch-%BRANCH_NAME%-%COMMIT_HASH%.exe"
