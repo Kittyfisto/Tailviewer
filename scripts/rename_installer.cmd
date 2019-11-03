@@ -3,12 +3,16 @@
 
 if not [%APPVEYOR_PULL_REQUEST_NUMBER%] == [] (
 	set BRANCH_NAME=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%
-	set BRANCH_NAME=%BRANCH_NAME:/=_%
-	set BRANCH_NAME=%BRANCH_NAME:\=_%
-	for /f %%i in ('git rev-parse --short HEAD') do set COMMIT_HASH=%%i
 ) else (
-	set BRANCH_NAME=master
+	if not [%APPVEYOR_REPO_BRANCH%] == [] (
+		set BRANCH_NAME=%APPVEYOR_REPO_BRANCH%
+	) else (
+		set BRANCH_NAME=master
+	)
 )
+set BRANCH_NAME=%BRANCH_NAME:/=_%
+set BRANCH_NAME=%BRANCH_NAME:\=_%
+for /f %%i in ('git rev-parse --short HEAD') do set COMMIT_HASH=%%i
 
 echo We're on %BRANCH_NAME%
 SET source_installer_name="Tailviewer-setup.exe"
