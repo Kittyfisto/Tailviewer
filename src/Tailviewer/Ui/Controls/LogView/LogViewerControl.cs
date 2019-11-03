@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 using Metrolib.Controls;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -594,6 +595,11 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			var element = PART_SearchBox;
 			element?.Focus();
+		}
+
+		private void OverlayOnMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			DataSourceToggleButton.IsChecked = false;
 		}
 	}
 }

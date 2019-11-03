@@ -7,9 +7,6 @@
                            xmlns:viewModels="clr-namespace:Tailviewer.Ui.ViewModels"
                            xmlns:metrolib="clr-namespace:Metrolib.Controls;assembly=Metrolib"
                            xmlns:actionCenter="clr-namespace:Tailviewer.Ui.Controls.ActionCenter"
-                           xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
-                           xmlns:list="clr-namespace:Metrolib.Controls.List;assembly=Metrolib"
-                           xmlns:mainPanel="clr-namespace:Tailviewer.Ui.Controls.MainPanel"
                            xmlns:metrolib1="clr-namespace:Metrolib;assembly=Metrolib"
                            mc:Ignorable="d"
                            d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
@@ -48,7 +45,6 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Plugins/PluginsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/About/AboutMainPanelDataTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/DataSources/DataSourcesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Highlighters/HighlightersSidePanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/Bookmarks/BookmarksDataTemplate.xaml" />
@@ -197,26 +193,9 @@
                 <controls:AutoUpdateControl DataContext="{Binding AutoUpdater}"
                                             Visibility="{Binding ShowUpdateAvailable, Converter={StaticResource BoolFalseToCollapsedConverter}}" />
 
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <ContentPresenter Content="{Binding SelectedMainPanel}"
-                                      x:Name="PART_Content"/>
-
-                    <Grid Grid.Column="1"
-                          Width="1"
-                          Background="{StaticResource SeparatorBrush}" />
-
-                    <sidePanel:SidePanelControl
-                        Grid.Column="2"
-                        MaxWidth="600"
-                        SidePanels="{Binding SelectedMainPanel.SidePanels}"
-                        SelectedPanel="{Binding SelectedMainPanel.SelectedSidePanel, Mode=TwoWay}"/>
-                </Grid>
+                <ContentPresenter Grid.Row="1"
+                                  Content="{Binding SelectedMainPanel}"
+                                  x:Name="PART_Content"/>
             </Grid>
         </Grid>
     </AdornerDecorator>

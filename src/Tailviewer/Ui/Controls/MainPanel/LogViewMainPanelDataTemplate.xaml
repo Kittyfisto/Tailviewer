@@ -12,95 +12,107 @@
     <DataTemplate DataType="{x:Type mainPanel:LogViewMainPanelViewModel}">
 
         <Grid>
-            <Grid Width="200"
-                  Height="150"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Center">
-                <TextBlock
-                    Text="Drag n' drop or select one or more files from the left in order to view them"
-                    TextWrapping="Wrap"
-                    FontSize="16"
-                    Margin="10"
-                    Foreground="DodgerBlue"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center" />
-                <Rectangle StrokeDashArray="4 4"
-                           Stroke="DodgerBlue"
-                           StrokeThickness="2"
-                           RadiusX="10"
-                           RadiusY="10" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid Width="200"
+                      Height="150"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center">
+                    <TextBlock
+                        Text="Drag n' drop or select one or more files from the left in order to view them"
+                        TextWrapping="Wrap"
+                        FontSize="16"
+                        Margin="10"
+                        Foreground="DodgerBlue"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center" />
+                    <Rectangle StrokeDashArray="4 4"
+                               Stroke="DodgerBlue"
+                               StrokeThickness="2"
+                               RadiusX="10"
+                               RadiusY="10" />
+                </Grid>
+
+                <logView:LogViewerControl
+                    Visibility="{Binding CurrentDataSourceLogView, Converter={StaticResource NullToCollapsedConverter}}"
+                    x:Name="PART_LogFileView"
+                    Settings="{Binding Settings}"
+                    LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
+                    TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
+                    ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
+                    DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
+                    LogView="{Binding CurrentDataSourceLogView}" />
+
+                <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
+                                        Placement="Center"
+                                        IsOpen="{Binding Show, Mode=TwoWay}">
+                    <Border Padding="2"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            BorderBrush="Gray"
+                            Background="LightGray">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Go to line:"
+                                       Margin="0,0,0,2" />
+                            <controls1:EditorTextBox Grid.Row="1"
+                                                     Width="150"
+                                                     Text="{Binding LineNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Watermark="Enter line number" />
+                        </Grid>
+                    </Border>
+                </goToLine:GoToLinePopup>
+
+                <quickNavigation1:QuickNavigationPopup x:Name="PART_FindDataSourcePopup"
+                                                       Placement="Center"
+                                                       IsOpen="{Binding ShowQuickNavigation, Mode=TwoWay}">
+                    <Border Padding="2"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            BorderBrush="Gray"
+                            Background="LightGray">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Search data sources:"
+                                       Margin="0,0,0,2" />
+                            <controls1:SuggestionInputControl x:Name="PART_FindDataSource"
+                                                              Grid.Row="1"
+                                                              DataContext="{Binding QuickNavigation}"
+                                                              Text="{Binding SearchTerm}"
+                                                              Watermark="Enter data source name or path"
+                                                              Suggestions="{Binding Suggestions}"
+                                                              SelectedSuggestion="{Binding SelectedSuggestion}"
+                                                              SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
+                                                              Width="300">
+                                <controls1:SuggestionInputControl.SuggestionTemplate>
+                                    <DataTemplate DataType="{x:Type quickNavigation1:DataSourceSuggestionViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Prefix, Mode=OneWay}" />
+                                            <TextBlock Text="{Binding Midfix, Mode=OneWay}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Postfix, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </controls1:SuggestionInputControl.SuggestionTemplate>
+                            </controls1:SuggestionInputControl>
+                        </Grid>
+                    </Border>
+                </quickNavigation1:QuickNavigationPopup>
             </Grid>
 
-            <logView:LogViewerControl
-                Visibility="{Binding CurrentDataSourceLogView, Converter={StaticResource NullToCollapsedConverter}}"
-                x:Name="PART_LogFileView"
-                Settings="{Binding Settings}"
-                LogEntryCount="{Binding CurrentDataSourceLogView.LogEntryCount}"
-                TotalLogEntryCount="{Binding CurrentDataSourceLogView.TotalLogEntryCount}"
-                ErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesExplanation}"
-                DetailedErrorMessage="{Binding CurrentDataSourceLogView.NoEntriesSubtext}"
-                LogView="{Binding CurrentDataSourceLogView}"/>
-
-            <goToLine:GoToLinePopup DataContext="{Binding GoToLine}"
-                                    Placement="Center"
-                                    IsOpen="{Binding Show, Mode=TwoWay}">
-                <Border Padding="2"
-                        BorderThickness="1"
-                        CornerRadius="2"
-                        BorderBrush="Gray"
-                        Background="LightGray">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Go to line:"
-                                   Margin="0,0,0,2" />
-                        <controls1:EditorTextBox Grid.Row="1"
-                                                 Width="150"
-                                                 Text="{Binding LineNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Watermark="Enter line number"/>
-                    </Grid>
-                </Border>
-            </goToLine:GoToLinePopup>
-
-            <quickNavigation1:QuickNavigationPopup x:Name="PART_FindDataSourcePopup"
-                                                  Placement="Center"
-                                                  IsOpen="{Binding ShowQuickNavigation, Mode=TwoWay}">
-                <Border Padding="2"
-                        BorderThickness="1"
-                        CornerRadius="2"
-                        BorderBrush="Gray"
-                        Background="LightGray">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Search data sources:"
-                                   Margin="0,0,0,2" />
-                        <controls1:SuggestionInputControl x:Name="PART_FindDataSource"
-                                                          Grid.Row="1"
-                                                          DataContext="{Binding QuickNavigation}"
-                                                          Text="{Binding SearchTerm}"
-                                                          Watermark="Enter data source name or path"
-                                                          Suggestions="{Binding Suggestions}"
-                                                          SelectedSuggestion="{Binding SelectedSuggestion}"
-                                                          SuggestionChosenCommand="{Binding ChooseDataSourceCommand}"
-                                                          Width="300">
-                            <controls1:SuggestionInputControl.SuggestionTemplate>
-                                <DataTemplate DataType="{x:Type quickNavigation1:DataSourceSuggestionViewModel}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Prefix, Mode=OneWay}" />
-                                        <TextBlock Text="{Binding Midfix, Mode=OneWay}" FontWeight="SemiBold" />
-                                        <TextBlock Text="{Binding Postfix, Mode=OneWay}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </controls1:SuggestionInputControl.SuggestionTemplate>
-                        </controls1:SuggestionInputControl>
-                    </Grid>
-                </Border>
-            </quickNavigation1:QuickNavigationPopup>
+            <ContentPresenter x:Name="SidePanelContent"
+                              Content="{x:Null}"
+                              Grid.Column="1"
+                              MaxWidth="600" />
         </Grid>
 
     </DataTemplate>

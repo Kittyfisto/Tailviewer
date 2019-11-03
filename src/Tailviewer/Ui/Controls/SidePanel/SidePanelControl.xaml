@@ -11,25 +11,13 @@
                 <ControlTemplate TargetType="{x:Type dashboard:SidePanelControl}">
                     <Border Background="{TemplateBinding Background}">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="48" />
-                            </Grid.ColumnDefinitions>
-
-                            <Border Background="White">
-                                <ContentPresenter x:Name="PART_Content"
-                                                  Content="{TemplateBinding DisplayedPanel}"
-                                                  HorizontalAlignment="Right"
-                                                  Width="300">
-                                    <ContentPresenter.LayoutTransform>
-                                        <ScaleTransform ScaleX="0" />
-                                    </ContentPresenter.LayoutTransform>
-                                </ContentPresenter>
-                            </Border>
-
                             <ItemsControl ItemsSource="{TemplateBinding SidePanels}"
-                                          FocusVisualStyle="{x:Null}"
-                                          Grid.Column="1">
+                                          FocusVisualStyle="{x:Null}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type dashboard:ISidePanelViewModel}">
                                         <controls:FlatToggleButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -59,40 +47,6 @@
                             </ItemsControl>
                         </Grid>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="HasSelection" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="PART_Content"
-                                                         Storyboard.TargetProperty="LayoutTransform.ScaleX"
-                                                         From="0"
-                                                         To="1"
-                                                         Duration="0:0:0.2">
-                                            <DoubleAnimation.EasingFunction>
-                                                <QuadraticEase EasingMode="EaseInOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="PART_Content"
-                                                         Storyboard.TargetProperty="LayoutTransform.ScaleX"
-                                                         From="1"
-                                                         To="0"
-                                                         Duration="0:0:0.2">
-                                            <DoubleAnimation.EasingFunction>
-                                                <QuadraticEase EasingMode="EaseInOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

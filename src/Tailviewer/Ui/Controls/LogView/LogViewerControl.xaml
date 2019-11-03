@@ -5,6 +5,8 @@
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:logView="clr-namespace:Tailviewer.Ui.Controls.LogView"
              xmlns:converters1="clr-namespace:Metrolib.Converters;assembly=Metrolib"
+             xmlns:sidePanel="clr-namespace:Tailviewer.Ui.Controls.SidePanel"
+             xmlns:dataSourceTree="clr-namespace:Tailviewer.Ui.Controls.DataSourceTree"
              x:Name="This"
              Background="White">
 
@@ -27,6 +29,7 @@
 
             <converters1:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
             <converters1:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
+            <converters1:BoolTrueToCollapsedConverter x:Key="BoolTrueToCollapsedConverter" />
             <converters:CountConverter x:Key="FatalCountConverter" Suffix="Fatal" />
             <converters:CountConverter x:Key="ErrorCountConverter" Suffix="Error" />
             <converters:CountConverter x:Key="WarningCountConverter" Suffix="Warning" />
@@ -42,23 +45,54 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <ContentPresenter Content="{Binding DataSources}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="3*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+            <!-- Data Source Selector -->
+            <Border Background="{StaticResource SecondaryBrush}"
+                    Width="300">
+                <controls:FlatToggleButton x:Name="DataSourceToggleButton"
+                                           HoveredBackground="{StaticResource SecondaryLightBrush}"
+                                           CheckedBackground="{StaticResource SecondaryLighterBrush}"
+                                           HoveredAndCheckedForeground="{StaticResource SecondaryLighterBrush}"
+                                           VerticalContentAlignment="Center"
+                                           HorizontalContentAlignment="Left"
+                                           ToolTip="{Binding Tooltip}"
+                                           FocusVisualStyle="{x:Null}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <WrapPanel Orientation="Horizontal" Margin="8">
+                        <StackPanel Margin="12,4,4,4">
+                            <TextBlock Text="Selected Data Source" Foreground="White" />
+                            <TextBlock Text="{Binding DataSource.DisplayName, ElementName=This}"
+                                       FontWeight="SemiBold"
+                                       FontSize="14"
+                                       Foreground="White" />
+                        </StackPanel>
+                        <!-- TODO: Icon to symbolize expand / shrink -->
+                    </Grid>
+                </controls:FlatToggleButton>
+            </Border>
+
+            <!-- Central Toolbar -->
+            <WrapPanel Grid.Column="1"
+                       Orientation="Horizontal"
+                       Margin="8">
                 <controls:FolderOpenButton Margin="0,0,0,4"
                                            Padding="0"
                                            Width="26"
@@ -269,17 +303,134 @@
                 </controls:PluginToggleButton>
             </WrapPanel>
 
-            <Grid Grid.Row="1"
-                  Height="1"
-                  Background="{StaticResource SeparatorBrush}" />
+            <!-- Filters, Bookmarks, Outline and Issues Selector -->
+            <sidePanel:SidePanelControl
+                Grid.Column="2"
+                Width="300"
+                SidePanels="{Binding SidePanels}"
+                SelectedPanel="{Binding SelectedSidePanel, Mode=TwoWay}" />
+        </Grid>
 
+        <Grid Grid.Row="1"
+              Height="1"
+              Background="{StaticResource SeparatorBrush}" />
+
+        <logView:LogEntryListView
+            x:Name="PART_ListView"
+            Grid.Row="2"
+            DataSource="{Binding DataSource.DataSource, ElementName=This}"
+            LogFile="{Binding LogFile, ElementName=This}"
+            Search="{Binding Search, ElementName=This}"
+            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+            ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+            ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+            ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+            ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+            MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+            Settings="{Binding Settings, ElementName=This}"
+            SnapsToDevicePixels="True" />
+
+        <!-- Overlay to hide current data source -->
+        <Rectangle Grid.Row="2"
+                   Fill="#55000000"
+                   MouseDown="OverlayOnMouseDown"
+                   Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"/>
+
+        <!-- Data Sources -->
+        <dataSourceTree:DataSourcesControl Grid.Row="2"
+                                           Width="300"
+                                           VerticalAlignment="Stretch"
+                                           HorizontalAlignment="Left"
+                                           Visibility="{Binding IsChecked, ElementName=DataSourceToggleButton, Converter={StaticResource BoolFalseToCollapsedConverter}}"
+                                           DataContext="{Binding DataSources}"
+                                           ItemsSource="{Binding Observable}"
+                                           AddDataSourceFromFileCommand="{Binding AddDataSourceFromFileCommand}"
+                                           AddDataSourceFromFolderCommand="{Binding AddDataSourceFromFolderCommand}"
+                                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+
+        <!-- Error Message (File missing, access error, etc...) -->
+        <StackPanel Grid.Row="2" VerticalAlignment="Center">
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="20"
+                Text="{Binding ErrorMessage, ElementName=This}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="12"
+                Text="{Binding DetailedErrorMessage, ElementName=This}" />
+        </StackPanel>
+
+        <Border Grid.Row="3"
+                Background="{StaticResource TitleBarBrush}">
+            <Grid
+                Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
+                <Grid.ColumnDefinitions>
+                    <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="1">
+                    <TextBlock
+                        Margin="4"
+                        Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
+                    <TextBlock
+                        Margin="4"
+                        Text="{Binding TotalLogEntryCount, ElementName=This, StringFormat=of {0}}" />
+                    <TextBlock
+                        Margin="4"
+                        Text="{Binding DataSource.FileSize, ElementName=This, StringFormat=size: {0}}" />
+                    <TextBlock
+                        Margin="4"
+                        Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
+                </StackPanel>
+
+                <Grid Grid.Column="3"
+                      Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Progress: "
+                               VerticalAlignment="Center" />
+                    <controls:FlatProgressBar Grid.Column="1"
+                                              Minimum="0"
+                                              Maximum="1"
+                                              Height="14"
+                                              Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}" />
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="4"
+              Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Background="{StaticResource PrimaryBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Find all results:"
+                           Foreground="White"
+                           Margin="8,4,8,4" />
+                <controls:CloseButton Grid.Column="1"
+                                      Height="26"
+                                      Command="{Binding DataSource.CloseFindAllCommand, ElementName=This}" />
+            </Grid>
             <logView:LogEntryListView
-                x:Name="PART_ListView"
-                Grid.Row="2"
-                DataSource="{Binding DataSource.DataSource, ElementName=This}"
-                LogFile="{Binding LogFile, ElementName=This}"
-                Search="{Binding Search, ElementName=This}"
-                CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+                x:Name="PART_FindAllView"
+                Height="300"
+                Grid.Row="1"
+                LogFile="{Binding FindAllLogFile, ElementName=This}"
+                Search="{Binding FindAllSearch, ElementName=This}"
+                SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
                 ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
                 ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
                 ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
@@ -287,97 +438,6 @@
                 MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
                 Settings="{Binding Settings, ElementName=This}"
                 SnapsToDevicePixels="True" />
-
-            <StackPanel Grid.Row="2" VerticalAlignment="Center">
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    FontSize="20"
-                    Text="{Binding ErrorMessage, ElementName=This}" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    FontSize="12"
-                    Text="{Binding DetailedErrorMessage, ElementName=This}" />
-            </StackPanel>
-
-            <Border Grid.Row="3"
-                    Background="{StaticResource TitleBarBrush}">
-                <Grid
-                    Visibility="{Binding DataSource.Exists, ElementName=This, Converter={StaticResource BoolFalseToHiddenConverter}}">
-                    <Grid.ColumnDefinitions>
-                        <!-- Spacer to prevent line count from overlapping with collapse left side panel button -->
-                        <ColumnDefinition Width="25" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="200" />
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Orientation="Horizontal"
-                                Grid.Column="1">
-                        <TextBlock
-                            Margin="4"
-                            Text="{Binding LogEntryCount, ElementName=This, StringFormat=lines: {0}}" />
-                        <TextBlock
-                            Margin="4"
-                            Text="{Binding TotalLogEntryCount, ElementName=This, StringFormat=of {0}}" />
-                        <TextBlock
-                            Margin="4"
-                            Text="{Binding DataSource.FileSize, ElementName=This, StringFormat=size: {0}}" />
-                        <TextBlock
-                            Margin="4"
-                            Text="{Binding DataSource.LastWrittenAge, ElementName=This, StringFormat=last written: {0} ago, Converter={StaticResource TimeSpanConverter}}" />
-                    </StackPanel>
-
-                    <Grid Grid.Column="3"
-                          Margin="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Progress: "
-                                   VerticalAlignment="Center" />
-                        <controls:FlatProgressBar Grid.Column="1"
-                                                  Minimum="0"
-                                                  Maximum="1"
-                                                  Height="14"
-                                                  Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}" />
-                    </Grid>
-
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="4"
-                  Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid Background="{StaticResource PrimaryBrush}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Find all results:"
-                               Foreground="White"
-                               Margin="8,4,8,4" />
-                    <controls:CloseButton Grid.Column="1"
-                                          Height="26"
-                                          Command="{Binding DataSource.CloseFindAllCommand, ElementName=This}" />
-                </Grid>
-                <logView:LogEntryListView
-                    x:Name="PART_FindAllView"
-                    Height="300"
-                    Grid.Row="1"
-                    LogFile="{Binding FindAllLogFile, ElementName=This}"
-                    Search="{Binding FindAllSearch, ElementName=This}"
-                    SelectedIndices="{Binding DataSource.SelectedFindAllLogLines, ElementName=This, Mode=TwoWay}"
-                    ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-                    ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-                    ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-                    ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-                    MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-                    Settings="{Binding Settings, ElementName=This}"
-                    SnapsToDevicePixels="True" />
-            </Grid>
         </Grid>
     </Grid>
 

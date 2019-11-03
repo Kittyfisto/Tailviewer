@@ -315,15 +315,18 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				// TODO: Should we even do anything when count = 0? Probably not...
 				var data = new LogLine[_currentlyVisibleSection.Count];
-				_logFile.GetSection(_currentlyVisibleSection, data);
-				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+				if (_currentlyVisibleSection.Count > 0)
 				{
-					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings)
+					_logFile.GetSection(_currentlyVisibleSection, data);
+					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
-						IsFocused = IsFocused,
-						SearchResults = _searchResults
-					};
-					_visibleTextLines.Add(line);
+						var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings)
+						{
+							IsFocused = IsFocused,
+							SearchResults = _searchResults
+						};
+						_visibleTextLines.Add(line);
+					}
 				}
 
 				Action fn = VisibleLinesChanged;
