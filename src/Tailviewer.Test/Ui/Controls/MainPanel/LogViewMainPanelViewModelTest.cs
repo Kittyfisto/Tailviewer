@@ -229,7 +229,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel
 
 			_dataSources.Setup(x => x.Sources).Returns(new List<IDataSource> {mergedDataSource.Object, dataSource1.Object, dataSource2.Object});
 			var model = new LogViewMainPanelViewModel(_services, _actionCenter.Object, _dataSources.Object, _quickFilters.Object, _highlighters.Object, _settings.Object);
-			var dataSources = model.SidePanels.OfType<DataSourcesViewModel>().First();
+			var dataSources = model.DataSources;
 
 			var dataSource1ViewModel = dataSources.DataSources.First(x => x.DataSource == dataSource1.Object);
 			model.CurrentDataSource = dataSource1ViewModel;
