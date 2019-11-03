@@ -315,20 +315,36 @@
               Height="1"
               Background="{StaticResource SeparatorBrush}" />
 
-        <logView:LogEntryListView
-            x:Name="PART_ListView"
-            Grid.Row="2"
-            DataSource="{Binding DataSource.DataSource, ElementName=This}"
-            LogFile="{Binding LogFile, ElementName=This}"
-            Search="{Binding Search, ElementName=This}"
-            CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
-            ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
-            ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
-            ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
-            ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
-            MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
-            Settings="{Binding Settings, ElementName=This}"
-            SnapsToDevicePixels="True" />
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <logView:LogEntryListView
+                x:Name="PART_ListView"
+                Grid.Column="0"
+                DataSource="{Binding DataSource.DataSource, ElementName=This}"
+                LogFile="{Binding LogFile, ElementName=This}"
+                Search="{Binding Search, ElementName=This}"
+                CurrentLine="{Binding CurrentLogLine, Mode=TwoWay, ElementName=This}"
+                ShowLineNumbers="{Binding ShowLineNumbers, ElementName=This}"
+                ShowDeltaTimes="{Binding DataSource.ShowDeltaTimes, Mode=OneWay, ElementName=This}"
+                ShowElapsedTime="{Binding DataSource.ShowElapsedTime, Mode=OneWay, ElementName=This}"
+                ColorByLevel="{Binding DataSource.ColorByLevel, Mode=OneWay, ElementName=This}"
+                MergedDataSourceDisplayMode="{Binding MergedDataSourceDisplayMode, Mode=TwoWay, ElementName=This}"
+                Settings="{Binding Settings, ElementName=This}"
+                SnapsToDevicePixels="True" />
+
+            <!-- Right Side Panel (Filers, Bookmarks, etc...) -->
+            <Grid Grid.Column="1"
+                  Visibility="{Binding SelectedSidePanel, Converter={StaticResource NullToCollapsedConverter}}">
+                <ContentPresenter Width="300"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Right"
+                                  Content="{Binding SelectedSidePanel}" />
+            </Grid>
+        </Grid>
 
         <!-- Overlay to hide current data source -->
         <Rectangle Grid.Row="2"
@@ -360,6 +376,7 @@
                 Text="{Binding DetailedErrorMessage, ElementName=This}" />
         </StackPanel>
 
+        <!-- Bottom information "Strip" -->
         <Border Grid.Row="3"
                 Background="{StaticResource TitleBarBrush}">
             <Grid
@@ -406,6 +423,7 @@
             </Grid>
         </Border>
 
+        <!-- Find all result display -->
         <Grid Grid.Row="4"
               Visibility="{Binding DataSource.ShowFindAll, ElementName=This, Converter={StaticResource BoolFalseToCollapsedConverter}}">
             <Grid.RowDefinitions>
