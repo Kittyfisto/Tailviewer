@@ -10,7 +10,7 @@ namespace Tailviewer.AcceptanceTests
 	public sealed class SingleApplicationHelperTest
 	{
 		[Test]
-		[LocalTest("This test fails 50% of the time and is thus unsuited to run on AppVeyor until it's fixed")]
+		[FlakyTest(3)]
 		public void TestOpenFile1()
 		{
 			using (var mutex = SingleApplicationHelper.AcquireMutex())
@@ -25,7 +25,7 @@ namespace Tailviewer.AcceptanceTests
 		}
 
 		[Test]
-		[LocalTest("This test fails 50% of the time and is thus unsuited to run on AppVeyor until it's fixed")]
+		[FlakyTest(3)]
 		public void TestBringToFront()
 		{
 			using (var mutex = SingleApplicationHelper.AcquireMutex(TimeSpan.FromSeconds(1)))

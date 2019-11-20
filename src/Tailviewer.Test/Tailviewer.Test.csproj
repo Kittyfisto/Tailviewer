@@ -178,6 +178,7 @@
     <Compile Include="ChangelogTest.cs" />
     <Compile Include="DataSourceIdTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterIdTest.cs" />
+    <Compile Include="FlakyTestAttribute.cs" />
     <Compile Include="IssueAttribute.cs" />
     <Compile Include="EnhancementAttribute.cs" />
     <Compile Include="FileExTest.cs" />

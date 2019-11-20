@@ -79,7 +79,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		}
 
 		[Test]
-		[LocalTest("This test is wonky and needs to be rewritten")]
+		[FlakyTest(3)]
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
