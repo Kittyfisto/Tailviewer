@@ -10,7 +10,7 @@ namespace Tailviewer.AcceptanceTests
 	public sealed class SingleApplicationHelperTest
 	{
 		[Test]
-		[FlakyTest(5)]
+		[LocalTest("Can't get this to work on appveyor")]
 		public void TestOpenFile1()
 		{
 			using (var mutex = SingleApplicationHelper.AcquireMutex())
