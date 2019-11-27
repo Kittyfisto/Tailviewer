@@ -10,7 +10,7 @@ namespace Tailviewer.AcceptanceTests
 	public sealed class SingleApplicationHelperTest
 	{
 		[Test]
-		[FlakyTest(3)]
+		[FlakyTest(5)]
 		public void TestOpenFile1()
 		{
 			using (var mutex = SingleApplicationHelper.AcquireMutex())
