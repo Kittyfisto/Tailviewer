@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.Archiver.Plugins;
@@ -8,6 +9,26 @@ namespace Tailviewer.Archiver.Test.Plugins
 	[TestFixture]
 	public sealed class PluginPackageIndexTest
 	{
+		[Test]
+		public void TestVersion()
+		{
+			IPluginPackageIndex archive = new PluginPackageIndex
+			{
+				Version = "1.2.3.4"
+			};
+			archive.Version.Should().Be(new Version(1, 2, 3, 4));
+		}
+
+		[Test]
+		public void TestTailviewerApiVersion()
+		{
+			IPluginPackageIndex archive = new PluginPackageIndex
+			{
+				TailviewerApiVersion = "4.3.2.1"
+			};
+			archive.TailviewerApiVersion.Should().Be(new Version(4,3,2,1));
+		}
+
 		[Test]
 		public void TestRoundtripEmpty()
 		{
@@ -30,6 +51,8 @@ namespace Tailviewer.Archiver.Test.Plugins
 		{
 			var archive = new PluginPackageIndex
 			{
+				Version = "1.2.3.4",
+				TailviewerApiVersion = "0.9.8.7",
 				Assemblies = new List<AssemblyDescription>
 				{
 					new AssemblyDescription
@@ -45,7 +68,7 @@ namespace Tailviewer.Archiver.Test.Plugins
 								FullName = "AnotherAssembly"
 							}
 						},
-						EntryName = "Foobar"
+						EntryName = "Foobar",
 					}
 				},
 				ImplementedPluginInterfaces = new List<PluginInterfaceImplementation>
@@ -74,6 +97,8 @@ namespace Tailviewer.Archiver.Test.Plugins
 				}
 			};
 			var actualArchive = archive.Roundtrip();
+			actualArchive.Version.Should().Be("1.2.3.4");
+			actualArchive.TailviewerApiVersion.Should().Be("0.9.8.7");
 			actualArchive.Assemblies.Should().HaveCount(1);
 			actualArchive.Assemblies[0].AssemblyFileVersion.Should().Be("A");
 			actualArchive.Assemblies[0].AssemblyInformationalVersion.Should().Be("B");

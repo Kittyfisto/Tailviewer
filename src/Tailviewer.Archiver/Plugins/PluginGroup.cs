@@ -414,7 +414,8 @@ namespace Tailviewer.Archiver.Plugins
 				Website = website,
 				PluginImplementations = plugins,
 				SerializableTypes = serializableTypes,
-				Changes = changes
+				Changes = changes,
+				TailviewerApiVersion = archiveIndex.TailviewerApiVersion
 			};
 
 			return desc;

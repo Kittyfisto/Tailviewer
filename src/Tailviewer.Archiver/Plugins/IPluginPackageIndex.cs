@@ -67,5 +67,13 @@ namespace Tailviewer.Archiver.Plugins
 		///     The list of serializable types implemented by the plugin.
 		/// </summary>
 		IEnumerable<SerializableTypeDescription> SerializableTypes { get; }
+
+		/// <summary>
+		///     The version of the Tailviewer API this plugins has been compiled against.
+		/// </summary>
+		/// <remarks>
+		///     May not be available for older plugins compiled against v0.9 and older.
+		/// </remarks>
+		Version TailviewerApiVersion { get; }
 	}
 }
