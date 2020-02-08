@@ -85,7 +85,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
-			_dataSource.TotalCount.Should().Be(165342);
+			_dataSource.Property(x => x.TotalCount).ShouldEventually().Be(165342);
 			_dataSource.DebugCount.Should().Be(165337);
 			_dataSource.InfoCount.Should().Be(5);
 			_dataSource.WarningCount.Should().Be(0);

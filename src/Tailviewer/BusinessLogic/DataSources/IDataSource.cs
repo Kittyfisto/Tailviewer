@@ -79,6 +79,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 		bool ColorByLevel { get; set; }
 		bool HideEmptyLines { get; set; }
 		bool IsSingleLine { get; set; }
+		bool ScreenCleared { get; }
+		void ClearScreen();
+		void ShowAll();
+
 		DataSourceId Id { get; }
 		DataSourceId ParentId { get; }
 

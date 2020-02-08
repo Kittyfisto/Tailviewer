@@ -153,6 +153,23 @@
                                     ToolTip="Treat every single line as a separate log entry"
                                     Content="Single line" />
 
+                                <controls:FlatButton 
+                                    Margin="0"
+                                    Padding="4"
+                                    x:Name="PART_CLS"
+                                    Command="{Binding DataSource.ClearScreenCommand}"
+                                    Content="Clear Screen"
+                                    ToolTip="Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."/>
+
+                                <controls:FlatButton 
+                                    Margin="0"
+                                    Padding="4"
+                                    x:Name="PART_ShowAll"
+                                    Command="{Binding DataSource.ShowAllCommand}"
+                                    IsEnabled="{Binding DataSource.ScreenCleared}"
+                                    Content="Show All"
+                                    ToolTip="Shows all log entries that were previously cleared again"/>
+
                             </StackPanel>
                         </controls:MenuItemContentControl>
                     </controls:FlatContextMenu>

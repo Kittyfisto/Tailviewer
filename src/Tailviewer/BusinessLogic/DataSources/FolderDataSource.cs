@@ -265,6 +265,23 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
+		public bool ScreenCleared
+		{
+			get { return _mergedDataSource.ScreenCleared; }
+		}
+
+		public void ClearScreen()
+		{
+			_mergedDataSource.ClearScreen();
+			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+		}
+
+		public void ShowAll()
+		{
+			_mergedDataSource.ShowAll();
+			_filteredLogFileProxy.InnerLogFile = _mergedDataSource.FilteredLogFile;
+		}
+
 		public DataSourceId Id
 		{
 			get { return _mergedDataSource.Id; }

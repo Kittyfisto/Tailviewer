@@ -9,7 +9,7 @@ namespace Tailviewer.Core.Filters
 	/// (or only have whitespace characters).
 	/// </summary>
 	public sealed class EmptyLogLineFilter
-		: ILogLineFilter
+		: ILogEntryFilter
 	{
 		/// <inheritdoc />
 		public bool PassesFilter(LogLine logLine)
@@ -24,5 +24,21 @@ namespace Tailviewer.Core.Filters
 		{
 			return new List<LogLineMatch>();
 		}
+
+		#region Implementation of ILogEntryFilter
+
+		/// <inheritdoc />
+		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		/// <inheritdoc />
+		public void Match(LogLine line, List<LogLineMatch> matches)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		#endregion
 	}
 }

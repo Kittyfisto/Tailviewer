@@ -39,6 +39,8 @@ namespace Tailviewer.Ui.ViewModels
 		private int _currentSearchResultIndex;
 		private int _searchResultCount;
 		private double _progress;
+		private readonly DelegateCommand2 _clearScreenCommand;
+		private readonly DelegateCommand2 _showAllCommand;
 
 		#region Find all
 
@@ -59,6 +61,12 @@ namespace Tailviewer.Ui.ViewModels
 			_removeCommand = new DelegateCommand(OnRemoveDataSource);
 			_currentSearchResultIndex = -1;
 
+			_clearScreenCommand = new DelegateCommand2(ClearScreen);
+
+			_showAllCommand = new DelegateCommand2(ShowAll)
+			{
+				CanBeExecuted = false
+			};
 		}
 
 		public int NewLogLineCount
@@ -418,6 +426,21 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ScreenCleared
+		{
+			get { return _dataSource.ScreenCleared; }
+		}
+
+		public ICommand ClearScreenCommand
+		{
+			get { return _clearScreenCommand; }
+		}
+
+		public ICommand ShowAllCommand
+		{
+			get { return _showAllCommand; }
+		}
+
 		#region Searches
 
 		public double Progress
@@ -672,6 +695,21 @@ namespace Tailviewer.Ui.ViewModels
 		protected void EmitPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private void ClearScreen()
+		{
+			_dataSource.ClearScreen();
+
+			EmitPropertyChanged(nameof(ScreenCleared));
+			_showAllCommand.CanBeExecuted = true;
+		}
+
+		private void ShowAll()
+		{
+			_dataSource.ShowAll();
+			EmitPropertyChanged(nameof(ScreenCleared));
+			_showAllCommand.CanBeExecuted = false;
 		}
 	}
 }

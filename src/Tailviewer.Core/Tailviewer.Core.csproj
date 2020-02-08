@@ -74,6 +74,7 @@
     <Compile Include="Filters\ExpressionEngine\ContainsStringExpression.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
+    <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="LogFiles\Issues\LogFileIssue.cs" />
     <Compile Include="LogFiles\LogFileFormats.cs" />

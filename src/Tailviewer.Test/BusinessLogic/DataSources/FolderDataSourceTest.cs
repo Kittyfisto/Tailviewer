@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -298,6 +299,34 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			folderDataSource.Dispose();
 			childDataSource.IsDisposed.Should().BeTrue("because the folder data source should dispose of its children upon being disposed of itself");
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
+		public void TestClearAllShowAll()
+		{
+			var folderDataSource = new FolderDataSource(_taskScheduler,
+			                                            _logFileFactory,
+			                                            _filesystem,
+			                                            _settings,
+			                                            TimeSpan.Zero);
+			var merged = GetInnerDataSource(folderDataSource);
+
+			folderDataSource.ScreenCleared.Should().BeFalse();
+			folderDataSource.ClearScreen();
+			folderDataSource.ScreenCleared.Should().BeTrue();
+			merged.ScreenCleared.Should().BeTrue();
+
+			folderDataSource.ShowAll();
+			folderDataSource.ScreenCleared.Should().BeFalse();
+			merged.ScreenCleared.Should().BeFalse();
+		}
+
+		private static IDataSource GetInnerDataSource(FolderDataSource folderDataSource)
+		{
+			var inner = (IDataSource)folderDataSource.GetType().GetField("_mergedDataSource", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(folderDataSource);
+			inner.Should().NotBeNull();
+			return inner;
 		}
 	}
 }
