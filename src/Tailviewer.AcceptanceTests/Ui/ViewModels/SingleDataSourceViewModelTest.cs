@@ -108,5 +108,29 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				monitor.Should().NotRaisePropertyChangeFor(x => x.CanBeRemoved);
 			}
 		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
+		public void TestClearAllShowAll()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			var model = new SingleDataSourceViewModel(dataSource.Object, new Mock<IActionCenter>().Object);
+
+			model.ScreenCleared.Should().BeFalse();
+
+			model.ClearScreenCommand.Should().NotBeNull();
+			model.ClearScreenCommand.CanExecute(null).Should().BeTrue("because the screen can always be cleared");
+			model.ShowAllCommand.Should().NotBeNull();
+			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because the screen hasn't been cleared so nothing needs to be shown again");
+			model.ClearScreenCommand.Execute(null);
+			dataSource.Verify(x => x.ClearScreen(), Times.Once);
+
+			model.ShowAllCommand.Should().NotBeNull();
+			model.ShowAllCommand.CanExecute(null).Should().BeTrue("because the screen has been cleared and thus everything may be shown again");
+			model.ShowAllCommand.Execute(null);
+			dataSource.Verify(x => x.ShowAll(), Times.Once);
+
+			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because everything has been shown again and thus nothing further can be shown");
+		}
 	}
 }

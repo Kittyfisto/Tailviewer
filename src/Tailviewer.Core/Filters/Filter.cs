@@ -47,6 +47,17 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <summary>
+		///     Creates a new <see cref="ILogLineFilter"/> from the given values.
+		/// </summary>
+		/// <param name="filters"></param>
+		/// <returns></returns>
+		public static ILogLineFilter Create(IEnumerable<ILogLineFilter> filters)
+		{
+			var tmp = filters.Where(x => x != null).Select(x => (ILogEntryFilter)x).ToList();
+			return Create(tmp);
+		}
+
+		/// <summary>
 		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
 		/// </summary>
 		/// <param name="filters"></param>
@@ -56,9 +67,13 @@ namespace Tailviewer.Core.Filters
 			var tmp = filters.Where(x => x != null).ToList();
 			if (tmp.Count == 0)
 				return null;
-
 			if (tmp.Count == 1)
-				return tmp[index: 0];
+			{
+				var filter = tmp[0];
+				if (filter is NoFilter)
+					return null;
+				return filter;
+			}
 			return new AndFilter(tmp);
 		}
 
@@ -105,6 +120,18 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="levels"></param>
+		/// <returns></returns>
+		public static ILogEntryFilter Create(LevelFlags levels)
+		{
+			if (levels == LevelFlags.All)
+				return null;
+			return new LevelFilter(levels);
+		}
+
+		/// <summary>
 		///     Creates a new <see cref="ILogEntryFilter" /> from the given values.
 		/// </summary>
 		/// <param name="levelFilter"></param>
@@ -112,10 +139,10 @@ namespace Tailviewer.Core.Filters
 		/// <param name="orFilters"></param>
 		/// <returns></returns>
 		public static ILogEntryFilter Create(LevelFlags levelFilter,
-			IEnumerable<ILogEntryFilter> andFilters = null,
+			IEnumerable<ILogEntryFilter> andFilters,
 			IEnumerable<ILogEntryFilter> orFilters = null)
 		{
-			var filters = new List<ILogEntryFilter> {new LevelFilter(levelFilter)};
+			var filters = new List<ILogEntryFilter> {Create(levelFilter)};
 			if (andFilters != null)
 				filters.AddRange(andFilters);
 			return Create(filters);
@@ -138,6 +165,22 @@ namespace Tailviewer.Core.Filters
 			if (additionalFilters != null)
 				filters.AddRange(additionalFilters);
 			return Create(filters);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="logEntryFilter"></param>
+		/// <returns></returns>
+		public static bool IsFilter(ILogLineFilter logEntryFilter)
+		{
+			if (logEntryFilter == null)
+				return false;
+
+			if (logEntryFilter is NoFilter)
+				return false;
+
+			return true;
 		}
 	}
 }

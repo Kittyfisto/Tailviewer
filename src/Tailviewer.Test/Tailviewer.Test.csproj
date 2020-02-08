@@ -115,6 +115,7 @@
     <Compile Include="BusinessLogic\Filters\LevelFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\NoFilterTest.cs" />
     <Compile Include="BusinessLogic\Filters\OrFilterTest.cs" />
+    <Compile Include="BusinessLogic\Filters\RangeFilterTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterTest.cs" />
     <Compile Include="BusinessLogic\LevelFlagsTest.cs" />
     <Compile Include="BusinessLogic\LogDataCacheTest.cs" />

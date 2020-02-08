@@ -62,6 +62,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 							"Because this line belongs to the previous log entry and thus is marked as fatal as well");
 				lines[5].LogEntryIndex.Should().Be(lines[4].LogEntryIndex);
 
+				_scheduler.RunOnce();
+
 				dataSource.DebugCount.Should().Be(1);
 				dataSource.InfoCount.Should().Be(1);
 				dataSource.WarningCount.Should().Be(1);
