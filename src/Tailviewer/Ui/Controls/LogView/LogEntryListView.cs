@@ -351,6 +351,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_lineNumberColumn.Visibility = showLineNumbers
 				? Visibility.Visible
 				: Visibility.Collapsed;
+			UpdateColumn(_lineNumberColumn);
 		}
 		
 		private static void OnShowElapsedTimeChanged(DependencyObject dependencyObject,
@@ -364,6 +365,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_elapsedTimeColumn.Visibility = showLineNumbers
 				? Visibility.Visible
 				: Visibility.Collapsed;
+			UpdateColumn(_elapsedTimeColumn);
 		}
 
 		private static void OnShowDeltaTimesChanged(DependencyObject dependencyObject,
@@ -377,6 +379,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_deltaTimesColumn.Visibility = showLineNumbers
 				? Visibility.Visible
 				: Visibility.Collapsed;
+			UpdateColumn(_deltaTimesColumn);
 		}
 
 		private void OnCurrentLineChanged(LogLineIndex index)
@@ -443,19 +446,20 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void TextCanvasOnVisibleLinesChanged()
 		{
-			_lineNumberColumn.FetchValues(LogFile,
-			                               PartTextCanvas.CurrentlyVisibleSection,
-			                               PartTextCanvas.YOffset);
-			_deltaTimesColumn.FetchValues(LogFile,
-			                               PartTextCanvas.CurrentlyVisibleSection,
-			                               PartTextCanvas.YOffset);
-			_elapsedTimeColumn.FetchValues(LogFile,
-			                                PartTextCanvas.CurrentlyVisibleSection,
-			                                PartTextCanvas.YOffset);
+			UpdateColumn(_lineNumberColumn);
+			UpdateColumn(_deltaTimesColumn);
+			UpdateColumn(_elapsedTimeColumn);
 
 			_dataSourceCanvas.UpdateDataSources(DataSource,
 			                                    PartTextCanvas.CurrentlyVisibleSection,
 			                                    PartTextCanvas.YOffset);
+		}
+
+		private void UpdateColumn<T>(AbstractLogColumnPresenter<T> column)
+		{
+			column.FetchValues(LogFile,
+			                   PartTextCanvas.CurrentlyVisibleSection,
+			                   PartTextCanvas.YOffset);
 		}
 
 		private void TextCanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
