@@ -29,7 +29,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 			}
 		}
 
-		protected override AbstractLogEntryValueFormatter CreatePresenter(TimeSpan? value)
+		protected override AbstractLogEntryValueFormatter CreateFormatter(TimeSpan? value)
 		{
 			return new ElapsedTimeFormatter(value, TextSettings);
 		}

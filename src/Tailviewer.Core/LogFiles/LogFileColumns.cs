@@ -100,6 +100,12 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		public static readonly ILogFileColumn<TimeSpan?> DeltaTime;
 
+		/// <summary>
+		///     The (human readable) message of the log entry (i.e. the actual textual information that does not info into
+		///     any other column).
+		/// </summary>
+		public static readonly ILogFileColumn<string> Message;
+
 		#region Presentation
 
 		/// <summary>
@@ -132,6 +138,7 @@ namespace Tailviewer.Core.LogFiles
 			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");
 			DeltaTime = new WellKnownLogFileColumn<TimeSpan?>("delta_time");
+			Message = new WellKnownLogFileColumn<string>("message");
 
 			RawContentMaxPresentationWidth = new WellKnownLogFileColumn<float>("raw_content_max_presentation_width");
 			PresentationStartingLineNumber = new WellKnownLogFileColumn<int>("presentation_line_number");

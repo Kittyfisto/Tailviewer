@@ -25,7 +25,7 @@ namespace Tailviewer.Ui.Controls.LogView.LogLevels
 			Width = width;
 		}
 
-		protected override AbstractLogEntryValueFormatter CreatePresenter(LevelFlags value)
+		protected override AbstractLogEntryValueFormatter CreateFormatter(LevelFlags value)
 		{
 			return new LevelFormatter(value, TextSettings);
 		}

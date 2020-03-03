@@ -62,7 +62,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				var values = new T[visibleSection.Count];
 				logFile.GetColumn(visibleSection, _column, values);
 				foreach (var value in values)
-					_values.Add(CreatePresenter(value));
+					_values.Add(CreateFormatter(value));
 			}
 
 			UpdateWidth(logFile, _textSettings);
@@ -75,7 +75,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		protected abstract AbstractLogEntryValueFormatter CreatePresenter(T value);
+		protected abstract AbstractLogEntryValueFormatter CreateFormatter(T value);
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{

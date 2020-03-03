@@ -195,9 +195,13 @@
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\Messages\MessageColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Messages\MessageFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\LogView\Timestamps\TimestampColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Timestamps\TimestampFormatter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />

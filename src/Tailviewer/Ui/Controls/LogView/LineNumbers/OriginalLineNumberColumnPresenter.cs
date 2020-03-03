@@ -35,7 +35,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			Width = _lineNumberWidth + textSettings.LineNumberSpacing;
 		}
 
-		protected override AbstractLogEntryValueFormatter CreatePresenter(int value)
+		protected override AbstractLogEntryValueFormatter CreateFormatter(int value)
 		{
 			return new LineNumberFormatter(value, TextSettings);
 		}
