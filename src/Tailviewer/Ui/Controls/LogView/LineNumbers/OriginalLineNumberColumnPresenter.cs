@@ -20,7 +20,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			: base(LogFileColumns.OriginalLineNumber, textSettings)
 		{}
 
-		public IEnumerable<LineNumberPresenter> LineNumbers => Values.Cast<LineNumberPresenter>();
+		public IEnumerable<LineNumberFormatter> LineNumbers => Values.Cast<LineNumberFormatter>();
 
 		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
 		{
@@ -35,9 +35,9 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			Width = _lineNumberWidth + textSettings.LineNumberSpacing;
 		}
 
-		protected override AbstractLogEntryValuePresenter CreatePresenter(int value)
+		protected override AbstractLogEntryValueFormatter CreatePresenter(int value)
 		{
-			return new LineNumberPresenter(value, TextSettings);
+			return new LineNumberFormatter(value, TextSettings);
 		}
 	}
 }

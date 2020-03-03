@@ -15,7 +15,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		: FrameworkElement
 	{
 		private readonly ILogFileColumn<T> _column;
-		private readonly List<AbstractLogEntryValuePresenter> _values;
+		private readonly List<AbstractLogEntryValueFormatter> _values;
 
 		private double _yOffset;
 		private TextSettings _textSettings;
@@ -27,11 +27,11 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_column = column;
 			_textSettings = textSettings;
-			_values = new List<AbstractLogEntryValuePresenter>();
+			_values = new List<AbstractLogEntryValueFormatter>();
 			ClipToBounds = true;
 		}
 
-		protected IEnumerable<AbstractLogEntryValuePresenter> Values => _values;
+		protected IEnumerable<AbstractLogEntryValueFormatter> Values => _values;
 
 		public TextSettings TextSettings
 		{
@@ -75,7 +75,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		protected abstract AbstractLogEntryValuePresenter CreatePresenter(T value);
+		protected abstract AbstractLogEntryValueFormatter CreatePresenter(T value);
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{

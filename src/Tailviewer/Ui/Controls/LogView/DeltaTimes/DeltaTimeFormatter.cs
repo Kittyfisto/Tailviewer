@@ -7,16 +7,16 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 {
-	internal sealed class DeltaTimePresenter
-		: AbstractLogEntryValuePresenter
+	internal sealed class DeltaTimeFormatter
+		: AbstractLogEntryValueFormatter
 	{
 		private readonly TimeSpan? _delta;
 
-		public DeltaTimePresenter(TimeSpan? delta)
+		public DeltaTimeFormatter(TimeSpan? delta)
 			: this(delta, TextSettings.Default)
 		{}
 
-		public DeltaTimePresenter(TimeSpan? delta, TextSettings textSettings)
+		public DeltaTimeFormatter(TimeSpan? delta, TextSettings textSettings)
 			: base(textSettings)
 		{
 			_delta = delta;

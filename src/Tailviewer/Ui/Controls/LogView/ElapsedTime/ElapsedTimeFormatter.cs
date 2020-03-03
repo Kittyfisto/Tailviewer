@@ -7,13 +7,13 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 {
-	public sealed class ElapsedTimePresenter
-		: AbstractLogEntryValuePresenter
+	public sealed class ElapsedTimeFormatter
+		: AbstractLogEntryValueFormatter
 	{
 		public const int CharacterWidth = 11;
 		private readonly TimeSpan? _value;
 
-		public ElapsedTimePresenter(TimeSpan? value, TextSettings textSettings)
+		public ElapsedTimeFormatter(TimeSpan? value, TextSettings textSettings)
 			: base(textSettings)
 		{
 			_value = value;

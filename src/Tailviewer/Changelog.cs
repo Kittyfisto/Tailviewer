@@ -57,7 +57,7 @@ namespace Tailviewer
 		{
 			var features = new[]
 			{
-				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
+				"Introduced plugin browser which works in conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
 				"Introduced clear screen & display [#215](https://github.com/Kittyfisto/Tailviewer/issues/215)"
 			};
 			var bugfixes = new string[]

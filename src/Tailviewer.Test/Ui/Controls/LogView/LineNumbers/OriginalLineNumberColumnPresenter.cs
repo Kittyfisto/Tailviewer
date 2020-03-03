@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			var numbers = _column.LineNumbers;
 			numbers.Should().NotBeNull();
 			numbers.Should().HaveCount(count);
-			numbers.Should().Equal(Enumerable.Range(0, count).Select(i => new LineNumberPresenter(i+1)));
+			numbers.Should().Equal(Enumerable.Range(0, count).Select(i => new LineNumberFormatter(i+1)));
 		}
 
 		[Test]
@@ -59,10 +59,10 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 				});
 			_column.FetchValues(logFile.Object, new LogFileSection(0, 4), 0);
 			_column.Width.Should().BeApproximately(24.8, 0.1, "because the canvas should reserve space for the original line count, which is 4 digits");
-			_column.LineNumbers.Should().Equal(new LineNumberPresenter(42),
-				new LineNumberPresenter(101),
-				new LineNumberPresenter(255),
-				new LineNumberPresenter(512));
+			_column.LineNumbers.Should().Equal(new LineNumberFormatter(42),
+				new LineNumberFormatter(101),
+				new LineNumberFormatter(255),
+				new LineNumberFormatter(512));
 		}
 
 		private void AddLines(int count)

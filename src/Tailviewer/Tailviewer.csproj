@@ -193,6 +193,8 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
@@ -200,13 +202,13 @@
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
-    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
@@ -284,7 +286,7 @@
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
     <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />

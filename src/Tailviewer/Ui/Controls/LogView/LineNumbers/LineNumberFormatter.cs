@@ -6,16 +6,16 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 {
-	public sealed class LineNumberPresenter
-		: AbstractLogEntryValuePresenter
+	public sealed class LineNumberFormatter
+		: AbstractLogEntryValueFormatter
 	{
 		private readonly int _number;
 
-		public LineNumberPresenter(int value)
+		public LineNumberFormatter(int value)
 			: this(value, TextSettings.Default)
 		{}
 
-		public LineNumberPresenter(int value, TextSettings textSettings)
+		public LineNumberFormatter(int value, TextSettings textSettings)
 			: base(textSettings)
 		{
 			_number = value;
@@ -39,7 +39,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 			                         1.25);
 		}
 
-		private bool Equals(LineNumberPresenter other)
+		private bool Equals(LineNumberFormatter other)
 		{
 			return _number == other._number;
 		}
@@ -48,7 +48,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj is LineNumberPresenter && Equals((LineNumberPresenter) obj);
+			return obj is LineNumberFormatter && Equals((LineNumberFormatter) obj);
 		}
 
 		public override int GetHashCode()

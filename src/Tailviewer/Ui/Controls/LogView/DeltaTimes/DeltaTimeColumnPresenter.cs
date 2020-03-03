@@ -21,9 +21,9 @@ namespace Tailviewer.Ui.Controls.LogView.DeltaTimes
 		protected override void UpdateWidth(ILogFile logFile, TextSettings textSettings)
 		{}
 
-		protected override AbstractLogEntryValuePresenter CreatePresenter(TimeSpan? value)
+		protected override AbstractLogEntryValueFormatter CreatePresenter(TimeSpan? value)
 		{
-			return new DeltaTimePresenter(value, TextSettings);
+			return new DeltaTimeFormatter(value, TextSettings);
 		}
 	}
 }
