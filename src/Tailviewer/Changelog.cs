@@ -59,7 +59,8 @@ namespace Tailviewer
 				"Introduced find all search (ctrl+shift+f) [#210](https://github.com/Kittyfisto/Tailviewer/issues/210)",
 				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
 				"Introduced overview side panel for a condensed view onto the log file [#207](https://github.com/Kittyfisto/Tailviewer/issues/207)",
-				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)"
+				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)",
+				"Introduced clear screen & display [#215](https://github.com/Kittyfisto/Tailviewer/issues/215)"
 			};
 			var bugfixes = new[]
 			{
@@ -74,7 +75,7 @@ namespace Tailviewer
 				"The titlebar properly reacts to losing focus [#202](https://github.com/Kittyfisto/Tailviewer/issues/202)", // 
 				"The left side panel can be collapsed [#201](https://github.com/Kittyfisto/Tailviewer/issues/201)"
 			};
-			var releaseDate = new DateTime(2019, 10, 31);
+			var releaseDate = new DateTime(2020, 3, 3);
 			var version = new Version(0, 9, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
