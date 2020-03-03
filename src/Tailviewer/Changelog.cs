@@ -50,6 +50,26 @@ namespace Tailviewer
 			AddV080();
 			AddV081();
 			AddV090();
+			AddV091();
+		}
+
+		private static void AddV091()
+		{
+			var features = new[]
+			{
+				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
+				"Introduced clear screen & display [#215](https://github.com/Kittyfisto/Tailviewer/issues/215)"
+			};
+			var bugfixes = new string[]
+			{
+			};
+			var misc = new string[]
+			{
+			};
+			var releaseDate = new DateTime(2020, 3, 3);
+			var version = new Version(0, 9, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV090()
@@ -75,7 +95,7 @@ namespace Tailviewer
 				"The titlebar properly reacts to losing focus [#202](https://github.com/Kittyfisto/Tailviewer/issues/202)", // 
 				"The left side panel can be collapsed [#201](https://github.com/Kittyfisto/Tailviewer/issues/201)"
 			};
-			var releaseDate = new DateTime(2020, 3, 3);
+			var releaseDate = new DateTime(2019, 10, 31);
 			var version = new Version(0, 9, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);
