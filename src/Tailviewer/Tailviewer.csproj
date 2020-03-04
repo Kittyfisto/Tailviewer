@@ -193,6 +193,9 @@
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\Messages\MessageColumnPresenter.cs" />
