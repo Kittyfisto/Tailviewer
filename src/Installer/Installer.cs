@@ -463,13 +463,11 @@ namespace Installer
 			}
 		}
 
-		private static void TryDeleteFile(string fullInstalledPath)
+		private void TryDeleteFile(string fullInstalledPath)
 		{
 			try
 			{
-				Log.DebugFormat("Deleting '{0}'...", fullInstalledPath);
-				File.Delete(fullInstalledPath);
-				Log.DebugFormat("Deleted '{0}'", fullInstalledPath);
+				DeleteFile(fullInstalledPath);
 			}
 			catch (Exception e)
 			{
