@@ -103,7 +103,7 @@ namespace Installer.Applications.Update
 
 		private void Installation()
 		{
-			_installer.Run(_installationPath);
+			_installer.Install(_installationPath);
 		}
 
 		private void OnInstallationFinished(Task task)

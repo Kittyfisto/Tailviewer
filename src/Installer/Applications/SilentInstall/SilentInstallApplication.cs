@@ -17,7 +17,7 @@ namespace Installer.Applications.SilentInstall
 				               args.InstallationPath);
 
 				var installer = new Installer();
-				installer.Run(args.InstallationPath);
+				installer.Install(args.InstallationPath);
 
 				Log.InfoFormat("Installation finished");
 

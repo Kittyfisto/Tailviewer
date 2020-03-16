@@ -249,7 +249,7 @@ namespace Installer.Applications.Install
 
 		private void Installation()
 		{
-			_installer.Run(_installationPath);
+			_installer.Install(_installationPath);
 		}
 
 		private void DoBrowse()
