@@ -51,6 +51,23 @@ namespace Tailviewer
 			AddV081();
 			AddV090();
 			AddV091();
+			AddV092();
+		}
+
+		private static void AddV092()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{};
+			var misc = new[]
+			{
+				"Implemented uninstallation [#219](https://github.com/Kittyfisto/Tailviewer/issues/219)"
+			};
+			var releaseDate = new DateTime(2020, 3, 17);
+			var version = new Version(0, 9, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV091()

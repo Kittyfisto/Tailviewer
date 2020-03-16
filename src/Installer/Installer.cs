@@ -276,7 +276,7 @@ namespace Installer
 			var name = Path.GetFileName(filePath);
 			var dir = Path.GetDirectoryName(filePath);
 
-			Log.InfoFormat("Removing {0}", filePath);
+			Log.DebugFormat("Removing {0}", filePath);
 
 			var tries = 0;
 			Exception lastException = null;
@@ -284,6 +284,7 @@ namespace Installer
 				try
 				{
 					File.Delete(filePath);
+					Log.InfoFormat("Removed {0}", filePath);
 					break;
 				}
 				catch (DirectoryNotFoundException)
