@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using log4net;
 
 namespace Installer
@@ -13,7 +14,7 @@ namespace Installer
 		private Arguments(Mode mode, string installationPath)
 		{
 			Mode = mode;
-			InstallationPath = installationPath;
+			InstallationPath = !string.IsNullOrEmpty(installationPath) ? installationPath : Constants.DefaultApplicationFolder;
 		}
 
 		public static Arguments Install()
@@ -21,33 +22,23 @@ namespace Installer
 			return new Arguments(Mode.Install, null);
 		}
 
-		public static Arguments Update(string installationPath)
-		{
-			return new Arguments(Mode.Update, installationPath);
-		}
-
-		public static Arguments SilentInstall(string installationPath)
-		{
-			return new Arguments(Mode.SilentInstall, installationPath);
-		}
-
 		public static Arguments Parse(string[] args)
 		{
-			if (args == null || args.Length < 2)
+			if (args == null || args.Length < 1)
 				return Install();
 
 			var mode = args[0];
+			var installationPath = args.Length > 1 ? args[1] : null;
 			switch (mode)
 			{
 				case "update":
-					return Update(args[1]);
+					return new Arguments(Mode.Update, installationPath);
 
 				case "silentinstall":
-					return SilentInstall(args[1]);
+					return new Arguments(Mode.SilentInstall, installationPath);
 
 				default:
-					Log.WarnFormat("Unable to parse '{0}', defaulting to install...", mode);
-					return Install();
+					throw new Exception($"Unable to parse '{mode}'");
 			}
 		}
 	}

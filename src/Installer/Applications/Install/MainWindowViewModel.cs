@@ -36,8 +36,7 @@ namespace Installer.Applications.Install
 		{
 			_dispatcher = dispatcher;
 			_appVersion = Constants.ApplicationVersion;
-			_installationPath =
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), Constants.ApplicationTitle);
+			_installationPath = Constants.DefaultApplicationFolder;
 			_browseCommand = new DelegateCommand(DoBrowse);
 			_installationCommand = new DelegateCommand(DoInstall, CanClickInstall);
 			_launchCommand = new DelegateCommand(DoLaunch, CanLaunch);
