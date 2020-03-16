@@ -20,7 +20,7 @@ namespace Installer
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly Assembly _assembly;
-		private readonly List<string> _files;
+		private readonly List<string> _extractedFiles;
 		private readonly string _prefix;
 		private string _installationPath;
 		private Size _installedSize;
@@ -30,8 +30,14 @@ namespace Installer
 			_assembly = Assembly.GetExecutingAssembly();
 			_prefix = "InstallationFiles\\";
 			var allFiles = _assembly.GetManifestResourceNames();
-			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
-			InstallationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			_extractedFiles = allFiles.Where(x => x.Contains(_prefix)).ToList();
+			InstallationSize = _extractedFiles.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			InstallationSize += Filesize(ThisInstallerPath);
+		}
+
+		public IReadOnlyList<string> InstallationFileNames
+		{
+			get { return _extractedFiles.Select(x => x.Replace(_prefix, "")).ToList(); }
 		}
 
 		public Size InstallationSize { get; }
@@ -46,6 +52,11 @@ namespace Installer
 
 		private Size Filesize(string fileName)
 		{
+			if (Path.IsPathRooted(fileName))
+			{
+				return Size.FromBytes(new FileInfo(fileName).Length);
+			}
+
 			using (var stream = _assembly.GetManifestResourceStream(fileName))
 			{
 				if (stream == null)
@@ -66,6 +77,7 @@ namespace Installer
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
+				CopySetup(installationPath);
 				WriteRegistry();
 				CreateStartMenuEntry();
 
@@ -84,6 +96,24 @@ namespace Installer
 				if (remaining > TimeSpan.Zero)
 					Thread.Sleep(remaining);
 			}
+		}
+
+		private static string ThisInstallerPath
+		{
+			get
+			{
+				UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
+				string sourceSetupPath = Uri.UnescapeDataString(uri.Path);
+				return sourceSetupPath;
+			}
+		}
+
+		private void CopySetup(string installationPath)
+		{
+			string sourceSetupPath = ThisInstallerPath;
+			var destSetupPath = Path.Combine(installationPath, "Tailviewer-setup.exe");
+
+			File.Copy(sourceSetupPath, destSetupPath);
 		}
 
 		private void ExitTailviewer(string installationPath)
@@ -110,7 +140,7 @@ namespace Installer
 						// it takes some time until the operating system allows us actually
 						// access the files in question, so we'll just have to busy wait for
 						// a while...
-						foreach (var file in _files)
+						foreach (var file in _extractedFiles)
 						{
 							var destFilePath = DestFilePath(installationPath, file);
 							WaitUntilFileCanBeAccessed(destFilePath);
@@ -245,7 +275,7 @@ namespace Installer
 
 		private void InstallNewFiles(string installationPath)
 		{
-			foreach (var file in _files)
+			foreach (var file in _extractedFiles)
 			{
 				var destFilePath = DestFilePath(installationPath, file);
 				CopyFile(destFilePath, file);

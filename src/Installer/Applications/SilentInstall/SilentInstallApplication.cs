@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using System.Windows;
 using log4net;
 
 namespace Installer.Applications.SilentInstall
 {
 	public sealed class SilentInstallApplication
-		: Application
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -37,6 +37,9 @@ namespace Installer
 				case "silentinstall":
 					return new Arguments(Mode.SilentInstall, installationPath);
 
+				case "uninstall":
+					return new Arguments(Mode.Uninstall, installationPath);
+
 				default:
 					throw new Exception($"Unable to parse '{mode}'");
 			}

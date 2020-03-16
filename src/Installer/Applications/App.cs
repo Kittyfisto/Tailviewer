@@ -2,6 +2,7 @@
 using System.Reflection;
 using Installer.Applications.Install;
 using Installer.Applications.SilentInstall;
+using Installer.Applications.Uninstall;
 using Installer.Applications.Update;
 using log4net;
 using log4net.Appender;
@@ -35,6 +36,9 @@ namespace Installer.Applications
 
 					case Mode.Update:
 						return UpdateApplication.Run(arguments);
+
+					case Mode.Uninstall:
+						return UninstallApplication.Run(arguments);
 
 					default:
 						throw new Exception($"Unknown mode: {arguments.Mode}");
