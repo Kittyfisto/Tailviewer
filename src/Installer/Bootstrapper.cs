@@ -18,7 +18,15 @@ namespace Installer
 
 			EnableEmbeddedDependencyLoading("InstallationFiles");
 
-			return App.Run(args);
+			try
+			{
+				return App.Run(args);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("An error occured: {0}", e);
+				return -1;
+			}
 		}
 
 		/// <summary>

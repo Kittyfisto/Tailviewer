@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using System.Windows;
 using log4net;
 
 namespace Installer.Applications.SilentInstall
 {
 	public sealed class SilentInstallApplication
-		: Application
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -19,7 +17,7 @@ namespace Installer.Applications.SilentInstall
 				               args.InstallationPath);
 
 				var installer = new Installer();
-				installer.Run(args.InstallationPath);
+				installer.Install(args.InstallationPath);
 
 				Log.InfoFormat("Installation finished");
 
