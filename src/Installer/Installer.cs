@@ -102,6 +102,8 @@ namespace Installer
 		{
 			try
 			{
+				KillTailviewer(installationPath);
+
 				var subFolders = new HashSet<string>();
 				foreach (var installedFile in InstallationFileNames)
 				{
@@ -407,6 +409,35 @@ namespace Installer
 			{
 				throw new CopyFileException(fileName, directory, e);
 			}
+		}
+
+		private void KillTailviewer(string installationPath)
+		{
+			var normalizedInstallationPath = NormalizePath(installationPath);
+
+			var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Constants.ApplicationExecutable));
+			foreach (var process in processes)
+			{
+				var folder = NormalizePath(Path.GetDirectoryName(process?.MainModule?.FileName));
+				if (Equals(folder, normalizedInstallationPath))
+				{
+					Kill(process);
+				}
+			}
+		}
+
+		private void Kill(Process process)
+		{
+			Log.InfoFormat("Killing running tailviewer (PID: {0})...", process.Id);
+
+			process.Kill();
+		}
+
+		private static string NormalizePath(string path)
+		{
+			return Path.GetFullPath(new Uri(path).LocalPath)
+			           .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+			           .ToUpperInvariant();
 		}
 
 		private void CreateDirectory(string directory)
