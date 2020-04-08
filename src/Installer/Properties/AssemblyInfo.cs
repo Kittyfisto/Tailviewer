@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2019")]
+[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -113,7 +113,7 @@ namespace Tailviewer.PluginCreator
 			builder.AppendLine("[assembly: AssemblyConfiguration(\"\")]");
 			builder.AppendLine("[assembly: AssemblyCompany(\"\")]");
 			builder.AppendLine("[assembly: AssemblyProduct(\"Tailviewer.PluginCreator\")]");
-			builder.AppendLine("[assembly: AssemblyCopyright(\"Copyright ©  2019\")]");
+			builder.AppendLine("[assembly: AssemblyCopyright(\"Copyright © Simon Mießler 2020\")]");
 			builder.AppendLine("[assembly: AssemblyTrademark(\"\")]");
 			builder.AppendLine("[assembly: AssemblyCulture(\"\")]");
 			builder.AppendLine("[assembly: ComVisible(false)]");
