@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
+using System.Windows.Media;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
@@ -53,6 +54,24 @@ namespace Tailviewer.Test.Settings
 			settings.LinesScrolledPerWheelTick.Should().Be(2);
 			settings.FontSize.Should().Be(12);
 			settings.TabWidth.Should().Be(4);
+
+			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
+			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent);
+
+			settings.Debug.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
+			settings.Debug.BackgroundColor.Should().Be(Colors.Transparent);
+
+			settings.Info.ForegroundColor.Should().Be(Colors.Black);
+			settings.Info.BackgroundColor.Should().Be(Colors.Transparent);
+
+			settings.Warning.ForegroundColor.Should().Be(Colors.White);
+			settings.Warning.BackgroundColor.Should().Be(Color.FromRgb(255, 195, 0));
+
+			settings.Error.ForegroundColor.Should().Be(Colors.White);
+			settings.Error.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
+
+			settings.Fatal.ForegroundColor.Should().Be(Colors.White);
+			settings.Fatal.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
 		}
 
 		[Test]
@@ -64,13 +83,31 @@ namespace Tailviewer.Test.Settings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
-				TabWidth = tabWidth
+				TabWidth = tabWidth,
+				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
+				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
+				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
+				Warning = { BackgroundColor = Colors.Aquamarine, ForegroundColor = Colors.BlanchedAlmond },
+				Error = { BackgroundColor = Colors.BlueViolet, ForegroundColor = Colors.CadetBlue },
+				Fatal = { BackgroundColor = Colors.Coral, ForegroundColor = Colors.HotPink }
 			};
 
 			var actualSettings = settings.Clone();
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick);
 			actualSettings.FontSize.Should().Be(fontSize);
 			actualSettings.TabWidth.Should().Be(tabWidth);
+			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
+			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
+			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);
+			actualSettings.Debug.ForegroundColor.Should().Be(Colors.DodgerBlue);
+			actualSettings.Info.BackgroundColor.Should().Be(Colors.DarkOrange);
+			actualSettings.Info.ForegroundColor.Should().Be(Colors.AliceBlue);
+			actualSettings.Warning.BackgroundColor.Should().Be(Colors.Aquamarine);
+			actualSettings.Warning.ForegroundColor.Should().Be(Colors.BlanchedAlmond);
+			actualSettings.Error.BackgroundColor.Should().Be(Colors.BlueViolet);
+			actualSettings.Error.ForegroundColor.Should().Be(Colors.CadetBlue);
+			actualSettings.Fatal.BackgroundColor.Should().Be(Colors.Coral);
+			actualSettings.Fatal.ForegroundColor.Should().Be(Colors.HotPink);
 		}
 
 		[Test]
@@ -96,6 +133,24 @@ namespace Tailviewer.Test.Settings
 			settings.LinesScrolledPerWheelTick.Should().Be(2, reason);
 			settings.FontSize.Should().Be(12, reason);
 			settings.TabWidth.Should().Be(4, reason);
+
+			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128), reason);
+			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent, reason);
+
+			settings.Debug.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
+			settings.Debug.BackgroundColor.Should().Be(Colors.Transparent);
+
+			settings.Info.ForegroundColor.Should().Be(Colors.Black);
+			settings.Info.BackgroundColor.Should().Be(Colors.Transparent);
+
+			settings.Warning.ForegroundColor.Should().Be(Colors.White);
+			settings.Warning.BackgroundColor.Should().Be(Color.FromRgb(255, 195, 0));
+
+			settings.Error.ForegroundColor.Should().Be(Colors.White);
+			settings.Error.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
+
+			settings.Fatal.ForegroundColor.Should().Be(Colors.White);
+			settings.Fatal.BackgroundColor.Should().Be(Color.FromRgb(232, 17, 35));
 		}
 
 		[Test]
@@ -108,13 +163,31 @@ namespace Tailviewer.Test.Settings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
-				TabWidth = tabWidth
+				TabWidth = tabWidth,
+				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
+				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
+				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
+				Warning = { BackgroundColor = Colors.Aquamarine, ForegroundColor = Colors.BlanchedAlmond },
+				Error = { BackgroundColor = Colors.BlueViolet, ForegroundColor = Colors.CadetBlue },
+				Fatal = { BackgroundColor = Colors.Coral, ForegroundColor = Colors.HotPink }
 			});
 
-			var settings = Restore(file);
-			settings.LinesScrolledPerWheelTick.Should().Be(2, "because restore should simply discard invalid values and restore them to their defaults");
-			settings.FontSize.Should().Be(12);
-			settings.TabWidth.Should().Be(4);
+			var actualSettings = Restore(file);
+			actualSettings.LinesScrolledPerWheelTick.Should().Be(2, "because restore should simply discard invalid values and restore them to their defaults");
+			actualSettings.FontSize.Should().Be(12);
+			actualSettings.TabWidth.Should().Be(4);
+			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
+			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
+			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);
+			actualSettings.Debug.ForegroundColor.Should().Be(Colors.DodgerBlue);
+			actualSettings.Info.BackgroundColor.Should().Be(Colors.DarkOrange);
+			actualSettings.Info.ForegroundColor.Should().Be(Colors.AliceBlue);
+			actualSettings.Warning.BackgroundColor.Should().Be(Colors.Aquamarine);
+			actualSettings.Warning.ForegroundColor.Should().Be(Colors.BlanchedAlmond);
+			actualSettings.Error.BackgroundColor.Should().Be(Colors.BlueViolet);
+			actualSettings.Error.ForegroundColor.Should().Be(Colors.CadetBlue);
+			actualSettings.Fatal.BackgroundColor.Should().Be(Colors.Coral);
+			actualSettings.Fatal.ForegroundColor.Should().Be(Colors.HotPink);
 		}
 
 		[Test]
@@ -126,7 +199,13 @@ namespace Tailviewer.Test.Settings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
-				TabWidth = tabWidth
+				TabWidth = tabWidth,
+				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
+				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
+				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
+				Warning = { BackgroundColor = Colors.Aquamarine, ForegroundColor = Colors.BlanchedAlmond },
+				Error = { BackgroundColor = Colors.BlueViolet, ForegroundColor = Colors.CadetBlue },
+				Fatal = { BackgroundColor = Colors.Coral, ForegroundColor = Colors.HotPink }
 			};
 
 			var actualSettings = Restore(Save(settings));
@@ -134,6 +213,18 @@ namespace Tailviewer.Test.Settings
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick, reason);
 			actualSettings.FontSize.Should().Be(fontSize, reason);
 			actualSettings.TabWidth.Should().Be(tabWidth);
+			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
+			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
+			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);
+			actualSettings.Debug.ForegroundColor.Should().Be(Colors.DodgerBlue);
+			actualSettings.Info.BackgroundColor.Should().Be(Colors.DarkOrange);
+			actualSettings.Info.ForegroundColor.Should().Be(Colors.AliceBlue);
+			actualSettings.Warning.BackgroundColor.Should().Be(Colors.Aquamarine);
+			actualSettings.Warning.ForegroundColor.Should().Be(Colors.BlanchedAlmond);
+			actualSettings.Error.BackgroundColor.Should().Be(Colors.BlueViolet);
+			actualSettings.Error.ForegroundColor.Should().Be(Colors.CadetBlue);
+			actualSettings.Fatal.BackgroundColor.Should().Be(Colors.Coral);
+			actualSettings.Fatal.ForegroundColor.Should().Be(Colors.HotPink);
 		}
 	}
 }

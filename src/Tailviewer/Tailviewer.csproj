@@ -93,6 +93,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.Toolkit, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
@@ -123,6 +126,7 @@
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogFileSettings.cs" />
+    <Compile Include="Settings\LogLevelSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
     <Compile Include="Settings\TextSettings.cs" />
     <Compile Include="TaskExtensions.cs" />
@@ -208,6 +212,7 @@
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\LogLevelSettingsViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
