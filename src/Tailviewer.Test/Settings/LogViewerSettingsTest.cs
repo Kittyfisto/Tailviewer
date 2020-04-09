@@ -52,21 +52,25 @@ namespace Tailviewer.Test.Settings
 			var settings = new LogViewerSettings();
 			settings.LinesScrolledPerWheelTick.Should().Be(2);
 			settings.FontSize.Should().Be(12);
+			settings.TabWidth.Should().Be(4);
 		}
 
 		[Test]
-		public void TestClone([Values(1, 2, 3, 4)] int linesScrolledPerWheelTick,
-		                      [Values(1, 2, 3)] int fontSize)
+		public void TestClone([Values(1, 2)] int linesScrolledPerWheelTick,
+		                      [Values(1, 2)] int fontSize,
+		                      [Values(1, 2)] int tabWidth)
 		{
 			var settings = new LogViewerSettings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
-				FontSize = fontSize
+				FontSize = fontSize,
+				TabWidth = tabWidth
 			};
 
 			var actualSettings = settings.Clone();
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick);
 			actualSettings.FontSize.Should().Be(fontSize);
+			actualSettings.TabWidth.Should().Be(tabWidth);
 		}
 
 		[Test]
@@ -91,38 +95,45 @@ namespace Tailviewer.Test.Settings
 				"because when the attribute doesn't appear in the xml content, then its default value shall be restored";
 			settings.LinesScrolledPerWheelTick.Should().Be(2, reason);
 			settings.FontSize.Should().Be(12, reason);
+			settings.TabWidth.Should().Be(4, reason);
 		}
 
 		[Test]
 		[Description("Verifies that upon restoration, invalid values are replaced with defaults")]
 		public void TestRestoreFromInvalidValues([Values(-5, -2, -1, 0)] int linesScrolledPerWheelTick,
-		                                         [Values(-5, -1, 0)] int fontSize)
+		                                         [Values(-5, -1, 0)] int fontSize,
+		                                         [Values(-1, 0)] int tabWidth)
 		{
 			var file = Save(new LogViewerSettings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
-				FontSize = fontSize
+				FontSize = fontSize,
+				TabWidth = tabWidth
 			});
 
 			var settings = Restore(file);
 			settings.LinesScrolledPerWheelTick.Should().Be(2, "because restore should simply discard invalid values and restore them to their defaults");
 			settings.FontSize.Should().Be(12);
+			settings.TabWidth.Should().Be(4);
 		}
 
 		[Test]
-		public void TestRoundtrip([Values(1, 2, 5)] int linesScrolledPerWheelTick,
-		                          [Values(1, 20, 40)] int fontSize)
+		public void TestRoundtrip([Values(1, 2)] int linesScrolledPerWheelTick,
+		                          [Values(1, 20)] int fontSize,
+		                          [Values(1, 2)] int tabWidth)
 		{
 			var settings = new LogViewerSettings
 			{
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
-				FontSize = fontSize
+				FontSize = fontSize,
+				TabWidth = tabWidth
 			};
 
 			var actualSettings = Restore(Save(settings));
 			const string reason = "because all values should roundtrip perfectly";
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick, reason);
 			actualSettings.FontSize.Should().Be(fontSize, reason);
+			actualSettings.TabWidth.Should().Be(tabWidth);
 		}
 	}
 }

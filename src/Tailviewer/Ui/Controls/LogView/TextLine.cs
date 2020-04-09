@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using Tailviewer.BusinessLogic;
@@ -207,7 +208,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				_segments.Clear();
 
-				string message = _logLine.Message ?? string.Empty;
+				string message = CreateMessage(_logLine.Message);
 				Brush highlightedBrush = TextHelper.HighlightedForegroundBrush;
 				var searchResults = _searchResults;
 				if (searchResults != null)
@@ -247,6 +248,13 @@ namespace Tailviewer.Ui.Controls.LogView
 				}
 				_lastForegroundBrush = regularForegroundBrush;
 			}
+		}
+
+		private string CreateMessage(string logLineMessage)
+		{
+			var builder = new StringBuilder(logLineMessage ?? string.Empty);
+			ReplaceTabsWithSpaces(builder, _textSettings.TabWidth);
+			return builder.ToString();
 		}
 
 		private void AddSegmentsFrom(string message, Brush brush, bool isRegular)
@@ -326,6 +334,26 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			var isVisible = !(xMax < visibleXMin || xMin > visibleXMax);
 			return isVisible;
+		}
+
+		public static void ReplaceTabsWithSpaces(StringBuilder builder, int tabWidth)
+		{
+			for (int i = 0; i < builder.Length;)
+			{
+				if (builder[i] == '\t')
+				{
+					var already = i % tabWidth;
+					var remaining = tabWidth - already;
+					builder.Remove(i, 1);
+					builder.Insert(i, " ", remaining);
+
+					i += remaining;
+				}
+				else
+				{
+					++i;
+				}
+			}
 		}
 	}
 }

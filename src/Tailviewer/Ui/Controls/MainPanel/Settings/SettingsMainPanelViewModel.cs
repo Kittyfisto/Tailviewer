@@ -178,6 +178,21 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 				_settings.SaveAsync();
 			}
 		}
+		
+		public int TabWidth
+		{
+			get { return _settings.LogViewer.TabWidth; }
+			set
+			{
+				if (value == _settings.LogViewer.TabWidth)
+					return;
+
+				_settings.LogViewer.TabWidth = value;
+				EmitPropertyChanged();
+
+				_settings.SaveAsync();
+			}
+		}
 
 		public bool AlwaysOnTop
 		{
