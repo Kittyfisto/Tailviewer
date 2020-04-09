@@ -1,5 +1,4 @@
-﻿
-namespace Tailviewer.Settings
+﻿namespace Tailviewer.Settings
 {
 	/// <summary>
 	///     "Global" configuration of the log viewer.
@@ -15,5 +14,10 @@ namespace Tailviewer.Settings
 		/// <summary>
 		/// </summary>
 		int FontSize { get; set; }
+
+		/// <summary>
+		///     The width of a tab-character expressed in number of spaces.
+		/// </summary>
+		int TabWidth { get; set; }
 	}
 }

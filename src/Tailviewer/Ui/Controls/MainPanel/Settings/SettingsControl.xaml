@@ -59,6 +59,8 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="5" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="5" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -89,6 +91,23 @@
                         <controls:EditorTextBox Grid.Column="1" Grid.Row="2">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="FontSize"
+                                         Mode="TwoWay"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <tailviewer:Int32RangeRule Minimum="1" Maximum="100" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </controls:EditorTextBox.Text>
+                        </controls:EditorTextBox>
+
+                        <TextBlock Text="Tab Width"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="4"
+                                   Grid.Column="0"/>
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="4">
+                            <controls:EditorTextBox.Text>
+                                <Binding Path="TabWidth"
                                          Mode="TwoWay"
                                          UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>

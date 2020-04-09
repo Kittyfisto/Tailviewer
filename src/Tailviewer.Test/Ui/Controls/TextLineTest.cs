@@ -286,5 +286,24 @@ namespace Tailviewer.Test.Ui.Controls
 			var textLine = new TextLine(new LogLine(1, message.ToString(), LevelFlags.None, null), _hovered, _selected, true);
 			textLine.Segments.Count.Should().BeGreaterThan(1, "because this very long line should've been split up into multiple messages");
 		}
+
+		[Test]
+		public void TestReplaceTabsWithSpaces()
+		{
+			string replace(string input, int tabWidth)
+			{
+				var builder = new StringBuilder(input);
+				TextLine.ReplaceTabsWithSpaces(builder, tabWidth);
+				return builder.ToString();
+			}
+
+			replace("\t", 4).Should().Be("    ");
+			replace(" \t", 4).Should().Be("    ");
+			replace("a\t", 4).Should().Be("a   ");
+			replace("ab\t", 4).Should().Be("ab  ");
+			replace("abc\t", 4).Should().Be("abc ");
+			replace("abcd\t", 4).Should().Be("abcd    ");
+			replace("a\t\t", 2).Should().Be("a   ");
+		}
 	}
 }

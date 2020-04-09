@@ -113,7 +113,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public LogEntryListView()
 		{
-			var textSettings = TextSettings.Default;
+			var textSettings = new TextSettings();
 
 			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Star) });
 			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Auto) });
@@ -641,7 +641,9 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSettingsChanged(ILogViewerSettings settings)
 		{
-			ChangeTextSettings(settings != null ? new TextSettings(settings.FontSize) : TextSettings.Default);
+			ChangeTextSettings(settings != null
+				                   ? new TextSettings(settings.FontSize, settings.TabWidth)
+				                   : TextSettings.Default);
 		}
 
 		private void ChangeTextSettings(TextSettings textSettings)
