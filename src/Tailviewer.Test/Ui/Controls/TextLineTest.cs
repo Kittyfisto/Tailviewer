@@ -100,7 +100,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var results = new SearchResults();
 			results.Add(new LogMatch(0, new LogLineMatch(28, 4)));
 
-			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.None), _hovered,
+			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
 			                            _selected, true)
 				{
 					SearchResults = results
@@ -119,7 +119,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var results = new SearchResults();
 			results.Add(new LogMatch(0, new LogLineMatch(28, 5)));
 
-			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.None), _hovered,
+			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
 										_selected, true)
 			{
 				SearchResults = results
@@ -154,7 +154,7 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultTrace.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
 		}
 
@@ -194,7 +194,7 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultDebug.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultTrace.BackgroundColor);
 		}
 		/*
@@ -221,7 +221,7 @@ namespace Tailviewer.Test.Ui.Controls
 			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 		}*/
 
@@ -277,7 +277,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			var message = new StringBuilder();
 			message.Append('a', 10000);
-			var textLine = new TextLine(new LogLine(1, message.ToString(), LevelFlags.None, null), _hovered, _selected, true);
+			var textLine = new TextLine(new LogLine(1, message.ToString(), LevelFlags.Other, null), _hovered, _selected, true);
 			textLine.Segments.Count.Should().BeGreaterThan(1, "because this very long line should've been split up into multiple messages");
 		}
 

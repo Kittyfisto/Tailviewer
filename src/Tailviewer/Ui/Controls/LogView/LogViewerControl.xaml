@@ -32,6 +32,7 @@
             <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
             <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
+            <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <logView:NonMergedDataSourceToVisibilityCollapsedConverter x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
             <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
@@ -232,6 +233,14 @@
                 IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"
                 ToolTip="Show/hide trace log messages"
                 Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
+
+            <controls:FlatToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
+                ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
+                Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
 
             <controls:SearchTextBox
                 x:Name="PART_SearchBox"

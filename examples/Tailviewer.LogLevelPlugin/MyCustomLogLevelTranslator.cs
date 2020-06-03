@@ -30,7 +30,7 @@ namespace Tailviewer.LogLevelPlugin
 			if (lineMessage.IndexOf("TRA", StringComparison.CurrentCulture) != -1)
 				return LevelFlags.Trace;
 
-			return LevelFlags.None;
+			return LevelFlags.Other;
 		}
 
 		#endregion

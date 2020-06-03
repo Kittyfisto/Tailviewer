@@ -430,7 +430,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 			int index = int.MaxValue;
 
 			if (line == null)
-				return rightMost;
+			{
+				leftMost = LevelFlags.Other;
+				return LevelFlags.Other;
+			}
 
 			var idx = line.IndexOf("FATAL", StringComparison.InvariantCulture);
 			if (idx != -1)
@@ -497,6 +500,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				}
 			}
 
+			if (leftMost == LevelFlags.None)
+				leftMost = LevelFlags.Other;
+
+			if (rightMost == LevelFlags.None)
+				rightMost = LevelFlags.Other;
 			return rightMost;
 		}
 

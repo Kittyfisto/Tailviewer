@@ -126,7 +126,7 @@ namespace Tailviewer.Test.Ui
 		/// </remarks>
 		public static IEnumerable<LevelFlags> NotAll => new[]
 		{
-			LevelFlags.None,
+			LevelFlags.Other,
 			LevelFlags.Trace,
 			LevelFlags.Debug,
 			LevelFlags.Info,

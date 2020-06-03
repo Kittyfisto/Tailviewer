@@ -90,8 +90,8 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectOneLine1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
 			
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -113,8 +113,8 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLines1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -137,8 +137,8 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLines2()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -160,9 +160,9 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLinesWithKeyboard1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
-			logFile.AddEntry("How's it going?", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
+			logFile.AddEntry("How's it going?", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -191,11 +191,11 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLinesWithKeyboard2()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
-			logFile.AddEntry("How's", LevelFlags.None);
-			logFile.AddEntry("it", LevelFlags.None);
-			logFile.AddEntry("going?", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
+			logFile.AddEntry("How's", LevelFlags.Other);
+			logFile.AddEntry("it", LevelFlags.Other);
+			logFile.AddEntry("going?", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -230,9 +230,9 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLinesWithKeyboard3()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
-			logFile.AddEntry("How's it going?", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
+			logFile.AddEntry("How's it going?", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -251,9 +251,9 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLinesWithKeyboard4()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
-			logFile.AddEntry("How's it going?", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
+			logFile.AddEntry("How's it going?", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();
@@ -282,9 +282,9 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestSelectMultipleLinesWithKeyboard5()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
-			logFile.AddEntry("World", LevelFlags.None);
-			logFile.AddEntry("How's it going?", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
+			logFile.AddEntry("World", LevelFlags.Other);
+			logFile.AddEntry("How's it going?", LevelFlags.Other);
 
 			_control.LogFile = logFile;
 			_control.UpdateVisibleSection();

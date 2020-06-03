@@ -73,6 +73,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			DependencyProperty.Register("ShowTrace", typeof(bool), typeof(LogViewerControl),
 				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnTraceChanged));
 
+		public static readonly DependencyProperty ShowOtherProperty =
+			DependencyProperty.Register("ShowOther", typeof(bool), typeof(LogViewerControl),
+			                            new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnOtherChanged));
+
 		public static readonly DependencyProperty ShowAllProperty =
 			DependencyProperty.Register("ShowAll", typeof(bool?), typeof(LogViewerControl),
 				new PropertyMetadata(defaultValue: false, propertyChangedCallback: OnShowAllChanged));
@@ -192,6 +196,12 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get { return (bool?) GetValue(ShowAllProperty); }
 			set { SetValue(ShowAllProperty, value); }
+		}
+
+		public bool ShowOther
+		{
+			get { return (bool) GetValue(ShowOtherProperty); }
+			set { SetValue(ShowOtherProperty, value); }
 		}
 
 		public bool ShowTrace
@@ -402,6 +412,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			if (showAll == true)
 			{
+				ShowOther = true;
 				ShowTrace = true;
 				ShowDebug = true;
 				ShowInfo = true;
@@ -411,6 +422,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else if (showAll == false)
 			{
+				ShowOther = false;
 				ShowTrace = false;
 				ShowDebug = false;
 				ShowInfo = false;
@@ -510,6 +522,23 @@ namespace Tailviewer.Ui.Controls.LogView
 				DataSource.LevelsFilter &= ~level;
 		}
 
+		private static void OnOtherChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((LogViewerControl) dependencyObject).OnOtherChanged((bool) args.NewValue);
+		}
+
+		private void OnOtherChanged(bool isChecked)
+		{
+			if (DataSource == null)
+				return;
+			
+			const LevelFlags level = LevelFlags.Other;
+			if (isChecked)
+				DataSource.LevelsFilter |= level;
+			else
+				DataSource.LevelsFilter &= ~level;
+		}
+
 		private static void OnTraceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((LogViewerControl) dependencyObject).OnTraceChanged((bool) args.NewValue);
@@ -540,6 +569,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			ShowInfo = levels.HasFlag(LevelFlags.Info);
 			ShowDebug = levels.HasFlag(LevelFlags.Debug);
 			ShowTrace = levels.HasFlag(LevelFlags.Trace);
+			ShowOther = levels.HasFlag(LevelFlags.Other);
 
 			if (levels == LevelFlags.All)
 				ShowAll = true;

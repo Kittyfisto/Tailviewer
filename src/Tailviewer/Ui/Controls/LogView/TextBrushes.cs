@@ -49,8 +49,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_backgroundBrushes = new Dictionary<LevelFlags, Brush>();
 			if (settings != null)
 			{
-				_foregroundBrushes.Add(LevelFlags.None, CreateBrush(settings.Info.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.None, CreateBrush(settings.Info.BackgroundColor));
+				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Info.ForegroundColor));
+				_backgroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Info.BackgroundColor));
 
 				_foregroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.ForegroundColor));
 				_backgroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.BackgroundColor));

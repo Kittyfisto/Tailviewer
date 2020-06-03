@@ -51,7 +51,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.Other));
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World", LevelFlags.Other));
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_scheduler.Run(2);
 
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because only a single line has been written to disk");
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
 				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
-				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.None, null));
+				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.Other, null));
 			}
 		}
 	}

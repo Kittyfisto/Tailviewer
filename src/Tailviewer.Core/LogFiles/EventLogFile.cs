@@ -297,7 +297,7 @@ namespace Tailviewer.Core.LogFiles
 					return LevelFlags.Error;
 
 				default:
-					return LevelFlags.None;
+					return LevelFlags.Other;
 			}
 		}
 

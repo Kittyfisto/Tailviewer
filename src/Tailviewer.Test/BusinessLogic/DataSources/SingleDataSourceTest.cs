@@ -201,7 +201,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))
 			{
-				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.None));
+				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.Other));
 				_listeners.OnRead(1);
 				_scheduler.RunOnce();
 				dataSource.SearchTerm = "foobar";
