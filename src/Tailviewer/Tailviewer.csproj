@@ -298,7 +298,6 @@
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />

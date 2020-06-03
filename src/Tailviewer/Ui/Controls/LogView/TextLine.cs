@@ -100,7 +100,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get
 			{
-				return _textBrushes.BackgroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level);
+				return _textBrushes.BackgroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level, LogLine.LogEntryIndex);
 			}
 		}
 
