@@ -227,7 +227,7 @@
                 Content="{Binding DataSource.DebugCount, Converter={StaticResource DebugCountConverter}, ElementName=This}" />
 
             <controls:FlatToggleButton
-                Margin="0,0,8,8"
+                Margin="0,0,0,8"
                 Padding="4"
                 VerticalAlignment="Stretch"
                 IsChecked="{Binding ShowTrace, Mode=TwoWay, ElementName=This}"

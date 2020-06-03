@@ -133,6 +133,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="170" />
@@ -151,12 +152,30 @@
                                        HorizontalAlignment="Center"/>
                         </Grid>
 
-                        <TextBlock Text="Trace"
+                        <TextBlock Text="Other"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="1"
                                    Grid.Column="0"/>
                         <Grid Grid.Row="1"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.BackgroundColor}"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Trace"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="2"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="2"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>
@@ -172,9 +191,9 @@
                         <TextBlock Text="Debug"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="2"
+                                   Grid.Row="3"
                                    Grid.Column="0"/>
-                        <Grid Grid.Row="2"
+                        <Grid Grid.Row="3"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>
@@ -190,9 +209,9 @@
                         <TextBlock Text="Info"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="3"
+                                   Grid.Row="4"
                                    Grid.Column="0"/>
-                        <Grid Grid.Row="3"
+                        <Grid Grid.Row="4"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>
@@ -208,9 +227,9 @@
                         <TextBlock Text="Warning"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="4"
+                                   Grid.Row="5"
                                    Grid.Column="0"/>
-                        <Grid Grid.Row="4"
+                        <Grid Grid.Row="5"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>
@@ -226,9 +245,9 @@
                         <TextBlock Text="Error"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="5"
+                                   Grid.Row="6"
                                    Grid.Column="0"/>
-                        <Grid Grid.Row="5"
+                        <Grid Grid.Row="6"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>
@@ -244,9 +263,9 @@
                         <TextBlock Text="Fatal"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="6"
+                                   Grid.Row="7"
                                    Grid.Column="0"/>
-                        <Grid Grid.Row="6"
+                        <Grid Grid.Row="7"
                               Grid.Column="1"
                               Margin="0,6,6,6">
                             <Grid.ColumnDefinitions>

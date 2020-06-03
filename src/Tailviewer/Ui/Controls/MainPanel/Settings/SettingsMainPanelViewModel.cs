@@ -19,6 +19,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IApplicationSettings _settings;
+		private readonly LogLevelSettingsViewModel _otherLevel;
 		private readonly LogLevelSettingsViewModel _traceLevel;
 		private readonly LogLevelSettingsViewModel _debugLevel;
 		private readonly LogLevelSettingsViewModel _infoLevel;
@@ -45,6 +46,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 				_defaultTextFileEncoding = @default;
 			}
 
+			_otherLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Other);
 			_traceLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Trace);
 			_debugLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Debug);
 			_infoLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Info);
@@ -207,6 +209,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			}
 		}
 
+		public LogLevelSettingsViewModel OtherLevel => _otherLevel;
 		public LogLevelSettingsViewModel TraceLevel => _traceLevel;
 		public LogLevelSettingsViewModel DebugLevel => _debugLevel;
 		public LogLevelSettingsViewModel InfoLevel => _infoLevel;

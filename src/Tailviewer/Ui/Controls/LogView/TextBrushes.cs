@@ -49,8 +49,8 @@ namespace Tailviewer.Ui.Controls.LogView
 			_backgroundBrushes = new Dictionary<LevelFlags, Brush>();
 			if (settings != null)
 			{
-				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Info.ForegroundColor));
-				_backgroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Info.BackgroundColor));
+				_foregroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.ForegroundColor));
+				_backgroundBrushes.Add(LevelFlags.Other, CreateBrush(settings.Other.BackgroundColor));
 
 				_foregroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.ForegroundColor));
 				_backgroundBrushes.Add(LevelFlags.Trace, CreateBrush(settings.Trace.BackgroundColor));
@@ -102,7 +102,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 
 			return TextHelper.NormalForegroundBrush;*/
-			return _foregroundBrushes[LevelFlags.Info];
+			return _foregroundBrushes[LevelFlags.Other];
 		}
 
 		public Brush BackgroundBrush(bool isSelected, bool isFocused, bool colorByLevel, LevelFlags level)

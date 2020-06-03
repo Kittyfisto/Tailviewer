@@ -55,6 +55,9 @@ namespace Tailviewer.Test.Settings
 			settings.FontSize.Should().Be(12);
 			settings.TabWidth.Should().Be(4);
 
+			settings.Other.ForegroundColor.Should().Be(Colors.Black);
+			settings.Other.BackgroundColor.Should().Be(Colors.Transparent);
+
 			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128));
 			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent);
 
@@ -84,6 +87,7 @@ namespace Tailviewer.Test.Settings
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
 				TabWidth = tabWidth,
+				Other = { BackgroundColor = Colors.Red, ForegroundColor = Colors.Firebrick },
 				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
 				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
 				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
@@ -96,6 +100,8 @@ namespace Tailviewer.Test.Settings
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick);
 			actualSettings.FontSize.Should().Be(fontSize);
 			actualSettings.TabWidth.Should().Be(tabWidth);
+			actualSettings.Other.BackgroundColor.Should().Be(Colors.Red);
+			actualSettings.Other.ForegroundColor.Should().Be(Colors.Firebrick);
 			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
 			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
 			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);
@@ -134,6 +140,9 @@ namespace Tailviewer.Test.Settings
 			settings.FontSize.Should().Be(12, reason);
 			settings.TabWidth.Should().Be(4, reason);
 
+			settings.Other.ForegroundColor.Should().Be(Colors.Black);
+			settings.Other.BackgroundColor.Should().Be(Colors.Transparent);
+
 			settings.Trace.ForegroundColor.Should().Be(Color.FromRgb(128, 128, 128), reason);
 			settings.Trace.BackgroundColor.Should().Be(Colors.Transparent, reason);
 
@@ -164,6 +173,7 @@ namespace Tailviewer.Test.Settings
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
 				TabWidth = tabWidth,
+				Other = { BackgroundColor = Colors.Red, ForegroundColor = Colors.Firebrick },
 				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
 				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
 				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
@@ -176,6 +186,8 @@ namespace Tailviewer.Test.Settings
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(2, "because restore should simply discard invalid values and restore them to their defaults");
 			actualSettings.FontSize.Should().Be(12);
 			actualSettings.TabWidth.Should().Be(4);
+			actualSettings.Other.BackgroundColor.Should().Be(Colors.Red);
+			actualSettings.Other.ForegroundColor.Should().Be(Colors.Firebrick);
 			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
 			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
 			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);
@@ -200,6 +212,7 @@ namespace Tailviewer.Test.Settings
 				LinesScrolledPerWheelTick = linesScrolledPerWheelTick,
 				FontSize = fontSize,
 				TabWidth = tabWidth,
+				Other = { BackgroundColor = Colors.Red, ForegroundColor = Colors.Firebrick },
 				Trace = { BackgroundColor = Colors.Magenta, ForegroundColor = Colors.Teal },
 				Debug = { BackgroundColor = Colors.Aqua, ForegroundColor = Colors.DodgerBlue },
 				Info = { BackgroundColor = Colors.DarkOrange, ForegroundColor = Colors.AliceBlue },
@@ -213,6 +226,8 @@ namespace Tailviewer.Test.Settings
 			actualSettings.LinesScrolledPerWheelTick.Should().Be(linesScrolledPerWheelTick, reason);
 			actualSettings.FontSize.Should().Be(fontSize, reason);
 			actualSettings.TabWidth.Should().Be(tabWidth);
+			actualSettings.Other.BackgroundColor.Should().Be(Colors.Red);
+			actualSettings.Other.ForegroundColor.Should().Be(Colors.Firebrick);
 			actualSettings.Trace.BackgroundColor.Should().Be(Colors.Magenta);
 			actualSettings.Trace.ForegroundColor.Should().Be(Colors.Teal);
 			actualSettings.Debug.BackgroundColor.Should().Be(Colors.Aqua);

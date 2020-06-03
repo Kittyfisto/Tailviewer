@@ -21,6 +21,11 @@
 		int TabWidth { get; set; }
 		
 		/// <summary>
+		///    The settings concerning other-level log entries.
+		/// </summary>
+		LogLevelSettings Other { get; }
+		
+		/// <summary>
 		///    The settings concerning trace-level log entries.
 		/// </summary>
 		LogLevelSettings Trace { get; }

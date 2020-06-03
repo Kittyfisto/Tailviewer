@@ -17,6 +17,12 @@ namespace Tailviewer.Settings
 		public const int DefaultFontSize = 12;
 		public const int DefaultTabWidth = 4;
 
+		public static LogLevelSettings DefaultOther => new LogLevelSettings
+		{
+			ForegroundColor = Colors.Black,
+			BackgroundColor = Colors.Transparent
+		};
+
 		public static LogLevelSettings DefaultTrace => new LogLevelSettings
 		{
 			ForegroundColor = Color.FromRgb(128, 128, 128),
@@ -58,6 +64,7 @@ namespace Tailviewer.Settings
 		private int _linesScrolledPerWheelTick;
 		private int _fontSize;
 		private int _tabWidth;
+		private LogLevelSettings _other;
 		private LogLevelSettings _trace;
 		private LogLevelSettings _debug;
 		private LogLevelSettings _info;
@@ -70,6 +77,7 @@ namespace Tailviewer.Settings
 			_linesScrolledPerWheelTick = DefaultLinesScrolledPerWheelTick;
 			_fontSize = DefaultFontSize;
 			_tabWidth = DefaultTabWidth;
+			_other = DefaultOther;
 			_trace = DefaultTrace;
 			_debug = DefaultDebug;
 			_info = DefaultInfo;
@@ -94,6 +102,11 @@ namespace Tailviewer.Settings
 		{
 			get { return _tabWidth; }
 			set { _tabWidth = value; }
+		}
+
+		public LogLevelSettings Other
+		{
+			get { return _other; }
 		}
 
 		public LogLevelSettings Trace
@@ -131,6 +144,10 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeInt("linesscrolledperwheeltick", _linesScrolledPerWheelTick);
 			writer.WriteAttributeInt("fontsize", _fontSize);
 			writer.WriteAttributeInt("tabwidth", _tabWidth);
+
+			writer.WriteStartElement("other");
+			_other.Save(writer);
+			writer.WriteEndElement();
 
 			writer.WriteStartElement("trace");
 			_trace.Save(writer);
@@ -186,6 +203,10 @@ namespace Tailviewer.Settings
 			{
 				switch (subtree.Name)
 				{
+					case "other":
+						_other.Restore(subtree);
+						break;
+
 					case "trace":
 						_trace.Restore(subtree);
 						break;
@@ -221,6 +242,7 @@ namespace Tailviewer.Settings
 				LinesScrolledPerWheelTick = LinesScrolledPerWheelTick,
 				FontSize = FontSize,
 				TabWidth = TabWidth,
+				_other = Other.Clone(),
 				_trace = Trace.Clone(),
 				_debug = Debug.Clone(),
 				_info = Info.Clone(),
