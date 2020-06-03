@@ -21,6 +21,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly LogLine _logLine;
 		private readonly List<TextSegment> _segments;
 		private readonly TextSettings _textSettings;
+		private readonly TextBrushes _textBrushes;
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private ISearchResults _searchResults;
 		private Brush _lastForegroundBrush;
@@ -31,18 +32,21 @@ namespace Tailviewer.Ui.Controls.LogView
 		                HashSet<LogLineIndex> hoveredIndices,
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel)
-			: this(logLine, hoveredIndices, selectedIndices, colorByLevel, TextSettings.Default)
+			: this(logLine, hoveredIndices, selectedIndices, colorByLevel, TextSettings.Default,
+			       new TextBrushes(null))
 		{}
 
 		public TextLine(LogLine logLine,
 		                HashSet<LogLineIndex> hoveredIndices,
 		                HashSet<LogLineIndex> selectedIndices,
 		                bool colorByLevel,
-		                TextSettings textSettings)
+		                TextSettings textSettings,
+		                TextBrushes textBrushes)
 		{
 			if (logLine == null) throw new ArgumentNullException(nameof(logLine));
 			if (hoveredIndices == null) throw new ArgumentNullException(nameof(hoveredIndices));
 			if (selectedIndices == null) throw new ArgumentNullException(nameof(selectedIndices));
+			if (textBrushes == null) throw new ArgumentNullException(nameof(textBrushes));
 
 			_logLine = logLine;
 			_hoveredIndices = hoveredIndices;
@@ -50,6 +54,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_segments = new List<TextSegment>();
 			_colorByLevel = colorByLevel;
 			_textSettings = textSettings;
+			_textBrushes = textBrushes;
 			_isFocused = true;
 		}
 
@@ -87,44 +92,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get
 			{
-				if (_colorByLevel)
-				{
-					switch (_logLine.Level)
-					{
-						case LevelFlags.Fatal:
-						case LevelFlags.Error:
-							return TextHelper.ErrorForegroundBrush;
-
-						case LevelFlags.Debug:
-							if (IsSelected)
-								if (IsFocused)
-									return TextHelper.SelectedForegroundBrush;
-
-							return TextHelper.DebugForegroundBrush;
-
-						case LevelFlags.Trace:
-							if (IsSelected)
-								if (IsFocused)
-									return TextHelper.SelectedForegroundBrush;
-
-							return TextHelper.TraceForegroundBrush;
-					}
-				}
-
-				if (IsSelected)
-				{
-					if (IsFocused)
-						return TextHelper.SelectedForegroundBrush;
-
-					return TextHelper.NormalForegroundBrush;
-				}
-
-				if (IsHovered)
-				{
-					return TextHelper.HoveredForegroundBrush;
-				}
-
-				return TextHelper.NormalForegroundBrush;
+				return _textBrushes.ForegroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level);
 			}
 		}
 
@@ -132,52 +100,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			get
 			{
-				if (IsSelected)
-				{
-					if (IsFocused)
-						return TextHelper.SelectedBackgroundBrush;
-
-					return TextHelper.SelectedUnfocusedBackgroundBrush;
-				}
-
-				if (_colorByLevel)
-				{
-					if (IsHovered)
-					{
-						switch (_logLine.Level)
-						{
-							case LevelFlags.Fatal:
-							case LevelFlags.Error:
-								return TextHelper.ErrorHighlightBackgroundBrush;
-
-							case LevelFlags.Warning:
-								return TextHelper.WarningHighlightBackgroundBrush;
-
-							default:
-								return TextHelper.NormalHighlightBackgroundBrush;
-						}
-					}
-
-					switch (_logLine.Level)
-					{
-						case LevelFlags.Fatal:
-						case LevelFlags.Error:
-							return TextHelper.ErrorBackgroundBrush;
-
-						case LevelFlags.Warning:
-							return TextHelper.WarningBackgroundBrush;
-
-						default:
-							return TextHelper.NormalBackgroundBrush.GetBrushFor(_logLine.LogEntryIndex);
-					}
-				}
-
-				if (IsHovered)
-				{
-					return TextHelper.NormalHighlightBackgroundBrush;
-				}
-
-				return TextHelper.NormalBackgroundBrush.GetBrushFor(_logLine.LogEntryIndex);
+				return _textBrushes.BackgroundBrush(IsSelected, IsFocused, ColorByLevel, LogLine.Level);
 			}
 		}
 
@@ -209,7 +132,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				_segments.Clear();
 
 				string message = CreateMessage(_logLine.Message);
-				Brush highlightedBrush = TextHelper.HighlightedForegroundBrush;
+				Brush highlightedBrush = TextBrushes.HighlightedForegroundBrush;
 				var searchResults = _searchResults;
 				if (searchResults != null)
 				{
@@ -296,8 +219,8 @@ namespace Tailviewer.Ui.Controls.LogView
 					else
 					{
 						brush = IsSelected
-							? TextHelper.HighlightedSelectedBackgroundBrush
-							: TextHelper.HighlightedBackgroundBrush;
+							? TextBrushes.HighlightedSelectedBackgroundBrush
+							: TextBrushes.HighlightedBackgroundBrush;
 					}
 
 					if (brush != null)

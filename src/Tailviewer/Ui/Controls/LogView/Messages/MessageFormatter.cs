@@ -31,7 +31,7 @@ namespace Tailviewer.Ui.Controls.LogView.Messages
 			                         FlowDirection.LeftToRight,
 			                         textSettings.Typeface,
 			                         textSettings.FontSize,
-			                         TextHelper.LineNumberForegroundBrush,
+			                         TextBrushes.LineNumberForegroundBrush,
 			                         1.25);
 		}
 

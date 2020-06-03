@@ -37,6 +37,7 @@ namespace Tailviewer.Test.Ui.Controls
 				Height = 600
 			};
 			_control.Arrange(new Rect(0, 0, 800, 600));
+			_control.ChangeTextSettings(new TextSettings(), new TextBrushes(null));
 			DispatcherExtensions.ExecuteAllEvents();
 		}
 

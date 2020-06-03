@@ -104,6 +104,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private int _maxLineWidth;
 		private int _pendingModificationsCount;
 		private TextSettings _textSettings;
+		private TextBrushes _textBrushes;
 
 		static LogEntryListView()
 		{
@@ -114,6 +115,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		public LogEntryListView()
 		{
 			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(null);
 
 			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Star) });
 			RowDefinitions.Add(new RowDefinition { Height = new GridLength(value: 1, type: GridUnitType.Auto) });
@@ -185,7 +187,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			PartTextCanvas.VisibleSectionChanged += TextCanvasOnVisibleSectionChanged;
 			PartTextCanvas.OnSelectionChanged += TextCanvasOnOnSelectionChanged;
 
-			ChangeTextSettings(textSettings);
+			ChangeTextSettings(textSettings, textBrushes);
 
 			var separator = new Rectangle
 			{
@@ -641,14 +643,17 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void OnSettingsChanged(ILogViewerSettings settings)
 		{
-			ChangeTextSettings(settings != null
-				                   ? new TextSettings(settings.FontSize, settings.TabWidth)
-				                   : TextSettings.Default);
+			var textSettings = settings != null
+				? new TextSettings(settings.FontSize, settings.TabWidth)
+				: TextSettings.Default;
+			var textBrushes = new TextBrushes(settings);
+			ChangeTextSettings(textSettings, textBrushes);
 		}
 
-		private void ChangeTextSettings(TextSettings textSettings)
+		private void ChangeTextSettings(TextSettings textSettings, TextBrushes textBrushes)
 		{
 			_textSettings = textSettings;
+			_textBrushes = textBrushes;
 
 			_verticalScrollBar.SetValue(RangeBase.SmallChangeProperty, _textSettings.LineHeight);
 			_verticalScrollBar.SetValue(RangeBase.LargeChangeProperty, 10 * _textSettings.LineHeight);
@@ -660,7 +665,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				columnPresenter.TextSettings = _textSettings;
 			}
-			PartTextCanvas.TextSettings = _textSettings;
+			PartTextCanvas.ChangeTextSettings(_textSettings, _textBrushes);
 
 			if (LogFile != null)
 			{

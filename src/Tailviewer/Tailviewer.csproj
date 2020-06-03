@@ -207,6 +207,7 @@
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\LogView\TextBrushes.cs" />
     <Compile Include="Ui\Controls\LogView\Timestamps\TimestampColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Timestamps\TimestampFormatter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
@@ -302,7 +303,6 @@
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
-    <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
     <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />

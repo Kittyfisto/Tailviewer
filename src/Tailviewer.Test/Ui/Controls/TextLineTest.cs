@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using System.Windows.Media;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Test.Ui.Controls
@@ -130,120 +133,111 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestForegroundBrush1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.ErrorForegroundBrush);
+			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(new LogViewerSettings());
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.ErrorForegroundBrush);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultFatal.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultError.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultWarning.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.DebugForegroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.TraceForegroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultDebug.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.NormalForegroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultTrace.ForegroundColor);
+
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
 		}
 
 		[Test]
 		public void TestForegroundBrush2()
 		{
+			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(new LogViewerSettings());
+
 			_selected.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
-			textLine.ForegroundBrush.Should().Be(TextHelper.SelectedForegroundBrush);
+			foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
+			{
+				var textLine = new TextLine(new LogLine(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
+				textLine.ForegroundBrush.Should().Be(TextBrushes.SelectedForegroundBrush);
+			}
 		}
 
 		[Test]
 		public void TestBackgroundBrush1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorBackgroundBrush);
+			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(new LogViewerSettings());
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorBackgroundBrush);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultFatal.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.WarningBackgroundBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultError.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultWarning.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultInfo.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.NormalBackgroundBrush.NormalBrush);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultDebug.BackgroundColor);
+
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
+			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultTrace.BackgroundColor);
 		}
-
+		/*
 		[Test]
 		public void TestBackgroundBrush2()
 		{
+			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(new LogViewerSettings());
+
 			_hovered.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.WarningHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
+			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
-		}
+		}*/
 
 		[Test]
 		public void TestBackgroundBrush3()
 		{
+			var textSettings = new TextSettings();
+			var textBrushes = new TextBrushes(new LogViewerSettings());
+
 			_selected.Add(new LogLineIndex(0));
-
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
-
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.None), _hovered, _selected, true);
-			textLine.BackgroundBrush.Should().Be(TextHelper.SelectedBackgroundBrush);
+			
+			foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
+			{
+				var textLine = new TextLine(new LogLine(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
+				textLine.BackgroundBrush.Should().Be(TextBrushes.SelectedBackgroundBrush);
+			}
 		}
 
 		[Test]
@@ -304,6 +298,13 @@ namespace Tailviewer.Test.Ui.Controls
 			replace("abc\t", 4).Should().Be("abc ");
 			replace("abcd\t", 4).Should().Be("abcd    ");
 			replace("a\t\t", 2).Should().Be("a   ");
+		}
+
+		[Pure]
+		private static Color BrushColor(Brush brush)
+		{
+			brush.Should().BeOfType<SolidColorBrush>();
+			return ((SolidColorBrush) brush).Color;
 		}
 	}
 }
