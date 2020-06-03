@@ -547,6 +547,7 @@
     <Resource Include="Licenses\MMQ\LICENSE" />
     <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
     <Resource Include="Licenses\Ookii.Dialogs.Wpf\LICENSE" />
+    <Resource Include="Licenses\Xceed.Wpf.Toolkit\LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
