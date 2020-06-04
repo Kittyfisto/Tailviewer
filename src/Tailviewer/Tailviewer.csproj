@@ -538,6 +538,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Resource Include="..\..\LICENSE">
       <Link>Licenses\Tailviewer\LICENSE</Link>
     </Resource>
