@@ -28,6 +28,11 @@ echo Decrypting official key...
 echo Modifying AssemblyInfo.cs files of the entire solution...
 for /r "%SRC_DIR%" %%i in (*.*) do call :CHANGE_ASSEMBLYINFO %%i || goto :ASSEMBLYINFO_ERROR
 
+echo Modifying assembly redirections in app.config files...
+call :GENERATE_REDIRECTS "src\Tailviewer\App.config"
+call :GENERATE_REDIRECTS "src\Tailviewer.PluginRepository\App.config"
+call :GENERATE_REDIRECTS "src\Tailviewer.PluginRepository.Service\App.config"
+
 echo SUCESS: Tailviewer now compiles with the official strong name key
 exit /b 0
 
@@ -58,5 +63,12 @@ if not %ASSEMBLY_INFO_FILE_NAME% == AssemblyInfo.cs exit /b 0
 echo Patching %ASSEMBLY_INFO_FULL_PATH%...
 "%ASSEMBLYINFO_TOOL%" patch-internals-visible-to --assembly-info "%ASSEMBLY_INFO_FULL_PATH%" --key-path "%CURRENT_KEY%" --assemblies %TAILVIEWER_ASSEMBLIES%
 exit /b %errorlevel%
+
+:GENERATE_REDIRECTS
+set APP_CONFIG_PATH=%~1
+tools\GenerateRedirects.exe --appconfig %APP_CONFIG_PATH% --assemblyname "Tailviewer.Api" --assemblyinfo "src\GlobalAssemblyInfo.cs" || exit /b %errorlevel%
+tools\GenerateRedirects.exe --appconfig %APP_CONFIG_PATH% --assemblyname "Tailviewer.Core" --assemblyinfo "src\GlobalAssemblyInfo.cs" || exit /b %errorlevel%
+tools\GenerateRedirects.exe --appconfig %APP_CONFIG_PATH% --assemblyname "archive" --assemblyinfo "src\GlobalAssemblyInfo.cs" || exit /b %errorlevel%
+exit /b 0
 
 endlocal

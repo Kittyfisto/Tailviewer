@@ -8,6 +8,7 @@ using System.Reflection;
 using log4net;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -32,6 +33,8 @@ namespace Tailviewer.Archiver.Plugins
 		{
 			_filesystem = filesystem;
 			_plugins = new Dictionary<PluginId, PluginGroup>();
+
+			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
 			try
 			{
@@ -228,6 +231,68 @@ namespace Tailviewer.Archiver.Plugins
 					version = new Version(major: 0, minor: 0, build: 0, revision: 0);
 					break;
 			}
+		}
+
+		private Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+		{
+			var fullPath = GetAssemblyFullPath(args);
+			if (!File.Exists(fullPath)) //< If the dependency is not part of the TV installation, we try to load it through the plugin
+			{
+				// This assembly may be part of a plugin itself
+				var plugins = FindPluginGroupFor(args);
+				foreach (var plugin in plugins)
+				{
+					var assembly = TryLoadAssembly(args, plugin);
+					if (assembly != null)
+					{
+						return assembly;
+					}
+				}
+			}
+
+			// We have no idea where this assembly is from...
+			// .NET might be able to load it from the GAC...
+			return null;
+		}
+
+		private static Assembly TryLoadAssembly(ResolveEventArgs args, PluginGroup plugin)
+		{
+			try
+			{
+				return plugin.LoadAssembly(args.Name);
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Unable to load assembly '{0}' from plugin '{1}': {2}", args.Name, plugin, e);
+				return null;
+			}
+		}
+
+		[Pure]
+		private static string GetAssemblyFullPath(ResolveEventArgs args)
+		{
+			var entryAssembly = Assembly.GetEntryAssembly();
+			var folder = entryAssembly.GetFolder();
+			var assemblyName = args.Name;
+			var idx = assemblyName.IndexOf(',');
+			if (idx != -1)
+			{
+				assemblyName = assemblyName.Substring(0, idx);
+			}
+
+			var fullPath = Path.Combine(folder, assemblyName + ".dll");
+			return fullPath;
+		}
+
+		[Pure]
+		private IEnumerable<PluginGroup> FindPluginGroupFor(ResolveEventArgs args)
+		{
+			// For some reason, args.RequestingAssembly is always null so we have to guess which plugin tried to load it...
+			var plugins = _plugins.Values.Where(x => x.IsLoading).ToList();
+			if (plugins.Count > 1)
+				Log.WarnFormat("Found multiple plugins trying to load an assembly at the same time! We may use the wrong one :(");
+
+			return plugins;
 		}
 	}
 }
