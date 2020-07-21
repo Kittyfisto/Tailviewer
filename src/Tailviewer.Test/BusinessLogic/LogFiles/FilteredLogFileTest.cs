@@ -69,7 +69,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_logFile.Setup(x => x.Count).Returns(2);
 			_logFile.Setup(x => x.Progress).Returns(1);
 			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-			_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
+			_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
 
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 				Filter.Create(null, true, LevelFlags.Debug)))
@@ -90,7 +90,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -125,7 +125,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("ello", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.None));
+				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 
 				_taskScheduler.RunOnce();
@@ -138,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				section[0].OriginalLineIndex.Should().Be(0);
 				section[0].LogEntryIndex.Should().Be(0);
 				section[0].Message.Should().Be("Hello world!");
-				section[0].Level.Should().Be(LevelFlags.None);
+				section[0].Level.Should().Be(LevelFlags.Other);
 			}
 		}
 
@@ -308,30 +308,28 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				{
 					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
 					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
 				});
 
 				_taskScheduler.RunOnce();
-				filtered.Count.Should().Be(3);
+				filtered.Count.Should().Be(2);
 				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
 				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
-				filtered.GetLine(2).OriginalLineIndex.Should().Be(2);
 
 
 				logFile.RemoveFrom(new LogLineIndex(2));
 				logFile.AddRange(new []
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.None, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
 					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
 					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
-				filtered.Count.Should().Be(5);
+				filtered.Count.Should().Be(4);
 				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
 				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
-				filtered.GetLine(2).OriginalLineIndex.Should().Be(2);
-				filtered.GetLine(3).OriginalLineIndex.Should().Be(3);
-				filtered.GetLine(4).OriginalLineIndex.Should().Be(4);
+				filtered.GetLine(2).OriginalLineIndex.Should().Be(3);
+				filtered.GetLine(3).OriginalLineIndex.Should().Be(4);
 			}
 		}
 
@@ -342,7 +340,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestListener()
 		{
 			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-			_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
+			_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				var sections = new List<LogFileSection>();
@@ -376,7 +374,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -387,7 +385,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				    .Should().Equal(new[]
 					    {
 						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.None)
+						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
 					    });
 			}
 		}
@@ -400,7 +398,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -411,7 +409,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				    .Should().Equal(new[]
 					    {
 						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.None)
+						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
 					    });
 			}
 		}
@@ -429,7 +427,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
 
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -478,7 +476,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.None));
+				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.Other));
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
@@ -826,7 +824,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				source.AddEntry("", LevelFlags.None, DateTime.MinValue);
+				source.AddEntry("", LevelFlags.Other, DateTime.MinValue);
 
 				var deltas = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.DeltaTime);
 				deltas.Should().NotBeNull();
@@ -843,8 +841,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 11, 19, 34, 0));
-				source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 11, 19, 35, 0));
+				source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 11, 19, 34, 0));
+				source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 11, 19, 35, 0));
 				_taskScheduler.RunOnce();
 
 				var deltas = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime);
@@ -909,7 +907,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var logFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
 				var timestamp = new DateTime(2017, 12, 11, 20, 46, 0);
-				source.AddEntry("", LevelFlags.None, timestamp);
+				source.AddEntry("", LevelFlags.Other, timestamp);
 				_taskScheduler.RunOnce();
 
 				var timestamps = logFile.GetColumn(new LogFileSection(0, 1), LogFileColumns.Timestamp);

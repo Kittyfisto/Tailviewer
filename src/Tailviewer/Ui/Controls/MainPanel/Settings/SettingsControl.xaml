@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:Metrolib.Controls;assembly=Metrolib"
              xmlns:settings="clr-namespace:Tailviewer.Ui.Controls.MainPanel.Settings"
              xmlns:tailviewer="clr-namespace:Tailviewer"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance settings:SettingsMainPanelViewModel}"
@@ -23,7 +24,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
+    <controls:FlatScrollViewer VerticalScrollBarVisibility="Auto"
+                               HorizontalScrollBarVisibility="Disabled">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -57,9 +59,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="5" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="5" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -71,7 +71,8 @@
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
                                    Grid.Row="0" />
-                        <controls:EditorTextBox Grid.Column="1" Grid.Row="0">
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="0"
+                                                Margin="0,6,6,6">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="ScrollSpeed"
                                          Mode="TwoWay"
@@ -86,9 +87,10 @@
                         <TextBlock Text="Font Size"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="2"
+                                   Grid.Row="1"
                                    Grid.Column="0"/>
-                        <controls:EditorTextBox Grid.Column="1" Grid.Row="2">
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="1"
+                                                Margin="0,6,6,6">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="FontSize"
                                          Mode="TwoWay"
@@ -103,9 +105,10 @@
                         <TextBlock Text="Tab Width"
                                    VerticalAlignment="Center"
                                    Margin="0,6,6,6"
-                                   Grid.Row="4"
+                                   Grid.Row="2"
                                    Grid.Column="0"/>
-                        <controls:EditorTextBox Grid.Column="1" Grid.Row="4">
+                        <controls:EditorTextBox Grid.Column="1" Grid.Row="2"
+                                                Margin="0,6,6,6">
                             <controls:EditorTextBox.Text>
                                 <Binding Path="TabWidth"
                                          Mode="TwoWay"
@@ -116,11 +119,191 @@
                                 </Binding>
                             </controls:EditorTextBox.Text>
                         </controls:EditorTextBox>
-
                     </Grid>
                 </controls:FlatGroupBox>
-                
-                <controls:FlatGroupBox Grid.Row="2" Header="Data Sources" VerticalAlignment="Top" Margin="8"
+
+                <controls:FlatGroupBox Grid.Row="2" Header="Log Levels" VerticalAlignment="Top" Margin="8"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="170" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Foreground Color"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Background Color"
+                                       HorizontalAlignment="Center"/>
+                        </Grid>
+
+                        <TextBlock Text="Other"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="1"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="1"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Trace"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="2"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="2"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Debug"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="3"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="3"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Info"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="4"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="4"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Warning"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="5"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="5"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Error"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="6"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="6"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+
+                        <TextBlock Text="Fatal"
+                                   VerticalAlignment="Center"
+                                   Margin="0,6,6,6"
+                                   Grid.Row="7"
+                                   Grid.Column="0"/>
+                        <Grid Grid.Row="7"
+                              Grid.Column="1"
+                              Margin="0,6,6,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
+                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
+                                              Margin="6,0,0,0"
+                                              Grid.Column="1" />
+                        </Grid>
+                    </Grid>
+                </controls:FlatGroupBox>
+            </Grid>
+            
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <controls:FlatGroupBox Header="Data Sources" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -188,23 +371,17 @@
 
                     </Grid>
                 </controls:FlatGroupBox>
-            </Grid>
-            
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
 
-                <controls:FlatGroupBox Header="Window" VerticalAlignment="Top" Margin="8"
+                <controls:FlatGroupBox Grid.Row="1"
+                                       Header="Window" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
                         <CheckBox Content="Always on top" IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}" />
                     </Grid>
                 </controls:FlatGroupBox>
+
                 <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8"
-                                       Grid.Row="1">
+                                       Grid.Row="2">
                     <controls:FlatGroupBox.HeaderTemplate>
                         <DataTemplate>
                             <TextBlock FontSize="22" Text="{Binding}" />
@@ -257,5 +434,5 @@
 
             </Grid>
         </Grid>
-    </Grid>
+    </controls:FlatScrollViewer>
 </UserControl>

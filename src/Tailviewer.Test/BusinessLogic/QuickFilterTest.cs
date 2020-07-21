@@ -27,9 +27,9 @@ namespace Tailviewer.Test.BusinessLogic
 				{
 					Value = "foobar"
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hello foobar!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBAR", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBA", LevelFlags.None)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hello foobar!", LevelFlags.Other)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBAR", LevelFlags.Other)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "FOOBA", LevelFlags.Other)).Should().BeFalse();
 		}
 
 		[Test]
@@ -41,9 +41,9 @@ namespace Tailviewer.Test.BusinessLogic
 					IgnoreCase = true,
 					MatchType = FilterMatchType.WildcardFilter
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.None)).Should().BeTrue();
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello Wold!", LevelFlags.None)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello World!", LevelFlags.Other)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "hELlo wORld!", LevelFlags.Other)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "Hello Wold!", LevelFlags.Other)).Should().BeFalse();
 		}
 
 		[Test]
@@ -54,8 +54,8 @@ namespace Tailviewer.Test.BusinessLogic
 					Value = "foo",
 					IsInverted = true
 				};
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "foo", LevelFlags.None)).Should().BeFalse();
-			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "bar", LevelFlags.None)).Should().BeTrue();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "foo", LevelFlags.Other)).Should().BeFalse();
+			quickFilter.CreateFilter().PassesFilter(new LogLine(0, "bar", LevelFlags.Other)).Should().BeTrue();
 		}
 	}
 }

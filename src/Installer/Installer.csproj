@@ -209,6 +209,10 @@
       <Link>InstallationFiles\Ookii.Dialogs.Wpf.dll</Link>
       <LogicalName>InstallationFiles\Ookii.Dialogs.Wpf.dll</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\Xceed.Wpf.Toolkit.dll">
+      <Link>InstallationFiles\Xceed.Wpf.Toolkit.dll</Link>
+      <LogicalName>InstallationFiles\Xceed.Wpf.Toolkit.dll</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="InstallationFiles\Uninstall.cmd">
       <LogicalName>InstallationFiles\Uninstall.cmd</LogicalName>
     </EmbeddedResource>

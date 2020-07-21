@@ -25,8 +25,8 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestExportTwoLines()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello,", LevelFlags.None);
-			logFile.AddEntry("World!", LevelFlags.None);
+			logFile.AddEntry("Hello,", LevelFlags.Other);
+			logFile.AddEntry("World!", LevelFlags.Other);
 			var exporter = new LogFileToFileExporter(logFile, _directory, "foo");
 			exporter.FullExportFilename.Should().BeNull("because the full filename must be determined from inside Export, NOT beforehand");
 			new Action(() => exporter.Export()).Should().NotThrow();
@@ -40,11 +40,11 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		public void TestExportTwice()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello", LevelFlags.None);
+			logFile.AddEntry("Hello", LevelFlags.Other);
 			var exporter1 = new LogFileToFileExporter(logFile, _directory, "foo");
 			exporter1.Export();
 
-			logFile.AddEntry("World!", LevelFlags.None);
+			logFile.AddEntry("World!", LevelFlags.Other);
 			var exporter2 = new LogFileToFileExporter(logFile, _directory, "foo");
 			new Action(() => exporter2.Export()).Should().NotThrow();
 

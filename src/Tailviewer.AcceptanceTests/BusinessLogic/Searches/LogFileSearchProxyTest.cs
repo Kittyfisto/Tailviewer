@@ -105,7 +105,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.Searches
 		private void AddEntry(string message)
 		{
 			var index = _entries.Count;
-			var entry = new LogLine(index, index, message, LevelFlags.None);
+			var entry = new LogLine(index, index, message, LevelFlags.Other);
 			_entries.Add(entry);
 			_listeners.OnRead(_entries.Count);
 		}

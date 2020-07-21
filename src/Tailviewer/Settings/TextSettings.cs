@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using log4net;
+using Tailviewer.Ui.Controls.LogView;
 
 namespace Tailviewer.Settings
 {

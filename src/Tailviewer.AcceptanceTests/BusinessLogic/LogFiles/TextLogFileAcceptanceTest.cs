@@ -74,7 +74,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 					logFile.Entries.Should().Equal(new[]
 						{
-							new LogLine(0, "Hello World!", LevelFlags.None)
+							new LogLine(0, "Hello World!", LevelFlags.Other)
 						});
 				}
 			}
@@ -300,7 +300,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                                                          "Because the file has been created now");
 				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
 
-				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
 			}
 			finally
 			{
@@ -364,13 +364,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 						new LogLine(0, 0,
 						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
 						            LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(1, 1, "Foobar", LevelFlags.None, null),
-						new LogLine(2, 2, "Some more info", LevelFlags.None, null),
+						new LogLine(1, 1, "Foobar", LevelFlags.Other, null),
+						new LogLine(2, 2, "Some more info", LevelFlags.Other, null),
 						new LogLine(3, 3,
 						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
 						            LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
-						new LogLine(4, 4, "Hey look at me", LevelFlags.None, null),
-						new LogLine(5, 5, "dwadawdadw", LevelFlags.None, null)
+						new LogLine(4, 4, "Hey look at me", LevelFlags.Other, null),
+						new LogLine(5, 5, "dwadawdadw", LevelFlags.Other, null)
 					});
 			}
 		}

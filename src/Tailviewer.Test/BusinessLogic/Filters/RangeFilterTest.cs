@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 
 		private static LogLine CreateLine(LogLineIndex lineIndex)
 		{
-			return new LogLine(lineIndex, 0, "", LevelFlags.None, null);
+			return new LogLine(lineIndex, 0, "", LevelFlags.Other, null);
 		}
 	}
 }

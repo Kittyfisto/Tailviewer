@@ -19,6 +19,13 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IApplicationSettings _settings;
+		private readonly LogLevelSettingsViewModel _otherLevel;
+		private readonly LogLevelSettingsViewModel _traceLevel;
+		private readonly LogLevelSettingsViewModel _debugLevel;
+		private readonly LogLevelSettingsViewModel _infoLevel;
+		private readonly LogLevelSettingsViewModel _warnLevel;
+		private readonly LogLevelSettingsViewModel _errorLevel;
+		private readonly LogLevelSettingsViewModel _fatalLevel;
 		private string _pluginRepositories;
 		private EncodingViewModel _defaultTextFileEncoding;
 
@@ -38,6 +45,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 
 				_defaultTextFileEncoding = @default;
 			}
+
+			_otherLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Other);
+			_traceLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Trace);
+			_debugLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Debug);
+			_infoLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Info);
+			_warnLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Warning);
+			_errorLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Error);
+			_fatalLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Fatal);
 		}
 
 		public bool CheckForUpdates
@@ -193,6 +208,14 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 				_settings.SaveAsync();
 			}
 		}
+
+		public LogLevelSettingsViewModel OtherLevel => _otherLevel;
+		public LogLevelSettingsViewModel TraceLevel => _traceLevel;
+		public LogLevelSettingsViewModel DebugLevel => _debugLevel;
+		public LogLevelSettingsViewModel InfoLevel => _infoLevel;
+		public LogLevelSettingsViewModel WarningLevel => _warnLevel;
+		public LogLevelSettingsViewModel ErrorLevel => _errorLevel;
+		public LogLevelSettingsViewModel FatalLevel => _fatalLevel;
 
 		public bool AlwaysOnTop
 		{

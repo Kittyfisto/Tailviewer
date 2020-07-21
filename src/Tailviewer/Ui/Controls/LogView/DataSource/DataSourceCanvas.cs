@@ -213,11 +213,11 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 			switch (displayMode)
 			{
 				case DataSourceDisplayMode.Filename:
-					brush = TextHelper.DataSourceFilenameForegroundBrush;
+					brush = TextBrushes.DataSourceFilenameForegroundBrush;
 					break;
 
 				case DataSourceDisplayMode.CharacterCode:
-					brush = TextHelper.DataSourceCharacterCodeForegroundBrush;
+					brush = TextBrushes.DataSourceCharacterCodeForegroundBrush;
 					break;
 
 				default:

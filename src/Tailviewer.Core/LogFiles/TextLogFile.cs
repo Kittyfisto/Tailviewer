@@ -720,7 +720,14 @@ namespace Tailviewer.Core.LogFiles
 			if (_translator == null)
 				return logLine;
 
-			return _translator.Translate(this, logLine);
+			var translated = _translator.Translate(this, logLine);
+
+			// With the introduction of LevelFlags.Other, we need to ensure that "old" plugins continue to work
+			// as expected (Now, Other shall be used where previously None had to be).
+			if (translated.Level == LevelFlags.None)
+				translated.Level = LevelFlags.Other;
+
+			return translated;
 		}
 
 		private void RemoveLast()

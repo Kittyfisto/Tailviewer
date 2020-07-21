@@ -37,7 +37,7 @@
                      source to the user! -->
                 <TextBlock Text="{Binding CharacterCode}"
                            ToolTip="Identifies this data source amongst all others in this group - also displayed next to each log line"
-                           Foreground="{x:Static logView:TextHelper.DataSourceCharacterCodeForegroundBrush}"
+                           Foreground="{x:Static logView:TextBrushes.DataSourceCharacterCodeForegroundBrush}"
                            VerticalAlignment="Center" />
             </Grid>
 

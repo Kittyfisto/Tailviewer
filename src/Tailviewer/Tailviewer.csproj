@@ -93,6 +93,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.Toolkit, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.0.1\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
@@ -123,6 +126,7 @@
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogFileSettings.cs" />
+    <Compile Include="Settings\LogLevelSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
     <Compile Include="Settings\TextSettings.cs" />
     <Compile Include="TaskExtensions.cs" />
@@ -203,11 +207,13 @@
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\LogView\TextBrushes.cs" />
     <Compile Include="Ui\Controls\LogView\Timestamps\TimestampColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Timestamps\TimestampFormatter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\LogLevelSettingsViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
@@ -292,12 +298,10 @@
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
-    <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
     <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
@@ -546,6 +550,7 @@
     <Resource Include="Licenses\MMQ\LICENSE" />
     <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
     <Resource Include="Licenses\Ookii.Dialogs.Wpf\LICENSE" />
+    <Resource Include="Licenses\Xceed.Wpf.Toolkit\LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

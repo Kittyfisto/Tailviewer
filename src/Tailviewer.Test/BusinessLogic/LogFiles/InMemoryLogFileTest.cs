@@ -197,7 +197,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestAddListener2()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Foo", LevelFlags.None);
+			logFile.AddEntry("Foo", LevelFlags.Other);
 
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
 			_modifications.Should().Equal(new object[]

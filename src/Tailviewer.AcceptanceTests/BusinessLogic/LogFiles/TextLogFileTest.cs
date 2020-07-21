@@ -163,7 +163,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			_scheduler.RunOnce();
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Foo", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Foo", LevelFlags.Other));
 		}
 
 		[Test]
@@ -179,7 +179,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
 		}
 
 		[Test]
@@ -199,7 +199,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 		}
 
 		[Test]
@@ -229,7 +229,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 		}
 
 		[Test]
@@ -244,8 +244,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.None));
-			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.Other));
+			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.Other));
 		}
 
 		[Test]

@@ -373,7 +373,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
 
-			source.AddMultilineEntry(LevelFlags.None, new DateTime(2017, 12, 3, 11, 59, 30), new []
+			source.AddMultilineEntry(LevelFlags.Other, new DateTime(2017, 12, 3, 11, 59, 30), new []
 			{
 				"2017-12-03 11:59:30 Hello, ",
 				"World!"
@@ -612,8 +612,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
 
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 28, 23));
 			int count = source.Count;
 			_taskScheduler.Run(2);
 
@@ -642,9 +642,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
 
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 29, 1));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 28, 23));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 29, 1));
 			int count = source.Count;
 			_taskScheduler.Run(2);
 
@@ -674,8 +674,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
 
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 28, 23));
 			_taskScheduler.Run(2);
 
 			var deltaTimes = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime);
@@ -692,8 +692,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source);
 
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 27, 0));
-			source.AddEntry("", LevelFlags.None, new DateTime(2017, 12, 14, 23, 28, 23));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 27, 0));
+			source.AddEntry("", LevelFlags.Other, new DateTime(2017, 12, 14, 23, 28, 23));
 			_taskScheduler.Run(2);
 
 			var deltaTimes = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.DeltaTime);

@@ -25,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestGetPartialInvalid()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("Hello, World!", LevelFlags.None, new DateTime(2019, 5, 28, 0, 53, 0));
+			source.AddEntry("Hello, World!", LevelFlags.Other, new DateTime(2019, 5, 28, 0, 53, 0));
 
 			var index = new MergedLogFileIndex(source);
 			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
@@ -41,7 +41,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceOneLine()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("Hello, World!", LevelFlags.None, new DateTime(2019, 5, 28, 19, 55, 10));
+			source.AddEntry("Hello, World!", LevelFlags.Other, new DateTime(2019, 5, 28, 19, 55, 10));
 
 			var index = new MergedLogFileIndex(source);
 			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
@@ -63,7 +63,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceTwoLines()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("Hello,", LevelFlags.None, new DateTime(2019, 5, 27, 23, 37, 0));
+			source.AddEntry("Hello,", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 37, 0));
 
 			var index = new MergedLogFileIndex(source);
 			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
@@ -72,7 +72,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 				new LogFileSection(0, 1)
 			});
 
-			source.AddEntry("Hello,", LevelFlags.None, new DateTime(2019, 5, 27, 23, 38, 0));
+			source.AddEntry("Hello,", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 38, 0));
 			changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(1, 1)));
 			changes.Should().Equal(new object[]
 			{
@@ -98,9 +98,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendTwoSourcesWrongOrder()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 27, 23, 10, 0));
+			source1.AddEntry("B", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 10, 0));
 			var source2 = new InMemoryLogFile();
-			source2.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 27, 23, 09, 0));
+			source2.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 09, 0));
 
 			var index = new MergedLogFileIndex(source1, source2);
 			var changes = index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 1)),
@@ -129,9 +129,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendTwoSourcesWrongOrderSeparateChangesFullInvalidation()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 27, 23, 10, 0));
+			source1.AddEntry("B", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 10, 0));
 			var source2 = new InMemoryLogFile();
-			source2.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 27, 23, 09, 0));
+			source2.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 27, 23, 09, 0));
 
 			var index = new MergedLogFileIndex(source1, source2);
 			var changes = index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 1)));
@@ -166,11 +166,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendTwoSourcesWrongOrderSeparateChangesPartialInvalidation()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
-			source1.AddEntry("C", LevelFlags.None, new DateTime(2019, 5, 28, 00, 36, 0));
+			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
+			source1.AddEntry("C", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 36, 0));
 			var source2 = new InMemoryLogFile();
-			source2.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 28, 00, 35, 0));
-			source2.AddEntry("D", LevelFlags.None, new DateTime(2019, 5, 28, 00, 37, 0));
+			source2.AddEntry("B", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 35, 0));
+			source2.AddEntry("D", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 37, 0));
 
 			var index = new MergedLogFileIndex(source1, source2);
 			var changes = index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 2)));
@@ -191,12 +191,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceTwoIdenticalTimestamps()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 0));
-			source.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 2));
-			source.AddEntry("C1", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
-			source.AddEntry("C2", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
-			source.AddEntry("D", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 6));
-			source.AddEntry("E", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 8));
+			source.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 0));
+			source.AddEntry("B", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 2));
+			source.AddEntry("C1", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 4));
+			source.AddEntry("C2", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 4));
+			source.AddEntry("D", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 6));
+			source.AddEntry("E", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 8));
 
 			var index = new MergedLogFileIndex(source);
 			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 6)));
@@ -225,17 +225,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendTwoSourcesInterlocked()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 0));
-			source1.AddEntry("B", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 2));
-			source1.AddEntry("C", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 4));
-			source1.AddEntry("D", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 6));
-			source1.AddEntry("E", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 8));
+			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 0));
+			source1.AddEntry("B", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 2));
+			source1.AddEntry("C", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 4));
+			source1.AddEntry("D", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 6));
+			source1.AddEntry("E", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 8));
 			var source2 = new InMemoryLogFile();
-			source2.AddEntry("1", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 1));
-			source2.AddEntry("2", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 3));
-			source2.AddEntry("3", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 5));
-			source2.AddEntry("4", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 7));
-			source2.AddEntry("5", LevelFlags.None, new DateTime(2019, 5, 29, 00, 11, 9));
+			source2.AddEntry("1", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 1));
+			source2.AddEntry("2", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 3));
+			source2.AddEntry("3", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 5));
+			source2.AddEntry("4", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 7));
+			source2.AddEntry("5", LevelFlags.Other, new DateTime(2019, 5, 29, 00, 11, 9));
 
 			var index = new MergedLogFileIndex(source1, source2);
 			index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 5)));
@@ -277,7 +277,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestOneSourceResetEmpty()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
 
 			var index = new MergedLogFileIndex(source1);
 			var changes = index.Process(new MergedLogFilePendingModification(source1, LogFileSection.Reset));
@@ -288,7 +288,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestOneSourceAppendReset()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
 
 			var index = new MergedLogFileIndex(source1);
 			var changes = index.Process(new MergedLogFilePendingModification(source1, new LogFileSection(0, 1)));
@@ -313,7 +313,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestOneSourceResetAndAppend()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 00, 34, 0));
+			source1.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 00, 34, 0));
 
 			var index = new MergedLogFileIndex(source1);
 			var changes = index.Process(
@@ -332,14 +332,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestOneSourceManySameTimestamps()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("A", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 053));
-			source.AddEntry("B", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
-			source.AddEntry("C", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
-			source.AddEntry("D", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 100));
-			source.AddEntry("E", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
-			source.AddEntry("F", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
-			source.AddEntry("G", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
-			source.AddEntry("H", LevelFlags.None, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("A", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 053));
+			source.AddEntry("B", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("C", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("D", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("E", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("F", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("G", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 115));
+			source.AddEntry("H", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 115));
 
 			var index = new MergedLogFileIndex(source);
 			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 8)));
@@ -362,7 +362,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceOneLineWithoutTimestamp()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("Hello, World!", LevelFlags.None);
+			source.AddEntry("Hello, World!", LevelFlags.Other);
 
 			var index = new MergedLogFileIndex(source);
 			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 1)));
@@ -380,9 +380,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 		public void TestAppendOneSourceThreeOneLinesOneWithoutTimestamp()
 		{
 			var source = new InMemoryLogFile();
-			source.AddEntry("A", LevelFlags.None, new DateTime(2019, 5, 28, 19, 30, 1));
-			source.AddEntry("B", LevelFlags.None);
-			source.AddEntry("C", LevelFlags.None, new DateTime(2019, 5, 28, 19, 30, 42));
+			source.AddEntry("A", LevelFlags.Other, new DateTime(2019, 5, 28, 19, 30, 1));
+			source.AddEntry("B", LevelFlags.Other);
+			source.AddEntry("C", LevelFlags.Other, new DateTime(2019, 5, 28, 19, 30, 42));
 
 			var index = new MergedLogFileIndex(source);
 			var changes = index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 3)));

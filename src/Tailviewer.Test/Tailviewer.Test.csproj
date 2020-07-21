@@ -194,6 +194,7 @@
     <Compile Include="Settings\DataSourceSettingsTest.cs" />
     <Compile Include="Settings\DataSourceTest.cs" />
     <Compile Include="Settings\ExportSettingsTest.cs" />
+    <Compile Include="Settings\LogLevelSettingsTest.cs" />
     <Compile Include="Settings\LogViewerSettingsTest.cs" />
     <Compile Include="Settings\MainWindowSettingsTest.cs" />
     <Compile Include="Settings\QuickFiltersTest.cs" />
