@@ -52,6 +52,25 @@ namespace Tailviewer
 			AddV090();
 			AddV091();
 			AddV092();
+			AddV093();
+		}
+
+		private static void AddV093()
+		{
+			var features = new[]
+			{
+				"Fully customized color settings for log levels [#216](https://github.com/Kittyfisto/Tailviewer/issues/216)"
+			};
+			var bugfixes = new string[]
+				{};
+			var misc = new[]
+			{
+				"Add setting for tab size [#232](https://github.com/Kittyfisto/Tailviewer/issues/232)",
+			};
+			var releaseDate = new DateTime(2020, 7, 21);
+			var version = new Version(0, 9, 3);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV092()
