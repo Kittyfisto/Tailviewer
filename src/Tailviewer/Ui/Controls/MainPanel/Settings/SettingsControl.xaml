@@ -164,8 +164,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding OtherLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding OtherLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -182,8 +184,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding TraceLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding TraceLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -200,8 +204,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding DebugLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding DebugLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -218,8 +224,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding InfoLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding InfoLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -236,8 +244,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding WarningLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding WarningLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -254,8 +264,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding ErrorLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
@@ -272,8 +284,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.ForegroundColor}" />
+                            <xctk:ColorPicker SelectedColor="{Binding FatalLevel.ForegroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" />
                             <xctk:ColorPicker SelectedColor="{Binding FatalLevel.BackgroundColor}"
+                                              AvailableColorsSortingMode="HueSaturationBrightness"
                                               Margin="6,0,0,0"
                                               Grid.Column="1" />
                         </Grid>
