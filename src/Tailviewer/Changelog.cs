@@ -53,6 +53,23 @@ namespace Tailviewer
 			AddV091();
 			AddV092();
 			AddV093();
+			AddV094();
+		}
+
+		private static void AddV094()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{};
+			var misc = new []
+			{
+				"Added shortcut for new bookmark (Ctrl+B) [#240](https://github.com/Kittyfisto/Tailviewer/issues/240)"
+			};
+			var releaseDate = new DateTime(2020, 8, 20);
+			var version = new Version(0, 9, 4);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV093()
