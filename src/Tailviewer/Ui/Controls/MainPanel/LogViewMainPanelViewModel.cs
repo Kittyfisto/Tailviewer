@@ -419,9 +419,13 @@ namespace Tailviewer.Ui.Controls.MainPanel
 			SelectedSidePanel = _quickFilters;
 		}
 
-		public void AddBookmark()
+		public bool AddBookmark()
 		{
+			if (!_bookmarks.AddBookmarkCommand.CanExecute(null))
+				return false;
+
 			_bookmarks.AddBookmarkCommand.Execute(null);
+			return true;
 		}
 
 		public void ShowBookmarks()

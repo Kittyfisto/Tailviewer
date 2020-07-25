@@ -225,8 +225,10 @@ namespace Tailviewer.Ui.Controls
 			var logViewModel = viewModel?.SelectedMainPanel as LogViewMainPanelViewModel;
 			if (logViewModel != null)
 			{
-				logViewModel.AddBookmark();
-				logViewModel.ShowBookmarks();
+				if (logViewModel.AddBookmark())
+				{
+					logViewModel.ShowBookmarks();
+				}
 			}
 		}
 
