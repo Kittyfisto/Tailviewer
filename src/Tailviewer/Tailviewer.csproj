@@ -118,7 +118,10 @@
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowTextLogFileParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFileParser.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFileParserPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="Int32RangeRule.cs" />

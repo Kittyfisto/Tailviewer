@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
@@ -31,12 +32,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
-			_logFile = new TextLogFile(_scheduler, _fname);
+			_logFile = Create(_fname);
 
 			_settings = new DataSource(_fname)
 			{
 				Id = DataSourceId.CreateNew()
 			};
+		}
+
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			return new TextLogFile(serviceContainer, fileName);
 		}
 
 		[Test]

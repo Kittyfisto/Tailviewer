@@ -169,6 +169,9 @@ namespace Tailviewer
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
+					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
+					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
+
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);

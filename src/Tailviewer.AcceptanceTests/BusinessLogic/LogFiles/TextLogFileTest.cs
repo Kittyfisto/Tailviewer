@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 
@@ -38,7 +39,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter = new StreamWriter(_stream);
 			_binaryWriter = new BinaryWriter(_stream);
 
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 
 			_listener = new Mock<ILogFileListener>();
 			_changes = new List<LogFileSection>();
@@ -54,6 +55,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter?.Dispose();
 			//_streamWriter?.Dispose();
 			_stream?.Dispose();
+		}
+
+		private TextLogFile Create(string fileName,
+		                           Encoding encoding = null,
+		                           ILogLineTranslator translator = null)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			if (encoding != null)
+				serviceContainer.RegisterInstance<Encoding>(encoding);
+			if (translator != null)
+				serviceContainer.RegisterInstance<ILogLineTranslator>(translator);
+			return new TextLogFile(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -79,7 +93,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Write((byte) '\n');
 			_binaryWriter.Flush();
 
-			_file = new TextLogFile(_scheduler, _fname, encoding: Encoding.GetEncoding(1252));
+			_file = Create(_fname, encoding: Encoding.GetEncoding(1252));
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -98,7 +112,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Write((byte)'\n');
 			_binaryWriter.Flush();
 
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -110,7 +124,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public void TestTranslator1()
 		{
 			var translator = new Mock<ILogLineTranslator>();
-			_file = new TextLogFile(_scheduler, _fname, translator: translator.Object);
+			_file = Create(_fname, translator: translator.Object);
 			_file.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
 			_streamWriter.Write("Foo");
@@ -124,7 +138,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestDoesNotExist()
 		{
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 			_scheduler.RunOnce();
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
@@ -146,7 +160,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var stream = new FileStream(_fname, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
 			{
-				_file = new TextLogFile(_scheduler, _fname);
+				_file = Create(_fname);
 				_scheduler.RunOnce();
 
 				_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
@@ -370,7 +384,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 		protected override ILogFile CreateEmpty()
 		{
-			var logFile = new TextLogFile(_scheduler, "fawwaaw");
+			var logFile = Create("fawwaaw");
 			_scheduler.RunOnce();
 			return logFile;
 		}
@@ -388,7 +402,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				}
 			}
 
-			var logFile = new TextLogFile(_scheduler, fname);
+			var logFile = Create(fname);
 			_scheduler.RunOnce();
 			return logFile;
 		}

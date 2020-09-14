@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 
@@ -27,12 +28,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		[Ignore("Test isn't finished yet")]
 		public void Test()
 		{
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Entries))
-			using (var source2 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Lines))
+			using (var source1 = Create(TextLogFileAcceptanceTest.File2Entries))
+			using (var source2 = Create(TextLogFileAcceptanceTest.File2Lines))
 			{
 				var sources = new List<ILogFile> {source1, source2};
 				using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(10), sources))

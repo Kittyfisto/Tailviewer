@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Test;
 
@@ -26,6 +27,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
+		private TextLogFile Create(string fileName,
+		                           ITimestampParser timestampParser = null)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			if (timestampParser != null)
+				serviceContainer.RegisterInstance<ITimestampParser>(timestampParser);
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		[Ignore(
 			"Doesn't work anymore because the actual source file is not ordered by time strictly ascending - several lines are completely out of order"
@@ -33,7 +44,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
-			using (var source = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File20Mb))
+			using (var source = Create(TextLogFileAcceptanceTest.File20Mb))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source))
 			{
 				source.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
@@ -58,8 +69,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void Test2SmallSources()
 		{
-			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Entries))
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.File2Lines))
+			using (var source0 = Create(TextLogFileAcceptanceTest.File2Entries))
+			using (var source1 = Create(TextLogFileAcceptanceTest.File2Lines))
 			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
 			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
@@ -92,8 +103,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestLive1And2()
 		{
-			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive1))
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.FileTestLive2))
+			using (var source0 = Create(TextLogFileAcceptanceTest.FileTestLive1))
+			using (var source1 = Create(TextLogFileAcceptanceTest.FileTestLive2))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, source0, source1))
 			{
 				merged.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(19, "Because the merged file should've been finished");
@@ -189,8 +200,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that TextLogFile, MultiLineLogFile and MergedLogFile work in conjunction to produce a merged log file of two source files")]
 		public void TestMultilineNoLogLevels()
 		{
-			using (var source0 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
-			using (var source1 = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel2, new CustomTimestampParser()))
+			using (var source0 = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source1 = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel2, new CustomTimestampParser()))
 			using (var multi0 = new MultiLineLogFile(_scheduler, source0, TimeSpan.Zero))
 			using (var multi1 = new MultiLineLogFile(_scheduler, source1, TimeSpan.Zero))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))

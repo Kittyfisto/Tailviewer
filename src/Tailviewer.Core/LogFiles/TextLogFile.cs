@@ -12,6 +12,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Parsers;
+using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core.LogFiles
 {
@@ -26,11 +27,12 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		
+		private readonly IServiceContainer _serviceContainer;
 
 		#region Data
 
 		private readonly Encoding _encoding;
-		private readonly ILogFileFormatMatcher _formatMatcher;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private readonly ILogFileProperties _properties;
@@ -39,11 +41,11 @@ namespace Tailviewer.Core.LogFiles
 
 		#endregion
 
-		#region Timestamp parsing
-
-		private readonly ITimestampParser _timestampParser;
-		private int _numTimestampSuccess;
-		private int _numSuccessiveTimestampFailures;
+		#region Parsing
+		
+		private readonly ILogFileFormatMatcher _formatMatcher;
+		private readonly ITextLogFileParserPlugin _parserPlugin;
+		private ITextLogFileParser _parser;
 
 		#endregion
 
@@ -66,46 +68,37 @@ namespace Tailviewer.Core.LogFiles
 		///    Plugin authors are deliberately prevented from calling this constructor directly because it's signature may change
 		///    over time. In order to create an instance of this type, simply call <see cref="IServiceContainer.CreateTextLogFile"/>.
 		/// </remarks>
-		/// <param name="scheduler"></param>
+		/// <param name="serviceContainer"></param>
 		/// <param name="fileName"></param>
-		/// <param name="timestampParser">An optional timestamp parser that is used to find timestamps in log messages. If none is specified, then <see cref="TimestampParser"/> is used</param>
-		/// <param name="translator">An optional translator that is used to translate each log line in memory. If none is specified, then log lines are displayed as they are in the file on disk</param>
-		/// <param name="encoding">The encoding to use to interpet the file, if none is specified, then <see cref="Encoding.UTF8"/> is used</param>
-		/// <param name="formatMatcher"></param>
-		internal TextLogFile(ITaskScheduler scheduler,
-		                     string fileName,
-		                     ITimestampParser timestampParser = null,
-		                     ILogLineTranslator translator = null,
-		                     Encoding encoding = null,
-		                     ILogFileFormatMatcher formatMatcher = null)
-			: base(scheduler)
+		internal TextLogFile(IServiceContainer serviceContainer,
+		                     string fileName)
+			: base(serviceContainer.TryRetrieve<ITaskScheduler>())
 		{
+			_serviceContainer = serviceContainer;
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 			_fullFilename = fileName;
 			if (!Path.IsPathRooted(_fullFilename))
 				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
+			var translator = serviceContainer.TryRetrieve<ILogLineTranslator>();
 			if (translator != null)
 				_translator = new NoThrowLogLineTranslator(translator);
 
-			_formatMatcher = formatMatcher;
+			_formatMatcher = serviceContainer.Retrieve<ILogFileFormatMatcher>();
+			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
 			_syncRoot = new object();
+
+
+			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
+			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
+			var encoding = overwrittenEncoding ?? defaultEncoding;
 			_encoding = encoding ?? Encoding.UTF8;
 			_properties.SetValue(LogFileProperties.Encoding, encoding);
 
 			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, _encoding.EncodingName);
-
-			if (timestampParser != null)
-			{
-				_timestampParser = new NoThrowTimestampParser(timestampParser);
-			}
-			else
-			{
-				_timestampParser = new TimestampParser();
-			}
 
 			StartTask();
 		}
@@ -361,6 +354,12 @@ namespace Tailviewer.Core.LogFiles
 						if (format == null)
 						{
 							format = TryFindFormat(stream);
+
+							if (format != null)
+							{
+								_parser = _parserPlugin.CreateParser(_serviceContainer, format);
+							}
+
 							_properties.SetValue(LogFileProperties.Format, format);
 						}
 
@@ -390,8 +389,6 @@ namespace Tailviewer.Core.LogFiles
 
 								ResetEndOfSourceReached();
 
-								LevelFlags level = LogLine.DetermineLevelFromLine(currentLine);
-
 								bool lastLineHadNewline = _lastLineHadNewline;
 								var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
 								var entryCount = _entries.Count;
@@ -410,8 +407,11 @@ namespace Tailviewer.Core.LogFiles
 									read = true;
 								}
 
-								var timestamp = ParseTimestamp(trimmedLine);
-								Add(trimmedLine, level, _numberOfLinesRead, timestamp);
+								var parsed = _parser?.Parse(new RawLogEntry(_entries.Count, trimmedLine));
+								Add(trimmedLine,
+								    parsed?.LogLevel ?? LevelFlags.None,
+								    _numberOfLinesRead,
+								    parsed?.Timestamp);
 							}
 
 							_lastPosition = stream.Position;
@@ -740,29 +740,147 @@ namespace Tailviewer.Core.LogFiles
 			Listeners.Invalidate(index, 1);
 		}
 
-		private DateTime? ParseTimestamp(string line)
+		/// <summary>
+		///     Simple <see cref="IReadOnlyLogEntry" /> implementation for unparsed log lines.
+		/// </summary>
+		sealed class RawLogEntry
+			: IReadOnlyLogEntry
 		{
-			// If we stumble upon a file that doesn't contain a single timestamp in the first hundred log lines,
-			// then we will just call it a day and never try again...
-			// This obviously opens the possibility for not being able to detect valid timestamps in a file, however
-			// this is outweighed by being able to read a file without memory FAST. The current algorithm to detect
-			// the position and format is so slow that I can read about 1k lines of random data which is pretty bad...
-			if (_numTimestampSuccess == 0 &&
-			    _numSuccessiveTimestampFailures >= 100)
+			private static readonly IReadOnlyList<ILogFileColumn> AllColumns = new ILogFileColumn[]
 			{
-				return null;
+				LogFileColumns.RawContent,
+				LogFileColumns.Index,
+				LogFileColumns.OriginalIndex,
+				LogFileColumns.LineNumber,
+				LogFileColumns.OriginalLineNumber,
+				LogFileColumns.LogEntryIndex
+			};
+
+			private readonly LogLineIndex _index;
+			private readonly string _rawContent;
+
+			public RawLogEntry(LogLineIndex index,
+			                   string rawContent)
+			{
+				_index = index;
+				_rawContent = rawContent;
 			}
 
-			DateTime timestamp;
-			if (_timestampParser.TryParse(line, out timestamp))
+			#region Implementation of IReadOnlyLogEntry
+
+			public string RawContent
 			{
-				++_numTimestampSuccess;
-				_numSuccessiveTimestampFailures = 0;
-				return timestamp;
+				get { return _rawContent; }
 			}
 
-			++_numSuccessiveTimestampFailures;
-			return null;
+			public LogLineIndex Index
+			{
+				get { return _index; }
+			}
+
+			public LogLineIndex OriginalIndex
+			{
+				get { return _index; }
+			}
+
+			public LogEntryIndex LogEntryIndex
+			{
+				get { return (int)_index; }
+			}
+
+			public int LineNumber
+			{
+				get { return _index.Value + 1; }
+			}
+
+			public int OriginalLineNumber
+			{
+				get { return LineNumber; }
+			}
+
+			public LevelFlags LogLevel
+			{
+				get { return LevelFlags.None; }
+			}
+
+			public DateTime? Timestamp
+			{
+				get { return null; }
+			}
+
+			public TimeSpan? ElapsedTime
+			{
+				get { return null; }
+			}
+
+			public TimeSpan? DeltaTime
+			{
+				get { return null; }
+			}
+
+			public T GetValue<T>(ILogFileColumn<T> column)
+			{
+				if (!TryGetValue(column, out var value))
+					throw new NoSuchColumnException(column);
+
+				return value;
+			}
+
+			public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+			{
+				if (TryGetValue(column, out object tmp))
+				{
+					value = (T) tmp;
+					return true;
+				}
+
+				value = default;
+				return false;
+			}
+
+			public object GetValue(ILogFileColumn column)
+			{
+				if (!TryGetValue(column, out var value))
+					throw new NoSuchColumnException(column);
+
+				return value;
+			}
+
+			public bool TryGetValue(ILogFileColumn column, out object value)
+			{
+				if (Equals(column, LogFileColumns.RawContent))
+				{
+					value = RawContent;
+					return true;
+				}
+				if (Equals(column, LogFileColumns.Index) ||
+				    Equals(column, LogFileColumns.OriginalIndex))
+				{
+					value = Index;
+					return true;
+				}
+				if (Equals(column, LogFileColumns.LineNumber) ||
+				    Equals(column, LogFileColumns.OriginalLineNumber))
+				{
+					value = LineNumber;
+					return true;
+				}
+				if (Equals(column, LogFileColumns.LogEntryIndex))
+				{
+					value = LogEntryIndex;
+					return true;
+				}
+
+				value = default;
+				return false;
+			}
+
+			public IReadOnlyList<ILogFileColumn> Columns
+			{
+				get { return AllColumns; }
+			}
+
+			#endregion
 		}
 	}
 }

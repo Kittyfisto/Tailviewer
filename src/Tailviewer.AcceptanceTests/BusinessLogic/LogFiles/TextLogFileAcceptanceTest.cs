@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Test;
 using log4net;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -43,6 +44,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		public void TestClear1()
 		{
@@ -54,7 +62,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("Test");
 			}
 
-			using (var logFile = new TextLogFile(_scheduler, fname))
+			using (var logFile = Create(fname))
 			{
 				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
@@ -91,7 +99,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("Test");
 			}
 
-			using (var logFile = new TextLogFile(_scheduler, fname))
+			using (var logFile = Create(fname))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
@@ -117,7 +125,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			const string fname = "TestDelete1.log";
 			File.WriteAllText(fname, "Test");
 
-			using (var logFile = new TextLogFile(_scheduler, fname))
+			using (var logFile = Create(fname))
 			{
 				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
@@ -147,7 +155,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new TextLogFile(_scheduler, "dadwdawdw")).Should().NotThrow();
+				new Action(() => logFile = Create( "dadwdawdw")).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist);
@@ -167,7 +175,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				new Action(() => logFile = new TextLogFile(_scheduler, File2Lines)).Should().NotThrow();
+				new Action(() => logFile = Create( File2Lines)).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None);
@@ -184,7 +192,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSection1()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create( File20Mb))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue("because we should be able to read the entire file in a few seconds");
 				file.Count.Should().Be(165342);
@@ -246,7 +254,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				File.Delete(fname);
 
 			using (var logger = new FileLogger(fname))
-			using (var logFile = new TextLogFile(_scheduler, fname))
+			using (var logFile = Create(fname))
 			{
 				logFile.Count.Should().Be(0);
 
@@ -265,7 +273,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				File.Delete(fname);
 
 			using (var logger = new FileLogger(fname))
-			using (var logFile = new TextLogFile(_scheduler, fname))
+			using (var logFile = Create(fname))
 			{
 				logFile.Count.Should().Be(0);
 
@@ -288,7 +296,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 
-				new Action(() => logFile = new TextLogFile(_scheduler, fileName)).Should().NotThrow();
+				new Action(() => logFile = Create(fileName)).Should().NotThrow();
 
 				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist,
@@ -312,7 +320,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestRead2Lines()
 		{
-			using (var file = new TextLogFile(_scheduler, File2Lines))
+			using (var file = Create(File2Lines))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -334,7 +342,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestRead2LogEntries()
 		{
-			using (var file = new TextLogFile(_scheduler, File2Entries))
+			using (var file = Create( File2Entries))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var changes = new List<LogFileSection>();
@@ -378,7 +386,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadAll1()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create(File20Mb))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
 
@@ -402,7 +410,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestReadAll2()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create(File20Mb))
 			{
 				var listener = new Mock<ILogFileListener>();
 				var sections = new List<LogFileSection>();
@@ -428,7 +436,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies that the maximum number of characters for all lines is determined correctly")]
 		public void TestReadAll3()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create(File20Mb))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
 
@@ -440,7 +448,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat1()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt"))
+			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
@@ -452,7 +460,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat2()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt"))
+			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
@@ -464,7 +472,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat3()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\HH_mm_ss.txt"))
+			using (var file = Create( @"TestData\Timestamps\HH_mm_ss.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
@@ -477,7 +485,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat4()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
+			using (var file = Create(@"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
@@ -489,7 +497,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat5()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
+			using (var file = Create(@"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(2);
@@ -501,7 +509,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestTimestampFormat6()
 		{
-			using (var file = new TextLogFile(_scheduler, @"TestData\Timestamps\HH_mm_ss;s.txt"))
+			using (var file = Create(@"TestData\Timestamps\HH_mm_ss;s.txt"))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(2);
