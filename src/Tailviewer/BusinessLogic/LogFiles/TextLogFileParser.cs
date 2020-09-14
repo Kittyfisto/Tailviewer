@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public TextLogFileParser(ITimestampParser timestampParser)
 		{
-			_timestampParser = timestampParser;
+			_timestampParser = timestampParser ?? throw new ArgumentNullException(nameof(timestampParser));
 		}
 
 		#region Implementation of IDisposable

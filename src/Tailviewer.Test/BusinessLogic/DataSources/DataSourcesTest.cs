@@ -20,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 		}
 

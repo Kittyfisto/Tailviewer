@@ -5,12 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using log4net;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.LogFiles
@@ -18,7 +16,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	/// 
 	/// </summary>
-	public sealed class PluginLogFileFactory
+	public class PluginLogFileFactory
 		: ILogFileFactory
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -35,17 +33,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			_plugins = new List<IPluginWithDescription<IFileFormatPlugin>>(plugins);
 			_services = services;
-		}
-
-		public PluginLogFileFactory(ITaskScheduler scheduler, params IFileFormatPlugin[] plugins)
-			: this(CreateServiceContainer(scheduler), plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)))
-		{}
-
-		private static IServiceContainer CreateServiceContainer(ITaskScheduler scheduler)
-		{
-			var container = new ServiceContainer();
-			container.RegisterInstance<ITaskScheduler>(scheduler);
-			return container;
 		}
 
 		public PluginLogFileFactory(IServiceContainer services, IEnumerable<IPluginWithDescription<IFileFormatPlugin>> plugins)

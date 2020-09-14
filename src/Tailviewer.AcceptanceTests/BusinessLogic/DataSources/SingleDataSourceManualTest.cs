@@ -6,9 +6,11 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
@@ -44,6 +46,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
 			return new TextLogFile(serviceContainer, fileName);
 		}
 

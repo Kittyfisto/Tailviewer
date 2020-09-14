@@ -11,7 +11,6 @@ using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Core.Parsers;
 using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core.LogFiles
@@ -466,13 +465,14 @@ namespace Tailviewer.Core.LogFiles
 			var header = new byte[length];
 			stream.Read(header, 0, header.Length);
 
-			ILogFileFormat format = null;
-			_formatMatcher?.TryMatchFormat(_fullFilename, header, out format);
+			_formatMatcher.TryMatchFormat(_fullFilename, header, out var format);
+			if (format != null)
+				return format;
 
-			if (format == null && length == maxHeaderLength)
-				return LogFileFormats.GenericText;
+			if (length < maxHeaderLength)
+				return null; //< We cannot be sure what format we're dealing with and want to give the detection plugins a bit of a chance before we fall back
 
-			return format;
+			return LogFileFormats.GenericText;
 		}
 
 		private void GetTimestamp(IReadOnlyList<LogLineIndex> indices, DateTime?[] buffer, int destinationIndex)

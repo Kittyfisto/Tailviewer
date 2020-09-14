@@ -25,7 +25,7 @@ namespace Tailviewer.Test.Ui
 			_bookmarks = new Mock<IBookmarks>();
 
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings, _bookmarks.Object);
 			_actionCenter = new Mock<IActionCenter>();

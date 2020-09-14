@@ -136,8 +136,6 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogFile CreateTextLogFile(string fileName)
 		{
-			
-
 			return new TextLogFile(this,
 			                       fileName);
 		}

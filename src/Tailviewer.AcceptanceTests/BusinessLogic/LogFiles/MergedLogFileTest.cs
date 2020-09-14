@@ -4,8 +4,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Parsers;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -34,6 +36,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
 			if (timestampParser != null)
 				serviceContainer.RegisterInstance<ITimestampParser>(timestampParser);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
 			return new TextLogFile(serviceContainer, fileName);
 		}
 

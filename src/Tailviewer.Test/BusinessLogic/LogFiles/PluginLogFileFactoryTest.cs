@@ -40,7 +40,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.Is<string>(y => y == fname)))
 				.Returns(() => logFile.Object);
 
-			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
+			var factory = new SimplePluginLogFileFactory(_scheduler, plugin.Object);
 			var actualLogFile = factory.Open(fname, out _);
 			actualLogFile.Should().BeOfType<NoThrowLogFile>("because PluginLogFileFactory should protect us from buggy plugin implementations");
 
@@ -65,7 +65,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.IsAny<string>()))
 			      .Returns(() => logFile.Object);
 
-			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
+			var factory = new SimplePluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\logs\sfa_12345.log";
 			var actualLogFile = factory.Open(filename, out _);
 
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			plugin.Setup(x => x.Open(It.IsAny<IServiceContainer>(), It.IsAny<string>()))
 			      .Returns(() => logFile.Object);
 
-			var factory = new PluginLogFileFactory(_scheduler, plugin.Object);
+			var factory = new SimplePluginLogFileFactory(_scheduler, plugin.Object);
 			var filename = @"C:\sfa_12345.log\.db\txt\foo.log";
 			factory.Open(filename, out _);
 			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Never,

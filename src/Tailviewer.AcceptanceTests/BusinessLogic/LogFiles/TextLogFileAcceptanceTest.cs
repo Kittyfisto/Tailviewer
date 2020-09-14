@@ -11,8 +11,10 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Test;
 using log4net;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Parsers;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
@@ -48,6 +50,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			var serviceContainer = new ServiceContainer();
 			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
 			return new TextLogFile(serviceContainer, fileName);
 		}
 
