@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -17,7 +16,7 @@ namespace Tailviewer.Serilog
 
 		public static string ToRegex(string serilogFormat, out IReadOnlyList<ISerilogMatcher> matchers)
 		{
-			var buffer = new StringBuilder();
+			var buffer = new StringBuilder("^");
 			var matchersInOrder = new List<ISerilogMatcher>();
 			int groupIndex = 1;
 			for (int i = 0; i < serilogFormat.Length;)
@@ -95,6 +94,8 @@ namespace Tailviewer.Serilog
 		{
 			switch (type)
 			{
+				case "Timestamp":
+					return new TimestampMatcher(specifier, groupIndex);
 				case "Level":
 					return new SerilogLevelMatcher(specifier, groupIndex);
 				default:

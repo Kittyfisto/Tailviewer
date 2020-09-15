@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -18,6 +19,44 @@ namespace Tailviewer.Serilog.Test
 				RawContent = rawContent
 			};
 			return parser.Parse(logEntry);
+		}
+
+		[Test]
+		public void TestParse_Timestamp_Custom_1()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:dd-MM-yyyy HH:mm:ss}]");
+			Parse(parser, "[15-09-2020 22:58:10]").Timestamp.Should().Be(new DateTime(2020, 9, 15, 22, 58, 10));
+			Parse(parser, "[15-09-1999 03:58:10]").Timestamp.Should().Be(new DateTime(1999, 9, 15, 3, 58, 10));
+		}
+
+		[Test]
+		public void TestParse_Timestamp_Custom_2()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:dd.MM.yyyy HH:mm:ss.f}]");
+			Parse(parser, "[16.09.2020 02:29:36.7]").Timestamp.Should().Be(new DateTime(2020, 9, 16, 02, 29, 36, 700));
+			Parse(parser, "[16.09.2021 12:29:36.7]").Timestamp.Should().Be(new DateTime(2021, 9, 16, 12, 29, 36, 700));
+		}
+
+		[Test]
+		public void TestParse_Timestamp_Custom_3()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:yyyy-MM-dd HH:mm:ss.ff}]");
+			Parse(parser, "[2020-09-16 01:30:51.21]").Timestamp.Should().Be(new DateTime(2020, 9, 16, 1, 30, 51, 210));
+			Parse(parser, "[2019-09-16 13:30:51.21]").Timestamp.Should().Be(new DateTime(2019, 9, 16, 13, 30, 51, 210));
+		}
+
+		[Test]
+		public void TestParse_Timestamp_Custom_4()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:yyyy-MM-dd HH:mm:ss.ff}]");
+			Parse(parser, "[2020-09-16 01:30:51.21]").Timestamp.Should().Be(new DateTime(2020, 9, 16, 1, 30, 51, 210));
+		}
+
+		[Test]
+		public void TestParse_Timestamp_Custom_5()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:MM.dd.yyyy HH mm ss fff}]");
+			Parse(parser, "[09.16.2020 01 32 34 342]").Timestamp.Should().Be(new DateTime(2020, 9, 16, 1, 32, 34, 342));
 		}
 
 		[Test]

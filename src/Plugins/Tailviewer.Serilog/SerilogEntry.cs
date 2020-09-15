@@ -9,6 +9,7 @@ namespace Tailviewer.Serilog
 		: IReadOnlyLogEntry
 	{
 		public LevelFlags LogLevel;
+		public DateTime Timestamp;
 
 		#region Implementation of IReadOnlyLogEntry
 
@@ -47,9 +48,9 @@ namespace Tailviewer.Serilog
 			get { return LogLevel; }
 		}
 
-		public DateTime? Timestamp
+		DateTime? IReadOnlyLogEntry.Timestamp
 		{
-			get { throw new NotImplementedException(); }
+			get { return Timestamp; }
 		}
 
 		public TimeSpan? ElapsedTime
