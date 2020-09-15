@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Serilog
 {
@@ -10,6 +11,7 @@ namespace Tailviewer.Serilog
 	{
 		public LevelFlags LogLevel;
 		public DateTime Timestamp;
+		public string Message;
 
 		#region Implementation of IReadOnlyLogEntry
 
@@ -65,6 +67,11 @@ namespace Tailviewer.Serilog
 
 		public T GetValue<T>(ILogFileColumn<T> column)
 		{
+			if (Equals(column, LogFileColumns.Message))
+			{
+				return (T)(object)Message;
+			}
+
 			throw new NotImplementedException();
 		}
 

@@ -98,6 +98,8 @@ namespace Tailviewer.Serilog
 					return new TimestampMatcher(specifier, groupIndex);
 				case "Level":
 					return new SerilogLevelMatcher(specifier, groupIndex);
+				case "Message":
+					return new MessageMatcher(specifier, groupIndex);
 				default:
 					throw new ArgumentException($"Unknown type: {type}");
 			}

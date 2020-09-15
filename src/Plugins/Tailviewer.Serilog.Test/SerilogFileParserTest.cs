@@ -211,5 +211,31 @@ namespace Tailviewer.Serilog.Test
 			Parse(parser, "[Error]").LogLevel.Should().Be(LevelFlags.Error);
 			Parse(parser, "[Fatal]").LogLevel.Should().Be(LevelFlags.Fatal);
 		}
+
+		[Test]
+		public void TestParse_Message()
+		{
+			var parser = new SerilogFileParser("{Message}");
+			Parse(parser, "This is an error").GetValue(LogFileColumns.Message).Should().Be("This is an error");
+		}
+
+		[Test]
+		public void TestParse_Timestamp_LogLevel()
+		{
+			var parser = new SerilogFileParser("{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}]");
+			var logEntry = Parse(parser, "16/09/2020 00:45:39 +02:00 [Verbose]");
+			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 16, 00, 45, 39));
+			logEntry.LogLevel.Should().Be(LevelFlags.Trace);
+		}
+
+		[Test]
+		public void TestParse_Timestamp_LogLevel_Message()
+		{
+			var parser = new SerilogFileParser("{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}] {Message}");
+			var logEntry = Parse(parser, "16/09/2020 01:21:59 +02:00 [Fatal] This is a fatal message!");
+			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 16, 01, 21, 59));
+			logEntry.LogLevel.Should().Be(LevelFlags.Fatal);
+			logEntry.GetValue(LogFileColumns.Message).Should().Be("This is a fatal message!");
+		}
 	}
 }
