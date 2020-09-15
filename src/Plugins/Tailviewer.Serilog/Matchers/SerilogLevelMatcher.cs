@@ -171,7 +171,7 @@ namespace Tailviewer.Serilog.Matchers
 			get { return _regex; }
 		}
 
-		public int NumCaptures
+		public int NumGroups
 		{
 			get { return 1; }
 		}

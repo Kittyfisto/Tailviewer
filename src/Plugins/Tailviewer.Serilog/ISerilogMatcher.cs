@@ -7,7 +7,7 @@ namespace Tailviewer.Serilog
 	{
 		string Regex { get; }
 
-		int NumCaptures { get; }
+		int NumGroups { get; }
 
 		ILogFileColumn Column { get; }
 

@@ -42,7 +42,7 @@ namespace Tailviewer.Serilog
 				buffer.Append(matcher.Regex);
 
 				i = next + 1;
-				groupIndex += matcher.NumCaptures;
+				groupIndex += matcher.NumGroups;
 			}
 
 			matchers = matchersInOrder;

@@ -12,12 +12,12 @@ namespace Tailviewer.Serilog.Matchers
 	public sealed class TimestampMatcher
 		: ISerilogMatcher
 	{
-		private readonly int _groupIndex;
-
-
 		private static readonly IReadOnlyList<KeyValuePair<string, Func<IDateTimeMatcher>>> MatcherFactories;
+
+		private readonly int _groupIndex;
 		private readonly IReadOnlyList<IDateTimeMatcher> _matchers;
 		private readonly string _regex;
+		private readonly int _numGroups;
 
 		static TimestampMatcher()
 		{
@@ -46,7 +46,9 @@ namespace Tailviewer.Serilog.Matchers
 				new KeyValuePair<string, Func<IDateTimeMatcher>>("MM", () => new MMMatcher() ),
 				new KeyValuePair<string, Func<IDateTimeMatcher>>("M", () => new MMatcher() ),
 
-				new KeyValuePair<string, Func<IDateTimeMatcher>>( "yyyy", () => new yyyyMatcher() )
+				new KeyValuePair<string, Func<IDateTimeMatcher>>("yyyy", () => new yyyyMatcher()),
+
+				new KeyValuePair<string, Func<IDateTimeMatcher>>("K", () => new KMatcher())
 			};
 		}
 
@@ -61,6 +63,7 @@ namespace Tailviewer.Serilog.Matchers
 				{
 					regex.Append(matcher.Regex);
 					matchers.Add(matcher);
+					_numGroups += matcher.NumGroups;
 				}
 				else
 				{
@@ -81,9 +84,9 @@ namespace Tailviewer.Serilog.Matchers
 			get { return _regex; }
 		}
 
-		public int NumCaptures
+		public int NumGroups
 		{
-			get { return _matchers.Count; }
+			get { return _numGroups; }
 		}
 
 		public ILogFileColumn Column
@@ -94,9 +97,11 @@ namespace Tailviewer.Serilog.Matchers
 		public void MatchInto(Match match, SerilogEntry logEntry)
 		{
 			var tmpValue = new TmpDateTime();
+			int groupIndex = _groupIndex;
 			for(int i = 0; i < _matchers.Count; ++i)
 			{
-				_matchers[i].MatchInto(match, ref tmpValue, _groupIndex + i);
+				_matchers[i].MatchInto(match, ref tmpValue, groupIndex);
+				groupIndex += _matchers[i].NumGroups;
 			}
 
 			var dateTime = tmpValue.ToDateTime();
@@ -133,6 +138,10 @@ namespace Tailviewer.Serilog.Matchers
 				}
 			}
 
+			var spec = specifier[startIndex];
+			if (char.IsLetter(spec))
+				throw new ArgumentException($"Unsupported Timestamp specifier '{spec}' in format '{specifier}'");
+
 			return null;
 		}
 		struct TmpDateTime
@@ -155,6 +164,7 @@ namespace Tailviewer.Serilog.Matchers
 		interface IDateTimeMatcher
 		{
 			string Regex { get; }
+			int NumGroups { get; }
 			void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex);
 		}
 
@@ -167,6 +177,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d)"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -189,6 +204,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -207,6 +227,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{3})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -229,6 +254,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{4})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -247,6 +277,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{5})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -269,6 +304,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{6})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -287,6 +327,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{67})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -309,6 +354,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{1,2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -327,6 +377,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{2})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -349,6 +404,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{1,2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -367,6 +427,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{2})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -389,6 +454,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{1,2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -403,6 +473,11 @@ namespace Tailviewer.Serilog.Matchers
 			: IDateTimeMatcher
 		{
 			#region Implementation of IDateTimeMatcher
+
+			public int NumGroups
+			{
+				get { return 1; }
+			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
@@ -428,6 +503,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{1,2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -448,6 +528,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -465,6 +550,11 @@ namespace Tailviewer.Serilog.Matchers
 			public string Regex
 			{
 				get { return @"(\d{1,2})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 1; }
 			}
 
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
@@ -487,6 +577,11 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{2})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
@@ -507,10 +602,38 @@ namespace Tailviewer.Serilog.Matchers
 				get { return @"(\d{4})"; }
 			}
 
+			public int NumGroups
+			{
+				get { return 1; }
+			}
+
 			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
 			{
 				var value = match.Groups[groupIndex].Value;
 				dateTime.Year = int.Parse(value);
+			}
+
+			#endregion
+		}
+
+		sealed class KMatcher
+			: IDateTimeMatcher
+		{
+			#region Implementation of IDateTimeMatcher
+
+			public string Regex
+			{
+				get { return @"((\+|-)\d{2}:\d{2})"; }
+			}
+
+			public int NumGroups
+			{
+				get { return 2; }
+			}
+
+			public void MatchInto(Match match, ref TmpDateTime dateTime, int groupIndex)
+			{
+				// For now we'll ignore this value
 			}
 
 			#endregion

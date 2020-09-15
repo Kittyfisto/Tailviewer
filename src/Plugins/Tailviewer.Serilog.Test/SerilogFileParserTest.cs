@@ -60,6 +60,15 @@ namespace Tailviewer.Serilog.Test
 		}
 
 		[Test]
+		public void TestParse_Timestamp_Custom_6()
+		{
+			var parser = new SerilogFileParser("[{Timestamp:dd/MM/yyyy HH:mm:ss K}]");
+			// TODO: Is this correct? What do we actually want here?
+			Parse(parser, "[16/09/2020 00:45:39 +02:00]").Timestamp.Should().Be(new DateTime(2020, 9, 16, 0, 45, 39));
+			Parse(parser, "[15/09/2020 20:26:52 -07:00]").Timestamp.Should().Be(new DateTime(2020, 9, 15, 20, 26, 52));
+		}
+
+		[Test]
 		public void TestParse_LogLevel_u1()
 		{
 			var parser = new SerilogFileParser("[{Level:u1}]");
