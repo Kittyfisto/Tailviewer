@@ -58,6 +58,9 @@
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileFormatRegistry.cs" />
+    <Compile Include="BusinessLogic\Plugins\CustomLogFileFormat.cs" />
+    <Compile Include="BusinessLogic\Plugins\ILogFileFormatCreatorPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcherPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssue.cs" />

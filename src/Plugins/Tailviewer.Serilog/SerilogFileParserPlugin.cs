@@ -5,19 +5,26 @@ using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.Serilog
 {
+	/// <summary>
+	///     Plugin to allow parsing of serilog text files.
+	/// </summary>
 	public sealed class SerilogFileParserPlugin
 		: ITextLogFileParserPlugin
 	{
 		#region Implementation of ITextLogFileParserPlugin
 
-		public IReadOnlyList<ILogFileFormat> SupportedFormats
+		IReadOnlyList<ILogFileFormat> ITextLogFileParserPlugin.SupportedFormats
 		{
-			get { throw new NotImplementedException(); }
+			get { return new ILogFileFormat[0]; }
 		}
 
 		public ITextLogFileParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{
-			throw new NotImplementedException();
+			var serilogFormat = format as SerilogFileFormat;
+			if (serilogFormat == null)
+				throw new ArgumentException($"Unsupported format: {format}");
+
+			return serilogFormat.Parser;
 		}
 
 		#endregion

@@ -8,20 +8,29 @@ using Tailviewer.Serilog.Matchers;
 
 namespace Tailviewer.Serilog
 {
+	/// <summary>
+	///     Responsible for parsing a singular log line into a <see cref="ILogEntry" /> by using
+	///     a Serilog format specification such as "{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}] {Message}".
+	/// </summary>
 	public sealed class SerilogFileParser
 		: ITextLogFileParser
 	{
-		private readonly Regex _regex;
 		private readonly IReadOnlyList<ISerilogMatcher> _matchers;
+		private readonly Regex _regex;
+
+		public SerilogFileParser(string serilogFormat)
+		{
+			_regex = new Regex(ToRegex(serilogFormat, out _matchers));
+		}
 
 		public static string ToRegex(string serilogFormat, out IReadOnlyList<ISerilogMatcher> matchers)
 		{
 			var buffer = new StringBuilder("^");
 			var matchersInOrder = new List<ISerilogMatcher>();
-			int groupIndex = 1;
-			for (int i = 0; i < serilogFormat.Length;)
+			var groupIndex = 1;
+			for (var i = 0; i < serilogFormat.Length;)
 			{
-				int first = serilogFormat.IndexOf('{', i);
+				var first = serilogFormat.IndexOf(value: '{', i);
 				if (first == -1)
 				{
 					var remaining = serilogFormat.Substring(i);
@@ -29,7 +38,7 @@ namespace Tailviewer.Serilog
 					break;
 				}
 
-				int next = serilogFormat.IndexOf('}', first + 1);
+				var next = serilogFormat.IndexOf(value: '}', first + 1);
 				if (next == -1)
 					throw new ArgumentException($"Format '{serilogFormat}' is missing a closing bracket");
 
@@ -49,43 +58,13 @@ namespace Tailviewer.Serilog
 			return buffer.ToString();
 		}
 
-		public SerilogFileParser(string serilogFormat)
-		{
-			_regex = new Regex(ToRegex(serilogFormat, out _matchers));
-		}
-
-		#region Implementation of IDisposable
-
-		public void Dispose()
-		{}
-
-		public IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry)
-		{
-			var content = logEntry.RawContent;
-			var match = _regex.Match(content);
-			if (!match.Success)
-				return logEntry;
-
-			var parsedLogEntry = new SerilogEntry();
-			foreach (var matcher in _matchers)
-			{
-				matcher.MatchInto(match, parsedLogEntry);
-			}
-
-			return parsedLogEntry;
-		}
-
-		#endregion
-
 		private static ISerilogMatcher CreateMatcher(string format, int groupIndex)
 		{
-			int separator = format.IndexOf(':');
+			var separator = format.IndexOf(value: ':');
 			if (separator != -1)
-			{
-				return CreateMatcher(format.Substring(0, separator),
-				               format.Substring(separator + 1),
-				               groupIndex);
-			}
+				return CreateMatcher(format.Substring(startIndex: 0, separator),
+				                     format.Substring(separator + 1),
+				                     groupIndex);
 
 			return CreateMatcher(format, "", groupIndex);
 		}
@@ -103,6 +82,38 @@ namespace Tailviewer.Serilog
 				default:
 					throw new ArgumentException($"Unknown type: {type}");
 			}
+		}
+
+		#region Implementation of IDisposable
+
+		public void Dispose()
+		{
+		}
+
+		public IReadOnlyLogEntry Parse(IReadOnlyLogEntry logEntry)
+		{
+			if (!TryParse(logEntry.RawContent, out var parsedLogEntry))
+				return logEntry;
+
+			return parsedLogEntry;
+		}
+
+		#endregion
+
+		public bool TryParse(string rawContent, out IReadOnlyLogEntry logEntry)
+		{
+			var match = _regex.Match(rawContent);
+			if (!match.Success)
+			{
+				logEntry = null;
+				return false;
+			}
+
+			var parsedLogEntry = new SerilogEntry();
+			foreach (var matcher in _matchers) matcher.MatchInto(match, parsedLogEntry);
+
+			logEntry = parsedLogEntry;
+			return true;
 		}
 	}
 }

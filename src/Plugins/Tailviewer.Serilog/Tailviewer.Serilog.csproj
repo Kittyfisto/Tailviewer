@@ -44,6 +44,9 @@
     <Compile Include="ISerilogMatcher.cs" />
     <Compile Include="Matchers\MessageMatcher.cs" />
     <Compile Include="Matchers\TimestampMatcher.cs" />
+    <Compile Include="SerilogFileFormatCreatorPlugin.cs" />
+    <Compile Include="SerilogFileFormatMatcher.cs" />
+    <Compile Include="SerilogFileFormatMatcherPlugin.cs" />
     <Compile Include="SerilogFileParser.cs" />
     <Compile Include="SerilogFileParserPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
