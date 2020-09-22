@@ -30,10 +30,12 @@ namespace Tailviewer.BusinessLogic.Plugins
 		///     Creates a new log file format of the given type.
 		/// </summary>
 		/// <remarks>
-		///     Tailviewer will register this new format with the <see cref="ILogFileFormatRegistry" />.
+		///     Tailviewer will register this new format with the <see cref="ILogFileFormatRepository" />
+		///     if it could be successfully created. All other plugins will be able to retrieve it through
+		///     this registry.
 		/// </remarks>
 		/// <param name="format">The values (entered by a user) from which to create the format.</param>
 		/// <returns></returns>
-		ILogFileFormat Create(CustomLogFileFormat format);
+		ILogFileFormat Create(ICustomLogFileFormat format);
 	}
 }

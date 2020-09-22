@@ -116,7 +116,9 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFileFormats\ILogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\LogFileFormats\LogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowTextLogFileParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
@@ -127,6 +129,9 @@
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
+    <Compile Include="Settings\CustomFormats\CustomFormatSettings.cs" />
+    <Compile Include="Settings\CustomFormats\CustomLogFileFormat.cs" />
+    <Compile Include="Settings\ICustomFormatsSettings.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogFileSettings.cs" />
     <Compile Include="Settings\LogLevelSettings.cs" />
@@ -194,7 +199,7 @@
     <Compile Include="Settings\ExportSettings.cs" />
     <Compile Include="Settings\IApplicationSettings.cs" />
     <Compile Include="Settings\IAutoUpdateSettings.cs" />
-    <Compile Include="Settings\IDataSourcesSettings.cs" />
+    <Compile Include="Settings\CustomFormats\IDataSourcesSettings.cs" />
     <Compile Include="Settings\IExportSettings.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />

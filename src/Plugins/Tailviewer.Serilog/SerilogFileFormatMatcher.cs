@@ -10,18 +10,18 @@ namespace Tailviewer.Serilog
 	public sealed class SerilogFileFormatMatcher
 		: ILogFileFormatMatcher
 	{
-		private readonly ILogFileFormatRegistry _registry;
+		private readonly ILogFileFormatRepository _repository;
 
-		public SerilogFileFormatMatcher(ILogFileFormatRegistry registry)
+		public SerilogFileFormatMatcher(ILogFileFormatRepository repository)
 		{
-			_registry = registry;
+			_repository = repository;
 		}
 
 		#region Implementation of ILogFileFormatMatcher
 
 		public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
 		{
-			var formats = _registry.Formats.OfType<SerilogFileFormat>();
+			var formats = _repository.Formats.OfType<SerilogFileFormat>();
 
 			foreach (var serilogFormat in formats)
 			{

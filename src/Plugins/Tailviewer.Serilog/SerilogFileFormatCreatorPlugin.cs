@@ -14,7 +14,7 @@ namespace Tailviewer.Serilog
 			get { return "Serilog"; }
 		}
 
-		public ILogFileFormat Create(CustomLogFileFormat format)
+		public ILogFileFormat Create(ICustomLogFileFormat format)
 		{
 			return new SerilogFileFormat(format.Name, format.Format, format.Encoding);
 		}

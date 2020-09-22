@@ -19,6 +19,7 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
@@ -166,6 +167,9 @@ namespace Tailviewer
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
 					services.RegisterInstance<IPluginLoader>(pluginSystem);
 
+					var logFileFormatRegistry = new LogFileFormatRegistry(pluginSystem, settings.CustomFormats);
+					services.RegisterInstance<ILogFileFormatRepository>(logFileFormatRegistry);
+
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
@@ -173,7 +177,6 @@ namespace Tailviewer
 					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
-
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))

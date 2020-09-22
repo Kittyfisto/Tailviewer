@@ -10,7 +10,7 @@ namespace Tailviewer.Serilog
 
 		public ILogFileFormatMatcher CreateMatcher(IServiceContainer services)
 		{
-			var registry = services.Retrieve<ILogFileFormatRegistry>();
+			var registry = services.Retrieve<ILogFileFormatRepository>();
 			return new SerilogFileFormatMatcher(registry);
 		}
 

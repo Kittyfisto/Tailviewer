@@ -4,21 +4,21 @@ namespace Tailviewer.BusinessLogic.Plugins
 {
 	/// <summary>
 	/// </summary>
-	public struct CustomLogFileFormat
+	public interface ICustomLogFileFormat
 	{
 		/// <summary>
 		///     The human readable name of this format
 		/// </summary>
-		public string Name;
+		string Name { get; }
 
 		/// <summary>
 		///     The format (input by a human) which specifies how the log file is to be interpreted
 		/// </summary>
-		public string Format;
+		string Format { get; }
 
 		/// <summary>
 		///     The encoding with which the text file is to be opened.
 		/// </summary>
-		public Encoding Encoding;
+		Encoding Encoding { get; }
 	}
 }

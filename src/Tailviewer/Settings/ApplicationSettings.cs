@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using log4net;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings
 {
@@ -26,6 +27,7 @@ namespace Tailviewer.Settings
 		private readonly ExportSettings _export;
 		private readonly LogViewerSettings _logViewer;
 		private readonly LogFileSettings _logFile;
+		private readonly CustomFormatsSettings _customFormats;
 		private int _numSaved;
 
 		/// <summary>
@@ -52,6 +54,7 @@ namespace Tailviewer.Settings
 			_export = other._export.Clone();
 			_logViewer = other._logViewer.Clone();
 			_logFile = other._logFile.Clone();
+			_customFormats = other._customFormats.Clone();
 		}
 
 		public ApplicationSettings(string fileName)
@@ -66,6 +69,7 @@ namespace Tailviewer.Settings
 			_logViewer = new LogViewerSettings();
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
+			_customFormats = new CustomFormatsSettings();
 		}
 
 		public IAutoUpdateSettings AutoUpdate => _autoUpdate;
@@ -81,6 +85,8 @@ namespace Tailviewer.Settings
 		public QuickFilters QuickFilters => _quickFilters;
 
 		public IExportSettings Export => _export;
+
+		public ICustomFormatsSettings CustomFormats => _customFormats;
 
 		public static ApplicationSettings Create()
 		{
@@ -139,6 +145,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("logfile");
 						_logFile.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("customformats");
+						_customFormats.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -216,6 +226,10 @@ namespace Tailviewer.Settings
 
 							case "logfile":
 								_logFile.Restore(reader);
+								break;
+
+							case "customformats":
+								_customFormats.Restore(reader);
 								break;
 						}
 					}

@@ -1,4 +1,5 @@
 ﻿using Tailviewer.Core.Settings;
+using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings
 {
@@ -36,6 +37,11 @@ namespace Tailviewer.Settings
 		/// 
 		/// </summary>
 		ILogFileSettings LogFile { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		ICustomFormatsSettings CustomFormats { get; }
 
 		/// <summary>
 		/// 

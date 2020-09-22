@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Tailviewer.Settings
+namespace Tailviewer.Settings.CustomFormats
 {
 	public interface IDataSourcesSettings
 		: IList<DataSource>
