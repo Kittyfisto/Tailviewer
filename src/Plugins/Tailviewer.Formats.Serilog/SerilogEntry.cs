@@ -4,7 +4,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	public sealed class SerilogEntry
 		: IReadOnlyLogEntry

@@ -169,6 +169,7 @@ namespace Tailviewer
 
 					var logFileFormatRegistry = new LogFileFormatRegistry(pluginSystem, settings.CustomFormats);
 					services.RegisterInstance<ILogFileFormatRepository>(logFileFormatRegistry);
+					services.RegisterInstance<ILogFileFormatRegistry>(logFileFormatRegistry);
 
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);

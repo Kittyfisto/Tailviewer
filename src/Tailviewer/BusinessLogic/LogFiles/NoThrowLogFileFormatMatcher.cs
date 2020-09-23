@@ -34,6 +34,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			try
 			{
+				if (_inner == null)
+				{
+					format = null;
+					return false;
+				}
+
 				return _inner.TryMatchFormat(fileName, initialContent, out format);
 			}
 			catch (Exception e)

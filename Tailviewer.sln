@@ -59,9 +59,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{3E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.LogLevelPlugin", "examples\Tailviewer.LogLevelPlugin\Tailviewer.LogLevelPlugin.csproj", "{A628892A-4BE2-4726-983E-CCE47C716CC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Serilog", "src\Plugins\Tailviewer.Serilog\Tailviewer.Serilog.csproj", "{9997F434-58B2-4C26-B622-5CA411A82BF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog", "src\Plugins\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj", "{9997F434-58B2-4C26-B622-5CA411A82BF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Serilog.Test", "src\Plugins\Tailviewer.Serilog.Test\Tailviewer.Serilog.Test.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailviewer.Formats.Serilog.Test", "src\Plugins\Tailviewer.Formats.Serilog.Test\Tailviewer.Formats.Serilog.Test.csproj", "{B132CF5C-8555-4D0F-A55A-F870C003EB59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

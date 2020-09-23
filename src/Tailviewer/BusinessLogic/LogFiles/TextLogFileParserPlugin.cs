@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using log4net;
@@ -19,51 +18,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IReadOnlyDictionary<ILogFileFormat, ITextLogFileParserPlugin> _pluginsByFormat;
+		private readonly IReadOnlyList<ITextLogFileParserPlugin> _plugins;
 		private readonly IReadOnlyList<ILogFileFormat> _formats;
 
 		public TextLogFileParserPlugin(IServiceContainer services)
 		{
 			var pluginLoader = services.Retrieve<IPluginLoader>();
-			var plugins = pluginLoader.LoadAllOfType<ITextLogFileParserPlugin>()
+			_plugins = pluginLoader.LoadAllOfType<ITextLogFileParserPlugin>()
 			                          .ToList();
-			_pluginsByFormat = GroupByFormat(plugins);
-			_formats = _pluginsByFormat.Keys.ToList();
-		}
-
-		[Pure]
-		private static Dictionary<ILogFileFormat, ITextLogFileParserPlugin> GroupByFormat(
-			IReadOnlyList<ITextLogFileParserPlugin> plugins)
-		{
-			var pluginsByFormat = new Dictionary<ILogFileFormat, ITextLogFileParserPlugin>();
-			foreach (var plugin in plugins) GroupByFormat(plugin, pluginsByFormat);
-
-			return pluginsByFormat;
-		}
-
-		private static void GroupByFormat(ITextLogFileParserPlugin plugin,
-		                                  Dictionary<ILogFileFormat, ITextLogFileParserPlugin> pluginsByFormat)
-		{
-			var supportedFormats = plugin.SupportedFormats;
-			try
-			{
-				if (supportedFormats.Count > 0)
-					foreach (var format in supportedFormats)
-						if (pluginsByFormat.TryGetValue(format, out var existingPlugin))
-							Log.WarnFormat("Plugin '{0}' already implements parsing for format '{1}', skipping plugin '{2}' which does the same, but was loaded later",
-							               existingPlugin,
-							               format,
-							               plugin);
-						else
-							pluginsByFormat.Add(format, plugin);
-				else
-					Log.WarnFormat("Plugin '{0}' claims to support 0 formats, it won't be used...", plugin);
-			}
-			catch (Exception e)
-			{
-				Log.WarnFormat("Caught unexpected exception while retrieving supported formats of plugin '{0}', it won't be used...",
-				               e);
-			}
 		}
 
 		private ITextLogFileParser CreateDefaultParser(IServiceContainer services)
@@ -84,21 +46,35 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		public ITextLogFileParser CreateParser(IServiceContainer services, ILogFileFormat format)
 		{
-			if (_pluginsByFormat.TryGetValue(format, out var plugin))
-				try
+			foreach (var plugin in _plugins)
+			{
+				if (TryCreateParser(plugin, services, format, out var parser))
 				{
-					return new NoThrowTextLogFileParser(plugin.CreateParser(services, format));
+					return parser;
 				}
-				catch (Exception e)
-				{
-					Log.ErrorFormat("Caught unexpected exception while trying to create parser for format '{0}' through plugin '{1}', falling back to default: {2}",
-					                format,
-					                plugin,
-					                e);
-					return CreateDefaultParser(services);
-				}
+			}
 
 			return CreateDefaultParser(services);
+		}
+
+		private bool TryCreateParser(ITextLogFileParserPlugin plugin, IServiceContainer services, ILogFileFormat format,
+		                             out ITextLogFileParser parser)
+		{
+			try
+			{
+				// We cannot trust plugins to adhere to the contract set up by the interface.
+				// Therefore we wrap the "raw" plugin implementation by a layer which ensures that the plugin cannot screw up too bad
+				var rawParser = plugin.CreateParser(services, format);
+				parser = new NoThrowTextLogFileParser(rawParser);
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.DebugFormat("Caught exception: {0}", e);
+
+				parser = null;
+				return false;
+			}
 		}
 
 		#endregion

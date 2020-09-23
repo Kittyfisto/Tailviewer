@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	/// <summary>
 	///     Responsible for finding out if a particular log file matches any of the well known serilog formats.
@@ -26,16 +28,40 @@ namespace Tailviewer.Serilog
 			foreach (var serilogFormat in formats)
 			{
 				var parser = serilogFormat.Parser;
-				var content = serilogFormat.Encoding.GetString(initialContent);
-				if (parser.TryParse(content, out _))
+				using (var reader = CreateStreamReader(initialContent, serilogFormat.Encoding))
 				{
-					format = serilogFormat;
-					return true;
+					if (TryParseFormat(reader, parser))
+					{
+						format = serilogFormat;
+						return true;
+					}
 				}
 			}
 
 			format = null;
 			return false;
+		}
+
+		private static bool TryParseFormat(StreamReader reader,
+		                                   SerilogFileParser parser)
+		{
+			// we're happy if we can match the first line
+			var line = reader.ReadLine();
+			if (!parser.TryParse(line, out _))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private static StreamReader CreateStreamReader(byte[] initialContent, Encoding encoding)
+		{
+			var stream = new MemoryStream(initialContent);
+			if (encoding != null)
+				return new StreamReader(stream, encoding);
+
+			return new StreamReader(stream);
 		}
 
 		#endregion

@@ -60,7 +60,7 @@
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormatRepository.cs" />
     <Compile Include="BusinessLogic\Plugins\ICustomLogFileFormat.cs" />
-    <Compile Include="BusinessLogic\Plugins\ILogFileFormatCreatorPlugin.cs" />
+    <Compile Include="BusinessLogic\Plugins\ICustomLogFileFormatCreatorPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcherPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssue.cs" />

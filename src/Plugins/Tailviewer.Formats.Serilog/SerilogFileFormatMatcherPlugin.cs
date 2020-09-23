@@ -1,7 +1,7 @@
 ﻿using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	public sealed class SerilogFileFormatMatcherPlugin
 		: ILogFileFormatMatcherPlugin

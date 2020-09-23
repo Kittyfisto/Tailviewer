@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	/// <summary>
 	///     Plugin to allow parsing of serilog text files.

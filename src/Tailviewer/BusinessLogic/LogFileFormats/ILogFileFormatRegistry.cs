@@ -1,12 +1,13 @@
 ﻿using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.BusinessLogic.LogFileFormats
 {
 	public interface ILogFileFormatRegistry
 		: ILogFileFormatRepository
 	{
-		void Add(ILogFileFormat format);
-		void Remove(ILogFileFormat format);
-		void Replace(ILogFileFormat old, ILogFileFormat @new);
+		void Add(CustomLogFileFormat customFormat, ILogFileFormat format);
+		void Remove(CustomLogFileFormat customFormat);
+		void Replace(CustomLogFileFormat oldCustomFormat, CustomLogFileFormat newCustomFormat, ILogFileFormat newFormat);
 	}
 }

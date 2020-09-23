@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Serilog.Matchers
+namespace Tailviewer.Formats.Serilog.Matchers
 {
 	public sealed class TimestampMatcher
 		: ISerilogMatcher

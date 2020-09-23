@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	/// <summary>
 	///     Represents a particular serilog format.

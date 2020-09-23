@@ -4,9 +4,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
-using Tailviewer.Serilog.Matchers;
+using Tailviewer.Formats.Serilog.Matchers;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	/// <summary>
 	///     Responsible for parsing a singular log line into a <see cref="ILogEntry" /> by using
@@ -20,7 +20,7 @@ namespace Tailviewer.Serilog
 
 		public SerilogFileParser(string serilogFormat)
 		{
-			_regex = new Regex(ToRegex(serilogFormat, out _matchers));
+			_regex = new Regex(ToRegex(serilogFormat ?? string.Empty, out _matchers));
 		}
 
 		public static string ToRegex(string serilogFormat, out IReadOnlyList<ISerilogMatcher> matchers)

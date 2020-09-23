@@ -3,6 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Tailviewer.Core;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.MainPanel.Settings;
 
@@ -32,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.MainPanel.Settings
 		public void TestChangeDataContext()
 		{
 			_settings.Object.ProxyPassword = "1234";
-			var dataContext = new SettingsMainPanelViewModel(_applicationSettings.Object);
+			var dataContext = new SettingsMainPanelViewModel(_applicationSettings.Object, new ServiceContainer());
 			_control.DataContext = dataContext;
 
 			new Action(() => _control.DataContext = null).Should().NotThrow();

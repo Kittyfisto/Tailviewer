@@ -3,7 +3,7 @@
 namespace Tailviewer.BusinessLogic.Plugins
 {
 	/// <summary>
-	///     This plugin, once implemented, allows users to dynamically add log formats to Tailviewer.
+	///     This plugin, once implemented, allows users to dynamically add custom log formats to Tailviewer.
 	/// </summary>
 	/// <remarks>
 	///     Tailviewer offers an editor which allows a user to add new custom formats.
@@ -14,7 +14,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 	///     a Serilog plugin) and perform the parsing into Tailviewer's <see cref="IReadOnlyLogEntry" />
 	///     so Tailviewer is able to interpret the log file.
 	/// </remarks>
-	public interface ILogFileFormatCreatorPlugin
+	public interface ICustomLogFileFormatCreatorPlugin
 		: IPlugin
 	{
 		/// <summary>
@@ -34,8 +34,10 @@ namespace Tailviewer.BusinessLogic.Plugins
 		///     if it could be successfully created. All other plugins will be able to retrieve it through
 		///     this registry.
 		/// </remarks>
+		/// <param name="serviceContainer"></param>
 		/// <param name="format">The values (entered by a user) from which to create the format.</param>
-		/// <returns></returns>
-		ILogFileFormat Create(ICustomLogFileFormat format);
+		/// <param name="logFileFormat"></param>
+		/// <returns>True when the <paramref name="format"/> is valid and a <see cref="ILogFileFormat"/> could be created, false otherwise.</returns>
+		bool TryCreate(IServiceContainer serviceContainer, ICustomLogFileFormat format, out ILogFileFormat logFileFormat);
 	}
 }

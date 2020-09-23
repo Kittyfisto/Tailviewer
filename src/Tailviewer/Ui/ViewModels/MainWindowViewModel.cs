@@ -78,7 +78,7 @@ namespace Tailviewer.Ui.ViewModels
 			_applicationSettings = settings;
 
 			_plugins = services.Retrieve<IPluginLoader>().Plugins;
-			_settings = new SettingsMainPanelViewModel(settings);
+			_settings = new SettingsMainPanelViewModel(settings, services);
 			_actionCenterViewModel = new ActionCenterViewModel(services.Retrieve<IDispatcher>(), actionCenter);
 
 			_logViewPanel = new LogViewMainPanelViewModel(services,

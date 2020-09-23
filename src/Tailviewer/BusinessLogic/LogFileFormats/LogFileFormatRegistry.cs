@@ -16,15 +16,16 @@ namespace Tailviewer.BusinessLogic.LogFileFormats
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IReadOnlyDictionary<PluginId, ILogFileFormatCreatorPlugin> _creatorsById;
+		private readonly IReadOnlyDictionary<PluginId, ICustomLogFileFormatCreatorPlugin> _creatorsById;
+		private readonly Dictionary<CustomLogFileFormat, ILogFileFormat> _formatsByCustomFormat;
 		private readonly List<ILogFileFormat> _formats;
 		private readonly object _syncRoot;
 
 		public LogFileFormatRegistry(IPluginLoader pluginLoader,
 		                             ICustomFormatsSettings customFormats)
 		{
-			var creators = pluginLoader.LoadAllOfTypeWithDescription<ILogFileFormatCreatorPlugin>();
-			var creatorsById = new Dictionary<PluginId, ILogFileFormatCreatorPlugin>(creators.Count);
+			var creators = pluginLoader.LoadAllOfTypeWithDescription<ICustomLogFileFormatCreatorPlugin>();
+			var creatorsById = new Dictionary<PluginId, ICustomLogFileFormatCreatorPlugin>(creators.Count);
 			foreach(var description in creators)
 			{
 				if (description.Plugin != null)
@@ -34,6 +35,7 @@ namespace Tailviewer.BusinessLogic.LogFileFormats
 			}
 
 			_creatorsById = creatorsById;
+			_formatsByCustomFormat = new Dictionary<CustomLogFileFormat, ILogFileFormat>();
 			_syncRoot = new object();
 			_formats = new List<ILogFileFormat>();
 
@@ -50,8 +52,11 @@ namespace Tailviewer.BusinessLogic.LogFileFormats
 			{
 				try
 				{
-					var format = creator.Create(customFormat);
-					_formats.Add(format);
+					if (creator.TryCreate(null, customFormat, out var format))
+					{
+						_formatsByCustomFormat.Add(customFormat, format);
+						_formats.Add(format);
+					}
 				}
 				catch (Exception e)
 				{
@@ -77,7 +82,7 @@ namespace Tailviewer.BusinessLogic.LogFileFormats
 
 		#region Implementation of ILogFileFormatRegistry
 
-		public void Add(ILogFileFormat format)
+		public void Add(CustomLogFileFormat customFormat, ILogFileFormat format)
 		{
 			lock (_syncRoot)
 			{
@@ -85,20 +90,36 @@ namespace Tailviewer.BusinessLogic.LogFileFormats
 			}
 		}
 
-		public void Remove(ILogFileFormat format)
+		public void Remove(CustomLogFileFormat customFormat)
 		{
+			if (customFormat == null)
+				return;
+
 			lock (_syncRoot)
 			{
-				_formats.Remove(format);
+				if (_formatsByCustomFormat.TryGetValue(customFormat, out var format))
+				{
+					_formatsByCustomFormat.Remove(customFormat);
+					_formats.Remove(format);
+				}
 			}
 		}
 
-		public void Replace(ILogFileFormat old, ILogFileFormat @new)
+		public void Replace(CustomLogFileFormat oldCustomFormat, CustomLogFileFormat newCustomFormat, ILogFileFormat newFormat)
 		{
 			lock (_syncRoot)
 			{
-				_formats.Add(old);
-				_formats.Remove(@new);
+				if (oldCustomFormat != null && _formatsByCustomFormat.TryGetValue(oldCustomFormat, out var oldFormat))
+				{
+					_formatsByCustomFormat.Remove(oldCustomFormat);
+					_formats.Remove(oldFormat);
+				}
+
+				if (newCustomFormat != null && newFormat != null)
+				{
+					_formatsByCustomFormat.Add(newCustomFormat, newFormat);
+					_formats.Add(newFormat);
+				}
 			}
 		}
 

@@ -35,5 +35,5 @@ using Tailviewer.BusinessLogic.Plugins;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: PluginId("Tailviewer", "Serilog")]
+[assembly: PluginId("Tailviewer.Formats", "Serilog")]
 [assembly: PluginAuthor("Simon Mießler")]

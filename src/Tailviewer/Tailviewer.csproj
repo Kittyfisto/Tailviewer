@@ -220,6 +220,9 @@
     <Compile Include="Ui\Controls\LogView\Timestamps\TimestampFormatter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatPluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatsSettingsViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\LogLevelSettingsViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
@@ -373,6 +376,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\LogView\PluginDescriptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatPluginDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatsSettingsDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

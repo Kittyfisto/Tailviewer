@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Tailviewer.BusinessLogic.LogFiles;
 
-namespace Tailviewer.Serilog
+namespace Tailviewer.Formats.Serilog
 {
 	/// <summary>
 	///     Responsible for matching a particular serilog type such as Timestamp, Level or Message.

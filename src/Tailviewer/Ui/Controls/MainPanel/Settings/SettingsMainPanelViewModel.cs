@@ -9,6 +9,7 @@ using log4net;
 using Metrolib;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
+using Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.SidePanel;
 
 namespace Tailviewer.Ui.Controls.MainPanel.Settings
@@ -26,18 +27,34 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 		private readonly LogLevelSettingsViewModel _warnLevel;
 		private readonly LogLevelSettingsViewModel _errorLevel;
 		private readonly LogLevelSettingsViewModel _fatalLevel;
+		private readonly IReadOnlyList<EncodingViewModel> _textFileEncodings;
 		private string _pluginRepositories;
 		private EncodingViewModel _defaultTextFileEncoding;
+		private readonly CustomFormatsSettingsViewModel _customFormats;
 
-		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings) : base(applicationSettings)
+		public SettingsMainPanelViewModel(IApplicationSettings applicationSettings,
+		                                  IServiceContainer serviceContainer)
+			: base(applicationSettings)
 		{
 			_settings = applicationSettings;
 
 			var repos = applicationSettings.AutoUpdate.PluginRepositories;
 			_pluginRepositories = repos != null ? string.Join(Environment.NewLine, repos) : string.Empty;
 
+			_textFileEncodings = new[]
+			{
+				// TODO: Move to service
+				new EncodingViewModel(null, "Auto detect"),
+				new EncodingViewModel(Encoding.Default),
+				new EncodingViewModel(Encoding.ASCII),
+				new EncodingViewModel(Encoding.UTF8),
+				new EncodingViewModel(Encoding.UTF7),
+				new EncodingViewModel(Encoding.UTF32),
+				new EncodingViewModel(Encoding.BigEndianUnicode),
+				new EncodingViewModel(Encoding.Unicode)
+			};
 			var defaultEncoding = applicationSettings.LogFile?.DefaultEncoding;
-			_defaultTextFileEncoding = TextFileEncodings.FirstOrDefault(x => Equals(x.Encoding, defaultEncoding));
+			_defaultTextFileEncoding = _textFileEncodings.FirstOrDefault(x => Equals(x.Encoding, defaultEncoding));
 			if (_defaultTextFileEncoding == null)
 			{
 				var @default = TextFileEncodings.FirstOrDefault();
@@ -53,6 +70,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			_warnLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Warning);
 			_errorLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Error);
 			_fatalLevel = new LogLevelSettingsViewModel(_settings, applicationSettings.LogViewer.Fatal);
+			_customFormats = new CustomFormatsSettingsViewModel(_settings, serviceContainer, _textFileEncodings);
 		}
 
 		public bool CheckForUpdates
@@ -217,6 +235,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 		public LogLevelSettingsViewModel ErrorLevel => _errorLevel;
 		public LogLevelSettingsViewModel FatalLevel => _fatalLevel;
 
+		public CustomFormatsSettingsViewModel CustomFormats => _customFormats;
+
 		public bool AlwaysOnTop
 		{
 			get { return _settings.MainWindow.AlwaysOnTop; }
@@ -265,17 +285,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings
 			}
 		}
 
-		public IEnumerable<EncodingViewModel> TextFileEncodings => new[]
-		{
-			new EncodingViewModel(null, "Auto detect"),
-			new EncodingViewModel(Encoding.Default),
-			new EncodingViewModel(Encoding.ASCII),
-			new EncodingViewModel(Encoding.UTF8),
-			new EncodingViewModel(Encoding.UTF7),
-			new EncodingViewModel(Encoding.UTF32),
-			new EncodingViewModel(Encoding.BigEndianUnicode),
-			new EncodingViewModel(Encoding.Unicode)
-		};
+		public IEnumerable<EncodingViewModel> TextFileEncodings => _textFileEncodings;
 
 		public EncodingViewModel DefaultTextFileEncoding
 		{
