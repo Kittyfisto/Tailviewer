@@ -76,7 +76,7 @@ namespace Tailviewer.Formats.Serilog
 				case "Timestamp":
 					return new TimestampMatcher(specifier, groupIndex);
 				case "Level":
-					return new SerilogLevelMatcher(specifier, groupIndex);
+					return new LevelMatcher(specifier, groupIndex);
 				case "Message":
 					return new MessageMatcher(specifier, groupIndex);
 				default:

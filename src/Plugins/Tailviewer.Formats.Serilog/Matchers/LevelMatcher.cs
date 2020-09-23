@@ -8,14 +8,14 @@ using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Formats.Serilog.Matchers
 {
-	public sealed class SerilogLevelMatcher
+	public sealed class LevelMatcher
 		: ISerilogMatcher
 	{
 		private readonly int _groupIndex;
 		private readonly IReadOnlyDictionary<string, LevelFlags> _mapping;
 		private readonly string _regex;
 
-		public SerilogLevelMatcher(string specifier, int groupIndex)
+		public LevelMatcher(string specifier, int groupIndex)
 		{
 			_groupIndex = groupIndex;
 			_mapping = CreateMapping(specifier);

@@ -19,7 +19,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IReadOnlyList<ITextLogFileParserPlugin> _plugins;
-		private readonly IReadOnlyList<ILogFileFormat> _formats;
 
 		public TextLogFileParserPlugin(IServiceContainer services)
 		{
@@ -40,7 +39,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			get
 			{
-				return _formats;
+				return new ILogFileFormat[0];
 			}
 		}
 
