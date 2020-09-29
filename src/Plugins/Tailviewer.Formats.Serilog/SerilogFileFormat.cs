@@ -39,7 +39,7 @@ namespace Tailviewer.Formats.Serilog
 
 		public string Description
 		{
-			get { return _format; }
+			get { return $"Serilog ({_format})"; }
 		}
 
 		public bool IsText

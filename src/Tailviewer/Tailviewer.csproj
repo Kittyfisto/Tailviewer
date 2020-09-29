@@ -294,6 +294,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
