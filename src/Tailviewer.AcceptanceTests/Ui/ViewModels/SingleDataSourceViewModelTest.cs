@@ -6,6 +6,8 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Test;
@@ -24,12 +26,21 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			_taskScheduler = new DefaultTaskScheduler();
 		}
 
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		[Description("Verifies that the number of search results is properly forwarded to the view model upon Update()")]
 		public void TestSearch1()
 		{
 			var settings = new DataSource(TextLogFileAcceptanceTest.File2Mb) { Id = DataSourceId.CreateNew() };
-			using (var logFile = new TextLogFile(_taskScheduler, TextLogFileAcceptanceTest.File2Mb))
+			using (var logFile = Create(TextLogFileAcceptanceTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);

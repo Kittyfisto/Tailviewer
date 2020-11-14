@@ -201,6 +201,9 @@
     <Compile Include="Settings\QuickFilterTest.cs" />
     <Compile Include="Settings\TextSettingsTest.cs" />
     <Compile Include="Settings\TimeFilterTest.cs" />
+    <Compile Include="SimpleLogFileFormatMatcher.cs" />
+    <Compile Include="SimplePluginLogFileFactory.cs" />
+    <Compile Include="SimpleTextLogFileParserPlugin.cs" />
     <Compile Include="StringExtensionsTest.cs" />
     <Compile Include="TypeFactoryTest.cs" />
     <Compile Include="Ui\AbstractDataSourceViewModelTest.cs" />

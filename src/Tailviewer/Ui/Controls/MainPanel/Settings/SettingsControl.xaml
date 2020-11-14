@@ -17,6 +17,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Metrolib;component/Themes/Constants.xaml" />
+                <ResourceDictionary Source="CustomFormats/CustomFormatsSettingsDataTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="HeaderDataTemplate">
                 <TextBlock FontSize="22" Text="{Binding}" />
@@ -294,9 +295,10 @@
                     </Grid>
                 </controls:FlatGroupBox>
             </Grid>
-            
+
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -372,7 +374,14 @@
                     </Grid>
                 </controls:FlatGroupBox>
 
-                <controls:FlatGroupBox Grid.Row="1"
+                <controls:FlatGroupBox Header="Custom Log file Formats"
+                                       HeaderTemplate="{StaticResource HeaderDataTemplate}"
+                                       Grid.Row="1"
+                                       VerticalAlignment="Top" Margin="8">
+                    <ContentPresenter Content="{Binding CustomFormats}" />
+                </controls:FlatGroupBox>
+
+                <controls:FlatGroupBox Grid.Row="2"
                                        Header="Window" VerticalAlignment="Top" Margin="8"
                                        HeaderTemplate="{StaticResource HeaderDataTemplate}">
                     <Grid>
@@ -381,7 +390,7 @@
                 </controls:FlatGroupBox>
 
                 <controls:FlatGroupBox Header="Updates" VerticalAlignment="Top" Margin="8"
-                                       Grid.Row="2">
+                                       Grid.Row="3">
                     <controls:FlatGroupBox.HeaderTemplate>
                         <DataTemplate>
                             <TextBlock FontSize="22" Text="{Binding}" />

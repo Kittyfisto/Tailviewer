@@ -21,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 
 			_logFile = new Mock<ILogFile>();
 			_entries = new List<LogLine>();

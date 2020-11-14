@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_taskScheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
 			_filesystem = new InMemoryFilesystem();
 			_settings = new DataSource
 			{

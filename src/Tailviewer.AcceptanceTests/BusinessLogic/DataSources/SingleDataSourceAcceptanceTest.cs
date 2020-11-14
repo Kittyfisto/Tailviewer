@@ -6,6 +6,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
@@ -19,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 		}
 
 		[Test]

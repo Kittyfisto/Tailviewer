@@ -7,8 +7,11 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
@@ -31,10 +34,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		public void TestFilter1()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create(File20Mb))
 			{
 				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
 
@@ -74,9 +86,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestFilter2()
 		{
-			using (var file = new TextLogFile(_scheduler, File20Mb))
+			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
+				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
 
 				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
 				{
@@ -113,7 +125,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				writer.WriteLine("INFO - Test");
 			}
 
-			using (var file = new TextLogFile(_scheduler, fname))
+			using (var file = Create(fname))
 			{
 				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 

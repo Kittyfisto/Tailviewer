@@ -9,6 +9,7 @@ using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 using Tailviewer.Ui.ViewModels;
 
 namespace Tailviewer.AcceptanceTests.Ui.ViewModels
@@ -25,7 +26,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestFixtureSetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 			_settings = new ApplicationSettings(Path.GetTempFileName());
 		}

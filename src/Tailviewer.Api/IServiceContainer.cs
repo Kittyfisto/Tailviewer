@@ -20,6 +20,8 @@ namespace Tailviewer
 	///     - <see cref="System.Threading.ITaskScheduler" />
 	///     - <see cref="System.Threading.ISerialTaskScheduler" />
 	///     - <see cref="System.IO.IFilesystem" />
+	///     - <see cref="ILogFileFormatRepository"/>
+	///     - IPluginLoader
 	/// </remarks>
 	public interface IServiceContainer
 	{
