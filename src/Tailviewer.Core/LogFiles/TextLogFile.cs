@@ -45,6 +45,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ILogFileFormatMatcher _formatMatcher;
 		private readonly ITextLogFileParserPlugin _parserPlugin;
 		private ITextLogFileParser _parser;
+		private ILogFileFormat _parserFormat;
 
 		#endregion
 
@@ -350,16 +351,23 @@ namespace Tailviewer.Core.LogFiles
 						FileShare.ReadWrite))
 					{
 						var format = _properties.GetValue(LogFileProperties.Format);
-						if (format == null)
+						var certainty = _properties.GetValue(LogFileProperties.FormatDetectionCertainty);
+						if (format == null || certainty != Certainty.Sure)
 						{
-							format = TryFindFormat(stream);
+							format = TryFindFormat(stream, out certainty);
 
 							if (format != null)
 							{
-								_parser = _parserPlugin.CreateParser(_serviceContainer, format);
+								// We only need to create a new parser when we don't have one already or we've changed out minds
+								if (_parser == null || !Equals(format, _parserFormat))
+								{
+									_parser = _parserPlugin.CreateParser(_serviceContainer, format);
+									_parserFormat = format;
+								}
 							}
 
 							_properties.SetValue(LogFileProperties.Format, format);
+							_properties.SetValue(LogFileProperties.FormatDetectionCertainty, certainty);
 						}
 
 						var encoding = format?.Encoding ?? _encoding;
@@ -456,7 +464,7 @@ namespace Tailviewer.Core.LogFiles
 			return TimeSpan.FromMilliseconds(100);
 		}
 
-		private ILogFileFormat TryFindFormat(FileStream stream)
+		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
 		{
 			var pos = stream.Position;
 
@@ -464,13 +472,13 @@ namespace Tailviewer.Core.LogFiles
 			var length = Math.Min(maxHeaderLength, stream.Length - pos);
 			var header = new byte[length];
 			stream.Read(header, 0, header.Length);
+			certainty = length >= maxHeaderLength
+				? Certainty.Sure
+				: Certainty.Uncertain;
 
 			_formatMatcher.TryMatchFormat(_fullFilename, header, out var format);
 			if (format != null)
 				return format;
-
-			if (length < maxHeaderLength)
-				return null; //< We cannot be sure what format we're dealing with and want to give the detection plugins a bit of a chance before we fall back
 
 			return LogFileFormats.GenericText;
 		}
@@ -630,6 +638,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties.SetValue(LogFileProperties.Created, null);
 			_properties.SetValue(LogFileProperties.Size, null);
 			_properties.SetValue(LogFileProperties.Format, null);
+			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
 			_properties.SetValue(LogFileProperties.Encoding, null);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}

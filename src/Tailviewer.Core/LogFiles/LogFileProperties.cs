@@ -64,6 +64,13 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<ILogFileFormat> Format;
 
 		/// <summary>
+		///     The certainty with which <see cref="ILogFileFormatMatcher"/> has detected the format.
+		///     It is possible that while tailing a file, the format may change in case another format
+		///     is now a better match.
+		/// </summary>
+		public static readonly ILogFilePropertyDescriptor<Certainty> FormatDetectionCertainty;
+
+		/// <summary>
 		///     The <see cref="Encoding"/> used by tailviewer to interpret the log file's content as text.
 		/// </summary>
 		public static readonly ILogFilePropertyDescriptor<Encoding> Encoding;
@@ -84,6 +91,7 @@ namespace Tailviewer.Core.LogFiles
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
 			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");
+			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>("FormatDetectionCertainty");
 			Encoding = new WellKnownLogFilePropertyDescriptor<Encoding>("Encoding");
 
 			Minimum = new ILogFilePropertyDescriptor[]
@@ -97,6 +105,7 @@ namespace Tailviewer.Core.LogFiles
 				Size,
 				EmptyReason,
 				Format,
+				FormatDetectionCertainty,
 				Encoding
 			};
 		}

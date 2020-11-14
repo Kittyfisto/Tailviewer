@@ -88,7 +88,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(165342);
+				file.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(10)).Be(165342);
 
 				using (FilteredLogFile filtered = file.AsFiltered(_scheduler, null, Filter.Create("info")))
 				{
