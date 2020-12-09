@@ -2,7 +2,10 @@
 <package >
   <metadata>
     <id>Tailviewer.Api</id>
-    <version>$version$-beta</version>
+    <!-- The version will be overwritten via a commandline parameter in pack.cmd.
+         However if we don't include a placeholder here, then nuget will throw a hissy fit
+         and not produce anything... -->
+    <version>$version$</version>
     <authors>Simon Mießler</authors>
     <owners>Simon Mießler</owners>
     <license type="expression">MIT</license>
@@ -23,7 +26,9 @@
   </metadata>
   <files>
     <file src="..\..\src\Tailviewer\Resources\Tailviewer.png" target="" />
+    <file src="..\..\bin\Tailviewer.Api.dll" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Api.pdb" target="lib\net45\" />
+    <file src="..\..\bin\Tailviewer.Api.xml" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.dll" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.pdb" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.xml" target="lib\net45\" />
