@@ -2,25 +2,33 @@
 <package >
   <metadata>
     <id>Tailviewer.Api</id>
-    <version>$version$-beta</version>
+    <!-- The version will be overwritten via a commandline parameter in pack.cmd.
+         However if we don't include a placeholder here, then nuget will throw a hissy fit
+         and not produce anything... -->
+    <version>$version$</version>
     <authors>Simon Mießler</authors>
     <owners>Simon Mießler</owners>
-    <licenseUrl>https://github.com/Kittyfisto/Tailviewer/blob/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/Kittyfisto/Tailviewer/</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/Kittyfisto/Tailviewer/master/Tailviewer/Resources/Tailviewer.ico</iconUrl>
+    <icon>Tailviewer.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>API to create plugins for Tailviewer, the free log file viewer</description>
     <releaseNotes>Alpha release</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>.NET Tailviewer API SDK logfile</tags>
     <dependencies>
-      <dependency id="log4net" version="2.0.8" />
-      <dependency id="Metrolib" version="0.3.0.135" />
-      <dependency id="System.Threading.Extensions" version="2.0.59" />
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="log4net" version="2.0.8" />
+        <dependency id="Metrolib" version="0.3.0.135" />
+        <dependency id="System.Threading.Extensions" version="2.0.59" />
+      </group>
     </dependencies>
   </metadata>
   <files>
+    <file src="..\..\src\Tailviewer\Resources\Tailviewer.png" target="" />
+    <file src="..\..\bin\Tailviewer.Api.dll" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Api.pdb" target="lib\net45\" />
+    <file src="..\..\bin\Tailviewer.Api.xml" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.dll" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.pdb" target="lib\net45\" />
     <file src="..\..\bin\Tailviewer.Core.xml" target="lib\net45\" />
