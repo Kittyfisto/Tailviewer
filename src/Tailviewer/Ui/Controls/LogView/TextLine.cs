@@ -131,49 +131,56 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				_segments.Clear();
 
-				string message = CreateMessage(_logLine.Message);
 				Brush highlightedBrush = TextBrushes.HighlightedForegroundBrush;
 				var searchResults = _searchResults;
 				if (searchResults != null)
 				{
 					try
 					{
+						// The search results are based on the unformatted message (e.g. before we replace tabs by the appropriate
+						// amount of spaces). Therefore we'll have to subdivide the message into chunks based on the search results
+						// and then reformat the individual chunks.
+						var unformattedMessage = _logLine.Message;
 						string substring;
 						int lastIndex = 0;
 						foreach (LogLineMatch match in searchResults.MatchesByLine[_logLine.LineIndex])
 						{
 							if (match.Index > lastIndex)
 							{
-								substring = message.Substring(lastIndex, match.Index - lastIndex);
-								AddSegmentsFrom(substring, regularForegroundBrush, isRegular: true);
+								substring = unformattedMessage.Substring(lastIndex, match.Index - lastIndex);
+								AddSegmentsFrom(FormatMessage(substring), regularForegroundBrush, isRegular: true);
 							}
 
-							substring = message.Substring(match.Index, match.Count);
-							AddSegmentsFrom(substring, highlightedBrush, isRegular: false);
+							substring = unformattedMessage.Substring(match.Index, match.Count);
+							AddSegmentsFrom(FormatMessage(substring), highlightedBrush, isRegular: false);
 							lastIndex = match.Index + match.Count;
 						}
 
-						if (lastIndex <= message.Length - 1)
+						if (lastIndex <= unformattedMessage.Length - 1)
 						{
-							substring = message.Substring(lastIndex);
-							AddSegmentsFrom(substring, regularForegroundBrush, isRegular: true);
+							substring = unformattedMessage.Substring(lastIndex);
+							AddSegmentsFrom(FormatMessage(substring), regularForegroundBrush, isRegular: true);
 						}
 					}
 					catch (Exception)
 					{
 						_segments.Clear();
+
+						string message = FormatMessage(_logLine.Message);
 						AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 					}
 				}
 				else
 				{
+					string message = FormatMessage(_logLine.Message);
 					AddSegmentsFrom(message, regularForegroundBrush, isRegular: true);
 				}
 				_lastForegroundBrush = regularForegroundBrush;
 			}
 		}
 
-		private string CreateMessage(string logLineMessage)
+		[Pure]
+		private string FormatMessage(string logLineMessage)
 		{
 			var builder = new StringBuilder(logLineMessage ?? string.Empty);
 			ReplaceTabsWithSpaces(builder, _textSettings.TabWidth);

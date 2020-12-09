@@ -125,9 +125,33 @@ namespace Tailviewer.Test.Ui.Controls
 				SearchResults = results
 			};
 
-			textLine.Segments.Count().Should().Be(2);
+			textLine.Segments.Count.Should().Be(2);
 			textLine.Segments.ElementAt(0).Text.Should().Be(".NET Environment: 4.0.30319.");
 			textLine.Segments.ElementAt(1).Text.Should().Be("42000");
+		}
+
+		[Test]
+		[Description("Verifies that highlighting works correct on lines containing tabs")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/244")]
+		public void TestHighlightTabs()
+		{
+			var results = new SearchResults();
+			var message = "		double tabs, offset by eight";
+			var searchTerm = "tabs";
+			results.Add(new LogMatch(0, new LogLineMatch(message.IndexOf(searchTerm), searchTerm.Length)));
+			const int tabWidth = 4; //< It's important that we run this test with a tabwidth of > 1
+			var textSettings = new TextSettings(tabWidth: tabWidth);
+
+			var textLine = new TextLine(new LogLine(0, 0, message, LevelFlags.Other), _hovered,
+			                            _selected, true, textSettings, new TextBrushes(null))
+			{
+				SearchResults = results
+			};
+
+			textLine.Segments.Count.Should().Be(3);
+			textLine.Segments.ElementAt(0).Text.Should().Be("        double ");
+			textLine.Segments.ElementAt(1).Text.Should().Be("tabs");
+			textLine.Segments.ElementAt(2).Text.Should().Be(", offset by eight");
 		}
 
 		[Test]
