@@ -111,14 +111,14 @@ namespace Tailviewer.Settings
 			IReadOnlyCollection<Screen> screens)
 		{
 			var centerPoint = new Point(window.Left + window.Width / 2, window.Top + window.Height / 2);
-			var sorted = screens.OrderBy(x => x.Center.SquaredDistanceTo(centerPoint)).ToList();
+			var sorted = screens.OrderBy(x => x.Bounds.Center.SquaredDistanceTo(centerPoint)).ToList();
 			return sorted;
 		}
 
 		[Pure]
 		private static IReadOnlyList<Screen> SortScreensByArea(IReadOnlyCollection<Screen> screens)
 		{
-			var sorted = screens.OrderBy(x => x.Area).ToList();
+			var sorted = screens.OrderBy(x => x.WorkingArea.Area).ToList();
 			return sorted;
 		}
 
@@ -413,17 +413,22 @@ namespace Tailviewer.Settings
 		///     Represents one screen connected to the current system.
 		/// </summary>
 		public sealed class Screen
-			: Rectangle
 		{
+			public readonly Rectangle Bounds;
+			public readonly Rectangle WorkingArea;
 
 			public Screen(Point topLeft, Size size)
-				: base(topLeft, size)
-			{ }
+			{
+				Bounds = new Rectangle(topLeft, size);
+				WorkingArea = new Rectangle(topLeft, size);
+			}
 
 			public Screen(System.Windows.Forms.Screen screen)
-				: base(new Point(screen.Bounds.X, screen.Bounds.Y),
-				       new Size(screen.Bounds.Width, screen.Bounds.Height))
 			{
+				Bounds = new Rectangle(new Point(screen.Bounds.X, screen.Bounds.Y),
+				                       new Size(screen.Bounds.Width, screen.Bounds.Height));
+				WorkingArea = new Rectangle(new Point(screen.WorkingArea.X, screen.WorkingArea.Y),
+				                            new Size(screen.WorkingArea.Width, screen.WorkingArea.Height));
 			}
 
 			/// <summary>
@@ -436,16 +441,16 @@ namespace Tailviewer.Settings
 			{
 				movedWindow = null;
 
-				if (window.Width > Size.Width)
+				if (window.Width > WorkingArea.Size.Width)
 					return false;
-				if (window.Height > Size.Height)
+				if (window.Height > WorkingArea.Size.Height)
 					return false;
 
 				// The window will fit, we'll just have to move it into view.
 				// Let's place it so its centered on the screen...
 				var halfWidth = window.Width / 2;
 				var halfHeight = window.Height / 2;
-				var center = Center;
+				var center = WorkingArea.Center;
 				var topLeft = new Point(center.X - halfWidth, center.Y - halfHeight);
 				movedWindow = new Rectangle(topLeft, window.Size);
 				return true;
@@ -454,7 +459,7 @@ namespace Tailviewer.Settings
 			[Pure]
 			public Rectangle FitWindowInto(Rectangle settings)
 			{
-				var newSettings = new Rectangle(TopLeft, Size);
+				var newSettings = new Rectangle(WorkingArea.TopLeft, WorkingArea.Size);
 				return newSettings;
 			}
 
@@ -464,7 +469,9 @@ namespace Tailviewer.Settings
 				var result = new List<Rectangle>();
 				foreach (var window in windowPortions)
 				{
-					result.AddRange(window.Cut(this));
+					// We do NOT use the working area on purpose because it's not unusual for the taskbar
+					// to be clipped to the side, effectively hiding small parts of the window.
+					result.AddRange(window.Cut(Bounds));
 				}
 
 				return result;
