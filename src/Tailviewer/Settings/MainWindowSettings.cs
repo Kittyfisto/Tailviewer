@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Windows;
 using System.Xml;
+using log4net;
 using Metrolib;
 
 namespace Tailviewer.Settings
@@ -10,6 +12,8 @@ namespace Tailviewer.Settings
 		: IMainWindowSettings
 		, ICloneable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		public double Height
 		{
 			get { return _window.Height; }
@@ -63,7 +67,7 @@ namespace Tailviewer.Settings
 			IsLeftSidePanelVisible = other.IsLeftSidePanelVisible;
 		}
 
-		private readonly WindowSettings _window;
+		private WindowSettings _window;
 
 		object ICloneable.Clone()
 		{
@@ -110,6 +114,28 @@ namespace Tailviewer.Settings
 		public void UpdateFrom(Window window)
 		{
 			_window.UpdateFrom(window);
+		}
+
+		public void ClipToBounds(Desktop desktop)
+		{
+			try
+			{
+				var currentRectangle = new Desktop.Window(_window);
+				var newRectangle = desktop.ClipToBoundaries(currentRectangle);
+				if (newRectangle != currentRectangle)
+				{
+					_window.Left = newRectangle.Left;
+					_window.Top = newRectangle.Top;
+					_window.Width = newRectangle.Width;
+					_window.Height = newRectangle.Height;
+					if (newRectangle.IsMaximized)
+						_window.State = WindowState.Maximized;
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while trying to clip window to desktop bounds: {0}", e);
+			}
 		}
 
 		public void RestoreTo(Window window)
