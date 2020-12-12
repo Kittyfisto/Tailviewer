@@ -114,7 +114,16 @@ namespace Tailviewer.Settings
 
 		public void RestoreTo(Window window)
 		{
-			_window = Desktop.Current.ClipToBoundaries(_window);
+			var currentRectangle = new Desktop.Rectangle(_window);
+			var newRectangle = Desktop.Current.ClipToBoundaries(currentRectangle);
+			if (newRectangle != currentRectangle)
+			{
+				_window.Left = newRectangle.Left;
+				_window.Top = newRectangle.Top;
+				_window.Width = newRectangle.Width;
+				_window.Height = newRectangle.Height;
+			}
+
 			_window.RestoreTo(window);
 			window.Topmost = AlwaysOnTop;
 		}

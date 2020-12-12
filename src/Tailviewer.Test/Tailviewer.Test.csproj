@@ -187,6 +187,7 @@
     <Compile Include="LocalTest.cs" />
     <Compile Include="QuickFilterIdTest.cs" />
     <Compile Include="ReaderWriterTest.cs" />
+    <Compile Include="RectangleTest.cs" />
     <Compile Include="ServiceContainerTest.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="Settings\ApplicationSettingsTest.cs" />
