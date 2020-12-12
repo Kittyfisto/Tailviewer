@@ -15,7 +15,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowFits()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(10, 20), new Size(800, 600));
+			var window = new Desktop.Window(new Desktop.Point(10, 20), new Size(800, 600));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(1024, 768));
 			var desktop = new Desktop(new[] {screen});
@@ -30,7 +30,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowClipsLeft()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(-1, 20), new Size(800, 600));
+			var window = new Desktop.Window(new Desktop.Point(-1, 20), new Size(800, 600));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(1024, 768));
 			var desktop = new Desktop(new[] {screen});
@@ -45,7 +45,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowClipsTop()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(10, -1), new Size(800, 600));
+			var window = new Desktop.Window(new Desktop.Point(10, -1), new Size(800, 600));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(1024, 768));
 			var desktop = new Desktop(new[] {screen});
@@ -60,7 +60,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowClipsRight()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(225, 201), new Size(800, 600));
+			var window = new Desktop.Window(new Desktop.Point(225, 201), new Size(800, 600));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(1024, 768));
 			var desktop = new Desktop(new[] {screen});
@@ -75,7 +75,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowClipsBottom()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(10, 169), new Size(800, 600));
+			var window = new Desktop.Window(new Desktop.Point(10, 169), new Size(800, 600));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(1024, 768));
 			var desktop = new Desktop(new[] {screen});
@@ -90,7 +90,7 @@ namespace Tailviewer.Test
 		[Test]
 		public void TestOneMonitorWindowTooBig()
 		{
-			var window = new Desktop.Rectangle(new Desktop.Point(10, 169), new Size(1024, 768));
+			var window = new Desktop.Window(new Desktop.Point(10, 169), new Size(1024, 768));
 
 			var screen = new Desktop.Screen(new Desktop.Point(0, 0), new Size(800, 600));
 			var desktop = new Desktop(new[] {screen});

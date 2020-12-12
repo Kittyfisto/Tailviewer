@@ -47,7 +47,7 @@ namespace Tailviewer.Settings
 		///     necessary.
 		/// </returns>
 		[Pure]
-		public Rectangle ClipToBoundaries(Rectangle window)
+		public Window ClipToBoundaries(Window window)
 		{
 			// If we didn't detect any monitors then somethings going on, but whatever it may be, we cannot move on...
 			if (_screens.Count == 0)
@@ -209,10 +209,6 @@ namespace Tailviewer.Settings
 				_size = size;
 			}
 
-			public Rectangle(WindowSettings settings)
-				: this(new Point(settings.Left, settings.Top), new Size(settings.Width, settings.Height))
-			{ }
-
 			public double Top
 			{
 				get { return _topLeft.Y; }
@@ -320,30 +316,11 @@ namespace Tailviewer.Settings
 				// If on the other hand, the two rectangles don't overlap even one bit,
 				// then nothing changes due to the cut and we can simply return this rectangle
 				if (!other.Overlap(this))
-					return new Rectangle[]{this};
-
-				/*
-				// So we know that there's a partial overlap. We'll just have to figure
-				// out what the resulting shape looks like.
-				// There's several possibilities:
-				// 1. The cut removes an inside portion of this rectangle
-				if (Contains(other))
-					throw new NotImplementedException("Cutting holes not implemented");
-				*/
-
-				IEnumerable<Rectangle> CutOnce(IEnumerable<Rectangle> rectangles)
-				{
-					var pass1 = rectangles.SelectMany(rectangle => rectangle.CutHorizontal(other.Top)).ToList();
-					var pass2 = pass1.SelectMany(rectangle => rectangle.CutHorizontal(other.Bottom)).ToList();
-					var pass3 = pass2.SelectMany(rectangle => rectangle.CutVertical(other.Left)).ToList();
-					var pass4 = pass3.SelectMany(rectangle => rectangle.CutVertical(other.Right)).ToList();
-					return pass4;
-				}
+					return new[]{this};
 
 				// We want to find out the area of this rectangle, which is left when the overlapping area with the other
 				// rectangle is cut away. This can be achieved in the following way:
 				// We first cut this rectangle into pieces along the four (infinite) lines of the other rectangle.
-				// Then we do a second pass where we cut the resulting rectangles once more by the same lines again.
 				// Now we should have a list of up to 9 rectangles which are either **completely** outside or
 				// completely inside the screen, i.e. there's no intersections anymore.
 				// All that is left to do now is to remove those rectangles which are part of the screen and we're
@@ -354,10 +331,13 @@ namespace Tailviewer.Settings
 				// - Full intersection in which the screen cuts away a hole inside the window.
 				//var pass1 = CutOnce(new[] {this});
 				//var pass2 = CutOnce(pass1);
-				var tmpResult = CutOnce(new[] {this});
+				var pass1 = new[] {this}.SelectMany(rectangle => rectangle.CutHorizontal(other.Top)).ToList();
+				var pass2 = pass1.SelectMany(rectangle => rectangle.CutHorizontal(other.Bottom)).ToList();
+				var pass3 = pass2.SelectMany(rectangle => rectangle.CutVertical(other.Left)).ToList();
+				var pass4 = pass3.SelectMany(rectangle => rectangle.CutVertical(other.Right)).ToList();
 				// The result is almost there, after we've cut up this rectangle, we want to remove
 				// those portions that are completely inside the screen, leaving only those parts which do not.
-				var finalResult = tmpResult.Where(x => !other.Contains(x)).ToList();
+				var finalResult = pass4.Where(x => !other.Contains(x)).ToList();
 				return finalResult;
 			}
 
@@ -409,6 +389,20 @@ namespace Tailviewer.Settings
 			}
 		}
 
+		public sealed class Window
+			: Rectangle
+		{
+			public Window(Point topLeft, Size size)
+				: base(topLeft, size)
+			{ }
+
+			public Window(WindowSettings settings)
+				: this(new Point(settings.Left, settings.Top), new Size(settings.Width, settings.Height))
+			{ }
+
+			public bool IsMaximized;
+		}
+
 		/// <summary>
 		///     Represents one screen connected to the current system.
 		/// </summary>
@@ -437,7 +431,7 @@ namespace Tailviewer.Settings
 			/// <param name="window"></param>
 			/// <param name="movedWindow"></param>
 			/// <returns></returns>
-			public bool TryMoveWindowIntoScreen(Rectangle window, out Rectangle movedWindow)
+			public bool TryMoveWindowIntoScreen(Window window, out Window movedWindow)
 			{
 				movedWindow = null;
 
@@ -452,14 +446,15 @@ namespace Tailviewer.Settings
 				var halfHeight = window.Height / 2;
 				var center = WorkingArea.Center;
 				var topLeft = new Point(center.X - halfWidth, center.Y - halfHeight);
-				movedWindow = new Rectangle(topLeft, window.Size);
+				movedWindow = new Window(topLeft, window.Size);
 				return true;
 			}
 
 			[Pure]
-			public Rectangle FitWindowInto(Rectangle settings)
+			public Window FitWindowInto(Window settings)
 			{
-				var newSettings = new Rectangle(WorkingArea.TopLeft, WorkingArea.Size);
+				var newSettings = new Window(WorkingArea.TopLeft, WorkingArea.Size);
+				newSettings.IsMaximized = true;
 				return newSettings;
 			}
 

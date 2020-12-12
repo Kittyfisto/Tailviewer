@@ -112,18 +112,23 @@ namespace Tailviewer.Settings
 			_window.UpdateFrom(window);
 		}
 
-		public void RestoreTo(Window window)
+		public void ClipToBounds(Desktop desktop)
 		{
-			var currentRectangle = new Desktop.Rectangle(_window);
-			var newRectangle = Desktop.Current.ClipToBoundaries(currentRectangle);
+			var currentRectangle = new Desktop.Window(_window);
+			var newRectangle = desktop.ClipToBoundaries(currentRectangle);
 			if (newRectangle != currentRectangle)
 			{
 				_window.Left = newRectangle.Left;
 				_window.Top = newRectangle.Top;
 				_window.Width = newRectangle.Width;
 				_window.Height = newRectangle.Height;
+				if (newRectangle.IsMaximized)
+					_window.State = WindowState.Maximized;
 			}
+		}
 
+		public void RestoreTo(Window window)
+		{
 			_window.RestoreTo(window);
 			window.Topmost = AlwaysOnTop;
 		}

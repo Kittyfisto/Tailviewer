@@ -24,6 +24,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -232,7 +233,8 @@ namespace Tailviewer
 						{
 							DataContext = windowViewModel
 						};
-
+						
+						settings.MainWindow.ClipToBounds(Desktop.Current);
 						settings.MainWindow.RestoreTo(window);
 
 						stopwatch.Stop();

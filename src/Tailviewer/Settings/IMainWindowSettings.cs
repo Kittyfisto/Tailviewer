@@ -48,6 +48,7 @@ namespace Tailviewer.Settings
 		void Save(XmlWriter writer);
 		void Restore(XmlReader reader);
 		void UpdateFrom(Window window);
+		void ClipToBounds(Desktop desktop);
 		void RestoreTo(Window window);
 	}
 }
