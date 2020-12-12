@@ -63,7 +63,7 @@ namespace Tailviewer.Settings
 			IsLeftSidePanelVisible = other.IsLeftSidePanelVisible;
 		}
 
-		private readonly WindowSettings _window;
+		private WindowSettings _window;
 
 		object ICloneable.Clone()
 		{
@@ -114,6 +114,7 @@ namespace Tailviewer.Settings
 
 		public void RestoreTo(Window window)
 		{
+			_window = Desktop.Current.ClipToBoundaries(_window);
 			_window.RestoreTo(window);
 			window.Topmost = AlwaysOnTop;
 		}
