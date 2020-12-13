@@ -37,6 +37,46 @@ namespace Tailviewer.Test.Settings
 		}
 
 		[Test]
+		[RequiresThread(ApartmentState.STA)]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/250")]
+		public void TestRestoreToMinimized1()
+		{
+			var settings = new MainWindowSettings
+			{
+				Width = 9001,
+				Height = 42,
+				State = WindowState.Normal
+			};
+			settings.State = WindowState.Minimized;
+
+			var window = new Window();
+			settings.RestoreTo(window);
+			window.Width.Should().Be(9001);
+			window.Height.Should().Be(42);
+			window.WindowState.Should().Be(WindowState.Normal);
+		}
+
+		[Test]
+		[RequiresThread(ApartmentState.STA)]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/250")]
+		public void TestRestoreToMinimized2()
+		{
+			var settings = new MainWindowSettings
+			{
+				Width = 9001,
+				Height = 42,
+				State = WindowState.Maximized
+			};
+			settings.State = WindowState.Minimized;
+
+			var window = new Window();
+			settings.RestoreTo(window);
+			window.Width.Should().Be(9001);
+			window.Height.Should().Be(42);
+			window.WindowState.Should().Be(WindowState.Maximized);
+		}
+
+		[Test]
 		public void TestClone([Values(true, false)] bool alwaysOnTop,
 		                      [Values(true, false)] bool isLeftSidePanelCollapsed)
 		{

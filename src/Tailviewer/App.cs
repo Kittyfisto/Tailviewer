@@ -135,6 +135,7 @@ namespace Tailviewer
 		{
 			ApplicationSettings settings = ApplicationSettings.Create();
 			settings.Restore(out var neededPatching);
+			settings.AllowSave = false; //< We will allow saving once the app is fully booted
 
 			if (neededPatching)
 			{
@@ -236,6 +237,7 @@ namespace Tailviewer
 						
 						settings.MainWindow.ClipToBounds(Desktop.Current);
 						settings.MainWindow.RestoreTo(window);
+						settings.AllowSave = true;
 
 						stopwatch.Stop();
 						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);

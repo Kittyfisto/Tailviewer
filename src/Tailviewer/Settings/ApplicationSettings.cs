@@ -30,6 +30,14 @@ namespace Tailviewer.Settings
 		private readonly CustomFormatsSettings _customFormats;
 		private int _numSaved;
 
+		private bool _allowSave;
+
+		public bool AllowSave
+		{
+			get { return _allowSave; }
+			set { _allowSave = value; }
+		}
+
 		/// <summary>
 		///    How often <see cref=" SaveAsync"/> was called.
 		/// </summary>
@@ -55,6 +63,7 @@ namespace Tailviewer.Settings
 			_logViewer = other._logViewer.Clone();
 			_logFile = other._logFile.Clone();
 			_customFormats = other._customFormats.Clone();
+			_allowSave = true;
 		}
 
 		public ApplicationSettings(string fileName)
@@ -70,6 +79,7 @@ namespace Tailviewer.Settings
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
 			_customFormats = new CustomFormatsSettings();
+			_allowSave = true;
 		}
 
 		public IAutoUpdateSettings AutoUpdate => _autoUpdate;
@@ -97,6 +107,12 @@ namespace Tailviewer.Settings
 
 		public void SaveAsync()
 		{
+			if (!AllowSave)
+			{
+				Log.DebugFormat("Saving not allow, skipping...");
+				return;
+			}
+
 			var config = Clone();
 			_saveTask = _saveTask.ContinueWith(unused => config.Save());
 			++_numSaved;
