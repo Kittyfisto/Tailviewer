@@ -35,6 +35,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private bool _isDisposed;
 		private ILogFile _previousUnfilteredLogFile;
 		private string _findAllFilter;
+		private int? _hideLogLineCount;
 
 		protected AbstractDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 		{
@@ -131,6 +132,23 @@ namespace Tailviewer.BusinessLogic.DataSources
 		{
 			get { return _settings.LastViewed; }
 			set { _settings.LastViewed = value; }
+		}
+
+		public bool ScreenCleared
+		{
+			get { return _hideLogLineCount != null; }
+		}
+
+		public void ClearScreen()
+		{
+			_hideLogLineCount = UnfilteredLogFile?.Count ?? 0;
+			CreateFilteredLogFile();
+		}
+
+		public void ShowAll()
+		{
+			_hideLogLineCount = null;
+			CreateFilteredLogFile();
 		}
 
 		public DataSourceId Id => _settings.Id;
@@ -315,11 +333,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 		private void CreateFilteredLogFile()
 		{
 			_filteredLogFile?.Dispose();
-			
+
 			LevelFlags levelFilter = LevelFilter;
-			ILogLineFilter logLineFilter = HideEmptyLines ? (ILogLineFilter)new EmptyLogLineFilter() : new NoFilter();
+			ILogLineFilter logLineFilter = CreateLogLineFilter();
 			ILogEntryFilter logEntryFilter = Filter.Create(levelFilter, _quickFilterChain);
-			if (logEntryFilter != null)
+			if (Filter.IsFilter(logEntryFilter) || Filter.IsFilter(logLineFilter))
 			{
 				_filteredLogFile = UnfilteredLogFile.AsFiltered(_taskScheduler, logLineFilter, logEntryFilter, _maximumWaitTime);
 				_logFile.InnerLogFile = _filteredLogFile;
@@ -329,6 +347,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 				_filteredLogFile = null;
 				_logFile.InnerLogFile = UnfilteredLogFile;
 			}
+		}
+
+		private ILogLineFilter CreateLogLineFilter()
+		{
+			var filters = new List<ILogLineFilter>();
+			if (HideEmptyLines)
+				filters.Add(new EmptyLogLineFilter());
+			if (_hideLogLineCount != null)
+				filters.Add(new RangeFilter(new LogFileSection(0, _hideLogLineCount.Value)));
+			return Filter.Create(filters);
 		}
 
 		private void UpdateSearch()

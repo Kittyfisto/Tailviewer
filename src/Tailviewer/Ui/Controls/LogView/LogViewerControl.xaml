@@ -36,6 +36,7 @@
             <converters:CountConverter x:Key="InfoCountConverter" Suffix="Info" />
             <converters:CountConverter x:Key="DebugCountConverter" Suffix="Debug" HasPlural="False" />
             <converters:CountConverter x:Key="TraceCountConverter" Suffix="Trace" HasPlural="False" />
+            <converters:CountConverter x:Key="OtherCountConverter" Suffix="Other" HasPlural="False" />
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <logView:NonMergedDataSourceToVisibilityCollapsedConverter
                 x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
@@ -196,6 +197,23 @@
                                         IsChecked="{Binding DataSource.IsSingleLine, Mode=TwoWay}"
                                         ToolTip="Treat every single line as a separate log entry"
                                         Content="Single line" />
+                                    
+                                    <controls:FlatButton 
+                                    Margin="0"
+                                    Padding="4"
+                                    x:Name="PART_CLS"
+                                    Command="{Binding DataSource.ClearScreenCommand}"
+                                    Content="Clear Screen"
+                                    ToolTip="Hides all log current entries of the data source. New log entries will still be shown once they are added to the data source."/>
+
+                                <controls:FlatButton 
+                                    Margin="0"
+                                    Padding="4"
+                                    x:Name="PART_ShowAll"
+                                    Command="{Binding DataSource.ShowAllCommand}"
+                                    IsEnabled="{Binding DataSource.ScreenCleared}"
+                                    Content="Show All"
+                                    ToolTip="Shows all log entries that were previously cleared again"/>
 
                                 </StackPanel>
                             </controls:MenuItemContentControl>
@@ -260,6 +278,13 @@
                     ToolTip="Show/hide trace log messages"
                     Content="{Binding DataSource.TraceCount, Converter={StaticResource TraceCountConverter}, ElementName=This}" />
 
+                <controls:FlatToggleButton
+                Margin="0,0,8,8"
+                Padding="4"
+                VerticalAlignment="Stretch"
+                IsChecked="{Binding ShowOther, Mode=TwoWay, ElementName=This}"
+                ToolTip="Show/hide other log messages (i.e. those who's log level cannot be identified by Tailviewer)"
+                Content="{Binding DataSource.OtherCount, Converter={StaticResource OtherCountConverter}, ElementName=This}" />
                 <controls:SearchTextBox
                     x:Name="PART_SearchBox"
                     Margin="0,0,8,8"

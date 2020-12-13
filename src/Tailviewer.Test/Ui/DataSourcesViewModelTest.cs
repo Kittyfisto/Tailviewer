@@ -35,7 +35,7 @@ namespace Tailviewer.Test.Ui
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 			_actionCenter = new Mock<IActionCenter>();
 		}
@@ -764,6 +764,26 @@ namespace Tailviewer.Test.Ui
 			var folder = _model.GetOrAddFolder("bar");
 			_model.CanBeDropped(file, folder, DataSourceDropType.Group, out var unused)
 			      .Should().BeFalse("because folder data sources do not partake in drag 'n drop operations");
+		}
+
+		[Test]
+		[Description("Verifies that grouped data sources are updated")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/225")]
+		public void TestGroupFilesUpdate()
+		{
+			var file1 = _model.GetOrAddFile("A");
+			var file2 = _model.GetOrAddFile("B");
+			_model.OnDropped(file1, file2, DataSourceDropType.Group);
+
+			_model.Observable.Should().HaveCount(1, "because we've dropped two files into a group and thus there should only be one top-level data source");
+			var group = _model.Observable.First();
+
+			// The following lines verify that the model adds the new group to its internal (flat) list
+			// of all data sources. The view model uses said list for updating view models and there's
+			// no simple solution to verify an update call ATM.
+			_model.AllDataSourceViewModels.Should().Contain(file1);
+			_model.AllDataSourceViewModels.Should().Contain(file2);
+			_model.AllDataSourceViewModels.Should().Contain(group);
 		}
 	}
 }

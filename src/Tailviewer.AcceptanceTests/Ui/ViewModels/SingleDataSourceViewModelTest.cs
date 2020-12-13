@@ -6,6 +6,8 @@ using NUnit.Framework;
 using Tailviewer.AcceptanceTests.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Test;
@@ -24,12 +26,21 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			_taskScheduler = new DefaultTaskScheduler();
 		}
 
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		[Description("Verifies that the number of search results is properly forwarded to the view model upon Update()")]
 		public void TestSearch1()
 		{
 			var settings = new DataSource(TextLogFileAcceptanceTest.File2Mb) { Id = DataSourceId.CreateNew() };
-			using (var logFile = new TextLogFile(_taskScheduler, TextLogFileAcceptanceTest.File2Mb))
+			using (var logFile = Create(TextLogFileAcceptanceTest.File2Mb))
 			using (var dataSource = new SingleDataSource(_taskScheduler, settings, logFile, TimeSpan.Zero))
 			{
 				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);
@@ -107,6 +118,30 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 				model.CanBeRemoved.Should().BeTrue();
 				monitor.Should().NotRaisePropertyChangeFor(x => x.CanBeRemoved);
 			}
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
+		public void TestClearAllShowAll()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			var model = new SingleDataSourceViewModel(dataSource.Object, new Mock<IActionCenter>().Object);
+
+			model.ScreenCleared.Should().BeFalse();
+
+			model.ClearScreenCommand.Should().NotBeNull();
+			model.ClearScreenCommand.CanExecute(null).Should().BeTrue("because the screen can always be cleared");
+			model.ShowAllCommand.Should().NotBeNull();
+			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because the screen hasn't been cleared so nothing needs to be shown again");
+			model.ClearScreenCommand.Execute(null);
+			dataSource.Verify(x => x.ClearScreen(), Times.Once);
+
+			model.ShowAllCommand.Should().NotBeNull();
+			model.ShowAllCommand.CanExecute(null).Should().BeTrue("because the screen has been cleared and thus everything may be shown again");
+			model.ShowAllCommand.Execute(null);
+			dataSource.Verify(x => x.ShowAll(), Times.Once);
+
+			model.ShowAllCommand.CanExecute(null).Should().BeFalse("because everything has been shown again and thus nothing further can be shown");
 		}
 	}
 }

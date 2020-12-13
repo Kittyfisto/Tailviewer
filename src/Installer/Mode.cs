@@ -5,5 +5,6 @@
 		Install,
 		SilentInstall,
 		Update,
+		Uninstall
 	}
 }

@@ -117,14 +117,14 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		public void TestParseLevel1()
 		{
 			var parser = new Log4PatternParser("%level");
-			parser.Parse(new LogLine(0, 0, "DEBUG", LevelFlags.None)).Fields.Should().Equal(new object[] {LevelFlags.Debug});
+			parser.Parse(new LogLine(0, 0, "DEBUG", LevelFlags.Other)).Fields.Should().Equal(new object[] {LevelFlags.Debug});
 		}
 
 		[Test]
 		public void TestParseLevel2()
 		{
 			var parser = new Log4PatternParser("[%level]");
-			parser.Parse(new LogLine(0, 0, "[DEBUG]", LevelFlags.None)).Fields.Should().Equal(new object[] {LevelFlags.Debug});
+			parser.Parse(new LogLine(0, 0, "[DEBUG]", LevelFlags.Other)).Fields.Should().Equal(new object[] {LevelFlags.Debug});
 		}
 
 		[Test]
@@ -132,12 +132,12 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		public void TestParseLevel3()
 		{
 			var parser = new Log4PatternParser("[%level]");
-			parser.Parse(new LogLine(0, 0, null, LevelFlags.None)).Fields.Should().Equal(new object[1]);
-			parser.Parse(new LogLine(0, 0, string.Empty, LevelFlags.None)).Fields.Should().Equal(new object[1]);
-			parser.Parse(new LogLine(0, 0, "DEBUG]", LevelFlags.None)).Fields.Should().Equal(new object[1]);
-			parser.Parse(new LogLine(0, 0, "[DEBUG", LevelFlags.None)).Fields.Should().Equal(new object[1]);
-			parser.Parse(new LogLine(0, 0, "[debug]", LevelFlags.None)).Fields.Should().Equal(new object[1]);
-			parser.Parse(new LogLine(0, 0, "[DeBuG]", LevelFlags.None)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, null, LevelFlags.Other)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, string.Empty, LevelFlags.Other)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, "DEBUG]", LevelFlags.Other)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, "[DEBUG", LevelFlags.Other)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, "[debug]", LevelFlags.Other)).Fields.Should().Equal(new object[1]);
+			parser.Parse(new LogLine(0, 0, "[DeBuG]", LevelFlags.Other)).Fields.Should().Equal(new object[1]);
 		}
 
 		[Test]
@@ -145,7 +145,7 @@ namespace Tailviewer.Test.BusinessLogic.LogTables.Parsers
 		public void TestParseDate1()
 		{
 			var parser = new Log4PatternParser("%date");
-			parser.Parse(new LogLine(0, 0, "2016-10-26 09:06:35,176", LevelFlags.None)).Fields.Should().Equal(new object[] {DateTime.Parse("2016-10-26 09:06:35,176")});
+			parser.Parse(new LogLine(0, 0, "2016-10-26 09:06:35,176", LevelFlags.Other)).Fields.Should().Equal(new object[] {DateTime.Parse("2016-10-26 09:06:35,176")});
 		}
 	}
 }

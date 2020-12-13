@@ -8,8 +8,13 @@ using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Parsers;
+using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.LogFiles;
+using Certainty = Tailviewer.BusinessLogic.Certainty;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
@@ -38,7 +43,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter = new StreamWriter(_stream);
 			_binaryWriter = new BinaryWriter(_stream);
 
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 
 			_listener = new Mock<ILogFileListener>();
 			_changes = new List<LogFileSection>();
@@ -56,17 +61,43 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_stream?.Dispose();
 		}
 
+		private TextLogFile Create(string fileName,
+		                           Encoding encoding = null,
+		                           ILogLineTranslator translator = null,
+		                           ILogFileFormatMatcher matcher = null,
+		                           ITextLogFileParserPlugin parser = null)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			if (encoding != null)
+				serviceContainer.RegisterInstance<Encoding>(encoding);
+			if (translator != null)
+				serviceContainer.RegisterInstance<ILogLineTranslator>(translator);
+			if (matcher == null)
+				matcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(matcher);
+			if (parser == null)
+				parser = new SimpleTextLogFileParserPlugin();
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(parser);
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		public void TestCtor()
 		{
 			_streamWriter.Write("Foo");
 			_streamWriter.Flush();
 
+			_file.GetValue(LogFileProperties.Format).Should().Be(null);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.None);
+
 			var info = new FileInfo(_fname);
 			_scheduler.RunOnce();
 
 			_file.GetValue(LogFileProperties.LastModified).Should().Be(info.LastWriteTime);
 			_file.GetValue(LogFileProperties.Created).Should().Be(info.CreationTime);
+			_file.GetValue(LogFileProperties.Format).Should().Be(LogFileFormats.GenericText);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
 		}
 
 		[Test]
@@ -79,7 +110,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Write((byte) '\n');
 			_binaryWriter.Flush();
 
-			_file = new TextLogFile(_scheduler, _fname, encoding: Encoding.GetEncoding(1252));
+			_file = Create(_fname, encoding: Encoding.GetEncoding(1252));
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -98,7 +129,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Write((byte)'\n');
 			_binaryWriter.Flush();
 
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
@@ -110,7 +141,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public void TestTranslator1()
 		{
 			var translator = new Mock<ILogLineTranslator>();
-			_file = new TextLogFile(_scheduler, _fname, translator: translator.Object);
+			_file = Create(_fname, translator: translator.Object);
 			_file.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
 			_streamWriter.Write("Foo");
@@ -124,10 +155,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestDoesNotExist()
 		{
-			_file = new TextLogFile(_scheduler, _fname);
+			_file = Create(_fname);
 			_scheduler.RunOnce();
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
+			_file.GetValue(LogFileProperties.Format).Should().Be(LogFileFormats.GenericText);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().NotBe(Certainty.None);
 
 			_streamWriter?.Dispose();
 			_stream?.Dispose();
@@ -136,6 +169,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 			_file.GetValue(LogFileProperties.Created).Should().BeNull();
+			_file.GetValue(LogFileProperties.Format).Should().BeNull();
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.None);
 		}
 
 		[Test]
@@ -146,7 +181,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var stream = new FileStream(_fname, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
 			{
-				_file = new TextLogFile(_scheduler, _fname);
+				_file = Create(_fname);
 				_scheduler.RunOnce();
 
 				_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
@@ -163,7 +198,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			_scheduler.RunOnce();
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Foo", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Foo", LevelFlags.Other));
 		}
 
 		[Test]
@@ -179,7 +214,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
 		}
 
 		[Test]
@@ -199,7 +234,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 		}
 
 		[Test]
@@ -229,7 +264,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 		}
 
 		[Test]
@@ -244,8 +279,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.None));
-			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.None));
+			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.Other));
+			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.Other));
 		}
 
 		[Test]
@@ -368,9 +403,84 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file.GetValue(LogFileProperties.Name).Should().Be(_fname);
 		}
 
+		sealed class TestMatcher
+		: ILogFileFormatMatcher
+		{
+			public ILogFileFormat Format;
+			public bool Success;
+			public int NumTries;
+
+			#region Implementation of ILogFileFormatMatcher
+
+			public bool TryMatchFormat(string fileName, byte[] initialContent, out ILogFileFormat format)
+			{
+				++NumTries;
+				format = Format;
+				return Success;
+			}
+
+			#endregion
+		}
+
+		[Test]
+		[Description("Verifies that the log file will create new parsers when the format detection changes its mind")]
+		public void TestFormatDetection()
+		{
+			var matcher = new TestMatcher
+			{
+				Format = LogFileFormats.GenericText,
+				Success = true
+			};
+
+			var parser = new Mock<ITextLogFileParserPlugin>();
+			parser.Setup(x => x.CreateParser(It.IsAny<IServiceContainer>(),
+			                                 It.IsAny<ILogFileFormat>())).Returns(() => new Mock<ITextLogFileParser>().Object);
+			_file = Create(_fname, matcher: matcher, parser: parser.Object);
+
+			_streamWriter.WriteLine("Hello, World!");
+			_scheduler.RunOnce();
+			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
+			matcher.NumTries.Should().Be(1);
+			parser.Verify(x => x.CreateParser(It.IsAny<IServiceContainer>(),
+			                                  LogFileFormats.GenericText),
+			              Times.Once);
+			parser.ResetCalls();
+
+
+			// Now let's write a second line: Our matcher will still claim its a generic text file
+			// and we expect the log file to still invoke the matcher, but NOT create a new parser
+			// since the format itself hasn't changed, even if its still uncertain.
+			_streamWriter.WriteLine("Second line");
+			_scheduler.RunOnce();
+			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
+			matcher.NumTries.Should().Be(2, "because the log file should perform another match since the first one wasn't certain");
+			parser.Verify(x => x.CreateParser(It.IsAny<IServiceContainer>(),
+			                                  LogFileFormats.GenericText),
+			              Times.Never);
+			parser.ResetCalls();
+
+
+			// And now things become interesting. Now our matcher claims the format is a different one.
+			// We expect the log file to create a new parser to accomodate this!
+			matcher.Format = LogFileFormats.Csv;
+			_streamWriter.WriteLine("This is interesting, it's a CSV now!");
+			_scheduler.RunOnce();
+			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
+			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
+			matcher.NumTries.Should().Be(3, "because the log file should perform another match since the file is still too small to be certain");
+			parser.Verify(x => x.CreateParser(It.IsAny<IServiceContainer>(),
+			                                  LogFileFormats.GenericText),
+			              Times.Never);
+			parser.Verify(x => x.CreateParser(It.IsAny<IServiceContainer>(),
+			                                  LogFileFormats.Csv),
+			              Times.Once);
+		}
+
 		protected override ILogFile CreateEmpty()
 		{
-			var logFile = new TextLogFile(_scheduler, "fawwaaw");
+			var logFile = Create("fawwaaw");
 			_scheduler.RunOnce();
 			return logFile;
 		}
@@ -388,7 +498,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				}
 			}
 
-			var logFile = new TextLogFile(_scheduler, fname);
+			var logFile = Create(fname);
 			_scheduler.RunOnce();
 			return logFile;
 		}

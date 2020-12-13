@@ -8,14 +8,27 @@ using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
 {
+	public abstract class AbstractLogColumnPresenter
+		: FrameworkElement
+		, ILogFileColumnPresenter
+	{
+		#region Implementation of ILogFileColumnPresenter
+
+		public abstract ILogFileColumn Column { get; }
+		public abstract TextSettings TextSettings { get; set; }
+		public abstract void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset);
+
+		#endregion
+	}
+
 	/// <summary>
 	///     Responsible for presenting the values of a particular column.
 	/// </summary>
 	public abstract class AbstractLogColumnPresenter<T>
-		: FrameworkElement
+		: AbstractLogColumnPresenter
 	{
 		private readonly ILogFileColumn<T> _column;
-		private readonly List<AbstractLogEntryValuePresenter> _values;
+		private readonly List<AbstractLogEntryValueFormatter> _values;
 
 		private double _yOffset;
 		private TextSettings _textSettings;
@@ -27,13 +40,18 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_column = column;
 			_textSettings = textSettings;
-			_values = new List<AbstractLogEntryValuePresenter>();
+			_values = new List<AbstractLogEntryValueFormatter>();
 			ClipToBounds = true;
 		}
 
-		protected IEnumerable<AbstractLogEntryValuePresenter> Values => _values;
+		protected IEnumerable<AbstractLogEntryValueFormatter> Values => _values;
 
-		public TextSettings TextSettings
+		public override ILogFileColumn Column
+		{
+			get { return _column; }
+		}
+
+		public override TextSettings TextSettings
 		{
 			get { return _textSettings; }
 			set
@@ -49,7 +67,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <param name="logFile"></param>
 		/// <param name="visibleSection"></param>
 		/// <param name="yOffset"></param>
-		public void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset)
+		public override void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset)
 		{
 			if (Visibility != Visibility.Visible) //< We shouldn't waste CPU cycles when we're hidden from view...
 				return;
@@ -62,7 +80,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				var values = new T[visibleSection.Count];
 				logFile.GetColumn(visibleSection, _column, values);
 				foreach (var value in values)
-					_values.Add(CreatePresenter(value));
+					_values.Add(CreateFormatter(value));
 			}
 
 			UpdateWidth(logFile, _textSettings);
@@ -75,7 +93,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		protected abstract AbstractLogEntryValuePresenter CreatePresenter(T value);
+		protected abstract AbstractLogEntryValueFormatter CreateFormatter(T value);
 
 		protected override void OnRender(DrawingContext drawingContext)
 		{

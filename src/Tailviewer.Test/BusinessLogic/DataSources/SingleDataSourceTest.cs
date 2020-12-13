@@ -21,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 
 			_logFile = new Mock<ILogFile>();
 			_entries = new List<LogLine>();
@@ -201,7 +201,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))
 			{
-				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.None));
+				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.Other));
 				_listeners.OnRead(1);
 				_scheduler.RunOnce();
 				dataSource.SearchTerm = "foobar";
@@ -239,6 +239,55 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 				dataSource.IsSingleLine = false;
 				settings.IsSingleLine.Should().BeFalse("because the data source should modify the settings object when changed");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that ClearScreen() filters all entries of the log file")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
+		public void TestClearScreen()
+		{
+			var settings = CreateDataSource();
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Foo");
+			logFile.AddEntry("Bar");
+			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
+			{
+				_scheduler.RunOnce();
+				dataSource.FilteredLogFile.Count.Should().Be(2);
+
+				dataSource.ClearScreen();
+				_scheduler.RunOnce();
+				dataSource.FilteredLogFile.Count.Should().Be(0, "because we've just cleared the screen");
+
+
+				logFile.AddEntry("Hello!");
+				_scheduler.Run(2);
+				dataSource.FilteredLogFile.Count.Should().Be(1, "because newer log entries should still appear");
+				dataSource.FilteredLogFile.GetLine(0).Message.Should().Be("Hello!");
+			}
+		}
+
+		[Test]
+		[Description("Verifies that ShowAll() shows all entries of the log file again")]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
+		public void TestClearScreenShowAll()
+		{
+			var settings = CreateDataSource();
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Foo");
+			logFile.AddEntry("Bar");
+			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
+			{
+				_scheduler.RunOnce();
+
+				dataSource.ClearScreen();
+				_scheduler.RunOnce();
+				dataSource.FilteredLogFile.Count.Should().Be(0, "because we've just cleared the screen");
+
+				dataSource.ShowAll();
+				_scheduler.RunOnce();
+				dataSource.FilteredLogFile.Count.Should().Be(2, "because we've just shown everything again");
 			}
 		}
 

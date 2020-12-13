@@ -40,7 +40,7 @@
                                         <Setter Property="ToolTip" Value="Select a line to add a bookmark" />
                                     </Trigger>
                                     <Trigger Property="IsEnabled" Value="True">
-                                        <Setter Property="ToolTip" Value="Add new bookmark at the selected line" />
+                                        <Setter Property="ToolTip" Value="Add new bookmark at the selected line (Ctrl+B)" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>

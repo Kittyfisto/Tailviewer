@@ -118,7 +118,7 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		private void Add(string message)
 		{
 			var index = _entries.Count;
-			var entry = new LogLine(index, index, message, LevelFlags.None);
+			var entry = new LogLine(index, index, message, LevelFlags.Other);
 			_entries.Add(entry);
 		}
 	}

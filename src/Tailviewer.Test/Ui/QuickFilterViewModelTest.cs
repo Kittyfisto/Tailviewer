@@ -19,7 +19,7 @@ namespace Tailviewer.Test.Ui
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 		}
 
 		[SetUp]

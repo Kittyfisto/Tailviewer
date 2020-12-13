@@ -50,6 +50,79 @@ namespace Tailviewer
 			AddV080();
 			AddV081();
 			AddV090();
+			AddV091();
+			AddV092();
+			AddV093();
+			AddV094();
+		}
+
+		private static void AddV094()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{};
+			var misc = new []
+			{
+				"Added shortcut for new bookmark (Ctrl+B) [#240](https://github.com/Kittyfisto/Tailviewer/issues/240)"
+			};
+			var releaseDate = new DateTime(2020, 8, 20);
+			var version = new Version(0, 9, 4);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV093()
+		{
+			var features = new[]
+			{
+				"Fully customized color settings for log levels [#216](https://github.com/Kittyfisto/Tailviewer/issues/216)"
+			};
+			var bugfixes = new string[]
+				{};
+			var misc = new[]
+			{
+				"Add setting for tab size [#232](https://github.com/Kittyfisto/Tailviewer/issues/232)",
+			};
+			var releaseDate = new DateTime(2020, 7, 21);
+			var version = new Version(0, 9, 3);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV092()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{};
+			var misc = new[]
+			{
+				"Implemented uninstallation [#219](https://github.com/Kittyfisto/Tailviewer/issues/219)"
+			};
+			var releaseDate = new DateTime(2020, 3, 17);
+			var version = new Version(0, 9, 2);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
+		}
+
+		private static void AddV091()
+		{
+			var features = new[]
+			{
+				"Introduced plugin browser which works in conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
+				"Introduced clear screen & display [#215](https://github.com/Kittyfisto/Tailviewer/issues/215)"
+			};
+			var bugfixes = new string[]
+			{
+			};
+			var misc = new string[]
+			{
+			};
+			var releaseDate = new DateTime(2020, 3, 3);
+			var version = new Version(0, 9, 1);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV090()
@@ -59,7 +132,8 @@ namespace Tailviewer
 				"Introduced find all search (ctrl+shift+f) [#210](https://github.com/Kittyfisto/Tailviewer/issues/210)",
 				"Introduced plugin browser which works on conjunction with self hosted repositories [#90](https://github.com/Kittyfisto/Tailviewer/issues/90)",
 				"Introduced overview side panel for a condensed view onto the log file [#207](https://github.com/Kittyfisto/Tailviewer/issues/207)",
-				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)"
+				"Introduced issues side panel for automated log file analysis [#209](https://github.com/Kittyfisto/Tailviewer/issues/209)",
+				"Introduced clear screen & display [#215](https://github.com/Kittyfisto/Tailviewer/issues/215)"
 			};
 			var bugfixes = new[]
 			{

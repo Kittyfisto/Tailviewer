@@ -18,6 +18,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Settings.CustomFormats;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.SidePanel.DataSources;
 using Tailviewer.Ui.Controls.SidePanel.QuickFilters;

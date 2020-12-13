@@ -536,6 +536,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 						merged.AddChild(source);
 						merged.AddChild(dest);
 						_observable.Insert(destIndex, merged);
+						_allDataSourceViewModels.Add(merged);
 						SelectedItem = merged;
 					}
 				}
@@ -546,5 +547,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		{
 			viewModel.AddChild(source);
 		}
+
+		internal IEnumerable<IDataSourceViewModel> AllDataSourceViewModels => _allDataSourceViewModels;
 	}
 }

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using log4net;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core
 {
@@ -137,16 +133,8 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogFile CreateTextLogFile(string fileName)
 		{
-			var defaultEncoding = TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
-			var overwrittenEncoding = TryRetrieve<Encoding>();
-			var encoding = overwrittenEncoding ?? defaultEncoding;
-
-			return new TextLogFile(Retrieve<ITaskScheduler>(),
-			                       fileName,
-			                       TryRetrieve<ITimestampParser>(),
-			                       TryRetrieve<ILogLineTranslator>(),
-			                       encoding,
-			                       TryRetrieve<ILogFileFormatMatcher>());
+			return new TextLogFile(this,
+			                       fileName);
 		}
 
 		/// <inheritdoc />

@@ -11,7 +11,7 @@ namespace Tailviewer.Test.BusinessLogic
 		public void TestAll()
 		{
 			LevelFlags.All.Should().Be(LevelFlags.Fatal | LevelFlags.Error | LevelFlags.Warning | LevelFlags.Info |
-			                           LevelFlags.Debug | LevelFlags.Trace);
+			                           LevelFlags.Debug | LevelFlags.Trace | LevelFlags.Other);
 		}
 	}
 }

@@ -66,6 +66,9 @@ namespace Tailviewer.Archiver.Plugins.Description
 		/// <inheritdoc />
 		public IReadOnlyList<IChange> Changes { get; set; }
 
+		/// <inheritdoc />
+		public Version TailviewerApiVersion { get; set; }
+
 		#region Overrides of Object
 
 		public override string ToString()

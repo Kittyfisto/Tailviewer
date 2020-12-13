@@ -29,7 +29,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void OneTimeSetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
 		}
 
@@ -285,6 +285,19 @@ namespace Tailviewer.Test.Ui.Controls
 		}
 
 		[Test]
+		public void TestChangeShowOther()
+		{
+			_control.DataSource.LevelsFilter = LevelFlags.None;
+			_control.ShowOther.Should().BeFalse();
+
+			_control.ShowOther = true;
+			_control.DataSource.LevelsFilter.Should().Be(LevelFlags.Other);
+
+			_control.ShowOther = false;
+			_control.DataSource.LevelsFilter.Should().Be(LevelFlags.None);
+		}
+
+		[Test]
 		public void TestChangeShowDebug()
 		{
 			_control.DataSource.LevelsFilter = LevelFlags.None;
@@ -362,6 +375,7 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				DataSource = source
 			};
+			control.ShowOther.Should().BeTrue();
 			control.ShowTrace.Should().BeTrue();
 			control.ShowDebug.Should().BeTrue();
 			control.ShowInfo.Should().BeTrue();
@@ -374,6 +388,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestShowAll1()
 		{
 			_control.ShowAll = true;
+			_control.ShowOther.Should().BeTrue();
 			_control.ShowTrace.Should().BeTrue();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeTrue();
@@ -385,6 +400,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestShowAll2()
 		{
+			_control.ShowOther = true;
 			_control.ShowTrace = true;
 			_control.ShowDebug = true;
 			_control.ShowInfo = true;
@@ -393,6 +409,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowFatal = true;
 			_control.ShowAll = false;
 
+			_control.ShowOther.Should().BeFalse();
 			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeFalse();
@@ -408,6 +425,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowDebug = false;
 			_control.ShowAll.Should().NotHaveValue();
 
+			_control.ShowOther.Should().BeTrue();
 			_control.ShowTrace.Should().BeTrue();
 			_control.ShowDebug.Should().BeFalse();
 			_control.ShowInfo.Should().BeTrue();
@@ -423,6 +441,7 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.ShowDebug = true;
 			_control.ShowAll.Should().NotHaveValue();
 
+			_control.ShowOther.Should().BeFalse();
 			_control.ShowTrace.Should().BeFalse();
 			_control.ShowDebug.Should().BeTrue();
 			_control.ShowInfo.Should().BeFalse();
@@ -436,6 +455,9 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_control.ShowAll = false;
 			_control.ShowAll.Should().BeFalse();
+
+			_control.ShowOther = true;
+			_control.ShowAll.Should().NotHaveValue();
 
 			_control.ShowTrace = true;
 			_control.ShowAll.Should().NotHaveValue();

@@ -85,6 +85,7 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -93,6 +94,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.Toolkit, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Extended.Wpf.Toolkit.4.0.1\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
@@ -113,16 +117,26 @@
     <Compile Include="BusinessLogic\Highlighters\HighlighterId.cs" />
     <Compile Include="BusinessLogic\Highlighters\IHighlighters.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFileFormats\ILogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\LogFileFormats\LogFileFormatRegistry.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileFormatMatcher.cs" />
+    <Compile Include="BusinessLogic\LogFiles\NoThrowTextLogFileParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactory.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFileParser.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFileParserPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\IPluginUpdater.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginUpdater.cs" />
     <Compile Include="Int32RangeRule.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Settings\Bookmarks\IBookmarks.cs" />
+    <Compile Include="Settings\CustomFormats\CustomFormatSettings.cs" />
+    <Compile Include="Settings\CustomFormats\CustomLogFileFormat.cs" />
+    <Compile Include="Settings\Desktop.cs" />
+    <Compile Include="Settings\ICustomFormatsSettings.cs" />
     <Compile Include="Settings\ILogViewerSettings.cs" />
     <Compile Include="Settings\LogFileSettings.cs" />
+    <Compile Include="Settings\LogLevelSettings.cs" />
     <Compile Include="Settings\LogViewerSettings.cs" />
     <Compile Include="Settings\TextSettings.cs" />
     <Compile Include="TaskExtensions.cs" />
@@ -187,26 +201,40 @@
     <Compile Include="Settings\ExportSettings.cs" />
     <Compile Include="Settings\IApplicationSettings.cs" />
     <Compile Include="Settings\IAutoUpdateSettings.cs" />
-    <Compile Include="Settings\IDataSourcesSettings.cs" />
+    <Compile Include="Settings\CustomFormats\IDataSourcesSettings.cs" />
     <Compile Include="Settings\IExportSettings.cs" />
     <Compile Include="Settings\IMainWindowSettings.cs" />
     <Compile Include="Settings\MainWindowSettings.cs" />
     <Compile Include="SingleApplicationHelper.cs" />
     <Compile Include="Ui\Controls\AboutViewModel.cs" />
+    <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\Messages\MessageColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Messages\MessageFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\PluginDescriptionControl.xaml.cs">
       <DependentUpon>PluginDescriptionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Ui\Controls\LogView\TextBrushes.cs" />
+    <Compile Include="Ui\Controls\LogView\Timestamps\TimestampColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\Timestamps\TimestampFormatter.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\IPluginViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\AvailablePluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatPluginViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatsSettingsViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatViewModel.cs" />
     <Compile Include="Ui\Controls\MainPanel\Settings\EncodingViewModel.cs" />
+    <Compile Include="Ui\Controls\MainPanel\Settings\LogLevelSettingsViewModel.cs" />
     <Compile Include="Ui\Controls\QuickFilter\FilterToggleButton.cs" />
-    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\AbstractLogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\AbstractLogColumnPresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeColumnPresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenter.cs" />
-    <Compile Include="Ui\Controls\LogView\ILogEntryValuePresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimeFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\ILogEntryValueFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFile.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\AutoPopup.cs" />
     <Compile Include="Ui\Controls\MainPanel\Raw\GoToLine\GoToLinePopup.cs" />
@@ -268,6 +296,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\IInternalLogFileOutlineViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\ILogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFileOutlineViewModelProxy.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
@@ -283,12 +312,10 @@
     <Compile Include="Ui\Controls\DataSourceTree\TreeItem.cs" />
     <Compile Include="Ui\Controls\ImageLabel.cs" />
     <Compile Include="Ui\Controls\MainPanel\IMainPanelViewModel.cs" />
-    <Compile Include="Ui\Controls\LogView\BrushHelper.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\LineNumberFormatter.cs" />
     <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\SelectMode.cs" />
     <Compile Include="Ui\Controls\LogView\TextCanvas.cs" />
-    <Compile Include="Ui\Controls\LogView\TextHelper.cs" />
     <Compile Include="Ui\Controls\LogView\TextSegment.cs" />
     <Compile Include="Ui\Controls\QuickFilterMatchTypeToggleButton.cs" />
     <Compile Include="Ui\Controls\LogView\TextLine.cs" />
@@ -352,6 +379,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Ui\Controls\LogView\PluginDescriptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatPluginDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\MainPanel\Settings\CustomFormats\CustomFormatsSettingsDataTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -521,6 +560,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Resource Include="..\..\LICENSE">
       <Link>Licenses\Tailviewer\LICENSE</Link>
     </Resource>
@@ -530,6 +572,7 @@
     <Resource Include="Licenses\MMQ\LICENSE" />
     <Resource Include="Licenses\System.Threading.Extensions\LICENSE" />
     <Resource Include="Licenses\Ookii.Dialogs.Wpf\LICENSE" />
+    <Resource Include="Licenses\Xceed.Wpf.Toolkit\LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

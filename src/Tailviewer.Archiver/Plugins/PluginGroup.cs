@@ -40,6 +40,9 @@ namespace Tailviewer.Archiver.Plugins
 		private readonly PluginStatus _status;
 		private PluginDescription _selectedPlugin;
 		private IPluginArchive _selectedPluginArchive;
+		private bool _isLoading;
+
+		public bool IsLoading => _isLoading;
 
 		public PluginGroup(PluginId id)
 		{
@@ -169,9 +172,8 @@ namespace Tailviewer.Archiver.Plugins
 						Log.DebugFormat("Creating instance of plugin '{0}' from '{1}'...", implementation.FullTypeName,
 						               preferredPlugin.FilePath);
 
-						var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
-						var type = assembly.GetType(implementation.FullTypeName);
-						var pluginObject = Activator.CreateInstance(type);
+						var pluginObject = LoadPluginImplementation(implementation);
+
 						types.Add(new PluginWithDescription<IPlugin>((IPlugin) pluginObject, preferredPlugin));
 
 						Log.InfoFormat("Created instance of plugin '{0}' from '{1}'", implementation.FullTypeName,
@@ -414,10 +416,27 @@ namespace Tailviewer.Archiver.Plugins
 				Website = website,
 				PluginImplementations = plugins,
 				SerializableTypes = serializableTypes,
-				Changes = changes
+				Changes = changes,
+				TailviewerApiVersion = archiveIndex.TailviewerApiVersion
 			};
 
 			return desc;
+		}
+
+		private object LoadPluginImplementation(IPluginImplementationDescription implementation)
+		{
+			try
+			{
+				_isLoading = true;
+				var assembly = _selectedPluginArchive.LoadPlugin(); //< is cached so multiple calls are fine
+				var type = assembly.GetType(implementation.FullTypeName);
+				var pluginObject = Activator.CreateInstance(type);
+				return pluginObject;
+			}
+			finally
+			{
+				_isLoading = false;
+			}
 		}
 
 		private static Type ResolvePluginInterface(PluginInterfaceImplementation description)
@@ -435,6 +454,12 @@ namespace Tailviewer.Archiver.Plugins
 			image.StreamSource = icon;
 			image.EndInit();
 			return image;
+		}
+
+		public Assembly LoadAssembly(string argsName)
+		{
+			var assembly = _selectedPluginArchive.LoadAssembly(argsName);
+			return assembly;
 		}
 	}
 }

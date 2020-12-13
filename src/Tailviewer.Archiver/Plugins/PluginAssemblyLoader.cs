@@ -13,6 +13,7 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.BusinessLogic.Plugins.Issues;
 using Tailviewer.Core;
 using Tailviewer.Ui.Outline;
+using Constants = Tailviewer.Core.Constants;
 
 namespace Tailviewer.Archiver.Plugins
 {
@@ -37,6 +38,7 @@ namespace Tailviewer.Archiver.Plugins
 				typeof(ILogFileOutlinePlugin),
 				typeof(ILogFileIssuesPlugin),
 				typeof(ILogFileFormatMatcherPlugin),
+				typeof(ICustomLogFileFormatCreatorPlugin),
 				typeof(ITextLogFileParserPlugin)
 			};
 		}
@@ -123,6 +125,7 @@ namespace Tailviewer.Archiver.Plugins
 		/// <returns></returns>
 		public IPluginDescription ReflectPlugin(Assembly assembly, string pluginPath = null)
 		{
+			var apiVersion = GetTailviewerApiVersion(assembly, pluginPath);
 			var idAttribute = assembly.GetCustomAttribute<PluginIdAttribute>();
 			var authorAttribute = assembly.GetCustomAttribute<PluginAuthorAttribute>();
 			var websiteAttribute = assembly.GetCustomAttribute<PluginWebsiteAttribute>();
@@ -181,8 +184,31 @@ namespace Tailviewer.Archiver.Plugins
 				Version = pluginVersion,
 				FilePath = pluginPath,
 				PluginImplementations = plugins,
-				SerializableTypes = serializableTypes
+				SerializableTypes = serializableTypes,
+				TailviewerApiVersion = apiVersion
 			};
+		}
+
+		private static Version GetTailviewerApiVersion(Assembly assembly, string pluginPath)
+		{
+			const string apiAssemblyName = "Tailviewer.Api";
+			var assemblies = assembly.GetReferencedAssemblies().Where(x => x.Name == apiAssemblyName).ToList();
+			if (assemblies.Count == 0)
+				throw new PackException($"The plugin '{pluginPath}' does not reference '{apiAssemblyName}', but that's required in order for this plugin to work.");
+
+			if (assemblies.Count > 1)
+				throw new PackException($"The plugin '{pluginPath}' appears to reference '{apiAssemblyName}' multiple times - this cannot be");
+
+			var apiAssembly = assemblies[0];
+			var version = apiAssembly.Version;
+			// See https://github.com/Kittyfisto/Tailviewer/issues/227
+			if (version < Constants.ApplicationVersion)
+				Log.WarnFormat("You are using an older version of archive.exe (v{0}) to build a plugin targeting {1} v{2}. This is not recommended. Please try to use archive.exe v{2} (or greater) to build this plugin.",
+				               Constants.ApplicationVersion,
+				               apiAssemblyName,
+				               version);
+
+			return version;
 		}
 
 		private Assembly CurrentDomainOnAssemblyResolve(object sender, ResolveEventArgs args)

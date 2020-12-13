@@ -6,8 +6,11 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
@@ -31,12 +34,21 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			
 			_stream = File.Open(_fname, FileMode.Create, FileAccess.Write, FileShare.Read);
 			_writer = new StreamWriter(_stream);
-			_logFile = new TextLogFile(_scheduler, _fname);
+			_logFile = Create(_fname);
 
 			_settings = new DataSource(_fname)
 			{
 				Id = DataSourceId.CreateNew()
 			};
+		}
+
+		private TextLogFile Create(string fileName)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			return new TextLogFile(serviceContainer, fileName);
 		}
 
 		[Test]
@@ -51,7 +63,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.Other));
 			}
 		}
 
@@ -67,7 +79,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World", LevelFlags.Other));
 			}
 		}
 
@@ -112,7 +124,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_scheduler.Run(2);
 
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because only a single line has been written to disk");
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.None));
+				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
 			}
 		}
 
@@ -152,7 +164,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
 				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
-				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.None, null));
+				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.Other, null));
 			}
 		}
 	}

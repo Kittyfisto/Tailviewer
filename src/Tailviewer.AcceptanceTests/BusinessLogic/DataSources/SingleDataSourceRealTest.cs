@@ -19,7 +19,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new DefaultTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_settings = new DataSource(TextLogFileAcceptanceTest.File20Mb)
 			{
 				Id = DataSourceId.CreateNew()
@@ -79,13 +79,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		}
 
 		[Test]
-		[LocalTest("This test is wonky and needs to be rewritten")]
+		[FlakyTest(3)]
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
 			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 
-			_dataSource.TotalCount.Should().Be(165342);
+			_dataSource.Property(x => x.TotalCount).ShouldEventually().Be(165342);
 			_dataSource.DebugCount.Should().Be(165337);
 			_dataSource.InfoCount.Should().Be(5);
 			_dataSource.WarningCount.Should().Be(0);

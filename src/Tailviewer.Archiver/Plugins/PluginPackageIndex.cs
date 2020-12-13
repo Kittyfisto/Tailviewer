@@ -70,8 +70,22 @@ namespace Tailviewer.Archiver.Plugins
 			}
 		}
 
+		Version IPluginPackageIndex.TailviewerApiVersion
+		{
+			get
+			{
+				
+				Version version;
+				System.Version.TryParse(TailviewerApiVersion, out version);
+				return version;
+			}
+		}
+
 		[DataMember]
 		public string Version { get; set; }
+
+		[DataMember]
+		public string TailviewerApiVersion { get; set; }
 
 		IEnumerable<SerializableTypeDescription> IPluginPackageIndex.SerializableTypes => SerializableTypes;
 

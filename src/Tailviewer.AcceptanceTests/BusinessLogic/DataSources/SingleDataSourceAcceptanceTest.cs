@@ -6,6 +6,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
+using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
@@ -19,7 +20,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 		}
 
 		[Test]
@@ -61,6 +62,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 						.Be(LevelFlags.Fatal,
 							"Because this line belongs to the previous log entry and thus is marked as fatal as well");
 				lines[5].LogEntryIndex.Should().Be(lines[4].LogEntryIndex);
+
+				_scheduler.RunOnce();
 
 				dataSource.DebugCount.Should().Be(1);
 				dataSource.InfoCount.Should().Be(1);

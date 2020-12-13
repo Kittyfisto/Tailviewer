@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Installer.Applications.Install;
 using Installer.Applications.SilentInstall;
+using Installer.Applications.Uninstall;
 using Installer.Applications.Update;
 using log4net;
 using log4net.Appender;
@@ -21,20 +23,31 @@ namespace Installer.Applications
 			Log.InfoFormat("Starting setup...");
 			Log.InfoFormat("Commandline arguments: {0}", string.Join(" ", args));
 
-			var arguments = Arguments.Parse(args);
-			switch (arguments.Mode)
+			try
 			{
-				case Mode.Install:
-					return InstallApplication.Run(arguments);
+				var arguments = Arguments.Parse(args);
+				switch (arguments.Mode)
+				{
+					case Mode.Install:
+						return InstallApplication.Run(arguments);
 
-				case Mode.SilentInstall:
-					return SilentInstallApplication.Run(arguments);
+					case Mode.SilentInstall:
+						return SilentInstallApplication.Run(arguments);
 
-				case Mode.Update:
-					return UpdateApplication.Run(arguments);
+					case Mode.Update:
+						return UpdateApplication.Run(arguments);
 
-				default:
-					return -1;
+					case Mode.Uninstall:
+						return UninstallApplication.Run(arguments);
+
+					default:
+						throw new Exception($"Unknown mode: {arguments.Mode}");
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Error: {0}", e.Message);
+				return -1;
 			}
 		}
 

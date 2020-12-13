@@ -6,6 +6,7 @@ using System.Xml;
 using log4net;
 using Metrolib;
 using Tailviewer.Core;
+using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings
 {

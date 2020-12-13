@@ -366,6 +366,8 @@ namespace Tailviewer.Archiver.Plugins
 					FullName = pair.Value
 				});
 			}
+
+			_index.TailviewerApiVersion = description.TailviewerApiVersion?.ToString();
 		}
 
 		private void StoreIndex()

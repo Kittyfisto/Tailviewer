@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -22,9 +21,10 @@ namespace Tailviewer.Settings
 		public readonly double LineNumberSpacing;
 		public readonly Typeface Typeface;
 		public readonly double GlyphWidth;
-		public readonly double TabWidth;
+		public readonly int TabWidth;
 
-		public TextSettings(int fontSize = 12)
+		public TextSettings(int fontSize = LogViewerSettings.DefaultFontSize,
+		                    int tabWidth = LogViewerSettings.DefaultTabWidth)
 		{
 			FontSize = fontSize;
 			LineSpacing = 3;
@@ -34,17 +34,11 @@ namespace Tailviewer.Settings
 			FontFamily family = PickFontFamily();
 			Typeface = new Typeface(family, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
-			GlyphTypeface test;
-			Typeface.TryGetGlyphTypeface(out test);
+			Typeface.TryGetGlyphTypeface(out var test);
 
 			ushort glyphIndex = test.CharacterToGlyphMap[' '];
 			GlyphWidth = test.AdvanceWidths[glyphIndex]*FontSize;
-			TabWidth = new FormattedText("s\t", CultureInfo.CurrentUICulture,
-			                             FlowDirection.LeftToRight,
-			                             Typeface,
-			                             FontSize,
-			                             Brushes.Black,
-			                             1.25).Width;
+			TabWidth = tabWidth;
 		}
 
 		#region Overrides of Object

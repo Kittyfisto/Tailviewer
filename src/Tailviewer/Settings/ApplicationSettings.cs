@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using log4net;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings.CustomFormats;
 
 namespace Tailviewer.Settings
 {
@@ -26,7 +27,16 @@ namespace Tailviewer.Settings
 		private readonly ExportSettings _export;
 		private readonly LogViewerSettings _logViewer;
 		private readonly LogFileSettings _logFile;
+		private readonly CustomFormatsSettings _customFormats;
 		private int _numSaved;
+
+		private bool _allowSave;
+
+		public bool AllowSave
+		{
+			get { return _allowSave; }
+			set { _allowSave = value; }
+		}
 
 		/// <summary>
 		///    How often <see cref=" SaveAsync"/> was called.
@@ -52,6 +62,8 @@ namespace Tailviewer.Settings
 			_export = other._export.Clone();
 			_logViewer = other._logViewer.Clone();
 			_logFile = other._logFile.Clone();
+			_customFormats = other._customFormats.Clone();
+			_allowSave = true;
 		}
 
 		public ApplicationSettings(string fileName)
@@ -66,6 +78,8 @@ namespace Tailviewer.Settings
 			_logViewer = new LogViewerSettings();
 			_logFile = new LogFileSettings();
 			_export = new ExportSettings();
+			_customFormats = new CustomFormatsSettings();
+			_allowSave = true;
 		}
 
 		public IAutoUpdateSettings AutoUpdate => _autoUpdate;
@@ -82,6 +96,8 @@ namespace Tailviewer.Settings
 
 		public IExportSettings Export => _export;
 
+		public ICustomFormatsSettings CustomFormats => _customFormats;
+
 		public static ApplicationSettings Create()
 		{
 			string fileName = Path.Combine(Constants.AppDataLocalFolder, "settings");
@@ -91,6 +107,12 @@ namespace Tailviewer.Settings
 
 		public void SaveAsync()
 		{
+			if (!AllowSave)
+			{
+				Log.DebugFormat("Saving not allow, skipping...");
+				return;
+			}
+
 			var config = Clone();
 			_saveTask = _saveTask.ContinueWith(unused => config.Save());
 			++_numSaved;
@@ -139,6 +161,10 @@ namespace Tailviewer.Settings
 
 						writer.WriteStartElement("logfile");
 						_logFile.Save(writer);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("customformats");
+						_customFormats.Save(writer);
 						writer.WriteEndElement();
 
 						writer.WriteEndElement();
@@ -216,6 +242,10 @@ namespace Tailviewer.Settings
 
 							case "logfile":
 								_logFile.Restore(reader);
+								break;
+
+							case "customformats":
+								_customFormats.Restore(reader);
 								break;
 						}
 					}

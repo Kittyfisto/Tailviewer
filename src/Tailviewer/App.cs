@@ -19,10 +19,12 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.Highlighters;
+using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.Settings;
+using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
 using Tailviewer.Ui;
 using ApplicationSettings = Tailviewer.Settings.ApplicationSettings;
@@ -133,6 +135,7 @@ namespace Tailviewer
 		{
 			ApplicationSettings settings = ApplicationSettings.Create();
 			settings.Restore(out var neededPatching);
+			settings.AllowSave = false; //< We will allow saving once the app is fully booted
 
 			if (neededPatching)
 			{
@@ -166,11 +169,17 @@ namespace Tailviewer
 					var pluginSystem = CreatePluginSystem(pluginArchiveLoader);
 					services.RegisterInstance<IPluginLoader>(pluginSystem);
 
+					var logFileFormatRegistry = new LogFileFormatRegistry(pluginSystem, settings.CustomFormats);
+					services.RegisterInstance<ILogFileFormatRepository>(logFileFormatRegistry);
+					services.RegisterInstance<ILogFileFormatRegistry>(logFileFormatRegistry);
+
 					var logFileFormatMatcher = new LogFileFormatMatcher(services);
 					services.RegisterInstance<ILogFileFormatMatcher>(logFileFormatMatcher);
 
-					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
+					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
+					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
 
+					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
@@ -225,8 +234,10 @@ namespace Tailviewer
 						{
 							DataContext = windowViewModel
 						};
-
+						
+						settings.MainWindow.ClipToBounds(Desktop.Current);
 						settings.MainWindow.RestoreTo(window);
+						settings.AllowSave = true;
 
 						stopwatch.Stop();
 						Log.InfoFormat("Tailviewer started (took {0}ms), showing window...", stopwatch.ElapsedMilliseconds);

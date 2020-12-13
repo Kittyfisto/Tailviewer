@@ -402,7 +402,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (logLine.Timestamp != null)
 				return false; //< A line with a timestamp is never added to a previous log entry
-			if (logLine.Level != LevelFlags.None)
+			if (logLine.Level != LevelFlags.None && logLine.Level != LevelFlags.Other)
 				return false; //< A line with a log level is never added to a previous log entry
 
 			return true;

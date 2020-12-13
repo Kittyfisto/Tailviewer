@@ -97,6 +97,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that the Message property doesn't regress")]
+		public void TestMessage()
+		{
+			LogFileColumns.Message.Id.Should().Be("message");
+			LogFileColumns.Message.DataType.Should().Be<string>();
+		}
+
+		[Test]
 		[Description("Verifies that the ElapsedTime property doesn't regress")]
 		public void TestElapsedTime()
 		{

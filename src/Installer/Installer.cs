@@ -20,7 +20,7 @@ namespace Installer
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly Assembly _assembly;
-		private readonly List<string> _files;
+		private readonly List<string> _extractedFiles;
 		private readonly string _prefix;
 		private string _installationPath;
 		private Size _installedSize;
@@ -30,8 +30,14 @@ namespace Installer
 			_assembly = Assembly.GetExecutingAssembly();
 			_prefix = "InstallationFiles\\";
 			var allFiles = _assembly.GetManifestResourceNames();
-			_files = allFiles.Where(x => x.Contains(_prefix)).ToList();
-			InstallationSize = _files.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			_extractedFiles = allFiles.Where(x => x.Contains(_prefix)).ToList();
+			InstallationSize = _extractedFiles.Aggregate(Size.Zero, (size, fileName) => size + Filesize(fileName));
+			InstallationSize += Filesize(ThisInstallerPath);
+		}
+
+		public IReadOnlyList<string> InstallationFileNames
+		{
+			get { return _extractedFiles.Select(x => x.Replace(_prefix, "")).ToList(); }
 		}
 
 		public Size InstallationSize { get; }
@@ -46,6 +52,11 @@ namespace Installer
 
 		private Size Filesize(string fileName)
 		{
+			if (Path.IsPathRooted(fileName))
+			{
+				return Size.FromBytes(new FileInfo(fileName).Length);
+			}
+
 			using (var stream = _assembly.GetManifestResourceStream(fileName))
 			{
 				if (stream == null)
@@ -55,7 +66,7 @@ namespace Installer
 			}
 		}
 
-		public void Run(string installationPath)
+		public void Install(string installationPath)
 		{
 			var start = DateTime.Now;
 			_installationPath = installationPath;
@@ -66,7 +77,8 @@ namespace Installer
 				RemovePreviousInstallation(installationPath);
 				EnsureInstallationPath(installationPath);
 				InstallNewFiles(installationPath);
-				WriteRegistry();
+				CopySetup(installationPath);
+				WriteRegistry(installationPath);
 				CreateStartMenuEntry();
 
 				Log.InfoFormat("Installation succeeded");
@@ -84,6 +96,57 @@ namespace Installer
 				if (remaining > TimeSpan.Zero)
 					Thread.Sleep(remaining);
 			}
+		}
+
+		public void Uninstall(string installationPath)
+		{
+			try
+			{
+				KillTailviewer(installationPath);
+
+				var subFolders = new HashSet<string>();
+				foreach (var installedFile in InstallationFileNames)
+				{
+					var fullInstalledPath = Path.Combine(installationPath, installedFile);
+					TryDeleteFile(fullInstalledPath);
+
+					var folder = Path.GetDirectoryName(fullInstalledPath);
+					subFolders.Add(folder);
+				}
+
+				foreach (var subFolder in subFolders)
+				{
+					if (subFolder != installationPath)
+						TryDeleteDirectory(subFolder);
+				}
+
+				TryDeleteDirectory(installationPath);
+				DeleteRegistry();
+				DeleteStartMenuEntry();
+			}
+			catch (Exception e)
+			{
+				Log.FatalFormat("Unable to complete uninstallation: {0}", e);
+				throw;
+			}
+		}
+
+		private static string ThisInstallerPath
+		{
+			get
+			{
+				UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
+				string sourceSetupPath = Uri.UnescapeDataString(uri.Path);
+				return sourceSetupPath;
+			}
+		}
+
+		private void CopySetup(string installationPath)
+		{
+			string sourceSetupPath = ThisInstallerPath;
+			var destSetupPath = Path.Combine(installationPath, "Tailviewer-setup.exe");
+
+			File.Copy(sourceSetupPath, destSetupPath);
 		}
 
 		private void ExitTailviewer(string installationPath)
@@ -110,7 +173,7 @@ namespace Installer
 						// it takes some time until the operating system allows us actually
 						// access the files in question, so we'll just have to busy wait for
 						// a while...
-						foreach (var file in _files)
+						foreach (var file in _extractedFiles)
 						{
 							var destFilePath = DestFilePath(installationPath, file);
 							WaitUntilFileCanBeAccessed(destFilePath);
@@ -213,7 +276,7 @@ namespace Installer
 			var name = Path.GetFileName(filePath);
 			var dir = Path.GetDirectoryName(filePath);
 
-			Log.InfoFormat("Removing {0}", filePath);
+			Log.DebugFormat("Removing {0}", filePath);
 
 			var tries = 0;
 			Exception lastException = null;
@@ -221,6 +284,7 @@ namespace Installer
 				try
 				{
 					File.Delete(filePath);
+					Log.InfoFormat("Removed {0}", filePath);
 					break;
 				}
 				catch (DirectoryNotFoundException)
@@ -245,46 +309,66 @@ namespace Installer
 
 		private void InstallNewFiles(string installationPath)
 		{
-			foreach (var file in _files)
+			foreach (var file in _extractedFiles)
 			{
 				var destFilePath = DestFilePath(installationPath, file);
 				CopyFile(destFilePath, file);
 			}
 		}
+		
+		const string UninstallRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Uninstall";
 
-		private void WriteRegistry()
+		private void WriteRegistry(string installationPath)
 		{
-			var uninstallPath = @"Software\Microsoft\Windows\CurrentVersion\Uninstall";
-			var uninstall = Registry.LocalMachine.OpenSubKey(uninstallPath, true);
+			var uninstall = Registry.LocalMachine.OpenSubKey(UninstallRegistryPath, true);
 			if (uninstall == null)
 			{
-				Log.ErrorFormat("Unable to locate '{0}', this shouldn't really happen...", uninstallPath);
+				Log.ErrorFormat("Unable to locate '{0}', this shouldn't really happen...", UninstallRegistryPath);
 				return;
 			}
 
 			var program = uninstall.CreateSubKey(Constants.ApplicationTitle);
 			program.SetValue("DisplayName", Constants.ApplicationTitle, RegistryValueKind.String);
 			program.SetValue("DisplayIcon", IconPath, RegistryValueKind.String);
-			program.SetValue("UninstallString", "TODO", RegistryValueKind.String);
+			program.SetValue("UninstallString", string.Format("CMD.exe /C \"{0}\"", Path.Combine(installationPath, "Uninstall.cmd")), RegistryValueKind.String);
 			program.SetValue("DisplayVersion", Constants.ApplicationVersion, RegistryValueKind.String);
 			program.SetValue("Publisher", Constants.Publisher, RegistryValueKind.String);
 			program.SetValue("EstimatedSize", InstallationSize.Kilobytes, RegistryValueKind.DWord);
 		}
 
+		private void DeleteRegistry()
+		{
+			var uninstall = Registry.LocalMachine.OpenSubKey(UninstallRegistryPath, true);
+			if (uninstall == null)
+			{
+				Log.ErrorFormat("Unable to locate '{0}', this shouldn't really happen...", UninstallRegistryPath);
+				return;
+			}
+
+			uninstall.DeleteSubKeyTree(Constants.ApplicationTitle);
+		}
+
+		static readonly string StartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
+		static readonly string ShortcutFolder = Path.Combine(StartMenuPath, Constants.ApplicationTitle);
+		static readonly string TailviewerLink = Path.Combine(ShortcutFolder, "Tailviewer.lnk");
+
 		private void CreateStartMenuEntry()
 		{
-			var startMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms);
-			var shortcutFolder = Path.Combine(startMenuPath, Constants.ApplicationTitle);
-			if (!Directory.Exists(shortcutFolder))
-				Directory.CreateDirectory(shortcutFolder);
+			if (!Directory.Exists(ShortcutFolder))
+				Directory.CreateDirectory(ShortcutFolder);
 			var shell = new WshShell();
-			var tailviewerLink = Path.Combine(shortcutFolder, "Tailviewer.lnk");
-			var shortcut = (IWshShortcut) shell.CreateShortcut(tailviewerLink);
+			var shortcut = (IWshShortcut) shell.CreateShortcut(TailviewerLink);
 			shortcut.TargetPath = Path.Combine(_installationPath, "Tailviewer.exe");
 			shortcut.IconLocation = IconPath;
 			shortcut.Arguments = "";
 			shortcut.Description = "Open & Free log file viewer";
 			shortcut.Save();
+		}
+
+		private void DeleteStartMenuEntry()
+		{
+			if (File.Exists(TailviewerLink))
+				File.Delete(TailviewerLink);
 		}
 
 		private string DestFilePath(string installationPath, string file)
@@ -328,12 +412,67 @@ namespace Installer
 			}
 		}
 
+		private void KillTailviewer(string installationPath)
+		{
+			var normalizedInstallationPath = NormalizePath(installationPath);
+
+			var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Constants.ApplicationExecutable));
+			foreach (var process in processes)
+			{
+				var folder = NormalizePath(Path.GetDirectoryName(process?.MainModule?.FileName));
+				if (Equals(folder, normalizedInstallationPath))
+				{
+					Kill(process);
+				}
+			}
+		}
+
+		private void Kill(Process process)
+		{
+			Log.InfoFormat("Killing running tailviewer (PID: {0})...", process.Id);
+
+			process.Kill();
+		}
+
+		private static string NormalizePath(string path)
+		{
+			return Path.GetFullPath(new Uri(path).LocalPath)
+			           .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+			           .ToUpperInvariant();
+		}
+
 		private void CreateDirectory(string directory)
 		{
 			if (!Directory.Exists(directory))
 			{
 				Log.InfoFormat("Creating directory '{0}'", directory);
 				Directory.CreateDirectory(directory);
+			}
+		}
+
+		private static void TryDeleteDirectory(string fullInstalledPath)
+		{
+			try
+			{
+				Log.DebugFormat("Deleting '{0}'...", fullInstalledPath);
+				Directory.Delete(fullInstalledPath);
+				Log.DebugFormat("Deleted '{0}'", fullInstalledPath);
+			}
+			catch (Exception e)
+			{
+				Log.WarnFormat("Unable to delete directory: {0}", e.Message);
+			}
+		}
+
+		private void TryDeleteFile(string fullInstalledPath)
+		{
+			try
+			{
+				DeleteFile(fullInstalledPath);
+			}
+			catch (Exception e)
+			{
+				Log.WarnFormat("Unable to delete file: {0}", e.Message);
 			}
 		}
 

@@ -30,6 +30,10 @@ namespace Tailviewer.Ui.Controls
 			DependencyProperty.Register("FocusLogFileSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
 
+		public static readonly DependencyProperty NewBookmarkCommandProperty =
+			DependencyProperty.Register("NewBookmarkCommand", typeof(ICommand), typeof(MainWindow),
+			                            new PropertyMetadata(default(ICommand)));
+
 		public static readonly DependencyProperty FocusDataSourceSearchCommandProperty =
 			DependencyProperty.Register("FocusDataSourceSearchCommand", typeof(ICommand), typeof(MainWindow),
 			                            new PropertyMetadata(default(ICommand)));
@@ -60,6 +64,7 @@ namespace Tailviewer.Ui.Controls
 			FocusLogFileSearchAllCommand = new DelegateCommand(FocusLogFileSearchAll);
 			FocusDataSourceSearchCommand = new DelegateCommand(FocusDataSourceSearch);
 			NewQuickFilterCommand = new DelegateCommand(NewQuickFilter);
+			NewBookmarkCommand = new DelegateCommand(NewBookmark);
 
 			InitializeComponent();
 			SizeChanged += OnSizeChanged;
@@ -95,6 +100,12 @@ namespace Tailviewer.Ui.Controls
 		{
 			get { return (ICommand) GetValue(NewQuickFilterCommandProperty); }
 			set { SetValue(NewQuickFilterCommandProperty, value); }
+		}
+
+		public ICommand NewBookmarkCommand
+		{
+			get { return (ICommand) GetValue(NewBookmarkCommandProperty); }
+			set { SetValue(NewBookmarkCommandProperty, value); }
 		}
 
 		public void OnShowMainwindow()
@@ -205,6 +216,19 @@ namespace Tailviewer.Ui.Controls
 					var textBox = boxes.LastOrDefault(x => x.DataContext == model);
 					textBox?.Focus();
 				}), DispatcherPriority.Background);
+			}
+		}
+
+		private void NewBookmark()
+		{
+			var viewModel = DataContext as MainWindowViewModel;
+			var logViewModel = viewModel?.SelectedMainPanel as LogViewMainPanelViewModel;
+			if (logViewModel != null)
+			{
+				if (logViewModel.AddBookmark())
+				{
+					logViewModel.ShowBookmarks();
+				}
 			}
 		}
 

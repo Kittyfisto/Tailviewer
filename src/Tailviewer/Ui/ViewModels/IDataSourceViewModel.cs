@@ -7,7 +7,6 @@ using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Filters;
-using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -84,6 +83,24 @@ namespace Tailviewer.Ui.ViewModels
 		bool HideEmptyLines { get; set; }
 
 		bool IsSingleLine { get; set; }
+
+		/// <summary>
+		///     When set to true, all current log entries will be filtered out.
+		///     Newer log entries will still appear.
+		///     When set to false, all log entries (that are not otherwise filtered) appear again.
+		/// </summary>
+		bool ScreenCleared { get; }
+
+		/// <summary>
+		/// Clears all log entries currently part of the data source.
+		/// Future log entries will be shown once they become available.
+		/// </summary>
+		ICommand ClearScreenCommand { get; }
+
+		/// <summary>
+		/// Sets <see cref="ScreenCleared"/> to false.
+		/// </summary>
+		ICommand ShowAllCommand { get; }
 
 		double Progress { get; }
 

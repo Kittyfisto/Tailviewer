@@ -33,6 +33,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private readonly HashSet<LogLineIndex> _selectedIndices;
 		private readonly ScrollBar _verticalScrollBar;
 		private TextSettings _textSettings;
+		private TextBrushes _textBrushes;
 		private readonly List<TextLine> _visibleTextLines;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
@@ -216,14 +217,10 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public TextSettings TextSettings
+		public void ChangeTextSettings(TextSettings textSettings, TextBrushes textBrushes)
 		{
-			get { return _textSettings; }
-			set
-			{
-				_textSettings = value;
-				// TODO
-			}
+			_textSettings = textSettings;
+			_textBrushes = textBrushes;
 		}
 
 		public event Action<LogFileSection> VisibleSectionChanged;
@@ -320,7 +317,8 @@ namespace Tailviewer.Ui.Controls.LogView
 					_logFile.GetSection(_currentlyVisibleSection, data);
 					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
-						var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings)
+						var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel,
+						                        _textSettings, _textBrushes)
 						{
 							IsFocused = IsFocused,
 							SearchResults = _searchResults

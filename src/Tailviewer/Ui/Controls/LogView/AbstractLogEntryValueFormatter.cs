@@ -7,16 +7,16 @@ using Tailviewer.Settings;
 namespace Tailviewer.Ui.Controls.LogView
 {
 	/// <summary>
-	///     Responsible for displaying a single value of a log entry.
+	///     Responsible for formatting a single value of a log entry.
 	/// </summary>
-	public abstract class AbstractLogEntryValuePresenter
-		: ILogEntryValuePresenter
+	public abstract class AbstractLogEntryValueFormatter
+		: ILogEntryValueFormatter
 	{
 		private readonly TextSettings _textSettings;
 		private FormattedText _formattedText;
 		private double _width;
 
-		protected AbstractLogEntryValuePresenter(TextSettings textSettings)
+		protected AbstractLogEntryValueFormatter(TextSettings textSettings)
 		{
 			_textSettings = textSettings;
 			_formattedText = null;

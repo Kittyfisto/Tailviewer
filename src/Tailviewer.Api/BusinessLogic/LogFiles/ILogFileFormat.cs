@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading;
+﻿using System.Text;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -12,7 +10,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     tailviewer will start to use find plugins targeting that format.
 	/// </remarks>
 	/// <remarks>
-	///     Plugins can introduce new formats by simply implementing
+	///     Plugins can introduce new formats by simply implementing this interface.
 	/// </remarks>
 	public interface ILogFileFormat
 	{

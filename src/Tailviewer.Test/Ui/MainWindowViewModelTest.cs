@@ -36,7 +36,7 @@ namespace Tailviewer.Test.Ui
 			_bookmarks = new Bookmarks("aawdwa");
 			_dispatcher = new ManualDispatcher();
 			_scheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_scheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_filesystem = new InMemoryFilesystem();
 			_dataSources = new DataSources(_logFileFactory, _scheduler, _filesystem, _settings.DataSources, _bookmarks);
 			_quickFilters = new QuickFilters(_settings.QuickFilters);

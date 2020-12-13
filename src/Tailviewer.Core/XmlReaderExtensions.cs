@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Windows.Media;
 using System.Xml;
 using log4net;
 using Metrolib;
@@ -55,6 +57,38 @@ namespace Tailviewer.Core
 					log.WarnFormat("Cannot parse value '{0}' as an integer, restoring default value for attribute '{1}' instead",
 					               content,
 					               attributeName);
+					value = defaultValue;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <param name="attributeName"></param>
+		/// <param name="log"></param>
+		/// <param name="defaultValue"></param>
+		/// <param name="value"></param>
+		public static void ReadAttributeAsColor(this XmlReader reader, string attributeName, ILog log, Color defaultValue, out Color value)
+		{
+			if (!TryMoveToAttribute(reader, attributeName, log))
+			{
+				value = defaultValue;
+			}
+			else
+			{
+				var content = reader.ReadContentAsString();
+				try
+				{
+					value = (Color) ColorConverter.ConvertFromString(content ?? string.Empty);
+				}
+				catch (Exception e)
+				{
+					log.WarnFormat("Cannot parse value '{0}' as an integer, restoring default value for attribute '{1}' instead:\r\n{2}",
+					               content,
+					               attributeName,
+					               e);
 					value = defaultValue;
 				}
 			}

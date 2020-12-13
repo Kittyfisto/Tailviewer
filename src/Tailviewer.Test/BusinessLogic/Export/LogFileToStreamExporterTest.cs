@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		{
 			var stream = new MemoryStream();
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello, World!", LevelFlags.None);
+			logFile.AddEntry("Hello, World!", LevelFlags.Other);
 			var exporter = new LogFileToStreamExporter(logFile, stream);
 			new Action(() => exporter.Export()).Should().NotThrow();
 
@@ -50,8 +50,8 @@ namespace Tailviewer.Test.BusinessLogic.Export
 		{
 			var stream = new MemoryStream();
 			var logFile = new InMemoryLogFile();
-			logFile.AddEntry("Hello,", LevelFlags.None);
-			logFile.AddEntry("World!", LevelFlags.None);
+			logFile.AddEntry("Hello,", LevelFlags.Other);
+			logFile.AddEntry("World!", LevelFlags.Other);
 			var exporter = new LogFileToStreamExporter(logFile, stream);
 			new Action(() => exporter.Export()).Should().NotThrow();
 

@@ -8,6 +8,7 @@ using MMQ;
 using Ookii.Dialogs.Wpf;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.SidePanel;
+using Xceed.Wpf.Toolkit;
 
 namespace Tailviewer.Ui.Controls.MainPanel.About
 {
@@ -32,7 +33,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.About
 					"https://github.com/google/material-design-icons", "Licenses/GoogleMaterialDesignIcons/License.txt"),
 				new Dependency("Material Design Icons", new Version(1, 7, 22, 0),
 					"https://github.com/Templarian/MaterialDesign", "Licenses/MaterialDesignIcons/License.txt"),
-				Dependency.CreateFrom<VistaFolderBrowserDialog>("https://github.com/caioproiete/ookii-dialogs-wpf", "Licenses/Ookii.Dialogs.Wpf/LICENSE")
+				Dependency.CreateFrom<VistaFolderBrowserDialog>("https://github.com/caioproiete/ookii-dialogs-wpf", "Licenses/Ookii.Dialogs.Wpf/LICENSE"),
+				Dependency.CreateFrom<ColorPicker>("https://github.com/xceedsoftware/wpftoolkit", "Licenses/Xceed.Wpf.Toolkit/LICENSE")
 			};
 			SelectedDependency = _dependencies[0];
 		}

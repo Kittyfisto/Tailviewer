@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void SetUp()
 		{
 			_taskScheduler = new ManualTaskScheduler();
-			_logFileFactory = new PluginLogFileFactory(_taskScheduler);
+			_logFileFactory = new SimplePluginLogFileFactory(_taskScheduler);
 			_settings = new DataSource
 				{
 					Id = DataSourceId.CreateNew(),
@@ -223,7 +223,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			var t2 = new DateTime(2017, 11, 26, 14, 27, 0);
 			logFile2.AddEntry("foo", LevelFlags.Trace, t2);
-			logFile2.AddEntry("bar", LevelFlags.None);
+			logFile2.AddEntry("bar", LevelFlags.Other);
 
 			var t3 = new DateTime(2017, 11, 26, 14, 28, 0);
 			logFile1.AddEntry("Houston, we have a problem", LevelFlags.Warning, t3);

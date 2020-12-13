@@ -49,7 +49,7 @@ namespace Tailviewer.Test.BusinessLogic
 		[Test]
 		public void TestTryGet2()
 		{
-			var line = new LogLine(42, 42, "hello World!", LevelFlags.None);
+			var line = new LogLine(42, 42, "hello World!", LevelFlags.Other);
 			_cache.Add(_file1, 42, line);
 
 			LogLine actualLine;

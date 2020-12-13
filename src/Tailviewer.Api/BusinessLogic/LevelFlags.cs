@@ -48,13 +48,18 @@ namespace Tailviewer.BusinessLogic
 		Trace = 0x20,
 
 		/// <summary>
-		///     A combination of all possible log levels.
-		/// </summary>
-		All = Fatal | Error | Warning | Info | Debug | Trace,
-
-		/// <summary>
 		///     The log line is not associated with any of the above log levels or it simply
 		///     could not be determined.
+		/// </summary>
+		Other = 0x40,
+
+		/// <summary>
+		///     A combination of all possible log levels.
+		/// </summary>
+		All = Fatal | Error | Warning | Info | Debug | Trace | Other,
+
+		/// <summary>
+		///     Not meant to be used directly. Use <see cref="Other"/> instead.
 		/// </summary>
 		None = 0
 	}

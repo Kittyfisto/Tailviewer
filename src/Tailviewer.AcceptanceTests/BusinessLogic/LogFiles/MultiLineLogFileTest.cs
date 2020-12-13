@@ -5,7 +5,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.Parsers;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -27,12 +30,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.Dispose();
 		}
 
+		private TextLogFile Create(string fileName,
+		                           ITimestampParser timestampParser = null)
+		{
+			var serviceContainer = new ServiceContainer();
+			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			if (timestampParser != null)
+				serviceContainer.RegisterInstance<ITimestampParser>(timestampParser);
+			serviceContainer.RegisterInstance<ILogFileFormatMatcher>(new SimpleLogFileFormatMatcher(LogFileFormats.GenericText));
+			serviceContainer.RegisterInstance<ITextLogFileParserPlugin>(new SimpleTextLogFileParserPlugin());
+			return new TextLogFile(serviceContainer, fileName);
+		}
+
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/183")]
 		[Description("Verifies accessing entries by log file section")]
 		public void TestMultilineNoLevel1()
 		{
-			using (var source = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
@@ -85,7 +100,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies accessing entries by log file index list")]
 		public void TestMultilineNoLevel2()
 		{
-			using (var source = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
@@ -146,7 +161,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Description("Verifies accessing entries by log file index list")]
 		public void TestMultilineNoLevel3()
 		{
-			using (var source = new TextLogFile(_scheduler, TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
+			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);

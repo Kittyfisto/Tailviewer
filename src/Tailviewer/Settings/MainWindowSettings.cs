@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 using System.Windows;
 using System.Xml;
+using log4net;
 using Metrolib;
 
 namespace Tailviewer.Settings
@@ -10,6 +12,10 @@ namespace Tailviewer.Settings
 		: IMainWindowSettings
 		, ICloneable
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private WindowState _previousWindowState = WindowState.Normal;
+
 		public double Height
 		{
 			get { return _window.Height; }
@@ -25,7 +31,14 @@ namespace Tailviewer.Settings
 		public WindowState State
 		{
 			get { return _window.State; }
-			set { _window.State = value; }
+			set
+			{
+				if (value == _window.State)
+					return;
+
+				_previousWindowState = _window.State;
+				_window.State = value;
+			}
 		}
 
 		public double Top
@@ -63,7 +76,7 @@ namespace Tailviewer.Settings
 			IsLeftSidePanelVisible = other.IsLeftSidePanelVisible;
 		}
 
-		private readonly WindowSettings _window;
+		private WindowSettings _window;
 
 		object ICloneable.Clone()
 		{
@@ -76,6 +89,7 @@ namespace Tailviewer.Settings
 			writer.WriteAttributeString("selectedsidepanel", SelectedSidePanel);
 			writer.WriteAttributeBool("alwaysontop", AlwaysOnTop);
 			writer.WriteAttributeBool("isleftsidepanelvisible", IsLeftSidePanelVisible);
+			writer.WriteAttributeEnum("previouswindowstate", _previousWindowState);
 			_window.Save(writer);
 		}
 
@@ -101,6 +115,10 @@ namespace Tailviewer.Settings
 					case "selectedsidepanel":
 						SelectedSidePanel = reader.ReadContentAsString();
 						break;
+
+					case "previouswindowstate":
+						_previousWindowState = reader.ReadContentAsEnum<WindowState>();
+						break;
 				}
 			}
 
@@ -110,10 +128,49 @@ namespace Tailviewer.Settings
 		public void UpdateFrom(Window window)
 		{
 			_window.UpdateFrom(window);
+
+			// For some reason, when the window is minimized, the width and height
+			// are set to small values such as 160/28 whereas the ActualWidth and ActualHeight
+			// values are sensible. Don't know why that is, but we want to store the sensible values!
+			if (window.Width < window.ActualWidth)
+				_window.Width = window.ActualWidth;
+			if (window.Height < window.ActualHeight)
+				_window.Height = window.ActualHeight;
+
+			Log.InfoFormat("Updated main window settings to : Width={0} Height={1}", Width, Height);
+		}
+
+		public void ClipToBounds(Desktop desktop)
+		{
+			try
+			{
+				var currentRectangle = new Desktop.Window(_window);
+				var newRectangle = desktop.ClipToBoundaries(currentRectangle);
+				if (newRectangle != currentRectangle)
+				{
+					_window.Left = newRectangle.Left;
+					_window.Top = newRectangle.Top;
+					_window.Width = newRectangle.Width;
+					_window.Height = newRectangle.Height;
+					if (newRectangle.IsMaximized)
+						_window.State = WindowState.Maximized;
+				}
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception while trying to clip window to desktop bounds: {0}", e);
+			}
 		}
 
 		public void RestoreTo(Window window)
 		{
+			// https://github.com/Kittyfisto/Tailviewer/issues/250
+			// When we start the application, a user NEVER wants the app
+			// to start-up minimized. Therefore we start with the previous state
+			// just in case the app was minimized before it was shut-down.
+			if (_window.State == WindowState.Minimized)
+				_window.State = _previousWindowState;
+
 			_window.RestoreTo(window);
 			window.Topmost = AlwaysOnTop;
 		}

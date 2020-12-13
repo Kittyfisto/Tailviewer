@@ -1,0 +1,7 @@
+0 This log file contains lineswith log levels which are not detected by tailviewer by default.
+1 DBG This is a DEBUG level line
+ 2 ERR This line contains an ERROR
+  3 WARN This line contains a WARNING
+ 	4 TRA This line contains a TRACE message
+	 	5 INF This line is of INFORMATIVE nature
+ 6 FAT This line is really FATal

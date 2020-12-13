@@ -1,6 +1,6 @@
 ﻿namespace Tailviewer.Ui.Controls.LogView
 {
-	public interface ILogEntryValuePresenter
+	public interface ILogEntryValueFormatter
 	{
 
 	}
