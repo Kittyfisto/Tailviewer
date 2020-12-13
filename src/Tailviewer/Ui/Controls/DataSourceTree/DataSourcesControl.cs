@@ -344,7 +344,16 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			var element = _partDataSources.InputHitTest(position) as DependencyObject;
 			while (element != null)
 			{
-				element = VisualTreeHelper.GetParent(element);
+
+				try
+				{
+					element = VisualTreeHelper.GetParent(element);
+				}
+				catch (InvalidOperationException)
+				{
+					return null;
+				}
+
 				var treeViewItem = element as TreeViewItem;
 				if (treeViewItem != null)
 					return treeViewItem;
