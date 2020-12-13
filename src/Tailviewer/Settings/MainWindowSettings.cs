@@ -137,7 +137,7 @@ namespace Tailviewer.Settings
 			if (window.Height < window.ActualHeight)
 				_window.Height = window.ActualHeight;
 
-			Log.InfoFormat("Updated main window settings to : Width={0} Height={1}", Width, Height);
+			Log.DebugFormat("Updated main window settings to : Width={0} Height={1}", Width, Height);
 		}
 
 		public void ClipToBounds(Desktop desktop)
