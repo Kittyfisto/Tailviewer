@@ -130,13 +130,20 @@ namespace Tailviewer.Ui.ViewModels
 		{
 			switch (e.PropertyName)
 			{
-				case "IsGrouped":
+				case nameof(Parent):
+					if (Parent?.DataSource is IMultiDataSource parentDataSource && parentDataSource.IsExcluded(_dataSource))
+					{
+						ExcludeFromParent = true;
+					}
+					break;
+
+				case nameof(IsGrouped):
 					UpdateDisplayNoTimestampCount();
 					UpdateFolder();
 					UpdateCanBeRemoved();
 					break;
 
-				case "NoTimestampCount":
+				case nameof(NoTimestampCount):
 					UpdateDisplayNoTimestampCount();
 					break;
 			}

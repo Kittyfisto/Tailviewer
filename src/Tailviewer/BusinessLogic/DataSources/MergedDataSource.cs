@@ -14,7 +14,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 		, IMergedDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;
-		private readonly HashSet<IDataSource> _excludedDataSources;
 		private MergedLogFile _unfilteredLogFile;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
@@ -26,7 +25,6 @@ namespace Tailviewer.BusinessLogic.DataSources
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_dataSources = new HashSet<IDataSource>();
-			_excludedDataSources = new HashSet<IDataSource>();
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
 		}
@@ -34,18 +32,24 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public int DataSourceCount => _dataSources.Count;
 
 		public IReadOnlyList<IDataSource> OriginalSources { get; private set; }
+
 		public void SetExcluded(IDataSource dataSource, bool isExcluded)
 		{
 			if (isExcluded)
 			{
-				_excludedDataSources.Add(dataSource);
+				Settings.ExcludedDataSources.Add(dataSource.Id);
 			}
 			else
 			{
-				_excludedDataSources.Remove(dataSource);
+				Settings.ExcludedDataSources.Remove(dataSource.Id);
 			}
 
 			UpdateUnfilteredLogFile();
+		}
+
+		public bool IsExcluded(IDataSource dataSource)
+		{
+			return Settings.ExcludedDataSources.Contains(dataSource.Id);
 		}
 
 		public override IPluginDescription TranslationPlugin => null;
@@ -96,7 +100,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");
 
-			_excludedDataSources.Remove(dataSource);
+			Settings.ExcludedDataSources.Remove(dataSource.Id);
 			dataSource.Settings.ParentId = DataSourceId.Empty;
 			UpdateUnfilteredLogFile();
 		}
@@ -147,7 +151,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			                              {
 				                              // Unfortunately, due to a hack, the attribution to the original data source
 				                              // will be lost if we were to not forward anything to the merged data source.
-				                              if (_excludedDataSources.Contains(dataSource))
+				                              if (Settings.ExcludedDataSources.Contains(dataSource.Id))
 					                              return new EmptyLogFile();
 
 				                              if (IsSingleLine)
