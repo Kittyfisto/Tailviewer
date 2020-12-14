@@ -344,13 +344,13 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 			var element = _partDataSources.InputHitTest(position) as DependencyObject;
 			while (element != null)
 			{
-
 				try
 				{
 					element = VisualTreeHelper.GetParent(element);
 				}
-				catch (InvalidOperationException)
+				catch (InvalidOperationException e)
 				{
+					Log.WarnFormat("Caught unexpected exception: {0}", e);
 					return null;
 				}
 
