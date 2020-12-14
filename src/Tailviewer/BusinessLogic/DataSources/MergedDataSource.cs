@@ -96,6 +96,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");
 
+			_excludedDataSources.Remove(dataSource);
 			dataSource.Settings.ParentId = DataSourceId.Empty;
 			UpdateUnfilteredLogFile();
 		}
