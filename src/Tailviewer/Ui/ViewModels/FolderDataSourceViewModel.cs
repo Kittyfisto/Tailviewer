@@ -172,6 +172,11 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public override IEnumerable<IContextMenuViewModel> ContextMenuItems
+		{
+			get { return Enumerable.Empty<IContextMenuViewModel>(); }
+		}
+
 		public override void Update()
 		{
 			base.Update();

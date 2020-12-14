@@ -14,7 +14,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		, IMergedDataSource
 	{
 		private readonly HashSet<IDataSource> _dataSources;
-
+		private readonly HashSet<IDataSource> _excludedDataSources;
 		private MergedLogFile _unfilteredLogFile;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
@@ -26,6 +26,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_dataSources = new HashSet<IDataSource>();
+			_excludedDataSources = new HashSet<IDataSource>();
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
 		}
@@ -33,6 +34,19 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public int DataSourceCount => _dataSources.Count;
 
 		public IReadOnlyList<IDataSource> OriginalSources { get; private set; }
+		public void SetExcluded(IDataSource dataSource, bool isExcluded)
+		{
+			if (isExcluded)
+			{
+				_excludedDataSources.Add(dataSource);
+			}
+			else
+			{
+				_excludedDataSources.Remove(dataSource);
+			}
+
+			UpdateUnfilteredLogFile();
+		}
 
 		public override IPluginDescription TranslationPlugin => null;
 
@@ -127,16 +141,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_unfilteredLogFile?.Dispose();
 
 			OriginalSources = _dataSources.ToList();
-			IReadOnlyList<ILogFile> logFiles;
 
-			if (IsSingleLine)
-			{
-				logFiles = OriginalSources.Select(x => x.OriginalLogFile).ToList();
-			}
-			else
-			{
-				logFiles = OriginalSources.Select(x => x.UnfilteredLogFile).ToList();
-			}
+			var logFiles = OriginalSources.Select(dataSource =>
+			                              {
+				                              // Unfortunately, due to a hack, the attribution to the original data source
+				                              // will be lost if we were to not forward anything to the merged data source.
+				                              if (_excludedDataSources.Contains(dataSource))
+					                              return new EmptyLogFile();
+
+				                              if (IsSingleLine)
+					                              return dataSource.OriginalLogFile;
+
+				                              return dataSource.UnfilteredLogFile;
+			                              })
+			                              .ToList();
 
 			_unfilteredLogFile = new MergedLogFile(TaskScheduler,
 			                                       MaximumWaitTime,

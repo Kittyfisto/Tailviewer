@@ -35,5 +35,18 @@ namespace Tailviewer.BusinessLogic.DataSources
 		///     entry in this list.
 		/// </remarks>
 		IReadOnlyList<IDataSource> OriginalSources { get; }
+
+		/// <summary>
+		/// Changes the given data source to be either included or excluded from this multi data source.
+		/// </summary>
+		/// <remarks>
+		///    By default, every data source is included, but it can be excluded if desired.
+		///    This can be done for a multitude of reasons, but most often it has to do with one source not
+		///    containing information relevant to the current analysis, but ungrouping the file is just not
+		///    a valid option either.
+		/// </remarks>
+		/// <param name="dataSource"></param>
+		/// <param name="isExcluded"></param>
+		void SetExcluded(IDataSource dataSource, bool isExcluded);
 	}
 }

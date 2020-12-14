@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -24,6 +26,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _folder;
 		private bool _displayNoTimestampCount;
 		private bool _canBeRemoved;
+		private readonly ObservableCollection<IContextMenuViewModel> _contextMenuItems;
 
 		public SingleDataSourceViewModel(ISingleDataSource dataSource,
 							IActionCenter actionCenter)
@@ -36,6 +39,8 @@ namespace Tailviewer.Ui.ViewModels
 			_fileName = Path.GetFileName(dataSource.FullFileName);
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
 			_canBeRemoved = true;
+
+			_contextMenuItems = new ObservableCollection<IContextMenuViewModel>();
 
 			Update();
 			UpdateFolder();
@@ -68,6 +73,11 @@ namespace Tailviewer.Ui.ViewModels
 		public override bool CanBeRenamed => false;
 
 		public override string DataSourceOrigin => FullName;
+
+		public override IEnumerable<IContextMenuViewModel> ContextMenuItems
+		{
+			get { return _contextMenuItems; }
+		}
 
 		public string Folder => _folder;
 
@@ -139,6 +149,13 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCanBeRemoved()
 		{
 			CanBeRemoved = !(Parent is FolderDataSourceViewModel);
+
+			_contextMenuItems.Clear();
+
+			if (Parent?.DataSource is IMultiDataSource parentDataSource)
+			{
+				_contextMenuItems.Add(new ToggleExcludeFromGroupContextViewModel(_dataSource, parentDataSource));
+			}
 		}
 
 		[Pure]

@@ -165,6 +165,11 @@ namespace Tailviewer.Ui.ViewModels
 			DistributeCharacterCodes();
 		}
 
+		public override IEnumerable<IContextMenuViewModel> ContextMenuItems
+		{
+			get { return Enumerable.Empty<IContextMenuViewModel>(); }
+		}
+
 		public override void Update()
 		{
 			base.Update();

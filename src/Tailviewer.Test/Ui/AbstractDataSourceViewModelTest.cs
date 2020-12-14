@@ -68,6 +68,11 @@ namespace Tailviewer.Test.Ui
 			{
 				get { throw new NotImplementedException(); }
 			}
+
+			public override IEnumerable<IContextMenuViewModel> ContextMenuItems
+			{
+				get { throw new NotImplementedException(); }
+			}
 		}
 
 		[Test]

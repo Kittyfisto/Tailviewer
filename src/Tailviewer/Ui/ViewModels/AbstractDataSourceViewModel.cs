@@ -643,6 +643,8 @@ namespace Tailviewer.Ui.ViewModels
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 
+		public abstract IEnumerable<IContextMenuViewModel> ContextMenuItems { get; }
+
 		public virtual void Update()
 		{
 			int newBefore = NewLogLineCount;

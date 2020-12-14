@@ -27,6 +27,17 @@
                 <ColumnDefinition Width="12" x:Name="PART_ScrollbarSpacer" />
             </Grid.ColumnDefinitions>
 
+            <Grid.ContextMenu>
+                <ContextMenu ItemsSource="{Binding ContextMenuItems}">
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="Command" Value="{Binding Command}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
+                </ContextMenu>
+            </Grid.ContextMenu>
+
             <!-- This spacer ensures that all content is indented if there is a parent.
                  We want children to reserve this space so that the blue rectangle that is displayed
                  when an item is selected, covers the entire width of the tree view.
