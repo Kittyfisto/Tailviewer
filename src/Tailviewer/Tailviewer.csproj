@@ -645,8 +645,8 @@
     <Folder Include="Settings\Dashboard\Analysers\Event\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\ic_file_hidden_black_8dp.png" />
-    <Resource Include="Resources\ic_file_hidden_white_8dp.png" />
+    <Resource Include="Resources\ic_file_remove_outline_black_8dp.png" />
+    <Resource Include="Resources\ic_file_remove_outline_white_8dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -55,8 +55,8 @@
 
                 <local:ImageLabel
                     ToolTip="This data source is excluded from the parent's data source view"
-                    DarkImage="pack://application:,,,/Resources/ic_file_hidden_black_8dp.png"
-                    LightImage="pack://application:,,,/Resources/ic_file_hidden_white_8dp.png"
+                    DarkImage="pack://application:,,,/Resources/ic_file_remove_outline_black_8dp.png"
+                    LightImage="pack://application:,,,/Resources/ic_file_remove_outline_white_8dp.png"
                     Visibility="{Binding ExcludeFromParent, Converter={StaticResource BoolFalseToHiddenConverter}}"
                     UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
 
