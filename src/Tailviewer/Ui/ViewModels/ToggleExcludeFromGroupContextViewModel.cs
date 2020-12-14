@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Metrolib;
-using Tailviewer.BusinessLogic.DataSources;
 
 namespace Tailviewer.Ui.ViewModels
 {
@@ -10,16 +9,14 @@ namespace Tailviewer.Ui.ViewModels
 		: IContextMenuViewModel
 		, INotifyPropertyChanged
 	{
-		private readonly IDataSource _dataSource;
-		private readonly IMultiDataSource _multiDataSource;
+		private readonly ISingleDataSourceViewModel _dataSource;
 		private readonly DelegateCommand2 _command;
 		private string _header;
 		private bool _excludeFromGroup;
 
-		public ToggleExcludeFromGroupContextViewModel(IDataSource dataSource, IMultiDataSource multiDataSource)
+		public ToggleExcludeFromGroupContextViewModel(ISingleDataSourceViewModel dataSource)
 		{
 			_dataSource = dataSource;
-			_multiDataSource = multiDataSource;
 			_command = new DelegateCommand2(ToggleFilterAll);
 			UpdateHeader();
 		}
@@ -62,8 +59,9 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void ToggleFilterAll()
 		{
+			_dataSource.ExcludeFromParent = !_dataSource.ExcludeFromParent;
 			_excludeFromGroup = !_excludeFromGroup;
-			_multiDataSource.SetExcluded(_dataSource, _excludeFromGroup);
+			
 			UpdateHeader();
 		}
 

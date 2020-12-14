@@ -27,6 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _displayNoTimestampCount;
 		private bool _canBeRemoved;
 		private readonly ObservableCollection<IContextMenuViewModel> _contextMenuItems;
+		private bool _excludeFromParent;
 
 		public SingleDataSourceViewModel(ISingleDataSource dataSource,
 							IActionCenter actionCenter)
@@ -109,6 +110,22 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ExcludeFromParent
+		{
+			get { return _excludeFromParent; }
+			set
+			{
+				if (value == _excludeFromParent)
+					return;
+
+				_excludeFromParent = value;
+				if (Parent?.DataSource is IMultiDataSource parentDataSource)
+					parentDataSource.SetExcluded(_dataSource, _excludeFromParent);
+
+				EmitPropertyChanged();
+			}
+		}
+
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
@@ -154,7 +171,7 @@ namespace Tailviewer.Ui.ViewModels
 
 			if (Parent?.DataSource is IMultiDataSource parentDataSource)
 			{
-				_contextMenuItems.Add(new ToggleExcludeFromGroupContextViewModel(_dataSource, parentDataSource));
+				_contextMenuItems.Add(new ToggleExcludeFromGroupContextViewModel(this));
 			}
 		}
 

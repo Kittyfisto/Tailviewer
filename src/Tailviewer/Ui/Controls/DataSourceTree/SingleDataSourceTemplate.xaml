@@ -12,6 +12,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <converters2:BoolFalseToHiddenConverter x:Key="BoolFalseToHiddenConverter" />
+    <converters2:BoolTrueToHiddenConverter x:Key="BoolTrueToHiddenConverter" />
     <converters:ZeroToHiddenConverter x:Key="ZeroToHiddenConverter" />
     <converters:CountConverter x:Key="CountConverter" />
     <converters:SkippedDueToTimestampConverter x:Key="SkippedDueToTimestampConverter" />
@@ -19,7 +20,7 @@
     <converters2:BoolFalseToCollapsedConverter x:Key="BoolFalseToCollapsedConverter" />
 
     <DataTemplate DataType="{x:Type viewModels:SingleDataSourceViewModel}">
-        <Grid>
+        <Grid Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -49,7 +50,16 @@
                 <TextBlock Text="{Binding CharacterCode}"
                            ToolTip="Identifies this data source amongst all others in this group - also displayed next to each log line"
                            Foreground="{x:Static logView:TextBrushes.DataSourceCharacterCodeForegroundBrush}"
+                           Visibility="{Binding ExcludeFromParent, Converter={StaticResource BoolTrueToHiddenConverter}}"
                            VerticalAlignment="Center" />
+
+                <local:ImageLabel
+                    ToolTip="This data source is excluded from the parent's data source view"
+                    DarkImage="pack://application:,,,/Resources/ic_file_hidden_black_8dp.png"
+                    LightImage="pack://application:,,,/Resources/ic_file_hidden_white_8dp.png"
+                    Visibility="{Binding ExcludeFromParent, Converter={StaticResource BoolFalseToHiddenConverter}}"
+                    UseLightColors="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, FallbackValue=False}" />
+
             </Grid>
 
             <Grid Margin="0,4,16,4" Grid.Column="1">
