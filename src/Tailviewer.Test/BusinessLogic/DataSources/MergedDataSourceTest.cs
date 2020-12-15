@@ -309,6 +309,31 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		}
 
 		[Test]
+		public void TestDataSourceOrder()
+		{
+			var logFile2 = new InMemoryLogFile();
+			var source2 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile2,
+			                                   TimeSpan.Zero);
+
+			var logFile1 = new InMemoryLogFile();
+			var source1 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile1,
+			                                   TimeSpan.Zero);
+
+			var logFile3 = new InMemoryLogFile();
+			var source3 = new SingleDataSource(_taskScheduler,
+			                                   new DataSource { Id = DataSourceId.CreateNew() },
+			                                   logFile3,
+			                                   TimeSpan.Zero);
+
+			_merged.SetDataSources(new []{source1, source2, source3});
+			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2, logFile3);
+		}
+
+		[Test]
 		[Description("Verifies that the log files of excluded data sources are no longer part of the merged view")]
 		public void TestExcludeDataSource1()
 		{
@@ -325,14 +350,14 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			                                   TimeSpan.Zero);
 
 			_merged.SetDataSources(new []{source1, source2});
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().BeEquivalentTo(logFile1, logFile2);
+			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2);
 
 			_merged.SetExcluded(source1, true);
 			((IMergedLogFile) _merged.UnfilteredLogFile)
 				.Sources.Should().NotContain(logFile1, "because we've just excluded the first source");
 
 			_merged.SetExcluded(source1, false);
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().BeEquivalentTo(logFile1, logFile2);
+			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(logFile1, logFile2);
 		}
 
 		[Test]
@@ -352,7 +377,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 			_merged.Remove(source1);
 			_merged.Add(source1);
-			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().BeEquivalentTo(new[]{logFile1}, "because the merged data source shouldn't remember the 'excluded' property of a data source after it's been removed");
+			((IMergedLogFile)_merged.UnfilteredLogFile).Sources.Should().Equal(new[]{logFile1}, "because the merged data source shouldn't remember the 'excluded' property of a data source after it's been removed");
 		}
 	}
 }

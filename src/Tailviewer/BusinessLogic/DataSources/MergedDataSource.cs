@@ -13,7 +13,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		: AbstractDataSource
 		, IMergedDataSource
 	{
-		private readonly HashSet<IDataSource> _dataSources;
+		/// <summary>
+		///    The list of data sources.
+		/// </summary>
+		/// <remarks>
+		///    Preserving the order of data sources is incredibly important here and therefore we use a list
+		///    rather than a HashSet so that we don't have rely on undocumented behavior.
+		/// </remarks>
+		private readonly List<IDataSource> _dataSources;
 		private MergedLogFile _unfilteredLogFile;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
@@ -24,7 +31,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			_dataSources = new HashSet<IDataSource>();
+			_dataSources = new List<IDataSource>();
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
 		}
@@ -84,8 +91,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)
 				throw new ArgumentException("This data source already belongs to a different parent");
 
-			if (_dataSources.Add(dataSource))
+			if (!_dataSources.Contains(dataSource))
 			{
+				_dataSources.Add(dataSource);
 				dataSource.Settings.ParentId = Settings.Id;
 				UpdateUnfilteredLogFile();
 			}
@@ -115,8 +123,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			foreach (var dataSource in dataSources)
 			{
-				_dataSources.Add(dataSource);
-				dataSource.Settings.ParentId = Settings.Id;
+				if (!_dataSources.Contains(dataSource))
+				{
+					_dataSources.Add(dataSource);
+					dataSource.Settings.ParentId = Settings.Id;
+				}
 			}
 
 			foreach (var dataSource in _dataSources.ToList())
