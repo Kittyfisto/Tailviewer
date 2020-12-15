@@ -45,6 +45,7 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSourceViewModelsByDataSource = new Dictionary<IDataSource, IDataSourceViewModel>();
 			_dataSourceViewModels = new ObservableCollection<IDataSourceViewModel>();
 
+			SetContextMenuItems(new IContextMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
 			UpdateFileReport();
 		}
 
@@ -170,11 +171,6 @@ namespace Tailviewer.Ui.ViewModels
 				_isDirty = value;
 				EmitPropertyChanged();
 			}
-		}
-
-		public override IEnumerable<IContextMenuViewModel> ContextMenuItems
-		{
-			get { return Enumerable.Empty<IContextMenuViewModel>(); }
 		}
 
 		public override void Update()

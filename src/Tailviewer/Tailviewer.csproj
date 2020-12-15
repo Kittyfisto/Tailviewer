@@ -301,6 +301,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
+    <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelEntry.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IncludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\MergedDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\QuickFilters\QuickFiltersSidePanelViewModel.cs" />
@@ -364,7 +366,7 @@
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
-    <Compile Include="Ui\ViewModels\ToggleExcludeFromGroupContextViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ToggleExcludeFromGroupViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

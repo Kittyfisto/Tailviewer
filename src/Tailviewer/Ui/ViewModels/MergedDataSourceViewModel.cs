@@ -41,6 +41,8 @@ namespace Tailviewer.Ui.ViewModels
 			_dataSource = dataSource;
 			_observable = new ObservableCollection<IDataSourceViewModel>();
 			_openInExplorerCommand = new DelegateCommand(OpenInExplorer);
+
+			SetContextMenuItems(new IContextMenuViewModel[]{new IncludeAllInGroupViewModel(this), new ExcludeAllInGroupViewModel(this) });
 			Update();
 		}
 
@@ -163,11 +165,6 @@ namespace Tailviewer.Ui.ViewModels
 			Update();
 
 			DistributeCharacterCodes();
-		}
-
-		public override IEnumerable<IContextMenuViewModel> ContextMenuItems
-		{
-			get { return Enumerable.Empty<IContextMenuViewModel>(); }
 		}
 
 		public override void Update()

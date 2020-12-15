@@ -5,16 +5,15 @@ using Metrolib;
 
 namespace Tailviewer.Ui.ViewModels
 {
-	public sealed class ToggleExcludeFromGroupContextViewModel
+	public sealed class ToggleExcludeFromGroupViewModel
 		: IContextMenuViewModel
 		, INotifyPropertyChanged
 	{
 		private readonly ISingleDataSourceViewModel _dataSource;
 		private readonly DelegateCommand2 _command;
 		private string _header;
-		private bool _excludeFromGroup;
 
-		public ToggleExcludeFromGroupContextViewModel(ISingleDataSourceViewModel dataSource)
+		public ToggleExcludeFromGroupViewModel(ISingleDataSourceViewModel dataSource)
 		{
 			_dataSource = dataSource;
 			_command = new DelegateCommand2(ToggleFilterAll);
@@ -60,16 +59,15 @@ namespace Tailviewer.Ui.ViewModels
 		private void ToggleFilterAll()
 		{
 			_dataSource.ExcludeFromParent = !_dataSource.ExcludeFromParent;
-			_excludeFromGroup = !_excludeFromGroup;
 			
 			UpdateHeader();
 		}
 
-		private void UpdateHeader()
+		public void UpdateHeader()
 		{
 			// The text describes what Command() does, and thus if we're currently excluding the file,
 			// then executing the command will include it (and vice versa).
-			if (_excludeFromGroup)
+			if (_dataSource.ExcludeFromParent)
 			{
 				Header = "Include in group";
 			}
