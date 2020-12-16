@@ -5,11 +5,11 @@ using Tailviewer.BusinessLogic.Plugins;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tailviewer.Formats.Serilog")]
+[assembly: AssemblyTitle("Tailviewer.DataSources.UDP")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tailviewer.Formats.Serilog")]
+[assembly: AssemblyProduct("Tailviewer.DataSources.UDP")]
 [assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using Tailviewer.BusinessLogic.Plugins;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9997f434-58b2-4c26-b622-5ca411a82bf7")]
+[assembly: Guid("f4f3d6cc-4dbb-40bc-bc12-7af88cfdab22")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,5 +35,5 @@ using Tailviewer.BusinessLogic.Plugins;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: PluginId("Tailviewer.Formats", "Serilog")]
+[assembly: PluginId("Tailviewer.DataSources", "UDP")]
 [assembly: PluginAuthor("Simon Mießler")]

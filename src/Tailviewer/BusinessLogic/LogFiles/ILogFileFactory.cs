@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Tailviewer.Archiver.Plugins.Description;
+using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -14,5 +16,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="pluginDescription"></param>
 		/// <returns></returns>
 		ILogFile Open(string filePath, out IPluginDescription pluginDescription);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources { get; }
+
+		ILogFile CreateCustom(CustomDataSourceId id, ICustomDataSourceConfiguration configuration,
+		                      out IPluginDescription pluginDescription);
 	}
 }

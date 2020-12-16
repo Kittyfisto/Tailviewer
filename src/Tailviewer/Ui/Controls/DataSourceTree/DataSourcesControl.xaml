@@ -41,6 +41,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Data sources"
                                            Foreground="DarkGray"
@@ -64,6 +65,24 @@
                                     HorizontalAlignment="Right"
                                     ToolTip="Add new data source from folder"
                                     Command="{TemplateBinding AddDataSourceFromFolderCommand}" />
+                                <controls2:AddButton
+                                    Grid.Column="4"
+                                    Width="26"
+                                    Height="26"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    ToolTip="Add new custom data source">
+                                    <controls2:AddButton.ContextMenu>
+                                        <ContextMenu ItemsSource="{Binding CustomDataSources}">
+                                            <ContextMenu.ItemContainerStyle>
+                                                <Style TargetType="MenuItem">
+                                                    <Setter Property="Header" Value="{Binding Name}" />
+                                                    <Setter Property="Command" Value="{Binding AddCommand}" />
+                                                </Style>
+                                            </ContextMenu.ItemContainerStyle>
+                                        </ContextMenu>
+                                    </controls2:AddButton.ContextMenu>
+                                </controls2:AddButton>
                             </Grid>
 
                             <controls2:FilterTextBox

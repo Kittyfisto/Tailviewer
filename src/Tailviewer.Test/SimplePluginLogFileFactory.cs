@@ -12,7 +12,7 @@ namespace Tailviewer.Test
 		: PluginLogFileFactory
 	{
 		public SimplePluginLogFileFactory(ITaskScheduler scheduler, params IFileFormatPlugin[] plugins)
-			: base(CreateServiceContainer(scheduler), plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)))
+			: base(CreateServiceContainer(scheduler), plugins.Select(x => new PluginWithDescription<IFileFormatPlugin>(x, null)), null)
 		{}
 
 		private static IServiceContainer CreateServiceContainer(ITaskScheduler scheduler)

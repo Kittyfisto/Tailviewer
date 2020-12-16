@@ -52,6 +52,12 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		public static readonly DependencyProperty AddDataSourceFromFolderCommandProperty = DependencyProperty.Register(
 		                                                "AddDataSourceFromFolderCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
 
+		public static readonly DependencyProperty AddCustomDataSourceCommandProperty = DependencyProperty.Register(
+		                                                                                                               "AddCustomDataSourceCommand", typeof(ICommand), typeof(DataSourcesControl), new PropertyMetadata(default(ICommand)));
+
+		public static readonly DependencyProperty CustomDataSourcesProperty = DependencyProperty.Register(
+		                                                                                                           "CustomDataSources", typeof(IEnumerable<AddCustomDataSourceViewModel>), typeof(DataSourcesControl), new PropertyMetadata(default(IEnumerable<AddCustomDataSourceViewModel>)));
+
 		public static DataSourcesControl Instance;
 
 		private FilterTextBox _partDataSourceSearch;
@@ -79,6 +85,18 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		{
 			get { return (ICommand) GetValue(AddDataSourceFromFolderCommandProperty); }
 			set { SetValue(AddDataSourceFromFolderCommandProperty, value); }
+		}
+
+		public ICommand AddCustomDataSourceCommand
+		{
+			get { return (ICommand) GetValue(AddCustomDataSourceCommandProperty); }
+			set { SetValue(AddCustomDataSourceCommandProperty, value); }
+		}
+
+		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources
+		{
+			get { return (IEnumerable<AddCustomDataSourceViewModel>) GetValue(CustomDataSourcesProperty); }
+			set { SetValue(CustomDataSourcesProperty, value); }
 		}
 
 		public string StringFilter

@@ -9,6 +9,7 @@
             ItemsSource="{Binding Observable}"
             AddDataSourceFromFileCommand="{Binding AddDataSourceFromFileCommand}"
             AddDataSourceFromFolderCommand="{Binding AddDataSourceFromFolderCommand}"
+            CustomDataSources="{Binding CustomDataSources}"
             SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
     </DataTemplate>
     

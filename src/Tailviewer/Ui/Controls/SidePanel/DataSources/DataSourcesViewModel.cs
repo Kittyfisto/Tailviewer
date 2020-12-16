@@ -13,6 +13,8 @@ using Ookii.Dialogs.Wpf;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.DataSources.Custom;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.ViewModels;
@@ -29,10 +31,13 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		private readonly IApplicationSettings _settings;
 		private readonly ICommand _addDataSourceFromFileCommand;
 		private readonly ICommand _addDataSourceFromFolderCommand;
+		private readonly IReadOnlyList<AddCustomDataSourceViewModel> _customDataSources;
 		private IDataSourceViewModel _selectedItem;
 
 
-		public DataSourcesViewModel(IApplicationSettings settings, IDataSources dataSources, IActionCenter actionCenter)
+		public DataSourcesViewModel(IApplicationSettings settings,
+		                            IDataSources dataSources,
+		                            IActionCenter actionCenter)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (dataSources == null) throw new ArgumentNullException(nameof(dataSources));
@@ -65,8 +70,17 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 				}
 			}
 
+			_customDataSources =
+				_dataSources.CustomDataSources.Select(x => new AddCustomDataSourceViewModel(x.DisplayName, () => AddCustomDataSource(x.Id))).ToList();
+
 			UpdateTooltip();
 			PropertyChanged += OnPropertyChanged;
+		}
+
+		private void AddCustomDataSource(CustomDataSourceId id)
+		{
+			var dataSource = _dataSources.AddCustom(id);
+			Add(dataSource);
 		}
 
 		private void UpdateTooltip()
@@ -89,6 +103,8 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 		public ICommand AddDataSourceFromFileCommand => _addDataSourceFromFileCommand;
 
 		public ICommand AddDataSourceFromFolderCommand => _addDataSourceFromFolderCommand;
+
+		public IEnumerable<AddCustomDataSourceViewModel> CustomDataSources => _customDataSources;
 
 		public IDataSourceViewModel SelectedItem
 		{

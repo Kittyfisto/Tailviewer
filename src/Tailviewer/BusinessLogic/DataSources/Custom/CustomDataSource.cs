@@ -2,46 +2,30 @@
 using System.Threading;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
-namespace Tailviewer.BusinessLogic.DataSources
+namespace Tailviewer.BusinessLogic.DataSources.Custom
 {
-	public sealed class SingleDataSource
+	public sealed class CustomDataSource
 		: AbstractDataSource
-		, ISingleDataSource
+		, ICustomDataSource
 	{
 		private readonly ILogFile _originalLogFile;
 		private readonly LogFileProxy _unfilteredLogFile;
 		private readonly IPluginDescription _pluginDescription;
 		private MultiLineLogFile _multiLineLogFile;
 
-		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings)
-			: this(logFileFactory, taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
-		{
-		}
-
-		public SingleDataSource(ILogFileFactory logFileFactory, ITaskScheduler taskScheduler, DataSource settings,
-			TimeSpan maximumWaitTime)
+		public CustomDataSource(ILogFileFactory logFileFactory,
+		                        ITaskScheduler taskScheduler,
+		                        DataSource settings,
+		                        TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			if (logFileFactory == null)
-				throw new ArgumentNullException(nameof(logFileFactory));
-
-			_originalLogFile = logFileFactory.Open(settings.File, out _pluginDescription);
-			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
-			OnSingleLineChanged();
-			OnUnfilteredLogFileChanged();
-		}
-
-		public SingleDataSource(ITaskScheduler taskScheduler, DataSource settings, ILogFile unfilteredLogFile,
-			TimeSpan maximumWaitTime)
-			: base(taskScheduler, settings, maximumWaitTime)
-		{
-			if (unfilteredLogFile == null)
-				throw new ArgumentNullException(nameof(unfilteredLogFile));
-
-			_originalLogFile = unfilteredLogFile;
+			_originalLogFile =
+				logFileFactory.CreateCustom(settings.CustomDataSourceId, settings.CustomDataSourceConfiguration,
+				                            out _pluginDescription);
 			_unfilteredLogFile = new LogFileProxy(TaskScheduler, MaximumWaitTime);
 			OnSingleLineChanged();
 			OnUnfilteredLogFileChanged();
@@ -74,5 +58,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_unfilteredLogFile?.Dispose();
 			_multiLineLogFile?.Dispose();
 		}
+
+		#region Implementation of ICustomDataSource
+
+		public ICustomDataSourceConfiguration Configuration => Settings.CustomDataSourceConfiguration;
+
+		#endregion
 	}
 }

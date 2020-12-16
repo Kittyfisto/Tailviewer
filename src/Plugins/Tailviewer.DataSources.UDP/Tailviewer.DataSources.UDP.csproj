@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('..\..\..\packages\NUnit.3.12.0\build\NUnit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B132CF5C-8555-4D0F-A55A-F870C003EB59}</ProjectGuid>
+    <ProjectGuid>{F4F3D6CC-4DBB-40BC-BC12-7AF88CFDAB22}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tailviewer.Serilog.Test</RootNamespace>
-    <AssemblyName>Tailviewer.Serilog.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>Tailviewer.DataSources.UDP</RootNamespace>
+    <AssemblyName>Tailviewer.DataSources.UDP</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,23 +32,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=5.6.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.5.6.0\lib\net47\FluentAssertions.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SerilogFileParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="UdpCustomDataSourceConfiguration.cs" />
+    <Compile Include="UdpDataSourceViewModel.cs" />
+    <Compile Include="UdpDataSourcePlugin.cs" />
+    <Compile Include="UdpLogFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Tailviewer.Api\Tailviewer.Api.csproj">
@@ -61,16 +59,13 @@
       <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
       <Name>Tailviewer.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tailviewer.Formats.Serilog\Tailviewer.Formats.Serilog.csproj">
-      <Project>{9997F434-58B2-4C26-B622-5CA411A82BF7}</Project>
-      <Name>Tailviewer.Formats.Serilog</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\NUnit.3.12.0\build\NUnit.props'))" />
-  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>"archive.exe" pack "$(MSBuildProjectDirectory)\$(OutDir)Tailviewer.DataSources.UDP.dll"
+xcopy "$(MSBuildProjectDirectory)\$(OutDir)Tailviewer.DataSources.UDP.*.tvp" "$(MSBuildProjectDirectory)\$(OutDir)Plugins\" /y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

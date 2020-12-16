@@ -18,6 +18,7 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using Tailviewer.Archiver.Plugins;
+using Tailviewer.BusinessLogic.DataSources.Custom;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -180,7 +181,8 @@ namespace Tailviewer
 					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
-					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);
+					var customDataSourcePlugins = pluginSystem.LoadAllOfTypeWithDescription<ICustomDataSourcePlugin>();
+					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins, customDataSourcePlugins);
 					using (var dataSources = new DataSources(logFileFactory, taskScheduler, filesystem, settings.DataSources, bookmarks))
 					using (var updater = new AutoUpdater(actionCenter, settings.AutoUpdate))
 					{

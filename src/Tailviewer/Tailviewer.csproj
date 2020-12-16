@@ -104,10 +104,14 @@
     <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\CustomDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\NoThrowCustomDataSourceConfiguration.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\ICustomDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMultiDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\NoThrowCustomDataSourcePlugin.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
@@ -346,6 +350,7 @@
     <Compile Include="Ui\Controls\ActionCenter\ChangeViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\NotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
+    <Compile Include="Ui\ViewModels\AddCustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IContextMenuViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
