@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using Metrolib;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -24,6 +25,7 @@ namespace Tailviewer.Ui.ViewModels
 		private string _folder;
 		private bool _displayNoTimestampCount;
 		private bool _canBeRemoved;
+		private bool _excludeFromParent;
 
 		public SingleDataSourceViewModel(ISingleDataSource dataSource,
 							IActionCenter actionCenter)
@@ -99,17 +101,43 @@ namespace Tailviewer.Ui.ViewModels
 			}
 		}
 
+		public bool ExcludeFromParent
+		{
+			get { return _excludeFromParent; }
+			set
+			{
+				if (value == _excludeFromParent)
+					return;
+
+				_excludeFromParent = value;
+				if (Parent?.DataSource is IMultiDataSource parentDataSource)
+					parentDataSource.SetExcluded(_dataSource, _excludeFromParent);
+
+				foreach(var item in ContextMenuItems.OfType<ToggleExcludeFromGroupViewModel>())
+					item.UpdateHeader();
+
+				EmitPropertyChanged();
+			}
+		}
+
 		private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case "IsGrouped":
+				case nameof(Parent):
+					if (Parent?.DataSource is IMultiDataSource parentDataSource && parentDataSource.IsExcluded(_dataSource))
+					{
+						ExcludeFromParent = true;
+					}
+					break;
+
+				case nameof(IsGrouped):
 					UpdateDisplayNoTimestampCount();
 					UpdateFolder();
 					UpdateCanBeRemoved();
 					break;
 
-				case "NoTimestampCount":
+				case nameof(NoTimestampCount):
 					UpdateDisplayNoTimestampCount();
 					break;
 			}
@@ -139,6 +167,15 @@ namespace Tailviewer.Ui.ViewModels
 		private void UpdateCanBeRemoved()
 		{
 			CanBeRemoved = !(Parent is FolderDataSourceViewModel);
+
+			if (Parent?.DataSource is IMultiDataSource parentDataSource)
+			{
+				SetContextMenuItems(new []{new ToggleExcludeFromGroupViewModel(this)});
+			}
+			else
+			{
+				SetContextMenuItems(Enumerable.Empty<IContextMenuViewModel>());
+			}
 		}
 
 		[Pure]

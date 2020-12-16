@@ -112,6 +112,11 @@ namespace Tailviewer.Ui.ViewModels
 		IDataSourceViewModel Parent { get; set; }
 		IEnumerable<ILogEntryFilter> QuickFilterChain { get; set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		IEnumerable<IContextMenuViewModel> ContextMenuItems { get; }
+
 		void RequestBringIntoView(LogLineIndex index);
 
 		event Action<IDataSourceViewModel, LogLineIndex> OnRequestBringIntoView;

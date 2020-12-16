@@ -8,7 +8,7 @@
 		: IDataSourceViewModel
 	{
 		/// <summary>
-		///    When set to true, a user can remove this data source, otherwise he cannot.
+		///     When set to true, a user can remove this data source, otherwise he cannot.
 		/// </summary>
 		bool CanBeRemoved { get; }
 
@@ -17,5 +17,12 @@
 		///     i.e. those with the same parent.
 		/// </summary>
 		string CharacterCode { get; set; }
+
+		/// <summary>
+		///     Whether or not this data source is excluded from its parent.
+		///     An excluded data source's log events will not be displayed in the parent's view
+		///     until it's included again.
+		/// </summary>
+		bool ExcludeFromParent { get; set; }
 	}
 }

@@ -238,5 +238,13 @@ namespace Tailviewer.Serilog.Test
 			logEntry.LogLevel.Should().Be(LevelFlags.Fatal);
 			logEntry.GetValue(LogFileColumns.Message).Should().Be("This is a fatal message!");
 		}
+
+		[Test]
+		public void TestParse_NullMessage()
+		{
+			var parser = new SerilogFileParser("{Timestamp:dd/MM/yyyy HH:mm:ss K} [{Level}] {Message}");
+			var logEntry = Parse(parser, null);
+			logEntry.RawContent.Should().BeNullOrEmpty();
+		}
 	}
 }
