@@ -18,12 +18,23 @@
 
     <HierarchicalDataTemplate DataType="{x:Type viewModels:MergedDataSourceViewModel}"
                               ItemsSource="{Binding Observable}">
-        <Grid>
+        <Grid Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="24" />
                 <ColumnDefinition Width="12" />
             </Grid.ColumnDefinitions>
+
+            <Grid.ContextMenu>
+                <ContextMenu ItemsSource="{Binding ContextMenuItems}">
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="Command" Value="{Binding Command}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
+                </ContextMenu>
+            </Grid.ContextMenu>
 
             <Grid Margin="0,4,0,4">
                 <Grid.RowDefinitions>

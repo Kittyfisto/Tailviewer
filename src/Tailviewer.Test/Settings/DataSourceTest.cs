@@ -43,6 +43,9 @@ namespace Tailviewer.Test.Settings
 
 			dataSource.IsExpanded.Should().BeTrue();
 
+			dataSource.ExcludedDataSources.Should().NotBeNull();
+			dataSource.ExcludedDataSources.Should().BeEmpty();
+
 			dataSource.MergedDataSourceDisplayMode.Should().Be(DataSourceDisplayMode.Filename);
 		}
 
@@ -145,7 +148,12 @@ namespace Tailviewer.Test.Settings
 				},
 				ActivatedQuickFilters = {filter},
 				MergedDataSourceDisplayMode = displayMode,
-				DisplayName = "Some fancy name"
+				DisplayName = "Some fancy name",
+				ExcludedDataSources = new HashSet<DataSourceId>
+				{
+					DataSourceId.CreateNew(),
+					DataSourceId.CreateNew()
+				}
 			};
 			var cloned = ((ICloneable)dataSource).Clone() as DataSource;
 			cloned.Should().NotBeNull();
@@ -171,6 +179,8 @@ namespace Tailviewer.Test.Settings
 			cloned.ActivatedQuickFilters.Should().NotBeSameAs(dataSource.ActivatedQuickFilters);
 			cloned.MergedDataSourceDisplayMode.Should().Be(displayMode);
 			cloned.DisplayName.Should().Be("Some fancy name");
+			cloned.ExcludedDataSources.Should().NotBeSameAs(dataSource.ExcludedDataSources);
+			cloned.ExcludedDataSources.Should().BeEquivalentTo(dataSource.ExcludedDataSources);
 		}
 
 		[Test]
@@ -261,6 +271,11 @@ namespace Tailviewer.Test.Settings
 			var id = DataSourceId.CreateNew();
 			var parent = DataSourceId.CreateNew();
 			var filter = QuickFilterId.CreateNew();
+			var excluded = new HashSet<DataSourceId>
+			{
+				DataSourceId.CreateNew(),
+				DataSourceId.CreateNew()
+			};
 
 			using (var stream = new MemoryStream())
 			{
@@ -292,7 +307,8 @@ namespace Tailviewer.Test.Settings
 						//},
 						ActivatedQuickFilters = {filter},
 						MergedDataSourceDisplayMode = displayMode,
-						DisplayName = "A stupid name"
+						DisplayName = "A stupid name",
+						ExcludedDataSources = excluded
 					};
 					dataSource.Save(writer);
 				}
@@ -326,6 +342,7 @@ namespace Tailviewer.Test.Settings
 					dataSource.ActivatedQuickFilters.Should().Equal(new object[] {filter});
 					dataSource.MergedDataSourceDisplayMode.Should().Be(displayMode);
 					dataSource.DisplayName.Should().Be("A stupid name");
+					dataSource.ExcludedDataSources.Should().BeEquivalentTo(excluded);
 				}
 			}
 		}

@@ -13,8 +13,14 @@ namespace Tailviewer.BusinessLogic.DataSources
 		: AbstractDataSource
 		, IMergedDataSource
 	{
-		private readonly HashSet<IDataSource> _dataSources;
-
+		/// <summary>
+		///    The list of data sources.
+		/// </summary>
+		/// <remarks>
+		///    Preserving the order of data sources is incredibly important here and therefore we use a list
+		///    rather than a HashSet so that we don't have rely on undocumented behavior.
+		/// </remarks>
+		private readonly List<IDataSource> _dataSources;
 		private MergedLogFile _unfilteredLogFile;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
@@ -25,7 +31,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings, TimeSpan maximumWaitTime)
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
-			_dataSources = new HashSet<IDataSource>();
+			_dataSources = new List<IDataSource>();
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
 		}
@@ -33,6 +39,25 @@ namespace Tailviewer.BusinessLogic.DataSources
 		public int DataSourceCount => _dataSources.Count;
 
 		public IReadOnlyList<IDataSource> OriginalSources { get; private set; }
+
+		public void SetExcluded(IDataSource dataSource, bool isExcluded)
+		{
+			if (isExcluded)
+			{
+				Settings.ExcludedDataSources.Add(dataSource.Id);
+			}
+			else
+			{
+				Settings.ExcludedDataSources.Remove(dataSource.Id);
+			}
+
+			UpdateUnfilteredLogFile();
+		}
+
+		public bool IsExcluded(IDataSource dataSource)
+		{
+			return Settings.ExcludedDataSources.Contains(dataSource.Id);
+		}
 
 		public override IPluginDescription TranslationPlugin => null;
 
@@ -66,8 +91,9 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (dataSource.ParentId != DataSourceId.Empty && dataSource.ParentId != Id)
 				throw new ArgumentException("This data source already belongs to a different parent");
 
-			if (_dataSources.Add(dataSource))
+			if (!_dataSources.Contains(dataSource))
 			{
+				_dataSources.Add(dataSource);
 				dataSource.Settings.ParentId = Settings.Id;
 				UpdateUnfilteredLogFile();
 			}
@@ -82,6 +108,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			if (!_dataSources.Remove(dataSource))
 				throw new ArgumentException("dataSource");
 
+			Settings.ExcludedDataSources.Remove(dataSource.Id);
 			dataSource.Settings.ParentId = DataSourceId.Empty;
 			UpdateUnfilteredLogFile();
 		}
@@ -96,8 +123,11 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			foreach (var dataSource in dataSources)
 			{
-				_dataSources.Add(dataSource);
-				dataSource.Settings.ParentId = Settings.Id;
+				if (!_dataSources.Contains(dataSource))
+				{
+					_dataSources.Add(dataSource);
+					dataSource.Settings.ParentId = Settings.Id;
+				}
 			}
 
 			foreach (var dataSource in _dataSources.ToList())
@@ -127,16 +157,20 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_unfilteredLogFile?.Dispose();
 
 			OriginalSources = _dataSources.ToList();
-			IReadOnlyList<ILogFile> logFiles;
 
-			if (IsSingleLine)
-			{
-				logFiles = OriginalSources.Select(x => x.OriginalLogFile).ToList();
-			}
-			else
-			{
-				logFiles = OriginalSources.Select(x => x.UnfilteredLogFile).ToList();
-			}
+			var logFiles = OriginalSources.Select(dataSource =>
+			                              {
+				                              // Unfortunately, due to a hack, the attribution to the original data source
+				                              // will be lost if we were to not forward anything to the merged data source.
+				                              if (Settings.ExcludedDataSources.Contains(dataSource.Id))
+					                              return new EmptyLogFile();
+
+				                              if (IsSingleLine)
+					                              return dataSource.OriginalLogFile;
+
+				                              return dataSource.UnfilteredLogFile;
+			                              })
+			                              .ToList();
 
 			_unfilteredLogFile = new MergedLogFile(TaskScheduler,
 			                                       MaximumWaitTime,

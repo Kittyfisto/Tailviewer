@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -266,6 +267,60 @@ namespace Tailviewer.Test.Ui
 			var singleViewModel = new SingleDataSourceViewModel(single.Object, _actionCenter.Object);
 			singleViewModel.TranslationPlugin.Should().NotBeNull();
 			singleViewModel.TranslationPlugin.Should().BeSameAs(pluginDescription);
+		}
+
+		[Test]
+		[Description("Verifies that the description of the context menu item changes even when the ExcludeFromParent property is updated on its own")]
+		public void TestToggleExcludeViaModel()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.Setup(x => x.Settings).Returns(new DataSource());
+			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
+			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var parent = new Mock<IMergedDataSourceViewModel>();
+			var parentDataSource = new Mock<IMultiDataSource>();
+			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
+			parent.Setup(x => x.DataSource).Returns(parentDataSource.Object);
+
+			model.Parent = parent.Object;
+			model.ContextMenuItems.Should().HaveCount(1);
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Exclude from group");
+
+			model.ExcludeFromParent = true;
+			parentDataSource.Verify(x => x.SetExcluded(dataSource.Object, true), Times.Once);
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Include in group");
+
+			model.ExcludeFromParent = false;
+			parentDataSource.Verify(x => x.SetExcluded(dataSource.Object, false), Times.Once);
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Exclude from group");
+		}
+
+		[Test]
+		public void TestToggleExcludeViaContextMenu()
+		{
+			var dataSource = new Mock<ISingleDataSource>();
+			dataSource.Setup(x => x.Settings).Returns(new DataSource());
+			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
+			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var parent = new Mock<IMergedDataSourceViewModel>();
+			var parentDataSource = new Mock<IMultiDataSource>();
+			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
+			parent.Setup(x => x.DataSource).Returns(parentDataSource.Object);
+
+			model.Parent = parent.Object;
+			model.ContextMenuItems.Should().HaveCount(1);
+			model.ExcludeFromParent.Should().BeFalse();
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Exclude from group");
+
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Command.Execute(null);
+			model.ExcludeFromParent.Should().BeTrue();
+			parentDataSource.Verify(x => x.SetExcluded(dataSource.Object, true), Times.Once);
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Include in group");
+
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Command.Execute(null);
+			model.ExcludeFromParent.Should().BeFalse();
+			parentDataSource.Verify(x => x.SetExcluded(dataSource.Object, false), Times.Once);
+			((ToggleExcludeFromGroupViewModel) model.ContextMenuItems.First()).Header.Should().Be("Exclude from group");
 		}
 	}
 }

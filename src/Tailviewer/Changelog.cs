@@ -59,14 +59,21 @@ namespace Tailviewer
 		private static void AddV094()
 		{
 			var features = new string[]
-			{};
+			{
+				"Include/Exclude child data sources [#254](https://github.com/Kittyfisto/Tailviewer/issues/254)"
+			};
 			var bugfixes = new string[]
-			{};
+			{
+				"Fixed highlighting in lines with tabs [#244](https://github.com/Kittyfisto/Tailviewer/issues/244)",
+				"TV should never start off-screen [#238](https://github.com/Kittyfisto/Tailviewer/issues/238)",
+				"Number of errors, warning, etc.. is always 0 for merged data sources[#225](https://github.com/Kittyfisto/Tailviewer/issues/225)"
+			};
 			var misc = new []
 			{
-				"Added shortcut for new bookmark (Ctrl+B) [#240](https://github.com/Kittyfisto/Tailviewer/issues/240)"
+				"Added shortcut for new bookmark (Ctrl+B) [#240](https://github.com/Kittyfisto/Tailviewer/issues/240)",
+				"TV should never start minimized [#250](https://github.com/Kittyfisto/Tailviewer/issues/250)"
 			};
-			var releaseDate = new DateTime(2020, 8, 20);
+			var releaseDate = new DateTime(2020, 12, 16);
 			var version = new Version(0, 9, 4);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);
 			AllChanges.Add(change);

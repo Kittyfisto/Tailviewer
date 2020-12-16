@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -51,6 +52,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		#endregion
 
+		private readonly ObservableCollection<IContextMenuViewModel> _contextMenuItems;
+
 		protected AbstractDataSourceViewModel(IDataSource dataSource)
 		{
 			if (dataSource == null) throw new ArgumentNullException(nameof(dataSource));
@@ -67,6 +70,8 @@ namespace Tailviewer.Ui.ViewModels
 			{
 				CanBeExecuted = false
 			};
+
+			_contextMenuItems = new ObservableCollection<IContextMenuViewModel>();
 		}
 
 		public int NewLogLineCount
@@ -643,6 +648,8 @@ namespace Tailviewer.Ui.ViewModels
 		public event PropertyChangedEventHandler PropertyChanged;
 		public event Action<IDataSourceViewModel> Remove;
 
+		public IEnumerable<IContextMenuViewModel> ContextMenuItems => _contextMenuItems;
+
 		public virtual void Update()
 		{
 			int newBefore = NewLogLineCount;
@@ -674,6 +681,13 @@ namespace Tailviewer.Ui.ViewModels
 					_lastSeenLogLine = TotalCount;
 				}
 			}
+		}
+
+		protected void SetContextMenuItems(IEnumerable<IContextMenuViewModel> contextMenuItems)
+		{
+			_contextMenuItems.Clear();
+			foreach(var item in contextMenuItems)
+				_contextMenuItems.Add(item);
 		}
 
 		private void UpdateLastSeenLogLine()

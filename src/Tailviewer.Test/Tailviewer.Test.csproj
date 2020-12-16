@@ -125,6 +125,7 @@
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\EmptyLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />

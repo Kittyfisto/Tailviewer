@@ -102,6 +102,12 @@ namespace Tailviewer.Formats.Serilog
 
 		public bool TryParse(string rawContent, out IReadOnlyLogEntry logEntry)
 		{
+			if (rawContent == null)
+			{
+				logEntry = null;
+				return false;
+			}
+
 			var match = _regex.Match(rawContent);
 			if (!match.Success)
 			{

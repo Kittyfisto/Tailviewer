@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Tailviewer.BusinessLogic;
@@ -27,6 +28,14 @@ namespace Tailviewer.Settings
 		public bool ShowDeltaTimes;
 		public bool ShowElapsedTime;
 		public bool IsExpanded;
+
+		/// <summary>
+		///    The list of data source Id's which are excluded from being displayed.
+		/// </summary>
+		/// <remarks>
+		///    Only relevant for merged data sources.
+		/// </remarks>
+		public HashSet<DataSourceId> ExcludedDataSources;
 
 		/// <summary>
 		///     Uniquely identifies this data source amongst all others.
@@ -90,6 +99,7 @@ namespace Tailviewer.Settings
 			IsExpanded = true;
 			SelectedLogLines = new HashSet<LogLineIndex>();
 			VisibleLogLine = LogLineIndex.Invalid;
+			ExcludedDataSources = new HashSet<DataSourceId>();
 		}
 
 		public DataSource(string file)
@@ -139,6 +149,27 @@ namespace Tailviewer.Settings
 				writer.WriteEndElement();
 			}
 			writer.WriteEndElement();
+			
+			writer.WriteStartElement("activatedquickfilters");
+			foreach (QuickFilterId guid in ActivatedQuickFilters)
+			{
+				writer.WriteStartElement("quickfilter");
+				writer.WriteAttribute("id", guid);
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+
+			if (ExcludedDataSources.Count > 0)
+			{
+				writer.WriteStartElement("excludeddatasources");
+				foreach (DataSourceId id in ExcludedDataSources)
+				{
+					writer.WriteStartElement("datasource");
+					writer.WriteAttribute("id", id);
+					writer.WriteEndElement();
+				}
+				writer.WriteEndElement();
+			}
 		}
 
 		public void Restore(XmlReader reader, out bool neededPatching)
@@ -262,6 +293,12 @@ namespace Tailviewer.Settings
 						ActivatedQuickFilters.Clear();
 						ActivatedQuickFilters.AddRange(filters);
 						break;
+
+					case "excludeddatasources":
+						var excluded = ReadExcludedDataSources(reader);
+						ExcludedDataSources.Clear();
+						ExcludedDataSources.AddRange(excluded);
+						break;
 				}
 			}
 		}
@@ -284,6 +321,34 @@ namespace Tailviewer.Settings
 							{
 								case "id":
 									guids.Add(reader.ReadContentAsQuickFilterId());
+									break;
+							}
+						}
+						break;
+				}
+			}
+
+			return guids;
+		}
+
+		private IEnumerable<DataSourceId> ReadExcludedDataSources(XmlReader reader)
+		{
+			var guids = new List<DataSourceId>();
+			XmlReader subtree = reader.ReadSubtree();
+
+			while (subtree.Read())
+			{
+				switch (subtree.Name)
+				{
+					case "datasource":
+						int count = reader.AttributeCount;
+						for (int i = 0; i < count; ++i)
+						{
+							reader.MoveToAttribute(i);
+							switch (reader.Name)
+							{
+								case "id":
+									guids.Add(reader.ReadContentAsDataSourceId());
 									break;
 							}
 						}
@@ -319,10 +384,11 @@ namespace Tailviewer.Settings
 				VisibleLogLine = VisibleLogLine,
 				IsExpanded = IsExpanded,
 				MergedDataSourceDisplayMode = MergedDataSourceDisplayMode,
-				DisplayName = DisplayName
+				DisplayName = DisplayName,
 			};
 			clone.ActivatedQuickFilters.AddRange(ActivatedQuickFilters);
 			clone.SelectedLogLines.AddRange(SelectedLogLines);
+			clone.ExcludedDataSources.AddRange(ExcludedDataSources);
 			return clone;
 		}
 

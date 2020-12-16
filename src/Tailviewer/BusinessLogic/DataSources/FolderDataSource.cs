@@ -374,6 +374,16 @@ namespace Tailviewer.BusinessLogic.DataSources
 			get { return _mergedDataSource.OriginalSources; }
 		}
 
+		public void SetExcluded(IDataSource dataSource, bool isExcluded)
+		{
+			_mergedDataSource.SetExcluded(dataSource, isExcluded);
+		}
+
+		public bool IsExcluded(IDataSource dataSource)
+		{
+			return _mergedDataSource.IsExcluded(dataSource);
+		}
+
 		#endregion
 
 		#region Implementation of IFolderDataSource
