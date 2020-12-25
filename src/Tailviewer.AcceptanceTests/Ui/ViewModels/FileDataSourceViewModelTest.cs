@@ -72,7 +72,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestCannotBeRemovedAsPartOfFolder()
 		{
 			var actionCenter = new Mock<IActionCenter>();
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			var model = new FileDataSourceViewModel(dataSource.Object, actionCenter.Object);
 			using (var monitor = model.Monitor())
@@ -99,7 +99,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestCanBeRemovedAsPartOfMergedDataSource()
 		{
 			var actionCenter = new Mock<IActionCenter>();
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			var model = new FileDataSourceViewModel(dataSource.Object, actionCenter.Object);
 			using (var monitor = model.Monitor())
@@ -124,7 +124,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/215")]
 		public void TestClearAllShowAll()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			var model = new FileDataSourceViewModel(dataSource.Object, new Mock<IActionCenter>().Object);
 
 			model.ScreenCleared.Should().BeFalse();

@@ -122,6 +122,9 @@ namespace Tailviewer.Settings
 
 		public override string ToString()
 		{
+			if (CustomDataSourceConfiguration != null)
+				return string.Format("Custom ({0})", CustomDataSourceConfiguration);
+
 			if (File == null)
 				return string.Format("Merged ({0})", Id);
 

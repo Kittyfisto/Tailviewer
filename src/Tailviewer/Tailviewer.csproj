@@ -306,6 +306,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
+    <Compile Include="Ui\ViewModels\CustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
@@ -353,6 +354,7 @@
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
     <Compile Include="Ui\ViewModels\AddCustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IContextMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\IFileDataSourceViewModel.cs" />
@@ -383,6 +385,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\CustomDataSourceTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

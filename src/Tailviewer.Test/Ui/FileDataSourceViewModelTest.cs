@@ -148,7 +148,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRename()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
 			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 
@@ -209,7 +209,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCharacterCode()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.SetupAllProperties();
 
 			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
@@ -230,7 +230,7 @@ namespace Tailviewer.Test.Ui
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/125")]
 		public void TestDisplayRelativePathWithFolderParent()
 		{
-			var single = new Mock<ISingleDataSource>();
+			var single = new Mock<IFileDataSource>();
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			single.Setup(x => x.FullFileName).Returns(@"C:\Users\Simon\AppData\Local\Tailviewer\Installation.log");
 			var singleViewModel = new FileDataSourceViewModel(single.Object, _actionCenter.Object);
@@ -260,7 +260,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestPluginDescription()
 		{
-			var single = new Mock<ISingleDataSource>();
+			var single = new Mock<IFileDataSource>();
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			var pluginDescription = new PluginDescription();
 			single.Setup(x => x.TranslationPlugin).Returns(pluginDescription);
@@ -273,7 +273,7 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that the description of the context menu item changes even when the ExcludeFromParent property is updated on its own")]
 		public void TestToggleExcludeViaModel()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
 			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
@@ -298,7 +298,7 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestToggleExcludeViaContextMenu()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
 			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);

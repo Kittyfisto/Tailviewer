@@ -9,6 +9,8 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Themes/Constants.xaml" />
         <ResourceDictionary
+            Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/CustomDataSourceTemplate.xaml" />
+        <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/FileDataSourceTemplate.xaml" />
         <ResourceDictionary
             Source="pack://application:,,,/Tailviewer;component/Ui/Controls/DataSourceTree/FolderDataSourceTemplate.xaml" />

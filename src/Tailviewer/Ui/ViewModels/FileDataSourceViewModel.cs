@@ -27,7 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _canBeRemoved;
 		private bool _excludeFromParent;
 
-		public FileDataSourceViewModel(ISingleDataSource dataSource,
+		public FileDataSourceViewModel(IFileDataSource dataSource,
 							IActionCenter actionCenter)
 								: base(dataSource)
 		{

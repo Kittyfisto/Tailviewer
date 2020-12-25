@@ -256,31 +256,27 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 				throw new ArgumentNullException(nameof(dataSource));
 
 			IDataSourceViewModel viewModel;
-			var single = dataSource as ISingleDataSource;
-			if (single != null)
+			if (dataSource is IFileDataSource single)
 			{
 				viewModel = new FileDataSourceViewModel(single, _actionCenter);
 			}
+			else if (dataSource is IMergedDataSource merged)
+			{
+				viewModel = new MergedDataSourceViewModel(merged, _actionCenter);
+			}
+			else if (dataSource is IFolderDataSource folder)
+			{
+				viewModel = new FolderDataSourceViewModel(folder, _actionCenter);
+			}
+			else if (dataSource is ICustomDataSource custom)
+			{
+				viewModel = new CustomDataSourceViewModel(custom);
+			}
 			else
 			{
-				var merged = dataSource as IMergedDataSource;
-				if (merged != null)
-				{
-					viewModel = new MergedDataSourceViewModel(merged, _actionCenter);
-				}
-				else
-				{
-					var folder = dataSource as IFolderDataSource;
-					if (folder != null)
-					{
-						viewModel = new FolderDataSourceViewModel(folder, _actionCenter);
-					}
-					else
-					{
-						throw new ArgumentException(string.Format("Unknown data source: {0} ({1})", dataSource, dataSource.GetType()));
-					}
-				}
+				throw new ArgumentException(string.Format("Unknown data source: {0} ({1})", dataSource, dataSource.GetType()));
 			}
+
 			viewModel.Remove += OnRemove;
 			_allDataSourceViewModels.Add(viewModel);
 

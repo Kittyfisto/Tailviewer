@@ -74,7 +74,22 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			var pair = _dataSourcePlugins.First(x => x.Plugin.Id == id);
 			pluginDescription = pair.Description;
-			return pair.Plugin.CreateLogFile(_services, configuration);
+			var logFile = TryCreateCustomWith(pair.Plugin, configuration);
+			return new NoThrowLogFile(logFile, pluginDescription.Name);
+		}
+
+		private ILogFile TryCreateCustomWith(ICustomDataSourcePlugin plugin, ICustomDataSourceConfiguration configuration)
+		{
+			try
+			{
+				var logFile = plugin.CreateLogFile(_services, configuration);
+				return logFile;
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught exception while trying to create custom log file: {0}", e);
+				return null;
+			}
 		}
 
 		private IFileFormatPlugin FindSupportingPlugin(string filePath, out IPluginDescription pluginDescription)
