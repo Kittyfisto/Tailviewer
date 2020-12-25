@@ -172,7 +172,7 @@
     <Compile Include="BusinessLogic\QuickFiltersTest.cs" />
     <Compile Include="BusinessLogic\QuickFilterTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchTest.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSourceTest.cs" />
+    <Compile Include="BusinessLogic\DataSources\FileDataSourceTest.cs" />
     <Compile Include="BusinessLogic\Searches\SearchResultsTest.cs" />
     <Compile Include="BusinessLogic\StreamReaderExTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Parsers\TimeOfDaySecondsSinceStartParserTest.cs" />
@@ -243,7 +243,7 @@
     <Compile Include="Ui\FolderDataSourceViewModelTest.cs" />
     <Compile Include="Ui\MergedDataSourceViewModelTest.cs" />
     <Compile Include="Ui\SettingsMainPanelViewModelTest.cs" />
-    <Compile Include="Ui\SingleDataSourceViewModelTest.cs" />
+    <Compile Include="Ui\FileDataSourceViewModelTest.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="BusinessLogic\LogFileListenerCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFileListenerNotifierTest.cs" />

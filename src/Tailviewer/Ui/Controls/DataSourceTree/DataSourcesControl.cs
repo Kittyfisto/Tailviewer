@@ -216,7 +216,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 		private bool IsValidDrop(DragEventArgs e, out DropInfo dropInfo)
 		{
 			dropInfo = null;
-			IDataSourceViewModel viewModel = e.Data.GetData(typeof (SingleDataSourceViewModel)) as IDataSourceViewModel ??
+			IDataSourceViewModel viewModel = e.Data.GetData(typeof (FileDataSourceViewModel)) as IDataSourceViewModel ??
 			                                 e.Data.GetData(typeof (MergedDataSourceViewModel)) as IDataSourceViewModel;
 			var source = new TreeItem
 				{
@@ -260,7 +260,7 @@ namespace Tailviewer.Ui.Controls.DataSourceTree
 
 			var dropType = DataSourceDropType.None;
 			double height = destination.TreeViewItem.ActualHeight;
-			if (source is SingleDataSourceViewModel)
+			if (source is FileDataSourceViewModel)
 			{
 				// Let's distribute it as follows:
 				// 20% top => arrange

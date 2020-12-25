@@ -42,7 +42,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		public PluginLogFileFactory(IServiceContainer services,
 		                            IEnumerable<IPluginWithDescription<IFileFormatPlugin>> plugins,
 		                            IEnumerable<IPluginWithDescription<ICustomDataSourcePlugin>> dataSourcePlugins)
-			: this(services, plugins?.ToArray(), dataSourcePlugins?.ToArray())
+			: this(services,
+			       plugins?.ToArray() ?? new IPluginWithDescription<IFileFormatPlugin>[0],
+			       dataSourcePlugins?.ToArray() ?? new IPluginWithDescription<ICustomDataSourcePlugin>[0])
 		{}
 
 		/// <inheritdoc />

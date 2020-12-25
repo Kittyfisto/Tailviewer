@@ -11,7 +11,7 @@ using Tailviewer.Test;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceAcceptanceTest
+	public sealed class FileDataSourceAcceptanceTest
 	{
 		private ManualTaskScheduler _scheduler;
 		private PluginLogFileFactory _logFileFactory;
@@ -32,7 +32,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			{
 				Id = DataSourceId.CreateNew()
 			};
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			using (var dataSource = new FileDataSource(_logFileFactory, _scheduler, settings))
 			{
 				dataSource.FilteredLogFile.Property(x =>
 				{

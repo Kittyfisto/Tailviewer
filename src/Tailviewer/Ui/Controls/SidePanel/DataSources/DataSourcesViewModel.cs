@@ -236,7 +236,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 
 		private bool Represents(IDataSourceViewModel dataSourceViewModel, string fullName)
 		{
-			var file = dataSourceViewModel as SingleDataSourceViewModel;
+			var file = dataSourceViewModel as FileDataSourceViewModel;
 			if (file == null)
 				return false;
 
@@ -259,7 +259,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.DataSources
 			var single = dataSource as ISingleDataSource;
 			if (single != null)
 			{
-				viewModel = new SingleDataSourceViewModel(single, _actionCenter);
+				viewModel = new FileDataSourceViewModel(single, _actionCenter);
 			}
 			else
 			{

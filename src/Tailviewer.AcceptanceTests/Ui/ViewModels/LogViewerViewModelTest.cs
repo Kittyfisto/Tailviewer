@@ -47,10 +47,10 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 		public void TestSearch1()
 		{
 			using (
-				var dataSource = new SingleDataSource(_logFileFactory, _scheduler,
+				var dataSource = new FileDataSource(_logFileFactory, _scheduler,
 					new DataSource(TextLogFileAcceptanceTest.File20Mb) {Id = DataSourceId.CreateNew()}))
 			{
-				var dataSourceModel = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
+				var dataSourceModel = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
 				var model = new LogViewerViewModel(dataSourceModel, _actionCenter.Object, _settings, TimeSpan.Zero);
 
 				dataSourceModel.SearchTerm = "i";

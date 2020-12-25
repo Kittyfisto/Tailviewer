@@ -13,7 +13,7 @@ using Tailviewer.Test;
 namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 {
 	[TestFixture]
-	public sealed class SingleDataSourceRealTest
+	public sealed class FileDataSourceRealTest
 	{
 		[SetUp]
 		public void SetUp()
@@ -24,7 +24,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			{
 				Id = DataSourceId.CreateNew()
 			};
-			_dataSource = new SingleDataSource(_logFileFactory, _scheduler, _settings, TimeSpan.FromMilliseconds(100));
+			_dataSource = new FileDataSource(_logFileFactory, _scheduler, _settings, TimeSpan.FromMilliseconds(100));
 		}
 
 		[TearDown]
@@ -35,7 +35,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		}
 
 		private DataSource _settings;
-		private SingleDataSource _dataSource;
+		private FileDataSource _dataSource;
 		private DefaultTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
 

@@ -162,7 +162,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 				}
 				else if (!string.IsNullOrEmpty(settings.File))
 				{
-					dataSource = new SingleDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
+					dataSource = new FileDataSource(_logFileFactory, _taskScheduler, settings, _maximumWaitTime);
 				}
 				else if (settings.CustomDataSourceConfiguration != null)
 				{
@@ -223,15 +223,15 @@ namespace Tailviewer.BusinessLogic.DataSources
 			return dataSource;
 		}
 
-		public SingleDataSource AddFile(string fileName)
+		public FileDataSource AddFile(string fileName)
 		{
 			string key = GetKey(fileName, out var fullFileName);
-			SingleDataSource dataSource;
+			FileDataSource dataSource;
 
 			lock (_syncRoot)
 			{
 				dataSource =
-					(SingleDataSource)
+					(FileDataSource)
 					_dataSources.FirstOrDefault(x => string.Equals(x.FullFileName, key, StringComparison.InvariantCultureIgnoreCase));
 				if (dataSource == null)
 				{
@@ -240,7 +240,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 							Id = DataSourceId.CreateNew()
 						};
 					_settings.Add(settings);
-					dataSource = (SingleDataSource) AddDataSource(settings);
+					dataSource = (FileDataSource) AddDataSource(settings);
 				}
 			}
 
