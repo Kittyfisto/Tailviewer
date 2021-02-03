@@ -59,6 +59,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Plugins\v0.8.0.680\DataSourceAnalyserPlugin+DataSourceAnalyser.0.0.tvp" />
     <None Include="Plugins\v0.8.0.680\DataSourceAnalyserPlugin.0.0.tvp" />
