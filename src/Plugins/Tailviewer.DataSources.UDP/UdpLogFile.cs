@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -10,11 +12,37 @@ namespace Tailviewer.DataSources.UDP
 	public sealed class UdpLogFile
 		: AbstractLogFile
 	{
-		public UdpLogFile(ITaskScheduler scheduler, string address)
+		private readonly IUdpSocket _socket;
+		private readonly ConcurrentQueue<UdpDatagram> _incomingDatagrams;
+		private readonly LogFilePropertyList _properties;
+
+		public UdpLogFile(ITaskScheduler scheduler,
+						  Encoding encoding,
+		                  IUdpSocket socket)
 			: base(scheduler)
-		{}
+		{
+			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties.SetValue(LogFileProperties.Encoding, encoding);
+
+			_socket = socket;
+			_incomingDatagrams = new ConcurrentQueue<UdpDatagram>();
+
+			// DO NOT PUT ANY MORE INITIALIZATION BELOW HERE OR THINGS WILL GO HORRIBLY WRONG
+			_socket.OnMessage += OnMessageReceived;
+		}
+
+		private void OnMessageReceived(UdpDatagram datagram)
+		{
+			_incomingDatagrams.Enqueue(datagram);
+		}
 
 		#region Overrides of AbstractLogFile
+
+		protected override void DisposeAdditional()
+		{
+			_socket.OnMessage -= OnMessageReceived;
+			_socket?.Dispose();
+		}
 
 		public override int MaxCharactersPerLine
 		{
@@ -87,6 +115,29 @@ namespace Tailviewer.DataSources.UDP
 		}
 
 		protected override TimeSpan RunOnce(CancellationToken token)
+		{
+			const int maxOps = 1000;
+			int numProcessed;
+			for (numProcessed = 0; numProcessed < maxOps; ++numProcessed)
+			{
+				if (!_incomingDatagrams.TryDequeue(out var datagram))
+					break;
+
+				Add(datagram);
+			}
+
+			if (numProcessed > 0)
+				return TimeSpan.Zero;
+
+			return TimeSpan.FromMilliseconds(500);
+		}
+
+		private void Add(UdpDatagram datagram)
+		{
+			var message = TryDecode(datagram.Message);
+		}
+
+		private string TryDecode(byte[] datagram)
 		{
 			throw new NotImplementedException();
 		}

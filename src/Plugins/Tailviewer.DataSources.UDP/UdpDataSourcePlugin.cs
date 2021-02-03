@@ -1,8 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Net;
+using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.Settings;
 using Tailviewer.Ui;
 
 namespace Tailviewer.DataSources.UDP
@@ -45,8 +49,24 @@ namespace Tailviewer.DataSources.UDP
 		public ILogFile CreateLogFile(IServiceContainer serviceContainer, ICustomDataSourceConfiguration configuration)
 		{
 			var config = (UdpCustomDataSourceConfiguration) configuration;
+			var socket = new UdpSocket(ParseEndPoint(config.Address));
+			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
+			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
+			var encoding = overwrittenEncoding ?? defaultEncoding ?? Encoding.UTF8;
 			return new UdpLogFile(serviceContainer.Retrieve<ITaskScheduler>(),
-			                      config.Address);
+			                      encoding,
+			                      socket);
+		}
+
+		private IPEndPoint ParseEndPoint(string configAddress)
+		{
+			var idx = configAddress.LastIndexOf(":");
+			if (idx == -1)
+				throw new ArgumentException($"Invalid IPEndPoint '{configAddress}': Expected a form of 'address:port'");
+
+			var address = IPAddress.Parse(configAddress.Substring(0, idx));
+			var port = int.Parse(configAddress.Substring(idx + 1));
+			return new IPEndPoint(address, port);
 		}
 
 		#endregion
