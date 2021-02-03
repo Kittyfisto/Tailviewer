@@ -21,7 +21,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 		///    rather than a HashSet so that we don't have rely on undocumented behavior.
 		/// </remarks>
 		private readonly List<IDataSource> _dataSources;
-		private MergedLogFile _unfilteredLogFile;
+		private readonly LogFileProxy _unfilteredLogFile;
+		private MergedLogFile _logFile;
 
 		public MergedDataSource(ITaskScheduler taskScheduler, DataSource settings)
 			: this(taskScheduler, settings, TimeSpan.FromMilliseconds(value: 10))
@@ -32,8 +33,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			: base(taskScheduler, settings, maximumWaitTime)
 		{
 			_dataSources = new List<IDataSource>();
+			_unfilteredLogFile = new LogFileProxy(taskScheduler, TimeSpan.Zero);
 			OriginalSources = new IDataSource[0];
 			UpdateUnfilteredLogFile();
+			OnUnfilteredLogFileChanged();
 		}
 
 		public int DataSourceCount => _dataSources.Count;
@@ -144,7 +147,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		protected override void DisposeAdditional()
 		{
-			_unfilteredLogFile?.Dispose();
+			_unfilteredLogFile.Dispose();
+			_logFile?.Dispose();
 		}
 
 		protected override void OnSingleLineChanged()
@@ -154,7 +158,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private void UpdateUnfilteredLogFile()
 		{
-			_unfilteredLogFile?.Dispose();
+			_logFile?.Dispose();
 
 			OriginalSources = _dataSources.ToList();
 
@@ -172,10 +176,10 @@ namespace Tailviewer.BusinessLogic.DataSources
 			                              })
 			                              .ToList();
 
-			_unfilteredLogFile = new MergedLogFile(TaskScheduler,
-			                                       MaximumWaitTime,
-			                                       logFiles);
-			OnUnfilteredLogFileChanged();
+			_logFile = new MergedLogFile(TaskScheduler,
+			                             MaximumWaitTime,
+			                             logFiles);
+			_unfilteredLogFile.InnerLogFile = _logFile;
 		}
 	}
 }
