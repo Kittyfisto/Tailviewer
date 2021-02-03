@@ -10,6 +10,7 @@ namespace Tailviewer.AcceptanceTests
 	public sealed class SingleApplicationHelperTest
 	{
 		[Test]
+		[FlakyTest(3)]
 		[LocalTest("Can't get this to work on appveyor")]
 		public void TestOpenFile1()
 		{
