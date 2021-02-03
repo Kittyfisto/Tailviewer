@@ -16,7 +16,7 @@ using Tailviewer.Ui.ViewModels;
 namespace Tailviewer.Test.Ui
 {
 	[TestFixture]
-	public sealed class SingleDataSourceViewModelTest
+	public sealed class FileDataSourceViewModelTest
 	{
 		private ILogFileFactory _logFileFactory;
 		private ManualTaskScheduler _scheduler;
@@ -37,9 +37,9 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = DataSourceId.CreateNew()
 			};
-			using (var source = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			using (var source = new FileDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				model.FullName.Should().Be(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test");
 				model.Id.Should().Be(settings.Id);
 
@@ -52,13 +52,13 @@ namespace Tailviewer.Test.Ui
 		public void TestConstruction2()
 		{
 			using (
-				var source = new SingleDataSource(_scheduler,
+				var source = new FileDataSource(_scheduler,
 					new DataSource {Id = DataSourceId.CreateNew(), File = @"C:\temp\foo.txt", SearchTerm = "foobar"},
 					new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
 				source.SearchTerm.Should().Be("foobar");
 
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				model.SearchTerm.Should().Be("foobar");
 			}
 		}
@@ -66,14 +66,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestConstruction3([Values(true, false)] bool showDeltaTimes)
 		{
-			using (var source = new SingleDataSource(_scheduler, new DataSource
+			using (var source = new FileDataSource(_scheduler, new DataSource
 			{
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowDeltaTimes.Should().Be(showDeltaTimes);
 			}
 		}
@@ -81,14 +81,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestConstruction4([Values(true, false)] bool showElapsedTime)
 		{
-			using (var source = new SingleDataSource(_scheduler, new DataSource
+			using (var source = new FileDataSource(_scheduler, new DataSource
 			{
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				model.ShowElapsedTime.Should().Be(showElapsedTime);
 			}
 		}
@@ -96,14 +96,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeShowElapsedTime([Values(true, false)] bool showElapsedTime)
 		{
-			using (var source = new SingleDataSource(_scheduler, new DataSource
+			using (var source = new FileDataSource(_scheduler, new DataSource
 			{
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowElapsedTime = showElapsedTime
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -122,14 +122,14 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestChangeShowDeltaTimes([Values(true, false)] bool showDeltaTimes)
 		{
-			using (var source = new SingleDataSource(_scheduler, new DataSource
+			using (var source = new FileDataSource(_scheduler, new DataSource
 			{
 				Id = DataSourceId.CreateNew(),
 				File = @"C:\temp\foo.txt",
 				ShowDeltaTimes = showDeltaTimes
 			}, new Mock<ILogFile>().Object, TimeSpan.Zero))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 
 				var changes = new List<string>();
 				model.PropertyChanged += (sender, args) => changes.Add(args.PropertyName);
@@ -148,9 +148,9 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestRename()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 
 			model.DisplayName.Should().Be("foo");
 			new Action(() => model.DisplayName = "bar").Should().Throw<InvalidOperationException>();
@@ -162,10 +162,10 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(_logFileFactory, _scheduler,
+					new FileDataSource(_logFileFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				model.RemoveCommand.Should().NotBeNull();
 				model.RemoveCommand.CanExecute(null).Should().BeTrue();
 				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
@@ -177,10 +177,10 @@ namespace Tailviewer.Test.Ui
 		{
 			using (
 				var source =
-					new SingleDataSource(_logFileFactory, _scheduler,
+					new FileDataSource(_logFileFactory, _scheduler,
 						new DataSource(@"E:\Code\SharpTail\SharpTail.Test\TestData\20Mb.test") {Id = DataSourceId.CreateNew()}))
 			{
-				var model = new SingleDataSourceViewModel(source, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(source, _actionCenter.Object);
 				var calls = new List<IDataSourceViewModel>();
 				model.Remove += calls.Add;
 				new Action(() => model.RemoveCommand.Execute(null)).Should().NotThrow();
@@ -196,9 +196,9 @@ namespace Tailviewer.Test.Ui
 				{
 					Id = DataSourceId.CreateNew()
 			};
-			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, settings))
+			using (var dataSource = new FileDataSource(_logFileFactory, _scheduler, settings))
 			{
-				var model = new SingleDataSourceViewModel(dataSource, _actionCenter.Object);
+				var model = new FileDataSourceViewModel(dataSource, _actionCenter.Object);
 				var chain = new[] {new SubstringFilter("foobar", true)};
 				model.QuickFilterChain = chain;
 				model.QuickFilterChain.Should().BeSameAs(chain);
@@ -209,10 +209,10 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestCharacterCode()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.SetupAllProperties();
 
-			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			model.CharacterCode = "ZZ";
 			model.CharacterCode.Should().Be("ZZ");
 			dataSource.Object.CharacterCode.Should().Be("ZZ");
@@ -230,10 +230,10 @@ namespace Tailviewer.Test.Ui
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/125")]
 		public void TestDisplayRelativePathWithFolderParent()
 		{
-			var single = new Mock<ISingleDataSource>();
+			var single = new Mock<IFileDataSource>();
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			single.Setup(x => x.FullFileName).Returns(@"C:\Users\Simon\AppData\Local\Tailviewer\Installation.log");
-			var singleViewModel = new SingleDataSourceViewModel(single.Object, _actionCenter.Object);
+			var singleViewModel = new FileDataSourceViewModel(single.Object, _actionCenter.Object);
 			using (var monitor = singleViewModel.Monitor())
 			{
 				singleViewModel.DisplayName.Should().Be("Installation.log");
@@ -260,11 +260,11 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestPluginDescription()
 		{
-			var single = new Mock<ISingleDataSource>();
+			var single = new Mock<IFileDataSource>();
 			single.Setup(x => x.Settings).Returns(new DataSource());
 			var pluginDescription = new PluginDescription();
 			single.Setup(x => x.TranslationPlugin).Returns(pluginDescription);
-			var singleViewModel = new SingleDataSourceViewModel(single.Object, _actionCenter.Object);
+			var singleViewModel = new FileDataSourceViewModel(single.Object, _actionCenter.Object);
 			singleViewModel.TranslationPlugin.Should().NotBeNull();
 			singleViewModel.TranslationPlugin.Should().BeSameAs(pluginDescription);
 		}
@@ -273,10 +273,10 @@ namespace Tailviewer.Test.Ui
 		[Description("Verifies that the description of the context menu item changes even when the ExcludeFromParent property is updated on its own")]
 		public void TestToggleExcludeViaModel()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var parent = new Mock<IMergedDataSourceViewModel>();
 			var parentDataSource = new Mock<IMultiDataSource>();
 			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());
@@ -298,10 +298,10 @@ namespace Tailviewer.Test.Ui
 		[Test]
 		public void TestToggleExcludeViaContextMenu()
 		{
-			var dataSource = new Mock<ISingleDataSource>();
+			var dataSource = new Mock<IFileDataSource>();
 			dataSource.Setup(x => x.Settings).Returns(new DataSource());
 			dataSource.Setup(x => x.FullFileName).Returns("A:\\foo");
-			var model = new SingleDataSourceViewModel(dataSource.Object, _actionCenter.Object);
+			var model = new FileDataSourceViewModel(dataSource.Object, _actionCenter.Object);
 			var parent = new Mock<IMergedDataSourceViewModel>();
 			var parentDataSource = new Mock<IMultiDataSource>();
 			parentDataSource.Setup(x => x.Id).Returns(DataSourceId.CreateNew());

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F4F3D6CC-4DBB-40BC-BC12-7AF88CFDAB22}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tailviewer.DataSources.UDP</RootNamespace>
+    <AssemblyName>Tailviewer.DataSources.UDP</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Extensions, Version=2.0.59.0, Culture=neutral, PublicKeyToken=951c63ca832f7094, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IUdpSocket.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UdpCustomDataSourceConfiguration.cs" />
+    <Compile Include="UdpDatagram.cs" />
+    <Compile Include="UdpDataSourceViewModel.cs" />
+    <Compile Include="UdpDataSourcePlugin.cs" />
+    <Compile Include="UdpLogFile.cs" />
+    <Compile Include="UdpSocket.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Tailviewer.Api\Tailviewer.Api.csproj">
+      <Project>{0C18B216-9FF4-4DCF-88C0-4B1448892F43}</Project>
+      <Name>Tailviewer.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tailviewer.Core\Tailviewer.Core.csproj">
+      <Project>{62C60D20-180E-4A59-9EF3-30161E1E31CB}</Project>
+      <Name>Tailviewer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"archive.exe" pack "$(MSBuildProjectDirectory)\$(OutDir)Tailviewer.DataSources.UDP.dll"
+xcopy "$(MSBuildProjectDirectory)\$(OutDir)Tailviewer.DataSources.UDP.*.tvp" "$(MSBuildProjectDirectory)\$(OutDir)Plugins\" /y</PostBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -5,11 +5,11 @@ using Tailviewer.BusinessLogic.Plugins;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tailviewer.Serilog")]
+[assembly: AssemblyTitle("Tailviewer.Formats.Serilog")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Tailviewer.Serilog")]
+[assembly: AssemblyProduct("Tailviewer.Formats.Serilog")]
 [assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

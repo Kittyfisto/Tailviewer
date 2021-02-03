@@ -183,6 +183,9 @@
     <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.Formats.Serilog.0.0.0.tvp">
       <LogicalName>InstallationFiles\Plugins\Tailviewer.Formats.Serilog.0.0.0.tvp</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\bin\Plugins\Tailviewer.DataSources.UDP.0.0.0.tvp">
+      <LogicalName>InstallationFiles\Plugins\Tailviewer.DataSources.UDP.0.0.0.tvp</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\..\bin\MMQ.dll">
       <Link>InstallationFiles\MMQ.dll</Link>
       <LogicalName>InstallationFiles\MMQ.dll</LogicalName>

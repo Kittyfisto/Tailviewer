@@ -53,10 +53,13 @@
       <HintPath>..\..\packages\System.Threading.Extensions.2.0.59\lib\net45\System.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogic\Certainty.cs" />
+    <Compile Include="BusinessLogic\Plugins\CustomDataSourceId.cs" />
+    <Compile Include="BusinessLogic\Plugins\ICustomDataSourceConfiguration.cs" />
+    <Compile Include="BusinessLogic\Plugins\ICustomDataSourcePlugin.cs" />
     <Compile Include="BusinessLogic\Filters\ILogEntryFilter.cs" />
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParser.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParserPlugin.cs" />
+    <Compile Include="Ui\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />

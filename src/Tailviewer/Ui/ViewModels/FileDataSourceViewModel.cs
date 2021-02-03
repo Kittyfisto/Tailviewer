@@ -14,9 +14,9 @@ namespace Tailviewer.Ui.ViewModels
 	/// <summary>
 	///     Represents a data source and is capable of opening the source folder in explorer
 	/// </summary>
-	public sealed class SingleDataSourceViewModel
+	public sealed class FileDataSourceViewModel
 		: AbstractDataSourceViewModel
-		, ISingleDataSourceViewModel
+		, IFileDataSourceViewModel
 	{
 		private readonly IActionCenter _actionCenter;
 		private readonly ISingleDataSource _dataSource;
@@ -27,7 +27,7 @@ namespace Tailviewer.Ui.ViewModels
 		private bool _canBeRemoved;
 		private bool _excludeFromParent;
 
-		public SingleDataSourceViewModel(ISingleDataSource dataSource,
+		public FileDataSourceViewModel(IFileDataSource dataSource,
 							IActionCenter actionCenter)
 								: base(dataSource)
 		{

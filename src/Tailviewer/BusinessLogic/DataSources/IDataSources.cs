@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Tailviewer.BusinessLogic.Bookmarks;
+using Tailviewer.BusinessLogic.DataSources.Custom;
+using Tailviewer.BusinessLogic.Plugins;
 
 namespace Tailviewer.BusinessLogic.DataSources
 {
@@ -29,6 +31,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		IReadOnlyList<IDataSource> Sources { get; }
 
+		IReadOnlyList<ICustomDataSourcePlugin> CustomDataSources { get; }
+
 		/// <summary>
 		///     Tests if a data source with the given id exists.
 		/// </summary>
@@ -36,9 +40,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 		/// <returns></returns>
 		bool Contains(DataSourceId id);
 
-		SingleDataSource AddFile(string fileName);
+		FileDataSource AddFile(string fileName);
 		IFolderDataSource AddFolder(string folderPath);
 		MergedDataSource AddGroup();
+
+		CustomDataSource AddCustom(CustomDataSourceId id);
+
 		bool Remove(IDataSource viewModelDataSource);
 
 		#endregion

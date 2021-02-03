@@ -206,7 +206,7 @@ namespace Tailviewer.Test.Ui
 
 			viewModel = _model.Observable[1];
 			viewModel.Should().NotBeNull();
-			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+			viewModel.Should().BeOfType<FileDataSourceViewModel>();
 			viewModel.DataSource.Id.Should().Be(source3.Id);
 		}
 
@@ -231,7 +231,7 @@ namespace Tailviewer.Test.Ui
 
 			viewModel = _model.Observable[1];
 			viewModel.Should().NotBeNull();
-			viewModel.Should().BeOfType<SingleDataSourceViewModel>();
+			viewModel.Should().BeOfType<FileDataSourceViewModel>();
 		}
 
 		[Test]

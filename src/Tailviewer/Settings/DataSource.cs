@@ -6,6 +6,7 @@ using System.Xml;
 using Tailviewer.BusinessLogic;
 using log4net;
 using Metrolib;
+using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 
 namespace Tailviewer.Settings
@@ -83,6 +84,16 @@ namespace Tailviewer.Settings
 		public List<QuickFilterId> ActivatedQuickFilters => _activatedQuickFilters;
 
 		/// <summary>
+		/// 
+		/// </summary>
+		public CustomDataSourceId CustomDataSourceId;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public ICustomDataSourceConfiguration CustomDataSourceConfiguration;
+
+		/// <summary>
 		///     A user defined name for this data source.
 		/// </summary>
 		public string DisplayName;
@@ -111,6 +122,9 @@ namespace Tailviewer.Settings
 
 		public override string ToString()
 		{
+			if (CustomDataSourceConfiguration != null)
+				return string.Format("Custom ({0})", CustomDataSourceConfiguration);
+
 			if (File == null)
 				return string.Format("Merged ({0})", Id);
 

@@ -10,6 +10,8 @@ using Tailviewer.Archiver.Plugins;
 using Tailviewer.Archiver.Plugins.Description;
 using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.AutoUpdates;
+using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.DataSources.Custom;
 using Tailviewer.BusinessLogic.Highlighters;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Settings;

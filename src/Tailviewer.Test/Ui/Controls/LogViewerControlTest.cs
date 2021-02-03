@@ -20,7 +20,7 @@ namespace Tailviewer.Test.Ui.Controls
 	{
 		private Mock<IActionCenter> _actionCenter;
 		private LogViewerControl _control;
-		private SingleDataSourceViewModel _dataSource;
+		private FileDataSourceViewModel _dataSource;
 		private ILogFileFactory _logFileFactory;
 		private ManualTaskScheduler _scheduler;
 		private Mock<IApplicationSettings> _settings;
@@ -38,8 +38,8 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			_settings = new Mock<IApplicationSettings>();
 			_dataSource =
-				new SingleDataSourceViewModel(
-					new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
+				new FileDataSourceViewModel(
+					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
 					_actionCenter.Object);
 			_control = new LogViewerControl
 			{
@@ -366,8 +366,8 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestCtor()
 		{
 			var source =
-				new SingleDataSourceViewModel(
-					new SingleDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
+				new FileDataSourceViewModel(
+					new FileDataSource(_logFileFactory, _scheduler, new DataSource("Foobar") {Id = DataSourceId.CreateNew()}),
 					_actionCenter.Object);
 			source.LevelsFilter = LevelFlags.All;
 

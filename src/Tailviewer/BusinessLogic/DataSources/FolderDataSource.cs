@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		private const char PatternSeparator = ';';
 
-		private readonly Dictionary<IFileInfo, SingleDataSource> _dataSources;
+		private readonly Dictionary<IFileInfo, FileDataSource> _dataSources;
 		private readonly MergedDataSource _mergedDataSource;
 		private readonly IFilesystem _filesystem;
 		private readonly ITaskScheduler _taskScheduler;
@@ -69,7 +69,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			_filesystem = filesystem;
 			_settings = settings;
 			_syncRoot = new object();
-			_dataSources = new Dictionary<IFileInfo, SingleDataSource>();
+			_dataSources = new Dictionary<IFileInfo, FileDataSource>();
 			_mergedDataSource = new MergedDataSource(taskScheduler, settings, maximumWaitTime);
 			_unfilteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
 			_filteredLogFileProxy = new LogFileProxy(taskScheduler, maximumWaitTime);
@@ -488,7 +488,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 							{
 								Id = DataSourceId.CreateNew()
 							};
-							dataSource = new SingleDataSource(_logFileFactory,
+							dataSource = new FileDataSource(_logFileFactory,
 															  _taskScheduler,
 															  settings);
 							_dataSources.Add(file, dataSource);

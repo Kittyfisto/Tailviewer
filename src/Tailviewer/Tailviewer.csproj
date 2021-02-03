@@ -105,10 +105,15 @@
     <Compile Include="BusinessLogic\ActionCenter\IOpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderAction.cs" />
     <Compile Include="BusinessLogic\ActionCenter\OpenFolderException.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\CustomDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\NoThrowCustomDataSourceConfiguration.cs" />
     <Compile Include="BusinessLogic\DataSources\FolderDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\ICustomDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\IFileDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IFolderDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMergedDataSource.cs" />
     <Compile Include="BusinessLogic\DataSources\IMultiDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\Custom\NoThrowCustomDataSourcePlugin.cs" />
     <Compile Include="BusinessLogic\FileExplorer\FileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\IFileExplorer.cs" />
     <Compile Include="BusinessLogic\FileExplorer\NativeMethods.cs" />
@@ -302,6 +307,7 @@
     <Compile Include="Ui\Controls\SidePanel\Outline\LogFilePropertyViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModel.cs" />
     <Compile Include="Ui\NavigationService.cs" />
+    <Compile Include="Ui\ViewModels\CustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ExcludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\FolderDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\SidePanel\HyperlinkRun.cs" />
@@ -347,9 +353,12 @@
     <Compile Include="Ui\Controls\ActionCenter\ChangeViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\NotificationViewModel.cs" />
     <Compile Include="Ui\ViewModels\AutoUpdateViewModel.cs" />
+    <Compile Include="Ui\ViewModels\AddCustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IContextMenuViewModel.cs" />
+    <Compile Include="Ui\ViewModels\ICustomDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IDataSourceViewModel.cs" />
     <Compile Include="Ui\Controls\ActionCenter\INotificationViewModel.cs" />
+    <Compile Include="Ui\ViewModels\IFileDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IMergedDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\IncludeAllInGroupViewModel.cs" />
     <Compile Include="Ui\ViewModels\ISingleDataSourceViewModel.cs" />
@@ -363,10 +372,10 @@
     <Compile Include="Ui\Converters\CountConverter.cs" />
     <Compile Include="Ui\Controls\SidePanel\DataSources\DataSourcesViewModel.cs" />
     <Compile Include="Ui\Controls\DataSourceTree\DataSourcesControl.cs" />
-    <Compile Include="BusinessLogic\DataSources\SingleDataSource.cs" />
+    <Compile Include="BusinessLogic\DataSources\FileDataSource.cs" />
     <Compile Include="Ui\ViewModels\LogViewerViewModel.cs" />
     <Compile Include="Ui\ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Ui\ViewModels\SingleDataSourceViewModel.cs" />
+    <Compile Include="Ui\ViewModels\FileDataSourceViewModel.cs" />
     <Compile Include="Ui\ViewModels\ToggleExcludeFromGroupViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
@@ -377,6 +386,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Ui\Controls\DataSourceTree\CustomDataSourceTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -496,7 +509,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ui\Controls\DataSourceTree\SingleDataSourceTemplate.xaml">
+    <Page Include="Ui\Controls\DataSourceTree\FileDataSourceTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
