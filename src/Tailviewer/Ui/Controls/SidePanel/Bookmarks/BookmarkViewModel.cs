@@ -40,6 +40,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.Bookmarks
 
 		private string DataSourceName(IDataSource dataSource)
 		{
+			var merged = dataSource as IMergedDataSource;
+			if (merged != null)
+				return merged.DisplayName;
+
 			var fname = dataSource?.FullFileName;
 			var name = Path.GetFileName(fname);
 			return name;

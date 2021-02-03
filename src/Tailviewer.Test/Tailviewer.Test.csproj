@@ -230,7 +230,8 @@
     <Compile Include="Ui\Controls\MainPanel\Settings\SettingsControlTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\DataSourceSuggestionViewModelTest.cs" />
     <Compile Include="Ui\Controls\QuickNavigation\QuickNavigationViewModelTest.cs" />
-    <Compile Include="Ui\Controls\SidePanel\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarksViewModelTest.cs" />
+    <Compile Include="Ui\Controls\SidePanel\Bookmarks\BookmarkViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Issues\IssuesSidePanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\Outline\OutlineSidePanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\SidePanel\TimeFilter\TimeFiltersViewModelTest.cs" />
