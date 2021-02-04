@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <title>Tailviewer by Kittyfisto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+<body>
+    <section class="page-header">
+        <h1 class="project-name">Tailviewer</h1>
+        <h2 class="project-tagline">A fast, free and open source log viewer for Windows</h2>
+        <a href="https://github.com/Kittyfisto/Tailviewer" class="btn">View on GitHub</a>
+        <a href="https://github.com/Kittyfisto/Tailviewer/releases/download/v0.9.5/Tailviewer-setup-0.9.5.1.exe" class="btn">Download Installer (4.98Mb)</a>
+    </section>
+
+    <section class="main-content">
+        <h1>
+            <a id="welcome" class="anchor" href="#welcome" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is Tailviewer?
+        </h1>
+
+        <p>Tailviewer is a log file viewer for Windows that allows you to view text based log files both offline and in real-time. It is easy to use, incredibly fast and free!</p>
+
+        <h1>
+            <a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features
+        </h1>
+
+        <p>Tailviewer can display any text based log file and allows tailing, searching and filtering. </p>
+
+        <h2>
+            <a id="filtering" class="anchor" href="#filtering" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filtering
+        </h2>
+
+        <div class="clearfix">
+            <p class="imageleft"><img src="images/filter-chaining.png" /></p>
+            <p>Filtering allows you to reduce a log file to only those entries that you're interested in. You can easily chain multiple filters to narrow in on a particular problem.</p>
+            <p>You can filter by sub string (the default), wildcard or using a regular expression. In addition, you can invert filters to hide matching entries.</p>
+            <p>Your filters are stored automatically and available with every log file you open. Tailviewer even remembers which filters were applied the last time you viewed a log file so you don't have to!</p>
+        </div>
+
+        <h2>
+            <a id="multiline" class="anchor" href="#multiline" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multiline filtering
+        </h2>
+        <p>
+            Most of the time, log files contain one log entry per line. However that is not always the case, especially when you're logging exception stacktraces or similar
+            multiline content. For this reason, filters work on log entries, not just lines. That is, if a particular line of a multiline log entry matches the filter, then the
+            entire log entry is displayed
+        </p>
+        <p style="margin: 15px"><img src="images/multiline-filter.png" /></p>
+
+        <h2>
+            <a id="unicode" class="anchor" href="#unicode" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Unicode support
+        </h2>
+        <div class="clearfix">
+            <p class="imageright"><img src="images/unicode.png" /></p>
+            <p>Log files shouldn't be limited to plain old ASCII, and neither should you. Tailviewer works with a lot of different encodings including: ASCII, UTF-8 and UTF-16.</p>
+        </div>
+
+        <h2>
+            <a id="multiple" class="anchor" href="#multiple" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multiple log files
+        </h2>
+        <p>You can open multiple log files at the same time and Tailviewer automatically notifies you when an opened log file is modified so you never miss a modification!</p>
+
+        <h2>
+            <a id="merging" class="anchor" href="#merging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Merging log files
+        </h2>
+        <div class="clearfix">
+            <p class="imageleft"><img src="images/merged.png" /></p>
+            <p>Developing distributed applications is hard. Debugging them is even harder.</p>
+            <p>Tailviewer can help you monitor distributed applications by being able to display a merged view of two or more log files based on the timestamps of individual log entries.</p>
+            <p>You can even display a merged view when its files are being modified.</p>
+        </div>
+
+        <h2>
+            <a id="search" class="anchor" href="#search" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Searching
+        </h2>
+        <div>
+            <p class="imageright"><img src="images/searching.png" /></p>
+            <p>Sometimes, you just want to search for the occurence of a string. Tailviewer obviously allows you to easily search a log file and to step through each and every occurence.</p>
+        </div>
+
+        <h2>
+            <a id="levelfilter" class="anchor" href="#levelfilter" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Level quick filter
+        </h2>
+        <div class="clearfix">
+            <p class="imageleft"><img src="images/level-filters.png" /></p>
+            <p>Not interested in debug statements? Can't stand the sight of errors anymore? You can easily select which log levels shall be displayed and which ones should not.</p>
+            <p>Not only does it allow you to hide log entries, but it also gives you an overview over the amount of log entries in a log file. Want to know if a particular file contains any errors? You don't need to search or filter to find the answer!</p>
+        </div>
+
+        <h2>
+            <a id="speed" class="anchor" href="#speed" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Speed
+        </h2>
+        <p>Tailviewer is incredibly fast and allows you to concentrate on your work, instead of having to wait for the application to respond.</p>
+
+        <footer class="site-footer">
+            <span class="site-footer-owner"><a href="https://github.com/Kittyfisto/Tailviewer">Tailviewer</a> is maintained by <a href="https://github.com/Kittyfisto">Simon Mießler</a>.</span>
+
+            <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+        </footer>
+
+    </section>
+
+
+</body>
+</html>

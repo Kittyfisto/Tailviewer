@@ -17,6 +17,7 @@ using Tailviewer.Ui.Controls.ActionCenter;
 using Tailviewer.Ui.Controls.DataSourceTree;
 using Tailviewer.Ui.Controls.MainPanel;
 using Tailviewer.Ui.Controls.MainPanel.About;
+using Tailviewer.Ui.Controls.MainPanel.Help;
 using Tailviewer.Ui.Controls.MainPanel.Plugins;
 using Tailviewer.Ui.Controls.MainPanel.Settings;
 using DataSources = Tailviewer.BusinessLogic.DataSources.DataSources;
@@ -44,6 +45,7 @@ namespace Tailviewer.Ui.ViewModels
 		private readonly LogViewMainPanelEntry _rawEntry;
 		private readonly IMainPanelEntry _pluginsEntry;
 		private readonly IMainPanelEntry _settingsEntry;
+		private readonly HelpMainPanelEntry _helpEntry;
 		private readonly IMainPanelEntry _aboutEntry;
 		private readonly LogViewMainPanelViewModel _logViewPanel;
 		private readonly IMainPanelEntry[] _topEntries;
@@ -113,11 +115,13 @@ namespace Tailviewer.Ui.ViewModels
 
 			_settingsEntry = new SettingsMainPanelEntry();
 			_pluginsEntry = new PluginsMainPanelEntry();
+			_helpEntry = new HelpMainPanelEntry();
 			_aboutEntry = new AboutMainPanelEntry();
 			_bottomEntries = new[]
 			{
 				_settingsEntry,
 				_pluginsEntry,
+				_helpEntry,
 				_aboutEntry
 			};
 
@@ -335,8 +339,6 @@ namespace Tailviewer.Ui.ViewModels
 				if (value == _settingsEntry)
 				{
 					SelectedMainPanel = _settings;
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "Settings";
 				}
 				else if (value == _pluginsEntry)
 				{
@@ -344,20 +346,23 @@ namespace Tailviewer.Ui.ViewModels
 					                                                  _services.Retrieve<IDispatcher>(),
 					                                                  _services.Retrieve<IPluginUpdater>(),
 					                                                  _plugins);
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "Plugins";
+				}
+				else if (value == _helpEntry)
+				{
+					SelectedMainPanel = new HelpMainPanelViewModel(_applicationSettings);
 				}
 				else if (value == _aboutEntry)
 				{
 					SelectedMainPanel = new AboutMainPanelViewModel(_applicationSettings);
-					WindowTitle = Constants.MainWindowTitle;
-					WindowTitleSuffix = "About";
 				}
+
+				WindowTitleSuffix = value?.Title;
 
 				if (value != null)
 				{
 					_applicationSettings.MainWindow.SelectedMainPanel = value.Id;
 					SelectedTopEntry = null;
+					WindowTitle = Constants.MainWindowTitle;
 				}
 			}
 		}

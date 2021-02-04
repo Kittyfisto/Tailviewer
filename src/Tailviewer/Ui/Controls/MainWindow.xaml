@@ -48,6 +48,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/LogViewMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Settings/SettingsMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Plugins/PluginsMainPanelDataTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/Help/HelpMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/MainPanel/About/AboutMainPanelDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/DataSources/DataSourcesDataTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Tailviewer;component/Ui/Controls/SidePanel/QuickFilters/QuickFiltersSidePanelDataTemplate.xaml" />
