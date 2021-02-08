@@ -414,11 +414,18 @@ namespace Tailviewer.Core.LogFiles
 									read = true;
 								}
 
-								var parsed = _parser?.Parse(new RawLogEntry(_entries.Count, trimmedLine));
-								Add(trimmedLine,
-								    parsed?.LogLevel ?? LevelFlags.None,
+								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine);
+								if (_parser != null)
+								{
+									var parsedLogEntry = _parser.Parse(logEntry);
+									if (parsedLogEntry != null)
+										logEntry = parsedLogEntry;
+								}
+
+								Add(logEntry.RawContent,
+								    logEntry.LogLevel,
 								    _numberOfLinesRead,
-								    parsed?.Timestamp);
+								    logEntry.Timestamp);
 							}
 
 							_lastPosition = stream.Position;

@@ -55,6 +55,23 @@ namespace Tailviewer
 			AddV093();
 			AddV094();
 			AddV095();
+			AddV096();
+		}
+
+		private static void AddV096()
+		{
+			var features = new string[]
+			{};
+			var bugfixes = new string[]
+			{
+				"Tailviewer displays an empty file when the first line contains lots of garbage data [#273](https://github.com/Kittyfisto/Tailviewer/issues/273)"
+			};
+			var misc = new string[]
+			{};
+			var releaseDate = new DateTime(2021, 2, 8);
+			var version = new Version(0, 9, 6);
+			var change = new Change(releaseDate, version, features, bugfixes, misc);
+			AllChanges.Add(change);
 		}
 
 		private static void AddV095()
