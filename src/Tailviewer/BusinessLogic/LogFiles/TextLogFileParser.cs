@@ -18,7 +18,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		static TextLogFileParser()
 		{
 			// We will remove every character from ASCII [0-31] besides the tab character from the line because we can't display them anways.
-			RemovableCharacters = Enumerable.Range(0, 31).Select(x => new string((char) x, 1)).Where(y => y != "\t").ToArray();
+			RemovableCharacters = Enumerable.Range(0, 32).Select(x => new string((char) x, 1)).Where(y => y != "\t")
+			                                .Concat(new []{"\u007f"}).ToArray();
 		}
 
 		public TextLogFileParser(ITimestampParser timestampParser)
