@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -13,6 +15,18 @@ namespace Tailviewer.Core.Parsers
 		: ITimestampParser
 	{
 		private const int MaxToleratedExceptions = 10;
+
+		/// <summary>
+		/// The maximum number of characters (from the start of the line) which tailviewer will traverse in order to find a timestamp.
+		/// </summary>
+		/// <remarks>
+		/// This number exists because sometimes a software (not to name names) might write utter garbage into its first line.
+		/// If there's enough garbage (say 158k bytes) in the first line, then tailviewer would search endlessly for a timestamp
+		/// (the loop not optimized so searching that much data might take hours).
+		/// If one were to find a better way to implement the loop, then this number might become irrelevant once more.
+		/// </remarks>
+		private const int MaxLineLength = 200;
+
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ITimestampParser[] _subParsers;
@@ -142,10 +156,20 @@ namespace Tailviewer.Core.Parsers
 
 		private void DetermineDateTimePart(string line)
 		{
+			if (SkipLine(line))
+				return;
+
+			int lineLength = line.Length;
+			if (line.Length > MaxLineLength)
+			{
+				Log.WarnFormat("Line has a length ({1}) greater than {0} characters. A timestamp will only be looked for in the first {0} characters!", MaxLineLength, line.Length);
+				lineLength = MaxLineLength;
+			}
+
 			foreach (var parser in _subParsers)
 			{
-				for (var firstIndex = 0; firstIndex < line.Length; ++firstIndex)
-				for (var lastIndex = firstIndex + parser.MinimumLength; lastIndex <= line.Length; ++lastIndex)
+				for (var firstIndex = 0; firstIndex < lineLength; ++firstIndex)
+				for (var lastIndex = firstIndex + parser.MinimumLength; lastIndex <= lineLength; ++lastIndex)
 				{
 					var dateTimeString = line.Substring(firstIndex, lastIndex - firstIndex);
 					try
@@ -167,6 +191,25 @@ namespace Tailviewer.Core.Parsers
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <remarks>
+		///   This method exists because parsing timestamps is time consuming due to its sub-par implementation.
+		/// </remarks>
+		/// <param name="line"></param>
+		/// <returns></returns>
+		[Pure]
+		private static bool SkipLine(string line)
+		{
+			// The runtime of the DetermineDateTimePart() method is so bad that performing a simple o(n)
+			// check is totally worth it, when you can skip gigantic lines
+			if (line.Any(char.IsDigit))
+				return false;
+
+			return true;
 		}
 	}
 }

@@ -137,7 +137,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 			DateTime unused;
 			subParser.Setup(x => x.TryParse(It.IsAny<string>(), out unused)).Throws<NullReferenceException>();
 
-			new Action(() => parser.TryParse("dawwadw", out unused)).Should().NotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
+			new Action(() => parser.TryParse("dawwadw1", out unused)).Should().NotThrow("because the parser is supposed to catch *all* exceptions thrown by buggy sub-parsers");
 			subParser.Verify(x => x.TryParse(It.IsAny<string>(), out unused), Times.AtLeastOnce);
 		}
 
@@ -231,6 +231,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Parsers
 				.Should()
 				.BeTrue();
 			timestamp.Should().Be(new DateTime(2019, 7, 8, 16, 18, 58, 381));
+		}
+
+		[Test]
+		public void TestTryParseLongGarbageLine()
+		{
+			var parser = new TimestampParser();
+			var line = new string('\0', 158000);
+			parser
+				.TryParse(
+				          line,
+				          out _)
+				.Should()
+				.BeFalse();
 		}
 	}
 }

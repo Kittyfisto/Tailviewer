@@ -148,6 +148,7 @@
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\TextLogFileParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
