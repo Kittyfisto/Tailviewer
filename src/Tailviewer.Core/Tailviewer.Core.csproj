@@ -77,6 +77,13 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="Filters\RangeFilter.cs" />
+    <Compile Include="IO\BufferedIoScheduler.cs" />
+    <Compile Include="IO\IoScheduler.cs" />
+    <Compile Include="IO\TextFileReader.cs" />
+    <Compile Include="IO\ITextFileReader.cs" />
+    <Compile Include="IO\ITextFileListener.cs" />
+    <Compile Include="IO\IIoScheduler.cs" />
+    <Compile Include="IO\TextFileReaderExtensions.cs" />
     <Compile Include="LogFiles\EmptyLogFile.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="LogFiles\Issues\LogFileIssue.cs" />
@@ -88,6 +95,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
+    <Compile Include="LogFiles\TextLogFile2.cs" />
     <Compile Include="LogFiles\TextLogFileFormat.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="ServiceContainer.cs" />

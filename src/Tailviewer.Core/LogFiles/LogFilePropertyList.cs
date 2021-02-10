@@ -188,5 +188,17 @@ namespace Tailviewer.Core.LogFiles
 				set { Value = (T) value; }
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <exception cref="NotImplementedException"></exception>
+		public void Reset()
+		{
+			foreach (var value in _values.Values)
+			{
+				value.Value = null;
+			}
+		}
 	}
 }
