@@ -23,6 +23,7 @@ using Tailviewer.BusinessLogic.LogFileFormats;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
+using Tailviewer.Core.IO;
 using Tailviewer.Core.Settings;
 using Tailviewer.Settings;
 using Tailviewer.Settings.Bookmarks;
@@ -178,6 +179,9 @@ namespace Tailviewer
 
 					var textLogFileParserPlugin = new TextLogFileParserPlugin(services);
 					services.RegisterInstance<ITextLogFileParserPlugin>(textLogFileParserPlugin);
+
+					var ioScheduler = new IoScheduler(taskScheduler);
+					services.RegisterInstance<IIoScheduler>(ioScheduler);
 
 					var fileFormatPlugins = pluginSystem.LoadAllOfTypeWithDescription<IFileFormatPlugin>();
 					var logFileFactory = new PluginLogFileFactory(services, fileFormatPlugins);

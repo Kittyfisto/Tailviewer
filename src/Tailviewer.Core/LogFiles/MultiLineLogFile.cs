@@ -31,6 +31,9 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private static readonly ILogFileColumn[] RequiredColumns = new ILogFileColumn[]
+			{LogFileColumns.Index, LogFileColumns.LogLevel, LogFileColumns.Timestamp};
+
 		private const int MaximumBatchSize = 10000;
 
 		private readonly object _syncRoot;
@@ -291,7 +294,28 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Append(LogFileSection section)
 		{
-			var buffer = new LogLine[section.Count];
+			var buffer = new LogEntryBuffer(section.Count, RequiredColumns);
+			_source.GetEntries(section, buffer);
+
+			lock (_syncRoot)
+			{
+				for (var i = 0; i < section.Count; ++i)
+				{
+					var logEntry = buffer[i];
+
+					if (_currentLogEntry.EntryIndex.IsInvalid ||
+					    !AppendToCurrentLogEntry(logEntry))
+					{
+						_currentLogEntry = _currentLogEntry.NextEntry(logEntry.Index);
+						_currentLogEntryLevel = logEntry.LogLevel;
+						_currentLogEntryTimestamp = logEntry.Timestamp;
+					}
+
+					_indices.Add(_currentLogEntry);
+				}
+			}
+
+			/*var buffer = new LogLine[section.Count];
 			_source.GetSection(section, buffer);
 
 			lock (_syncRoot)
@@ -310,7 +334,7 @@ namespace Tailviewer.Core.LogFiles
 
 					_indices.Add(_currentLogEntry);
 				}
-			}
+			}*/
 
 			_currentSourceIndex += section.Count;
 			_fullSourceSection = new LogFileSection(0, _currentSourceIndex.Value);
@@ -403,6 +427,23 @@ namespace Tailviewer.Core.LogFiles
 			if (logLine.Timestamp != null)
 				return false; //< A line with a timestamp is never added to a previous log entry
 			if (logLine.Level != LevelFlags.None && logLine.Level != LevelFlags.Other)
+				return false; //< A line with a log level is never added to a previous log entry
+
+			return true;
+
+			/*if (_currentLogEntryTimestamp != null && logLine.Timestamp == null)
+				return true;
+			if (_currentLogEntryLevel != LevelFlags.None && logLine.Level == LevelFlags.None)
+				return true;
+
+			return false;*/
+		}
+
+		private bool AppendToCurrentLogEntry(IReadOnlyLogEntry logLine)
+		{
+			if (logLine.Timestamp != null)
+				return false; //< A line with a timestamp is never added to a previous log entry
+			if (logLine.LogLevel != LevelFlags.None && logLine.LogLevel != LevelFlags.Other)
 				return false; //< A line with a log level is never added to a previous log entry
 
 			return true;

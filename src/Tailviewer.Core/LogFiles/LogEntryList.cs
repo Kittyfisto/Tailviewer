@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -115,6 +116,57 @@ namespace Tailviewer.Core.LogFiles
 			else
 			{
 				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="column"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex"></param>
+		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
+			if (destinationIndex + sourceIndices.Count > destination.Length)
+				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
+			IColumnData data;
+			if (_dataByColumn.TryGetValue(column, out data))
+			{
+				((ColumnData<T>)data).CopyTo(sourceIndices, destination, destinationIndex);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="indices"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		public void CopyTo(IReadOnlyList<int> indices, ILogEntries buffer, int destinationIndex)
+		{
+			foreach (var column in buffer.Columns)
+			{
+				if (_dataByColumn.TryGetValue(column, out var data))
+				{
+					data.CopyTo(indices, buffer, destinationIndex);
+				}
+				else
+				{
+					// TODO
+				}
 			}
 		}
 
@@ -366,6 +418,11 @@ namespace Tailviewer.Core.LogFiles
 				_data.Insert(index, _column.DefaultValue);
 			}
 
+			public void CopyTo(IReadOnlyList<int> indices, ILogEntries buffer, int destinationIndex)
+			{
+				buffer.CopyFrom(_column, destinationIndex, _data, indices);
+			}
+
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
 			{
 				if (length <= 0)
@@ -411,6 +468,22 @@ namespace Tailviewer.Core.LogFiles
 					if (sourceIndex >= 0 && sourceIndex < _data.Count)
 					{
 						destination[destinationIndex + i] = _data[sourceIndex];
+					}
+					else
+					{
+						destination[destinationIndex + i] = _column.DefaultValue;
+					}
+				}
+			}
+
+			public void CopyTo(IReadOnlyList<LogLineIndex> sourceIndices, T[] destination, int destinationIndex)
+			{
+				for (int i = 0; i < sourceIndices.Count; ++i)
+				{
+					var sourceIndex = sourceIndices[i];
+					if (sourceIndex >= 0 && sourceIndex < _data.Count)
+					{
+						destination[destinationIndex + i] = _data[(int) sourceIndex];
 					}
 					else
 					{

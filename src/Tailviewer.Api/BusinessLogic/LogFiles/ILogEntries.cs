@@ -18,6 +18,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="sourceIndex">The first index of <paramref name="source" /> from which to copy data from</param>
 		/// <param name="length">The number of elements of <paramref name="source" /> to copy from</param>
 		void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, T[] source, int sourceIndex, int length);
+		
+		/// <summary>
+		///     Copies data from the given array into this buffer.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="column">The column to copy data to</param>
+		/// <param name="destinationIndex">The first index in this buffer to which the given <paramref name="source" /> is copied</param>
+		/// <param name="source">The source from which to copy data from</param>
+		/// <param name="sourceIndices">The list of source indices from which to copy</param>
+		void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices);
 
 		/// <summary>
 		///     Copies data from the given column of the given log file into this buffer.

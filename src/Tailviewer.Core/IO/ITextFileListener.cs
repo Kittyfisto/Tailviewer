@@ -30,7 +30,7 @@ namespace Tailviewer.Core.IO
 		/// </summary>
 		/// <param name="properties"></param>
 		/// <param name="readSection"></param>
-		/// <param name="readData"></param>
-		void OnRead(ILogFileProperties properties, LogFileSection readSection, IReadOnlyList<string> readData);
+		/// <param name="lines"></param>
+		void OnRead(ILogFileProperties properties, LogFileSection readSection, IReadOnlyList<string> lines);
 	}
 }

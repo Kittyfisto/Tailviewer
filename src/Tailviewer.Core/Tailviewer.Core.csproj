@@ -77,8 +77,8 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="Filters\RangeFilter.cs" />
-    <Compile Include="IO\BufferedIoScheduler.cs" />
     <Compile Include="IO\IoScheduler.cs" />
+    <Compile Include="IO\NoThrowTextFileListener.cs" />
     <Compile Include="IO\TextFileReader.cs" />
     <Compile Include="IO\ITextFileReader.cs" />
     <Compile Include="IO\ITextFileListener.cs" />
@@ -87,6 +87,7 @@
     <Compile Include="LogFiles\EmptyLogFile.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="LogFiles\Issues\LogFileIssue.cs" />
+    <Compile Include="LogFiles\LogEntryCache.cs" />
     <Compile Include="LogFiles\LogFileFormats.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFileChanges.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFilePendingModification.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
-    <Compile Include="LogFiles\TextLogFile2.cs" />
+    <Compile Include="LogFiles\CachedTextLogFile.cs" />
     <Compile Include="LogFiles\TextLogFileFormat.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="ServiceContainer.cs" />

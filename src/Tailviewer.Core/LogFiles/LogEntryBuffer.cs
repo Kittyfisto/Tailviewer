@@ -105,6 +105,23 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			IColumnData columnData;
+			if (_dataByColumn.TryGetValue(column, out columnData))
+			{
+				((ColumnData<T>)columnData).CopyFrom(destinationIndex, source, sourceIndices);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
 		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, LogFileSection section)
 		{
 			if (column == null)
@@ -316,11 +333,6 @@ namespace Tailviewer.Core.LogFiles
 				_data = new T[length];
 			}
 
-			public void CopyFrom(int destIndex, T[] source, int sourceIndex, int length)
-			{
-				Array.Copy(source, sourceIndex, _data, destIndex, length);
-			}
-
 			public T this[int index]
 			{
 				get { return _data[index]; }
@@ -331,6 +343,19 @@ namespace Tailviewer.Core.LogFiles
 			{
 				get { return _data[index]; }
 				set { _data[index] = (T) value; }
+			}
+
+			public void CopyFrom(int destIndex, T[] source, int sourceIndex, int length)
+			{
+				Array.Copy(source, sourceIndex, _data, destIndex, length);
+			}
+
+			public void CopyFrom(int destinationIndex, IReadOnlyList<T> source, IReadOnlyList<int> sourceIndices)
+			{
+				for (int i = 0; i < sourceIndices.Count; ++i)
+				{
+					_data[destinationIndex + i] = source[i];
+				}
 			}
 
 			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)

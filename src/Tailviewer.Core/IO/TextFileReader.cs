@@ -32,7 +32,7 @@ namespace Tailviewer.Core.IO
 		private readonly ILogFileFormatMatcher _formatMatcher;
 		private readonly List<long> _lineOffsets;
 		private readonly List<string> _listenerOnReadBuffer;
-		private readonly ConcurrentQueue<ReadRequest> _readRequests;
+		private readonly ConcurrentQueue<IReadRequest> _readRequests;
 		private readonly LogFilePropertyList _properties;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly CancellationToken _cancellationToken;
@@ -52,16 +52,18 @@ namespace Tailviewer.Core.IO
 			_taskScheduler = taskScheduler;
 			_formatMatcher = formatMatcher;
 			_fileName = fileName;
-			_defaultEncoding = defaultEncoding;
+			_defaultEncoding = defaultEncoding ?? throw new ArgumentNullException(nameof(defaultEncoding));
+			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Encoding, defaultEncoding);
 			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
-			_listener = listener;
+			_listener = new NoThrowTextFileListener(listener);
 			_lineOffsets = new List<long>();
 			_listenerOnReadBuffer = new List<string>();
-			_readRequests = new ConcurrentQueue<ReadRequest>();
-			_properties = new LogFilePropertyList();
+			_readRequests = new ConcurrentQueue<IReadRequest>();
 			_cancellationTokenSource = new CancellationTokenSource();
 			_cancellationToken = _cancellationTokenSource.Token;
+
+			Log.DebugFormat("Log File '{0}' is interpreted using {1}", _fileName, defaultEncoding.EncodingName);
 		}
 
 		#region Implementation of IDisposable
@@ -77,18 +79,37 @@ namespace Tailviewer.Core.IO
 
 		public void Start()
 		{
+			if (_readTask != null)
+				return;
+
+			Reset();
 			_readTask = _taskScheduler.StartPeriodic(RunOnce, ToString());
 		}
 
 		public Task<int> ReadAsync(LogFileSection section, string[] buffer, int index)
 		{
 			var taskSource = new TaskCompletionSource<int>();
-			_readRequests.Enqueue(new ReadRequest(section, taskSource, buffer));
+			_readRequests.Enqueue(new ContiguousReadRequest(section, taskSource, buffer));
 			return taskSource.Task;
+		}
+
+		public Task<int> ReadAsync(IReadOnlyList<LogLineIndex> section, string[] buffer, int index)
+		{
+			var taskSource = new TaskCompletionSource<int>();
+			_readRequests.Enqueue(new NonContiguousReadRequest(section, taskSource, buffer));
+			return taskSource.Task;
+		}
+
+		public int Read(IReadOnlyList<LogLineIndex> section, string[] buffer, int index)
+		{
+			throw new NotImplementedException();
 		}
 
 		public int Read(LogFileSection section, string[] buffer, int index)
 		{
+			var task = ReadAsync(section, buffer, index);
+			task.Wait(_cancellationToken);
+			return task.Result;
 		}
 
 		#endregion
@@ -126,7 +147,7 @@ namespace Tailviewer.Core.IO
 						}
 					}
 
-					Listeners.OnRead(_numberOfLinesRead);
+					OnRead();
 					SetEndOfSourceReached();
 				}
 			}
@@ -254,7 +275,19 @@ namespace Tailviewer.Core.IO
 			return readAnything;
 		}
 
-		private void ServeReadRequest(StreamReaderEx reader, FileStream stream, ReadRequest request)
+		private void ServeReadRequest(StreamReaderEx reader, FileStream stream, IReadRequest request)
+		{
+			if (request is ContiguousReadRequest contiguous)
+			{
+				ServeContiguousReadRequest(reader, stream, contiguous);
+			}
+			else if (request is NonContiguousReadRequest nonContiguous)
+			{
+				ServeNonContiguousReadRequest(reader, stream, nonContiguous);
+			}
+		}
+
+		private void ServeContiguousReadRequest(StreamReaderEx reader, FileStream stream, ContiguousReadRequest request)
 		{
 			var startIndex = (int) request.Section.Index;
 			stream.Position = _lineOffsets[startIndex];
@@ -271,15 +304,52 @@ namespace Tailviewer.Core.IO
 			request.TaskSource.TrySetResult(linesRead);
 		}
 
+		private void ServeNonContiguousReadRequest(StreamReaderEx reader, FileStream stream, NonContiguousReadRequest request)
+		{
+			int linesRead = 0;
+			foreach (var lineIndex in request.Section)
+			{
+				stream.Position = _lineOffsets[lineIndex.Value];
+				var line = reader.ReadLine();
+				if (line == null)
+					break;
+
+				request.Buffer[linesRead] = line;
+				++linesRead;
+			}
+
+			request.TaskSource.TrySetResult(linesRead);
+		}
+
 		private void Add(long lineOffset, string trimmedLine)
 		{
 			_lineOffsets.Add(lineOffset);
 			_listenerOnReadBuffer.Add(trimmedLine);
 
-			if (_listenerOnReadBuffer > 1000)
+			if (_listenerOnReadBuffer.Count > 1000)
 			{
 				OnRead();
 			}
+		}
+
+		private void UpdateProgress()
+		{
+			_properties.SetValue(LogFileProperties.PercentageProcessed, CalculateProgress());
+		}
+
+		[Pure]
+		private Percentage CalculateProgress()
+		{
+			var fileSize = _properties.GetValue(LogFileProperties.Size);
+			var position = _lastPosition;
+			if (fileSize == null)
+				return Percentage.HundredPercent; //< We've fully read the non-existant file...
+
+			var progress = (double) fileSize.Value.Bytes / position;
+			// Since we've performed two reads, it's possible that they have inconsistent values
+			// and therefore we should perform a sanity check on the resulting progress value
+			// so it stays within the expected boundaries. (It's just not worth a lock)
+			return Percentage.FromPercent((float)MathEx.Saturate(progress) * 100);
 		}
 
 		/// <summary>
@@ -300,7 +370,12 @@ namespace Tailviewer.Core.IO
 				if (format != null)
 				{
 					var encoding = format.Encoding ?? _defaultEncoding;
-					_properties.SetValue(LogFileProperties.Encoding, encoding);
+					var previousEncoding = _properties.GetValue(LogFileProperties.Encoding);
+					if (!Equals(encoding, previousEncoding))
+					{
+						Log.DebugFormat("Log File '{0}' is now interpreted using {1} (previous: {2})", _fileName, encoding.EncodingName, previousEncoding.EncodingName);
+						_properties.SetValue(LogFileProperties.Encoding, encoding);
+					}
 				}
 			}
 
@@ -335,7 +410,10 @@ namespace Tailviewer.Core.IO
 
 		private void OnRead()
 		{
-			_listener.OnRead(_properties, );
+			UpdateProgress();
+			var section = new LogFileSection(_numberOfLinesRead - _listenerOnReadBuffer.Count, _listenerOnReadBuffer.Count);
+			_listener.OnRead(_properties, section, _listenerOnReadBuffer);
+			_listenerOnReadBuffer.Clear();
 		}
 
 		private void OnReset(FileStream stream,
@@ -383,15 +461,39 @@ namespace Tailviewer.Core.IO
 			_listener.OnReset(_properties);
 		}
 
-		struct ReadRequest
+		interface IReadRequest
+		{
+			TaskCompletionSource<int> TaskSource { get; }
+			string[] Buffer { get; }
+		}
+
+		sealed class ContiguousReadRequest
+			: IReadRequest
 		{
 			public readonly LogFileSection Section;
-			public readonly TaskCompletionSource<int> TaskSource;
-			public readonly string[] Buffer;
+			public TaskCompletionSource<int> TaskSource { get; }
+			public string[] Buffer { get; }
 
-			public ReadRequest(LogFileSection section,
-			                   TaskCompletionSource<int> taskSourceSource,
-			                   string[] buffer)
+			public ContiguousReadRequest(LogFileSection section,
+			                             TaskCompletionSource<int> taskSourceSource,
+			                             string[] buffer)
+			{
+				Section = section;
+				TaskSource = taskSourceSource;
+				Buffer = buffer;
+			}
+		}
+
+		sealed class NonContiguousReadRequest
+			: IReadRequest
+		{
+			public readonly IReadOnlyList<LogLineIndex> Section;
+			public TaskCompletionSource<int> TaskSource { get; }
+			public string[] Buffer { get; }
+
+			public NonContiguousReadRequest(IReadOnlyList<LogLineIndex> section,
+			                                TaskCompletionSource<int> taskSourceSource,
+			                                string[] buffer)
 			{
 				Section = section;
 				TaskSource = taskSourceSource;

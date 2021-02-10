@@ -1,4 +1,6 @@
-﻿using Tailviewer.BusinessLogic.LogFiles;
+﻿using System.Collections.Generic;
+using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
@@ -47,5 +49,13 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="index"></param>
 		void InsertEmpty(int index);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="indices"></param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		void CopyTo(IReadOnlyList<int> indices, ILogEntries buffer, int destinationIndex);
 	}
 }

@@ -85,29 +85,12 @@ namespace Tailviewer.Core.LogFiles
 		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
 		///     them into the given <paramref name="buffer" />.
 		/// </summary>
-		/// <remarks>
-		///     TODO: Move this method into the <see cref="ILogFile"/> interface
-		/// </remarks>
-		/// <param name="logFile"></param>
-		/// <param name="section"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex"></param>
-		public static void GetEntries(this ILogFile logFile, LogFileSection section, ILogEntries buffer, int destinationIndex)
-		{
-			foreach (var column in buffer.Columns)
-				buffer.CopyFrom(column, destinationIndex, logFile, section);
-		}
-
-		/// <summary>
-		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
-		///     them into the given <paramref name="buffer" />.
-		/// </summary>
 		/// <param name="logFile"></param>
 		/// <param name="section"></param>
 		/// <param name="buffer"></param>
 		public static void GetEntries(this ILogFile logFile, LogFileSection section, ILogEntries buffer)
 		{
-			GetEntries(logFile, section, buffer, 0);
+			logFile.GetEntries(section, buffer, 0);
 		}
 
 		/// <summary>
@@ -154,8 +137,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="buffer"></param>
 		public static void GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> indices, ILogEntries buffer)
 		{
-			foreach (var column in buffer.Columns)
-				buffer.CopyFrom(column, 0, logFile, indices);
+			logFile.GetEntries(indices, buffer, 0);
 		}
 
 		/// <summary>

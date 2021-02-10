@@ -41,6 +41,27 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _propertyDescriptors;
 
 		/// <inheritdoc />
+		public void CopyFrom(ILogFileProperties properties)
+		{
+			foreach (var propertyDescriptor in properties.Properties)
+			{
+				// By performing a virtual call (CopyFrom) into the typed storage,
+				// we can avoid any and all boxing / unboxing of value types.
+				if (!_values.ContainsKey(propertyDescriptor))
+				{
+					_propertyDescriptors.Add(propertyDescriptor);
+					var storage = CreateValueStorage(propertyDescriptor);
+					storage.CopyFrom(properties);
+					_values.Add(propertyDescriptor, storage);
+				}
+				else
+				{
+					_values[propertyDescriptor].CopyFrom(properties);
+				}
+			}
+		}
+
+		/// <inheritdoc />
 		public void SetValue(ILogFilePropertyDescriptor propertyDescriptor, object value)
 		{
 			if (propertyDescriptor == null)
@@ -152,7 +173,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private IPropertyStorage CreateValueStorage<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return new PropertyStorage<T>(propertyDescriptor.DefaultValue);
+			return new PropertyStorage<T>(propertyDescriptor);
 		}
 
 		/// <summary>
@@ -161,6 +182,7 @@ namespace Tailviewer.Core.LogFiles
 		private interface IPropertyStorage
 		{
 			object Value { get; set; }
+			void CopyFrom(ILogFileProperties properties);
 		}
 
 		/// <summary>
@@ -169,17 +191,24 @@ namespace Tailviewer.Core.LogFiles
 		private sealed class PropertyStorage<T>
 			: IPropertyStorage
 		{
+			private readonly ILogFilePropertyDescriptor<T> _descriptor;
 			private T _value;
 
-			public PropertyStorage(T value)
+			public PropertyStorage(ILogFilePropertyDescriptor<T> descriptor)
 			{
-				_value = value;
+				_descriptor = descriptor;
+				_value = descriptor.DefaultValue;
 			}
 
 			public T Value
 			{
 				get { return _value; }
 				set { _value = value; }
+			}
+
+			public void CopyFrom(ILogFileProperties properties)
+			{
+				_value = properties.GetValue(_descriptor);
 			}
 
 			object IPropertyStorage.Value

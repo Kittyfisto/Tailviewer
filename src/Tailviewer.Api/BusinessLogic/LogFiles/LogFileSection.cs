@@ -148,6 +148,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		[Pure]
+		public LogFileSection? Intersect(LogFileSection other)
+		{
+			var greatestStart = Index > other.Index ? Index : other.Index;
+			int smallestEnd = LastIndex < other.LastIndex ? LastIndex : other.LastIndex;
+
+			//no intersection
+			if (greatestStart > smallestEnd)
+			{
+				return null;
+			}
+
+			return new LogFileSection(greatestStart, smallestEnd - greatestStart + 1);
+		}
+
+		/// <summary>
 		///     Creates a new section which spawns from the lowest <see cref="Index" />
 		///     of the given two sections to the greatest <see cref="LastIndex" />.
 		/// </summary>

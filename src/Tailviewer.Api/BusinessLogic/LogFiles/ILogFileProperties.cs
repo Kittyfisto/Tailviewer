@@ -13,6 +13,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
 
 		/// <summary>
+		/// Reads all values from the given properties object and copies it to this object.
+		/// </summary>
+		/// <param name="properties"></param>
+		void CopyFrom(ILogFileProperties properties);
+
+		/// <summary>
 		///     Sets the value of the given property.
 		/// </summary>
 		/// <param name="propertyDescriptor"></param>
