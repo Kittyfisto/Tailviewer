@@ -118,7 +118,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
+		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -127,7 +127,7 @@ namespace Tailviewer.Core.LogFiles
 			if (!_dataByColumn.TryGetValue(column, out columnData))
 				throw new NoSuchColumnException(column);
 
-			columnData.CopyFrom(destinationIndex, source, indices);
+			columnData.CopyFrom(destinationIndex, source, sourceIndices);
 		}
 
 		/// <inheritdoc />

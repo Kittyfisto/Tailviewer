@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -20,7 +21,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Count.Should().Be(0);
 			entries.Columns.Should()
 			       .Equal(new object[] {LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime, LogFileColumns.RawContent},
-			              "because the order columns should've been preserved");
+			              "because the order columns should have been preserved");
 		}
 
 		[Test]
@@ -167,6 +168,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestAddRange()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			var other = new LogEntryList(LogFileColumns.RawContent);
+			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "rob"}}));
+			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "ert"}}));
+
+			entries.AddRange(other);
+			entries.Count.Should().Be(2, "because we've added all two entries from the other list");
+			entries[0].RawContent.Should().Be("rob");
+			entries[1].RawContent.Should().Be("ert");
+		}
+
+		[Test]
 		public void TestRemoveAtInvalidIndex([Values(-1, 1, 2)] int invalidIndex)
 		{
 			var entries = new LogEntryList(LogFileColumns.DeltaTime, LogFileColumns.RawContent);
@@ -285,6 +300,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestRemoveRange()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add("foo");
+			entries.Add("clondyke");
+			entries.Add("bar");
+			entries.Count.Should().Be(3);
+
+			entries.RemoveRange(1, 1);
+			entries.Count.Should().Be(2);
+			entries[0].RawContent.Should().Be("foo", "because the first message shouldn't have been modified");
+			entries[1].RawContent.Should().Be("bar", "because the second cell should have been removed, the third cell should have moved down");
+		}
+
+		[Test]
 		public void TestRemoveRangeInvalidIndex1([Values(-2, -1)] int invalidIndex)
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
@@ -379,9 +409,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello!"}}));
 			entries.Resize(3);
 			entries.Count.Should().Be(3);
-			entries[0].RawContent.Should().Be("Hello!", "because the content of the first cell should've been left untouched");
-			entries[1].RawContent.Should().BeNull("because an default value should've been placed in the newly added cell");
-			entries[2].RawContent.Should().BeNull("because an default value should've been placed in the newly added cell");
+			entries[0].RawContent.Should().Be("Hello!", "because the content of the first cell should have been left untouched");
+			entries[1].RawContent.Should().BeNull("because an default value should have been placed in the newly added cell");
+			entries[2].RawContent.Should().BeNull("because an default value should have been placed in the newly added cell");
 		}
 
 		[Test]
@@ -392,7 +422,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "World!"}}));
 			entries.Resize(1);
 			entries.Count.Should().Be(1, "because we just removed a cell");
-			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should've been left untouched");
+			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should been left untouched");
+		}
+
+		[Test]
+		public void TestResizeInvalidCount()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello,"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "World!"}}));
+			new Action(() => entries.Resize(-1)).Should().Throw<ArgumentOutOfRangeException>();
+			entries.Count.Should().Be(2, "because the list shouldn't have been modified");
+			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should been left untouched");
+			entries[1].RawContent.Should().Be("World!", "Because the content of the second cell should been left untouched");
 		}
 
 		[Test]
@@ -435,10 +477,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Resize(4);
 			entries.Count.Should().Be(buffer.Length);
 			entries.CopyFrom(LogFileColumns.LogLevel, 0, buffer, 0, buffer.Length);
-			entries[0].LogLevel.Should().Be(LevelFlags.All, "because the first entry's level should've have been overwritten");
-			entries[1].LogLevel.Should().Be(LevelFlags.Debug, "because the second entry's level should've have been overwritten");
-			entries[2].LogLevel.Should().Be(LevelFlags.Error, "because the third log entry should've been added");
-			entries[3].LogLevel.Should().Be(LevelFlags.Warning, "because the third log entry should've been added");
+			entries[0].LogLevel.Should().Be(LevelFlags.All, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug, "because the second entry's level should have been overwritten");
+			entries[2].LogLevel.Should().Be(LevelFlags.Error, "because the third log entry should been added");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning, "because the third log entry should been added");
 		}
 
 		[Test]
@@ -458,8 +500,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, 2, buffer, 0, buffer.Length))
 				.Should().Throw<ArgumentOutOfRangeException>();
-			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
-			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should have been overwritten");
 		}
 
 		[Test]
@@ -479,8 +521,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, 1, buffer, 0, buffer.Length))
 				.Should().Throw<ArgumentOutOfRangeException>();
-			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
-			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should have been overwritten");
 		}
 
 		[Test]
@@ -498,8 +540,153 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, -1, buffer, 0, buffer.Length))
 				.Should().Throw<ArgumentOutOfRangeException>();
-			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
-			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromArray_NullColumn()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new string[]
+			{
+				"Foo",
+				"Bar"
+			};
+
+			new Action(() => entries.CopyFrom(null, 0, buffer, 0, buffer.Length))
+				.Should().Throw<ArgumentNullException>();
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromArray_NoSuchColumn()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new string[]
+			{
+				"Foo",
+				"Bar"
+			};
+
+			new Action(() => entries.CopyFrom(LogFileColumns.RawContent, 0, buffer, 0, buffer.Length))
+				.Should().Throw<NoSuchColumnException>();
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromLogFile_Contiguous()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}}));
+
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello", LevelFlags.Debug);
+			logFile.AddEntry("World!", LevelFlags.Info);
+
+			entries.CopyFrom(LogFileColumns.RawContent, 3, logFile, new LogFileSection(0, 2));
+			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
+			entries[0].RawContent.Should().Be("I", "because the first entry's raw content should not have been overwritten");
+			entries[1].RawContent.Should().Be("want", "because the second entry's raw content should not have been overwritten");
+			entries[2].RawContent.Should().Be("a", "because the third entry's raw content should not have been overwritten");
+			entries[3].RawContent.Should().Be("Hello", "because the fourth entry's raw content should have been overwritten");
+			entries[4].RawContent.Should().Be("World!", "because the fifth entry's raw content should have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromLogFile_Non_Contiguous()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}}));
+
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("What", LevelFlags.Debug);
+			logFile.AddEntry("are", LevelFlags.Debug);
+			logFile.AddEntry("you", LevelFlags.Debug);
+			logFile.AddEntry("doing", LevelFlags.Debug);
+			logFile.AddEntry("Turn?", LevelFlags.Info);
+
+			entries.CopyFrom(LogFileColumns.RawContent, 3, logFile, new[]{new LogLineIndex(2), new LogLineIndex(4) });
+			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
+			entries[0].RawContent.Should().Be("I", "because the first entry's raw content should not have been overwritten");
+			entries[1].RawContent.Should().Be("want", "because the second entry's raw content should not have been overwritten");
+			entries[2].RawContent.Should().Be("a", "because the third entry's raw content should not have been overwritten");
+			entries[3].RawContent.Should().Be("you", "because the fourth entry's raw content should have been overwritten");
+			entries[4].RawContent.Should().Be("Turn?", "because the fifth entry's raw content should have been overwritten");
+		}
+
+		[Test]
+		public void TestFillDefault()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
+
+			entries.FillDefault(2, 2);
+			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
+
+			entries[0].RawContent.Should().Be("I", "because the first entry's raw content should not have been overwritten");
+			entries[0].LogLevel.Should().Be(LevelFlags.Debug, "because the first entry's raw content should not have been overwritten");
+
+			entries[1].RawContent.Should().Be("want", "because the second entry's raw content should not have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info, "because the second entry's raw content should not have been overwritten");
+
+			entries[2].RawContent.Should().Be(null, "because the third entry's raw content should have been overwritten");
+			entries[2].LogLevel.Should().Be(LevelFlags.None, "because the third entry's log level should have been overwritten");
+
+			entries[3].RawContent.Should().Be(null, "because the fourth entry's raw content should have been overwritten");
+			entries[3].LogLevel.Should().Be(LevelFlags.None, "because the fourth entry's log level should have been overwritten");
+
+			entries[4].RawContent.Should().Be("Bar", "because the fifth entry's raw content should not have been overwritten");
+			entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "because the fifth entry's log level should not have been overwritten");
+		}
+
+		[Test]
+		public void TestFillDefault_SingleColumn()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
+
+			entries.FillDefault(LogFileColumns.RawContent,  1, 3);
+			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
+
+			entries[0].RawContent.Should().Be("I", "because the first entry's raw content should NOT have been overwritten");
+			entries[0].LogLevel.Should().Be(LevelFlags.Debug, "because the first entry's raw content should NOT have been overwritten");
+
+			entries[1].RawContent.Should().Be(null, "because the second entry's raw content should have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info, "because the second entry's raw content should NOT have been overwritten");
+
+			entries[2].RawContent.Should().Be(null, "because the third entry's raw content should have been overwritten");
+			entries[2].LogLevel.Should().Be(LevelFlags.Warning, "because the third entry's log level should NOT have been overwritten");
+
+			entries[3].RawContent.Should().Be(null, "because the fourth entry's raw content should have been overwritten");
+			entries[3].LogLevel.Should().Be(LevelFlags.Error, "because the fourth entry's log level should NOT have been overwritten");
+
+			entries[4].RawContent.Should().Be("Bar", "because the fifth entry's raw content should NOT have been overwritten");
+			entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "because the fifth entry's log level should NOT have been overwritten");
 		}
 
 		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)

@@ -196,6 +196,18 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		///   
+		/// </summary>
+		/// <param name="count"></param>
+		public void AddRange(int count)
+		{
+			foreach(var column in _dataByColumn.Values)
+			{
+				column.AddRange(count);
+			}
+		}
+
+		/// <summary>
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="logEntry"></param>
@@ -270,11 +282,18 @@ namespace Tailviewer.Core.LogFiles
 			if (count < 0)
 				throw new ArgumentOutOfRangeException($"Resize to {count} not allowed");
 
-			foreach (var column in _dataByColumn.Values)
+			
+			if (count < _count)
 			{
-				column.Resize(count);
+				var startIndex = count;
+				var toRemove = _count - count;
+				RemoveRange(startIndex, toRemove);
 			}
-
+			else if (count > _count)
+			{
+				var toAdd = count - _count;
+				AddRange(toAdd);
+			}
 			_count = count;
 		}
 
@@ -324,7 +343,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
+		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -333,7 +352,7 @@ namespace Tailviewer.Core.LogFiles
 			if (!_dataByColumn.TryGetValue(column, out columnData))
 				throw new NoSuchColumnException(column);
 
-			columnData.CopyFrom(destinationIndex, source, indices);
+			columnData.CopyFrom(destinationIndex, source, sourceIndices);
 		}
 
 		/// <inheritdoc />
@@ -438,7 +457,7 @@ namespace Tailviewer.Core.LogFiles
 
 			void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section);
 			void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
-			void Resize(int count);
+			void AddRange(int count);
 		}
 
 		private sealed class ColumnData<T>
@@ -503,9 +522,6 @@ namespace Tailviewer.Core.LogFiles
 
 			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)
 			{
-				if (destinationIndex != 0)
-					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
-
 				// TODO: Write custom List implementation which allows access to its internal buffer so we can void the allocation and additional copy here
 				var maxCount = destinationIndex + section.Count;
 				while (maxCount > _data.Count)
@@ -521,9 +537,6 @@ namespace Tailviewer.Core.LogFiles
 
 			public void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
 			{
-				if (destinationIndex != 0)
-					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
-
 				// TODO: Write custom List implementation which allows access to its internal buffer so we can void the allocation and additional copy here
 				var maxCount = destinationIndex + indices.Count;
 				while (maxCount > _data.Count)
@@ -537,21 +550,11 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			public void Resize(int count)
+			public void AddRange(int count)
 			{
-				if (count < _data.Count)
+				for (int i = 0; i < count; ++i)
 				{
-					var startIndex = count;
-					var toRemove = _data.Count - count;
-					_data.RemoveRange(startIndex, toRemove);
-				}
-				else if (count > _data.Count)
-				{
-					var toAdd = count - _data.Count;
-					for (int i = 0; i < toAdd; ++i)
-					{
-						_data.Add(_column.DefaultValue);
-					}
+					_data.Add(_column.DefaultValue);
 				}
 			}
 
