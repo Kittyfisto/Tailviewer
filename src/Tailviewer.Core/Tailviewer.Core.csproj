@@ -77,6 +77,7 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeInterval.cs" />
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="Filters\RangeFilter.cs" />
+    <Compile Include="ListExtensions.cs" />
     <Compile Include="LogFiles\EmptyLogFile.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="LogFiles\Issues\LogFileIssue.cs" />
@@ -137,7 +138,6 @@
     <Compile Include="LogFiles\AbstractReadOnlyLogEntry.cs" />
     <Compile Include="LogFiles\CustomLogFileColumn.cs" />
     <Compile Include="LogFiles\FilteredLogFile.cs" />
-    <Compile Include="LogFiles\IColumnData.cs" />
     <Compile Include="LogFiles\InMemoryLogFile.cs" />
     <Compile Include="LogFiles\LogEntry2.cs" />
     <Compile Include="LogFiles\LogEntryBuffer.cs" />

@@ -270,13 +270,19 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			foreach (var column in buffer.Columns)
+			{
+				buffer.CopyFrom(column, destinationIndex, this, section);
+			}
 		}
 
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			foreach (var column in buffer.Columns)
+			{
+				buffer.CopyFrom(column, destinationIndex, this, indices);
+			}
 		}
 
 		/// <inheritdoc />

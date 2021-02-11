@@ -372,6 +372,136 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 		}
 
+		[Test]
+		public void TestResizeAddRows()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello!"}}));
+			entries.Resize(3);
+			entries.Count.Should().Be(3);
+			entries[0].RawContent.Should().Be("Hello!", "because the content of the first cell should've been left untouched");
+			entries[1].RawContent.Should().BeNull("because an default value should've been placed in the newly added cell");
+			entries[2].RawContent.Should().BeNull("because an default value should've been placed in the newly added cell");
+		}
+
+		[Test]
+		public void TestResizeRemoveRows()
+		{
+			var entries = new LogEntryList(LogFileColumns.RawContent);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello,"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "World!"}}));
+			entries.Resize(1);
+			entries.Count.Should().Be(1, "because we just removed a cell");
+			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should've been left untouched");
+		}
+
+		[Test]
+		public void TestCopyFromArray_Empty()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+
+			var buffer = new LevelFlags[]
+			{
+				LevelFlags.All,
+				LevelFlags.Debug,
+				LevelFlags.Error,
+				LevelFlags.Warning
+			};
+
+			entries.Resize(4);
+			entries.Count.Should().Be(buffer.Length);
+			entries.CopyFrom(LogFileColumns.LogLevel, 0, buffer, 0, buffer.Length);
+			entries[0].LogLevel.Should().Be(LevelFlags.All);
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[2].LogLevel.Should().Be(LevelFlags.Error);
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+		}
+
+		[Test]
+		public void TestCopyFromArray_PartiallyFilled()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new LevelFlags[]
+			{
+				LevelFlags.All,
+				LevelFlags.Debug,
+				LevelFlags.Error,
+				LevelFlags.Warning
+			};
+			
+			entries.Resize(4);
+			entries.Count.Should().Be(buffer.Length);
+			entries.CopyFrom(LogFileColumns.LogLevel, 0, buffer, 0, buffer.Length);
+			entries[0].LogLevel.Should().Be(LevelFlags.All, "because the first entry's level should've have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug, "because the second entry's level should've have been overwritten");
+			entries[2].LogLevel.Should().Be(LevelFlags.Error, "because the third log entry should've been added");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning, "because the third log entry should've been added");
+		}
+
+		[Test]
+		public void TestCopyFromArray_CompletelyOutOfBounds()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new LevelFlags[]
+			{
+				LevelFlags.All,
+				LevelFlags.Debug,
+				LevelFlags.Error,
+				LevelFlags.Warning
+			};
+
+			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, 2, buffer, 0, buffer.Length))
+				.Should().Throw<ArgumentOutOfRangeException>();
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromArray_PartiallyOutOfBounds1()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new LevelFlags[]
+			{
+				LevelFlags.All,
+				LevelFlags.Debug,
+				LevelFlags.Error,
+				LevelFlags.Warning
+			};
+
+			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, 1, buffer, 0, buffer.Length))
+				.Should().Throw<ArgumentOutOfRangeException>();
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+		}
+
+		[Test]
+		public void TestCopyFromArray_PartiallyOutOfBounds2()
+		{
+			var entries = new LogEntryList(LogFileColumns.LogLevel);
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+
+			var buffer = new LevelFlags[]
+			{
+				LevelFlags.All,
+				LevelFlags.Debug
+			};
+
+			new Action(() => entries.CopyFrom(LogFileColumns.LogLevel, -1, buffer, 0, buffer.Length))
+				.Should().Throw<ArgumentOutOfRangeException>();
+			entries[0].LogLevel.Should().Be(LevelFlags.Info, "because the first entry's level should've have been overwritten");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace, "because the second entry's level should've have been overwritten");
+		}
+
 		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
 		{
 			return new LogEntryList(columns);

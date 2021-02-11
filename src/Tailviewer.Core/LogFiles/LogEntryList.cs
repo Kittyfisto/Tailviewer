@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -12,8 +13,11 @@ namespace Tailviewer.Core.LogFiles
 	///     A variable-length buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s:
 	///     New rows can be added, existing rows modified and removed.
 	/// </summary>
+	/// <remarks>
+	///     Log entries are stored in the order they are added (regardless of their <see cref="IReadOnlyLogEntry.Index"/>, <see cref="IReadOnlyLogEntry.LogEntryIndex"/>, etc...).
+	/// </remarks>
 	public sealed class LogEntryList
-		: IReadOnlyLogEntries
+		: ILogEntries
 	{
 		private readonly IReadOnlyDictionary<ILogFileColumn, IColumnData> _dataByColumn;
 		private readonly IReadOnlyList<ILogFileColumn> _columns;
@@ -56,6 +60,11 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public int Count => _count;
+
+		ILogEntry ILogEntries.this[int index]
+		{
+			get { throw new NotImplementedException(); }
+		}
 
 		/// <inheritdoc />
 		public IReadOnlyLogEntry this[int index]
@@ -253,6 +262,23 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="count"></param>
+		public void Resize(int count)
+		{
+			if (count < 0)
+				throw new ArgumentOutOfRangeException($"Resize to {count} not allowed");
+
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.Resize(count);
+			}
+
+			_count = count;
+		}
+
+		/// <summary>
 		///     Removes all log entries.
 		/// </summary>
 		public void Clear()
@@ -262,6 +288,74 @@ namespace Tailviewer.Core.LogFiles
 				column.Clear();
 			}
 			_count = 0;
+		}
+
+		/// <inheritdoc />
+		public void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			if (destinationIndex + length > _count)
+				throw new ArgumentOutOfRangeException();
+
+			IColumnData columnData;
+			if (_dataByColumn.TryGetValue(column, out columnData))
+			{
+				((ColumnData<T>)columnData).CopyFrom(destinationIndex, source, sourceIndex, length);
+			}
+			else
+			{
+				throw new NoSuchColumnException(column);
+			}
+		}
+
+		/// <inheritdoc />
+		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, LogFileSection section)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			IColumnData columnData;
+			if (!_dataByColumn.TryGetValue(column, out columnData))
+				throw new NoSuchColumnException(column);
+
+			columnData.CopyFrom(destinationIndex, source, section);
+		}
+
+		/// <inheritdoc />
+		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			IColumnData columnData;
+			if (!_dataByColumn.TryGetValue(column, out columnData))
+				throw new NoSuchColumnException(column);
+
+			columnData.CopyFrom(destinationIndex, source, indices);
+		}
+
+		/// <inheritdoc />
+		public void FillDefault(int destinationIndex, int length)
+		{
+			foreach (var column in _dataByColumn.Values)
+			{
+				column.FillDefault(destinationIndex, length);
+			}
+		}
+
+		/// <inheritdoc />
+		public void FillDefault(ILogFileColumn column, int destinationIndex, int length)
+		{
+			if (column == null)
+				throw new ArgumentNullException(nameof(column));
+
+			IColumnData columnData;
+			if (!_dataByColumn.TryGetValue(column, out columnData))
+				throw new NoSuchColumnException(column);
+
+			columnData.FillDefault(destinationIndex, length);
 		}
 
 		private sealed class LogEntryAccessor
@@ -323,6 +417,30 @@ namespace Tailviewer.Core.LogFiles
 			public override IReadOnlyList<ILogFileColumn> Columns => _list._columns;
 		}
 
+		private interface IColumnData
+		{
+			object this[int index] { get; }
+
+			void Clear();
+
+			void Add(IReadOnlyLogEntry logEntry);
+
+			void RemoveAt(int index);
+
+			void AddEmpty();
+
+			void Insert(int index, IReadOnlyLogEntry logEntry);
+			void RemoveRange(int index, int count);
+
+			void InsertEmpty(int index);
+
+			void FillDefault(int destinationIndex, int length);
+
+			void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section);
+			void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices);
+			void Resize(int count);
+		}
+
 		private sealed class ColumnData<T>
 			: IColumnData
 		{
@@ -378,6 +496,65 @@ namespace Tailviewer.Core.LogFiles
 				_data.Insert(index, _column.DefaultValue);
 			}
 
+			public void FillDefault(int destinationIndex, int length)
+			{
+				_data.Fill(_column.DefaultValue, destinationIndex, length);
+			}
+
+			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)
+			{
+				if (destinationIndex != 0)
+					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
+
+				// TODO: Write custom List implementation which allows access to its internal buffer so we can void the allocation and additional copy here
+				var maxCount = destinationIndex + section.Count;
+				while (maxCount > _data.Count)
+					_data.Add(default);
+
+				var buffer = new T[section.Count];
+				source.GetColumn(section, _column, buffer, 0);
+				for (int i = 0; i < buffer.Length; ++i)
+				{
+					_data[destinationIndex + i] = buffer[i];
+				}
+			}
+
+			public void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
+			{
+				if (destinationIndex != 0)
+					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
+
+				// TODO: Write custom List implementation which allows access to its internal buffer so we can void the allocation and additional copy here
+				var maxCount = destinationIndex + indices.Count;
+				while (maxCount > _data.Count)
+					_data.Add(default);
+
+				var buffer = new T[indices.Count];
+				source.GetColumn(indices, _column, buffer, 0);
+				for (int i = 0; i < buffer.Length; ++i)
+				{
+					_data[destinationIndex + i] = buffer[i];
+				}
+			}
+
+			public void Resize(int count)
+			{
+				if (count < _data.Count)
+				{
+					var startIndex = count;
+					var toRemove = _data.Count - count;
+					_data.RemoveRange(startIndex, toRemove);
+				}
+				else if (count > _data.Count)
+				{
+					var toAdd = count - _data.Count;
+					for (int i = 0; i < toAdd; ++i)
+					{
+						_data.Add(_column.DefaultValue);
+					}
+				}
+			}
+
 			public void CopyTo(int sourceIndex, T[] destination, int destinationIndex, int length)
 			{
 				if (length <= 0)
@@ -428,6 +605,14 @@ namespace Tailviewer.Core.LogFiles
 					{
 						destination[destinationIndex + i] = _column.DefaultValue;
 					}
+				}
+			}
+
+			public void CopyFrom(int destinationIndex, T[] source, int sourceIndex, int length)
+			{
+				for (int i = 0; i < length; ++i)
+				{
+					_data[destinationIndex + i] = source[sourceIndex + i];
 				}
 			}
 		}

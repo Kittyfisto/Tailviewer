@@ -201,6 +201,26 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public IReadOnlyLogEntry this[int index]
+		{
+			get { return _logEntries[index]; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public IReadOnlyLogEntry this[LogLineIndex index]
+		{
+			get { return this[(int)index]; }
+		}
+
 		private LogLine CreateLogLine(IReadOnlyLogEntry logEntry)
 		{
 			return new LogLine((int)logEntry.Index,
