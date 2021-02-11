@@ -175,6 +175,18 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		///   
+		/// </summary>
+		/// <param name="entries"></param>
+		public void AddRange(IReadOnlyLogEntries entries)
+		{
+			foreach (var logEntry in entries)
+			{
+				Add(logEntry);
+			}
+		}
+
+		/// <summary>
 		/// </summary>
 		/// <param name="index"></param>
 		/// <param name="logEntry"></param>

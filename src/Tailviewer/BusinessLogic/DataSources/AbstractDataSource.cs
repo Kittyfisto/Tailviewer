@@ -421,7 +421,8 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			#endregion
 
-			private readonly List<LogLine> _lines;
+			private readonly LogEntryList _entries;
+			private readonly ReadOnlyLogEntry _emptyLine;
 
 			public LogFileCounter()
 			{
@@ -435,7 +436,13 @@ namespace Tailviewer.BusinessLogic.DataSources
 				NoTimestamp = new Counter();
 				Total = new Counter();
 
-				_lines = new List<LogLine>();
+				_entries = new LogEntryList(LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
+				_emptyLine = new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>
+				{
+					{LogFileColumns.LogEntryIndex, new LogEntryIndex(-1) },
+					{LogFileColumns.Timestamp, null },
+					{LogFileColumns.LogLevel, LevelFlags.None}
+				});
 			}
 
 			public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -456,112 +463,42 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 			private void AddRange(ILogFile logFile, LogFileSection section)
 			{
-				var previousLine = _lines.Count > 0
-					? _lines[_lines.Count - 1]
-					: new LogLine(-1, -1, null, LevelFlags.None);
+				var previousEntry = _entries.Count > 0
+					? _entries[_entries.Count - 1]
+					: _emptyLine;
 
-				LogLine[] lines = logFile.GetSection(section);
+				var entries = logFile.GetEntries(section, _entries.Columns);
 				for (int i = 0; i < section.Count; ++i)
 				{
-					LogLine line = lines[i];
-					IncrementCount(line, previousLine);
-					previousLine = line;
+					var entry = entries[i];
+					IncrementCount(entry, previousEntry);
+					previousEntry = entry;
 				}
-				_lines.AddRange(lines);
+				_entries.AddRange(entries);
 			}
 
 			private void RemoveRange(LogFileSection section)
 			{
-				var previousLine = section.Index > 0
-					? _lines[(int) section.Index]
-					: new LogLine(-1, -1, null, LevelFlags.None);
+				var previousEntry = _entries.Count > 0
+					? _entries[_entries.Count - 1]
+					: _emptyLine;
 
 				for (int i = 0; i < section.Count; ++i)
 				{
 					LogLineIndex index = section.Index + i;
-					LogLine line = _lines[(int) index];
-					DecrementCount(line, previousLine);
-					previousLine = line;
+					IReadOnlyLogEntry entry = _entries[(int) index];
+					DecrementCount(entry, previousEntry);
+					previousEntry = entry;
 				}
 
-				_lines.RemoveRange((int) section.Index, section.Count);
+				_entries.RemoveRange((int) section.Index, section.Count);
 			}
 
-			private void DecrementCount(LogLine currentLogLine, LogLine previousLogLine)
+			private void IncrementCount(IReadOnlyLogEntry currentLogLine, IReadOnlyLogEntry previousLogLine)
 			{
 				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
 				{
-					switch (currentLogLine.Level)
-					{
-						case LevelFlags.Fatal:
-							--Fatals.LogEntryCount;
-							break;
-						case LevelFlags.Error:
-							--Errors.LogEntryCount;
-							break;
-						case LevelFlags.Warning:
-							--Warnings.LogEntryCount;
-							break;
-						case LevelFlags.Info:
-							--Infos.LogEntryCount;
-							break;
-						case LevelFlags.Debug:
-							--Debugs.LogEntryCount;
-							break;
-						case LevelFlags.Trace:
-							--Trace.LogEntryCount;
-							break;
-						default:
-							--NoLevel.LogEntryCount;
-							break;
-					}
-
-					if (currentLogLine.Timestamp == null)
-					{
-						--NoTimestamp.LogEntryCount;
-					}
-
-					--Total.LogEntryCount;
-				}
-
-				switch (currentLogLine.Level)
-				{
-					case LevelFlags.Fatal:
-						--Fatals.LogLineCount;
-						break;
-					case LevelFlags.Error:
-						--Errors.LogLineCount;
-						break;
-					case LevelFlags.Warning:
-						--Warnings.LogLineCount;
-						break;
-					case LevelFlags.Info:
-						--Infos.LogLineCount;
-						break;
-					case LevelFlags.Debug:
-						--Debugs.LogLineCount;
-						break;
-					case LevelFlags.Trace:
-						--Trace.LogLineCount;
-						break;
-					default:
-						--NoLevel.LogLineCount;
-						break;
-				}
-
-				if (currentLogLine.Timestamp == null)
-				{
-					--NoTimestamp.LogLineCount;
-				}
-
-				--Total.LogLineCount;
-			}
-
-			private void IncrementCount(LogLine currentLogLine, LogLine previousLogLine)
-			{
-				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
-				{
-					switch (currentLogLine.Level)
+					switch (currentLogLine.LogLevel)
 					{
 						case LevelFlags.Fatal:
 							++Fatals.LogEntryCount;
@@ -594,7 +531,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 					++Total.LogEntryCount;
 				}
 
-				switch (currentLogLine.Level)
+				switch (currentLogLine.LogLevel)
 				{
 					case LevelFlags.Fatal:
 						++Fatals.LogLineCount;
@@ -627,9 +564,79 @@ namespace Tailviewer.BusinessLogic.DataSources
 				++Total.LogLineCount;
 			}
 
+			private void DecrementCount(IReadOnlyLogEntry currentLogLine, IReadOnlyLogEntry previousLogLine)
+			{
+				if (currentLogLine.LogEntryIndex != previousLogLine.LogEntryIndex)
+				{
+					switch (currentLogLine.LogLevel)
+					{
+						case LevelFlags.Fatal:
+							--Fatals.LogEntryCount;
+							break;
+						case LevelFlags.Error:
+							--Errors.LogEntryCount;
+							break;
+						case LevelFlags.Warning:
+							--Warnings.LogEntryCount;
+							break;
+						case LevelFlags.Info:
+							--Infos.LogEntryCount;
+							break;
+						case LevelFlags.Debug:
+							--Debugs.LogEntryCount;
+							break;
+						case LevelFlags.Trace:
+							--Trace.LogEntryCount;
+							break;
+						default:
+							--NoLevel.LogEntryCount;
+							break;
+					}
+
+					if (currentLogLine.Timestamp == null)
+					{
+						--NoTimestamp.LogEntryCount;
+					}
+
+					--Total.LogEntryCount;
+				}
+
+				switch (currentLogLine.LogLevel)
+				{
+					case LevelFlags.Fatal:
+						--Fatals.LogLineCount;
+						break;
+					case LevelFlags.Error:
+						--Errors.LogLineCount;
+						break;
+					case LevelFlags.Warning:
+						--Warnings.LogLineCount;
+						break;
+					case LevelFlags.Info:
+						--Infos.LogLineCount;
+						break;
+					case LevelFlags.Debug:
+						--Debugs.LogLineCount;
+						break;
+					case LevelFlags.Trace:
+						--Trace.LogLineCount;
+						break;
+					default:
+						--NoLevel.LogLineCount;
+						break;
+				}
+
+				if (currentLogLine.Timestamp == null)
+				{
+					--NoTimestamp.LogLineCount;
+				}
+
+				--Total.LogLineCount;
+			}
+
 			private void Clear()
 			{
-				_lines.Clear();
+				_entries.Clear();
 				Fatals.Reset();
 				Errors.Reset();
 				Warnings.Reset();
