@@ -48,6 +48,12 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
+		public bool Contains(ILogFileColumn column)
+		{
+			return _dataByColumn.ContainsKey(column);
+		}
+
+		/// <inheritdoc />
 		public void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
 		{
 			if (column == null)
@@ -153,7 +159,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
+		public IEnumerator<ILogEntry> GetEnumerator()
+		{
+			return new LogEntriesEnumerator(this);
+		}
+
+		IEnumerator<IReadOnlyLogEntry> IEnumerable<IReadOnlyLogEntry>.GetEnumerator()
 		{
 			return new ReadOnlyLogEntriesEnumerator(this);
 		}
@@ -335,17 +346,11 @@ namespace Tailviewer.Core.LogFiles
 
 			public void CopyFrom(int destinationIndex, ILogFile source, LogFileSection section)
 			{
-				if (destinationIndex != 0)
-					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
-
-				source.GetColumn(section, _column, _data);
+				source.GetColumn(section, _column, _data, destinationIndex);
 			}
 
 			public void CopyFrom(int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> indices)
 			{
-				if (destinationIndex != 0)
-					throw new NotImplementedException("The ILogFile interface needs to be changed for that!");
-
 				source.GetColumn(indices, _column, _data, destinationIndex);
 			}
 

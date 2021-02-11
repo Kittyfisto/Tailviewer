@@ -160,34 +160,34 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
+			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			if (Equals(column, LogFileColumns.DeltaTime))
 			{
-				GetDeltaTime(section, (TimeSpan?[]) (object) buffer, destinationIndex);
+				GetDeltaTime(sourceSection, (TimeSpan?[]) (object) destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.Index) ||
 			         Equals(column, LogFileColumns.OriginalIndex))
 			{
-				_index.GetLogLineIndices(section, (LogLineIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogLineIndices(sourceSection, (LogLineIndex[]) (object) destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LogEntryIndex))
 			{
-				_index.GetLogEntryIndices(section, (LogEntryIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogEntryIndices(sourceSection, (LogEntryIndex[]) (object) destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
-				_index.GetLineNumbers(section, (int[]) (object) buffer, destinationIndex);
+				_index.GetLineNumbers(sourceSection, (int[]) (object) destination, destinationIndex);
 			}
 			else
 			{
@@ -195,52 +195,52 @@ namespace Tailviewer.Core.LogFiles
 				// The best we can achieve is up to one call per source, which is what the following
 				// code achieves:
 				// At first, we want to build the list of indices we need to retrieve per source
-				var sourceIndices = _index.GetOriginalLogLineIndices<T>(section);
+				var sourceIndices = _index.GetOriginalLogLineIndices<T>(sourceSection);
 				// Then we want to retrieve the column values per source
 				GetSourceColumnValues(column, sourceIndices);
 				// And finally we want to copy those column values back to the destination
 				// buffer IN THEIR CORRECT ORDER.
-				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
+				CopyColumnValuesToBuffer(sourceIndices, destination, destinationIndex);
 			}
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + indices.Count > buffer.Length)
+			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			if (Equals(column, LogFileColumns.DeltaTime))
 			{
-				GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.Index) ||
 			         Equals(column, LogFileColumns.OriginalIndex))
 			{
-				_index.GetLogLineIndices(indices, (LogLineIndex[]) (object) buffer, destinationIndex);
+				_index.GetLogLineIndices(sourceIndices, (LogLineIndex[]) (object) destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LogEntryIndex))
 			{
-				_index.GetLogEntryIndices(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
+				_index.GetLogEntryIndices(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber) ||
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
-				_index.GetLineNumbers(indices, (int[]) (object) buffer, destinationIndex);
+				_index.GetLineNumbers(sourceIndices, (int[]) (object) destination, destinationIndex);
 			}
 			else
 			{
-				var sourceIndices = _index.GetOriginalLogLineIndices<T>(indices);
-				GetSourceColumnValues(column, sourceIndices);
-				CopyColumnValuesToBuffer(sourceIndices, buffer, destinationIndex);
+				var actualSourceIndices = _index.GetOriginalLogLineIndices<T>(sourceIndices);
+				GetSourceColumnValues(column, actualSourceIndices);
+				CopyColumnValuesToBuffer(actualSourceIndices, destination, destinationIndex);
 			}
 		}
 
@@ -341,15 +341,23 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
+			foreach (var column in destination.Columns)
+			{
+				destination.CopyFrom(column, destinationIndex, this, sourceSection);
+			}
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
-			throw new NotImplementedException();
+			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
+			foreach (var column in destination.Columns)
+			{
+				destination.CopyFrom(column, destinationIndex, this, sourceIndices);
+			}
 		}
 
 		/// <inheritdoc />

@@ -7,8 +7,6 @@ using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
-
-
 	/// <summary>
 	///     A variable-length buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s:
 	///     New rows can be added, existing rows modified and removed.
@@ -48,7 +46,13 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IEnumerator<IReadOnlyLogEntry> GetEnumerator()
+		public IEnumerator<ILogEntry> GetEnumerator()
+		{
+			return new LogEntriesEnumerator(this);
+		}
+
+		/// <inheritdoc />
+		IEnumerator<IReadOnlyLogEntry> IEnumerable<IReadOnlyLogEntry>.GetEnumerator()
 		{
 			return new ReadOnlyLogEntriesEnumerator(this);
 		}
@@ -61,13 +65,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public int Count => _count;
 
-		ILogEntry ILogEntries.this[int index]
-		{
-			get { throw new NotImplementedException(); }
-		}
-
 		/// <inheritdoc />
-		public IReadOnlyLogEntry this[int index]
+		public ILogEntry this[int index]
 		{
 			get
 			{
@@ -78,8 +77,25 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		IReadOnlyLogEntry IReadOnlyList<IReadOnlyLogEntry>.this[int index]
+		{
+			get
+			{
+				if (index < 0 || index >= _count)
+					throw new ArgumentOutOfRangeException();
+
+				return new ReadOnlyLogEntryAccessor(this, index);
+			}
+		}
+
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumn> Columns => _columns;
+
+		/// <inheritdoc />
+		public bool Contains(ILogFileColumn column)
+		{
+			return _dataByColumn.ContainsKey(column);
+		}
 
 		/// <inheritdoc />
 		public void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
@@ -377,13 +393,13 @@ namespace Tailviewer.Core.LogFiles
 			columnData.FillDefault(destinationIndex, length);
 		}
 
-		private sealed class LogEntryAccessor
+		private sealed class ReadOnlyLogEntryAccessor
 			: AbstractReadOnlyLogEntry
 		{
 			private readonly int _index;
 			private readonly LogEntryList _list;
 
-			public LogEntryAccessor(LogEntryList list, int index)
+			public ReadOnlyLogEntryAccessor(LogEntryList list, int index)
 			{
 				_list = list;
 				_index = index;
@@ -436,9 +452,82 @@ namespace Tailviewer.Core.LogFiles
 			public override IReadOnlyList<ILogFileColumn> Columns => _list._columns;
 		}
 
+		private sealed class LogEntryAccessor
+			: AbstractLogEntry
+		{
+			private readonly int _index;
+			private readonly LogEntryList _list;
+
+			public LogEntryAccessor(LogEntryList list, int index)
+			{
+				_list = list;
+				_index = index;
+			}
+
+			public override T GetValue<T>(ILogFileColumn<T> column)
+			{
+				T data;
+				if (!TryGetValue(column, out data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data;
+			}
+
+			public override bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+			{
+				IColumnData data;
+				if (!_list._dataByColumn.TryGetValue(column, out data))
+				{
+					value = column.DefaultValue;
+					return false;
+				}
+
+				value = ((ColumnData<T>)data)[_index];
+				return true;
+			}
+
+			public override object GetValue(ILogFileColumn column)
+			{
+				if (!TryGetValue(column, out var data))
+					throw new ColumnNotRetrievedException(column);
+
+				return data;
+			}
+
+			public override bool TryGetValue(ILogFileColumn column, out object value)
+			{
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
+				{
+					value = column.DefaultValue;
+					return false;
+				}
+
+				value = data[_index];
+				return true;
+			}
+
+			public override void SetValue(ILogFileColumn column, object value)
+			{
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
+					throw new NoSuchColumnException(column);
+
+				data[_index] = value;
+			}
+
+			public override void SetValue<T>(ILogFileColumn<T> column, T value)
+			{
+				if (!_list._dataByColumn.TryGetValue(column, out var data))
+					throw new NoSuchColumnException(column);
+
+				((ColumnData<T>) data)[_index] = value;
+			}
+
+			public override IReadOnlyList<ILogFileColumn> Columns => _list._columns;
+		}
+
 		private interface IColumnData
 		{
-			object this[int index] { get; }
+			object this[int index] { get; set; }
 
 			void Clear();
 
@@ -472,9 +561,17 @@ namespace Tailviewer.Core.LogFiles
 				_data = new List<T>();
 			}
 
-			object IColumnData.this[int index] => _data[index];
+			object IColumnData.this[int index]
+			{
+				get { return _data[index]; }
+				set { _data[index] = (T) value; }
+			}
 
-			public T this[int index] => _data[index];
+			public T this[int index]
+			{
+				get { return _data[index]; }
+				set { _data[index] = value; }
+			}
 
 			public void Clear()
 			{

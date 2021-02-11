@@ -141,50 +141,50 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
 
-			_logEntries.CopyTo(column, (int)section.Index, buffer, destinationIndex, section.Count);
+			_logEntries.CopyTo(column, (int)sourceSection.Index, destination, destinationIndex, sourceSection.Count);
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
 
-			_logEntries.CopyTo(column, new Int32View(indices), buffer, destinationIndex);
+			_logEntries.CopyTo(column, new Int32View(sourceIndices), destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				foreach (var column in buffer.Columns)
-					buffer.CopyFrom(column, destinationIndex, this, section);
+				foreach (var column in destination.Columns)
+					destination.CopyFrom(column, destinationIndex, this, sourceSection);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				foreach (var column in buffer.Columns)
-					buffer.CopyFrom(column, destinationIndex, this, indices);
+				foreach (var column in destination.Columns)
+					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
 			}
 		}
 

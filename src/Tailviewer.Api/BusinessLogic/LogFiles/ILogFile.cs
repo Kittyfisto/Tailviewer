@@ -112,39 +112,39 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="section"></param>
+		/// <param name="sourceSection"></param>
 		/// <param name="column"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex);
 
 		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="indices"></param>
+		/// <param name="sourceIndices"></param>
 		/// <param name="column"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex);
 
 		/// <summary>
-		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
-		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		///     Retrieves all entries from the given <paramref name="sourceSection" /> from this log file and copies
+		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
 		/// </summary>
-		/// <param name="section"></param>
-		/// <param name="buffer"></param>
+		/// <param name="sourceSection"></param>
+		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
-		void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex);
+		void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);
 
 		/// <summary>
-		///     Retrieves all entries from the given <paramref name="indices" /> from this log file and copies
-		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
+		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
 		/// </summary>
-		/// <param name="indices"></param>
-		/// <param name="buffer"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
-		void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex);
+		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
 
 		/// <summary>
 		///     Retrieves a list of log lines from this log file.

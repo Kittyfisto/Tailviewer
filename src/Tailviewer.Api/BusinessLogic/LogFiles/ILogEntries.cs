@@ -7,6 +7,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	public interface ILogEntries
 		: IReadOnlyLogEntries
+		, IEnumerable<ILogEntry>
 	{
 		/// <summary>
 		///     Copies data from the given array into this buffer.

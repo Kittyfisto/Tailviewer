@@ -34,6 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		private const int MaximumBatchSize = 10000;
 
 		private readonly object _syncRoot;
+		private readonly HashSet<ILogFileColumn> _columns;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -66,6 +67,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_syncRoot = new object();
+			_columns = new HashSet<ILogFileColumn>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
@@ -133,53 +135,105 @@ namespace Tailviewer.Core.LogFiles
 		public override int OriginalCount => _source.OriginalCount;
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
+			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (!TryGetSpecialColumn(section, column, buffer, destinationIndex))
+			if (!TryGetSpecialColumn(sourceSection, column, destination, destinationIndex))
 			{
-				_source.GetColumn(section, column, buffer, destinationIndex);
+				_source.GetColumn(sourceSection, column, destination, destinationIndex);
 			}
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + indices.Count > buffer.Length)
+			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (!TryGetSpecialColumn(indices, column, buffer, destinationIndex))
+			if (!TryGetSpecialColumn(sourceIndices, column, destination, destinationIndex))
 			{
-				_source.GetColumn(indices, column, buffer, destinationIndex);
+				_source.GetColumn(sourceIndices, column, destination, destinationIndex);
 			}
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
-			_source.GetEntries(section, buffer, destinationIndex);
+			var remainingColumns = new List<ILogFileColumn>();
+			bool partiallyRetrieved = false;
+			foreach (var column in destination.Columns)
+			{
+				if (_columns.Contains(column))
+				{
+					destination.CopyFrom(column, destinationIndex, this, sourceSection);
+					partiallyRetrieved = true;
+				}
+				else
+				{
+					remainingColumns.Add(column);
+				}
+			}
+
+			if (remainingColumns.Count > 0)
+			{
+				if (partiallyRetrieved)
+				{
+					var view = new LogEntriesView(destination, remainingColumns);
+					_source.GetEntries(sourceSection, view, destinationIndex);
+				}
+				else
+				{
+					_source.GetEntries(sourceSection, destination, destinationIndex);
+				}
+			}
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
-			_source.GetEntries(indices, buffer, destinationIndex);
+			var remainingColumns = new List<ILogFileColumn>();
+			bool partiallyRetrieved = false;
+			foreach (var column in destination.Columns)
+			{
+				if (_columns.Contains(column))
+				{
+					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
+					partiallyRetrieved = true;
+				}
+				else
+				{
+					remainingColumns.Add(column);
+				}
+			}
+
+			if (remainingColumns.Count > 0)
+			{
+				if (partiallyRetrieved)
+				{
+					var view = new LogEntriesView(destination, remainingColumns);
+					_source.GetEntries(sourceIndices, view, destinationIndex);
+				}
+				else
+				{
+					_source.GetEntries(sourceIndices, destination, destinationIndex);
+				}
+			}
 		}
 
 		/// <inheritdoc />

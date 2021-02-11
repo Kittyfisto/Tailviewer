@@ -787,15 +787,36 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var section = new LogFileSection(42, 5);
-			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(section, buffer, destinationIndex);
 
-			_source.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogEntries>(y => y == buffer),
-			                                 It.Is<int>(y => y == destinationIndex)),
+			_source.Verify(x => x.GetEntries(section,
+			                                 buffer,
+			                                 destinationIndex),
 			               Times.Once);
+		}
+
+		[Test]
+		public void TestGetEntriesBySection_Partial()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("INFO: This is a good start", LevelFlags.Info, new DateTime(2021, 02, 11, 21, 02, 09));
+			source.AddEntry("DEBUG: Hello", LevelFlags.Debug, new DateTime(2021, 02, 11, 21, 04, 09));
+			source.AddEntry("\tWorld!");
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+
+			var section = new LogFileSection(1, 2);
+			var buffer = new LogEntryBuffer(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
+			var destinationIndex = 2;
+
+			logFile.GetEntries(section, buffer, destinationIndex);
+			buffer[2].RawContent.Should().Be("DEBUG: Hello");
+			buffer[2].Timestamp.Should().Be(new DateTime(2021, 02, 11, 21, 04, 09));
+			buffer[3].RawContent.Should().Be("\tWorld!");
+			buffer[3].Timestamp.Should().Be(new DateTime(2021, 02, 11, 21, 04, 09));
 		}
 
 		[Test]
@@ -803,7 +824,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var indices = new LogLineIndex[] { 0, 2, 5 };
-			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.Timestamp);
+			var buffer = new LogEntryBuffer(5, LogFileColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(indices, buffer, destinationIndex);
@@ -812,6 +833,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			                                 It.Is<ILogEntries>(y => y == buffer),
 			                                 It.Is<int>(y => y == destinationIndex)),
 			               Times.Once);
+		}
+
+		[Test]
+		public void TestGetEntriesByIndices_Partial()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("INFO: This is a good start", LevelFlags.Info, new DateTime(2021, 02, 11, 21, 02, 09));
+			source.AddEntry("DEBUG: Hello", LevelFlags.Debug, new DateTime(2021, 02, 11, 21, 04, 09));
+			source.AddEntry("\tWorld!");
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			_taskScheduler.RunOnce();
+
+			var sourceIndices = new[] {new LogLineIndex(2), new LogLineIndex(1)};
+			var buffer = new LogEntryBuffer(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
+			var destinationIndex = 1;
+
+			logFile.GetEntries(sourceIndices, buffer, destinationIndex);
+			buffer[1].RawContent.Should().Be("\tWorld!");
+			buffer[1].Timestamp.Should().Be(new DateTime(2021, 02, 11, 21, 04, 09));
+			buffer[2].RawContent.Should().Be("DEBUG: Hello");
+			buffer[2].Timestamp.Should().Be(new DateTime(2021, 02, 11, 21, 04, 09));
 		}
 
 		[Test]

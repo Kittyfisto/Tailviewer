@@ -464,7 +464,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			private void AddRange(ILogFile logFile, LogFileSection section)
 			{
 				var previousEntry = _entries.Count > 0
-					? _entries[_entries.Count - 1]
+					? (IReadOnlyLogEntry)_entries[_entries.Count - 1]
 					: _emptyLine;
 
 				var entries = logFile.GetEntries(section, _entries.Columns);
@@ -480,7 +480,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			private void RemoveRange(LogFileSection section)
 			{
 				var previousEntry = _entries.Count > 0
-					? _entries[_entries.Count - 1]
+					? (IReadOnlyLogEntry)_entries[_entries.Count - 1]
 					: _emptyLine;
 
 				for (int i = 0; i < section.Count; ++i)

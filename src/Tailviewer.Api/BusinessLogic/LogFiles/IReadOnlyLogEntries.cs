@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -15,6 +16,14 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     The list of columns to store in this buffer.
 		/// </summary>
 		IReadOnlyList<ILogFileColumn> Columns { get; }
+
+		/// <summary>
+		///     Tests if this buffer contains the given column.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <returns></returns>
+		[Pure]
+		bool Contains(ILogFileColumn column);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.

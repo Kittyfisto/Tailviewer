@@ -25,6 +25,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestContains()
+		{
+			var entries = new LogEntryList(LogFileColumns.DeltaTime, LogFileColumns.ElapsedTime, LogFileColumns.RawContent);
+			entries.Contains(LogFileColumns.DeltaTime).Should().BeTrue();
+			entries.Contains(LogFileColumns.ElapsedTime).Should().BeTrue();
+			entries.Contains(LogFileColumns.RawContent).Should().BeTrue();
+			entries.Contains(LogFileColumns.LogLevel).Should().BeFalse("because we've not specified this column during construction");
+			entries.Contains(LogFileColumns.Timestamp).Should().BeFalse("because we've not specified this column during construction");
+		}
+
+		[Test]
 		public void TestClearEmpty()
 		{
 			var entries = new LogEntryList(LogFileColumns.ElapsedTime);
