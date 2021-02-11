@@ -22,11 +22,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				LogFileColumns.LogEntryIndex,
 				LogFileColumns.LineNumber,
 				LogFileColumns.OriginalLineNumber,
+				LogFileColumns.OriginalDataSourceName,
 				LogFileColumns.LogLevel,
 				LogFileColumns.Timestamp,
 				LogFileColumns.ElapsedTime,
 				LogFileColumns.DeltaTime
 			});
+
+			LogFileColumns.Minimum.Should().NotContain(LogFileColumns.SourceId,
+			                                           "because the source id column is specialized and only available in some cases");
 		}
 
 		[Test]

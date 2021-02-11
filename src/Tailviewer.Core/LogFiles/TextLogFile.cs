@@ -195,6 +195,10 @@ namespace Tailviewer.Core.LogFiles
 				{
 					GetElapsedTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
 				}
+				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				{
+					GetDataSourceName(sourceSection, (string[]) (object) destination, destinationIndex);
+				}
 				else if(Equals(column, LogFileColumns.RawContent))
 				{
 					GetRawContent(sourceSection, (string[]) (object) destination, destinationIndex);
@@ -592,21 +596,21 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private void GetDataSourceName(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
+		private void GetDataSourceName(IReadOnlyList<LogLineIndex> sourceIndices, string[] buffer, int destinationIndex)
 		{
-			for (int i = 0; i < indices.Count; ++i)
+			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
 				buffer[destinationIndex + i] = _fileName;
 			}
 		}
 
-		private void GetLogLevel(IReadOnlyList<LogLineIndex> indices, LevelFlags[] buffer, int destinationIndex)
+		private void GetLogLevel(IReadOnlyList<LogLineIndex> sourceIndices, LevelFlags[] buffer, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				for (int i = 0; i < indices.Count; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
-					var index = indices[i];
+					var index = sourceIndices[i];
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Level

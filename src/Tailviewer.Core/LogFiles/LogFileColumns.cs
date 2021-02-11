@@ -81,6 +81,14 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileColumn<string> OriginalDataSourceName;
 
 		/// <summary>
+		///     The id of the source the log entry comes from.
+		/// </summary>
+		/// <remarks>
+		///     This column is present when multiple sources are merged together in order to tell which file a particular entry belongs to.
+		/// </remarks>
+		public static readonly ILogFileColumn<LogLineSourceId> SourceId;
+
+		/// <summary>
 		///     The log level of the entry (debug, info, warning, etc...)
 		/// </summary>
 		public static readonly ILogFileColumn<LevelFlags> LogLevel;
@@ -134,6 +142,7 @@ namespace Tailviewer.Core.LogFiles
 			LineNumber = new WellKnownLogFileColumn<int>("line_number");
 			OriginalLineNumber = new WellKnownLogFileColumn<int>("original_line_number");
 			OriginalDataSourceName = new WellKnownLogFileColumn<string>("original_data_source_name");
+			SourceId = new WellKnownLogFileColumn<LogLineSourceId>("source_id");
 			LogLevel = new WellKnownLogFileColumn<LevelFlags>("log_level");
 			Timestamp = new WellKnownLogFileColumn<DateTime?>("timestamp");
 			ElapsedTime = new WellKnownLogFileColumn<TimeSpan?>("elapsed_time");
@@ -152,6 +161,7 @@ namespace Tailviewer.Core.LogFiles
 				LogEntryIndex,
 				LineNumber,
 				OriginalLineNumber,
+				OriginalDataSourceName,
 				LogLevel,
 				Timestamp,
 				ElapsedTime,

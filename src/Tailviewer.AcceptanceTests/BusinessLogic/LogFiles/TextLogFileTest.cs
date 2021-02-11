@@ -85,6 +85,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[Test]
 		public void TestCtor()
 		{
+			_file.Columns.Should().Equal(LogFileColumns.Minimum);
+
 			_streamWriter.Write("Foo");
 			_streamWriter.Flush();
 

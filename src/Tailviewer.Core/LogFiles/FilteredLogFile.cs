@@ -29,6 +29,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 10000;
 
+		private readonly IReadOnlyList<ILogFileColumn> _columns;
 		private readonly ILogLineFilter _logLineFilter;
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
@@ -62,6 +63,7 @@ namespace Tailviewer.Core.LogFiles
 			if (source == null) throw new ArgumentNullException(nameof(source));
 
 			_source = source;
+			_columns = LogFileColumns.CombineWithMinimum(source.Columns);
 			_logLineFilter = logLineFilter ?? new NoFilter();
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
@@ -100,7 +102,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
@@ -144,7 +146,15 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogFileColumns.DeltaTime))
+			if (Equals(column, LogFileColumns.Index))
+			{
+				GetIndex(sourceSection, (LogLineIndex[])(object)destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			{
+				GetLogEntryIndex(sourceSection, (LogEntryIndex[])(object)destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
 			}
@@ -177,7 +187,15 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogFileColumns.DeltaTime))
+			if (Equals(column, LogFileColumns.Index))
+			{
+				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			{
+				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 			}
@@ -234,7 +252,87 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		private void GetIndex(LogFileSection sourceSection, LogLineIndex[] destination, int destinationIndex)
+		{
+			lock (_indices)
+			{
+				for (int i = 0; i < sourceSection.Count; ++i)
+				{
+					var sourceIndex = sourceSection.Index.Value + i;
+					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
+					{
+						destination[destinationIndex + i] = sourceIndex;
+					}
+					else
+					{
+						destination[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex)
+		{
+			lock (_indices)
+			{
+				for (int i = 0; i < sourceIndices.Count; ++i)
+				{
+					var sourceIndex = sourceIndices[i].Value;
+					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
+					{
+						destination[destinationIndex + i] = sourceIndex;
+					}
+					else
+					{
+						destination[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetLogEntryIndex(LogFileSection sourceSection, LogEntryIndex[] destination, int destinationIndex)
+		{
+			lock (_indices)
+			{
+				for (int i = 0; i < sourceSection.Count; ++i)
+				{
+					var sourceIndex = sourceSection.Index.Value + i;
+					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
+					{
+						var originalIndex = _indices[sourceIndex];
+						var logEntryIndex = _logEntryIndices[originalIndex];
+						destination[destinationIndex + i] = logEntryIndex;
+					}
+					else
+					{
+						destination[destinationIndex + i] = LogFileColumns.LogEntryIndex.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex)
+		{
+			lock (_indices)
+			{
+				for (int i = 0; i < sourceIndices.Count; ++i)
+				{
+					var sourceIndex = sourceIndices[i].Value;
+					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
+					{
+						var originalIndex = _indices[sourceIndex];
+						var logEntryIndex = _logEntryIndices[originalIndex];
+						destination[destinationIndex + i] = logEntryIndex;
+					}
+					else
+					{
+						destination[destinationIndex + i] = LogFileColumns.LogEntryIndex.DefaultValue;
+					}
+				}
+			}
+		}
+
+		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex)
 		{
 			lock (_indices)
 			{
@@ -244,17 +342,17 @@ namespace Tailviewer.Core.LogFiles
 					if (index >= 0 && index < _indices.Count)
 					{
 						var lineNumber = (int) (index + 1);
-						buffer[destinationIndex + i] = lineNumber;
+						destination[destinationIndex + i] = lineNumber;
 					}
 					else
 					{
-						buffer[destinationIndex + i] = 0;
+						destination[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
 					}
 				}
 			}
 		}
 
-		private void GetDeltaTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
+		private void GetDeltaTime(LogFileSection section, TimeSpan?[] destination, int destinationIndex)
 		{
 			var actualIndices = new LogLineIndex[section.Count + 1];
 
@@ -282,11 +380,11 @@ namespace Tailviewer.Core.LogFiles
 				var previousTimestamp = timestamps[i - 1];
 				var currentTimestamp = timestamps[i];
 				var delta = currentTimestamp - previousTimestamp;
-				buffer[destinationIndex + i - 1] = delta;
+				destination[destinationIndex + i - 1] = delta;
 			}
 		}
 
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex)
 		{
 			// The easiest way to serve random access to this column is to simply retrieve
 			// the timestamp for every requested index as well as for the preceeding index.
@@ -306,7 +404,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				var previousTimestamp = timestamps[i * 2 + 0];
 				var currentTimestamp = timestamps[i * 2 + 1];
-				buffer[destinationIndex + i] = currentTimestamp - previousTimestamp;
+				destination[destinationIndex + i] = currentTimestamp - previousTimestamp;
 			}
 		}
 
@@ -347,10 +445,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			lock (_indices)
-			{
-				return GetLineNoLock(index);
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

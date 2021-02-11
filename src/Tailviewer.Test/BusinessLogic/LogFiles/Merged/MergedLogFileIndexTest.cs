@@ -52,7 +52,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var indices = index.Get(new LogFileSection(0, 1));
 			indices.Count.Should().Be(1);
-			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceId.Should().Be(0);
 			indices[0].SourceLineIndex.Should().Be(0);
 			indices[0].OriginalLogEntryIndex.Should().Be(0);
 			indices[0].MergedLogEntryIndex.Should().Be(0);
@@ -81,13 +81,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var indices = index.Get(new LogFileSection(0, 2));
 			indices.Count.Should().Be(2);
-			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceId.Should().Be(0);
 			indices[0].SourceLineIndex.Should().Be(0);
 			indices[0].OriginalLogEntryIndex.Should().Be(0);
 			indices[0].MergedLogEntryIndex.Should().Be(0);
 			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 37, 0));
 
-			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceId.Should().Be(0);
 			indices[1].SourceLineIndex.Should().Be(1);
 			indices[1].OriginalLogEntryIndex.Should().Be(1);
 			indices[1].MergedLogEntryIndex.Should().Be(1);
@@ -112,13 +112,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var indices = index.Get(new LogFileSection(0, 2));
 			indices.Count.Should().Be(2);
-			indices[0].LogFileIndex.Should().Be(1);
+			indices[0].SourceId.Should().Be(1);
 			indices[0].SourceLineIndex.Should().Be(0);
 			indices[0].OriginalLogEntryIndex.Should().Be(0);
 			indices[0].MergedLogEntryIndex.Should().Be(0);
 			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 9, 0));
 
-			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceId.Should().Be(0);
 			indices[1].SourceLineIndex.Should().Be(0);
 			indices[1].OriginalLogEntryIndex.Should().Be(0);
 			indices[1].MergedLogEntryIndex.Should().Be(1);
@@ -149,13 +149,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var indices = index.Get(new LogFileSection(0, 2));
 			indices.Count.Should().Be(2);
-			indices[0].LogFileIndex.Should().Be(1);
+			indices[0].SourceId.Should().Be(1);
 			indices[0].SourceLineIndex.Should().Be(0);
 			indices[0].OriginalLogEntryIndex.Should().Be(0);
 			indices[0].MergedLogEntryIndex.Should().Be(0);
 			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 27, 23, 9, 0));
 
-			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceId.Should().Be(0);
 			indices[1].SourceLineIndex.Should().Be(0);
 			indices[1].OriginalLogEntryIndex.Should().Be(0);
 			indices[1].MergedLogEntryIndex.Should().Be(1);
@@ -202,22 +202,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 6)));
 
 			var indices = index.Get(new LogFileSection(0, 6));
-			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceId.Should().Be(0);
 			indices[0].SourceLineIndex.Should().Be(0);
 
-			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceId.Should().Be(0);
 			indices[1].SourceLineIndex.Should().Be(1);
 
-			indices[2].LogFileIndex.Should().Be(0);
+			indices[2].SourceId.Should().Be(0);
 			indices[2].SourceLineIndex.Should().Be(2);
 
-			indices[3].LogFileIndex.Should().Be(0);
+			indices[3].SourceId.Should().Be(0);
 			indices[3].SourceLineIndex.Should().Be(3);
 
-			indices[4].LogFileIndex.Should().Be(0);
+			indices[4].SourceId.Should().Be(0);
 			indices[4].SourceLineIndex.Should().Be(4);
 
-			indices[5].LogFileIndex.Should().Be(0);
+			indices[5].SourceId.Should().Be(0);
 			indices[5].SourceLineIndex.Should().Be(5);
 		}
 
@@ -242,34 +242,34 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			index.Process(new MergedLogFilePendingModification(source2, new LogFileSection(0, 5)));
 
 			var indices = index.Get(new LogFileSection(0, 10));
-			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceId.Should().Be(0);
 			indices[0].SourceLineIndex.Should().Be(0);
 
-			indices[1].LogFileIndex.Should().Be(1);
+			indices[1].SourceId.Should().Be(1);
 			indices[1].SourceLineIndex.Should().Be(0);
 
-			indices[2].LogFileIndex.Should().Be(0);
+			indices[2].SourceId.Should().Be(0);
 			indices[2].SourceLineIndex.Should().Be(1);
 
-			indices[3].LogFileIndex.Should().Be(1);
+			indices[3].SourceId.Should().Be(1);
 			indices[3].SourceLineIndex.Should().Be(1);
 
-			indices[4].LogFileIndex.Should().Be(0);
+			indices[4].SourceId.Should().Be(0);
 			indices[4].SourceLineIndex.Should().Be(2);
 
-			indices[5].LogFileIndex.Should().Be(1);
+			indices[5].SourceId.Should().Be(1);
 			indices[5].SourceLineIndex.Should().Be(2);
 
-			indices[6].LogFileIndex.Should().Be(0);
+			indices[6].SourceId.Should().Be(0);
 			indices[6].SourceLineIndex.Should().Be(3);
 
-			indices[7].LogFileIndex.Should().Be(1);
+			indices[7].SourceId.Should().Be(1);
 			indices[7].SourceLineIndex.Should().Be(3);
 
-			indices[8].LogFileIndex.Should().Be(0);
+			indices[8].SourceId.Should().Be(0);
 			indices[8].SourceLineIndex.Should().Be(4);
 
-			indices[9].LogFileIndex.Should().Be(1);
+			indices[9].SourceId.Should().Be(1);
 			indices[9].SourceLineIndex.Should().Be(4);
 		}
 
@@ -392,13 +392,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var indices = index.Get(new LogFileSection(0, 2));
 			indices.Count.Should().Be(2);
-			indices[0].LogFileIndex.Should().Be(0);
+			indices[0].SourceId.Should().Be(0);
 			indices[0].SourceLineIndex.Should().Be(0);
 			indices[0].OriginalLogEntryIndex.Should().Be(0);
 			indices[0].MergedLogEntryIndex.Should().Be(0);
 			indices[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 19, 30, 1));
 
-			indices[1].LogFileIndex.Should().Be(0);
+			indices[1].SourceId.Should().Be(0);
 			indices[1].SourceLineIndex.Should().Be(2);
 			indices[1].OriginalLogEntryIndex.Should().Be(2);
 			indices[1].MergedLogEntryIndex.Should().Be(1);

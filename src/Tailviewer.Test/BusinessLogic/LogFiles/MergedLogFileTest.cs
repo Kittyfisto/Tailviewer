@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -51,6 +52,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			return data;
 		}
 
+		[Pure]
+		private static ILogFileColumn CreateCustomColumn<T>(T defaultValue)
+		{
+			var column = new Mock<ILogFileColumn<T>>();
+			column.SetupGet(x => x.DefaultValue).Returns(defaultValue);
+			column.SetupGet(x => x.DataType).Returns(typeof(T));
+			return column.Object;
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -59,10 +69,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that creating a merged log file from two sources is possible")]
-		public void TestCtor1()
+		public void TestConstruction1()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 
 			MergedLogFile logFile = null;
 			new Action(() => logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object))
@@ -72,17 +84,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that a merged log file can be created using the maximum number of supported sources")]
-		public void TestCtor2()
+		public void TestConstruction2()
 		{
 			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources)
-				.Select(unused => new Mock<ILogFile>().Object).ToArray();
+				.Select(unused =>
+				{
+					var logFileSource = new Mock<ILogFile>();
+					logFileSource.Setup(x => x.Columns).Returns(new ILogFileColumn[0]);
+					return logFileSource.Object;
+				}).ToArray();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), sources);
 			logFile.Sources.Should().Equal(sources);
 		}
 
 		[Test]
 		[Description("Verifies that the ctor complains if too many sources are merged")]
-		public void TestCtor3()
+		public void TestConstruction3()
 		{
 			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources+1)
 				.Select(unused => new Mock<ILogFile>().Object).ToArray();
@@ -92,11 +109,49 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that a merged log file is able to provide access to custom columns")]
+		public void TestCustomColumn()
+		{
+			var myCustomColumn = CreateCustomColumn<string>(null);
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry2
+			{
+				RawContent = "What is up Munich?",
+				Timestamp = new DateTime(2021, 02, 11, 22, 16, 49)
+			});
+			var source2 = new InMemoryLogFile(myCustomColumn);
+			var entry2 = new LogEntry2
+			{
+				RawContent = "Everything",
+				Timestamp = new DateTime(2021, 02, 11, 22, 15, 11)
+			};
+			entry2.SetValue(myCustomColumn, "A very important piece of information");
+			source2.Add(entry2);
+
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, new[] {source1, source2});
+			_taskScheduler.RunOnce();
+
+			merged.Count.Should().Be(2);
+			var entries = merged.GetEntries(new LogFileSection(0, 2), new ILogFileColumn[]{LogFileColumns.RawContent, LogFileColumns.Timestamp, LogFileColumns.SourceId, myCustomColumn});
+			entries.Count.Should().Be(2);
+			entries[0].RawContent.Should().Be("Everything");
+			entries[0].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 15, 11));
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1), "because this log entry is from the second source of the log file");
+			entries[0].GetValue(myCustomColumn).Should().Be("A very important piece of information");
+			entries[1].RawContent.Should().Be("What is up Munich?");
+			entries[1].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 16, 49));
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0), "because this log entry is from the first source of the log file");
+			entries[1].GetValue(myCustomColumn).Should().Be(myCustomColumn.DefaultValue, "because the first source doesn't have this column");
+		}
+
+		[Test]
 		[Description("Verifies that disposing a logfile works")]
 		public void TestDispose1()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			new Action(logFile.Dispose).Should().NotThrow();
@@ -107,7 +162,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDispose2()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			source1.Verify(x => x.AddListener(logFile, It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
@@ -123,6 +180,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEndOfSourceReached1()
 		{
 			var source = new Mock<ILogFile>();
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source.Object);
 			source.Verify(x => x.EndOfSourceReached, Times.Never);
 			logFile.EndOfSourceReached.Should().BeFalse("because the original source hasn't reached its end");
@@ -483,10 +542,40 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that merging a multi line entry in order works")]
+		public void TestOriginalDataSourceName()
+		{
+			var source1 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
+			var source2 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+
+			source1.Add(new Dictionary<ILogFileColumn, object>
+			{
+				{LogFileColumns.OriginalDataSourceName, "important_document.txt" },
+				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 33, 10)}
+			});
+
+			source2.Add(new Dictionary<ILogFileColumn, object>
+			{
+				{LogFileColumns.OriginalDataSourceName, "rubbish.log" },
+				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 29, 10)}
+			});
+
+			_taskScheduler.RunOnce();
+			merged.Count.Should().Be(2);
+			merged.GetEntry(0).GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
+			merged.GetEntry(0).GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			merged.GetEntry(1).GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
+			merged.GetEntry(1).GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+		}
+
+		[Test]
 		[Description("Verifies that starting a merged log file causes it to add listeners with the source files")]
 		public void TestStart1()
 		{
 			var source = new Mock<ILogFile>();
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+
 			var listeners = new List<Tuple<ILogFileListener, TimeSpan, int>>();
 			source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 			      .Callback(

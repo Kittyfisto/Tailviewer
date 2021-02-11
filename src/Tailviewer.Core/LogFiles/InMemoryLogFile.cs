@@ -417,6 +417,15 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		/// <param name="entry"></param>
+		public void Add(IReadOnlyDictionary<ILogFileColumn, object> entry)
+		{
+			Add(new ReadOnlyLogEntry(entry));
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="entry"></param>
 		public void Add(IReadOnlyLogEntry entry)
 		{
 			lock (_syncRoot)

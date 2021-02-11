@@ -169,6 +169,42 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
+		///     Retrieves the entry with the given <paramref name="columns" /> at the given <paramref name="sourceIndex" />
+		///     from this log file.
+		/// </summary>
+		/// <remarks>
+		///     Do NOT use this method if you want to retrieve multiple entries. Use any overload of ILogFile.GetEntries instead.
+		/// </remarks>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndex"></param>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex, IEnumerable<ILogFileColumn> columns)
+		{
+			var buffer = new LogEntryBuffer(1, columns);
+			logFile.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
+			return buffer[0];
+		}
+
+		/// <summary>
+		///     Retrieves the entry with all columns of the log file at the given <paramref name="sourceIndex" />.
+		/// </summary>
+		/// <remarks>
+		///     Do NOT use this method if you want to retrieve multiple entries. Use any overload of ILogFile.GetEntries instead.
+		/// </remarks>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndex"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex)
+		{
+			var buffer = new LogEntryBuffer(1, logFile.Columns);
+			logFile.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
+			return buffer[0];
+		}
+
+		/// <summary>
 		///     Retrieves a list of log lines from this log file.
 		/// </summary>
 		/// <param name="logFile"></param>

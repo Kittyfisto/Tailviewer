@@ -24,6 +24,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 
 			_logFile = new Mock<ILogFile>();
+			_logFile.SetupGet(x => x.Columns).Returns(LogFileColumns.Minimum);
 			_entries = new List<LogLine>();
 			_listeners = new LogFileListenerCollection(_logFile.Object);
 			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
@@ -264,7 +265,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				logFile.AddEntry("Hello!");
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because newer log entries should still appear");
-				dataSource.FilteredLogFile.GetLine(0).Message.Should().Be("Hello!");
+				dataSource.FilteredLogFile.GetEntry(0).RawContent.Should().Be("Hello!");
 			}
 		}
 

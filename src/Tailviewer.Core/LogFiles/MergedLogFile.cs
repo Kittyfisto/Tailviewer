@@ -35,6 +35,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly MergedLogFileIndex _index;
 		private readonly TimeSpan _maximumWaitTime;
+		private readonly IReadOnlyList<ILogFileColumn> _columns;
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly ILogFileProperties _properties;
@@ -75,6 +76,7 @@ namespace Tailviewer.Core.LogFiles
 			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
 			var logFileIndices = new Dictionary<ILogFile, byte>();
 			_maximumWaitTime = maximumWaitTime;
+			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFileColumns.SourceId}).Distinct().ToList();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 
 			byte idx = 0;
@@ -121,7 +123,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
@@ -188,6 +190,10 @@ namespace Tailviewer.Core.LogFiles
 			         Equals(column, LogFileColumns.OriginalLineNumber))
 			{
 				_index.GetLineNumbers(sourceSection, (int[]) (object) destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.SourceId))
+			{
+				_index.GetSourceIds(sourceSection, (LogLineSourceId[]) (object) destination, destinationIndex);
 			}
 			else
 			{
@@ -259,7 +265,8 @@ namespace Tailviewer.Core.LogFiles
 				    sourceLogFileIndex < _sources.Count)
 				{
 					var sourceLogFile = _sources[sourceLogFileIndex];
-					sourceLogFile.GetColumn(indices, column, columnBuffer, 0);
+					if (sourceLogFile.Columns.Contains(column))
+						sourceLogFile.GetColumn(indices, column, columnBuffer, 0);
 				}
 				else
 				{
@@ -373,7 +380,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			MergedLogLineIndex idx = _index[index];
 
-			var logFileIndex = idx.LogFileIndex;
+			var logFileIndex = idx.SourceId;
 			var logFile = _sources[logFileIndex];
 
 			var line = logFile.GetLine(idx.SourceLineIndex);
