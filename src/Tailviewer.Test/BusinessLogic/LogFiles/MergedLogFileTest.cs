@@ -615,7 +615,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		[Description("Verifies that changes from many sources are batched together")]
 		public void TestManySources2()
 		{
@@ -640,12 +639,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			// For once, we expect the content of the merged data source to be as expected...
 			merged.Count.Should().Be(sourceCount, "because every source added one line");
+			var entries = merged.GetEntries(new LogFileSection(0, sourceCount));
 			for (int i = 0; i < sourceCount; ++i)
 			{
+				var entry = entries[i];
+				entry.Index.Should().Be(i);
+				entry.LogEntryIndex.Should().Be(i);
 				int idx = sourceCount - i - 1;
-				merged.GetLine(i).Should().Be(new LogLine(i, i, new LogLineSourceId((byte)idx),
-				                                          idx.ToString(), LevelFlags.Info,
-				                                          end - TimeSpan.FromSeconds(idx)));
+				entry.SourceId.Should().Be(new LogLineSourceId((byte) idx));
+				entry.RawContent.Should().Be(idx.ToString());
+				entry.LogLevel.Should().Be(LevelFlags.Info);
+				entry.Timestamp.Should().Be(end - TimeSpan.FromSeconds(idx));
 			}
 
 			// But then it should also have fired as few changes as possible!

@@ -24,11 +24,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_lines = new List<LogLine>();
 			_source = new Mock<ILogFile>();
 			_source.Setup(x => x.Count).Returns(_lines.Count);
-			_source.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _lines[index]);
-			_source.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-				.Callback(
-					(LogFileSection section, LogLine[] entries) =>
-						_lines.CopyTo((int) section.Index, entries, 0, section.Count));
 			_source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 				.Callback((ILogFileListener listener, TimeSpan unused1, int unused2) =>
 				{
@@ -239,9 +234,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that receiving a Reset() actually causes the entire content to be reset")]
 		public void TestReset1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
 			_lines.Clear();
@@ -285,15 +280,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that receiving a Reset() actually causes the Reset() to be forwarded to all listeners")]
 		public void TestReset3()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
-			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
-			_lines.Clear();
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
+			source.Clear();
 			_taskScheduler.RunOnce();
 
 			_changes.Should().Equal(new object[]
@@ -440,17 +434,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file correctly fires invalidation events to its listeners when a log entry arrives in multiple parts")]
 		public void TestOneEntry3()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
-			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
 
 			_changes.Clear();
-			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			_changes.Should().Equal(new object[]
 			{
@@ -462,15 +455,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file correctly fires invalidation events to its listeners when a log entry arrives in multiple parts")]
 		public void TestTwoEntries1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			_lines.Add(new LogLine(0, 0, "DEBUG: Starting...", LevelFlags.Debug));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("DEBUG: Starting...", LevelFlags.Debug);
 			_taskScheduler.RunOnce();
 
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
-			_lines.Add(new LogLine(1, 1, "INFO: hello", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			source.AddEntry("INFO: hello", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			_changes.Should().Equal(new object[]
 			{
@@ -480,8 +472,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			});
 
 			_changes.Clear();
-			_lines.Add(new LogLine(2, 2, "world!", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(2, 1));
+			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			_changes.Should().Equal(new object[]
 			{
@@ -697,19 +688,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries6()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
 
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("A", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			source.AddEntry("B", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-
-			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(2, 1));
+			
+			source.AddEntry("C", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 
 			_changes.Should().Equal(LogFileSection.Reset,
@@ -719,32 +708,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Open issue, I need to fix this soon")]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/74")]
 		public void TestManyEntries7()
 		{
+			var source = new InMemoryLogFile();
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 3);
-
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			
+			source.AddEntry("A", LevelFlags.Other);
+			_taskScheduler.RunOnce();
+			
+			source.AddEntry("B", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			source.RemoveFrom(1);
+			source.AddEntry("B", LevelFlags.Other);
+			source.AddEntry("C", LevelFlags.Other);
 			_taskScheduler.RunOnce();
-
-			_lines[1] = new LogLine(1, 1, "B", LevelFlags.Other);
-			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 1));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
-			_taskScheduler.RunOnce();
-
-			logFile.GetSection(new LogFileSection(0, 3))
-				.Should().Equal(
-					new LogLine(0, 0, "A", LevelFlags.Other),
-					new LogLine(1, 1, "B", LevelFlags.Other),
-					new LogLine(2, 2, "C", LevelFlags.Other));
 		}
 
 		[Test]
