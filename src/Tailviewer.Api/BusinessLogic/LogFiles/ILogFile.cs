@@ -27,7 +27,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		/// <summary>
 		///     The total number of <see cref="LogLine" />s that are offered by this log file at this moment.
-		///     If the log file is not modified, then it is expected that <see cref="GetSection" /> may be called
+		///     If the log file is not modified, then it is expected that <see cref="GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)" /> may be called
 		///     with as many lines as returned by this property.
 		/// </summary>
 		int Count { get; }
@@ -155,6 +155,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="section"></param>
 		/// <param name="dest"></param>
 		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
+		[Obsolete("LogLine will be removed and so will this method sometime in 2021")]
 		void GetSection(LogFileSection section, LogLine[] dest);
 
 		/// <summary>

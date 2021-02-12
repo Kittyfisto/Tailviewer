@@ -3,6 +3,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
@@ -42,9 +43,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore(
-			"Doesn't work anymore because the actual source file is not ordered by time strictly ascending - several lines are completely out of order"
-			)]
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
@@ -56,16 +54,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Count.Should().Be(source.Count);
+				merged.Count.Should().Be(165342);
 				merged.GetValue(LogFileProperties.Size).Should().Be(source.GetValue(LogFileProperties.Size));
 				merged.GetValue(LogFileProperties.StartTimestamp).Should().Be(source.GetValue(LogFileProperties.StartTimestamp));
 
-				LogLine[] sourceLines = source.GetSection(new LogFileSection(0, source.Count));
-				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
+				var sourceEntries = source.GetEntries(new LogFileSection(0, source.Count));
+				var mergedEntries = merged.GetEntries(new LogFileSection(0, merged.Count));
 				for (int i = 0; i < source.Count; ++i)
 				{
-					LogLine mergedLine = mergedLines[i];
-					LogLine sourceLine = sourceLines[i];
-					mergedLine.Should().Be(sourceLine);
+					var mergedEntry = mergedEntries[i];
+					var sourceEntry = sourceEntries[i];
+
+					mergedEntry.Index.Should().Be(sourceEntry.Index);
+					mergedEntry.LogEntryIndex.Should().Be(sourceEntry.LogEntryIndex);
+					mergedEntry.LineNumber.Should().Be(sourceEntry.LineNumber);
+					mergedEntry.RawContent.Should().Be(sourceEntry.RawContent);
+					mergedEntry.DeltaTime.Should().Be(sourceEntry.DeltaTime);
+					if (i > 0)
+						mergedEntry.DeltaTime.Should().BeGreaterOrEqualTo(TimeSpan.Zero);
 				}
 			}
 		}

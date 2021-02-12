@@ -201,22 +201,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		///     Retrieves a list of log lines from this log file.
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="section"></param>
-		/// <returns></returns>
-		[Pure]
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018",
-			"https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		public static LogLine[] GetSection(this ILogFile logFile, LogFileSection section)
-		{
-			var entries = new LogLine[section.Count];
-			logFile.GetSection(section, entries);
-			return entries;
-		}
-
-		/// <summary>
 		///     Creates a filtered view onto this log file.
 		/// </summary>
 		/// <param name="logFile"></param>
