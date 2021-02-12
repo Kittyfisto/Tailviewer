@@ -145,18 +145,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		public double Progress => _buffer.Progress;
 
 		/// <inheritdoc />

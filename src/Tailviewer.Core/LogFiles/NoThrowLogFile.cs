@@ -305,16 +305,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			return default;
-		}
-
-		/// <inheritdoc />
 		public double Progress
 		{
 			get

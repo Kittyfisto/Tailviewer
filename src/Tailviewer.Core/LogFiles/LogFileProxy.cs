@@ -385,12 +385,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			var logFile = _innerLogFile;
@@ -400,12 +394,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			return LogLineIndex.Invalid;
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

@@ -100,18 +100,6 @@ namespace Tailviewer.Core.LogFiles
 			throw new NotImplementedException();
 		}
 
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			//if (section.Count > 0)
-			//	throw new ArgumentOutOfRangeException(nameof(section), "This log file is empty");
-			throw new NotImplementedException();
-		}
-
-		public LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
-		}
-
 		public double Progress
 		{
 			get { return 1; }

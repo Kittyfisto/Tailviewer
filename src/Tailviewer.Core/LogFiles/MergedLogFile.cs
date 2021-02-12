@@ -424,18 +424,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
-		public override LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			// Every Process() invocation locks the sync root until

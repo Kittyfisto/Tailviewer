@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetLine()
+		public void TestGetEntry()
 		{
 			var source = new InMemoryLogFile();
 			source.AddEntry("I'm an english man in new york");

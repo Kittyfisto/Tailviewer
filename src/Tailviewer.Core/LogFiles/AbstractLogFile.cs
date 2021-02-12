@@ -125,9 +125,6 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
 
-		/// <inheritdoc />
-		public abstract void GetSection(LogFileSection section, LogLine[] dest);
-
 		#region Index Translation
 
 		/// <inheritdoc />
@@ -137,10 +134,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		#endregion
-
-		/// <inheritdoc />
-		public abstract LogLine GetLine(int index);
-
+		
 		/// <inheritdoc />
 		public abstract double Progress { get; }
 

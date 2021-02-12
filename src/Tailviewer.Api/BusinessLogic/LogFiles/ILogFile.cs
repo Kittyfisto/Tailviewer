@@ -147,31 +147,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
 
 		/// <summary>
-		///     Retrieves a list of log lines from this log file.
-		/// </summary>
-		/// <remarks>
-		///     This method is currently expected to block until all lines have been retrieved.
-		/// </remarks>
-		/// <param name="section"></param>
-		/// <param name="dest"></param>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		[Obsolete("LogLine will be removed and so will this method sometime in 2021")]
-		void GetSection(LogFileSection section, LogLine[] dest);
-
-		/// <summary>
-		///     Retrieves the given log line.
-		/// </summary>
-		/// <remarks>
-		///     This method is currently expected to block until the given line has been retrieved.
-		/// </remarks>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		[Pure]
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		[Obsolete("LogLine will be removed and so will this method sometime in 2021")]
-		LogLine GetLine(int index);
-
-		/// <summary>
 		///     The relative progress (in between 0 and 1) between the number of lines currently exposed by this log file versus
 		///     the number
 		///     of lines in the underlying data source.

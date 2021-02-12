@@ -3,12 +3,10 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.Exporter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.Parsers;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles

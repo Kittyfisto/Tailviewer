@@ -188,12 +188,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -214,16 +208,6 @@ namespace Tailviewer.Core.LogFiles
 			get { return this[(int)index]; }
 		}
 
-		private LogLine CreateLogLine(IReadOnlyLogEntry logEntry)
-		{
-			return new LogLine((int)logEntry.Index,
-							   (int)logEntry.OriginalIndex,
-							   (int)logEntry.LogEntryIndex,
-							   logEntry.RawContent,
-							   logEntry.LogLevel,
-							   logEntry.Timestamp);
-		}
-
 		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
@@ -236,12 +220,6 @@ namespace Tailviewer.Core.LogFiles
 
 				return originalLineIndex;
 			}
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

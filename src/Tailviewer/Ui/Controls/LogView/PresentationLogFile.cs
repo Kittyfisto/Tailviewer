@@ -294,16 +294,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
-		}
-
 		public override double Progress => _source.Progress * MyProgress;
 
 		/// <summary>

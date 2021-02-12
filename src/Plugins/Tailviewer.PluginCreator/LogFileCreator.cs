@@ -42,8 +42,6 @@ namespace Tailviewer.PluginCreator
 			builder.AppendLine("\tpublic void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex) {}");
 			builder.AppendLine("\tpublic void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex) {}");
 			builder.AppendLine("\tpublic void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex) {}");
-			builder.AppendLine("\tpublic void GetSection(LogFileSection section, LogLine[] dest) {}");
-			builder.AppendLine("\tpublic LogLine GetLine(int index) {return new LogLine();}");
 			builder.AppendLine("\tpublic double Progress => 0;");
 			builder.AppendLine("\tpublic LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex) {return new LogLineIndex();}");
 			builder.AppendLine("}");
