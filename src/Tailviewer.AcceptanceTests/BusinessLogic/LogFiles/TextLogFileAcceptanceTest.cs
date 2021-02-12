@@ -193,7 +193,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetSection1()
+		public void TestGetEntries1()
 		{
 			using (var file = Create( File20Mb))
 			{
@@ -201,50 +201,68 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				file.Count.Should().Be(165342);
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-				LogLine[] section = file.GetSection(new LogFileSection(0, 10));
-				section.Should().Equal(new[]
-					{
-						new LogLine(0,
-						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-						            LevelFlags.Info,
-						            new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(1,
-						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 58, 998)),
-						new LogLine(2,
-						            "2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 013)),
-						new LogLine(3,
-						            "2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 062)),
-						new LogLine(4,
-						            "2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 067)),
-						new LogLine(5,
-						            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
-						            LevelFlags.Info,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 081)),
-						new LogLine(6,
-						            "2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 141)),
-						new LogLine(7,
-						            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
-						            LevelFlags.Info,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 171)),
-						new LogLine(8,
-						            "2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 181)),
-						new LogLine(9,
-						            "2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip",
-						            LevelFlags.Debug,
-						            new DateTime(2015, 10, 7, 19, 50, 59, 182))
-					});
+				var buffer = file.GetEntries(new LogFileSection(0, 10));
+
+
+				buffer[0].Index.Should().Be(0);
+				buffer[0].RawContent.Should()
+				         .Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
+				buffer[0].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+
+				buffer[1].Index.Should().Be(1);
+				buffer[1].RawContent.Should()
+				         .Be("2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1");
+				buffer[1].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[1].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 998));
+
+				buffer[2].Index.Should().Be(2);
+				buffer[2].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,013 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551613) 'SharpRemote.Heartbeat' implementing 'SharpRemote.IHeartbeat'");
+				buffer[2].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[2].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 013));
+
+				buffer[3].Index.Should().Be(3);
+				buffer[3].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,062 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551614) 'SharpRemote.Latency' implementing 'SharpRemote.ILatency'");
+				buffer[3].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[3].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 062));
+
+				buffer[4].Index.Should().Be(4);
+				buffer[4].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,067 [8092, 1] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - Creating new servant (#18446744073709551615) 'SharpRemote.Hosting.SubjectHost' implementing 'SharpRemote.Hosting.ISubjectHost'");
+				buffer[4].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[4].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 067));
+
+				buffer[5].Index.Should().Be(5);
+				buffer[5].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152");
+				buffer[5].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[5].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 081));
+
+				buffer[6].Index.Should().Be(6);
+				buffer[6].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,141 [8092, 6] DEBUG SharpRemote.SocketRemotingEndPointServer (null) - Incoming connection from '127.0.0.1:10348', starting handshake...");
+				buffer[6].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[6].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 141));
+
+				buffer[7].Index.Should().Be(7);
+				buffer[7].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348");
+				buffer[7].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[7].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 171));
+
+				buffer[8].Index.Should().Be(8);
+				buffer[8].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,181 [8092, 10] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #1 to 18446744073709551611.Beat");
+				buffer[8].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[8].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 181));
+
+				buffer[9].Index.Should().Be(9);
+				buffer[9].RawContent.Should()
+				         .Be("2015-10-07 19:50:59,182 [8092, 11] DEBUG SharpRemote.AbstractSocketRemotingEndPoint (null) - 0.0.0.0:49152 to 127.0.0.1:10348: sending RPC #2 to 18446744073709551612.Roundtrip");
+				buffer[9].LogLevel.Should().Be(LevelFlags.Debug);
+				buffer[9].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 182));
 			}
 		}
 
@@ -311,7 +329,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                                                          "Because the file has been created now");
 				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
 
-				logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
+				var entry = logFile.GetEntry(0);
+				entry.Index.Should().Be(0);
+				entry.LogEntryIndex.Should().Be(0);
+				entry.RawContent.Should().Be("Hello World!");
+				entry.LogLevel.Should().Be(LevelFlags.Other);
 			}
 			finally
 			{
@@ -369,20 +391,42 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-				LogLine[] lines = file.GetSection(new LogFileSection(0, 6));
-				lines.Should().Equal(new[]
-					{
-						new LogLine(0, 0,
-						            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-						            LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)),
-						new LogLine(1, 1, "Foobar", LevelFlags.Other, null),
-						new LogLine(2, 2, "Some more info", LevelFlags.Other, null),
-						new LogLine(3, 3,
-						            "2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1",
-						            LevelFlags.Debug, new DateTime(2015, 10, 7, 19, 50, 58, 998)),
-						new LogLine(4, 4, "Hey look at me", LevelFlags.Other, null),
-						new LogLine(5, 5, "dwadawdadw", LevelFlags.Other, null)
-					});
+				var entries = file.GetEntries(new LogFileSection(0, 6));
+				entries[0].Index.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].LogLevel.Should().Be(LevelFlags.Info);
+				entries[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+				entries[0].RawContent.Should().Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
+				
+				entries[1].Index.Should().Be(1);
+				entries[1].LogEntryIndex.Should().Be(1);
+				entries[1].LogLevel.Should().Be(LevelFlags.Other);
+				entries[1].Timestamp.Should().Be(null);
+				entries[1].RawContent.Should().Be("Foobar");
+				
+				entries[2].Index.Should().Be(2);
+				entries[2].LogEntryIndex.Should().Be(2);
+				entries[2].LogLevel.Should().Be(LevelFlags.Other);
+				entries[2].Timestamp.Should().Be(null);
+				entries[2].RawContent.Should().Be("Some more info");
+				
+				entries[3].Index.Should().Be(3);
+				entries[3].LogEntryIndex.Should().Be(3);
+				entries[3].LogLevel.Should().Be(LevelFlags.Debug);
+				entries[3].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 998));
+				entries[3].RawContent.Should().Be("2015-10-07 19:50:58,998 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1");
+				
+				entries[4].Index.Should().Be(4);
+				entries[4].LogEntryIndex.Should().Be(4);
+				entries[4].LogLevel.Should().Be(LevelFlags.Other);
+				entries[4].Timestamp.Should().Be(null);
+				entries[4].RawContent.Should().Be("Hey look at me");
+				
+				entries[5].Index.Should().Be(5);
+				entries[5].LogEntryIndex.Should().Be(5);
+				entries[5].LogLevel.Should().Be(LevelFlags.Other);
+				entries[5].Timestamp.Should().Be(null);
+				entries[5].RawContent.Should().Be("dwadawdadw");
 			}
 		}
 
@@ -455,8 +499,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
-				var line = file.GetLine(0);
-				line.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, 143, DateTimeKind.Unspecified));
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, 143, DateTimeKind.Unspecified));
 			}
 		}
 
@@ -467,8 +512,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
-				var line = file.GetLine(0);
-				line.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, DateTimeKind.Unspecified));
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, DateTimeKind.Unspecified));
 			}
 		}
 
@@ -479,9 +525,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
-				var line = file.GetLine(0);
+
+				var entry = file.GetEntry(0);
 				var today = DateTime.Today;
-				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 21, 04, 33, DateTimeKind.Unspecified));
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 21, 04, 33, DateTimeKind.Unspecified));
 			}
 		}
 
@@ -492,8 +539,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(1);
-				var line = file.GetLine(0);
-				line.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
+
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
 			}
 		}
 
@@ -504,8 +552,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
 				file.Count.Should().Be(2);
-				var line = file.GetLine(1);
-				line.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
+
+				var entry = file.GetEntry(1);
+				entry.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
 			}
 		}
 
@@ -518,10 +567,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				file.Count.Should().Be(2);
 
 				var today = DateTime.Today;
-				var line = file.GetLine(0);
-				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 51, 57, 135, DateTimeKind.Unspecified));
-				line = file.GetLine(1);
-				line.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 53, 06, 341, DateTimeKind.Unspecified));
+				var entry = file.GetEntry(0);
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 51, 57, 135, DateTimeKind.Unspecified));
+				entry = file.GetEntry(1);
+				entry.Timestamp.Should().Be(new DateTime(today.Year, today.Month, today.Day, 6, 53, 06, 341, DateTimeKind.Unspecified));
 			}
 		}
 	}

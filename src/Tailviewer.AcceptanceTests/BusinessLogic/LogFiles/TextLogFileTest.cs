@@ -11,7 +11,6 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.Parsers;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 using Certainty = Tailviewer.BusinessLogic.Certainty;
@@ -116,8 +115,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			var line = _file.GetLine(0);
-			line.Message.Should().Be("65°");
+			var entry = _file.GetEntry(0);
+			entry.RawContent.Should().Be("65°");
 		}
 
 		[Test]
@@ -135,8 +134,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			var line = _file.GetLine(0);
-			line.Message.Should().Be("65°");
+			var line = _file.GetEntry(0);
+			line.RawContent.Should().Be("65°");
 		}
 
 		[Test]
@@ -200,7 +199,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			_scheduler.RunOnce();
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Foo", LevelFlags.Other));
+			var entry = _file.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("Foo");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
@@ -216,7 +219,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
+			var entry = _file.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("Hello World!");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
@@ -236,7 +243,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
+			var entry = _file.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("ABC");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
@@ -266,7 +277,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
 			_file.Count.Should().Be(1);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
+			var entry = _file.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("ABC");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
@@ -281,8 +296,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_scheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
-			_file.GetLine(0).Should().Be(new LogLine(0, 0, "Hello", LevelFlags.Other));
-			_file.GetLine(1).Should().Be(new LogLine(1, 1, "World!", LevelFlags.Other));
+			var entries = _file.GetEntries(new LogFileSection(0, 2));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("Hello");
+			entries[0].LogLevel.Should().Be(LevelFlags.Other);
+			
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("World!");
+			entries[1].LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]

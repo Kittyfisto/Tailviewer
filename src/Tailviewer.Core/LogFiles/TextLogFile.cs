@@ -292,31 +292,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			if (section.Index < 0)
-				throw new ArgumentOutOfRangeException("section.Index");
-			if (section.Count < 0)
-				throw new ArgumentOutOfRangeException("section.Count");
-			if (dest == null)
-				throw new ArgumentNullException(nameof(dest));
-			if (dest.Length < section.Count)
-				throw new ArgumentOutOfRangeException("section.Count");
-
-			lock (_syncRoot)
-			{
-				if (section.Index + section.Count > _entries.Count)
-					throw new ArgumentOutOfRangeException(nameof(section));
-
-				_entries.CopyTo((int) section.Index, dest, 0, section.Count);
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			lock (_syncRoot)
-			{
-				return _entries[index];
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
