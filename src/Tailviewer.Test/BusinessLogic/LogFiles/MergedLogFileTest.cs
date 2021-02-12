@@ -116,13 +116,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var myCustomColumn = CreateCustomColumn<string>(null);
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2
+			source1.Add(new LogEntry
 			{
 				RawContent = "What is up Munich?",
 				Timestamp = new DateTime(2021, 02, 11, 22, 16, 49)
 			});
 			var source2 = new InMemoryLogFile(myCustomColumn);
-			var entry2 = new LogEntry2
+			var entry2 = new LogEntry
 			{
 				RawContent = "Everything",
 				Timestamp = new DateTime(2021, 02, 11, 22, 15, 11)
@@ -728,10 +728,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndicesBySection2()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -750,10 +750,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndexByIndices()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -776,10 +776,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetLineNumbersBySection()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -798,10 +798,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetLineNumbersByIndices()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();

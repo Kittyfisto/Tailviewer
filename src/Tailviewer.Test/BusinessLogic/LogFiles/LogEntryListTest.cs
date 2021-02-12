@@ -145,13 +145,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.Timestamp);
 
-			var logEntry = new LogEntry2
+			var logEntry = new LogEntry
 			{
 				RawContent = "Foobar"
 			};
 			entries.Add(logEntry);
 
-			logEntry = new LogEntry2
+			logEntry = new LogEntry
 			{
 				Timestamp = new DateTime(2017, 12, 19, 16, 08, 0)
 			};

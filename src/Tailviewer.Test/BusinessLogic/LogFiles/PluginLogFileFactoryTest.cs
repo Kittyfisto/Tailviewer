@@ -44,7 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var actualLogFile = factory.Open(fname, out _);
 			actualLogFile.Should().BeOfType<NoThrowLogFile>("because PluginLogFileFactory should protect us from buggy plugin implementations");
 
-			var buffer = new LogEntryBuffer(2);
+			var buffer = new LogEntryArray(2);
 			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 0);
 			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 0), Times.Once,
 				"because even though we've been given a proxy, it should nevertheless forward all calls to the actual implementation");
@@ -71,7 +71,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var actualLogFile = factory.Open(filename, out _);
 
 			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Once);
-			var buffer = new LogEntryBuffer(3);
+			var buffer = new LogEntryArray(3);
 			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 1);
 			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 1), Times.Once,
 			               "because even though we've been given a proxy, it should nevertheless forward all calls to the actual implementation");

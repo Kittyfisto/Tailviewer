@@ -129,13 +129,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile(LogFileColumns.LogLevel);
 
-			var logEntry = new LogEntry2
+			var logEntry = new LogEntry
 			{
 				LogLevel = LevelFlags.Error
 			};
 			logFile.Add(logEntry);
 
-			var buffer = new LogEntryBuffer(1, LogFileColumns.LogLevel);
+			var buffer = new LogEntryArray(1, LogFileColumns.LogLevel);
 			logFile.GetEntries(new LogFileSection(0, 1), buffer);
 			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}

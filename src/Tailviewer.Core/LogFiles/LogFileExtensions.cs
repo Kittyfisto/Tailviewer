@@ -101,7 +101,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection)
 		{
-			var buffer = new LogEntryBuffer(sourceSection.Count, logFile.Columns);
+			var buffer = new LogEntryArray(sourceSection.Count, logFile.Columns);
 			GetEntries(logFile, sourceSection, buffer);
 			return buffer;
 		}
@@ -117,7 +117,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection, IEnumerable<ILogFileColumn> columns)
 		{
-			var buffer = new LogEntryBuffer(sourceSection.Count, columns);
+			var buffer = new LogEntryArray(sourceSection.Count, columns);
 			GetEntries(logFile, sourceSection, buffer);
 			return buffer;
 		}
@@ -131,7 +131,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices)
 		{
-			var buffer = new LogEntryBuffer(sourceIndices.Count, logFile.Columns);
+			var buffer = new LogEntryArray(sourceIndices.Count, logFile.Columns);
 			GetEntries(logFile, sourceIndices, buffer);
 			return buffer;
 		}
@@ -159,7 +159,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, IEnumerable<ILogFileColumn> columns)
 		{
-			var buffer = new LogEntryBuffer(sourceIndices.Count, columns);
+			var buffer = new LogEntryArray(sourceIndices.Count, columns);
 			logFile.GetEntries(sourceIndices, buffer);
 			return buffer;
 		}
@@ -178,7 +178,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex, IEnumerable<ILogFileColumn> columns)
 		{
-			var buffer = new LogEntryBuffer(1, columns);
+			var buffer = new LogEntryArray(1, columns);
 			logFile.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
 			return buffer[0];
 		}
@@ -195,7 +195,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex)
 		{
-			var buffer = new LogEntryBuffer(1, logFile.Columns);
+			var buffer = new LogEntryArray(1, logFile.Columns);
 			logFile.GetEntries(new LogFileSection(sourceIndex, 1), buffer);
 			return buffer[0];
 		}

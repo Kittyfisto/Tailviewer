@@ -14,10 +14,10 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 		public void TestPassesFilter1()
 		{
 			var filter = new NoFilter();
-			filter.PassesFilter(new LogEntry2()).Should().BeTrue();
+			filter.PassesFilter(new LogEntry()).Should().BeTrue();
 			filter.PassesFilter((IEnumerable<IReadOnlyLogEntry>) null).Should().BeTrue();
-			filter.PassesFilter(new LogEntry2[0]).Should().BeTrue();
-			filter.PassesFilter(new[] {new LogEntry2()}).Should().BeTrue();
+			filter.PassesFilter(new LogEntry[0]).Should().BeTrue();
+			filter.PassesFilter(new[] {new LogEntry()}).Should().BeTrue();
 		}
 	}
 }

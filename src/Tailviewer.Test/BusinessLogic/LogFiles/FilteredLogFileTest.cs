@@ -204,10 +204,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				source.AddRange(new[]
 				{
-					new LogEntry2 { RawContent = "A" },
-					new LogEntry2 { RawContent = "B" },
-					new LogEntry2 { RawContent = "C" },
-					new LogEntry2 { RawContent = "D" }
+					new LogEntry { RawContent = "A" },
+					new LogEntry { RawContent = "B" },
+					new LogEntry { RawContent = "C" },
+					new LogEntry { RawContent = "D" }
 				});
 				source.RemoveFrom(2);
 
@@ -231,10 +231,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 				source.AddRange(new []
 				{
-					new LogEntry2(LogFileColumns.Minimum){RawContent = "A", LogLevel = LevelFlags.Info},
-					new LogEntry2(LogFileColumns.Minimum){RawContent = "B", LogLevel = LevelFlags.Info},
-					new LogEntry2(LogFileColumns.Minimum){RawContent = "C", LogLevel = LevelFlags.Info},
-					new LogEntry2(LogFileColumns.Minimum){RawContent = "D", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "A", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "B", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "C", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "D", LogLevel = LevelFlags.Info},
 				});
 
 				_taskScheduler.RunOnce();
@@ -308,9 +308,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				logFile.AddRange(new[]
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
 				});
 
 				_taskScheduler.RunOnce();
@@ -322,9 +322,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				logFile.RemoveFrom(new LogLineIndex(2));
 				logFile.AddRange(new []
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
 				filtered.Count.Should().Be(4);
@@ -752,10 +752,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -770,10 +770,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -795,10 +795,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -813,10 +813,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 

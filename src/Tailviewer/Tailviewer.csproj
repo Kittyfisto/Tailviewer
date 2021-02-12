@@ -172,7 +172,6 @@
     <Compile Include="BusinessLogic\DataSources\MergedDataSource.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilter.cs" />
     <Compile Include="BusinessLogic\Filters\QuickFilters.cs" />
-    <Compile Include="BusinessLogic\NoLogDataAccessor.cs" />
     <Compile Include="BusinessLogic\Searches\DispatchedSearchResults.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearch.cs" />
     <Compile Include="BusinessLogic\Searches\ILogFileSearchListener.cs" />

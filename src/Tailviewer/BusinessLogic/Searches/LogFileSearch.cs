@@ -23,7 +23,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly LogFileSearchListenerCollection _listeners;
 		private readonly SubstringFilter _filter;
 		private readonly ILogFile _logFile;
-		private readonly LogEntryBuffer _logLinesBuffer;
+		private readonly LogEntryArray _logLinesArray;
 		private readonly List<LogMatch> _matches;
 		private readonly List<LogLineMatch> _matchesBuffer;
 		private readonly TimeSpan _maximumWaitTime;
@@ -57,7 +57,7 @@ namespace Tailviewer.BusinessLogic.Searches
 
 			const int maximumLineCount = 1000;
 			_maximumWaitTime = maximumWaitTime;
-			_logLinesBuffer = new LogEntryBuffer(maximumLineCount, LogFileColumns.Index, LogFileColumns.RawContent);
+			_logLinesArray = new LogEntryArray(maximumLineCount, LogFileColumns.Index, LogFileColumns.RawContent);
 			_matchesBuffer = new List<LogLineMatch>();
 			_logFile.AddListener(this, _maximumWaitTime, maximumLineCount);
 
@@ -143,12 +143,12 @@ namespace Tailviewer.BusinessLogic.Searches
 				// We've instructed the logfile to give us exactly up to
 				// _logLinesBuffer.Length amount of entries in the ctor, hence the following
 				// is correct:
-				_logFile.GetEntries(section, _logLinesBuffer);
+				_logFile.GetEntries(section, _logLinesArray);
 
 				bool added = false;
 				for (int i = 0; i < section.Count; ++i)
 				{
-					var line = _logLinesBuffer[i];
+					var line = _logLinesArray[i];
 
 					_filter.Match(line, _matchesBuffer);
 					if (_matchesBuffer.Count > 0)

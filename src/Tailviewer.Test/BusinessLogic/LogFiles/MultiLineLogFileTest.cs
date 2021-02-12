@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Metrolib;
@@ -386,8 +385,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
 			source.AddRange(new[]
 			{
-				new LogEntry2{RawContent = "INFO: hello", LogLevel = LevelFlags.Info, Timestamp = timestamp},
-				new LogEntry2{RawContent = "world!", LogLevel = LevelFlags.Other}
+				new LogEntry{RawContent = "INFO: hello", LogLevel = LevelFlags.Info, Timestamp = timestamp},
+				new LogEntry{RawContent = "world!", LogLevel = LevelFlags.Other}
 			});
 
 			_taskScheduler.RunOnce();
@@ -488,11 +487,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			source.AddRange(new[]
 			{
-				new LogEntry2 {RawContent = "A", LogLevel = LevelFlags.Debug},
-				new LogEntry2 {RawContent = "B", LogLevel = LevelFlags.Info},
-				new LogEntry2 {RawContent = "C", LogLevel = LevelFlags.Warning},
-				new LogEntry2 {RawContent = "D", LogLevel = LevelFlags.Error},
-				new LogEntry2 {RawContent = "E", LogLevel = LevelFlags.Fatal},
+				new LogEntry {RawContent = "A", LogLevel = LevelFlags.Debug},
+				new LogEntry {RawContent = "B", LogLevel = LevelFlags.Info},
+				new LogEntry {RawContent = "C", LogLevel = LevelFlags.Warning},
+				new LogEntry {RawContent = "D", LogLevel = LevelFlags.Error},
+				new LogEntry {RawContent = "E", LogLevel = LevelFlags.Fatal},
 			});
 			_taskScheduler.RunOnce();
 
@@ -614,8 +613,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			source.AddRange(new []
 			{
-				new LogEntry2{RawContent = "Foo", LogLevel = LevelFlags.Other},
-				new LogEntry2{RawContent = "INFO: Bar", LogLevel = LevelFlags.Info},
+				new LogEntry{RawContent = "Foo", LogLevel = LevelFlags.Other},
+				new LogEntry{RawContent = "INFO: Bar", LogLevel = LevelFlags.Info},
 			});
 			_taskScheduler.RunOnce();
 
@@ -635,8 +634,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			source.AddRange(new []
 			{
-				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
-				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info}
+				new LogEntry{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info}
 			});
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(3);
@@ -664,15 +663,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			source.AddRange(new []
 			{
-				new LogEntry2{RawContent = "Foo", LogLevel = LevelFlags.Other},
-				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
-				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
+				new LogEntry{RawContent = "Foo", LogLevel = LevelFlags.Other},
+				new LogEntry{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
 			});
 			source.RemoveFrom(1);
 			source.AddRange(new []
 			{
-				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
-				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
+				new LogEntry{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
 			});
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(3);
@@ -885,7 +884,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var section = new LogFileSection(42, 5);
-			var buffer = new LogEntryBuffer(3, LogFileColumns.DeltaTime, LogFileColumns.RawContent);
+			var buffer = new LogEntryArray(3, LogFileColumns.DeltaTime, LogFileColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(section, buffer, destinationIndex);
@@ -907,7 +906,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 
 			var section = new LogFileSection(1, 2);
-			var buffer = new LogEntryBuffer(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
+			var buffer = new LogEntryArray(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(section, buffer, destinationIndex);
@@ -922,7 +921,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
 			var indices = new LogLineIndex[] { 0, 2, 5 };
-			var buffer = new LogEntryBuffer(5, LogFileColumns.RawContent);
+			var buffer = new LogEntryArray(5, LogFileColumns.RawContent);
 			var destinationIndex = 2;
 
 			logFile.GetEntries(indices, buffer, destinationIndex);
@@ -944,7 +943,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 
 			var sourceIndices = new[] {new LogLineIndex(2), new LogLineIndex(1)};
-			var buffer = new LogEntryBuffer(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
+			var buffer = new LogEntryArray(4, LogFileColumns.Timestamp, LogFileColumns.RawContent);
 			var destinationIndex = 1;
 
 			logFile.GetEntries(sourceIndices, buffer, destinationIndex);
@@ -1013,9 +1012,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				logFile.AddRange(new[]
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
 				});
 
 				_taskScheduler.RunOnce();
@@ -1043,9 +1042,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				logFile.RemoveFrom(new LogLineIndex(2));
 				logFile.AddRange(new []
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
 				multiLine.Count.Should().Be(5);

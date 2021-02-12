@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -13,17 +12,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		public override ILogEntry CreateDefault()
 		{
-			return new LogEntry2();
+			return new LogEntry();
 		}
 
 		public override ILogEntry CreateEmpty()
 		{
-			return new LogEntry2(new ILogFileColumn[0]);
+			return new LogEntry(new ILogFileColumn[0]);
 		}
 
 		public override ILogEntry Create(params ILogFileColumn[] columns)
 		{
-			return new LogEntry2(columns);
+			return new LogEntry(columns);
 		}
 
 		#endregion

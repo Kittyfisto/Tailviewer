@@ -301,7 +301,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Append(LogFileSection section)
 		{
-			var buffer = new LogEntryBuffer(section.Count, LogFileColumns.Index, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
+			var buffer = new LogEntryArray(section.Count, LogFileColumns.Index, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
 			_source.GetEntries(section, buffer);
 
 			lock (_syncRoot)

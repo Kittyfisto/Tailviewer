@@ -285,7 +285,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
 		public IReadOnlyLogEntry AddEntry(string rawContent)
 		{
-			var logEntry = new LogEntry2
+			var logEntry = new LogEntry
 			{
 				RawContent = rawContent
 			};
@@ -300,7 +300,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
 		public IReadOnlyLogEntry AddEntry(string rawContent, LevelFlags level)
 		{
-			var logEntry = new LogEntry2
+			var logEntry = new LogEntry
 			{
 				RawContent = rawContent,
 				LogLevel = level
@@ -317,7 +317,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
 		public IReadOnlyLogEntry AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
-			var logEntry = new LogEntry2
+			var logEntry = new LogEntry
 			{
 				RawContent = rawContent,
 				LogLevel = level,
@@ -359,7 +359,7 @@ namespace Tailviewer.Core.LogFiles
 
 				foreach (var line in lines)
 				{
-					var logEntry = new LogEntry2
+					var logEntry = new LogEntry
 					{
 						Index = _logEntries.Count,
 						OriginalIndex = _logEntries.Count,
@@ -388,7 +388,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			for (int i = 0; i < count; ++i)
 			{
-				Add(new LogEntry2());
+				Add(new LogEntry());
 			}
 		}
 
@@ -439,7 +439,7 @@ namespace Tailviewer.Core.LogFiles
 				// The user supplies us with a list of properties to add, however we will
 				// never allow the user to supply us things like index or line number.
 				// Therefore we create a log entry which we actually want to add...
-				var finalLogEntry = new LogEntry2(Columns);
+				var finalLogEntry = new LogEntry(Columns);
 
 				foreach (var column in Columns)
 				{

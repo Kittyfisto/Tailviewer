@@ -38,8 +38,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				{LogFileColumns.RawContent, "Starbuck"}
 			};
-			var entry = new LogEntry2(values);
-			var equalEntry = new LogEntry2(values);
+			var entry = new LogEntry(values);
+			var equalEntry = new LogEntry(values);
 			Equals(entry, equalEntry).Should().BeTrue();
 
 			var equalReadOnlyEntry = new ReadOnlyLogEntry(values);
@@ -57,8 +57,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				{LogFileColumns.RawContent, "Apollo"}
 			};
-			var entry = new LogEntry2(values);
-			var otherEntry = new LogEntry2(otherValues);
+			var entry = new LogEntry(values);
+			var otherEntry = new LogEntry(otherValues);
 			Equals(entry, otherEntry).Should().BeFalse();
 
 			var otherReadOnlyEntry = new ReadOnlyLogEntry(otherValues);
@@ -68,8 +68,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualBothEmpty_DifferentColumns()
 		{
-			var entry = new LogEntry2(LogFileColumns.RawContent);
-			var otherEntry = new LogEntry2(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+			var entry = new LogEntry(LogFileColumns.RawContent);
+			var otherEntry = new LogEntry(LogFileColumns.RawContent, LogFileColumns.Timestamp);
 			Equals(entry, otherEntry).Should().BeFalse();
 
 			var equalReadOnlyEntry = new ReadOnlyLogEntry(LogFileColumns.RawContent, LogFileColumns.Timestamp);

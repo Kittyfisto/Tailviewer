@@ -10,7 +10,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     A fixed-size buffer which provides read/write access to <see cref="IReadOnlyLogEntry" />s.
 	/// </summary>
-	public sealed class LogEntryBuffer
+	public sealed class LogEntryArray
 		: ILogEntries
 	{
 		private readonly int _length;
@@ -21,7 +21,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="columns"></param>
-		public LogEntryBuffer(int length, IEnumerable<ILogFileColumn> columns)
+		public LogEntryArray(int length, IEnumerable<ILogFileColumn> columns)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
@@ -40,7 +40,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="columns"></param>
-		public LogEntryBuffer(int length, params ILogFileColumn[] columns)
+		public LogEntryArray(int length, params ILogFileColumn[] columns)
 			: this(length, (IEnumerable<ILogFileColumn>)columns)
 		{}
 
@@ -215,15 +215,15 @@ namespace Tailviewer.Core.LogFiles
 		private sealed class LogEntryAccessor
 			: AbstractLogEntry
 		{
-			private readonly LogEntryBuffer _buffer;
+			private readonly LogEntryArray _array;
 			private readonly int _index;
 
-			public LogEntryAccessor(LogEntryBuffer buffer, int index)
+			public LogEntryAccessor(LogEntryArray array, int index)
 			{
-				if (buffer == null)
-					throw new ArgumentNullException(nameof(buffer));
+				if (array == null)
+					throw new ArgumentNullException(nameof(array));
 
-				_buffer = buffer;
+				_array = array;
 				_index = index;
 			}
 
@@ -239,7 +239,7 @@ namespace Tailviewer.Core.LogFiles
 			public override bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
 			{
 				IColumnData data;
-				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+				if (!_array._dataByColumn.TryGetValue(column, out data))
 				{
 					value = column.DefaultValue;
 					return false;
@@ -261,7 +261,7 @@ namespace Tailviewer.Core.LogFiles
 			public override bool TryGetValue(ILogFileColumn column, out object value)
 			{
 				IColumnData data;
-				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+				if (!_array._dataByColumn.TryGetValue(column, out data))
 				{
 					value = column.DefaultValue;
 					return false;
@@ -271,12 +271,12 @@ namespace Tailviewer.Core.LogFiles
 				return true;
 			}
 
-			public override IReadOnlyList<ILogFileColumn> Columns => _buffer._columns;
+			public override IReadOnlyList<ILogFileColumn> Columns => _array._columns;
 
 			public override void SetValue(ILogFileColumn column, object value)
 			{
 				IColumnData data;
-				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+				if (!_array._dataByColumn.TryGetValue(column, out data))
 					throw new ColumnNotRetrievedException(column);
 
 				data[_index] = value;
@@ -285,7 +285,7 @@ namespace Tailviewer.Core.LogFiles
 			public override void SetValue<T>(ILogFileColumn<T> column, T value)
 			{
 				IColumnData data;
-				if (!_buffer._dataByColumn.TryGetValue(column, out data))
+				if (!_array._dataByColumn.TryGetValue(column, out data))
 					throw new ColumnNotRetrievedException(column);
 
 				((ColumnData<T>)data)[_index] = value;

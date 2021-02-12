@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.Core.LogTables;
 
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	///     An <see cref="ILogEntry" /> implementation which shouldn't be used to store data.
+	///     An <see cref="ILogEntry" /> implementation which holds all data in memory (although in a memory intensive fashion).
 	/// </summary>
 	/// <remarks>
-	///     TODO: Rename to LogEntry once <see cref="LogEntry" /> is removed.
+	///     DO NOT use Lists/Arrays of this type to store a bunch of data. Use <see cref="LogEntryArray"/> or <see cref="LogEntryList"/> instea.d
 	/// </remarks>
-	public sealed class LogEntry2
+	public sealed class LogEntry
 		: AbstractLogEntry
 	{
 		private readonly List<ILogFileColumn> _columns;
@@ -20,20 +18,20 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		/// </summary>
-		public LogEntry2()
+		public LogEntry()
 			: this(LogFileColumns.Minimum)
 		{}
 
 		/// <summary>
 		/// </summary>
-		public LogEntry2(params ILogFileColumn[] columns)
+		public LogEntry(params ILogFileColumn[] columns)
 			: this((IEnumerable<ILogFileColumn>) columns)
 		{
 		}
 
 		/// <summary>
 		/// </summary>
-		public LogEntry2(IEnumerable<ILogFileColumn> columns)
+		public LogEntry(IEnumerable<ILogFileColumn> columns)
 		{
 			_columns = new List<ILogFileColumn>(columns);
 			_values = new Dictionary<ILogFileColumn, object>(_columns.Count);
@@ -45,7 +43,7 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		/// </summary>
-		public LogEntry2(IReadOnlyDictionary<ILogFileColumn, object> columnValues)
+		public LogEntry(IReadOnlyDictionary<ILogFileColumn, object> columnValues)
 			: this(columnValues.Keys)
 		{
 			foreach (var pair in columnValues)

@@ -663,7 +663,7 @@ namespace Tailviewer.Ui.Controls.LogView
 					sortedIndices.Sort();
 					// TODO: What do we do if some mad man has 1 million lines selected?
 					// TODO: Request in batches
-					var buffer = new LogEntryBuffer(_selectedIndices.Count, LogFileColumns.RawContent);
+					var buffer = new LogEntryArray(_selectedIndices.Count, LogFileColumns.RawContent);
 					logFile.GetEntries(sortedIndices, buffer);
 
 					for (int i = 0; i < sortedIndices.Count; ++i)

@@ -28,7 +28,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		const int MaximumLineCount = 1000;
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private readonly LogEntryBuffer _buffer;
+		private readonly LogEntryArray _array;
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly LogEntryList _indices;
@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_indices = new LogEntryList(IndexedColumns);
 
-			_buffer = new LogEntryBuffer(MaximumLineCount, LogFileColumns.RawContent);
+			_array = new LogEntryArray(MaximumLineCount, LogFileColumns.RawContent);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_syncRoot = new object();
 			
@@ -161,14 +161,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void Add(ILogFile logFile, LogFileSection section)
 		{
 			// !!!We deliberately retrieve this section OUTSIDE of our own lock!!!
-			logFile.GetEntries(section, _buffer);
+			logFile.GetEntries(section, _array);
 
 			// Calculating the max width of a line takes time and is therefore done outside
 			// the lock!
 			var indices = new List<ILogEntry>(section.Count);
 			for (var i = 0; i < section.Count; ++i)
 			{
-				var logEntry = _buffer[i];
+				var logEntry = _array[i];
 				indices.Add(CreateIndex(logEntry));
 			}
 
@@ -213,7 +213,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			int numLines;
 			var width = EstimateWidth(logEntry.RawContent, out numLines);
-			var index = new LogEntry2();
+			var index = new LogEntry();
 			index.SetValue(LogFileColumns.RawContentMaxPresentationWidth, width);
 			index.SetValue(LogFileColumns.PresentationLineCount, numLines);
 			return index;

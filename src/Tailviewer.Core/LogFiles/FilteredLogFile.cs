@@ -35,7 +35,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly Dictionary<int, int> _logEntryIndices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly LogEntryBuffer _buffer;
+		private readonly LogEntryArray _array;
 		private readonly TimeSpan _maximumWaitTime;
 
 		private LogFileSection _fullSourceSection;
@@ -67,7 +67,7 @@ namespace Tailviewer.Core.LogFiles
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
 			_logEntryIndices = new Dictionary<int, int>();
-			_buffer = new LogEntryBuffer(BatchSize, LogFileColumns.Minimum);
+			_array = new LogEntryArray(BatchSize, LogFileColumns.Minimum);
 			_lastLogEntry = new LogEntryList(LogFileColumns.Minimum);
 			_maximumWaitTime = maximumWaitTime;
 
@@ -489,14 +489,14 @@ namespace Tailviewer.Core.LogFiles
 				int remaining = _fullSourceSection.Index + _fullSourceSection.Count - _currentSourceIndex;
 				int nextCount = Math.Min(remaining, BatchSize);
 				var nextSection = new LogFileSection(_currentSourceIndex, nextCount);
-				_source.GetEntries(nextSection, _buffer);
+				_source.GetEntries(nextSection, _array);
 
 				for (int i = 0; i < nextCount; ++i)
 				{
 					if (token.IsCancellationRequested)
 						break;
 
-					var logEntry = _buffer[i];
+					var logEntry = _array[i];
 					if (Log.IsDebugEnabled)
 						Log.DebugFormat("Processing: LineIndex={0}, OriginalLineIndex={1}, LogEntryIndex={2}, Message={3}",
 						                logEntry.Index,
