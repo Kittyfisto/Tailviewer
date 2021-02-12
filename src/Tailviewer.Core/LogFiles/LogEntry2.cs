@@ -21,10 +21,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		public LogEntry2()
-		{
-			_values = new Dictionary<ILogFileColumn, object>();
-			_columns = new List<ILogFileColumn>();
-		}
+			: this(LogFileColumns.Minimum)
+		{}
 
 		/// <summary>
 		/// </summary>
@@ -36,9 +34,24 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		public LogEntry2(IEnumerable<ILogFileColumn> columns)
-			: this()
 		{
-			foreach (var column in columns) Add(column);
+			_columns = new List<ILogFileColumn>(columns);
+			_values = new Dictionary<ILogFileColumn, object>(_columns.Count);
+			foreach (var column in _columns)
+			{
+				_values.Add(column, column.DefaultValue);
+			}
+		}
+
+		/// <summary>
+		/// </summary>
+		public LogEntry2(IReadOnlyDictionary<ILogFileColumn, object> columnValues)
+			: this(columnValues.Keys)
+		{
+			foreach (var pair in columnValues)
+			{
+				SetValue(pair.Key, pair.Value);
+			}
 		}
 
 		/// <inheritdoc />
@@ -50,7 +63,18 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		public void Add(ILogFileColumn column)
 		{
-			_values.Add(column, column.DefaultValue);
+			Add(column, column.DefaultValue);
+			;
+		}
+
+		/// <summary>
+		///     Adds a new column with the given value to this log entry.
+		/// </summary>
+		/// <param name="column"></param>
+		/// <param name="value"></param>
+		public void Add(ILogFileColumn column, object value)
+		{
+			_values.Add(column, value);
 			_columns.Add(column);
 		}
 

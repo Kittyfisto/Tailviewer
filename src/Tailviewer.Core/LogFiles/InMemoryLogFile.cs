@@ -314,11 +314,14 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		/// <param name="rawContent"></param>
-		public void AddEntry(string rawContent)
+		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
+		public IReadOnlyLogEntry AddEntry(string rawContent)
 		{
-			var logEntry = new LogEntry2();
-			logEntry.Add(LogFileColumns.RawContent, rawContent);
-			Add(logEntry);
+			var logEntry = new LogEntry2
+			{
+				RawContent = rawContent
+			};
+			return Add(logEntry);
 		}
 
 		/// <summary>
@@ -326,12 +329,15 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="rawContent"></param>
 		/// <param name="level"></param>
-		public void AddEntry(string rawContent, LevelFlags level)
+		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
+		public IReadOnlyLogEntry AddEntry(string rawContent, LevelFlags level)
 		{
-			var logEntry = new LogEntry2();
-			logEntry.Add(LogFileColumns.RawContent, rawContent);
-			logEntry.Add(LogFileColumns.LogLevel, level);
-			Add(logEntry);
+			var logEntry = new LogEntry2
+			{
+				RawContent = rawContent,
+				LogLevel = level
+			};
+			return Add(logEntry);
 		}
 
 		/// <summary>
@@ -340,13 +346,16 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="rawContent"></param>
 		/// <param name="level"></param>
 		/// <param name="timestamp"></param>
-		public void AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
+		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
+		public IReadOnlyLogEntry AddEntry(string rawContent, LevelFlags level, DateTime? timestamp)
 		{
-			var logEntry = new LogEntry2();
-			logEntry.Add(LogFileColumns.RawContent, rawContent);
-			logEntry.Add(LogFileColumns.LogLevel, level);
-			logEntry.Add(LogFileColumns.Timestamp, timestamp);
-			Add(logEntry);
+			var logEntry = new LogEntry2
+			{
+				RawContent = rawContent,
+				LogLevel = level,
+				Timestamp = timestamp
+			};
+			return Add(logEntry);
 		}
 
 		/// <summary>
@@ -382,17 +391,19 @@ namespace Tailviewer.Core.LogFiles
 
 				foreach (var line in lines)
 				{
-					var logEntry = new LogEntry2();
-					logEntry.Add(LogFileColumns.Index, _logEntries.Count);
-					logEntry.Add(LogFileColumns.OriginalIndex, _logEntries.Count);
-					logEntry.Add(LogFileColumns.LineNumber, _logEntries.Count + 1);
-					logEntry.Add(LogFileColumns.OriginalLineNumber, _logEntries.Count + 1);
-					logEntry.Add(LogFileColumns.LogEntryIndex, logEntryIndex);
-					logEntry.Add(LogFileColumns.RawContent, line);
-					logEntry.Add(LogFileColumns.LogLevel, level);
-					logEntry.Add(LogFileColumns.Timestamp, timestamp);
-					logEntry.Add(LogFileColumns.ElapsedTime, elapsed);
-					logEntry.Add(LogFileColumns.DeltaTime, deltaTime);
+					var logEntry = new LogEntry2
+					{
+						Index = _logEntries.Count,
+						OriginalIndex = _logEntries.Count,
+						LineNumber = _logEntries.Count + 1,
+						OriginalLineNumber = _logEntries.Count + 1,
+						LogEntryIndex = logEntryIndex,
+						RawContent = line,
+						LogLevel = level,
+						Timestamp = timestamp,
+						ElapsedTime = elapsed,
+						DeltaTime = deltaTime
+					};
 					_logEntries.Add(logEntry);
 					MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, line.Length);
 				}
@@ -426,7 +437,8 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		/// <param name="entry"></param>
-		public void Add(IReadOnlyLogEntry entry)
+		/// <returns>A copy of the log entry as it was entered into this log file with all columns of this file (columns not present in the given log entry will be set to their default value).</returns>
+		public IReadOnlyLogEntry Add(IReadOnlyLogEntry entry)
 		{
 			lock (_syncRoot)
 			{
@@ -483,6 +495,8 @@ namespace Tailviewer.Core.LogFiles
 				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, finalLogEntry.RawContent?.Length ?? 0);
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
+
+				return finalLogEntry;
 			}
 		}
 

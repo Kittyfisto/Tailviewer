@@ -17,13 +17,13 @@ namespace Tailviewer.BusinessLogic.Filters
 		/// <param name="logEntry"></param>
 		/// <returns></returns>
 		[Pure]
-		bool PassesFilter(IEnumerable<LogLine> logEntry);
+		bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry);
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="line"></param>
 		/// <param name="matches"></param>
-		void Match(LogLine line, List<LogLineMatch> matches);
+		void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches);
 	}
 }

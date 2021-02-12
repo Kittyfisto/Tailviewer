@@ -111,6 +111,66 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestOriginalDataSourceName_ColumnAvailable()
+		{
+			var entry = new Mock<ILogEntry>();
+			var view = new LogEntryView(entry.Object, LogFileColumns.OriginalDataSourceName);
+
+			entry.SetupProperty(x => x.OriginalDataSourceName);
+			entry.Object.OriginalDataSourceName = "F:\\important.txt";
+			view.OriginalDataSourceName.Should().Be("F:\\important.txt");
+
+			view.OriginalDataSourceName = "A:\\another_one.log";
+			entry.Object.OriginalDataSourceName.Should().Be("A:\\another_one.log");
+		}
+
+		[Test]
+		public void TestOriginalDataSourceName_NoSuchColumn()
+		{
+			var entry = new Mock<ILogEntry>();
+			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+
+			new Action(() =>
+			{
+				var unused = view.OriginalDataSourceName;
+			}).Should().Throw<NoSuchColumnException>();
+			entry.VerifyGet(x => x.OriginalDataSourceName, Times.Never);
+
+			new Action(() => { view.OriginalDataSourceName = "F:\\important.txt"; }).Should().Throw<NoSuchColumnException>();
+			entry.VerifySet(x => x.OriginalDataSourceName = "F:\\important.txt", Times.Never);
+		}
+
+		[Test]
+		public void TestSourceId_ColumnAvailable()
+		{
+			var entry = new Mock<ILogEntry>();
+			var view = new LogEntryView(entry.Object, LogFileColumns.SourceId);
+
+			entry.SetupProperty(x => x.SourceId);
+			entry.Object.SourceId = new LogLineSourceId(101);
+			view.SourceId.Should().Be(new LogLineSourceId(101));
+
+			view.SourceId = new LogLineSourceId(201);
+			entry.Object.SourceId.Should().Be(new LogLineSourceId(201));
+		}
+
+		[Test]
+		public void TestSourceId_NoSuchColumn()
+		{
+			var entry = new Mock<ILogEntry>();
+			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+
+			new Action(() =>
+			{
+				var unused = view.SourceId;
+			}).Should().Throw<NoSuchColumnException>();
+			entry.VerifyGet(x => x.SourceId, Times.Never);
+
+			new Action(() => { view.SourceId = new LogLineSourceId(101); }).Should().Throw<NoSuchColumnException>();
+			entry.VerifySet(x => x.SourceId = new LogLineSourceId(101), Times.Never);
+		}
+
+		[Test]
 		public void TestLogEntryIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();

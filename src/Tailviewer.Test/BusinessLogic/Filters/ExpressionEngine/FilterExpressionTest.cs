@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 {
@@ -14,11 +15,11 @@ namespace Tailviewer.Test.BusinessLogic.Filters.ExpressionEngine
 		public void TestLineNumberGreaterThan5000()
 		{
 			var expression = FilterExpression.Parse("$linenumber > 5000");
-			expression.PassesFilter(new LogLine(4999, 4999, LogLineSourceId.Default, "Stuff", LevelFlags.All,
-			                                    DateTime.MinValue))
+			expression.PassesFilter(new LogEntry2(LogFileColumns.Minimum){LineNumber = 4999})
 			          .Should().BeFalse();
-			expression.PassesFilter(new LogLine(5000, 5000, LogLineSourceId.Default, "Stuff", LevelFlags.All,
-			                                    DateTime.MinValue))
+			expression.PassesFilter(new LogEntry2(LogFileColumns.Minimum){LineNumber = 5000})
+			          .Should().BeFalse();
+			expression.PassesFilter(new LogEntry2(LogFileColumns.Minimum){LineNumber = 5001})
 			          .Should().BeTrue();
 		}
 	}

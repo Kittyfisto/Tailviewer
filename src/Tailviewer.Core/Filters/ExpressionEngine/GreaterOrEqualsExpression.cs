@@ -25,14 +25,14 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(long);
 
-		public bool Evaluate(IReadOnlyList<LogLine> logEntry)
+		public bool Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			var lhs = _lhs.Evaluate(logEntry);
 			var rhs = _rhs.Evaluate(logEntry);
 			return lhs >= rhs;
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

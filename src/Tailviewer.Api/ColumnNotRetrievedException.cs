@@ -8,7 +8,7 @@ namespace Tailviewer
 	///     from the sourc <see cref="ILogFile" /> and therefore isn't present.
 	/// </summary>
 	public sealed class ColumnNotRetrievedException
-		: ArgumentException
+		: NoSuchColumnException
 	{
 		/// <summary>
 		///     Initializes this object.

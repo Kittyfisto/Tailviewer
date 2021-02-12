@@ -35,13 +35,13 @@ namespace Tailviewer.Core.LogFiles
 		private readonly Dictionary<int, int> _logEntryIndices;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly LogLine[] _buffer;
+		private readonly LogEntryBuffer _buffer;
 		private readonly TimeSpan _maximumWaitTime;
 
 		private LogFileSection _fullSourceSection;
 		private int _maxCharactersPerLine;
 		private int _currentSourceIndex;
-		private readonly List<LogLine> _lastLogEntry;
+		private readonly LogEntryList _lastLogEntry;
 		private int _currentLogEntryIndex;
 
 		/// <summary>
@@ -67,8 +67,8 @@ namespace Tailviewer.Core.LogFiles
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_indices = new List<int>();
 			_logEntryIndices = new Dictionary<int, int>();
-			_buffer = new LogLine[BatchSize];
-			_lastLogEntry = new List<LogLine>();
+			_buffer = new LogEntryBuffer(BatchSize, LogFileColumns.Minimum);
+			_lastLogEntry = new LogEntryList(LogFileColumns.Minimum);
 			_maximumWaitTime = maximumWaitTime;
 
 			_source.AddListener(this, maximumWaitTime, BatchSize);
@@ -218,7 +218,7 @@ namespace Tailviewer.Core.LogFiles
 			GetOriginalIndices(indices, actualIndices, 0);
 			return actualIndices;
 		}
-		
+
 		private void GetOriginalIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] destination, int destinationIndex)
 		{
 			lock (_indices)
@@ -440,16 +440,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private LogLine GetLineNoLock(int lineIndex)
-		{
-			int sourceLineIndex = _indices[lineIndex];
-			_logEntryIndices.TryGetValue(sourceLineIndex, out var logEntryIndex);
-			var line = _source.GetLine(sourceLineIndex);
-			line.LineIndex = lineIndex;
-			line.LogEntryIndex = logEntryIndex;
-			return line;
-		}
-
 		/// <inheritdoc />
 		public override LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalSourceIndex)
 		{
@@ -511,28 +501,30 @@ namespace Tailviewer.Core.LogFiles
 				int remaining = _fullSourceSection.Index + _fullSourceSection.Count - _currentSourceIndex;
 				int nextCount = Math.Min(remaining, BatchSize);
 				var nextSection = new LogFileSection(_currentSourceIndex, nextCount);
-				_source.GetSection(nextSection, _buffer);
+				_source.GetEntries(nextSection, _buffer);
 
 				for (int i = 0; i < nextCount; ++i)
 				{
 					if (token.IsCancellationRequested)
 						break;
 
-					LogLine line = _buffer[i];
-					Log.DebugFormat("Processing: LineIndex={0}, OriginalLineIndex={1}, LogEntryIndex={2}, Message={3}",
-					                line.LineIndex,
-					                line.OriginalLineIndex,
-					                line.LogEntryIndex,
-					                line.Message);
-					if (_lastLogEntry.Count == 0 || _lastLogEntry[0].LogEntryIndex == line.LogEntryIndex)
+					var logEntry = _buffer[i];
+					if (Log.IsDebugEnabled)
+						Log.DebugFormat("Processing: LineIndex={0}, OriginalLineIndex={1}, LogEntryIndex={2}, Message={3}",
+						                logEntry.Index,
+						                logEntry.OriginalIndex,
+						                logEntry.LogEntryIndex,
+						                logEntry.RawContent);
+
+					if (_lastLogEntry.Count == 0 || _lastLogEntry[0].LogEntryIndex == logEntry.LogEntryIndex)
 					{
-						TryAddLogLine(line);
+						TryAddLogLine(logEntry);
 					}
-					else if (line.LogEntryIndex != _lastLogEntry[0].LogEntryIndex)
+					else if (logEntry.LogEntryIndex != _lastLogEntry[0].LogEntryIndex)
 					{
 						TryAddLogEntry(_lastLogEntry);
 						_lastLogEntry.Clear();
-						TryAddLogLine(line);
+						TryAddLogLine(logEntry);
 					}
 				}
 
@@ -554,13 +546,13 @@ namespace Tailviewer.Core.LogFiles
 			return _maximumWaitTime;
 		}
 
-		private static void RemoveInvalidatedLines(List<LogLine> lastLogEntry, int currentSourceIndex)
+		private static void RemoveInvalidatedLines(LogEntryList lastLogEntry, int currentSourceIndex)
 		{
 			while (lastLogEntry.Count > 0)
 			{
 				int i = lastLogEntry.Count - 1;
-				LogLine line = lastLogEntry[i];
-				if (line.LineIndex >= currentSourceIndex)
+				var logEntry = lastLogEntry[i];
+				if (logEntry.Index >= currentSourceIndex)
 				{
 					lastLogEntry.RemoveAt(i);
 				}
@@ -613,21 +605,21 @@ namespace Tailviewer.Core.LogFiles
 			Listeners.OnRead(-1);
 		}
 
-		private void TryAddLogLine(LogLine line)
+		private void TryAddLogLine(IReadOnlyLogEntry logEntry)
 		{
 			// We have a filter that operates on individual lines (regardless of log entry affiliation).
 			// We therefore have to evaluate each line for itself before we can even begin to consider adding a log
 			// entry.
-			if (_logLineFilter.PassesFilter(line))
+			if (_logLineFilter.PassesFilter(logEntry))
 			{
-				_lastLogEntry.Add(line);
+				_lastLogEntry.Add(logEntry);
 			}
 		}
 
-		private bool TryAddLogEntry(List<LogLine> logEntry)
+		private bool TryAddLogEntry(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			if (_indices.Count > 0 && logEntry.Count > 0 &&
-			    _indices[_indices.Count - 1] == logEntry[logEntry.Count - 1].LineIndex)
+			    _indices[_indices.Count - 1] == logEntry[logEntry.Count - 1].Index)
 				return true;
 
 			if (_logEntryFilter.PassesFilter(logEntry))
@@ -636,11 +628,11 @@ namespace Tailviewer.Core.LogFiles
 				{
 					if (logEntry.Count > 0)
 					{
-						foreach (LogLine line in logEntry)
+						foreach (var line in logEntry)
 						{
-							_indices.Add(line.LineIndex);
-							_logEntryIndices[line.LineIndex] = _currentLogEntryIndex;
-							_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.Message?.Length ?? 0);
+							_indices.Add((int) line.Index);
+							_logEntryIndices[(int) line.Index] = _currentLogEntryIndex;
+							_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, line.RawContent?.Length ?? 0);
 						}
 						++_currentLogEntryIndex;
 					}

@@ -94,6 +94,16 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				get { return _inner.OriginalLineNumber; }
 			}
 
+			public string OriginalDataSourceName
+			{
+				get { return _inner.OriginalDataSourceName; }
+			}
+
+			public LogLineSourceId SourceId
+			{
+				get { return _inner.SourceId; }
+			}
+
 			public LevelFlags LogLevel
 			{
 				get { return _logLevel; }

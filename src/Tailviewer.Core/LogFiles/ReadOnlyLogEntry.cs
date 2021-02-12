@@ -25,6 +25,28 @@ namespace Tailviewer.Core.LogFiles
 		private readonly IReadOnlyDictionary<ILogFileColumn, object> _values;
 
 		/// <summary>
+		///    Initializes a new readonly log entry with <see cref="LogFileColumns.Minimum"/> columns, each set to their default value.
+		/// </summary>
+		public ReadOnlyLogEntry()
+			: this(LogFileColumns.Minimum)
+		{}
+
+		/// <summary>
+		///    Initializes a new readonly log entry with the given list of <param name="columns" />, each set to their default value.
+		/// </summary>
+		public ReadOnlyLogEntry(IEnumerable<ILogFileColumn> columns)
+			: this(columns.ToDictionary(x => x, x => x.DefaultValue))
+		{}
+
+		/// <summary>
+		///    Initializes a new readonly log entry with the given list of <param name="columns" />, each set to their default value.
+		/// </summary>
+		public ReadOnlyLogEntry(params ILogFileColumn[] columns)
+			: this((IEnumerable<ILogFileColumn>) columns)
+		{
+		}
+
+		/// <summary>
 		/// </summary>
 		/// <param name="values"></param>
 		/// <exception cref="ArgumentNullException"></exception>

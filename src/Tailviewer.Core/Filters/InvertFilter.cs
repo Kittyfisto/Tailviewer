@@ -25,19 +25,19 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			return !_filter.PassesFilter(logEntry);
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
 			return !_filter.PassesFilter(logLine);
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding
 			// the actual filter text (since we're the inversion of the inner filter).
@@ -46,7 +46,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
 			// We don't mark any text because we would have to mark ALL text excluding
 			// the actual filter text (since we're the inversion of the inner filter).

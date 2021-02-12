@@ -131,6 +131,7 @@
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntriesViewTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntry2Test.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test2.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogTables\LogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogTables\InMemoryLogTableTest.cs" />
     <Compile Include="BusinessLogic\LogTables\LogTableListenerCollectionTest.cs" />

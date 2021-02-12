@@ -45,6 +45,16 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
+		public string OriginalDataSourceName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public LogLineSourceId SourceId
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		LevelFlags IReadOnlyLogEntry.LogLevel
 		{
 			get { return LogLevel; }

@@ -110,6 +110,30 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public string OriginalDataSourceName
+		{
+			get
+			{
+				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+
+				return _logEntry.OriginalDataSourceName;
+			}
+		}
+
+		/// <inheritdoc />
+		public LogLineSourceId SourceId
+		{
+			get
+			{
+				if (!_columns.Contains(LogFileColumns.SourceId))
+					throw new NoSuchColumnException(LogFileColumns.SourceId);
+
+				return _logEntry.SourceId;
+			}
+		}
+
+		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
 			get

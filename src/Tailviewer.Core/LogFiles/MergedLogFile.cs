@@ -173,7 +173,11 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogFileColumns.DeltaTime))
+			if (Equals(column, LogFileColumns.ElapsedTime))
+			{
+				GetElapsedTime(sourceSection, (TimeSpan?[]) (object) destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceSection, (TimeSpan?[]) (object) destination, destinationIndex);
 			}
@@ -224,7 +228,11 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogFileColumns.DeltaTime))
+			if (Equals(column, LogFileColumns.ElapsedTime))
+			{
+				GetElapsedTime(sourceIndices, (TimeSpan?[]) (object) destination, destinationIndex);
+			}
+			else if (Equals(column, LogFileColumns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 			}
@@ -293,6 +301,50 @@ namespace Tailviewer.Core.LogFiles
 					var destIndex = destinationIndex + stuff.DestinationIndices[i];
 					buffer[destIndex] = sourceColumnValues[i];
 				}
+			}
+		}
+
+		/// <summary>
+		///     Retrieves values for the "elapsed_time" column for the given rows denoted by <paramref name="section"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="section">The section of rows to retrieve</param>
+		/// <param name="buffer"></param>
+		/// <param name="destinationIndex"></param>
+		private void GetElapsedTime(LogFileSection section, TimeSpan?[] buffer, int destinationIndex)
+		{
+			var start = GetValue(LogFileProperties.StartTimestamp);
+			var timestamps = new DateTime?[section.Count];
+			GetColumn(new LogFileSection(section.Index, section.Count), LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < section.Count; ++i)
+			{
+				var current = timestamps[i];
+				buffer[destinationIndex + i] = current - start;
+			}
+		}
+
+		/// <summary>
+		///     Retrieves values for the "elapsed_time" column for the given rows denoted by <paramref name="indices"/>.
+		/// </summary>
+		/// <remarks>
+		///     The values for this column aren't stored here, hence we have to compute
+		///     them on-the-fly.
+		/// </remarks>
+		/// <param name="indices">The indices of the rows to retrieve</param>
+		/// <param name="buffer">The buffer into which the values of the time delta column have to be written</param>
+		/// <param name="destinationIndex">The index of the first value into <paramref name="buffer"/> where values have to be written</param>
+		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex)
+		{
+			var start = GetValue(LogFileProperties.StartTimestamp);
+			var timestamps = new DateTime?[indices.Count];
+			GetColumn(indices, LogFileColumns.Timestamp, timestamps, 0);
+			for (int i = 0; i < indices.Count; ++i)
+			{
+				var current = timestamps[i];
+				buffer[destinationIndex + i] = current - start;
 			}
 		}
 
@@ -374,25 +426,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			for (var i = 0; i < section.Count; ++i)
-				// TODO: This seems rubbish - maybe I should change the interface to SourceLineIndex altogether?
-				dest[i] = GetLine((int) (section.Index + i));
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			MergedLogLineIndex idx = _index[index];
-
-			var logFileIndex = idx.SourceId;
-			var logFile = _sources[logFileIndex];
-
-			var line = logFile.GetLine(idx.SourceLineIndex);
-			var actualLine = new LogLine(index,
-				idx.MergedLogEntryIndex,
-				new LogLineSourceId(logFileIndex),
-				line);
-			return actualLine;
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

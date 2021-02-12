@@ -13,7 +13,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(DateTime);
 
-		public DateTime? Evaluate(IReadOnlyList<LogLine> logEntry)
+		public DateTime? Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			using (var it = logEntry.GetEnumerator())
 			{
@@ -24,7 +24,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			}
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

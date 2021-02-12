@@ -100,7 +100,7 @@ namespace Tailviewer.Core
 		public ILogFile CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
 		{
 			return new FilteredLogFile(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
-			                           null,
+									   null,
 			                           filter);
 		}
 

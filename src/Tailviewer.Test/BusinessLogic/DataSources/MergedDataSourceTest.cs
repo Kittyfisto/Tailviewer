@@ -241,11 +241,31 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			logFile1.AddEntry("Houston, we have a problem", LevelFlags.Warning, t3);
 
 			_taskScheduler.Run(4); //< There's a few proxies involved and thus one round won't do it
-			_merged.FilteredLogFile.Count.Should().Be(4, "because there are four lines in total, each of which has a timestamp");
-			_merged.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Hello, World!", LevelFlags.Info, t1));
-			_merged.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "foo", LevelFlags.Trace, t2));
-			_merged.FilteredLogFile.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "bar", LevelFlags.Trace, t2));
-			_merged.FilteredLogFile.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "Houston, we have a problem", LevelFlags.Warning, t3));
+			var entries = _merged.FilteredLogFile.GetEntries(new LogFileSection(0, 4));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[0].RawContent.Should().Be("Hello, World!");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(t1);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[1].RawContent.Should().Be("foo");
+			entries[1].LogLevel.Should().Be(LevelFlags.Trace);
+			entries[1].Timestamp.Should().Be(t2);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[2].RawContent.Should().Be("bar");
+			entries[2].LogLevel.Should().Be(LevelFlags.Other);
+			entries[2].Timestamp.Should().Be(t2);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(2);
+			entries[3].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[3].RawContent.Should().Be("Houston, we have a problem");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Timestamp.Should().Be(t3);
 		}
 
 		[Test]

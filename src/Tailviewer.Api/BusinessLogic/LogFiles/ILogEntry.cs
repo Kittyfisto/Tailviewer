@@ -60,6 +60,23 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		new int OriginalLineNumber { get; set; }
 
 		/// <summary>
+		///     The name of the log entry's original data source.
+		/// </summary>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		new string OriginalDataSourceName { get; set; }
+
+		/// <summary>
+		///     The id of the source the log entry comes from.
+		/// </summary>
+		/// <remarks>
+		///     This column is present when multiple sources are merged together in order to tell which file a particular entry belongs to.
+		/// </remarks>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		new LogLineSourceId SourceId { get; set; }
+
+		/// <summary>
 		/// The log level of this entry.
 		/// </summary>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>

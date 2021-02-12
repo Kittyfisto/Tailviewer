@@ -15,7 +15,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <returns></returns>
-		new T Evaluate(IReadOnlyList<LogLine> logEntry);
+		new T Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry);
 	}
 
 	/// <summary>
@@ -33,6 +33,6 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <returns></returns>
-		object Evaluate(IReadOnlyList<LogLine> logEntry);
+		object Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry);
 	}
 }

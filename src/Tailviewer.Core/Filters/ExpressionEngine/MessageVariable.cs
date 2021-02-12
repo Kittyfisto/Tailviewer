@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Core.Filters.ExpressionEngine
 {
@@ -14,17 +15,17 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(string);
 
-		public string Evaluate(IReadOnlyList<LogLine> logEntry)
+		public string Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			var builder = new StringBuilder();
 			foreach(var line in logEntry)
 			{
-				builder.AppendLine(line.Message);
+				builder.AppendLine(line.GetValue(LogFileColumns.Message));
 			}
 			return builder.ToString();
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

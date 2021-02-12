@@ -92,6 +92,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
+    <Compile Include="LogFiles\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryView.cs" />
     <Compile Include="LogFiles\TextLogFileFormat.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />

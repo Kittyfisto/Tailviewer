@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Test.BusinessLogic.LogTables;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
@@ -15,30 +16,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction1()
 		{
-			var entry = new LogEntry2();
-			entry.Columns.Should().BeEmpty();
-			new Action(() => { var unused = entry.DeltaTime; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.ElapsedTime; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.Index; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LineNumber; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LogEntryIndex; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.LogLevel; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.OriginalIndex; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.OriginalLineNumber; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.RawContent; }).Should().Throw<NoSuchColumnException>();
-			new Action(() => { var unused = entry.Timestamp; }).Should().Throw<NoSuchColumnException>();
-		}
-
-		[Test]
-		public void TestConstruction2()
-		{
 			var entry = new LogEntry2(LogFileColumns.RawContent, LogFileColumns.DeltaTime);
 			entry.RawContent.Should().Be(LogFileColumns.RawContent.DefaultValue);
 			entry.DeltaTime.Should().Be(LogFileColumns.DeltaTime.DefaultValue);
 		}
 
 		[Test]
-		public void TestConstruction3()
+		public void TestConstruction2()
 		{
 			var entry = new LogEntry2(new List<ILogFileColumn> { LogFileColumns.Timestamp, LogFileColumns.LineNumber});
 			entry.Timestamp.Should().Be(LogFileColumns.Timestamp.DefaultValue);
@@ -48,7 +32,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogLevel()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LogLevel = LevelFlags.Fatal;
@@ -60,7 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogEntryIndex()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LogEntryIndex = 42;
@@ -72,7 +56,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetDeltaTime()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.DeltaTime = TimeSpan.FromSeconds(23);
@@ -84,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetElapsedTime()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.ElapsedTime = TimeSpan.FromSeconds(23);
@@ -96,7 +80,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetTimestamp()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.Timestamp = new DateTime(2017, 12, 20, 13, 33, 0);
@@ -108,7 +92,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetRawContent()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.RawContent = "The last Jedi";
@@ -120,7 +104,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetIndex()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.Index = 9001;
@@ -132,7 +116,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalIndex()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.OriginalIndex = 8999;
@@ -144,7 +128,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLineNumber()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LineNumber = 42;
@@ -156,7 +140,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalLineNumber()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.OriginalLineNumber = 1337;
@@ -168,15 +152,76 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetValueWrongType()
 		{
-			var entry = new LogEntry2();
+			var entry = new LogEntry2(new ILogFileColumn[0]);
 			new Action(() => entry.SetValue(LogFileColumns.RawContent, 42)).Should().Throw<ArgumentException>();
 			entry.Columns.Should().BeEmpty();
 			new Action(() => entry.GetValue(LogFileColumns.RawContent)).Should().Throw<ArgumentException>();
 		}
 
-		protected override IReadOnlyLogEntry CreateEmpty()
+		[Test]
+		public void TestEqualBothEmpty()
+		{
+			var entry = new LogEntry2();
+			var equalEntry = new LogEntry2();
+			Equals(entry, equalEntry).Should().BeTrue();
+
+			var equalReadOnlyEntry = new ReadOnlyLogEntry();
+			Equals(entry, equalReadOnlyEntry).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestEqualSameValue()
+		{
+			var values = new Dictionary<ILogFileColumn, object>
+			{
+				{LogFileColumns.RawContent, "Starbuck"}
+			};
+			var entry = new LogEntry2(values);
+			var equalEntry = new LogEntry2(values);
+			Equals(entry, equalEntry).Should().BeTrue();
+
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(values);
+			Equals(entry, equalReadOnlyEntry).Should().BeTrue();
+		}
+
+		[Test]
+		public void TestEqualDifferentValue()
+		{
+			var values = new Dictionary<ILogFileColumn, object>
+			{
+				{LogFileColumns.RawContent, "Starbuck"}
+			};
+			var otherValues = new Dictionary<ILogFileColumn, object>
+			{
+				{LogFileColumns.RawContent, "Apollo"}
+			};
+			var entry = new LogEntry2(values);
+			var otherEntry = new LogEntry2(otherValues);
+			Equals(entry, otherEntry).Should().BeFalse();
+
+			var otherReadOnlyEntry = new ReadOnlyLogEntry(otherValues);
+			Equals(entry, otherReadOnlyEntry).Should().BeFalse();
+		}
+
+		[Test]
+		public void TestEqualBothEmpty_DifferentColumns()
+		{
+			var entry = new LogEntry2(LogFileColumns.RawContent);
+			var otherEntry = new LogEntry2(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+			Equals(entry, otherEntry).Should().BeFalse();
+
+			var equalReadOnlyEntry = new ReadOnlyLogEntry(LogFileColumns.RawContent, LogFileColumns.Timestamp);
+			Equals(entry, equalReadOnlyEntry).Should().BeFalse();
+		}
+
+		protected override IReadOnlyLogEntry CreateDefault()
 		{
 			return new LogEntry2();
+		}
+
+		protected override IReadOnlyLogEntry CreateEmpty()
+		{
+			return new LogEntry2(new ILogFileColumn[0]);
 		}
 	}
 }

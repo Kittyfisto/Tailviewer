@@ -20,12 +20,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(string);
 
-		public string Evaluate(IReadOnlyList<LogLine> logEntry)
+		public string Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return _value;
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

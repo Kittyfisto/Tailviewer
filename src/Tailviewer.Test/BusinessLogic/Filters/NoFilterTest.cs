@@ -1,7 +1,9 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Filters
 {
@@ -12,10 +14,10 @@ namespace Tailviewer.Test.BusinessLogic.Filters
 		public void TestPassesFilter1()
 		{
 			var filter = new NoFilter();
-			filter.PassesFilter(new LogLine()).Should().BeTrue();
-			filter.PassesFilter(null).Should().BeTrue();
-			filter.PassesFilter(new LogLine[0]).Should().BeTrue();
-			filter.PassesFilter(new[] {new LogLine()}).Should().BeTrue();
+			filter.PassesFilter(new LogEntry2()).Should().BeTrue();
+			filter.PassesFilter((IEnumerable<IReadOnlyLogEntry>) null).Should().BeTrue();
+			filter.PassesFilter(new LogEntry2[0]).Should().BeTrue();
+			filter.PassesFilter(new[] {new LogEntry2()}).Should().BeTrue();
 		}
 	}
 }

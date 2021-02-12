@@ -424,7 +424,7 @@ namespace Tailviewer.Core.LogFiles
 									read = true;
 								}
 
-								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine);
+								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine, _fullFilename);
 								if (_parser != null)
 								{
 									var parsedLogEntry = _parser.Parse(logEntry);
@@ -784,12 +784,15 @@ namespace Tailviewer.Core.LogFiles
 
 			private readonly LogLineIndex _index;
 			private readonly string _rawContent;
+			private readonly string _originalDataSourceName;
 
 			public RawLogEntry(LogLineIndex index,
-			                   string rawContent)
+			                   string rawContent,
+			                   string originalDataSourceName)
 			{
 				_index = index;
 				_rawContent = rawContent;
+				_originalDataSourceName = originalDataSourceName;
 			}
 
 			#region Implementation of IReadOnlyLogEntry
@@ -822,6 +825,16 @@ namespace Tailviewer.Core.LogFiles
 			public int OriginalLineNumber
 			{
 				get { return LineNumber; }
+			}
+
+			public string OriginalDataSourceName
+			{
+				get { return _originalDataSourceName; }
+			}
+
+			public LogLineSourceId SourceId
+			{
+				get { throw new NoSuchColumnException(LogFileColumns.SourceId); }
 			}
 
 			public LevelFlags LogLevel
@@ -894,6 +907,11 @@ namespace Tailviewer.Core.LogFiles
 				if (Equals(column, LogFileColumns.LogEntryIndex))
 				{
 					value = LogEntryIndex;
+					return true;
+				}
+				if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				{
+					value = OriginalDataSourceName;
 					return true;
 				}
 

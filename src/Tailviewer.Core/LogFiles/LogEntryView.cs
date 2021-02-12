@@ -152,6 +152,44 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public string OriginalDataSourceName
+		{
+			get
+			{
+				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+
+				return _logEntry.OriginalDataSourceName;
+			}
+			set
+			{
+				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+
+				_logEntry.OriginalDataSourceName = value;
+			}
+		}
+
+		/// <inheritdoc />
+		public LogLineSourceId SourceId
+		{
+			get
+			{
+				if (!_columns.Contains(LogFileColumns.SourceId))
+					throw new NoSuchColumnException(LogFileColumns.SourceId);
+
+				return _logEntry.SourceId;
+			}
+			set
+			{
+				if (!_columns.Contains(LogFileColumns.SourceId))
+					throw new NoSuchColumnException(LogFileColumns.SourceId);
+
+				_logEntry.SourceId = value;
+			}
+		}
+
+		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
 			get

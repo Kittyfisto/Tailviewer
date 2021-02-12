@@ -13,7 +13,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public abstract Type ResultType { get; }
 
-		public abstract object Evaluate(IReadOnlyList<LogLine> logEntry);
+		public abstract object Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry);
 
 		#endregion
 

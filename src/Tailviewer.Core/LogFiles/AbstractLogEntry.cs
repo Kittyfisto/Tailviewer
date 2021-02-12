@@ -55,6 +55,20 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public string OriginalDataSourceName
+		{
+			get { return GetValue(LogFileColumns.OriginalDataSourceName); }
+			set { SetValue(LogFileColumns.OriginalDataSourceName, value); }
+		}
+
+		/// <inheritdoc />
+		public LogLineSourceId SourceId
+		{
+			get { return GetValue(LogFileColumns.SourceId); }
+			set { SetValue(LogFileColumns.SourceId, value); }
+		}
+
+		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
 			get { return GetValue(LogFileColumns.LogLevel); }
@@ -104,21 +118,22 @@ namespace Tailviewer.Core.LogFiles
 		public abstract IReadOnlyList<ILogFileColumn> Columns { get; }
 
 		/// <inheritdoc />
+		public override bool Equals(object obj)
+		{
+			return ReadOnlyLogEntryExtensions.Equals(this, obj as IReadOnlyLogEntry);
+		}
+
+		/// <inheritdoc />
+		public override int GetHashCode()
+		{
+			// TODO: What should we do here?
+			return base.GetHashCode();
+		}
+
+		/// <inheritdoc />
 		public override string ToString()
 		{
-			var stringBuilder = new StringBuilder();
-			foreach (var column in Columns)
-			{
-				object value;
-				if (TryGetValue(column, out value))
-				{
-					if (stringBuilder.Length > 0)
-						stringBuilder.Append(", ");
-
-					stringBuilder.AppendFormat("{0}: {1}", column.Id, value);
-				}
-			}
-			return stringBuilder.ToString();
+			return ReadOnlyLogEntryExtensions.ToString(this);
 		}
 	}
 }

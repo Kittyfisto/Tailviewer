@@ -325,6 +325,7 @@ namespace Tailviewer.Core.LogFiles
 
 				_column = column;
 				_data = new T[length];
+				_data.Fill(column.DefaultValue);
 			}
 
 			public void CopyFrom(int destIndex, T[] source, int sourceIndex, int length)

@@ -29,7 +29,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 		public Type ResultType => typeof(bool);
 
 		/// <inheritdoc />
-		public object Evaluate(IReadOnlyList<LogLine> logEntry)
+		public object Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			var lhs = _lhs.Evaluate(logEntry);
 			var rhs = _rhs.Evaluate(logEntry);
