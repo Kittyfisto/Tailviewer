@@ -837,7 +837,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 			for (int i = 0; i < count; ++i)
 			{
-				buffer[offset + i].Should().Be(source.GetLine(i).Timestamp);
+				buffer[offset + i].Should().Be(source.GetEntry(i).Timestamp);
 			}
 		}
 
@@ -866,8 +866,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				buffer[i].Should().Be(DateTime.MinValue, "because we've specified an offset and thus values before that offset shouldn't have been touched");
 			}
-			buffer[offset + 0].Should().Be(source.GetLine(2).Timestamp);
-			buffer[offset + 1].Should().Be(source.GetLine(1).Timestamp);
+			buffer[offset + 0].Should().Be(source.GetEntry(2).Timestamp);
+			buffer[offset + 1].Should().Be(source.GetEntry(1).Timestamp);
 		}
 
 		#endregion

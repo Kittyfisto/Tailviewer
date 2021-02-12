@@ -69,8 +69,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0));
 			logFile.AddEntry(" World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2));
 			logFile.Count.Should().Be(2);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello,", LevelFlags.Info, new DateTime(2017, 4, 29, 14, 56, 0)));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 1, " World!", LevelFlags.Warning, new DateTime(2017, 4, 29, 14, 56, 2)));
+
+			var entry1 = logFile.GetEntry(0);
+			entry1.Index.Should().Be(0);
+			entry1.LogEntryIndex.Should().Be(0);
+			entry1.LogLevel.Should().Be(LevelFlags.Info);
+			entry1.RawContent.Should().Be("Hello,");
+			entry1.Timestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
+
+			var entry2 = logFile.GetEntry(1);
+			entry2.Index.Should().Be(1);
+			entry2.LogEntryIndex.Should().Be(1);
+			entry2.LogLevel.Should().Be(LevelFlags.Warning);
+			entry2.RawContent.Should().Be(" World!");
+			entry2.Timestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 2));
+
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
 			logFile.GetValue(LogFileProperties.Duration).Should().Be(TimeSpan.FromSeconds(2));
 		}
@@ -133,8 +146,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new InMemoryLogFile();
 			logFile.AddMultilineEntry(LevelFlags.Debug, null, "foo", "bar");
 			logFile.Count.Should().Be(2);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "foo", LevelFlags.Debug, null));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "bar", LevelFlags.Debug, null));
+			var entry1 = logFile.GetEntry(0);
+			entry1.Index.Should().Be(0);
+			entry1.LogEntryIndex.Should().Be(0);
+			entry1.RawContent.Should().Be("foo");
+			entry1.LogLevel.Should().Be(LevelFlags.Debug);
+			entry1.Timestamp.Should().Be(null);
+
+			var entry2 = logFile.GetEntry(1);
+			entry2.Index.Should().Be(1);
+			entry2.LogEntryIndex.Should().Be(0);
+			entry2.RawContent.Should().Be("bar");
+			entry2.LogLevel.Should().Be(LevelFlags.Debug);
+			entry2.Timestamp.Should().Be(null);
 		}
 
 		[Test]
@@ -145,9 +169,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var t1 = new DateTime(2017, 11, 26, 11, 56, 0);
 			logFile.AddMultilineEntry(LevelFlags.Info, t1, "foo", "bar");
 			logFile.Count.Should().Be(3);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello, World!", LevelFlags.Debug, null));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 1, "foo", LevelFlags.Info, t1));
-			logFile.GetLine(2).Should().Be(new LogLine(2, 1, "bar", LevelFlags.Info, t1));
+			var entry1 = logFile.GetEntry(0);
+			entry1.Index.Should().Be(0);
+			entry1.LogEntryIndex.Should().Be(0);
+			entry1.RawContent.Should().Be("Hello, World!");
+			entry1.LogLevel.Should().Be(LevelFlags.Debug);
+			entry1.Timestamp.Should().Be(null);
+
+			var entry2 = logFile.GetEntry(1);
+			entry2.Index.Should().Be(1);
+			entry2.LogEntryIndex.Should().Be(1);
+			entry2.RawContent.Should().Be("foo");
+			entry2.LogLevel.Should().Be(LevelFlags.Info);
+			entry2.Timestamp.Should().Be(t1);
+
+			var entry3 = logFile.GetEntry(2);
+			entry3.Index.Should().Be(2);
+			entry3.LogEntryIndex.Should().Be(1);
+			entry3.RawContent.Should().Be("bar");
+			entry3.LogLevel.Should().Be(LevelFlags.Info);
+			entry3.Timestamp.Should().Be(t1);
 		}
 
 		[Test]
@@ -159,13 +200,55 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var t2 = new DateTime(2017, 11, 26, 11, 57, 0);
 			logFile.AddMultilineEntry(LevelFlags.Warning, t2, "H", "e", "l", "l", "o");
 			logFile.Count.Should().Be(7);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "foo", LevelFlags.Info, t1));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "bar", LevelFlags.Info, t1));
-			logFile.GetLine(2).Should().Be(new LogLine(2, 1, "H", LevelFlags.Warning, t2));
-			logFile.GetLine(3).Should().Be(new LogLine(3, 1, "e", LevelFlags.Warning, t2));
-			logFile.GetLine(4).Should().Be(new LogLine(4, 1, "l", LevelFlags.Warning, t2));
-			logFile.GetLine(5).Should().Be(new LogLine(5, 1, "l", LevelFlags.Warning, t2));
-			logFile.GetLine(6).Should().Be(new LogLine(6, 1, "o", LevelFlags.Warning, t2));
+			
+			var entry1 = logFile.GetEntry(0);
+			entry1.Index.Should().Be(0);
+			entry1.LogEntryIndex.Should().Be(0);
+			entry1.RawContent.Should().Be("foo");
+			entry1.LogLevel.Should().Be(LevelFlags.Info);
+			entry1.Timestamp.Should().Be(t1);
+
+			var entry2 = logFile.GetEntry(1);
+			entry2.Index.Should().Be(1);
+			entry2.LogEntryIndex.Should().Be(0);
+			entry2.RawContent.Should().Be("bar");
+			entry2.LogLevel.Should().Be(LevelFlags.Info);
+			entry2.Timestamp.Should().Be(t1);
+
+			var entry3 = logFile.GetEntry(2);
+			entry3.Index.Should().Be(2);
+			entry3.LogEntryIndex.Should().Be(1);
+			entry3.RawContent.Should().Be("H");
+			entry3.LogLevel.Should().Be(LevelFlags.Warning);
+			entry3.Timestamp.Should().Be(t2);
+			
+			var entry4 = logFile.GetEntry(3);
+			entry4.Index.Should().Be(3);
+			entry4.LogEntryIndex.Should().Be(1);
+			entry4.RawContent.Should().Be("e");
+			entry4.LogLevel.Should().Be(LevelFlags.Warning);
+			entry4.Timestamp.Should().Be(t2);
+
+			var entry5 = logFile.GetEntry(4);
+			entry5.Index.Should().Be(4);
+			entry5.LogEntryIndex.Should().Be(1);
+			entry5.RawContent.Should().Be("l");
+			entry5.LogLevel.Should().Be(LevelFlags.Warning);
+			entry5.Timestamp.Should().Be(t2);
+
+			var entry6 = logFile.GetEntry(5);
+			entry6.Index.Should().Be(5);
+			entry6.LogEntryIndex.Should().Be(1);
+			entry6.RawContent.Should().Be("l");
+			entry6.LogLevel.Should().Be(LevelFlags.Warning);
+			entry6.Timestamp.Should().Be(t2);
+			
+			var entry7 = logFile.GetEntry(6);
+			entry7.Index.Should().Be(6);
+			entry7.LogEntryIndex.Should().Be(1);
+			entry7.RawContent.Should().Be("o");
+			entry7.LogLevel.Should().Be(LevelFlags.Warning);
+			entry7.Timestamp.Should().Be(t2);
 		}
 
 		[Test]

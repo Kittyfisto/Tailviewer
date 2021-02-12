@@ -306,29 +306,12 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			try
-			{
-				_logFile.GetSection(section, dest);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-			}
-		}
+		{}
 
 		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
-			try
-			{
-				return _logFile.GetLine(index);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-				return new LogLine();
-			}
+			return default;
 		}
 
 		/// <inheritdoc />

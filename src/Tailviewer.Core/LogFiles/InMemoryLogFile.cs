@@ -191,14 +191,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			lock (_syncRoot)
-			{
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var line = CreateLogLine(_logEntries[(int)(section.Index + i)]);
-					dest[i] = line;
-				}
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -248,10 +241,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
-			lock (_syncRoot)
-			{
-				return CreateLogLine(_logEntries[index]);
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

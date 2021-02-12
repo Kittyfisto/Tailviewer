@@ -130,26 +130,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetSection()
-		{
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>())).Throws<SystemException>();
-			var section = new LogFileSection(42, 9001);
-			var lines = new LogLine[9001];
-			new Action(() => _proxy.GetSection(section, lines)).Should().NotThrow();
-			_logFile.Verify(x => x.GetSection(It.Is<LogFileSection>(y => y == section),
-				It.Is<LogLine[]>(y => y == lines)), Times.Once);
-		}
-
-		[Test]
-		public void TestGetLine1()
-		{
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Throws<SystemException>();
-			var index = 9001;
-			new Action(() => _proxy.GetLine(index)).Should().NotThrow();
-			_logFile.Verify(x => x.GetLine(It.Is<int>(y => y == index)), Times.Once);
-		}
-
-		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex()
 		{
 			_logFile.Setup(x => x.GetLogLineIndexOfOriginalLineIndex(It.IsAny<LogLineIndex>())).Throws<SystemException>();

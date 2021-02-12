@@ -255,33 +255,6 @@ namespace Tailviewer.Core.LogFiles
 			return $"MultiLineLogFile({_source})";
 		}
 
-		private LogLine PatchNoLock(LogLine line)
-		{
-			var info = _indices[line.LineIndex];
-
-			LevelFlags level;
-			DateTime? timestamp;
-			if (line.LineIndex != info.FirstLineIndex)
-			{
-				// This line belongs to the previous line and together they form
-				// (part of) a log entry. Even though only a single line mentions
-				// the log level, all lines are given the same log level.
-				var firstLine = _source.GetLine((int) info.FirstLineIndex);
-				level = firstLine.Level;
-				timestamp = firstLine.Timestamp;
-			}
-			else
-			{
-				level = line.Level;
-				timestamp = line.Timestamp;
-			}
-
-			return new LogLine(line.LineIndex, info.EntryIndex,
-				line.Message,
-				level,
-				timestamp);
-		}
-
 		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
@@ -330,8 +303,8 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Append(LogFileSection section)
 		{
-			var buffer = new LogLine[section.Count];
-			_source.GetSection(section, buffer);
+			var buffer = new LogEntryBuffer(section.Count, LogFileColumns.Index, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
+			_source.GetEntries(section, buffer);
 
 			lock (_syncRoot)
 			{
@@ -342,7 +315,7 @@ namespace Tailviewer.Core.LogFiles
 					if (_currentLogEntry.EntryIndex.IsInvalid ||
 					    !AppendToCurrentLogEntry(line))
 					{
-						_currentLogEntry = _currentLogEntry.NextEntry(line.LineIndex);
+						_currentLogEntry = _currentLogEntry.NextEntry(line.Index);
 					}
 
 					_indices.Add(_currentLogEntry);
@@ -436,21 +409,14 @@ namespace Tailviewer.Core.LogFiles
 			return false;
 		}
 
-		private bool AppendToCurrentLogEntry(LogLine logLine)
+		private bool AppendToCurrentLogEntry(IReadOnlyLogEntry logLine)
 		{
 			if (logLine.Timestamp != null)
 				return false; //< A line with a timestamp is never added to a previous log entry
-			if (logLine.Level != LevelFlags.None && logLine.Level != LevelFlags.Other)
+			if (logLine.LogLevel != LevelFlags.None && logLine.LogLevel != LevelFlags.Other)
 				return false; //< A line with a log level is never added to a previous log entry
 
 			return true;
-
-			/*if (_currentLogEntryTimestamp != null && logLine.Timestamp == null)
-				return true;
-			if (_currentLogEntryLevel != LevelFlags.None && logLine.Level == LevelFlags.None)
-				return true;
-
-			return false;*/
 		}
 
 		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
