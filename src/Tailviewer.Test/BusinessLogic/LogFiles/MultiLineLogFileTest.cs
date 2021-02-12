@@ -121,15 +121,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that MaxCharactersPerLine is changed once a modification is applied")]
 		public void TestOneModification2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			logFile.MaxCharactersPerLine.Should().Be(0);
 
-			_lines.Add(new LogLine());
-			_source.Setup(x => x.MaxCharactersPerLine).Returns(42);
-			logFile.MaxCharactersPerLine.Should().Be(0, "because the change shouldn't have been applied yet");
-
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("Hi, I’m new to driving and I need to move ");
 			logFile.MaxCharactersPerLine.Should().Be(0, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
@@ -258,28 +255,30 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file can represent completely new content after reset")]
 		public void TestReset2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Info));
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Warning));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			source.AddEntry("A", LevelFlags.Info);
+			source.AddEntry("B", LevelFlags.Warning);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(2);
 
-			_lines.Clear();
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
+			source.Clear();
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(0);
 
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Info));
-			_lines.Add(new LogLine(1, 1, "A continued", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
+			source.AddEntry("A", LevelFlags.Info);
+			source.AddEntry("A continued", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 
-			logFile.GetSection(new LogFileSection(0, 2)).Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "A", LevelFlags.Info),
-				new LogLine(1, 0, "A continued", LevelFlags.Info)
-			}, "because the log file should now represent the new content where both lines belong to the same entry");
+			var entries = logFile.GetEntries(new LogFileSection(0, 2));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("A");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[1].Index.Should().Be(1);
+			entries[1].RawContent.Should().Be("A continued");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
+			entries[1].LogEntryIndex.Should().Be(0, "because this line belongs to the previous one, forming a single entry");
 		}
 
 		[Test]
@@ -308,43 +307,49 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestOneLine1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			_lines.Add(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("INFO: Hello ", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
+			var entry = logFile.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("INFO: Hello ");
+			entry.LogLevel.Should().Be(LevelFlags.Info);
 
-			_lines[0] = new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info);
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(0, 1));
+			source.RemoveFrom(0);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(0);
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("INFO: Hello World!", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: Hello World!", LevelFlags.Info));
+			entry = logFile.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("INFO: Hello World!");
+			entry.LogLevel.Should().Be(LevelFlags.Info);
 		}
 
 		[Test]
 		public void TestOneLine2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 10);
 
-			_lines.Add(new LogLine(0, 0, "INFO: Hello ", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("INFO: Hello ", LevelFlags.Info);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
 			_changes.Should().Equal(new object[] {LogFileSection.Reset, new LogFileSection(0, 1)});
 
-			_lines[0] = new LogLine(0, 0, "Hello World!", LevelFlags.Other);
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(0, 1));
+			source.RemoveFrom(0);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(0);
 
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("Hello World!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
 			_changes.Should().Equal(new object[]
@@ -355,56 +360,80 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				new LogFileSection(0, 1)
 			});
 
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
+			var entry = logFile.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("Hello World!");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
 		public void TestOneLine3()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			_lines.Add(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("Hello World!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World!", LevelFlags.Other));
+			var entry = logFile.GetEntry(0);
+			entry.Index.Should().Be(0);
+			entry.LogEntryIndex.Should().Be(0);
+			entry.RawContent.Should().Be("Hello World!");
+			entry.LogLevel.Should().Be(LevelFlags.Other);
 		}
 
 		[Test]
 		public void TestOneEntry1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
-			_lines.Add(new LogLine(0, 0, "INFO: hello", LevelFlags.Info, timestamp));
-			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.Other, null));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
+			source.AddRange(new[]
+			{
+				new LogEntry2{RawContent = "INFO: hello", LogLevel = LevelFlags.Info, Timestamp = timestamp},
+				new LogEntry2{RawContent = "world!", LogLevel = LevelFlags.Other}
+			});
 
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(2);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "INFO: hello", LevelFlags.Info, timestamp));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "world!", LevelFlags.Info, timestamp));
+			var entries = logFile.GetEntries(new LogFileSection(0, 2));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("INFO: hello");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(0, "because this line belongs to the previous one, forming a single entry");
+			entries[1].RawContent.Should().Be("world!");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
 		}
 
 		[Test]
 		[Description("Verifies that the log file correctly assembles a log event that arrives as two separate lines")]
 		public void TestOneEntry2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
 			var timestamp = new DateTime(2017, 3, 15, 21, 52, 0);
-			_lines.Add(new LogLine(0, 0, "hello", LevelFlags.Info, timestamp));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("hello", LevelFlags.Info, timestamp);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
 
-			_lines.Add(new LogLine(1, 1, "world!", LevelFlags.Other));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			source.AddEntry("world!", LevelFlags.Other);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(2);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "hello", LevelFlags.Info, timestamp));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 0, "world!", LevelFlags.Info, timestamp));
+			var entries = logFile.GetEntries(new LogFileSection(0, 2));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("hello");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(0, "because this line belongs to the previous one, forming a single entry");
+			entries[1].RawContent.Should().Be("world!");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
 		}
 
 		[Test]
@@ -464,55 +493,94 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries1()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Debug));
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Info));
-			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Warning));
-			_lines.Add(new LogLine(3, 3, "D", LevelFlags.Error));
-			_lines.Add(new LogLine(4, 4, "E", LevelFlags.Fatal));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 5));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			source.AddRange(new[]
+			{
+				new LogEntry2 {RawContent = "A", LogLevel = LevelFlags.Debug},
+				new LogEntry2 {RawContent = "B", LogLevel = LevelFlags.Info},
+				new LogEntry2 {RawContent = "C", LogLevel = LevelFlags.Warning},
+				new LogEntry2 {RawContent = "D", LogLevel = LevelFlags.Error},
+				new LogEntry2 {RawContent = "E", LogLevel = LevelFlags.Fatal},
+			});
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(5);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "A", LevelFlags.Debug));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 1, "B", LevelFlags.Info));
-			logFile.GetLine(2).Should().Be(new LogLine(2, 2, "C", LevelFlags.Warning));
-			logFile.GetLine(3).Should().Be(new LogLine(3, 3, "D", LevelFlags.Error));
-			logFile.GetLine(4).Should().Be(new LogLine(4, 4, "E", LevelFlags.Fatal));
+			var entry1 = logFile.GetEntry(0);
+			entry1.Index.Should().Be(0);
+			entry1.LogEntryIndex.Should().Be(0);
+			entry1.RawContent.Should().Be("A");
+			entry1.LogLevel.Should().Be(LevelFlags.Debug);
+
+			var entry2 = logFile.GetEntry(1);
+			entry2.Index.Should().Be(1);
+			entry2.LogEntryIndex.Should().Be(1);
+			entry2.RawContent.Should().Be("B");
+			entry2.LogLevel.Should().Be(LevelFlags.Info);
+			
+			var entry3 = logFile.GetEntry(2);
+			entry3.Index.Should().Be(2);
+			entry3.LogEntryIndex.Should().Be(2);
+			entry3.RawContent.Should().Be("C");
+			entry3.LogLevel.Should().Be(LevelFlags.Warning);
+			
+			var entry4 = logFile.GetEntry(3);
+			entry4.Index.Should().Be(3);
+			entry4.LogEntryIndex.Should().Be(3);
+			entry4.RawContent.Should().Be("D");
+			entry4.LogLevel.Should().Be(LevelFlags.Error);
+			
+			 var entry5 = logFile.GetEntry(4);
+			entry5.Index.Should().Be(4);
+			entry5.LogEntryIndex.Should().Be(4);
+			entry5.RawContent.Should().Be("E");
+			entry5.LogLevel.Should().Be(LevelFlags.Fatal);
 		}
 
 		[Test]
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries2()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Debug));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 1));
+			source.AddEntry("A", LevelFlags.Debug);
 			_taskScheduler.RunOnce();
-
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 1));
+			
+			source.AddEntry("B", LevelFlags.Info);
 			_taskScheduler.RunOnce();
-
-			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Warning));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(2, 1));
+			
+			source.AddEntry("C", LevelFlags.Warning);
 			_taskScheduler.RunOnce();
-
-			_lines.Add(new LogLine(3, 3, "D", LevelFlags.Error));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(3, 1));
+			
+			source.AddEntry("D", LevelFlags.Error);
 			_taskScheduler.RunOnce();
-
-			_lines.Add(new LogLine(4, 4, "E", LevelFlags.Fatal));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(4, 1));
+			
+			source.AddEntry("E", LevelFlags.Fatal);
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(5);
-			logFile.GetLine(0).Should().Be(new LogLine(0, 0, "A", LevelFlags.Debug));
-			logFile.GetLine(1).Should().Be(new LogLine(1, 1, "B", LevelFlags.Info));
-			logFile.GetLine(2).Should().Be(new LogLine(2, 2, "C", LevelFlags.Warning));
-			logFile.GetLine(3).Should().Be(new LogLine(3, 3, "D", LevelFlags.Error));
-			logFile.GetLine(4).Should().Be(new LogLine(4, 4, "E", LevelFlags.Fatal));
+			var entries = logFile.GetEntries(new LogFileSection(0, 5));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("A");
+			entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("B");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(2);
+			entries[2].RawContent.Should().Be("C");
+			entries[2].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(3);
+			entries[3].RawContent.Should().Be("D");
+			entries[3].LogLevel.Should().Be(LevelFlags.Error);
+			entries[4].Index.Should().Be(4);
+			entries[4].LogEntryIndex.Should().Be(4);
+			entries[4].RawContent.Should().Be("E");
+			entries[4].LogLevel.Should().Be(LevelFlags.Fatal);
 		}
 
 		[Test]
@@ -542,58 +610,87 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestManyEntries4()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 
-			_lines.Add(new LogLine(0, 0, "Foo", LevelFlags.Other));
-			_lines.Add(new LogLine(1, 1, "INFO: Bar", LevelFlags.Info));
-
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 2));
+			source.AddRange(new []
+			{
+				new LogEntry2{RawContent = "Foo", LogLevel = LevelFlags.Other},
+				new LogEntry2{RawContent = "INFO: Bar", LogLevel = LevelFlags.Info},
+			});
 			_taskScheduler.RunOnce();
-			logFile.GetSection(new LogFileSection(0, 2))
-				.Should().Equal(new object[]
-				{
-					new LogLine(0, 0, "Foo", LevelFlags.Other),
-					new LogLine(1, 1, "INFO: Bar", LevelFlags.Info)
-				});
 
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 1));
+			var entries = logFile.GetEntries(new LogFileSection(0, 2));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Other);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("INFO: Bar");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
+
+			source.RemoveFrom(1);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(1);
 
-			_lines[1] = new LogLine(1, 1, "Bar", LevelFlags.Other);
-			_lines.Add(new LogLine(2, 2, "INFO: Sup", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
+			source.AddRange(new []
+			{
+				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info}
+			});
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(3);
-			var entries = logFile.GetSection(new LogFileSection(0, 3));
-			entries.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "Foo", LevelFlags.Other),
-				new LogLine(1, 0, "Bar", LevelFlags.Other),
-				new LogLine(2, 1, "INFO: Sup", LevelFlags.Info)
-			});
+
+			entries = logFile.GetEntries(new LogFileSection(0, 3));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Other);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(0);
+			entries[1].RawContent.Should().Be("Bar");
+			entries[1].LogLevel.Should().Be(LevelFlags.Other);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].RawContent.Should().Be("INFO: Sup");
+			entries[2].LogLevel.Should().Be(LevelFlags.Info);
 		}
 
 		[Test]
 		[Description("Verifies that the log file correctly processes multiple events in one run")]
 		public void TestManyEntries5()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.Add(new LogLine(0, 0, "Foo", LevelFlags.Other));
-			_lines.Add(new LogLine(1, 1, "Bar", LevelFlags.Other));
-			_lines.Add(new LogLine(2, 2, "INFO: Sup", LevelFlags.Info));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 3));
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Invalidate(1, 2));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(1, 2));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			source.AddRange(new []
+			{
+				new LogEntry2{RawContent = "Foo", LogLevel = LevelFlags.Other},
+				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
+			});
+			source.RemoveFrom(1);
+			source.AddRange(new []
+			{
+				new LogEntry2{RawContent = "Bar", LogLevel = LevelFlags.Other},
+				new LogEntry2{RawContent = "INFO: Sup", LogLevel = LevelFlags.Info},
+			});
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(3);
-			var entries = logFile.GetSection(new LogFileSection(0, 3));
-			entries.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "Foo", LevelFlags.Other),
-				new LogLine(1, 0, "Bar", LevelFlags.Other),
-				new LogLine(2, 1, "INFO: Sup", LevelFlags.Info)
-			});
+
+			var entries = logFile.GetEntries(new LogFileSection(0, 3));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Other);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(0);
+			entries[1].RawContent.Should().Be("Bar");
+			entries[1].LogLevel.Should().Be(LevelFlags.Other);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].RawContent.Should().Be("INFO: Sup");
+			entries[2].LogLevel.Should().Be(LevelFlags.Info);
 		}
 
 		[Test]
@@ -651,26 +748,39 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Description("Verifies that GetSection can return many entries")]
-		public void TestGetSection()
+		[Description("Verifies that GetEntries can return many entries")]
+		public void TestGetEntries()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.Add(new LogLine(0, 0, "A", LevelFlags.Debug));
-			_lines.Add(new LogLine(1, 1, "B", LevelFlags.Info));
-			_lines.Add(new LogLine(2, 2, "C", LevelFlags.Warning));
-			_lines.Add(new LogLine(3, 3, "D", LevelFlags.Error));
-			_lines.Add(new LogLine(4, 4, "E", LevelFlags.Fatal));
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 5));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			source.AddEntry("A", LevelFlags.Debug);
+			source.AddEntry("B", LevelFlags.Info);
+			source.AddEntry("C", LevelFlags.Warning);
+			source.AddEntry("D", LevelFlags.Error);
+			source.AddEntry("E", LevelFlags.Fatal);
 			_taskScheduler.RunOnce();
 
-			logFile.GetSection(new LogFileSection(0, 5)).Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "A", LevelFlags.Debug),
-				new LogLine(1, 1, "B", LevelFlags.Info),
-				new LogLine(2, 2, "C", LevelFlags.Warning),
-				new LogLine(3, 3, "D", LevelFlags.Error),
-				new LogLine(4, 4, "E", LevelFlags.Fatal)
-			});
+			var entries = logFile.GetEntries(new LogFileSection(0, 5));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("A");
+			entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("B");
+			entries[1].LogLevel.Should().Be(LevelFlags.Info);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(2);
+			entries[2].RawContent.Should().Be("C");
+			entries[2].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(3);
+			entries[3].RawContent.Should().Be("D");
+			entries[3].LogLevel.Should().Be(LevelFlags.Error);
+			entries[4].Index.Should().Be(4);
+			entries[4].LogEntryIndex.Should().Be(4);
+			entries[4].RawContent.Should().Be("E");
+			entries[4].LogLevel.Should().Be(LevelFlags.Fatal);
 		}
 
 		[Test]
@@ -878,15 +988,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			line.GetValue(LogFileColumns.LineNumber).Should().Be(1);
 			line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(0);
 			line.RawContent.Should().Be("2017-12-03 11:59:30 Hello, ");
+			line.Timestamp.Should().Be(new DateTime(2017, 12, 3, 11, 59, 30));
 
 			line = entries[1];
 			line.GetValue(LogFileColumns.LineNumber).Should().Be(2);
 			line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(0);
 			line.RawContent.Should().Be("World!");
+			line.Timestamp.Should().Be(new DateTime(2017, 12, 3, 11, 59, 30));
 		}
 
 		[Test]
-		public void TestFuck()
+		public void TestMultipleSingleEntries()
 		{
 			var source = new InMemoryLogFile();
 			source.AddEntry("2019-07-08 16:19:13.546 [TID = 01428] [CSomeClass::FooBar()] [Session 1337] [FW]", LevelFlags.Other, new DateTime(2019, 7, 8, 16, 19, 13, 546));
@@ -921,20 +1033,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_taskScheduler.RunOnce();
 				multiLine.Count.Should().Be(3);
 
-				var line0 = multiLine.GetLine(0);
-				line0.OriginalLineIndex.Should().Be(0);
-				line0.LineIndex.Should().Be(0);
+				var line0 = multiLine.GetEntry(0);
+				line0.OriginalIndex.Should().Be(0);
+				line0.Index.Should().Be(0);
 				line0.LogEntryIndex.Should().Be(0, "because every line is an individual log entry");
+				line0.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 19, 195));
 
-				var line1 = multiLine.GetLine(1);
-				line1.OriginalLineIndex.Should().Be(1);
-				line1.LineIndex.Should().Be(1);
+				var line1 = multiLine.GetEntry(1);
+				line1.OriginalIndex.Should().Be(1);
+				line1.Index.Should().Be(1);
 				line1.LogEntryIndex.Should().Be(1, "because every line is an individual log entry");
+				line1.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 19, 751));
 
-				var line2 = multiLine.GetLine(2);
-				line2.OriginalLineIndex.Should().Be(2);
-				line2.LineIndex.Should().Be(2);
+				var line2 = multiLine.GetEntry(2);
+				line2.OriginalIndex.Should().Be(2);
+				line2.Index.Should().Be(2);
 				line2.LogEntryIndex.Should().Be(2, "because every line is an individual log entry");
+				line2.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 21, 708));
 
 
 				logFile.RemoveFrom(new LogLineIndex(2));
@@ -947,30 +1062,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_taskScheduler.RunOnce();
 				multiLine.Count.Should().Be(5);
 
-				line0 = multiLine.GetLine(0);
-				line0.OriginalLineIndex.Should().Be(0);
-				line0.LineIndex.Should().Be(0);
+				line0 = multiLine.GetEntry(0);
+				line0.OriginalIndex.Should().Be(0);
+				line0.Index.Should().Be(0);
 				line0.LogEntryIndex.Should().Be(0, "because every line is an individual log entry");
+				line0.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 19, 195));
 
-				line1 = multiLine.GetLine(1);
-				line1.OriginalLineIndex.Should().Be(1);
-				line1.LineIndex.Should().Be(1);
+				line1 = multiLine.GetEntry(1);
+				line1.OriginalIndex.Should().Be(1);
+				line1.Index.Should().Be(1);
 				line1.LogEntryIndex.Should().Be(1, "because every line is an individual log entry");
+				line1.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 19, 751));
 
-				line2 = multiLine.GetLine(2);
-				line2.OriginalLineIndex.Should().Be(2);
-				line2.LineIndex.Should().Be(2);
+				line2 = multiLine.GetEntry(2);
+				line2.OriginalIndex.Should().Be(2);
+				line2.Index.Should().Be(2);
 				line2.LogEntryIndex.Should().Be(2, "because every line is an individual log entry");
+				line2.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 21, 708));
 
-				var line3 = multiLine.GetLine(3);
-				line3.OriginalLineIndex.Should().Be(3);
-				line3.LineIndex.Should().Be(3);
+				var line3 = multiLine.GetEntry(3);
+				line3.OriginalIndex.Should().Be(3);
+				line3.Index.Should().Be(3);
 				line3.LogEntryIndex.Should().Be(3, "because every line is an individual log entry");
+				line3.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 21, 708));
 
-				var line4 = multiLine.GetLine(4);
-				line4.OriginalLineIndex.Should().Be(4);
-				line4.LineIndex.Should().Be(4);
+				var line4 = multiLine.GetEntry(4);
+				line4.OriginalIndex.Should().Be(4);
+				line4.Index.Should().Be(4);
 				line4.LogEntryIndex.Should().Be(4, "because every line is an individual log entry");
+				line4.Timestamp.Should().Be(new DateTime(2017, 3, 24, 11, 45, 21, 811));
 			}
 		}
 

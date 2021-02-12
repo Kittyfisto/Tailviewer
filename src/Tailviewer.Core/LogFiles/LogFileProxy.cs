@@ -387,15 +387,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				logFile.GetSection(section, dest);
-			}
-			else
-			{
-				throw new IndexOutOfRangeException();
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -413,13 +405,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				return logFile.GetLine(index);
-			}
-
-			throw new IndexOutOfRangeException();
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

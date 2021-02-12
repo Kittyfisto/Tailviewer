@@ -5,7 +5,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
-using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
@@ -63,7 +62,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ssss", LevelFlags.Other));
+				var line = dataSource.FilteredLogFile.GetEntry(0);
+				line.Index.Should().Be(0);
+				line.LogEntryIndex.Should().Be(0);
+				line.RawContent.Should().Be("ssss");
+				line.LogLevel.Should().Be(LevelFlags.Other);
 			}
 		}
 
@@ -79,7 +82,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "Hello World", LevelFlags.Other));
+				var line = dataSource.FilteredLogFile.GetEntry(0);
+				line.Index.Should().Be(0);
+				line.LogEntryIndex.Should().Be(0);
+				line.RawContent.Should().Be("Hello World");
+				line.LogLevel.Should().Be(LevelFlags.Other);
 			}
 		}
 
@@ -124,7 +131,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_scheduler.Run(2);
 
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because only a single line has been written to disk");
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "ABC", LevelFlags.Other));
+				var line = dataSource.FilteredLogFile.GetEntry(0);
+				line.Index.Should().Be(0);
+				line.LogEntryIndex.Should().Be(0);
+				line.RawContent.Should().Be("ABC");
+				line.LogLevel.Should().Be(LevelFlags.Other);
+				line.Timestamp.Should().Be(null);
 			}
 		}
 
@@ -143,8 +155,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
-				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 0, "the application...", LevelFlags.Info, t));
+				var line1 = dataSource.FilteredLogFile.GetEntry(0);
+				line1.Index.Should().Be(0);
+				line1.LogEntryIndex.Should().Be(0);
+				line1.RawContent.Should().Be("2015-10-07 19:50:58,981 INFO Starting");
+				line1.LogLevel.Should().Be(LevelFlags.Info);
+				line1.Timestamp.Should().Be(t);
+
+				var line2 = dataSource.FilteredLogFile.GetEntry(1);
+				line2.Index.Should().Be(1);
+				line2.LogEntryIndex.Should().Be(0);
+				line2.RawContent.Should().Be("the application...");
+				line2.LogLevel.Should().Be(LevelFlags.Info);
+				line2.Timestamp.Should().Be(t);
 			}
 		}
 
@@ -163,8 +186,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
-				dataSource.FilteredLogFile.GetLine(0).Should().Be(new LogLine(0, 0, "2015-10-07 19:50:58,981 INFO Starting", LevelFlags.Info, t));
-				dataSource.FilteredLogFile.GetLine(1).Should().Be(new LogLine(1, 1, "the application...", LevelFlags.Other, null));
+				var line1 = dataSource.FilteredLogFile.GetEntry(0);
+				line1.Index.Should().Be(0);
+				line1.LogEntryIndex.Should().Be(0);
+				line1.RawContent.Should().Be("2015-10-07 19:50:58,981 INFO Starting");
+				line1.LogLevel.Should().Be(LevelFlags.Info);
+				line1.Timestamp.Should().Be(t);
+
+				var line2 = dataSource.FilteredLogFile.GetEntry(1);
+				line2.Index.Should().Be(1);
+				line2.LogEntryIndex.Should().Be(1);
+				line2.RawContent.Should().Be("the application...");
+				line2.LogLevel.Should().Be(LevelFlags.Other);
+				line2.Timestamp.Should().Be(null);
 			}
 		}
 	}

@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		private const int MaximumBatchSize = 10000;
 
 		private readonly object _syncRoot;
-		private readonly HashSet<ILogFileColumn> _columns;
+		private readonly HashSet<ILogFileColumn> _specialColumns;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -45,8 +45,6 @@ namespace Tailviewer.Core.LogFiles
 
 		private LogFileSection _fullSourceSection;
 		private int _maxCharactersPerLine;
-		private LevelFlags _currentLogEntryLevel;
-		private DateTime? _currentLogEntryTimestamp;
 
 		/// <summary>
 		///     Initializes this object.
@@ -67,7 +65,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_syncRoot = new object();
-			_columns = new HashSet<ILogFileColumn>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp};
+			_specialColumns = new HashSet<ILogFileColumn>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
@@ -179,7 +177,7 @@ namespace Tailviewer.Core.LogFiles
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)
 			{
-				if (_columns.Contains(column))
+				if (_specialColumns.Contains(column))
 				{
 					destination.CopyFrom(column, destinationIndex, this, sourceSection);
 					partiallyRetrieved = true;
@@ -211,7 +209,7 @@ namespace Tailviewer.Core.LogFiles
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)
 			{
-				if (_columns.Contains(column))
+				if (_specialColumns.Contains(column))
 				{
 					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
 					partiallyRetrieved = true;
@@ -239,26 +237,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			_source.GetSection(section, dest);
-			lock (_syncRoot)
-			{
-				for (var i = 0; i < section.Count; ++i)
-					dest[i] = PatchNoLock(dest[i]);
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
 		public override LogLine GetLine(int index)
 		{
-			var actualLine = _source.GetLine(index);
-			LogLine line;
-
-			lock (_syncRoot)
-			{
-				line = PatchNoLock(actualLine);
-			}
-
-			return line;
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -358,8 +343,6 @@ namespace Tailviewer.Core.LogFiles
 					    !AppendToCurrentLogEntry(line))
 					{
 						_currentLogEntry = _currentLogEntry.NextEntry(line.LineIndex);
-						_currentLogEntryLevel = line.Level;
-						_currentLogEntryTimestamp = line.Timestamp;
 					}
 
 					_indices.Add(_currentLogEntry);
@@ -436,7 +419,8 @@ namespace Tailviewer.Core.LogFiles
 
 		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
 		{
-			if (Equals(column, LogFileColumns.Timestamp))
+			if (Equals(column, LogFileColumns.Timestamp) ||
+			    Equals(column, LogFileColumns.LogLevel))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);
 				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);

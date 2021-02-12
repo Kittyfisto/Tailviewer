@@ -661,13 +661,18 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
 					sortedIndices.Sort();
+					// TODO: What do we do if some mad man has 1 million lines selected?
+					// TODO: Request in batches
+					var buffer = new LogEntryBuffer(_selectedIndices.Count, LogFileColumns.RawContent);
+					logFile.GetEntries(sortedIndices, buffer);
+
 					for (int i = 0; i < sortedIndices.Count; ++i)
 					{
-						LogLine line = logFile.GetLine((int) sortedIndices[i]);
+						var entry = buffer[i];
 						if (i < sortedIndices.Count - 1)
-							builder.AppendLine(line.Message);
+							builder.AppendLine(entry.RawContent);
 						else
-							builder.Append(line.Message);
+							builder.Append(entry.RawContent);
 					}
 				}
 				string message = builder.ToString();

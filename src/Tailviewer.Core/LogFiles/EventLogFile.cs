@@ -147,13 +147,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			_buffer.GetSection(section, dest);
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
 		public LogLine GetLine(int index)
 		{
-			return _buffer.GetLine(index);
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

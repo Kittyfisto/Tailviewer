@@ -16,8 +16,7 @@ namespace Tailviewer.BusinessLogic.Searches
 	/// </summary>
 	public sealed class LogFileSearch
 		: ILogFileSearch
-		  , IDisposable
-		  , ILogFileListener
+		, ILogFileListener
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

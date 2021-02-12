@@ -258,7 +258,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			entries[2].LogEntryIndex.Should().Be(1);
 			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
 			entries[2].RawContent.Should().Be("bar");
-			entries[2].LogLevel.Should().Be(LevelFlags.Other);
+			entries[2].LogLevel.Should().Be(LevelFlags.Trace);
 			entries[2].Timestamp.Should().Be(t2);
 			entries[3].Index.Should().Be(3);
 			entries[3].LogEntryIndex.Should().Be(2);
