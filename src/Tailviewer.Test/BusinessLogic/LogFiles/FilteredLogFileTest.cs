@@ -65,6 +65,25 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestChangeColumns()
+		{
+			_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumn[]
+				                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel});
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Debug)))
+			{
+				file.Columns.Should().Contain(new ILogFileColumn[]
+					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel});
+
+				var customColumn = new Mock<ILogFileColumn>().Object;
+				_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumn[]
+					                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
+				file.Columns.Should().Contain(new ILogFileColumn[]
+					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
+			}
+		}
+
+		[Test]
 		public void TestConstruction()
 		{
 			_logFile.Setup(x => x.Count).Returns(2);
@@ -124,22 +143,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEntryLevelNone()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("ello", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("ello", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				source.AddEntry("Hello world!", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
 
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(1);
-				var section = file.GetSection(new LogFileSection(0, 1));
-				section.Should().HaveCount(1);
-				section[0].LineIndex.Should().Be(0);
-				section[0].OriginalLineIndex.Should().Be(0);
-				section[0].LogEntryIndex.Should().Be(0);
-				section[0].Message.Should().Be("Hello world!");
-				section[0].Level.Should().Be(LevelFlags.Other);
+				var entries = file.GetEntries(new LogFileSection(0, 1), LogFileColumns.Minimum);
+				entries.Should().HaveCount(1);
+				entries[0].Index.Should().Be(0);
+				entries[0].OriginalIndex.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("Hello world!");
+				entries[0].LogLevel.Should().Be(LevelFlags.Other);
 			}
 		}
 
@@ -372,22 +391,25 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that all lines belonging to an entry pass the filter, even though only one line passes it")]
 		public void TestMultiLineLogEntry1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			                                      Filter.Create("Test", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
 				file.Count.Should().Be(2);
-				file.GetSection(new LogFileSection(0, 2))
-				    .Should().Equal(new[]
-					    {
-						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
-					    });
+				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumn[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
+				entries[0].Index.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("DEBUG: This is a test");
+				entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+				entries[1].Index.Should().Be(1);
+				entries[1].LogEntryIndex.Should().Be(0);
+				entries[1].RawContent.Should().Be("Yikes");
+				entries[1].LogLevel.Should().Be(LevelFlags.Debug);
 			}
 		}
 
@@ -396,22 +418,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			"Verifies that all lines belonging to an entry pass the filter, even though only the second line passes it")]
 		public void TestMultiLineLogEntry2()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry( LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
 				file.Count.Should().Be(2);
-				file.GetSection(new LogFileSection(0, 2))
-				    .Should().Equal(new[]
-					    {
-						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
-					    });
+				var entries = file.GetEntries(new LogFileSection(0, 2));
+				entries[0].Index.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("DEBUG: This is a test");
+				entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+				entries[1].Index.Should().Be(1);
+				entries[1].LogEntryIndex.Should().Be(0);
+				entries[1].RawContent.Should().Be("Yikes");
+				entries[1].LogLevel.Should().Be(LevelFlags.Debug);
 			}
 		}
 

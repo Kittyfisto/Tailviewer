@@ -55,30 +55,27 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					filtered.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(5);
 					filtered.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-					LogLine[] section = filtered.GetSection(new LogFileSection(0, 5));
-					section.Should().Equal(new[]
-						{
-							new LogLine(0, 0,
-							            "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-							            LevelFlags.Info,
-							            new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified)),
-							new LogLine(1, 1,
-							            "2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152",
-							            LevelFlags.Info,
-							            new DateTime(2015, 10, 7, 19, 50, 59, 081)),
-							new LogLine(2, 2,
-							            "2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348",
-							            LevelFlags.Info,
-							            new DateTime(2015, 10, 7, 19, 50, 59, 171)),
-							new LogLine(3, 3,
-							            "2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure",
-							            LevelFlags.Info,
-							            new DateTime(2015, 10, 7, 19, 51, 42, 481)),
-							new LogLine(4, 4,
-							            "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...",
-							            LevelFlags.Info,
-							            new DateTime(2015, 10, 7, 19, 51, 42, 483))
-						});
+					var entries = filtered.GetEntries(new LogFileSection(0, 5));
+					entries[0].Index.Should().Be(0);
+					entries[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982, DateTimeKind.Unspecified));
+					entries[0].LogLevel.Should().Be(LevelFlags.Info);
+					entries[0].RawContent.Should().Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
+					entries[1].Index.Should().Be(1);
+					entries[1].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 081));
+					entries[1].LogLevel.Should().Be(LevelFlags.Info);
+					entries[1].RawContent.Should().Be("2015-10-07 19:50:59,081 [8092, 1] INFO  SharpRemote.SocketRemotingEndPointServer (null) - EndPoint '<Unnamed>' listening on 0.0.0.0:49152");
+					entries[2].Index.Should().Be(2);
+					entries[2].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 59, 171));
+					entries[2].LogLevel.Should().Be(LevelFlags.Info);
+					entries[2].RawContent.Should().Be("2015-10-07 19:50:59,171 [8092, 6] INFO  SharpRemote.AbstractIPSocketRemotingEndPoint (null) - <Unnamed>: Connected to 127.0.0.1:10348");
+					entries[3].Index.Should().Be(3);
+					entries[3].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 51, 42, 481));
+					entries[3].LogLevel.Should().Be(LevelFlags.Info);
+					entries[3].RawContent.Should().Be("2015-10-07 19:51:42,481 [8092, EndPoint '<Unnamed>' Socket Reading] INFO  SharpRemote.AbstractSocketRemotingEndPoint (null) - Disconnecting socket '<Unnamed>' from 127.0.0.1:10348: ReadFailure");
+					entries[4].Index.Should().Be(4);
+					entries[4].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 51, 42, 483));
+					entries[4].LogLevel.Should().Be(LevelFlags.Info);
+					entries[4].RawContent.Should().Be("2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...");
 				}
 			}
 		}
@@ -140,10 +137,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					filtered.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
 
 					filtered.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-					filtered.GetSection(new LogFileSection(0, filtered.Count)).Should().Equal(new[]
-						{
-							new LogLine(0, "INFO - Test", LevelFlags.Info)
-						});
+					var entries = filtered.GetEntries(new LogFileSection(0, filtered.Count));
+					entries.Count.Should().Be(1);
+					entries[0].Index.Should().Be(0);
+					entries[0].RawContent.Should().Be("INFO - Test");
+					entries[0].LogLevel.Should().Be(LevelFlags.Info);
 
 					using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 					{

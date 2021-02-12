@@ -52,10 +52,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new LogFileSection(0, 6),
-					LogFileColumns.Timestamp,
-					LogFileColumns.LogEntryIndex,
-					LogFileColumns.LineNumber,
-					LogFileColumns.RawContent);
+				                               new ILogFileColumn[]
+				                               {
+					                               LogFileColumns.Timestamp,
+					                               LogFileColumns.LogEntryIndex,
+					                               LogFileColumns.LineNumber,
+					                               LogFileColumns.RawContent
+				                               });
 
 				var line = entries[0];
 				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
@@ -105,18 +108,21 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new List<LogLineIndex>
-					{
-						new LogLineIndex(0),
-						new LogLineIndex(1),
-						new LogLineIndex(2),
-						new LogLineIndex(3),
-						new LogLineIndex(4),
-						new LogLineIndex(5)
-					},
-					LogFileColumns.Timestamp,
-					LogFileColumns.LogEntryIndex,
-					LogFileColumns.LineNumber,
-					LogFileColumns.RawContent);
+				                               {
+					                               new LogLineIndex(0),
+					                               new LogLineIndex(1),
+					                               new LogLineIndex(2),
+					                               new LogLineIndex(3),
+					                               new LogLineIndex(4),
+					                               new LogLineIndex(5)
+				                               },
+				                               new ILogFileColumn[]
+				                               {
+					                               LogFileColumns.Timestamp,
+					                               LogFileColumns.LogEntryIndex,
+					                               LogFileColumns.LineNumber,
+					                               LogFileColumns.RawContent
+				                               });
 
 				var line = entries[0];
 				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));

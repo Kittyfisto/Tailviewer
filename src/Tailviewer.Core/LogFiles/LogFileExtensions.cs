@@ -93,17 +93,15 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		///     Retrieves all entries for the given <paramref name="columns" /> of the given <paramref name="sourceSection" />
-		///     from this log file.
+		///     Retrieves all entries for all columns of this log file of the given <paramref name="sourceSection" />:
 		/// </summary>
 		/// <param name="logFile"></param>
 		/// <param name="sourceSection"></param>
-		/// <param name="columns"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection, params ILogFileColumn[] columns)
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection)
 		{
-			var buffer = new LogEntryBuffer(sourceSection.Count, columns);
+			var buffer = new LogEntryBuffer(sourceSection.Count, logFile.Columns);
 			GetEntries(logFile, sourceSection, buffer);
 			return buffer;
 		}
@@ -121,6 +119,20 @@ namespace Tailviewer.Core.LogFiles
 		{
 			var buffer = new LogEntryBuffer(sourceSection.Count, columns);
 			GetEntries(logFile, sourceSection, buffer);
+			return buffer;
+		}
+
+		/// <summary>
+		///     Retrieves all entries for all columns of this log file of the given <paramref name="sourceIndices" />:
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndices"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices)
+		{
+			var buffer = new LogEntryBuffer(sourceIndices.Count, logFile.Columns);
+			GetEntries(logFile, sourceIndices, buffer);
 			return buffer;
 		}
 
@@ -145,25 +157,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="columns"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, params ILogFileColumn[] columns)
-		{
-			var buffer = new LogEntryBuffer(sourceIndices.Count, columns);
-			logFile.GetEntries(sourceIndices, buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		///     Retrieves all entries with the given <paramref name="columns" /> of the given <paramref name="sourceIndices" />
-		///     from this log file.
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="sourceIndices"></param>
-		/// <param name="columns"></param>
-		/// <returns></returns>
-		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, IEnumerable<ILogFileColumn> columns)
 		{
-			var buffer = new LogEntryBuffer(sourceIndices.Count);
+			var buffer = new LogEntryBuffer(sourceIndices.Count, columns);
 			logFile.GetEntries(sourceIndices, buffer);
 			return buffer;
 		}

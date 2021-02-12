@@ -242,6 +242,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				_index.GetLineNumbers(sourceIndices, (int[]) (object) destination, destinationIndex);
 			}
+			else if (Equals(column, LogFileColumns.SourceId))
+			{
+				_index.GetSourceIds(sourceIndices, (LogLineSourceId[]) (object) destination, destinationIndex);
+			}
 			else
 			{
 				var actualSourceIndices = _index.GetOriginalLogLineIndices<T>(sourceIndices);

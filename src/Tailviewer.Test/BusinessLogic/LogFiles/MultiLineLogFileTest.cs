@@ -896,7 +896,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
 			logFile.Count.Should().Be(3);
-			var entries = logFile.GetEntries(new LogFileSection(0, 3), LogFileColumns.LogEntryIndex);
+			var entries = logFile.GetEntries(new LogFileSection(0, 3), new[]{LogFileColumns.LogEntryIndex});
 			entries[0].LogEntryIndex.Should().Be(new LogEntryIndex(0));
 			entries[1].LogEntryIndex.Should().Be(new LogEntryIndex(1));
 			entries[2].LogEntryIndex.Should().Be(new LogEntryIndex(2));

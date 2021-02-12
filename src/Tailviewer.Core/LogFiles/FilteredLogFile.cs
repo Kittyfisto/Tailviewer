@@ -29,7 +29,6 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 10000;
 
-		private readonly IReadOnlyList<ILogFileColumn> _columns;
 		private readonly ILogLineFilter _logLineFilter;
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
@@ -63,7 +62,6 @@ namespace Tailviewer.Core.LogFiles
 			if (source == null) throw new ArgumentNullException(nameof(source));
 
 			_source = source;
-			_columns = LogFileColumns.CombineWithMinimum(source.Columns);
 			_logLineFilter = logLineFilter ?? new NoFilter();
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
@@ -102,7 +100,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => _columns;
+		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.CombineWithMinimum(_source.Columns);
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
@@ -419,27 +417,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetSection(LogFileSection section, LogLine[] dest)
 		{
-			if (section.Index < 0)
-				throw new ArgumentOutOfRangeException(nameof(section), string.Format("Index '{0}' is expected to be greater or equal to 0", section.Index));
-			if (section.Count < 0)
-				throw new ArgumentOutOfRangeException(nameof(section), string.Format("Count '{0}' is expected to be greater or equal to 0", section.Count));
-			if (dest == null)
-				throw new ArgumentNullException(nameof(dest));
-			if (dest.Length < section.Count)
-				throw new ArgumentOutOfRangeException(nameof(section), string.Format("The provided buffer (length '{0}') should hold at least as many items as requested '{1}", dest.Length, section.Count));
-
-			lock (_indices)
-			{
-				var count = section.Index + section.Count;
-				if (count > _indices.Count)
-					throw new ArgumentOutOfRangeException(nameof(section), string.Format("Cannot request more than '{0}' items: '{1}'", _indices.Count, count));
-
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var index = section.Index + i;
-					dest[i] = GetLineNoLock((int) index);
-				}
-			}
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

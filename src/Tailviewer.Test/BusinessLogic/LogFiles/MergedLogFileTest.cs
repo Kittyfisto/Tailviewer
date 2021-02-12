@@ -543,7 +543,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that merging a multi line entry in order works")]
-		public void TestOriginalDataSourceName()
+		public void TestOriginalDataSourceName1()
 		{
 			var source1 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
 			var source2 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
@@ -563,10 +563,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_taskScheduler.RunOnce();
 			merged.Count.Should().Be(2);
-			merged.GetEntry(0).GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
-			merged.GetEntry(0).GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
-			merged.GetEntry(1).GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
-			merged.GetEntry(1).GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			var entries = merged.GetEntries(new LogFileSection(0, 2));
+			entries[0].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[1].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+
+			entries = merged.GetEntries(new []{new LogLineIndex(1), new LogLineIndex(0) });
+			entries[0].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[1].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
 		}
 
 		[Test]
