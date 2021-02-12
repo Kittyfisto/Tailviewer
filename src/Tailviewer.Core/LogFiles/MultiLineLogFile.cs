@@ -259,22 +259,32 @@ namespace Tailviewer.Core.LogFiles
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			bool performedWork = false;
-			while (_pendingModifications.TryDequeue(out var nextSection) && !token.IsCancellationRequested)
-			{
-				if (nextSection.IsReset)
-				{
-					Clear();
-				}
-				else if (nextSection.IsInvalidate)
-				{
-					Invalidate(nextSection);
-				}
-				else
-				{
-					Append(nextSection);
-				}
 
-				performedWork = true;
+			// Every Process() invocation locks the sync root until
+			// the changes have been processed. The goal is to minimize
+			// total process time and to prevent locking for too long.
+			// The following number has been empirically determined
+			// via testing and it felt alright :P
+			const int maxLineCount = 10000;
+			if (_pendingModifications.TryDequeueUpTo(maxLineCount, out var modifications))
+			{
+				foreach (var nextSection in modifications)
+				{
+					if (nextSection.IsReset)
+					{
+						Clear();
+					}
+					else if (nextSection.IsInvalidate)
+					{
+						Invalidate(nextSection);
+					}
+					else
+					{
+						Append(nextSection);
+					}
+
+					performedWork = true;
+				}
 			}
 
 			// Now we can perform a block-copy of all properties.
@@ -290,7 +300,7 @@ namespace Tailviewer.Core.LogFiles
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_source.EndOfSourceReached && _fullSourceSection.IsEndOfSection(_currentSourceIndex))
+			if (_source.EndOfSourceReached && _source.Count == Count)
 			{
 				SetEndOfSourceReached();
 			}

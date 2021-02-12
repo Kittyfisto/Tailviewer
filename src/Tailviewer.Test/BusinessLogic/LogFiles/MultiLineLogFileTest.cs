@@ -575,27 +575,35 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("I introduced a regression here while refactoring the implementation, however we fail this test only by processing more than desired (functional there's nothing wrong)")]
 		[Description("Verifies that the log file correctly interprets many single line log entries")]
 		public void TestManyEntries3()
 		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_lines.AddRange(Enumerable.Range(0, 10001).Select(i => new LogLine(i, i, "", LevelFlags.Info)));
-			_source.Setup(x => x.EndOfSourceReached).Returns(true);
-			logFile.OnLogFileModified(_source.Object, new LogFileSection(0, 10001));
+			var source = new InMemoryLogFile();
+			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
+			for (int i = 0; i < 10001; ++i)
+			{
+				source.AddEntry("", LevelFlags.Info);
+			}
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(10000, "because the log file should process a fixed amount of lines per tick");
 			logFile.EndOfSourceReached.Should().BeFalse("because the log file hasn't processed the entire source yet");
-			logFile.GetSection(new LogFileSection(0, 10000))
-				.Should().Equal(_lines.GetRange(0, 10000));
+
+			var actualEntries = logFile.GetEntries(new LogFileSection(0, 10000));
+			for (int i = 0; i < actualEntries.Count; ++i)
+			{
+				actualEntries[i].Should().Be(source.GetEntry(i));
+			}
 
 			_taskScheduler.RunOnce();
 			logFile.Count.Should()
 				.Be(10001, "because the log file should now have enough ticks elapsed to have processed the entire source");
 			logFile.EndOfSourceReached.Should().BeTrue("because the log file should've processed the entire source by now");
-			logFile.GetSection(new LogFileSection(0, 10001))
-				.Should().Equal(_lines);
+			actualEntries = logFile.GetEntries(new LogFileSection(0, source.Count));
+			for (int i = 0; i < actualEntries.Count; ++i)
+			{
+				actualEntries[i].Should().Be(source.GetEntry(i));
+			}
 		}
 
 		[Test]

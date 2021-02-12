@@ -42,7 +42,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		int MaxCharactersPerLine { get; }
 
 		/// <summary>
@@ -176,7 +176,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     of lines in the underlying data source.
 		/// </summary>
 		/// <remarks>
-		///     In case it is unfeasable to determine the number of lines before scanning through the entire source, 1 should be returned.
+		///     In case it is unfeasible to determine the number of lines before scanning through the entire source, 1 should be returned.
 		/// </remarks>
 		double Progress { get; }
 
@@ -185,7 +185,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Indices
 
 		/// <summary>
-		///     Performs a reverse lookup and returns the index o fthe log entry
+		///     Performs a reverse lookup and returns the index of the log entry
 		///     which has the given original index.
 		/// </summary>
 		/// <param name="originalLineIndex"></param>

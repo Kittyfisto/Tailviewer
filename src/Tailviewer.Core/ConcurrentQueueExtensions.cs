@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core
 {
@@ -31,6 +32,33 @@ namespace Tailviewer.Core
 			while (queue.TryDequeue(out var value))
 				values.Add(value);
 			return values;
+		}
+
+		/// <summary>
+		///    Dequeues modifications from this queue until their combined sum of log entries added is greater or equal to the specified number.
+		/// </summary>
+		/// <param name="queue"></param>
+		/// <param name="maxLogEntries"></param>
+		/// <param name="logFileSections"></param>
+		/// <returns></returns>
+		public static bool TryDequeueUpTo(this ConcurrentQueue<LogFileSection> queue, int maxLogEntries,
+		                                  out IReadOnlyList<LogFileSection> logFileSections)
+		{
+			var tmp = new List<LogFileSection>();
+			int count = 0;
+
+			while (queue.TryDequeue(out var modification))
+			{
+				tmp.Add(modification);
+				if (!modification.IsInvalidate)
+					count += modification.Count;
+
+				if (count >= maxLogEntries)
+					break;
+			}
+
+			logFileSections = tmp;
+			return tmp.Count > 0;
 		}
 	}
 }
