@@ -51,7 +51,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				multi.Property(x => x.Count).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new LogFileSection(0, 6),
-				                               new ILogFileColumn[]
+				                               new ILogFileColumnDescriptor[]
 				                               {
 					                               LogFileColumns.Timestamp,
 					                               LogFileColumns.LogEntryIndex,
@@ -115,7 +115,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					                               new LogLineIndex(4),
 					                               new LogLineIndex(5)
 				                               },
-				                               new ILogFileColumn[]
+				                               new ILogFileColumnDescriptor[]
 				                               {
 					                               LogFileColumns.Timestamp,
 					                               LogFileColumns.LogEntryIndex,

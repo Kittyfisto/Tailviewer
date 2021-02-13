@@ -12,7 +12,7 @@
 		/// <param name="section"></param>
 		/// <param name="column">The column to copy data to</param>
 		/// <param name="source">The source from which to copy data from</param>
-		public static void CopyFrom<T>(this ILogEntries section, ILogFileColumn<T> column, T[] source)
+		public static void CopyFrom<T>(this ILogEntries section, ILogFileColumnDescriptor<T> column, T[] source)
 		{
 			section.CopyFrom(column, 0, source, 0, source.Length);
 		}

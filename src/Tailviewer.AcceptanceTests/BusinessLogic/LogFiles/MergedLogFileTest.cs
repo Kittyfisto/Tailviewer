@@ -417,7 +417,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				merged.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(10)).BeTrue();
 				var entries = merged.GetEntries(new LogFileSection(0, 11),
-				                                new ILogFileColumn[]
+				                                new ILogFileColumnDescriptor[]
 				                                {
 					                                LogFileColumns.Timestamp,
 					                                LogFileColumns.LogEntryIndex,

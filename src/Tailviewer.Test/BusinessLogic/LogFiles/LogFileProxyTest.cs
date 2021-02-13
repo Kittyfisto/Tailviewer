@@ -325,7 +325,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
 			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, 42);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 42)),
 			                Times.Once);
@@ -382,7 +382,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				                47);
 
 				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
-				                                 It.Is<ILogFileColumn<LogLineIndex>>(y => y == LogFileColumns.OriginalIndex),
+				                                 It.Is<ILogFileColumnDescriptor<LogLineIndex>>(y => y == LogFileColumns.OriginalIndex),
 				                                 It.Is<LogLineIndex[]>(y => y == buffer),
 				                                 It.Is<int>(y => y == 47)),
 				                Times.Once, "because the proxy should simply forward those calls to its source");

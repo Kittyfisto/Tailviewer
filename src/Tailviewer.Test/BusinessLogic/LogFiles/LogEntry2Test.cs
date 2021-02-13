@@ -23,7 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction2()
 		{
-			var entry = new LogEntry(new List<ILogFileColumn> { LogFileColumns.Timestamp, LogFileColumns.LineNumber});
+			var entry = new LogEntry(new List<ILogFileColumnDescriptor> { LogFileColumns.Timestamp, LogFileColumns.LineNumber});
 			entry.Timestamp.Should().Be(LogFileColumns.Timestamp.DefaultValue);
 			entry.LineNumber.Should().Be(LogFileColumns.LineNumber.DefaultValue);
 		}
@@ -31,7 +31,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogLevel()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LogLevel = LevelFlags.Fatal;
@@ -43,7 +43,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLogEntryIndex()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LogEntryIndex = 42;
@@ -55,7 +55,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetDeltaTime()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.DeltaTime = TimeSpan.FromSeconds(23);
@@ -67,7 +67,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetElapsedTime()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.ElapsedTime = TimeSpan.FromSeconds(23);
@@ -79,7 +79,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetTimestamp()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.Timestamp = new DateTime(2017, 12, 20, 13, 33, 0);
@@ -91,7 +91,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetRawContent()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.RawContent = "The last Jedi";
@@ -103,7 +103,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetIndex()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.Index = 9001;
@@ -115,7 +115,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalIndex()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.OriginalIndex = 8999;
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetLineNumber()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.LineNumber = 42;
@@ -139,7 +139,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetOriginalLineNumber()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			entry.Columns.Should().BeEmpty();
 
 			entry.OriginalLineNumber = 1337;
@@ -151,7 +151,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestSetValueWrongType()
 		{
-			var entry = new LogEntry(new ILogFileColumn[0]);
+			var entry = new LogEntry(new ILogFileColumnDescriptor[0]);
 			new Action(() => entry.SetValue(LogFileColumns.RawContent, 42)).Should().Throw<ArgumentException>();
 			entry.Columns.Should().BeEmpty();
 			new Action(() => entry.GetValue(LogFileColumns.RawContent)).Should().Throw<ArgumentException>();
@@ -171,7 +171,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualSameValue()
 		{
-			var values = new Dictionary<ILogFileColumn, object>
+			var values = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Starbuck"}
 			};
@@ -186,11 +186,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualDifferentValue()
 		{
-			var values = new Dictionary<ILogFileColumn, object>
+			var values = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Starbuck"}
 			};
-			var otherValues = new Dictionary<ILogFileColumn, object>
+			var otherValues = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Apollo"}
 			};
@@ -220,7 +220,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override IReadOnlyLogEntry CreateEmpty()
 		{
-			return new LogEntry(new ILogFileColumn[0]);
+			return new LogEntry(new ILogFileColumnDescriptor[0]);
 		}
 	}
 }

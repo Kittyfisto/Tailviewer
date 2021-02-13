@@ -19,10 +19,10 @@ namespace Tailviewer.Core.LogFiles
 
 		static ReadOnlyLogEntry()
 		{
-			_empty = new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>());
+			_empty = new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>());
 		}
 
-		private readonly IReadOnlyDictionary<ILogFileColumn, object> _values;
+		private readonly IReadOnlyDictionary<ILogFileColumnDescriptor, object> _values;
 
 		/// <summary>
 		///    Initializes a new readonly log entry with <see cref="LogFileColumns.Minimum"/> columns, each set to their default value.
@@ -34,15 +34,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///    Initializes a new readonly log entry with the given list of <param name="columns" />, each set to their default value.
 		/// </summary>
-		public ReadOnlyLogEntry(IEnumerable<ILogFileColumn> columns)
+		public ReadOnlyLogEntry(IEnumerable<ILogFileColumnDescriptor> columns)
 			: this(columns.ToDictionary(x => x, x => x.DefaultValue))
 		{}
 
 		/// <summary>
 		///    Initializes a new readonly log entry with the given list of <param name="columns" />, each set to their default value.
 		/// </summary>
-		public ReadOnlyLogEntry(params ILogFileColumn[] columns)
-			: this((IEnumerable<ILogFileColumn>) columns)
+		public ReadOnlyLogEntry(params ILogFileColumnDescriptor[] columns)
+			: this((IEnumerable<ILogFileColumnDescriptor>) columns)
 		{
 		}
 
@@ -50,7 +50,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="values"></param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public ReadOnlyLogEntry(IReadOnlyDictionary<ILogFileColumn, object> values)
+		public ReadOnlyLogEntry(IReadOnlyDictionary<ILogFileColumnDescriptor, object> values)
 		{
 			if (values == null)
 				throw new ArgumentNullException(nameof(values));
@@ -59,13 +59,13 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFileColumn<T> column)
+		public override T GetValue<T>(ILogFileColumnDescriptor<T> column)
 		{
-			return (T) GetValue((ILogFileColumn) column);
+			return (T) GetValue((ILogFileColumnDescriptor) column);
 		}
 
 		/// <inheritdoc />
-		public override bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+		public override bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
 		{
 			object tmp;
 			if (!TryGetValue(column, out tmp))
@@ -79,7 +79,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFileColumn column)
+		public override object GetValue(ILogFileColumnDescriptor column)
 		{
 			object value;
 			if (!TryGetValue(column, out value))
@@ -89,7 +89,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override bool TryGetValue(ILogFileColumn column, out object value)
+		public override bool TryGetValue(ILogFileColumnDescriptor column, out object value)
 		{
 			if (!_values.TryGetValue(column, out value))
 			{
@@ -101,7 +101,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => _values.Keys.ToList();
+		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _values.Keys.ToList();
 
 		/// <summary>
 		///     A completely empty log entry.
@@ -117,7 +117,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
 		/// <exception cref="ArgumentException"></exception>
 		[Pure]
-		public static IReadOnlyLogEntry Create(IReadOnlyList<ILogFileColumn> columns,
+		public static IReadOnlyLogEntry Create(IReadOnlyList<ILogFileColumnDescriptor> columns,
 		                                       IReadOnlyList<object> values)
 		{
 			if (columns == null)
@@ -129,7 +129,7 @@ namespace Tailviewer.Core.LogFiles
 					ArgumentOutOfRangeException(string.Format("Expected number of columns '{0}' to match number of values '{1}'",
 					                                          columns.Count, values.Count));
 
-			var valuesPerColumn = new Dictionary<ILogFileColumn, object>(columns.Count);
+			var valuesPerColumn = new Dictionary<ILogFileColumnDescriptor, object>(columns.Count);
 			for (var i = 0; i < columns.Count; ++i)
 			{
 				var column = columns[i];
@@ -153,8 +153,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
 		[Pure]
-		public static IReadOnlyLogEntry Create(IReadOnlyList<ILogFileColumn> columns,
-		                                       IReadOnlyDictionary<ILogFileColumn, object> values)
+		public static IReadOnlyLogEntry Create(IReadOnlyList<ILogFileColumnDescriptor> columns,
+		                                       IReadOnlyDictionary<ILogFileColumnDescriptor, object> values)
 		{
 			var actualValues = new List<object>();
 			foreach (var column in columns)

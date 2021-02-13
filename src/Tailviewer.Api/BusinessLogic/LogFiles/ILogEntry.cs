@@ -111,7 +111,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		void SetValue(ILogFileColumn column, object value);
+		void SetValue(ILogFileColumnDescriptor column, object value);
 
 		/// <summary>
 		///     Sets the value of this log entry for the given column.
@@ -121,6 +121,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		void SetValue<T>(ILogFileColumn<T> column, T value);
+		void SetValue<T>(ILogFileColumnDescriptor<T> column, T value);
 	}
 }

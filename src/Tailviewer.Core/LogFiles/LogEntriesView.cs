@@ -13,15 +13,15 @@ namespace Tailviewer.Core.LogFiles
 		: ILogEntries
 	{
 		private readonly ILogEntries _inner;
-		private readonly IReadOnlyList<ILogFileColumn> _columns;
+		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
 
 		/// <summary>
 		/// Initializes this log entry list proxy
 		/// </summary>
 		/// <param name="inner"></param>
 		/// <param name="columns"></param>
-		public LogEntriesView(ILogEntries inner, params ILogFileColumn[] columns)
-			: this(inner, (IReadOnlyList<ILogFileColumn>)columns)
+		public LogEntriesView(ILogEntries inner, params ILogFileColumnDescriptor[] columns)
+			: this(inner, (IReadOnlyList<ILogFileColumnDescriptor>)columns)
 		{}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="inner"></param>
 		/// <param name="columns"></param>
-		public LogEntriesView(ILogEntries inner, IReadOnlyList<ILogFileColumn> columns)
+		public LogEntriesView(ILogEntries inner, IReadOnlyList<ILogFileColumnDescriptor> columns)
 		{
 			_inner = inner;
 			_columns = columns;
@@ -68,7 +68,7 @@ namespace Tailviewer.Core.LogFiles
 		#region Implementation of IReadOnlyList<out IReadOnlyLogEntry>
 
 		/// <inheritdoc />
-		public void CopyFrom<T>(ILogFileColumn<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
+		public void CopyFrom<T>(ILogFileColumnDescriptor<T> column, int destinationIndex, T[] source, int sourceIndex, int length)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -77,7 +77,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, LogFileSection section)
+		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, LogFileSection section)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -86,7 +86,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumn column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices)
+		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -101,7 +101,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void FillDefault(ILogFileColumn column, int destinationIndex, int length)
+		public void FillDefault(ILogFileColumnDescriptor column, int destinationIndex, int length)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -130,19 +130,19 @@ namespace Tailviewer.Core.LogFiles
 		#region Implementation of IReadOnlyLogEntries
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { return _columns; }
 		}
 
 		/// <inheritdoc />
-		public bool Contains(ILogFileColumn column)
+		public bool Contains(ILogFileColumnDescriptor column)
 		{
 			return _columns.Contains(column);
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
+		public void CopyTo<T>(ILogFileColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -151,7 +151,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
+		public void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);

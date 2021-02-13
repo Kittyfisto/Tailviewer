@@ -23,7 +23,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="destination"></param>
 		public static void GetColumn<T>(this ILogFile logFile,
 		                                LogFileSection sourceSection,
-		                                ILogFileColumn<T> column,
+		                                ILogFileColumnDescriptor<T> column,
 		                                T[] destination)
 		{
 			logFile.GetColumn(sourceSection, column, destination, 0);
@@ -38,7 +38,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
-		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection sourceSection, ILogFileColumn<T> column)
+		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection sourceSection, ILogFileColumnDescriptor<T> column)
 		{
 			var cells = new T[sourceSection.Count];
 			logFile.GetColumn(sourceSection, column, cells);
@@ -55,7 +55,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="destination"></param>
 		public static void GetColumn<T>(this ILogFile logFile,
 										IReadOnlyList<LogLineIndex> sourceIndices,
-										ILogFileColumn<T> column,
+										ILogFileColumnDescriptor<T> column,
 										T[] destination)
 		{
 			logFile.GetColumn(sourceIndices, column, destination, 0);
@@ -70,7 +70,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
-		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column)
+		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -115,7 +115,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="columns"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection, IEnumerable<ILogFileColumn> columns)
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection, IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			var buffer = new LogEntryArray(sourceSection.Count, columns);
 			GetEntries(logFile, sourceSection, buffer);
@@ -157,7 +157,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="columns"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, IEnumerable<ILogFileColumn> columns)
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			var buffer = new LogEntryArray(sourceIndices.Count, columns);
 			logFile.GetEntries(sourceIndices, buffer);
@@ -176,7 +176,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="columns"></param>
 		/// <returns></returns>
 		[Pure]
-		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex, IEnumerable<ILogFileColumn> columns)
+		public static IReadOnlyLogEntry GetEntry(this ILogFile logFile, LogLineIndex sourceIndex, IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			var buffer = new LogEntryArray(1, columns);
 			logFile.GetEntries(new LogFileSection(sourceIndex, 1), buffer);

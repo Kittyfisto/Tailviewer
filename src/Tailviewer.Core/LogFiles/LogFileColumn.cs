@@ -13,7 +13,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static bool IsAssignableFrom(ILogFileColumn column, object value)
+		public static bool IsAssignableFrom(ILogFileColumnDescriptor column, object value)
 		{
 			var type = column.DataType;
 			if (value == null)

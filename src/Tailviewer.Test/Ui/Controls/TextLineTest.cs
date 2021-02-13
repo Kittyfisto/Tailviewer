@@ -23,7 +23,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 		private static IReadOnlyLogEntry CreateLogEntry(int lineIndex, int logEntryIndex, string message, LevelFlags flags)
 		{
-			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>
+			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.Index, (LogLineIndex)lineIndex },
 				{LogFileColumns.LogEntryIndex, (LogEntryIndex)logEntryIndex },

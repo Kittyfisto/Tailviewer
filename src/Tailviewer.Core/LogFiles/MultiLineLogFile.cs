@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		private const int MaximumBatchSize = 10000;
 
 		private readonly object _syncRoot;
-		private readonly HashSet<ILogFileColumn> _specialColumns;
+		private readonly HashSet<ILogFileColumnDescriptor> _specialColumns;
 		private readonly List<LogEntryInfo> _indices;
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
@@ -65,7 +65,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_syncRoot = new object();
-			_specialColumns = new HashSet<ILogFileColumn>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel};
+			_specialColumns = new HashSet<ILogFileColumnDescriptor>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
@@ -84,7 +84,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => _source.Columns;
+		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _source.Columns;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
@@ -133,7 +133,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int OriginalCount => _source.OriginalCount;
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -151,7 +151,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -173,7 +173,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
-			var remainingColumns = new List<ILogFileColumn>();
+			var remainingColumns = new List<ILogFileColumnDescriptor>();
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)
 			{
@@ -205,7 +205,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
-			var remainingColumns = new List<ILogFileColumn>();
+			var remainingColumns = new List<ILogFileColumnDescriptor>();
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)
 			{
@@ -388,7 +388,7 @@ namespace Tailviewer.Core.LogFiles
 			Listeners.OnRead(-1);
 		}
 
-		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
 		{
 			if (Equals(column, LogFileColumns.Timestamp) ||
 			    Equals(column, LogFileColumns.LogLevel))

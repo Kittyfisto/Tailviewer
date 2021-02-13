@@ -17,7 +17,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		protected override IReadOnlyLogEntry CreateEmpty()
 		{
-			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>());
+			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>());
 		}
 
 		[Test]
@@ -34,7 +34,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualSameValue()
 		{
-			var values = new Dictionary<ILogFileColumn, object>
+			var values = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Starbuck"}
 			};
@@ -49,11 +49,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEqualDifferentValue()
 		{
-			var values = new Dictionary<ILogFileColumn, object>
+			var values = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Starbuck"}
 			};
-			var otherValues = new Dictionary<ILogFileColumn, object>
+			var otherValues = new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.RawContent, "Apollo"}
 			};

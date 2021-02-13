@@ -15,7 +15,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			_descriptor = descriptor;
 		}
 
-		public string Title => _descriptor.Id;
+		public string Title => _descriptor.DisplayName;
 
 		public object Value
 		{

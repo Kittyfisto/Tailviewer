@@ -187,8 +187,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
 			var other = new LogEntryList(LogFileColumns.RawContent);
-			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "rob"}}));
-			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "ert"}}));
+			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "rob"}}));
+			other.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "ert"}}));
 
 			entries.AddRange(other);
 			entries.Count.Should().Be(2, "because we've added all two entries from the other list");
@@ -421,7 +421,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestResizeAddRows()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello!"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello!"}}));
 			entries.Resize(3);
 			entries.Count.Should().Be(3);
 			entries[0].RawContent.Should().Be("Hello!", "because the content of the first cell should have been left untouched");
@@ -433,8 +433,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestResizeRemoveRows()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello,"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "World!"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello,"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "World!"}}));
 			entries.Resize(1);
 			entries.Count.Should().Be(1, "because we just removed a cell");
 			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should been left untouched");
@@ -444,8 +444,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestResizeInvalidCount()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Hello,"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "World!"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello,"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "World!"}}));
 			new Action(() => entries.Resize(-1)).Should().Throw<ArgumentOutOfRangeException>();
 			entries.Count.Should().Be(2, "because the list shouldn't have been modified");
 			entries[0].RawContent.Should().Be("Hello,", "Because the content of the first cell should been left untouched");
@@ -478,8 +478,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_PartiallyFilled()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new LevelFlags[]
 			{
@@ -502,8 +502,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_CompletelyOutOfBounds()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new LevelFlags[]
 			{
@@ -523,8 +523,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_PartiallyOutOfBounds1()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new LevelFlags[]
 			{
@@ -544,8 +544,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_PartiallyOutOfBounds2()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new LevelFlags[]
 			{
@@ -563,8 +563,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_NullColumn()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new string[]
 			{
@@ -582,8 +582,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromArray_NoSuchColumn()
 		{
 			var entries = new LogEntryList(LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.LogLevel, LevelFlags.Trace}}));
 
 			var buffer = new string[]
 			{
@@ -601,11 +601,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromLogFile_Contiguous()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "I"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "want"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "a"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Clondyke"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Bar"}}));
 
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello", LevelFlags.Debug);
@@ -624,11 +624,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCopyFromLogFile_Non_Contiguous()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "I"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "want"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "a"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Clondyke"}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Bar"}}));
 
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("What", LevelFlags.Debug);
@@ -650,11 +650,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestFillDefault()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
 
 			entries.FillDefault(2, 2);
 			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
@@ -679,11 +679,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestFillDefault_SingleColumn()
 		{
 			var entries = new LogEntryList(LogFileColumns.RawContent, LogFileColumns.LogLevel);
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
-			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumn, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "I"}, {LogFileColumns.LogLevel, LevelFlags.Debug}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "want"}, {LogFileColumns.LogLevel, LevelFlags.Info}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "a"}, {LogFileColumns.LogLevel, LevelFlags.Warning}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Clondyke"}, {LogFileColumns.LogLevel, LevelFlags.Error}}));
+			entries.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Bar"}, {LogFileColumns.LogLevel, LevelFlags.Fatal}}));
 
 			entries.FillDefault(LogFileColumns.RawContent,  1, 3);
 			entries.Count.Should().Be(5, "because the count shouldn't have been modified");
@@ -704,7 +704,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries[4].LogLevel.Should().Be(LevelFlags.Fatal, "because the fifth entry's log level should NOT have been overwritten");
 		}
 
-		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
+		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			return new LogEntryList(columns);
 		}
@@ -721,7 +721,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				return list;
 			}
 
-			return CreateEmpty(new ILogFileColumn[0]);
+			return CreateEmpty(new ILogFileColumnDescriptor[0]);
 		}
 	}
 }

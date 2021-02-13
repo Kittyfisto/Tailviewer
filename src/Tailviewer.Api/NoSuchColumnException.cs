@@ -13,7 +13,7 @@ namespace Tailviewer
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="column"></param>
-		public NoSuchColumnException(ILogFileColumn column)
+		public NoSuchColumnException(ILogFileColumnDescriptor column)
 			: base(string.Format("No such column: '{0}'", column.Id))
 		{}
 

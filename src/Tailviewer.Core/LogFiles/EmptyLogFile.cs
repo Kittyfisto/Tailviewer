@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 			get { return 0; }
 		}
 
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { return LogFileColumns.Minimum; }
 		}
@@ -80,12 +80,12 @@ namespace Tailviewer.Core.LogFiles
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}

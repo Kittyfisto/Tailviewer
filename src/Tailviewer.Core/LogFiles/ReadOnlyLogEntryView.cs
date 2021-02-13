@@ -13,15 +13,15 @@ namespace Tailviewer.Core.LogFiles
 		: IReadOnlyLogEntry
 	{
 		private readonly IReadOnlyLogEntry _logEntry;
-		private readonly IReadOnlyList<ILogFileColumn> _columns;
+		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
 
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <param name="columns"></param>
-		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, params ILogFileColumn[] columns)
-			: this(logEntry, (IReadOnlyList<ILogFileColumn>)columns)
+		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, params ILogFileColumnDescriptor[] columns)
+			: this(logEntry, (IReadOnlyList<ILogFileColumnDescriptor>)columns)
 		{}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="logEntry"></param>
 		/// <param name="columns"></param>
-		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, IReadOnlyList<ILogFileColumn> columns)
+		public ReadOnlyLogEntryView(IReadOnlyLogEntry logEntry, IReadOnlyList<ILogFileColumnDescriptor> columns)
 		{
 			_logEntry = logEntry;
 			_columns = columns;
@@ -182,7 +182,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFileColumn<T> column)
+		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -191,7 +191,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+		public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
 		{
 			if (!_columns.Contains(column))
 			{
@@ -203,7 +203,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFileColumn column)
+		public object GetValue(ILogFileColumnDescriptor column)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
@@ -212,7 +212,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFileColumn column, out object value)
+		public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
 		{
 			if (!_columns.Contains(column))
 			{
@@ -224,7 +224,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { return _columns; }
 		}

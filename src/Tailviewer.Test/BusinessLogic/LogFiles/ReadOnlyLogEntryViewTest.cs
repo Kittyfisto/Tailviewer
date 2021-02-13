@@ -253,7 +253,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSetValue_ColumnAvailable()
 		{
-			var column = new Mock<ILogFileColumn>().Object;
+			var column = new Mock<ILogFileColumnDescriptor>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
@@ -265,19 +265,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSetValue_NoSuchColumn()
 		{
-			var column = new Mock<ILogFileColumn>().Object;
-			var anotherColumn = new Mock<ILogFileColumn>().Object;
+			var column = new Mock<ILogFileColumnDescriptor>().Object;
+			var anotherColumn = new Mock<ILogFileColumnDescriptor>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
 			new Action(() => view.GetValue(anotherColumn)).Should().Throw<NoSuchColumnException>();
-			entry.Verify(x => x.GetValue(It.IsAny<ILogFileColumn>()), Times.Never);
+			entry.Verify(x => x.GetValue(It.IsAny<ILogFileColumnDescriptor>()), Times.Never);
 		}
 
 		[Test]
 		public void TestGetSetValueTyped_ColumnAvailable()
 		{
-			var column = new Mock<ILogFileColumn<long>>().Object;
+			var column = new Mock<ILogFileColumnDescriptor<long>>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
@@ -289,19 +289,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetSetValueTyped_NoSuchColumn()
 		{
-			var column = new Mock<ILogFileColumn<long>>().Object;
-			var anotherColumn = new Mock<ILogFileColumn<long>>().Object;
+			var column = new Mock<ILogFileColumnDescriptor<long>>().Object;
+			var anotherColumn = new Mock<ILogFileColumnDescriptor<long>>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
 			new Action(() => view.GetValue(anotherColumn)).Should().Throw<NoSuchColumnException>();
-			entry.Verify(x => x.GetValue<long>(It.IsAny<ILogFileColumn<long>>()), Times.Never);
+			entry.Verify(x => x.GetValue<long>(It.IsAny<ILogFileColumnDescriptor<long>>()), Times.Never);
 		}
 
 		[Test]
 		public void TestTryGetValue_ColumnAvailable()
 		{
-			var column = new Mock<ILogFileColumn>().Object;
+			var column = new Mock<ILogFileColumnDescriptor>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
@@ -314,8 +314,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue_NoSuchColumn()
 		{
-			var column = new Mock<ILogFileColumn>().Object;
-			var otherColumn = new Mock<ILogFileColumn>();
+			var column = new Mock<ILogFileColumnDescriptor>().Object;
+			var otherColumn = new Mock<ILogFileColumnDescriptor>();
 			otherColumn.SetupGet(x => x.DefaultValue).Returns("<No Value>");
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
@@ -327,7 +327,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValueTyped_ColumnAvailable()
 		{
-			var column = new Mock<ILogFileColumn<string>>().Object;
+			var column = new Mock<ILogFileColumnDescriptor<string>>().Object;
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);
 
@@ -340,8 +340,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValueTyped_NoSuchColumn()
 		{
-			var column = new Mock<ILogFileColumn<string>>().Object;
-			var otherColumn = new Mock<ILogFileColumn<string>>();
+			var column = new Mock<ILogFileColumnDescriptor<string>>().Object;
+			var otherColumn = new Mock<ILogFileColumnDescriptor<string>>();
 			otherColumn.SetupGet(x => x.DefaultValue).Returns("<No Value>");
 			var entry = new Mock<IReadOnlyLogEntry>();
 			var view = new ReadOnlyLogEntryView(entry.Object, column);

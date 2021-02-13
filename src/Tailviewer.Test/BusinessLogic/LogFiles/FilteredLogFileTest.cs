@@ -62,18 +62,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestChangeColumns()
 		{
-			_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumn[]
+			_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[]
 				                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel});
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
 			                                      Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.Columns.Should().Contain(new ILogFileColumn[]
+				file.Columns.Should().Contain(new ILogFileColumnDescriptor[]
 					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel});
 
-				var customColumn = new Mock<ILogFileColumn>().Object;
-				_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumn[]
+				var customColumn = new Mock<ILogFileColumnDescriptor>().Object;
+				_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[]
 					                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
-				file.Columns.Should().Contain(new ILogFileColumn[]
+				file.Columns.Should().Contain(new ILogFileColumnDescriptor[]
 					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
 			}
 		}
@@ -383,7 +383,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.EndOfSourceReached.Should().BeTrue();
 
 				file.Count.Should().Be(2);
-				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumn[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
+				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
 				entries[0].RawContent.Should().Be("DEBUG: This is a test");
@@ -497,14 +497,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source = new InMemoryLogFile(LogFileColumns.SourceId);
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(LevelFlags.Error)))
 			{
-				source.Add(new Dictionary<ILogFileColumn, object>
+				source.Add(new Dictionary<ILogFileColumnDescriptor, object>
 				{
 					{LogFileColumns.SourceId, new LogLineSourceId(0) },
 					{LogFileColumns.RawContent, "DEBUG: This is a test"},
 					{LogFileColumns.LogLevel, LevelFlags.Debug }
 				});
 
-				source.Add(new Dictionary<ILogFileColumn, object>
+				source.Add(new Dictionary<ILogFileColumnDescriptor, object>
 				{
 					{LogFileColumns.SourceId, new LogLineSourceId(42) },
 					{LogFileColumns.RawContent, "ERROR: I feel a disturbance in the source"},

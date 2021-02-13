@@ -37,8 +37,8 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="columns"></param>
-		public InMemoryLogFile(params ILogFileColumn[] columns)
-			: this((IEnumerable < ILogFileColumn > )columns)
+		public InMemoryLogFile(params ILogFileColumnDescriptor[] columns)
+			: this((IEnumerable < ILogFileColumnDescriptor > )columns)
 		{}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="columns"></param>
-		public InMemoryLogFile(IEnumerable<ILogFileColumn> columns)
+		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
@@ -86,7 +86,7 @@ namespace Tailviewer.Core.LogFiles
 		public int MaxCharactersPerLine { get; private set; }
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns => _logEntries.Columns;
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _logEntries.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -141,7 +141,7 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -154,7 +154,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -396,7 +396,7 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		/// <param name="entry"></param>
-		public void Add(IReadOnlyDictionary<ILogFileColumn, object> entry)
+		public void Add(IReadOnlyDictionary<ILogFileColumnDescriptor, object> entry)
 		{
 			Add(new ReadOnlyLogEntry(entry));
 		}

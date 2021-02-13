@@ -25,7 +25,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction3([Values(1, 2, 5, 10, 42, 100, 9001)] int count)
 		{
-			var buffer = new LogEntryArray(count, new List<ILogFileColumn> {LogFileColumns.RawContent, LogFileColumns.DeltaTime});
+			var buffer = new LogEntryArray(count, new List<ILogFileColumnDescriptor> {LogFileColumns.RawContent, LogFileColumns.DeltaTime});
 			buffer.Columns.Should().Equal(new object[] {LogFileColumns.RawContent, LogFileColumns.DeltaTime });
 			buffer.Count.Should().Be(count);
 			buffer.Should().HaveCount(count);
@@ -324,7 +324,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			});
 		}
 
-		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumn> columns)
+		protected override IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumnDescriptor> columns)
 		{
 			return new LogEntryArray(0, columns);
 		}
@@ -346,7 +346,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				return list;
 			}
 
-			return CreateEmpty(new ILogFileColumn[0]);
+			return CreateEmpty(new ILogFileColumnDescriptor[0]);
 		}
 	}
 }

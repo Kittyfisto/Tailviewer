@@ -39,7 +39,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue1()
 		{
-			var column = new Mock<ILogFileColumn<int>>();
+			var column = new Mock<ILogFileColumnDescriptor<int>>();
 			column.Setup(x => x.DefaultValue).Returns(42);
 
 			var entry = CreateEmpty();
@@ -51,7 +51,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue2()
 		{
-			var column = new Mock<ILogFileColumn>();
+			var column = new Mock<ILogFileColumnDescriptor>();
 			column.Setup(x => x.DefaultValue).Returns(42);
 
 			var entry = CreateEmpty();

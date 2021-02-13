@@ -82,7 +82,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _buffer.Count;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns => _buffer.Columns;
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _buffer.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -118,14 +118,14 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			_buffer.GetColumn(sourceSection, column, destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
-		                         ILogFileColumn<T> column,
+		                         ILogFileColumnDescriptor<T> column,
 		                         T[] destination,
 		                         int destinationIndex)
 		{
@@ -182,7 +182,7 @@ namespace Tailviewer.Core.LogFiles
 					bool first = true;
 					foreach (var line in lines)
 					{
-						var values = new Dictionary<ILogFileColumn, object>
+						var values = new Dictionary<ILogFileColumnDescriptor, object>
 						{
 							{LogFileColumns.RawContent, FormatLine(line, first)},
 							{LogFileColumns.LogLevel, logLevel},

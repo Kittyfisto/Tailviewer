@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The list of columns to store in this buffer.
 		/// </summary>
-		IReadOnlyList<ILogFileColumn> Columns { get; }
+		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
 
 		/// <summary>
 		///     Tests if this buffer contains the given column.
@@ -23,7 +23,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
-		bool Contains(ILogFileColumn column);
+		bool Contains(ILogFileColumnDescriptor column);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.
@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex"></param>
 		/// <param name="length"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumn<T> column, int sourceIndex, T[] destination, int destinationIndex, int length);
+		void CopyTo<T>(ILogFileColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.
@@ -46,6 +46,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumn<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex);
+		void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex);
 	}
 }

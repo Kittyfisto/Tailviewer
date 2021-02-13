@@ -26,7 +26,7 @@ namespace Tailviewer.Core.LogFiles
 			if (ReferenceEquals(lhs, null))
 				return false;
 
-			var columns = new HashSet<ILogFileColumn>(lhs.Columns);
+			var columns = new HashSet<ILogFileColumnDescriptor>(lhs.Columns);
 			foreach (var column in rhs.Columns)
 			{
 				if (!columns.Remove(column))

@@ -31,7 +31,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 
 			_column.FetchValues(_logFile.Object, new LogFileSection(0, 1), 0);
 			_logFile.Verify(x => x.GetColumn(It.IsAny<LogFileSection>(),
-			                                 It.IsAny<ILogFileColumn<TimeSpan?>>(),
+			                                 It.IsAny<ILogFileColumnDescriptor<TimeSpan?>>(),
 			                                 It.IsAny<TimeSpan?[]>(),
 			                                 It.IsAny<int>()),
 			                Times.Never, "because the control is invisible and thus no data should've been retrieved");

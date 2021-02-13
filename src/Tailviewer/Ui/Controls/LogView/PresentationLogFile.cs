@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		[Pure]
-		private static bool IsIndexedColumn(ILogFileColumn column)
+		private static bool IsIndexedColumn(ILogFileColumnDescriptor column)
 		{
 			return IndexedColumns.Contains(column);
 		}
@@ -76,7 +76,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     The columns which are actually stored in this log file.
 		/// </summary>
-		private static IReadOnlyList<ILogFileColumn> IndexedColumns => new ILogFileColumn[]
+		private static IReadOnlyList<ILogFileColumnDescriptor> IndexedColumns => new ILogFileColumnDescriptor[]
 		{
 			LogFileColumns.PresentationStartingLineNumber,
 			LogFileColumns.PresentationLineCount,
@@ -260,7 +260,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -272,7 +272,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -326,7 +326,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
+		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
 
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
 

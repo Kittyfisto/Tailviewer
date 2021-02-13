@@ -966,7 +966,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(2);
 
 			var entries = logFile.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
-				new ILogFileColumn[]
+				new ILogFileColumnDescriptor[]
 				{
 					LogFileColumns.LineNumber, LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp,
 					LogFileColumns.RawContent

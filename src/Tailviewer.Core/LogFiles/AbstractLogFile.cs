@@ -59,7 +59,7 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed { get; private set; }
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumn> Columns { get; }
+		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -114,10 +114,10 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int Count { get; }
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(LogFileSection sourceSection, ILogFileColumn<T> column, T[] destination, int destinationIndex);
+		public abstract void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumn<T> column, T[] destination, int destinationIndex);
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <inheritdoc />
 		public abstract void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);

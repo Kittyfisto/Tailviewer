@@ -55,9 +55,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Pure]
-		private static ILogFileColumn CreateCustomColumn<T>(T defaultValue)
+		private static ILogFileColumnDescriptor CreateCustomColumn<T>(T defaultValue)
 		{
-			var column = new Mock<ILogFileColumn<T>>();
+			var column = new Mock<ILogFileColumnDescriptor<T>>();
 			column.SetupGet(x => x.DefaultValue).Returns(defaultValue);
 			column.SetupGet(x => x.DataType).Returns(typeof(T));
 			return column.Object;
@@ -74,9 +74,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction1()
 		{
 			var source1 = new Mock<ILogFile>();
-			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
-			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			MergedLogFile logFile = null;
 			new Action(() => logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object))
@@ -92,7 +92,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				.Select(unused =>
 				{
 					var logFileSource = new Mock<ILogFile>();
-					logFileSource.Setup(x => x.Columns).Returns(new ILogFileColumn[0]);
+					logFileSource.Setup(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 					return logFileSource.Object;
 				}).ToArray();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), sources);
@@ -134,7 +134,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 
 			merged.Count.Should().Be(2);
-			var entries = merged.GetEntries(new LogFileSection(0, 2), new ILogFileColumn[]{LogFileColumns.RawContent, LogFileColumns.Timestamp, LogFileColumns.SourceId, myCustomColumn});
+			var entries = merged.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.RawContent, LogFileColumns.Timestamp, LogFileColumns.SourceId, myCustomColumn});
 			entries.Count.Should().Be(2);
 			entries[0].RawContent.Should().Be("Everything");
 			entries[0].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 15, 11));
@@ -151,9 +151,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDispose1()
 		{
 			var source1 = new Mock<ILogFile>();
-			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
-			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			new Action(logFile.Dispose).Should().NotThrow();
@@ -164,9 +164,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDispose2()
 		{
 			var source1 = new Mock<ILogFile>();
-			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
-			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			source1.Verify(x => x.AddListener(logFile, It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
@@ -182,7 +182,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEndOfSourceReached1()
 		{
 			var source = new Mock<ILogFile>();
-			source.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source.Object);
 			source.Verify(x => x.EndOfSourceReached, Times.Never);
@@ -552,7 +552,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.Count.Should().Be(2);
 
 			var entries = merged.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
-				new ILogFileColumn[]
+				new ILogFileColumnDescriptor[]
 				{
 					LogFileColumns.LineNumber, LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp,
 					LogFileColumns.RawContent
@@ -668,13 +668,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source2 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 
-			source1.Add(new Dictionary<ILogFileColumn, object>
+			source1.Add(new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.OriginalDataSourceName, "important_document.txt" },
 				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 33, 10)}
 			});
 
-			source2.Add(new Dictionary<ILogFileColumn, object>
+			source2.Add(new Dictionary<ILogFileColumnDescriptor, object>
 			{
 				{LogFileColumns.OriginalDataSourceName, "rubbish.log" },
 				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 29, 10)}
@@ -700,7 +700,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestStart1()
 		{
 			var source = new Mock<ILogFile>();
-			source.SetupGet(x => x.Columns).Returns(new ILogFileColumn[0]);
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var listeners = new List<Tuple<ILogFileListener, TimeSpan, int>>();
 			source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
