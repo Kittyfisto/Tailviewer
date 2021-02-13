@@ -130,26 +130,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetSection()
-		{
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>())).Throws<SystemException>();
-			var section = new LogFileSection(42, 9001);
-			var lines = new LogLine[9001];
-			new Action(() => _proxy.GetSection(section, lines)).Should().NotThrow();
-			_logFile.Verify(x => x.GetSection(It.Is<LogFileSection>(y => y == section),
-				It.Is<LogLine[]>(y => y == lines)), Times.Once);
-		}
-
-		[Test]
-		public void TestGetLine1()
-		{
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Throws<SystemException>();
-			var index = 9001;
-			new Action(() => _proxy.GetLine(index)).Should().NotThrow();
-			_logFile.Verify(x => x.GetLine(It.Is<int>(y => y == index)), Times.Once);
-		}
-
-		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex()
 		{
 			_logFile.Setup(x => x.GetLogLineIndexOfOriginalLineIndex(It.IsAny<LogLineIndex>())).Throws<SystemException>();
@@ -161,14 +141,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumn1()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[9101];
 			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, 9001)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 											 It.Is<int>(y => y == 9001)),
 			                Times.Once);
@@ -177,14 +157,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumn2()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumn<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
 			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 101)),
 			                Times.Once);

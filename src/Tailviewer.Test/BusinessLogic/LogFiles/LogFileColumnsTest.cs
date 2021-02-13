@@ -22,11 +22,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				LogFileColumns.LogEntryIndex,
 				LogFileColumns.LineNumber,
 				LogFileColumns.OriginalLineNumber,
+				LogFileColumns.OriginalDataSourceName,
 				LogFileColumns.LogLevel,
 				LogFileColumns.Timestamp,
 				LogFileColumns.ElapsedTime,
 				LogFileColumns.DeltaTime
 			});
+
+			LogFileColumns.Minimum.Should().NotContain(LogFileColumns.SourceId,
+			                                           "because the source id column is specialized and only available in some cases");
 		}
 
 		[Test]
@@ -147,14 +151,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCombine1()
 		{
-			LogFileColumns.Combine(new ILogFileColumn[0], LogFileColumns.OriginalLineNumber)
+			LogFileColumns.Combine(new ILogFileColumnDescriptor[0], LogFileColumns.OriginalLineNumber)
 			              .Should().Equal(LogFileColumns.OriginalLineNumber);
 		}
 
 		[Test]
 		public void TestCombine2()
 		{
-			LogFileColumns.Combine(new ILogFileColumn[]
+			LogFileColumns.Combine(new ILogFileColumnDescriptor[]
 			              {
 				              LogFileColumns.PresentationLineCount
 			              }, LogFileColumns.OriginalLineNumber)
@@ -165,7 +169,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that Combine doesn't introduce the same column twice")]
 		public void TestCombine3()
 		{
-			LogFileColumns.Combine(new ILogFileColumn[]
+			LogFileColumns.Combine(new ILogFileColumnDescriptor[]
 			              {
 				              LogFileColumns.RawContent,
 							  LogFileColumns.RawContentMaxPresentationWidth

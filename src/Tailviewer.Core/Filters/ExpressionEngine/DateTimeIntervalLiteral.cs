@@ -37,7 +37,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(IInterval<DateTime?>);
 
-		public IInterval<DateTime?> Evaluate(IReadOnlyList<LogLine> logEntry)
+		public IInterval<DateTime?> Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			switch (_interval)
 			{
@@ -61,7 +61,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			}
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

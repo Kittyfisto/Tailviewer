@@ -30,10 +30,10 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
-			foreach (LogLine logLine in logEntry)
+			foreach (IReadOnlyLogEntry logLine in logEntry)
 				// ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))
@@ -45,9 +45,13 @@ namespace Tailviewer.Core.Filters
 
 		/// <inheritdoc />
 		[Pure]
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
-			int idx = logLine.Message.IndexOf(_stringFilter, _comparison);
+			var rawContent = logLine.RawContent;
+			if (rawContent == null)
+				return false;
+
+			int idx = rawContent.IndexOf(_stringFilter, _comparison);
 			if (idx == -1)
 				return false;
 
@@ -55,7 +59,7 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			var ret = new List<LogLineMatch>();
 			Match(line, ret);
@@ -63,23 +67,23 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
-			var message = line.Message;
-			if (message == null)
+			var rawContent = line.RawContent;
+			if (rawContent == null)
 				return;
 
 			int startIndex = 0;
 			do
 			{
-				startIndex = message.IndexOf(_stringFilter, startIndex, _comparison);
+				startIndex = rawContent.IndexOf(_stringFilter, startIndex, _comparison);
 				if (startIndex < 0)
 					break;
 
 				var length = _stringFilter.Length;
 				matches.Add(new LogLineMatch(startIndex, length));
 				startIndex += length;
-			} while (startIndex < message.Length - 1);
+			} while (startIndex < rawContent.Length - 1);
 		}
 
 		/// <inheritdoc />

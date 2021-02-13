@@ -13,7 +13,7 @@
 
 		/// <summary>
 		///     Deserializes a previously serialized object again.
-		///     This method is called after the parameterless constructor
+		///     This method is called after the parameter less constructor
 		///     of this type is called.
 		/// </summary>
 		/// <param name="reader"></param>

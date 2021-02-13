@@ -47,10 +47,10 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 			logFile.Setup(x => x.Count).Returns(4);
 			logFile.Setup(x => x.OriginalCount).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-			                               It.Is<ILogFileColumn<int>>(y => y == LogFileColumns.OriginalLineNumber),
+			                               It.Is<ILogFileColumnDescriptor<int>>(y => y == LogFileColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>()))
-				.Callback((LogFileSection section, ILogFileColumn<int> unused, int[] indices, int unused2) =>
+				.Callback((LogFileSection section, ILogFileColumnDescriptor<int> unused, int[] indices, int unused2) =>
 				{
 					indices[0] = 42;
 					indices[1] = 101;

@@ -15,6 +15,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
 using log4net;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 
 namespace Tailviewer.Ui.Controls.LogView
@@ -35,6 +36,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		private TextSettings _textSettings;
 		private TextBrushes _textBrushes;
 		private readonly List<TextLine> _visibleTextLines;
+		private readonly LogEntryList _visibleEntryBuffer;
 		private readonly DispatchedSearchResults _searchResults;
 		private readonly DispatcherTimer _timer;
 
@@ -61,6 +63,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_selectedIndices = new HashSet<LogLineIndex>();
 			_hoveredIndices = new HashSet<LogLineIndex>();
 			_visibleTextLines = new List<TextLine>();
+			_visibleEntryBuffer = new LogEntryList(LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.LogLevel, LogFileColumns.RawContent);
 			_searchResults = new DispatchedSearchResults();
 			_timer = new DispatcherTimer();
 			_timer.Tick += OnUpdate;
@@ -310,17 +313,21 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			try
 			{
-				// TODO: Should we even do anything when count = 0? Probably not...
-				var data = new LogLine[_currentlyVisibleSection.Count];
-				_logFile.GetSection(_currentlyVisibleSection, data);
-				for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
+				_visibleEntryBuffer.Clear();
+				_visibleEntryBuffer.Resize(_currentlyVisibleSection.Count);
+				if (_currentlyVisibleSection.Count > 0)
 				{
-					var line = new TextLine(data[i], _hoveredIndices, _selectedIndices, _colorByLevel, _textSettings, _textBrushes)
+					_logFile.GetEntries(_currentlyVisibleSection, _visibleEntryBuffer, 0);
+					for (int i = 0; i < _currentlyVisibleSection.Count; ++i)
 					{
-						IsFocused = IsFocused,
-						SearchResults = _searchResults
-					};
-					_visibleTextLines.Add(line);
+						var line = new TextLine(_visibleEntryBuffer[i], _hoveredIndices, _selectedIndices,
+						                        _colorByLevel, _textSettings, _textBrushes)
+						{
+							IsFocused = IsFocused,
+							SearchResults = _searchResults
+						};
+						_visibleTextLines.Add(line);
+					}
 				}
 
 				Action fn = VisibleLinesChanged;
@@ -439,7 +446,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			var visibleLineIndex = (int) Math.Floor(y/_textSettings.LineHeight);
 			if (visibleLineIndex >= 0 && visibleLineIndex < _visibleTextLines.Count)
 			{
-				var lineIndex = new LogLineIndex(_visibleTextLines[visibleLineIndex].LogLine.LineIndex);
+				var lineIndex = _visibleTextLines[visibleLineIndex].LogEntry.Index;
 				if (SetHovered(lineIndex, SelectMode.Replace))
 					InvalidateVisual();
 			}
@@ -654,13 +661,18 @@ namespace Tailviewer.Ui.Controls.LogView
 				{
 					var sortedIndices = new List<LogLineIndex>(_selectedIndices);
 					sortedIndices.Sort();
+					// TODO: What do we do if some mad man has 1 million lines selected?
+					// TODO: Request in batches
+					var buffer = new LogEntryArray(_selectedIndices.Count, LogFileColumns.RawContent);
+					logFile.GetEntries(sortedIndices, buffer);
+
 					for (int i = 0; i < sortedIndices.Count; ++i)
 					{
-						LogLine line = logFile.GetLine((int) sortedIndices[i]);
+						var entry = buffer[i];
 						if (i < sortedIndices.Count - 1)
-							builder.AppendLine(line.Message);
+							builder.AppendLine(entry.RawContent);
 						else
-							builder.Append(line.Message);
+							builder.Append(entry.RawContent);
 					}
 				}
 				string message = builder.ToString();

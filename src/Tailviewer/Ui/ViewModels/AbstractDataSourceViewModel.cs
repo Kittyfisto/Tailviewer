@@ -314,7 +314,7 @@ namespace Tailviewer.Ui.ViewModels
 				var index = value?.FirstOrDefault() ??  LogLineIndex.Invalid;
 				if (index.IsValid)
 				{
-					var entry = _dataSource.FindAllLogFile.GetEntries(new[] {index}, LogFileColumns.OriginalIndex);
+					var entry = _dataSource.FindAllLogFile.GetEntries(new[] {index}, new[]{LogFileColumns.OriginalIndex});
 					var originalIndex = entry[0].OriginalIndex;
 					if (originalIndex.IsValid)
 					{

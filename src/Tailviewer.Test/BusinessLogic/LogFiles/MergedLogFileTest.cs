@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
@@ -27,9 +28,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			return changes;
 		}
 
-		private static List<LogLine> Listen(ILogFile logFile)
+		private static ILogEntries Listen(ILogFile logFile)
 		{
-			var data = new List<LogLine>();
+			var data = new LogEntryList(logFile.Columns);
 			var listener = new Mock<ILogFileListener>();
 			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
 			        .Callback((ILogFile file, LogFileSection section) =>
@@ -44,11 +45,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 					        }
 					        else
 					        {
-						        data.AddRange(file.GetSection(section));
+						        var destinationIndex = data.Count;
+								data.Resize(data.Count + section.Count);
+						        file.GetEntries(section, data, destinationIndex);
 					        }
 				        });
 			logFile.AddListener(listener.Object, TimeSpan.Zero, 1);
 			return data;
+		}
+
+		[Pure]
+		private static ILogFileColumnDescriptor CreateCustomColumn<T>(T defaultValue)
+		{
+			var column = new Mock<ILogFileColumnDescriptor<T>>();
+			column.SetupGet(x => x.DefaultValue).Returns(defaultValue);
+			column.SetupGet(x => x.DataType).Returns(typeof(T));
+			return column.Object;
 		}
 
 		[SetUp]
@@ -59,10 +71,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that creating a merged log file from two sources is possible")]
-		public void TestCtor1()
+		public void TestConstruction1()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			MergedLogFile logFile = null;
 			new Action(() => logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object))
@@ -72,17 +86,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that a merged log file can be created using the maximum number of supported sources")]
-		public void TestCtor2()
+		public void TestConstruction2()
 		{
 			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources)
-				.Select(unused => new Mock<ILogFile>().Object).ToArray();
+				.Select(unused =>
+				{
+					var logFileSource = new Mock<ILogFile>();
+					logFileSource.Setup(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
+					return logFileSource.Object;
+				}).ToArray();
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), sources);
 			logFile.Sources.Should().Equal(sources);
 		}
 
 		[Test]
 		[Description("Verifies that the ctor complains if too many sources are merged")]
-		public void TestCtor3()
+		public void TestConstruction3()
 		{
 			var sources = Enumerable.Range(0, LogLineSourceId.MaxSources+1)
 				.Select(unused => new Mock<ILogFile>().Object).ToArray();
@@ -92,11 +111,49 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that a merged log file is able to provide access to custom columns")]
+		public void TestCustomColumn()
+		{
+			var myCustomColumn = CreateCustomColumn<string>(null);
+			var source1 = new InMemoryLogFile();
+			source1.Add(new LogEntry
+			{
+				RawContent = "What is up Munich?",
+				Timestamp = new DateTime(2021, 02, 11, 22, 16, 49)
+			});
+			var source2 = new InMemoryLogFile(myCustomColumn);
+			var entry2 = new LogEntry
+			{
+				RawContent = "Everything",
+				Timestamp = new DateTime(2021, 02, 11, 22, 15, 11)
+			};
+			entry2.SetValue(myCustomColumn, "A very important piece of information");
+			source2.Add(entry2);
+
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, new[] {source1, source2});
+			_taskScheduler.RunOnce();
+
+			merged.Count.Should().Be(2);
+			var entries = merged.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.RawContent, LogFileColumns.Timestamp, LogFileColumns.SourceId, myCustomColumn});
+			entries.Count.Should().Be(2);
+			entries[0].RawContent.Should().Be("Everything");
+			entries[0].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 15, 11));
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1), "because this log entry is from the second source of the log file");
+			entries[0].GetValue(myCustomColumn).Should().Be("A very important piece of information");
+			entries[1].RawContent.Should().Be("What is up Munich?");
+			entries[1].Timestamp.Should().Be(new DateTime(2021, 02, 11, 22, 16, 49));
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0), "because this log entry is from the first source of the log file");
+			entries[1].GetValue(myCustomColumn).Should().Be(myCustomColumn.DefaultValue, "because the first source doesn't have this column");
+		}
+
+		[Test]
 		[Description("Verifies that disposing a logfile works")]
 		public void TestDispose1()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			new Action(logFile.Dispose).Should().NotThrow();
@@ -107,7 +164,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDispose2()
 		{
 			var source1 = new Mock<ILogFile>();
+			source1.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 			var source2 = new Mock<ILogFile>();
+			source2.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source1.Object, source2.Object);
 			source1.Verify(x => x.AddListener(logFile, It.IsAny<TimeSpan>(), It.IsAny<int>()), Times.Once);
@@ -123,6 +182,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEndOfSourceReached1()
 		{
 			var source = new Mock<ILogFile>();
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
+
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.FromMilliseconds(1), source.Object);
 			source.Verify(x => x.EndOfSourceReached, Times.Never);
 			logFile.EndOfSourceReached.Should().BeFalse("because the original source hasn't reached its end");
@@ -135,16 +196,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source1 = new InMemoryLogFile();
 			var source2 = new InMemoryLogFile();
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
-			IEnumerable<LogLine> data = Listen(merged);
+			var entries = Listen(merged);
 
 			source1.AddEntry("foobar", LevelFlags.Info, new DateTime(2019, 5, 28, 20, 31, 1));
 
 			_taskScheduler.RunOnce();
 			merged.Count.Should().Be(1);
-			data.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "foobar", LevelFlags.Info, new DateTime(2019, 5, 28, 20, 31, 1))
-			});
+			entries.Count.Should().Be(1);
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("foobar");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 20, 31, 1));
 		}
 
 		[Test]
@@ -153,18 +216,28 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source1 = new InMemoryLogFile();
 			var source2 = new InMemoryLogFile();
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
-			IEnumerable<LogLine> data = Listen(merged);
+			var entries = Listen(merged);
 
 			source1.AddEntry("a", LevelFlags.Info, new DateTime(2019, 5, 28, 21, 59, 0));
 			source1.AddEntry("b", LevelFlags.Debug, new DateTime(2019, 5, 28, 22, 0, 0));
 
 			_taskScheduler.RunOnce();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, "a", LevelFlags.Info, new DateTime(2019, 5, 28, 21, 59, 0)),
-				new LogLine(1, 1, "b", LevelFlags.Debug, new DateTime(2019, 5, 28, 22, 0, 0)),
-			});
+			entries.Count.Should().Be(2);
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("a");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 21, 59, 0));
+			entries[0].ElapsedTime.Should().Be(TimeSpan.Zero);
+			entries[0].DeltaTime.Should().BeNull();
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("b");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Timestamp.Should().Be(new DateTime(2019, 5, 28, 22, 0, 0));
+			entries[1].ElapsedTime.Should().Be(TimeSpan.FromMinutes(1));
+			entries[1].DeltaTime.Should().Be(TimeSpan.FromMinutes(1));
 		}
 
 		[Test]
@@ -175,7 +248,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source0 = new InMemoryLogFile();
 			var source1 = new InMemoryLogFile();
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source0, source1);
-			var data = Listen(merged);
+			var entries = Listen(merged);
 
 			DateTime timestamp = DateTime.Now;
 			source0.AddEntry("a", LevelFlags.Info, timestamp);
@@ -188,11 +261,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, 0, new LogLineSourceId(0), "a", LevelFlags.Info, timestamp),
-				new LogLine(1, 1, 1, new LogLineSourceId(1), "b", LevelFlags.Debug, timestamp)
-			});
+			entries.Count.Should().Be(2);
+			entries[0].Index.Should().Be(0);
+			entries[0].OriginalIndex.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[0].RawContent.Should().Be("a");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(timestamp);
+			entries[1].Index.Should().Be(1);
+			entries[1].OriginalIndex.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[1].RawContent.Should().Be("b");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Timestamp.Should().Be(timestamp);
 		}
 
 		[Test]
@@ -202,7 +285,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source1 = new InMemoryLogFile();
 			var source2 = new InMemoryLogFile();
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
-			var data = Listen(merged);
+			var entries = Listen(merged);
 
 			source1.AddEntry("a", LevelFlags.Warning, new DateTime(2019, 5, 28, 22, 40, 0));
 			source1.AddEntry("b", LevelFlags.Info);
@@ -210,11 +293,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_taskScheduler.RunOnce();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, 0, "a", LevelFlags.Warning, new DateTime(2019, 5, 28, 22, 40, 0)),
-				new LogLine(1, 1, 1, "c", LevelFlags.Error, new DateTime(2019, 5, 28, 22, 41, 0))
-			});
+			entries.Count.Should().Be(2);
+			entries[0].Index.Should().Be(0);
+			entries[0].OriginalIndex.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].RawContent.Should().Be("a");
+			entries[0].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[0].Timestamp.Should().Be(new DateTime(2019, 5, 28, 22, 40, 0));
+			entries[1].Index.Should().Be(1);
+			entries[1].OriginalIndex.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].RawContent.Should().Be("c");
+			entries[1].LogLevel.Should().Be(LevelFlags.Error);
+			entries[1].Timestamp.Should().Be(new DateTime(2019, 5, 28, 22, 41, 0));
 		}
 
 		[Test]
@@ -225,7 +316,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source1 = new InMemoryLogFile();
 
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source0, source1);
-			var data = Listen(merged);
+			var entries = Listen(merged);
 
 			var later = new DateTime(2016, 2, 16);
 			var earlier = new DateTime(2016, 2, 15);
@@ -240,11 +331,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 			merged.Count.Should().Be(2);
-			data.Should().Equal(new object[]
-				{
-					new LogLine(0, 0, new LogLineSourceId(1), "c", LevelFlags.Error, earlier),
-					new LogLine(1, 1, new LogLineSourceId(0), "a", LevelFlags.Warning, later)
-				});
+			entries.Count.Should().Be(2);
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[0].RawContent.Should().Be("c");
+			entries[0].LogLevel.Should().Be(LevelFlags.Error);
+			entries[0].Timestamp.Should().Be(earlier);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[1].RawContent.Should().Be("a");
+			entries[1].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[1].Timestamp.Should().Be(later);
 		}
 
 		[Test]
@@ -257,7 +356,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var source1 = new InMemoryLogFile();
 
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source0, source1);
-			var data = Listen(merged);
+			var entries = Listen(merged);
 			var changes = ListenToChanges(merged, 1);
 
 			merged.OnLogFileModified(source0, LogFileSection.Reset);
@@ -274,10 +373,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 			merged.EndOfSourceReached.Should().BeTrue();
 
-			data.Should().Equal(new object[]
-			{
-				new LogLine(0, 0, new LogLineSourceId(1), "Hello World", LevelFlags.Info, timestamp)
-			});
+			entries.Count.Should().Be(1);
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[0].RawContent.Should().Be("Hello World");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(timestamp);
 
 			int count = changes.Count;
 			changes.ElementAt(count - 2).Should().Equal(LogFileSection.Reset);
@@ -305,10 +407,34 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_taskScheduler.RunOnce();
 			merged.Count.Should().Be(4);
-			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
-			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
-			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
-			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+			var entries = merged.GetEntries(new[]
+			{
+				new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3)
+			});
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(t1);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[1].RawContent.Should().Be("Hello,");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Timestamp.Should().Be(t2);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[2].RawContent.Should().Be("World!");
+			entries[2].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[2].Timestamp.Should().Be(t2);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(2);
+			entries[3].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[3].RawContent.Should().Be("bar");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Timestamp.Should().Be(t3);
 		}
 
 		[Test]
@@ -331,11 +457,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			source2.AddMultilineEntry(LevelFlags.Debug, t2, "Hello,", "World!");
 
 			_taskScheduler.RunOnce();
+			var entries = merged.GetEntries(new LogFileSection(0, 4));
 			merged.Count.Should().Be(4);
-			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
-			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
-			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
-			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(t1);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[1].RawContent.Should().Be("Hello,");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Timestamp.Should().Be(t2);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[2].RawContent.Should().Be("World!");
+			entries[2].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[2].Timestamp.Should().Be(t2);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(2);
+			entries[3].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[3].RawContent.Should().Be("bar");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Timestamp.Should().Be(t3);
 		}
 
 		[Test]
@@ -361,10 +508,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler.RunOnce();
 
 			merged.Count.Should().Be(4);
-			merged.GetLine(0).Should().Be(new LogLine(0, 0, source1Id, "Foo", LevelFlags.Info, t1));
-			merged.GetLine(1).Should().Be(new LogLine(1, 1, source2Id, "Hello,", LevelFlags.Debug, t2));
-			merged.GetLine(2).Should().Be(new LogLine(2, 1, source2Id, "World!", LevelFlags.Debug, t2));
-			merged.GetLine(3).Should().Be(new LogLine(3, 2, source1Id, "bar", LevelFlags.Warning, t3));
+			var entries = merged.GetEntries(new LogFileSection(0, 4));
+			merged.Count.Should().Be(4);
+			entries[0].Index.Should().Be(0);
+			entries[0].LogEntryIndex.Should().Be(0);
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[0].RawContent.Should().Be("Foo");
+			entries[0].LogLevel.Should().Be(LevelFlags.Info);
+			entries[0].Timestamp.Should().Be(t1);
+			entries[1].Index.Should().Be(1);
+			entries[1].LogEntryIndex.Should().Be(1);
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[1].RawContent.Should().Be("Hello,");
+			entries[1].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[1].Timestamp.Should().Be(t2);
+			entries[2].Index.Should().Be(2);
+			entries[2].LogEntryIndex.Should().Be(1);
+			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[2].RawContent.Should().Be("World!");
+			entries[2].LogLevel.Should().Be(LevelFlags.Debug);
+			entries[2].Timestamp.Should().Be(t2);
+			entries[3].Index.Should().Be(3);
+			entries[3].LogEntryIndex.Should().Be(2);
+			entries[3].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[3].RawContent.Should().Be("bar");
+			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
+			entries[3].Timestamp.Should().Be(t3);
 		}
 
 		[Test]
@@ -383,7 +552,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			merged.Count.Should().Be(2);
 
 			var entries = merged.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
-				new ILogFileColumn[]
+				new ILogFileColumnDescriptor[]
 				{
 					LogFileColumns.LineNumber, LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp,
 					LogFileColumns.RawContent
@@ -400,7 +569,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
+		//[Ignore("Not yet implemented")]
 		[Description("Verifies that changes from many sources are batched together")]
 		public void TestManySources1()
 		{
@@ -425,11 +594,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			// For once, we expect the content of the merged data source to be as expected...
 			merged.Count.Should().Be(sourceCount, "because every source added one line");
+
+			var buffer = merged.GetEntries(new LogFileSection(0, sourceCount));
 			for (byte i = 0; i < sourceCount; ++i)
 			{
-				merged.GetLine(i).Should().Be(new LogLine(i, i, new LogLineSourceId(i),
-				                                          i.ToString(), LevelFlags.Info,
-				                                          start + TimeSpan.FromSeconds(i)));
+				buffer[i].Index.Should().Be(i);
+				buffer[i].LogEntryIndex.Should().Be(i);
+				buffer[i].SourceId.Should().Be(new LogLineSourceId(i));
+				buffer[i].RawContent.Should().Be(i.ToString());
+				buffer[i].LogLevel.Should().Be(LevelFlags.Info);
+				buffer[i].Timestamp.Should().Be(start + TimeSpan.FromSeconds(i));
 			}
 
 			// But then it should also have fired as few changes as possible!
@@ -441,7 +615,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Not yet implemented")]
 		[Description("Verifies that changes from many sources are batched together")]
 		public void TestManySources2()
 		{
@@ -466,12 +639,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			// For once, we expect the content of the merged data source to be as expected...
 			merged.Count.Should().Be(sourceCount, "because every source added one line");
+			var entries = merged.GetEntries(new LogFileSection(0, sourceCount));
 			for (int i = 0; i < sourceCount; ++i)
 			{
+				var entry = entries[i];
+				entry.Index.Should().Be(i);
+				entry.LogEntryIndex.Should().Be(i);
 				int idx = sourceCount - i - 1;
-				merged.GetLine(i).Should().Be(new LogLine(i, i, new LogLineSourceId((byte)idx),
-				                                          idx.ToString(), LevelFlags.Info,
-				                                          end - TimeSpan.FromSeconds(idx)));
+				entry.SourceId.Should().Be(new LogLineSourceId((byte) idx));
+				entry.RawContent.Should().Be(idx.ToString());
+				entry.LogLevel.Should().Be(LevelFlags.Info);
+				entry.Timestamp.Should().Be(end - TimeSpan.FromSeconds(idx));
 			}
 
 			// But then it should also have fired as few changes as possible!
@@ -483,10 +661,47 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		[Description("Verifies that merging a multi line entry in order works")]
+		public void TestOriginalDataSourceName1()
+		{
+			var source1 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
+			var source2 = new InMemoryLogFile(LogFileColumns.OriginalDataSourceName);
+			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
+
+			source1.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			{
+				{LogFileColumns.OriginalDataSourceName, "important_document.txt" },
+				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 33, 10)}
+			});
+
+			source2.Add(new Dictionary<ILogFileColumnDescriptor, object>
+			{
+				{LogFileColumns.OriginalDataSourceName, "rubbish.log" },
+				{LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 23, 29, 10)}
+			});
+
+			_taskScheduler.RunOnce();
+			merged.Count.Should().Be(2);
+			var entries = merged.GetEntries(new LogFileSection(0, 2));
+			entries[0].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+			entries[1].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+
+			entries = merged.GetEntries(new []{new LogLineIndex(1), new LogLineIndex(0) });
+			entries[0].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("important_document.txt");
+			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+			entries[1].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
+			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+		}
+
+		[Test]
 		[Description("Verifies that starting a merged log file causes it to add listeners with the source files")]
 		public void TestStart1()
 		{
 			var source = new Mock<ILogFile>();
+			source.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[0]);
+
 			var listeners = new List<Tuple<ILogFileListener, TimeSpan, int>>();
 			source.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
 			      .Callback(
@@ -513,10 +728,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndicesBySection2()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -535,10 +750,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndexByIndices()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -561,10 +776,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetLineNumbersBySection()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -583,10 +798,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetLineNumbersByIndices()
 		{
 			var source1 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 1, 0)});
 
 			var source2 = new InMemoryLogFile();
-			source1.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
+			source1.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 20, 23, 0, 0)});
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
@@ -631,7 +846,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			}
 			for (int i = 0; i < count; ++i)
 			{
-				buffer[offset + i].Should().Be(source.GetLine(i).Timestamp);
+				buffer[offset + i].Should().Be(source.GetEntry(i).Timestamp);
 			}
 		}
 
@@ -660,8 +875,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				buffer[i].Should().Be(DateTime.MinValue, "because we've specified an offset and thus values before that offset shouldn't have been touched");
 			}
-			buffer[offset + 0].Should().Be(source.GetLine(2).Timestamp);
-			buffer[offset + 1].Should().Be(source.GetLine(1).Timestamp);
+			buffer[offset + 0].Should().Be(source.GetEntry(2).Timestamp);
+			buffer[offset + 1].Should().Be(source.GetEntry(1).Timestamp);
 		}
 
 		#endregion

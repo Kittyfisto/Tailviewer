@@ -8,29 +8,37 @@ namespace Tailviewer.Core.LogFiles
 	///     because its meaning is understood (such as Timestamp, etc...).
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	internal sealed class WellKnownLogFileColumn<T>
-		: ILogFileColumn<T>
+	internal sealed class WellKnownLogFileColumnDescriptor<T>
+		: ILogFileColumnDescriptor<T>
 	{
 		private readonly string _id;
+		private readonly string _displayName;
 		private readonly T _defaultValue;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
-		public WellKnownLogFileColumn(string id)
-			: this(id, default(T))
+		public WellKnownLogFileColumnDescriptor(string id)
+			: this(id, id)
 		{}
 
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="defaultValue"></param>
-		public WellKnownLogFileColumn(string id, T defaultValue)
-		{
-			if (id == null)
-				throw new ArgumentNullException(nameof(id));
+		/// <param name="displayName"></param>
+		public WellKnownLogFileColumnDescriptor(string id, string displayName)
+			: this(id, displayName, default(T))
+		{}
 
-			_id = id;
+		/// <summary>
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="displayName"></param>
+		/// <param name="defaultValue"></param>
+		public WellKnownLogFileColumnDescriptor(string id, string displayName, T defaultValue)
+		{
+			_id = id ?? throw new ArgumentNullException(nameof(id));
+			_displayName = displayName;
 			_defaultValue = defaultValue;
 		}
 
@@ -38,12 +46,15 @@ namespace Tailviewer.Core.LogFiles
 		public string Id => _id;
 
 		/// <inheritdoc />
+		public string DisplayName => _displayName;
+
+		/// <inheritdoc />
 		public Type DataType => typeof(T);
 
 		/// <inheritdoc />
 		public T DefaultValue => _defaultValue;
 
-		object ILogFileColumn.DefaultValue => DefaultValue;
+		object ILogFileColumnDescriptor.DefaultValue => DefaultValue;
 
 		/// <inheritdoc />
 		public override string ToString()

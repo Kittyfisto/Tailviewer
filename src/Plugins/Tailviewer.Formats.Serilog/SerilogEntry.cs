@@ -45,6 +45,16 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
+		public string OriginalDataSourceName
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public LogLineSourceId SourceId
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		LevelFlags IReadOnlyLogEntry.LogLevel
 		{
 			get { return LogLevel; }
@@ -65,7 +75,7 @@ namespace Tailviewer.Formats.Serilog
 			get { throw new NotImplementedException(); }
 		}
 
-		public T GetValue<T>(ILogFileColumn<T> column)
+		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
 		{
 			if (Equals(column, LogFileColumns.Message))
 			{
@@ -75,22 +85,22 @@ namespace Tailviewer.Formats.Serilog
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+		public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public object GetValue(ILogFileColumn column)
+		public object GetValue(ILogFileColumnDescriptor column)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool TryGetValue(ILogFileColumn column, out object value)
+		public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
 		{
 			throw new NotImplementedException();
 		}
 
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { throw new NotImplementedException(); }
 		}

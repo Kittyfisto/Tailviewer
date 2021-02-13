@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 			get { return 0; }
 		}
 
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { return LogFileColumns.Minimum; }
 		}
@@ -80,34 +80,22 @@ namespace Tailviewer.Core.LogFiles
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			//if (section.Count > 0)
-			//	throw new ArgumentOutOfRangeException(nameof(section), "This log file is empty");
-			throw new NotImplementedException();
-		}
-
-		public LogLine GetLine(int index)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}

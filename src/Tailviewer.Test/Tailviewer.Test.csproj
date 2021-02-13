@@ -118,8 +118,6 @@
     <Compile Include="BusinessLogic\Filters\RangeFilterTest.cs" />
     <Compile Include="BusinessLogic\Highlighters\HighlighterTest.cs" />
     <Compile Include="BusinessLogic\LevelFlagsTest.cs" />
-    <Compile Include="BusinessLogic\LogDataCacheTest.cs" />
-    <Compile Include="BusinessLogic\LogDataAccessQueueTest.cs" />
     <Compile Include="BusinessLogic\LogEntryIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
@@ -129,11 +127,14 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntriesViewTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntry2Test.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test2.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryListTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryViewTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnsTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileFormatsTest.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryViewTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
@@ -156,14 +158,7 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogEntryTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\InMemoryLogTableTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableListenerCollectionTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\LogTableSectionTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LevelParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4ColumnParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\Log4PatternParserTest.cs" />
-    <Compile Include="BusinessLogic\LogTables\Parsers\LoggerParserTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileIssuesPluginTest.cs" />

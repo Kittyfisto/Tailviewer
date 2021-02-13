@@ -10,7 +10,7 @@ namespace Tailviewer.Ui.Controls.LogView.Any
 	public sealed class AnyColumnPresenter<T>
 		: AbstractLogColumnPresenter<T>
 	{
-		public AnyColumnPresenter(ILogFileColumn<T> column, TextSettings textSettings)
+		public AnyColumnPresenter(ILogFileColumnDescriptor<T> column, TextSettings textSettings)
 			: base(column, textSettings)
 		{
 		}

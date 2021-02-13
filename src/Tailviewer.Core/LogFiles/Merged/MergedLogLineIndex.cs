@@ -11,7 +11,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 
 		public readonly int OriginalLogEntryIndex;
 		public readonly int SourceLineIndex;
-		public readonly byte LogFileIndex;
+		public readonly byte SourceId;
 		public readonly DateTime Timestamp;
 		public int MergedLogEntryIndex;
 
@@ -23,26 +23,26 @@ namespace Tailviewer.Core.LogFiles.Merged
 		public MergedLogLineIndex(int sourceLineIndex,
 		                          int mergedLogEntryIndex,
 		                          int originalLogEntryIndex,
-		                          byte logFileIndex)
+		                          byte sourceId)
 		{
 			SourceLineIndex = sourceLineIndex;
 			MergedLogEntryIndex = mergedLogEntryIndex;
 			OriginalLogEntryIndex = originalLogEntryIndex;
 			Timestamp = DateTime.MinValue;
-			LogFileIndex = logFileIndex;
+			SourceId = sourceId;
 		}
 
 		public MergedLogLineIndex(int sourceLineIndex,
 		                          int mergedLogEntryIndex,
 		                          int originalLogEntryIndex,
-		                          byte logFileIndex,
+		                          byte sourceId,
 		                          DateTime timestamp)
 		{
 			SourceLineIndex = sourceLineIndex;
 			MergedLogEntryIndex = mergedLogEntryIndex;
 			OriginalLogEntryIndex = originalLogEntryIndex;
 			Timestamp = timestamp;
-			LogFileIndex = logFileIndex;
+			SourceId = sourceId;
 		}
 
 		#region Equality members
@@ -50,7 +50,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		public bool Equals(MergedLogLineIndex other)
 		{
 			return OriginalLogEntryIndex == other.OriginalLogEntryIndex && SourceLineIndex == other.SourceLineIndex &&
-			       LogFileIndex == other.LogFileIndex && Timestamp.Equals(other.Timestamp) &&
+			       SourceId == other.SourceId && Timestamp.Equals(other.Timestamp) &&
 			       MergedLogEntryIndex == other.MergedLogEntryIndex;
 		}
 
@@ -66,7 +66,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 			{
 				var hashCode = OriginalLogEntryIndex;
 				hashCode = (hashCode * 397) ^ SourceLineIndex;
-				hashCode = (hashCode * 397) ^ LogFileIndex.GetHashCode();
+				hashCode = (hashCode * 397) ^ SourceId.GetHashCode();
 				hashCode = (hashCode * 397) ^ Timestamp.GetHashCode();
 				hashCode = (hashCode * 397) ^ MergedLogEntryIndex;
 				return hashCode;
@@ -89,7 +89,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		{
 			return
 				string.Format("SourceLineIndex: {0}, OriginalLogEntryIndex: {1}, LogFile: {2}, MergedLogEntryIndex: {3}, Timestamp: {4}",
-				              SourceLineIndex, OriginalLogEntryIndex, LogFileIndex, MergedLogEntryIndex, Timestamp);
+				              SourceLineIndex, OriginalLogEntryIndex, SourceId, MergedLogEntryIndex, Timestamp);
 		}
 	}
 }

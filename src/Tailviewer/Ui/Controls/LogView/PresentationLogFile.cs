@@ -28,7 +28,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		const int MaximumLineCount = 1000;
 
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-		private readonly LogEntryBuffer _buffer;
+		private readonly LogEntryArray _array;
 
 		private readonly ConcurrentQueue<PendingModification> _pendingModifications;
 		private readonly LogEntryList _indices;
@@ -59,7 +59,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			_indices = new LogEntryList(IndexedColumns);
 
-			_buffer = new LogEntryBuffer(MaximumLineCount, LogFileColumns.RawContent);
+			_array = new LogEntryArray(MaximumLineCount, LogFileColumns.RawContent);
 			_pendingModifications = new ConcurrentQueue<PendingModification>();
 			_syncRoot = new object();
 			
@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		[Pure]
-		private static bool IsIndexedColumn(ILogFileColumn column)
+		private static bool IsIndexedColumn(ILogFileColumnDescriptor column)
 		{
 			return IndexedColumns.Contains(column);
 		}
@@ -76,7 +76,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     The columns which are actually stored in this log file.
 		/// </summary>
-		private static IReadOnlyList<ILogFileColumn> IndexedColumns => new ILogFileColumn[]
+		private static IReadOnlyList<ILogFileColumnDescriptor> IndexedColumns => new ILogFileColumnDescriptor[]
 		{
 			LogFileColumns.PresentationStartingLineNumber,
 			LogFileColumns.PresentationLineCount,
@@ -161,14 +161,14 @@ namespace Tailviewer.Ui.Controls.LogView
 		private void Add(ILogFile logFile, LogFileSection section)
 		{
 			// !!!We deliberately retrieve this section OUTSIDE of our own lock!!!
-			logFile.GetEntries(section, _buffer);
+			logFile.GetEntries(section, _array);
 
 			// Calculating the max width of a line takes time and is therefore done outside
 			// the lock!
 			var indices = new List<ILogEntry>(section.Count);
 			for (var i = 0; i < section.Count; ++i)
 			{
-				var logEntry = _buffer[i];
+				var logEntry = _array[i];
 				indices.Add(CreateIndex(logEntry));
 			}
 
@@ -213,7 +213,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			int numLines;
 			var width = EstimateWidth(logEntry.RawContent, out numLines);
-			var index = new LogEntry2();
+			var index = new LogEntry();
 			index.SetValue(LogFileColumns.RawContentMaxPresentationWidth, width);
 			index.SetValue(LogFileColumns.PresentationLineCount, numLines);
 			return index;
@@ -260,46 +260,36 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (IsIndexedColumn(column))
 			{
-				_indices.CopyTo(column, (int) section.Index, buffer, destinationIndex, section.Count);
+				_indices.CopyTo(column, (int) sourceSection.Index, destination, destinationIndex, sourceSection.Count);
 			}
 			else
 			{
-				_source.GetColumn(section, column, buffer, destinationIndex);
+				_source.GetColumn(sourceSection, column, destination, destinationIndex);
 			}
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (IsIndexedColumn(column))
 			{
-				_indices.CopyTo(column, new Int32View(indices), buffer, destinationIndex);
+				_indices.CopyTo(column, new Int32View(sourceIndices), destination, destinationIndex);
 			}
 			else
 			{
-				_source.GetColumn(indices, column, buffer, destinationIndex);
+				_source.GetColumn(sourceIndices, column, destination, destinationIndex);
 			}
 		}
 
-		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override LogLine GetLine(int index)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
 			throw new NotImplementedException();
 		}
@@ -336,7 +326,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
+		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
 
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
 

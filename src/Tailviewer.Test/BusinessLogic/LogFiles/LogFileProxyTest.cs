@@ -53,8 +53,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				proxy.Count.Should().Be(0);
 				proxy.Columns.Should().Equal(LogFileColumns.Minimum);
 
-				new Action(() => proxy.GetLine(0)).Should().Throw<IndexOutOfRangeException>();
-				new Action(() => proxy.GetSection(new LogFileSection(0, 1))).Should().Throw<IndexOutOfRangeException>();
+				proxy.GetEntry(0).Index.Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
@@ -90,25 +89,41 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetLine()
+		public void TestGetEntry()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			var source = new InMemoryLogFile();
+			source.AddEntry("I'm an english man in new york");
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, source))
 			{
-				proxy.GetLine(42);
-				_logFile.Verify(l => l.GetLine(It.Is<int>(x => x == 42)), Times.Once);
+				var entry = proxy.GetEntry(0);
+				entry.RawContent.Should().Be("I'm an english man in new york");
+			}
+		}
+
+		[Test]
+		public void TestGetLine_NoSource()
+		{
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, null))
+			{
+				var entry = proxy.GetEntry(0);
+				entry.Index.Should().Be(LogLineIndex.Invalid);
 			}
 		}
 
 		[Test]
 		public void TestGetSection()
 		{
-			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
+			var source = new InMemoryLogFile();
+			source.AddEntry("Sting");
+			source.AddEntry("I'm an english man in new york");
+			source.AddEntry("1987");
+			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, source))
 			{
-				proxy.GetSection(new LogFileSection(42, 101), new LogLine[101]);
-
-				var expected = new LogFileSection(42, 101);
-				_logFile.Verify(l => l.GetSection(It.Is<LogFileSection>(x => Equals(x, expected)),
-												 It.IsAny<LogLine[]>()), Times.Once);
+				var entries = proxy.GetEntries(new LogFileSection(1, 2));
+				entries[0].Index.Should().Be(1);
+				entries[0].RawContent.Should().Be("I'm an english man in new york");
+				entries[1].Index.Should().Be(2);
+				entries[1].RawContent.Should().Be("1987");
 			}
 		}
 
@@ -310,7 +325,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
 			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, 42);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogFileColumn<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 42)),
 			                Times.Once);
@@ -367,7 +382,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				                47);
 
 				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
-				                                 It.Is<ILogFileColumn<LogLineIndex>>(y => y == LogFileColumns.OriginalIndex),
+				                                 It.Is<ILogFileColumnDescriptor<LogLineIndex>>(y => y == LogFileColumns.OriginalIndex),
 				                                 It.Is<LogLineIndex[]>(y => y == buffer),
 				                                 It.Is<int>(y => y == 47)),
 				                Times.Once, "because the proxy should simply forward those calls to its source");

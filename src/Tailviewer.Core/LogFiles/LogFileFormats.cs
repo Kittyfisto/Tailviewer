@@ -31,7 +31,7 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFileFormat CommonLogFormat;
 
 		/// <summary>
-		///     Extended Log Format (ELF) is a standardised text file format, like Common Log Format (CLF),
+		///     Extended Log Format (ELF) is a standardized text file format, like Common Log Format (CLF),
 		///     that is used by web servers when generating log files, but ELF files provide more information and flexibility.
 		///     <see href="https://en.wikipedia.org/wiki/Extended_Log_Format" /> for details.
 		/// </summary>
@@ -45,7 +45,7 @@ namespace Tailviewer.Core.LogFiles
 			                                        "The Common Log Format, also known as the NCSA Common log format is a standardized text file format used by web servers when generating server log files.",
 			                                        Encoding.ASCII);
 			ExtendedLogFormat = new TextLogFileFormat("Extended Log Format",
-			                                          "Extended Log Format (ELF) is a standardised text file format, like Common Log Format (CLF), that is used by web servers when generating log files, but ELF files provide more information and flexibility.",
+			                                          "Extended Log Format (ELF) is a standardized text file format, like Common Log Format (CLF), that is used by web servers when generating log files, but ELF files provide more information and flexibility.",
 			                                          Encoding.ASCII);
 		}
 	}

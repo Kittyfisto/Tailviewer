@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.BusinessLogic.Exporter
 {
@@ -39,7 +40,7 @@ namespace Tailviewer.BusinessLogic.Exporter
 		public void Export(IProgress<Percentage> progressReporter = null)
 		{
 			const int bufferSize = 1000;
-			var buffer = new LogLine[bufferSize];
+			var buffer = new LogEntryArray(bufferSize, LogFileColumns.Index, LogFileColumns.RawContent);
 			var count = _logFile.Count;
 			var index = 0;
 
@@ -60,19 +61,22 @@ namespace Tailviewer.BusinessLogic.Exporter
 			}
 		}
 
-		private bool ExportPortion(StreamWriter writer, LogLine[] buffer, int index, int count)
+		private bool ExportPortion(StreamWriter writer, LogEntryArray array, int index, int count)
 		{
 			try
 			{
-				_logFile.GetSection(new LogFileSection(index, count), buffer);
+				_logFile.GetEntries(new LogFileSection(index, count), array);
 
 				for (var i = 0; i < count; ++i)
 				{
 					if (_written)
 						writer.WriteLine();
 
-					var logLine = buffer[i];
-					writer.Write(logLine.Message);
+					var logLine = array[i];
+					if (logLine.Index == LogLineIndex.Invalid) //< EOF
+						break;
+
+					writer.Write(logLine.RawContent);
 					_written = true;
 				}
 

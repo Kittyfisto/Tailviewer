@@ -5,12 +5,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	///     Describes a column of a log file.
 	/// </summary>
-	public interface ILogFileColumn
+	public interface ILogFileColumnDescriptor
 	{
 		/// <summary>
 		///     Id of this column, two columns are the same if they have the same id.
 		/// </summary>
 		string Id { get; }
+
+		/// <summary>
+		///     The human readable name of this column. If none is given, then <see cref="Id"/> is used.
+		/// </summary>
+		string DisplayName { get; }
 
 		/// <summary>
 		///     The type of the data provided by this column.
@@ -28,8 +33,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Describes a column of a log file.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public interface ILogFileColumn<out T>
-		: ILogFileColumn
+	public interface ILogFileColumnDescriptor<out T>
+		: ILogFileColumnDescriptor
 	{
 		/// <summary>
 		///     The value used when an invalid row is accessed or

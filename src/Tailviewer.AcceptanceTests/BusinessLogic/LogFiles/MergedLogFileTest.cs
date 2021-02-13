@@ -7,7 +7,6 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
-using Tailviewer.Core.Parsers;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
@@ -42,9 +41,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore(
-			"Doesn't work anymore because the actual source file is not ordered by time strictly ascending - several lines are completely out of order"
-			)]
 		[Description("Verifies that the MergedLogFile represents the very same content than its single source")]
 		public void Test20Mb()
 		{
@@ -56,16 +52,24 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				merged.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
 
 				merged.Count.Should().Be(source.Count);
+				merged.Count.Should().Be(165342);
 				merged.GetValue(LogFileProperties.Size).Should().Be(source.GetValue(LogFileProperties.Size));
 				merged.GetValue(LogFileProperties.StartTimestamp).Should().Be(source.GetValue(LogFileProperties.StartTimestamp));
 
-				LogLine[] sourceLines = source.GetSection(new LogFileSection(0, source.Count));
-				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
+				var sourceEntries = source.GetEntries(new LogFileSection(0, source.Count));
+				var mergedEntries = merged.GetEntries(new LogFileSection(0, merged.Count));
 				for (int i = 0; i < source.Count; ++i)
 				{
-					LogLine mergedLine = mergedLines[i];
-					LogLine sourceLine = sourceLines[i];
-					mergedLine.Should().Be(sourceLine);
+					var mergedEntry = mergedEntries[i];
+					var sourceEntry = sourceEntries[i];
+
+					mergedEntry.Index.Should().Be(sourceEntry.Index);
+					mergedEntry.LogEntryIndex.Should().Be(sourceEntry.LogEntryIndex);
+					mergedEntry.LineNumber.Should().Be(sourceEntry.LineNumber);
+					mergedEntry.RawContent.Should().Be(sourceEntry.RawContent);
+					mergedEntry.DeltaTime.Should().Be(sourceEntry.DeltaTime);
+					if (i > 0)
+						mergedEntry.DeltaTime.Should().BeGreaterOrEqualTo(TimeSpan.Zero);
 				}
 			}
 		}
@@ -89,18 +93,49 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				merged.Property(x => x.GetValue(LogFileProperties.Size)).ShouldEventually().Be(source0.GetValue(LogFileProperties.Size) + source1.GetValue(LogFileProperties.Size));
 				merged.Property(x => x.GetValue(LogFileProperties.StartTimestamp)).ShouldEventually().Be(source1.GetValue(LogFileProperties.StartTimestamp));
 
-				LogLine[] source0Lines = multi0.GetSection(new LogFileSection(0, source0.Count));
-				LogLine[] source1Lines = multi1.GetSection(new LogFileSection(0, source1.Count));
-				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
+				var source0Lines = multi0.GetEntries(new LogFileSection(0, source0.Count));
+				var source1Lines = multi1.GetEntries(new LogFileSection(0, source1.Count));
+				var mergedLines = merged.GetEntries(new LogFileSection(0, merged.Count));
 
-				mergedLines[0].Should().Be(new LogLine(0, 0, new LogLineSourceId(1), source1Lines[0]));
-				mergedLines[1].Should().Be(new LogLine(1, 1, new LogLineSourceId(0), source0Lines[0]));
-				mergedLines[2].Should().Be(new LogLine(2, 1, new LogLineSourceId(0), source0Lines[1]));
-				mergedLines[3].Should().Be(new LogLine(3, 1, new LogLineSourceId(0), source0Lines[2]));
-				mergedLines[4].Should().Be(new LogLine(4, 2, new LogLineSourceId(1), source1Lines[1]));
-				mergedLines[5].Should().Be(new LogLine(5, 3, new LogLineSourceId(0), source0Lines[3]));
-				mergedLines[6].Should().Be(new LogLine(6, 3, new LogLineSourceId(0), source0Lines[4]));
-				mergedLines[7].Should().Be(new LogLine(7, 3, new LogLineSourceId(0), source0Lines[5]));
+				mergedLines[0].Index.Should().Be(0);
+				mergedLines[0].LogEntryIndex.Should().Be(0);
+				mergedLines[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+				mergedLines[0].RawContent.Should().Be(source1Lines[0].RawContent);
+				
+				mergedLines[1].Index.Should().Be(1);
+				mergedLines[1].LogEntryIndex.Should().Be(1);
+				mergedLines[1].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[1].RawContent.Should().Be(source0Lines[0].RawContent);
+				
+				mergedLines[2].Index.Should().Be(2);
+				mergedLines[2].LogEntryIndex.Should().Be(1);
+				mergedLines[2].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[2].RawContent.Should().Be(source0Lines[1].RawContent);
+				
+				mergedLines[3].Index.Should().Be(3);
+				mergedLines[3].LogEntryIndex.Should().Be(1);
+				mergedLines[3].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[3].RawContent.Should().Be(source0Lines[2].RawContent);
+				
+				mergedLines[4].Index.Should().Be(4);
+				mergedLines[4].LogEntryIndex.Should().Be(2);
+				mergedLines[4].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
+				mergedLines[4].RawContent.Should().Be(source1Lines[1].RawContent);
+				
+				mergedLines[5].Index.Should().Be(5);
+				mergedLines[5].LogEntryIndex.Should().Be(3);
+				mergedLines[5].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[5].RawContent.Should().Be(source0Lines[3].RawContent);
+				
+				mergedLines[6].Index.Should().Be(6);
+				mergedLines[6].LogEntryIndex.Should().Be(3);
+				mergedLines[6].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[6].RawContent.Should().Be(source0Lines[4].RawContent);
+				
+				mergedLines[7].Index.Should().Be(7);
+				mergedLines[7].LogEntryIndex.Should().Be(3);
+				mergedLines[7].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(0));
+				mergedLines[7].RawContent.Should().Be(source0Lines[5].RawContent);
 			}
 		}
 
@@ -115,84 +150,254 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				merged.Property(x => x.GetValue(LogFileProperties.Size)).ShouldEventually().Be(source0.GetValue(LogFileProperties.Size) + source1.GetValue(LogFileProperties.Size));
 				merged.Property(x => x.GetValue(LogFileProperties.StartTimestamp)).ShouldEventually().Be(source0.GetValue(LogFileProperties.StartTimestamp));
 
-				LogLine[] mergedLines = merged.GetSection(new LogFileSection(0, merged.Count));
+				var entries = merged.GetEntries(new LogFileSection(0, merged.Count));
 
-				mergedLines[0].Should()
-				              .Be(new LogLine(0, 0,
-				                              "2016-02-17 22:57:51,449 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Test",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 449)));
-				mergedLines[1].Should()
-				              .Be(new LogLine(1, 1,
-				                              "2016-02-17 22:57:51,559 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 559)));
-				mergedLines[2].Should()
-				              .Be(new LogLine(2, 2, 2, new LogLineSourceId(1),
-				                              "2016-02-17 22:57:51,560 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 560)));
-				mergedLines[3].Should()
-				              .Be(new LogLine(3, 3,
-				                              "2016-02-17 22:57:51,664 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 664)));
-				mergedLines[4].Should()
-				              .Be(new LogLine(4, 4, 4, new LogLineSourceId(1),
-				                              "2016-02-17 22:57:51,665 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 51, 665)));
-				mergedLines[5].Should()
-				              .Be(new LogLine(5, 5,
-				                              "2016-02-17 22:57:59,284 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 284)));
-				mergedLines[6].Should()
-				              .Be(new LogLine(6, 6, 6, new LogLineSourceId(1),
-				                              "2016-02-17 22:57:59,285 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 285)));
-				mergedLines[7].Should()
-				              .Be(new LogLine(7, 7,
-				                              "2016-02-17 22:57:59,298 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 298)));
-				mergedLines[8].Should()
-				              .Be(new LogLine(8, 8, 8, new LogLineSourceId(1),
-				                              "2016-02-17 22:57:59,299 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                              LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 299)));
-				mergedLines[9].Should()
-				              .Be(new LogLine(9, 9,
-				                              @"2016-02-17 22:57:59,302 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e",
-				                              LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 302)));
-				mergedLines[10].Should()
-				               .Be(new LogLine(10, 10, 10, new LogLineSourceId(1),
-				                               @"2016-02-17 22:57:59,303 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e",
-				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 303)));
-				mergedLines[11].Should()
-				               .Be(new LogLine(11, 11,
-				                               @"2016-02-17 22:57:59,304 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07",
-				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 304)));
-				mergedLines[12].Should()
-				               .Be(new LogLine(12, 12, 12, new LogLineSourceId(1),
-				                               @"2016-02-17 22:57:59,305 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07",
-				                               LevelFlags.Info, new DateTime(2016, 2, 17, 22, 57, 59, 305)));
-				mergedLines[13].Should()
-				               .Be(new LogLine(13, 13,
-				                               "2016-02-17 22:57:59,306 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 306)));
-				mergedLines[14].Should()
-				               .Be(new LogLine(14, 14, 14, new LogLineSourceId(1),
-				                               "2016-02-17 22:57:59,307 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 307)));
-				mergedLines[15].Should()
-				               .Be(new LogLine(15, 15, 15, new LogLineSourceId(1),
-				                               "2016-02-17 22:57:59,310 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 310)));
-				mergedLines[16].Should()
-				               .Be(new LogLine(16, 16,
-				                               "2016-02-17 22:57:59,311 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 311)));
-				mergedLines[17].Should()
-				               .Be(new LogLine(17, 17,
-				                               @"2016-02-17 22:57:59,863 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 863)));
-				mergedLines[18].Should()
-				               .Be(new LogLine(18, 18, 18, new LogLineSourceId(1),
-				                               @"2016-02-17 22:57:59,864 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one",
-				                               LevelFlags.Warning, new DateTime(2016, 2, 17, 22, 57, 59, 864)));
+				entries[0].Index.Should().Be(0);
+				entries[0].LineNumber.Should().Be(1);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].OriginalIndex.Should().Be(0);
+				entries[0].OriginalLineNumber.Should().Be(1);
+				entries[0].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[0].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[0].RawContent.Should().Be("2016-02-17 22:57:51,449 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Test");
+				entries[0].LogLevel.Should().Be(LevelFlags.Info);
+				entries[0].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 51, 449));
+				entries[0].ElapsedTime.Should().Be(TimeSpan.Zero);
+				entries[0].DeltaTime.Should().Be(null);
+
+				entries[1].Index.Should().Be(1);
+				entries[1].LineNumber.Should().Be(2);
+				entries[1].LogEntryIndex.Should().Be(1);
+				entries[1].OriginalIndex.Should().Be(1);
+				entries[1].OriginalLineNumber.Should().Be(2);
+				entries[1].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[1].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[1].RawContent.Should().Be("2016-02-17 22:57:51,559 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello");
+				entries[1].LogLevel.Should().Be(LevelFlags.Info);
+				entries[1].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 51, 559));
+				entries[1].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(110));
+				entries[1].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(110));
+
+				entries[2].Index.Should().Be(2);
+				entries[2].LineNumber.Should().Be(3);
+				entries[2].LogEntryIndex.Should().Be(2);
+				entries[2].OriginalIndex.Should().Be(2);
+				entries[2].OriginalLineNumber.Should().Be(3);
+				entries[2].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[2].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[2].RawContent.Should().Be("2016-02-17 22:57:51,560 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - Hello");
+				entries[2].LogLevel.Should().Be(LevelFlags.Info);
+				entries[2].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 51, 560));
+				entries[2].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(111));
+				entries[2].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[3].Index.Should().Be(3);
+				entries[3].LineNumber.Should().Be(4);
+				entries[3].LogEntryIndex.Should().Be(3);
+				entries[3].OriginalIndex.Should().Be(3);
+				entries[3].OriginalLineNumber.Should().Be(4);
+				entries[3].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[3].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[3].RawContent.Should().Be("2016-02-17 22:57:51,664 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!");
+				entries[3].LogLevel.Should().Be(LevelFlags.Info);
+				entries[3].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 51, 664));
+				entries[3].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(215));
+				entries[3].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(104));
+
+				entries[4].Index.Should().Be(4);
+				entries[4].LineNumber.Should().Be(5);
+				entries[4].LogEntryIndex.Should().Be(4);
+				entries[4].OriginalIndex.Should().Be(4);
+				entries[4].OriginalLineNumber.Should().Be(5);
+				entries[4].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[4].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[4].RawContent.Should().Be("2016-02-17 22:57:51,665 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Test.BusinessLogic.LogFileTest - world!");
+				entries[4].LogLevel.Should().Be(LevelFlags.Info);
+				entries[4].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 51, 665));
+				entries[4].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(216));
+				entries[4].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[5].Index.Should().Be(5);
+				entries[5].LineNumber.Should().Be(6);
+				entries[5].LogEntryIndex.Should().Be(5);
+				entries[5].OriginalIndex.Should().Be(5);
+				entries[5].OriginalLineNumber.Should().Be(6);
+				entries[5].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[5].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[5].RawContent.Should().Be("2016-02-17 22:57:59,284 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[5].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[5].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 284));
+				entries[5].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7835));
+				entries[5].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(7619));
+
+				entries[6].Index.Should().Be(6);
+				entries[6].LineNumber.Should().Be(7);
+				entries[6].LogEntryIndex.Should().Be(6);
+				entries[6].OriginalIndex.Should().Be(6);
+				entries[6].OriginalLineNumber.Should().Be(7);
+				entries[6].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[6].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[6].RawContent.Should().Be("2016-02-17 22:57:59,285 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[6].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[6].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 285));
+				entries[6].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7836));
+				entries[6].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[7].Index.Should().Be(7);
+				entries[7].LineNumber.Should().Be(8);
+				entries[7].LogEntryIndex.Should().Be(7);
+				entries[7].OriginalIndex.Should().Be(7);
+				entries[7].OriginalLineNumber.Should().Be(8);
+				entries[7].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[7].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[7].RawContent.Should().Be("2016-02-17 22:57:59,298 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[7].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[7].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 298));
+				entries[7].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7849));
+				entries[7].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(13));
+
+				entries[8].Index.Should().Be(8);
+				entries[8].LineNumber.Should().Be(9);
+				entries[8].LogEntryIndex.Should().Be(8);
+				entries[8].OriginalIndex.Should().Be(8);
+				entries[8].OriginalLineNumber.Should().Be(9);
+				entries[8].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[8].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[8].RawContent.Should().Be("2016-02-17 22:57:59,299 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[8].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[8].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 299));
+				entries[8].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7850));
+				entries[8].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[9].Index.Should().Be(9);
+				entries[9].LineNumber.Should().Be(10);
+				entries[9].LogEntryIndex.Should().Be(9);
+				entries[9].OriginalIndex.Should().Be(9);
+				entries[9].OriginalLineNumber.Should().Be(10);
+				entries[9].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[9].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[9].RawContent.Should().Be(@"2016-02-17 22:57:59,302 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e");
+				entries[9].LogLevel.Should().Be(LevelFlags.Info);
+				entries[9].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 302));
+				entries[9].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7853));
+				entries[9].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(3));
+
+				entries[10].Index.Should().Be(10);
+				entries[10].LineNumber.Should().Be(11);
+				entries[10].LogEntryIndex.Should().Be(10);
+				entries[10].OriginalIndex.Should().Be(10);
+				entries[10].OriginalLineNumber.Should().Be(11);
+				entries[10].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[10].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[10].RawContent.Should().Be(@"2016-02-17 22:57:59,303 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear1.log' doesn't have an ID yet, setting it to: b62ea0a3-c495-4f3f-b7c7-d1a0a66e361e");
+				entries[10].LogLevel.Should().Be(LevelFlags.Info);
+				entries[10].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 303));
+				entries[10].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7854));
+				entries[10].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[11].Index.Should().Be(11);
+				entries[11].LineNumber.Should().Be(12);
+				entries[11].LogEntryIndex.Should().Be(11);
+				entries[11].OriginalIndex.Should().Be(11);
+				entries[11].OriginalLineNumber.Should().Be(12);
+				entries[11].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[11].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[11].RawContent.Should().Be(@"2016-02-17 22:57:59,304 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07");
+				entries[11].LogLevel.Should().Be(LevelFlags.Info);
+				entries[11].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 304));
+				entries[11].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7855));
+				entries[11].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[12].Index.Should().Be(12);
+				entries[12].LineNumber.Should().Be(13);
+				entries[12].LogEntryIndex.Should().Be(12);
+				entries[12].OriginalIndex.Should().Be(12);
+				entries[12].OriginalLineNumber.Should().Be(13);
+				entries[12].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[12].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[12].RawContent.Should().Be(@"2016-02-17 22:57:59,305 [CurrentAppDomainHost.ExecuteNodes] INFO  Tailviewer.Settings.DataSource - Data Source 'E:\Code\Tailviewer\bin\Debug\TestClear2.log' doesn't have an ID yet, setting it to: 0ff1c032-0754-405f-8193-2fa4dbfb7d07");
+				entries[12].LogLevel.Should().Be(LevelFlags.Info);
+				entries[12].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 305));
+				entries[12].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7856));
+				entries[12].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[13].Index.Should().Be(13);
+				entries[13].LineNumber.Should().Be(14);
+				entries[13].LogEntryIndex.Should().Be(13);
+				entries[13].OriginalIndex.Should().Be(13);
+				entries[13].OriginalLineNumber.Should().Be(14);
+				entries[13].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[13].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[13].RawContent.Should().Be("2016-02-17 22:57:59,306 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[13].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[13].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 306));
+				entries[13].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7857));
+				entries[13].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[14].Index.Should().Be(14);
+				entries[14].LineNumber.Should().Be(15);
+				entries[14].LogEntryIndex.Should().Be(14);
+				entries[14].OriginalIndex.Should().Be(14);
+				entries[14].OriginalLineNumber.Should().Be(15);
+				entries[14].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[14].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[14].RawContent.Should().Be("2016-02-17 22:57:59,307 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[14].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[14].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 307));
+				entries[14].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7858));
+				entries[14].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[15].Index.Should().Be(15);
+				entries[15].LineNumber.Should().Be(16);
+				entries[15].LogEntryIndex.Should().Be(15);
+				entries[15].OriginalIndex.Should().Be(15);
+				entries[15].OriginalLineNumber.Should().Be(16);
+				entries[15].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[15].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[15].RawContent.Should().Be("2016-02-17 22:57:59,310 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[15].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[15].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 310));
+				entries[15].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7861));
+				entries[15].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(3));
+
+				entries[16].Index.Should().Be(16);
+				entries[16].LineNumber.Should().Be(17);
+				entries[16].LogEntryIndex.Should().Be(16);
+				entries[16].OriginalIndex.Should().Be(16);
+				entries[16].OriginalLineNumber.Should().Be(17);
+				entries[16].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[16].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[16].RawContent.Should().Be("2016-02-17 22:57:59,311 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.Settings.DataSources - Selected item '00000000-0000-0000-0000-000000000000' not found in data-sources, ignoring it...");
+				entries[16].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[16].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 311));
+				entries[16].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(7862));
+				entries[16].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
+
+				entries[17].Index.Should().Be(17);
+				entries[17].LineNumber.Should().Be(18);
+				entries[17].LogEntryIndex.Should().Be(17);
+				entries[17].OriginalIndex.Should().Be(17);
+				entries[17].OriginalLineNumber.Should().Be(18);
+				entries[17].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive1);
+				entries[17].SourceId.Should().Be(new LogLineSourceId(0));
+				entries[17].RawContent.Should().Be(@"2016-02-17 22:57:59,863 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one");
+				entries[17].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[17].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 863));
+				entries[17].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(8414));
+				entries[17].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(552));
+
+				entries[18].Index.Should().Be(18);
+				entries[18].LineNumber.Should().Be(19);
+				entries[18].LogEntryIndex.Should().Be(18);
+				entries[18].OriginalIndex.Should().Be(18);
+				entries[18].OriginalLineNumber.Should().Be(19);
+				entries[18].OriginalDataSourceName.Should().Be(TextLogFileAcceptanceTest.FileTestLive2);
+				entries[18].SourceId.Should().Be(new LogLineSourceId(1));
+				entries[18].RawContent.Should().Be(@"2016-02-17 22:57:59,864 [CurrentAppDomainHost.ExecuteNodes] WARN  Tailviewer.BusinessLogic.DataSources - DataSource 'foo (ec976867-195b-4adf-a819-a1427f0d9aac)' is assigned a parent 'f671f235-7084-4e57-b06a-d253f750fae6' but we don't know that one");
+				entries[18].LogLevel.Should().Be(LevelFlags.Warning);
+				entries[18].Timestamp.Should().Be(new DateTime(2016, 2, 17, 22, 57, 59, 864));
+				entries[18].ElapsedTime.Should().Be(TimeSpan.FromMilliseconds(8415));
+				entries[18].DeltaTime.Should().Be(TimeSpan.FromMilliseconds(1));
 			}
 		}
 
@@ -212,11 +417,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				merged.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(10)).BeTrue();
 				var entries = merged.GetEntries(new LogFileSection(0, 11),
-				                                LogFileColumns.Timestamp,
-				                                LogFileColumns.LogEntryIndex,
-				                                LogFileColumns.LineNumber,
-				                                LogFileColumns.RawContent,
-				                                LogFileColumns.OriginalDataSourceName);
+				                                new ILogFileColumnDescriptor[]
+				                                {
+					                                LogFileColumns.Timestamp,
+					                                LogFileColumns.LogEntryIndex,
+					                                LogFileColumns.LineNumber,
+					                                LogFileColumns.RawContent,
+					                                LogFileColumns.OriginalDataSourceName
+				                                });
 
 				var line = entries[0];
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 176));

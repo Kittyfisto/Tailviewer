@@ -131,7 +131,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get
 			{
@@ -142,7 +142,7 @@ namespace Tailviewer.Core.LogFiles
 				catch (Exception e)
 				{
 					BlameExceptionOnPlugin(e);
-					return new ILogFileColumn[0];
+					return new ILogFileColumnDescriptor[0];
 				}
 			}
 		}
@@ -233,20 +233,20 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
+			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			try
 			{
-				_logFile.GetColumn(section, column, buffer, destinationIndex);
+				_logFile.GetColumn(sourceSection, column, destination, destinationIndex);
 			}
 			catch (Exception e)
 			{
@@ -255,22 +255,22 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + indices.Count > buffer.Length)
+			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			try
 			{
-				_logFile.GetColumn(indices, column, buffer, destinationIndex);
+				_logFile.GetColumn(sourceIndices, column, destination, destinationIndex);
 			}
 			catch (Exception e)
 			{
@@ -279,11 +279,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
 			try
 			{
-				_logFile.GetEntries(section, buffer, destinationIndex);
+				_logFile.GetEntries(sourceSection, destination, destinationIndex);
 			}
 			catch (Exception e)
 			{
@@ -292,42 +292,15 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
 			try
 			{
-				_logFile.GetEntries(indices, buffer, destinationIndex);
+				_logFile.GetEntries(sourceIndices, destination, destinationIndex);
 			}
 			catch (Exception e)
 			{
 				BlameExceptionOnPlugin(e);
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			try
-			{
-				_logFile.GetSection(section, dest);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-			}
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			try
-			{
-				return _logFile.GetLine(index);
-			}
-			catch (Exception e)
-			{
-				BlameExceptionOnPlugin(e);
-				return new LogLine();
 			}
 		}
 

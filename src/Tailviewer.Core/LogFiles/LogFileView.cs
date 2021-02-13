@@ -44,9 +44,9 @@ namespace Tailviewer.Core.LogFiles
 			get
 			{
 				var count = _logFile.Count;
-				var buffer = new LogEntryBuffer(count, _logFile.Columns);
+				var buffer = new LogEntryArray(count, _logFile.Columns);
 				_logFile.GetEntries(new LogFileSection(0, count), buffer);
-				return buffer.ToArray();
+				return buffer.ToArray<IReadOnlyLogEntry>();
 			}
 		}
 

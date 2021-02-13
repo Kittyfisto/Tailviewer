@@ -15,7 +15,7 @@ namespace Tailviewer.Serilog.Test
 		[Pure]
 		private static IReadOnlyLogEntry Parse(SerilogFileParser parser, string rawContent)
 		{
-			var logEntry = new LogEntry2(LogFileColumns.RawContent)
+			var logEntry = new LogEntry(LogFileColumns.RawContent)
 			{
 				RawContent = rawContent
 			};

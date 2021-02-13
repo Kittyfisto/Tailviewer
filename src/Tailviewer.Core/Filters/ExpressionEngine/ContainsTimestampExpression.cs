@@ -25,7 +25,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(bool);
 
-		public bool Evaluate(IReadOnlyList<LogLine> logEntry)
+		public bool Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			var lhs = _lhs.Evaluate(logEntry);
 			var rhs = _rhs.Evaluate(logEntry);
@@ -57,7 +57,7 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 			return true;
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

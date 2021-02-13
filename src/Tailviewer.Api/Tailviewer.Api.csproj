@@ -77,7 +77,7 @@
     <Compile Include="BusinessLogic\LogFiles\IMergedLogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntries.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFileColumn.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFileColumnDescriptor.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntries.cs" />
     <Compile Include="BusinessLogic\LogFiles\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntrySectionExtensions.cs" />

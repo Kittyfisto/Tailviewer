@@ -15,7 +15,7 @@ namespace Tailviewer.Core.LogFiles.Issues
 		///     Initializes this issue.
 		/// </summary>
 		/// <param name="line">The **original** log line the issue was found at.</param>
-		/// <param name="timestamp">The timestamp of when the issue occured.</param>
+		/// <param name="timestamp">The timestamp of when the issue occurred.</param>
 		/// <param name="severity">The severity of the issue - more severe issues are presented to the user with more urgency</param>
 		/// <param name="summary">A very short summary of the issue, should fit into one line.</param>
 		/// <param name="description">An optional (very detailed) description of the issue. May span multiple lines.</param>
@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles.Issues
 		public LogLineIndex OriginalLineIndex { get; }
 
 		/// <summary>
-		///     The timestamp of when the issue occured.
+		///     The timestamp of when the issue occurred.
 		/// </summary>
 		public DateTime? Timestamp { get; } 
 

@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using Tailviewer.Core.LogFiles;
+﻿using NUnit.Framework;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
