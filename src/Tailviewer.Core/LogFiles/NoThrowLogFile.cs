@@ -270,23 +270,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public double Progress
-		{
-			get
-			{
-				try
-				{
-					return _logFile.Progress;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return 1;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalLineIndex)
 		{
 			try

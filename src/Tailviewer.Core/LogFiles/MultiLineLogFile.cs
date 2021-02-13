@@ -185,9 +185,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override double Progress => 1;
-
-		/// <inheritdoc />
 		public override string ToString()
 		{
 			return $"MultiLineLogFile({_source})";

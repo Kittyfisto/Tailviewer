@@ -222,24 +222,6 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override double Progress
-		{
-			get
-			{
-				var fileSize = _properties.GetValue(LogFileProperties.Size);
-				var position = _lastPosition;
-				if (fileSize == null)
-					return 1; //< We've fully read the non-existant file...
-
-				var progress = (double) fileSize.Value.Bytes / position;
-				// Since we've performed two reads, it's possible that they have inconsistent values
-				// and therefore we should perform a sanity check on the resulting progress value
-				// so it stays within the expected boundaries. (It's just not worth a lock)
-				return MathEx.Saturate(progress);
-			}
-		}
-
-		/// <inheritdoc />
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			bool read = false;

@@ -375,9 +375,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public double Progress => _source?.Progress ?? 1;
-
-		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			if (Log.IsDebugEnabled)

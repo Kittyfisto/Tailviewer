@@ -277,13 +277,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override double Progress => _source.Progress * MyProgress;
-
-		/// <summary>
-		///     TODO: Add better estimation.
-		/// </summary>
-		private double MyProgress => 1;
-
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{
 			bool performedWork = false;

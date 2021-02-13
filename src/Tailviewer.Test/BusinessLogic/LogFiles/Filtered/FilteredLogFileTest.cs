@@ -88,10 +88,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 				Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.Progress.Should().Be(0, "because the filtered log file hasn't consumed anything of its source (yet)");
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
 
 				_taskScheduler.RunOnce();
-				file.Progress.Should().Be(1, "because the filtered log file has consumed the entire source");
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the filtered log file has consumed the entire source");
 			}
 		}
 

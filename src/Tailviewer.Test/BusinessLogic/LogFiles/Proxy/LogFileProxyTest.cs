@@ -391,16 +391,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		public void TestProgress1()
 		{
 			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
-			logFile.Progress.Should().Be(1);
+			logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
 		}
 
 		[Test]
 		public void TestProgress2()
 		{
 			var logFile = new LogFileProxy(_taskScheduler, TimeSpan.Zero);
-			_logFile.Setup(x => x.Progress).Returns(0.5);
+
+			_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+			        .Callback((ILogFileProperties destination) =>
+			        {
+				        destination.SetValue(LogFileProperties.PercentageProcessed, Percentage.FiftyPercent);
+			        });
+
 			logFile.InnerLogFile = _logFile.Object;
-			logFile.Progress.Should().Be(0.5);
+			logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+			       .Be(Percentage.Zero, "because the proxy didn't process anything just yet");
+
+			_taskScheduler.RunOnce();
+			logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+			       .Be(Percentage.FiftyPercent, "because while the proxy is done, its source is only half finished");
 		}
 
 		#region Well Known Columns

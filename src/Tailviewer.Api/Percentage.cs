@@ -16,6 +16,11 @@ namespace Tailviewer
 		public static readonly Percentage HundredPercent;
 
 		/// <summary>
+		///     50%.
+		/// </summary>
+		public static readonly Percentage FiftyPercent;
+
+		/// <summary>
 		///     0%.
 		/// </summary>
 		public static readonly Percentage Zero;

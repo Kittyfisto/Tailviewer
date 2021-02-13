@@ -128,9 +128,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		#endregion
-		
-		/// <inheritdoc />
-		public abstract double Progress { get; }
 
 		/// <summary>
 		///     This method may be implemented in order to dispose of any additional resources, but it doesn't need to be.

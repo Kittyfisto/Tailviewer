@@ -149,9 +149,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override double Progress => _progress.RelativeValue;
-
-		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
 			if (Log.IsDebugEnabled)

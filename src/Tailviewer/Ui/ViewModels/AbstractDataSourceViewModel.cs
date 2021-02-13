@@ -668,7 +668,7 @@ namespace Tailviewer.Ui.ViewModels
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
-			Progress = _dataSource.FilteredLogFile?.Progress ?? 1;
+			Progress = _dataSource.FilteredLogFile?.GetValue(LogFileProperties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)
 			{

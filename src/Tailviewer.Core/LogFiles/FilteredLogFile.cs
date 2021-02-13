@@ -304,20 +304,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override double Progress
-		{
-			get
-			{
-				var sourceCount = _source.Count;
-				var currentIndex = _currentSourceIndex;
-
-				var relativeProgress = (double) currentIndex / sourceCount;
-				var progress = MathEx.Saturate(relativeProgress) * _source.Progress;
-				return progress;
-			}
-		}
-
-		/// <inheritdoc />
 		public override LogLineIndex GetLogLineIndexOfOriginalLineIndex(LogLineIndex originalSourceIndex)
 		{
 			lock (_indices)

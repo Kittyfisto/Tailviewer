@@ -153,16 +153,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
-		/// <summary>
-		///     The relative progress (in between 0 and 1) between the number of lines currently exposed by this log file versus
-		///     the number
-		///     of lines in the underlying data source.
-		/// </summary>
-		/// <remarks>
-		///     In case it is unfeasible to determine the number of lines before scanning through the entire source, 1 should be returned.
-		/// </remarks>
-		double Progress { get; }
-
 		#endregion
 
 		#region Indices
