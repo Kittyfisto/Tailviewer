@@ -6,6 +6,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     A registry of all log file formats known by Tailviewer. Allows users to query the list of currently known
 	///     (and supported) log file formats.
 	/// </summary>
+	[Service]
 	public interface ILogFileFormatRepository
 	{
 		/// <summary>

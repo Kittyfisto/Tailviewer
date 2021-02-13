@@ -6,6 +6,7 @@ namespace Tailviewer.Core.Settings
 	/// <summary>
 	///     Responsible for storing settings related to <see cref="ILogFile" /> and its implementations.
 	/// </summary>
+	[Service]
 	public interface ILogFileSettings
 	{
 		/// <summary>

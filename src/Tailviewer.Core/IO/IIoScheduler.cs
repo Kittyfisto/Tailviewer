@@ -7,6 +7,7 @@ namespace Tailviewer.Core.IO
 	/// <summary>
 	///     This interface allows read-only, random-access to text files.
 	/// </summary>
+	[Service]
 	public interface IIoScheduler
 		: IDisposable
 	{

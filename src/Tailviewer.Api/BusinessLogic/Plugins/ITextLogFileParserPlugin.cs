@@ -6,6 +6,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 	/// <summary>
 	///     This plugin needs to be implemented when introducing a log format to tailviewer that it does not natively support.
 	/// </summary>
+	[Service]
 	public interface ITextLogFileParserPlugin
 		: IPlugin
 	{
