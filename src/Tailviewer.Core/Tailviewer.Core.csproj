@@ -102,7 +102,7 @@
     <Compile Include="LogFiles\Merged\Stuff.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryView.cs" />
-    <Compile Include="LogFiles\CachedTextLogFile.cs" />
+    <Compile Include="LogFiles\StreamingTextLogFile.cs" />
     <Compile Include="LogFiles\TextLogFileFormat.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="ServiceContainer.cs" />

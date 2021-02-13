@@ -17,7 +17,7 @@ namespace Tailviewer.Core.LogFiles
 	///     A n<see cref="ILogFile" /> implementation which allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
 	/// </summary>
 	[DebuggerTypeProxy(typeof(LogFileView))]
-	internal sealed class CachedTextLogFile
+	internal sealed class StreamingTextLogFile
 		: ILogFile
 		, ITextFileListener
 	{
@@ -70,7 +70,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </remarks>
 		/// <param name="serviceContainer"></param>
 		/// <param name="fileName"></param>
-		internal CachedTextLogFile(IServiceContainer serviceContainer,
+		internal StreamingTextLogFile(IServiceContainer serviceContainer,
 		                           string fileName)
 		{
 			_serviceContainer = serviceContainer;
