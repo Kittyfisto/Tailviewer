@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.Bookmarks;
 using Tailviewer.BusinessLogic.DataSources;
+using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings.Bookmarks;
 
@@ -148,6 +151,39 @@ namespace Tailviewer.Test.BusinessLogic.Bookmarks
 			collection.RemoveBookmark(bookmark);
 			_bookmarks.Verify(x => x.SaveAsync(), Times.Exactly(2));
 			collection.Bookmarks.Should().BeEmpty();
+		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/281")]
+		public void TestDeadlockWhenRemovingAnActiveDataSource()
+		{
+			var logFile = new Mock<ILogFile>();
+			var dataSource = new Mock<IDataSource>();
+			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
+
+			var collection = new BookmarkCollection(_bookmarks.Object, TimeSpan.Zero);
+			logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
+			       .Callback((ILogFileListener unused) =>
+			       {
+					   // In order to produce the deadlock, we have to simulate what's happening in reality.
+					   // Any ILogFile implementation will hold a lock both while invoking listeners and while
+					   // Removing them. Waiting on the OnLogFileModified() call simulates exactly that...
+				       var task = new Task(() =>
+				       {
+					       collection.OnLogFileModified(logFile.Object, LogFileSection.Invalidate(0, 10));
+				       }, TaskCreationOptions.LongRunning);
+
+					   task.Start();
+				       task.Wait();
+			       });
+
+			collection.AddDataSource(dataSource.Object);
+
+			var removeTask = Task.Factory.StartNew(() => collection.RemoveDataSource(dataSource.Object));
+			removeTask.Wait(TimeSpan.FromSeconds(1)).Should().BeTrue("because RemoveDataSource should not block at all");
+
+			logFile.Verify(x => x.RemoveListener(collection), Times.Once);
+			
 		}
 	}
 }
