@@ -9,15 +9,24 @@ namespace Tailviewer.Formats.Serilog
 	public sealed class SerilogEntry
 		: IReadOnlyLogEntry
 	{
+		private readonly string _rawContent;
 		public LevelFlags LogLevel;
 		public DateTime Timestamp;
 		public string Message;
+
+		public SerilogEntry(string rawContent)
+		{
+			_rawContent = rawContent;
+		}
 
 		#region Implementation of IReadOnlyLogEntry
 
 		public string RawContent
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				return _rawContent;
+			}
 		}
 
 		public LogLineIndex Index
@@ -77,6 +86,11 @@ namespace Tailviewer.Formats.Serilog
 
 		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
 		{
+			if (Equals(column, LogFileColumns.RawContent))
+			{
+				return (T) (object) _rawContent;
+			}
+
 			if (Equals(column, LogFileColumns.Message))
 			{
 				return (T)(object)Message;

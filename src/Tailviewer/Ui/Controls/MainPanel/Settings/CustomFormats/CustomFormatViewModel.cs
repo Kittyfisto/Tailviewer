@@ -112,6 +112,8 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats
 
 		public ICommand RemoveCommand { get; set; }
 
+		public CustomLogFileFormat CustomFormat => _customFormat;
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private void TryCreateFormat()

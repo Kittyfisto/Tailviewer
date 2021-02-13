@@ -227,6 +227,7 @@ namespace Tailviewer.Serilog.Test
 			var logEntry = Parse(parser, "16/09/2020 00:45:39 +02:00 [Verbose]");
 			logEntry.Timestamp.Should().Be(new DateTime(2020, 09, 16, 00, 45, 39));
 			logEntry.LogLevel.Should().Be(LevelFlags.Trace);
+			logEntry.RawContent.Should().Be("16/09/2020 00:45:39 +02:00 [Verbose]");
 		}
 
 		[Test]

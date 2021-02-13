@@ -67,6 +67,7 @@ namespace Tailviewer.Ui.Controls.MainPanel.Settings.CustomFormats
 		private void Remove(CustomFormatViewModel viewModel)
 		{
 			_formats.Remove(viewModel);
+			_settings.CustomFormats.Remove(viewModel.CustomFormat);
 		}
 
 		public string Name => _name;

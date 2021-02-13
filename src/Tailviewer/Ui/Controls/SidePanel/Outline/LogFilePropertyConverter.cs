@@ -21,7 +21,11 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 			if (value is ILogFileFormat format)
 			{
-				return format.Description;
+				var description = format.Description;
+				if (string.IsNullOrWhiteSpace(description))
+					return format.Name;
+
+				return description;
 			}
 
 			if (value is Encoding encoding)
