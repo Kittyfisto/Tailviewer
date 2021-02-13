@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -7,8 +8,14 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.IO
 {
 	/// <summary>
-	/// 
+	///     This interface allows read-only, random-access to a text file.
 	/// </summary>
+	/// <remarks>
+	///     Contrary to a <see cref="FileStream"/>, the underlying file handle is not kept open continuously,
+	///     nor does the file need to exist in order for an object of this type to be created.
+	///     When the file does exist, then <see cref="Read(Tailviewer.BusinessLogic.LogFiles.LogFileSection,string[],int)"/> succeeds,
+	///     otherwise it might "fail" and return 0 bytes read.
+	/// </remarks>
 	public interface ITextFileReader
 		: IDisposable
 	{

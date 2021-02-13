@@ -5,6 +5,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.IO
 {
 	/// <summary>
+	///    
 	/// </summary>
 	public interface ITextFileListener
 	{
