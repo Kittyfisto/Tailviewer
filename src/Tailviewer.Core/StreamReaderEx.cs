@@ -16,6 +16,7 @@ namespace Tailviewer.Core
 		private readonly char[] _readBuffer;
 		private readonly StreamReader _reader;
 		private readonly Stream _stream;
+		private int _nextSearchStartIndex;
 
 		/// <summary>
 		///     Initializes this enhanced stream reader.
@@ -32,7 +33,15 @@ namespace Tailviewer.Core
 			_stream = stream;
 			_reader = new StreamReader(_stream, encoding, detectEncodingFromByteOrderMarks: true);
 
-			_readBuffer = new char[1024];
+			// We want to avoid allocating an array which is so big that it has to be placed in the large object heap because it would introduce a bit more memory fragmentation.
+			// The total number of characters we may allocate here has been guesstimated using various sources on the internet.
+			const int maxSmallObjectSize = 85000;
+			const int objectSize = 24;
+			const int estimatedArraySize = 4;
+			const int charSize = 2;
+			const int bufferSize = (maxSmallObjectSize - objectSize - estimatedArraySize - 1) / charSize;
+
+			_readBuffer = new char[bufferSize];
 			_contentBuffer = new StringBuilder();
 		}
 
@@ -64,7 +73,7 @@ namespace Tailviewer.Core
 		private string TryFormLine()
 		{
 			var index = -1;
-			for (var i = 0; i < _contentBuffer.Length; ++i)
+			for (var i = _nextSearchStartIndex; i < _contentBuffer.Length; ++i)
 			{
 				var c = _contentBuffer[i];
 				if (c == '\n')
@@ -80,6 +89,7 @@ namespace Tailviewer.Core
 			if (index != -1)
 				return FormLine(index + 1);
 
+			_nextSearchStartIndex = _contentBuffer.Length;
 			return null;
 		}
 
@@ -87,6 +97,7 @@ namespace Tailviewer.Core
 		{
 			var line = _contentBuffer.ToString(startIndex: 0, length: length);
 			_contentBuffer.Remove(startIndex: 0, length: length);
+			_nextSearchStartIndex = 0;
 			return line;
 		}
 	}

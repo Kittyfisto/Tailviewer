@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -60,7 +61,7 @@ namespace Tailviewer.Core.LogFiles
 
 				var column = columns[i];
 				var value = logEntry.GetValue(column);
-				buffer.AppendFormat("{0}: {1}", column.Id, value);
+				buffer.AppendFormat(CultureInfo.InvariantCulture, "{0}: {1}", column.Id, value);
 			}
 
 			return buffer.ToString();

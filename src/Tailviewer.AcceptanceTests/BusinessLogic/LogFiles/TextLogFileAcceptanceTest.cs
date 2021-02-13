@@ -21,6 +21,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 	[TestFixture]
 	public sealed class TextLogFileAcceptanceTest
 	{
+		public const string File1Mb_1Line = @"TestData\1Mb_1Line.txt";
+		public const string File1Mb_2Lines = @"TestData\1Mb_2Lines.txt";
 		public const string File2Mb = @"TestData\2Mb.txt";
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";

@@ -1042,11 +1042,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
 		public void TestGetTimestampPartiallyInvalidBySection()
 		{
-			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.Timestamp)
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
 			{
-				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
-				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
-				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
 			};
 
 			using (var logFile = CreateFromContent(content))

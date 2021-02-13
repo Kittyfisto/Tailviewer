@@ -112,6 +112,7 @@
     <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest2.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamReaderExTest.cs" />
     <Compile Include="InstallerTest.cs" />
     <Compile Include="ProcessEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
