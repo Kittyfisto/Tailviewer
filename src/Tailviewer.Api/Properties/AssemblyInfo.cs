@@ -6,11 +6,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("API to create plugins for Tailviewer, the free log file viewer")]
 [assembly: AssemblyDescription("API to create plugins for Tailviewer, the free log file viewer")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
