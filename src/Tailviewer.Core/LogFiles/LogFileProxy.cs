@@ -216,19 +216,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public int OriginalCount
-		{
-			get
-			{
-				ILogFile logFile = _source;
-				if (logFile != null)
-					return logFile.OriginalCount;
-
-				return 0;
-			}
-		}
-
-		/// <inheritdoc />
 		public int MaxCharactersPerLine
 		{
 			get
@@ -300,14 +287,20 @@ namespace Tailviewer.Core.LogFiles
 		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			lock (_properties)
-				return _properties.GetValue(propertyDescriptor);
+			{
+				_properties.TryGetValue(propertyDescriptor, out var value);
+				return value;
+			}
 		}
 
 		/// <inheritdoc />
 		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			lock (_properties)
-				return _properties.GetValue(propertyDescriptor);
+			{
+				_properties.TryGetValue(propertyDescriptor, out var value);
+				return value;
+			}
 		}
 
 		/// <inheritdoc />

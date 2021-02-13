@@ -57,13 +57,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		int Count { get; }
 
 		/// <summary>
-		///     The total number of <see cref="LogLine" />s of the underlying data source, which
-		///     is expected to be <see cref="Count" /> most of the time, unless the implementation
-		///     filters an underlying data source.
-		/// </summary>
-		int OriginalCount { get; }
-
-		/// <summary>
 		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
 		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]

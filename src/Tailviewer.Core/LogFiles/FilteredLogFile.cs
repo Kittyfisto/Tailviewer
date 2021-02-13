@@ -64,9 +64,7 @@ namespace Tailviewer.Core.LogFiles
 			ILogEntryFilter logEntryFilter)
 			: base(scheduler)
 		{
-			if (source == null) throw new ArgumentNullException(nameof(source));
-
-			_source = source;
+			_source = source ?? throw new ArgumentNullException(nameof(source));
 
 			_computedProperties = new[] {LogFileProperties.PercentageProcessed};
 			_properties = new LogFilePropertyList(_computedProperties.Concat(source.Properties).Distinct());
@@ -92,9 +90,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override int OriginalCount => _source.Count;
-
-		/// <inheritdoc />
 		public override int Count
 		{
 			get
@@ -118,13 +113,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _properties.GetValue(propertyDescriptor);
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _properties.GetValue(propertyDescriptor);
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
 		/// <inheritdoc />
@@ -200,7 +197,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-		
+
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
@@ -210,7 +207,7 @@ namespace Tailviewer.Core.LogFiles
 				destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
-		
+
 		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_indices)
@@ -229,7 +226,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-		
+
 		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_indices)

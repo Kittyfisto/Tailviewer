@@ -97,23 +97,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public int OriginalCount
-		{
-			get
-			{
-				try
-				{
-					return _logFile.OriginalCount;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return 0;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public int MaxCharactersPerLine
 		{
 			get

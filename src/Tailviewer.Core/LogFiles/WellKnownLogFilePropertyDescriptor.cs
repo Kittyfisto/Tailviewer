@@ -33,6 +33,10 @@ namespace Tailviewer.Core.LogFiles
 			: this(new []{id}, displayName, defaultValue)
 		{}
 
+		public WellKnownLogFilePropertyDescriptor(IEnumerable<string> path, string displayName)
+			: this(path, displayName, default)
+		{ }
+
 		public WellKnownLogFilePropertyDescriptor(IEnumerable<string> path, string displayName, T defaultValue)
 		{
 			if (path == null)

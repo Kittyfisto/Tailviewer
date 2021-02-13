@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.ActionCenter;
@@ -1153,6 +1154,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		#endregion
+
+		[Test]
+		public void TestUnknownProperty()
+		{
+			using (var logFile = CreateEmpty())
+			{
+				var customDefaultValue = "Shazarm!";
+				var myTypedProperty = new WellKnownLogFilePropertyDescriptor<string>("My current movie", "", customDefaultValue);
+
+				logFile.GetValue(myTypedProperty).Should().Be(customDefaultValue,
+				                                                "because the log doesn't have that property and should returns default value instead");
+				logFile.GetValue((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
+				                                                "because the log doesn't have that property and should returns default value instead");
+			}
+		}
 
 		#endregion
 	}

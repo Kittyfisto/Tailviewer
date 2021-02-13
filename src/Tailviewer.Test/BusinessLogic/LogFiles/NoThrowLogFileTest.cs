@@ -87,17 +87,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestOriginalCount()
-		{
-			_logFile.Setup(x => x.OriginalCount).Throws<SystemException>();
-			new Action(() =>
-			{
-				var unused = _proxy.OriginalCount;
-			}).Should().NotThrow();
-			_logFile.Verify(x => x.OriginalCount, Times.Once);
-		}
-
-		[Test]
 		public void TestMaxCharactersPerLine()
 		{
 			_logFile.Setup(x => x.MaxCharactersPerLine).Throws<SystemException>();

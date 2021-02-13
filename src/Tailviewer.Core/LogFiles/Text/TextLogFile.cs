@@ -89,8 +89,8 @@ namespace Tailviewer.Core.LogFiles.Text
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
+			_properties.SetValue(TextLogFileProperties.LineCount, 0);
 			_syncRoot = new object();
-
 
 			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
 			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
@@ -118,9 +118,6 @@ namespace Tailviewer.Core.LogFiles.Text
 		public override int Count => _entries.Count;
 
 		/// <inheritdoc />
-		public override int OriginalCount => Count;
-
-		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
@@ -132,16 +129,14 @@ namespace Tailviewer.Core.LogFiles.Text
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
@@ -318,13 +313,16 @@ namespace Tailviewer.Core.LogFiles.Text
 										logEntry = parsedLogEntry;
 								}
 
-								if (++numProcessed % 100 == 0)
-									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
-
 								Add(logEntry.RawContent,
 								    logEntry.LogLevel,
 								    _numberOfLinesRead,
 								    logEntry.Timestamp);
+
+								if (++numProcessed % 100 == 0)
+								{
+									_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
+									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+								}
 							}
 
 							_lastPosition = stream.Position;

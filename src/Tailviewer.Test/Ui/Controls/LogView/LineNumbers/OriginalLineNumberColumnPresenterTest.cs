@@ -46,7 +46,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		{
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(4);
-			logFile.Setup(x => x.OriginalCount).Returns(1000);
+			logFile.Setup(x => x.GetValue(TextLogFileProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
 			                               It.Is<ILogFileColumnDescriptor<int>>(y => y == LogFileColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),

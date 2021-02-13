@@ -94,6 +94,7 @@ namespace Tailviewer.Core.LogFiles
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
+
 			PercentageProcessed = new WellKnownLogFilePropertyDescriptor<Percentage>("PercentageProcessed", Percentage.Zero);
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
 			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");

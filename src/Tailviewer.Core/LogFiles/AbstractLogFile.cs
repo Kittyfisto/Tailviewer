@@ -102,9 +102,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public virtual int OriginalCount => Count;
-
-		/// <inheritdoc />
 		public abstract int MaxCharactersPerLine { get; }
 
 		/// <inheritdoc />
