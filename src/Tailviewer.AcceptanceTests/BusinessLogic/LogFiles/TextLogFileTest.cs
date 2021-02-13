@@ -525,6 +525,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			var logFile = Create(fname);
 			_scheduler.RunOnce();
+			logFile.Count.Should().Be(content.Count);
 			return logFile;
 		}
 	}
