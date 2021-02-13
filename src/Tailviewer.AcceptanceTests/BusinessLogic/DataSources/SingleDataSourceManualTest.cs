@@ -27,7 +27,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_fname = Path.GetTempFileName();
+			_fname = PathEx.GetTempFileName();
 			if (File.Exists(_fname))
 				File.Delete(_fname);
 			_scheduler = new ManualTaskScheduler();

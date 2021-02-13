@@ -106,9 +106,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
@@ -226,7 +226,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			// Now we can perform a block-copy of all properties.
-			_source.GetValues(_properties);
+			_source.GetAllValues(_properties);
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 

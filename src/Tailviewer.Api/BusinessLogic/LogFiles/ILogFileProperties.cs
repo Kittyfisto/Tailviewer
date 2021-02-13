@@ -21,34 +21,34 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     Sets the value of the given property.
 		/// </summary>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchPropertyException"></exception>
-		void SetValue(ILogFilePropertyDescriptor propertyDescriptor, object value);
+		void SetValue(ILogFilePropertyDescriptor property, object value);
 
 		/// <summary>
 		///     Sets the value of the given property.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchPropertyException"></exception>
-		void SetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor, T value);
+		void SetValue<T>(ILogFilePropertyDescriptor<T> property, T value);
 
 		/// <summary>
 		/// </summary>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue(ILogFilePropertyDescriptor propertyDescriptor, out object value);
+		bool TryGetValue(ILogFilePropertyDescriptor property, out object value);
 
 		/// <summary>
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="propertyDescriptor"></param>
+		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor, out T value);
+		bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value);
 
 		/// <summary>
 		///     Retrieves the value of the given property.
@@ -68,13 +68,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		T GetValue<T>(ILogFilePropertyDescriptor<T> property);
 
 		/// <summary>
-		///     Retrieves a subset of properties from this object and stores them in the given <paramref name="properties" />.
+		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
 		/// <remarks>
-		///     Only those properties present in the given <paramref name="properties" /> and in this
-		///     one are retrieved.
+		///     Values which are not already stored are added to the given buffer.
 		/// </remarks>
-		/// <param name="properties"></param>
-		void GetValues(ILogFileProperties properties);
+		/// <param name="destination"></param>
+		void CopyAllValuesTo(ILogFileProperties destination);
 	}
 }

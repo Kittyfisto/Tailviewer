@@ -93,6 +93,8 @@
     <Compile Include="LogFiles\LogEntryView.cs" />
     <Compile Include="LogFiles\LogEntryCache.cs" />
     <Compile Include="LogFiles\LogFileFormats.cs" />
+    <Compile Include="LogFiles\LogFilePropertiesExtensions.cs" />
+    <Compile Include="LogFiles\LogFilePropertiesView.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFileChanges.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFilePendingModification.cs" />
     <Compile Include="LogFiles\Merged\MergedLogFileIndex.cs" />
@@ -157,7 +159,7 @@
     <Compile Include="LogFiles\Int32View.cs" />
     <Compile Include="LogFiles\LogFileColumn.cs" />
     <Compile Include="LogFiles\LogFileProperties.cs" />
-    <Compile Include="LogFiles\LogFilePropertiesView.cs" />
+    <Compile Include="LogFiles\LogFilePropertiesDebuggerView.cs" />
     <Compile Include="LogFiles\LogFileProperty.cs" />
     <Compile Include="LogFiles\LogFilePropertyList.cs" />
     <Compile Include="LogFiles\LogFileView.cs" />

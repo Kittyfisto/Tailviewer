@@ -64,11 +64,6 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<ErrorFlags> EmptyReason;
 
 		/// <summary>
-		///     True when the log file has been fully processed, false otherwise.
-		/// </summary>
-		public static readonly ILogFilePropertyDescriptor<bool> EndOfSource;
-
-		/// <summary>
 		///     The format of the log file, as determined by a <see cref="ILogFileFormatMatcher"/>.
 		/// </summary>
 		public static readonly ILogFilePropertyDescriptor<ILogFileFormat> Format;
@@ -101,7 +96,6 @@ namespace Tailviewer.Core.LogFiles
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
 			PercentageProcessed = new WellKnownLogFilePropertyDescriptor<Percentage>("PercentageProcessed", Percentage.Zero);
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
-			EndOfSource = new WellKnownLogFilePropertyDescriptor<bool>("EndOfSource");
 			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");
 			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>("FormatDetectionCertainty");
 			Encoding = new WellKnownLogFilePropertyDescriptor<Encoding>("Encoding");
@@ -117,7 +111,6 @@ namespace Tailviewer.Core.LogFiles
 				Size,
 				PercentageProcessed,
 				EmptyReason,
-				EndOfSource,
 				Format,
 				FormatDetectionCertainty,
 				Encoding

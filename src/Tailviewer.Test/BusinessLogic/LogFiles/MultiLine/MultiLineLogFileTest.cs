@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 {
 	[TestFixture]
 	public sealed class MultiLineLogFileTest
@@ -138,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
@@ -188,7 +188,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.LastModified)).Returns(timestamp);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.LastModified, timestamp);
@@ -214,7 +214,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var size = Size.FromGigabytes(42);
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(size);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 					   properties.SetValue(LogFileProperties.Size, size);

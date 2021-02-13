@@ -198,7 +198,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create( File20Mb))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue("because we should be able to read the entire file in a few seconds");
+				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(15)).BeTrue("because we should be able to read the entire file in a few seconds");
 				file.Count.Should().Be(165342);
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
@@ -314,7 +314,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				string fileName = Path.GetTempFileName();
+				string fileName = PathEx.GetTempFileName();
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 

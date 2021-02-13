@@ -83,7 +83,7 @@ namespace Tailviewer.Core.LogFiles
 		public abstract T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <inheritdoc />
-		public abstract void GetValues(ILogFileProperties properties);
+		public abstract void GetAllValues(ILogFileProperties destination);
 
 		/// <inheritdoc />
 		public void Dispose()

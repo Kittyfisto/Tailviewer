@@ -9,6 +9,12 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///    This class offers a view onto a subset of columns of another <see cref="ILogEntry"/>.
 	/// </summary>
+	/// <remarks>
+	///     This class implements a similar concept to what System.Span{T} implements: The data isn't copied over, instead
+	///     it offers a view onto a sub-region (in this case limited by the set of columns given during construction) of log entries
+	///     which still reside in another <see cref="ILogEntries"/> object: When entries change in the source, then so do they
+	///     change when viewed through this object.
+	/// </remarks>
 	public sealed class LogEntryView
 		: ILogEntry
 	{

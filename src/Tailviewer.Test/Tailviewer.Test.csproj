@@ -122,10 +122,12 @@
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\AbstractTaskSchedulerLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\EmptyLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntriesViewTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryTest.cs" />
@@ -141,12 +143,15 @@
     <Compile Include="BusinessLogic\LogFiles\LogFilePropertiesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFilePropertyListTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileSectionTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileChangesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFilePendingModificationTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MultiLine\MultiLineLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\MultiLine\MultiLineLogFileTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\NoThrowLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\PluginLogFileFactoryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryViewTest.cs" />
@@ -156,7 +161,7 @@
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Proxy\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogEntryTest.cs" />
@@ -197,6 +202,7 @@
     <Compile Include="Settings\LogLevelSettingsTest.cs" />
     <Compile Include="Settings\LogViewerSettingsTest.cs" />
     <Compile Include="Settings\MainWindowSettingsTest.cs" />
+    <Compile Include="PathEx.cs" />
     <Compile Include="Settings\QuickFiltersTest.cs" />
     <Compile Include="Settings\QuickFilterTest.cs" />
     <Compile Include="Settings\TextSettingsTest.cs" />

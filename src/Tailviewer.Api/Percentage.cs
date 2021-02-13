@@ -138,6 +138,17 @@ namespace Tailviewer
 		}
 
 		/// <summary>
+		///     Returns the fraction between <paramref name="current" /> and <paramref name="count" />.
+		/// </summary>
+		/// <param name="current"></param>
+		/// <param name="count"></param>
+		/// <returns></returns>
+		public static Percentage Of(long current, long count)
+		{
+			return new Percentage((float) ((double)current / count));
+		}
+
+		/// <summary>
 		///     Compares the two percentages.
 		/// </summary>
 		/// <param name="lhs"></param>
@@ -179,6 +190,32 @@ namespace Tailviewer
 		public static bool operator <(Percentage lhs, Percentage rhs)
 		{
 			return lhs.RelativeValue < rhs.RelativeValue;
+		}
+
+		/// <summary>
+		///     Multiplies two percentages.
+		/// </summary>
+		/// <param name="lhs"></param>
+		/// <param name="rhs"></param>
+		/// <returns></returns>
+		public static Percentage operator *(Percentage lhs, Percentage rhs)
+		{
+			return new Percentage(lhs.RelativeValue * rhs.RelativeValue);
+		}
+
+		/// <summary>
+		/// Returns a new percentage value based on this one, but clamped to [0, 1].
+		/// </summary>
+		/// <returns></returns>
+		[Pure]
+		public Percentage Clamped()
+		{
+			if (RelativeValue < 0)
+				return Zero;
+			if (RelativeValue > 1)
+				return HundredPercent;
+
+			return this;
 		}
 
 		/// <summary>

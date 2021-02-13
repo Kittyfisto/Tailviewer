@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
@@ -9,6 +10,9 @@ using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
+	/// <summary>
+	/// This class is responsible for testing all <see cref="ILogFile"/> implementations.
+	/// </summary>
 	public abstract class AbstractLogFileTest
 	{
 		protected abstract ILogFile CreateEmpty();

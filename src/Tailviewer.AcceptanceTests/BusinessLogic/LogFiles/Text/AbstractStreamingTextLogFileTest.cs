@@ -26,7 +26,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_serviceContainer = new ServiceContainer();
 			_taskScheduler = new ManualTaskScheduler();
 			_formatMatcher = new SimpleLogFileFormatMatcher(LogFileFormats.GenericText);
-			_fileName = Path.GetTempFileName();
+			_fileName = PathEx.GetTempFileName();
 			_textLogFileParserPlugin = new SimpleTextLogFileParserPlugin();
 
 			_serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
@@ -49,16 +49,18 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			var logFile = Create();
 			logFile.Count.Should().Be(0);
 			logFile.OriginalCount.Should().Be(0);
-			logFile.GetValue(LogFileProperties.EndOfSource).Should().BeFalse("because the log file didn't even have enough time to check the source");
+			logFile.GetValue(LogFileProperties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
+			logFile.GetValue(LogFileProperties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None, "because the log file didn't have enough time to check the source");
 
 			_taskScheduler.RunOnce();
 
 			logFile.Count.Should().Be(0);
-			logFile.GetValue(LogFileProperties.EndOfSource).Should().BeTrue("because the log file has performed all work and thus has reached the end of the empty source");
+			logFile.GetValue(LogFileProperties.Size).Should().BeNull("because the source file does not exist");
+			logFile.GetValue(LogFileProperties.Created).Should().BeNull("because the source file does not exist");
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
-			logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 		}
 	}
 }

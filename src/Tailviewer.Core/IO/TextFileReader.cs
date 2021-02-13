@@ -446,19 +446,18 @@ namespace Tailviewer.Core.IO
 
 		private void ResetEndOfSourceReached()
 		{
-			_properties.SetValue(LogFileProperties.EndOfSource, false);
+			//_properties.SetValue(LogFileProperties.PercentageProcessed, ...);
 		}
 
 		private void SetEndOfSourceReached()
 		{
-			_properties.SetValue(LogFileProperties.EndOfSource, true);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			_listener.OnEndOfSourceReached(_properties);
 		}
 
 		private void SetDoesNotExist()
 		{
 			_properties.Reset();
-			_properties.SetValue(LogFileProperties.EndOfSource, true);
 			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			_listener.OnReset(_properties);

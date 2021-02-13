@@ -36,6 +36,13 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
+		public InMemoryLogFile(IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
+			: this(LogFileColumns.Minimum, properties)
+		{ }
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
 		/// <param name="columns"></param>
 		public InMemoryLogFile(params ILogFileColumnDescriptor[] columns)
 			: this((IEnumerable < ILogFileColumnDescriptor > )columns)
@@ -56,6 +63,15 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="columns"></param>
 		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns)
+			: this(columns, new Dictionary<ILogFilePropertyDescriptor, object>())
+		{ }
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="properties"></param>
+		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns, IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
@@ -66,6 +82,10 @@ namespace Tailviewer.Core.LogFiles
 
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Size, Size.Zero);
+			foreach (var pair in properties)
+			{
+				_properties.SetValue(pair.Key, pair.Value);
+			}
 		}
 
 		/// <inheritdoc />
@@ -122,9 +142,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <summary>

@@ -143,9 +143,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
@@ -385,6 +385,7 @@ namespace Tailviewer.Core.LogFiles
 			DateTime? startTimestamp = null;
 			DateTime? endTimestamp = null;
 			int maxCharactersPerLine = 0;
+			Percentage processed = Percentage.HundredPercent;
 			for (int n = 0; n < _sources.Count; ++n)
 			{
 				var source = _sources[n];
@@ -405,8 +406,12 @@ namespace Tailviewer.Core.LogFiles
 				if (end != null && (end > endTimestamp || endTimestamp == null))
 					endTimestamp = end;
 				maxCharactersPerLine = Math.Max(maxCharactersPerLine, source.MaxCharactersPerLine);
+
+				var sourceProcessed = source.GetValue(LogFileProperties.PercentageProcessed);
+				processed *= sourceProcessed;
 			}
 
+			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
 			_properties.SetValue(LogFileProperties.LastModified, lastModified);
 			_properties.SetValue(LogFileProperties.Size, size);
 			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);

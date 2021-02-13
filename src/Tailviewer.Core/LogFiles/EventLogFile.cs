@@ -112,9 +112,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			_buffer.GetValues(properties);
+			_buffer.GetAllValues(destination);
 		}
 
 		/// <inheritdoc />

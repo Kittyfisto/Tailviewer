@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrolib;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
@@ -8,7 +9,14 @@ namespace Tailviewer.Core.LogFiles
 	internal sealed class EmptyLogFile
 		: ILogFile
 	{
+		private readonly LogFilePropertyList _properties = new LogFilePropertyList(LogFileProperties.Minimum);
 		private readonly HashSet<ILogFileListener> _listeners = new HashSet<ILogFileListener>();
+
+		public EmptyLogFile()
+		{
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(LogFileProperties.Size, Size.Zero);
+		}
 
 		#region Implementation of IDisposable
 
@@ -61,23 +69,23 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				return new List<ILogFilePropertyDescriptor>();
+				return _properties.Properties;
 			}
 		}
 
 		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			throw new NotImplementedException();
+			return _properties.GetValue(propertyDescriptor);
 		}
 
 		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return default;
+			return _properties.GetValue(propertyDescriptor);
 		}
 
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			throw new NotImplementedException();
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)

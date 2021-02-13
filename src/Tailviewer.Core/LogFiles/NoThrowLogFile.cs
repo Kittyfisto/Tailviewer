@@ -219,11 +219,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
 			try
 			{
-				_logFile.GetValues(properties);
+				_logFile.GetAllValues(destination);
 			}
 			catch (Exception e)
 			{

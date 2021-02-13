@@ -146,9 +146,9 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
@@ -253,9 +253,10 @@ namespace Tailviewer.Core.LogFiles.Text
 				else
 				{
 					var info = new FileInfo(_fileName);
+					var fileSize = info.Length;
 					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
 					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
-					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
+					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -301,6 +302,7 @@ namespace Tailviewer.Core.LogFiles.Text
 								OnReset(stream, out _numberOfLinesRead, out _lastPosition);
 							}
 
+							int numProcessed = 0;
 							string currentLine;
 							while ((currentLine = reader.ReadLine()) != null)
 							{
@@ -334,6 +336,9 @@ namespace Tailviewer.Core.LogFiles.Text
 										logEntry = parsedLogEntry;
 								}
 
+								if (++numProcessed % 100 == 0)
+									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+
 								Add(logEntry.RawContent,
 								    logEntry.LogLevel,
 								    _numberOfLinesRead,
@@ -341,6 +346,7 @@ namespace Tailviewer.Core.LogFiles.Text
 							}
 
 							_lastPosition = stream.Position;
+							_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
 						}
 					}
 
@@ -381,6 +387,12 @@ namespace Tailviewer.Core.LogFiles.Text
 				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
+		}
+
+		[Pure]
+		private Percentage CalculatePercentageProcessed(long streamPosition, long fileSize)
+		{
+			return Percentage.Of(streamPosition, fileSize).Clamped();
 		}
 
 		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
@@ -559,6 +571,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			_properties.SetValue(LogFileProperties.Format, null);
 			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
 			_properties.SetValue(LogFileProperties.Encoding, null);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 

@@ -22,7 +22,7 @@ namespace Tailviewer.Archiver.Test
 		[SetUp]
 		public void Setup()
 		{
-			_fname = Path.GetTempFileName();
+			_fname = PathEx.GetTempFileName();
 			Console.WriteLine("Plugin: {0}", _fname);
 			if (File.Exists(_fname))
 				File.Delete(_fname);

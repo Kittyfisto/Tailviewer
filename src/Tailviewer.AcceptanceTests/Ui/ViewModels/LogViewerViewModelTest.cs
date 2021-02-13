@@ -28,7 +28,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			_scheduler = new DefaultTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
 			_actionCenter = new Mock<IActionCenter>();
-			_settings = new ApplicationSettings(Path.GetTempFileName());
+			_settings = new ApplicationSettings(PathEx.GetTempFileName());
 		}
 
 		[OneTimeTearDown]

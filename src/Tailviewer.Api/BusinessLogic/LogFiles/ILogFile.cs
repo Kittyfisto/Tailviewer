@@ -122,11 +122,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <summary>
-		///     Retrieves the values for the given properties and stores them in the given buffer.
+		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
-		/// <param name="properties"></param>
+		/// <param name="destination"></param>
 		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
-		void GetValues(ILogFileProperties properties);
+		void GetAllValues(ILogFileProperties destination);
 
 		#endregion
 

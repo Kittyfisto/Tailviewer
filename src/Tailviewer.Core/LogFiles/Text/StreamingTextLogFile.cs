@@ -154,9 +154,9 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
