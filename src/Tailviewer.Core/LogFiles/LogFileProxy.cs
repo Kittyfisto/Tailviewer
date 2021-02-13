@@ -111,7 +111,7 @@ namespace Tailviewer.Core.LogFiles
 
 			// This line is extremely important because listeners are allowed to limit how often they are notified.
 			// This means that even when there is NO modification to the source, we still need to notify the collection
-			// so it can check if enough time has ellapsed to finally notify listener.
+			// so it can check if enough time has elapsed to finally notify listener.
 			_listeners.OnRead(_listeners.CurrentLineIndex);
 
 			if (performedWork)

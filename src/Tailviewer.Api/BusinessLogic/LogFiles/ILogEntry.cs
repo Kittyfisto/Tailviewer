@@ -5,6 +5,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	///     Represents a log entry which can be modified.
 	/// </summary>
+	/// <remarks>
+	///     Plugin users really shouldn't directly implement this interface and instead use one the implementations
+	///     offered by the Tailviewer.Core library instead (namely LogEntry, LogEntryArray and LogEntryList).
+	///     If a custom implementation isn't avoidable, then the custom implementation should inherit from AbstractLogEntry instead.
+	/// </remarks>
 	public interface ILogEntry
 		: IReadOnlyLogEntry
 	{
@@ -12,7 +17,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     The raw content of this log entry.
 		/// </summary>
 		/// <remarks>
-		///     Might not be readable by a humand, depending on the data source.
+		///     Might not be readable by a human, depending on the data source.
 		/// </remarks>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
@@ -42,7 +47,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		[WillBeRemoved("This property will be be removed once multiline log entry handlign is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
+		[WillBeRemoved("This property will be be removed once multiline log entry handling is rewritten", "https://github.com/Kittyfisto/Tailviewer/issues/140")]
 		new LogEntryIndex LogEntryIndex { get; set; }
 
 		/// <summary>

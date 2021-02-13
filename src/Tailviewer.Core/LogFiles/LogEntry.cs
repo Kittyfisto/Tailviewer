@@ -8,7 +8,7 @@ namespace Tailviewer.Core.LogFiles
 	///     An <see cref="ILogEntry" /> implementation which holds all data in memory (although in a memory intensive fashion).
 	/// </summary>
 	/// <remarks>
-	///     DO NOT use Lists/Arrays of this type to store a bunch of data. Use <see cref="LogEntryArray"/> or <see cref="LogEntryList"/> instea.d
+	///     DO NOT use Lists/Arrays of this type to store a bunch of data. Use <see cref="LogEntryArray"/> or <see cref="LogEntryList"/> instead.
 	/// </remarks>
 	public sealed class LogEntry
 		: AbstractLogEntry

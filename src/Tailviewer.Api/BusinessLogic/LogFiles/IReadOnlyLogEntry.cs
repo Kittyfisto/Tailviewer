@@ -7,6 +7,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Provides read-only access to a log entry of a <see cref="ILogFile" />.
 	/// </summary>
 	/// <remarks>
+	///     Plugin users really shouldn't directly implement this interface and instead use one the implementations
+	///     offered by the Tailviewer.Core library instead (namely ReadOnlyLogEntry, LogEntryArray and LogEntryList).
+	///     If a custom implementation isn't avoidable, then the custom implementation should inherit from AbstractLogEntry instead.
+	/// </remarks>
+	/// <remarks>
 	///     This interface is meant to replace <see cref="LogLine" />.
 	///     With its introduction, <see cref="LogLineIndex" /> can be removed and be replaced
 	///     with <see cref="LogEntryIndex" />.

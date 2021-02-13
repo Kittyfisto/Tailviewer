@@ -9,7 +9,7 @@ namespace Tailviewer.Core.LogFiles
 	///     according to the settings given to <see cref="AddListener" />.
 	/// </summary>
 	/// <remarks>
-	///     This class should definately be used when implementing the <see cref="ILogFile" /> interface.
+	///     This class should definitely be used when implementing the <see cref="ILogFile" /> interface.
 	/// </remarks>
 	public sealed class LogFileListenerCollection
 	{

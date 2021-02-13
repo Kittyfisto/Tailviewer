@@ -6,8 +6,14 @@ using Tailviewer.BusinessLogic.LogFiles;
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	/// 
+	///    An abstract implementation of <see cref="ILogEntry"/>.
+	///    Delegates all fixed property access calls to <see cref="GetValue{T}"/> and <see cref="SetValue"/>.
 	/// </summary>
+	/// <remarks>
+	///    IF plugin authors desperately need to implement their own <see cref="ILogEntry"/>, then they should
+	///    inherit from this class instead. They don't have to implement all properties and are protected against
+	///    having to re-compile against future additions.
+	/// </remarks>
 	public abstract class AbstractLogEntry
 		: ILogEntry
 	{

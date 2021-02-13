@@ -133,7 +133,7 @@ namespace Tailviewer.Archiver.Plugins
 			var versionAttribute = assembly.GetCustomAttribute<PluginVersionAttribute>();
 
 			if (idAttribute == null)
-				throw new PackException(string.Format("Plugin '{0}' is missing the reqired PluginId attribute, please add it", pluginPath));
+				throw new PackException(string.Format("Plugin '{0}' is missing the required PluginId attribute, please add it", pluginPath));
 
 			if (string.IsNullOrWhiteSpace(idAttribute.Namespace))
 				throw new PackException(string.Format("The PluginId Namespace of plugin '{0}' is required to be non-null and to consists of at least one non-whitespace character", pluginPath));

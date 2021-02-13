@@ -166,10 +166,10 @@ namespace Tailviewer.Core.LogFiles
 			// Most tests expect that listeners have been notified
 			// of all pending changes when the source enters the
 			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should ellapse between
+			// for listeners specifying a timespan that should elapse between
 			// calls to OnLogFileModified. The listener collection has
 			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has ellapsed.
+			// neither the maximum line count, nor the maximum timespan has elapsed.
 			// Therefore we flush the collection to ensure that ALL listeners have been notified
 			// of ALL changes (even if they didn't want them yet) before we enter the
 			// EndOfSourceReached state.
@@ -185,7 +185,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		///     Any subclass MUST call this method in its constructor (perferably after the log file has been initialized,
+		///     Any subclass MUST call this method in its constructor (preferably after the log file has been initialized,
 		///     as after this call, <see cref="RunOnce" /> will be called.
 		/// </summary>
 		protected void StartTask()

@@ -112,7 +112,7 @@ namespace Tailviewer
 		public float Percent => RelativeValue * 100;
 
 		/// <summary>
-		///     Returns a number that represents this value in absolut [0, 1].
+		///     Returns a number that represents this value in absolute [0, 1].
 		/// </summary>
 		public float RelativeValue { get; }
 

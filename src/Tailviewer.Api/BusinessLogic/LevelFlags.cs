@@ -35,14 +35,14 @@ namespace Tailviewer.BusinessLogic
 
 		/// <summary>
 		///     The log line describes a debug/diagnostic message.
-		///     Debug messages are assumed to be less important than <see cref="Info"/>, which shows in their default visualisation.
+		///     Debug messages are assumed to be less important than <see cref="Info"/>, which shows in their default visualization.
 		///     Log lines with this level are shown to the user with a white background.
 		/// </summary>
 		Debug = 0x10,
 
 		/// <summary>
 		///     The log line describes a trace message.
-		///     Trace messages are assumed to be less important than <see cref="Debug"/>, which shows in their default visualisation.
+		///     Trace messages are assumed to be less important than <see cref="Debug"/>, which shows in their default visualization.
 		///     Log lines with this level are shown to the user with a gray foreground, white background.
 		/// </summary>
 		Trace = 0x20,

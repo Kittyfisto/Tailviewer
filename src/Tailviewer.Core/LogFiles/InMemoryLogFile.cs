@@ -13,7 +13,7 @@ namespace Tailviewer.Core.LogFiles
 	///     A <see cref="ILogFile"/> implementation which buffers the entire contents in memory.
 	/// </summary>
 	/// <remarks>
-	///     Should only be used for log files which's content actually fits into memory.
+	///     Should only be used for log files who's content actually fits into memory.
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(LogFileView))]
 	public sealed class InMemoryLogFile

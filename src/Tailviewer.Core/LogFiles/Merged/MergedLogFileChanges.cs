@@ -136,11 +136,6 @@ namespace Tailviewer.Core.LogFiles.Merged
 			_count = (int) (last.Index + last.Count);
 		}
 
-		private void ClampPeviousAppendIfNecessary(int invalidationIndex, LogLineIndex firstInvalidIndex)
-		{
-			
-		}
-
 		private bool TryGetLast(out LogFileSection lastSection)
 		{
 			if (_changes.Count > 0)

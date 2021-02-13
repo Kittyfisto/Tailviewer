@@ -10,7 +10,7 @@ namespace Tailviewer.Core
 	public static class ConcurrentQueueExtensions
 	{
 		/// <summary>
-		///     Enqueues many items into the given queue.
+		///     En-queues many items into the given queue.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="queue"></param>
@@ -21,7 +21,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <summary>
-		///     Dequeues and returns all values from the given queue.
+		///     De-queues and returns all values from the given queue.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="queue"></param>
@@ -35,7 +35,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <summary>
-		///    Dequeues modifications from this queue until their combined sum of log entries added is greater or equal to the specified number.
+		///    De-queues modifications from this queue until their combined sum of log entries added is greater or equal to the specified number.
 		/// </summary>
 		/// <param name="queue"></param>
 		/// <param name="maxLogEntries"></param>

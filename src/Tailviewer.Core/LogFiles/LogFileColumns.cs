@@ -30,7 +30,7 @@ namespace Tailviewer.Core.LogFiles
 		///     The raw content of the entry as it was extracted from the data source.
 		/// </summary>
 		/// <remarks>
-		///     Might not be readable by a humand, depending on the data source.
+		///     Might not be readable by a human, depending on the data source.
 		/// </remarks>
 		public static readonly ILogFileColumnDescriptor<string> RawContent;
 

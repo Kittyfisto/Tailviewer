@@ -385,7 +385,7 @@ namespace Tailviewer.Core.LogFiles
 		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex)
 		{
 			// The easiest way to serve random access to this column is to simply retrieve
-			// the timestamp for every requested index as well as for the preceeding index.
+			// the timestamp for every requested index as well as for the preceding index.
 			var actualIndices = new LogLineIndex[indices.Count * 2];
 			lock (_indices)
 			{

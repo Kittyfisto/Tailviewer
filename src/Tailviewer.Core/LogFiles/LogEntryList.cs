@@ -175,7 +175,7 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		///     Adds the given log entry to this list.
-		///     It is expected that as many valeus as there are columns are passed
+		///     It is expected that as many values as there are columns are passed
 		///     and that the values match the column's data type.
 		/// </summary>
 		/// <param name="values"></param>
