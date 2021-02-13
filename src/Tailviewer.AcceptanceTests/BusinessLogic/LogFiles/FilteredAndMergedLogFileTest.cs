@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {

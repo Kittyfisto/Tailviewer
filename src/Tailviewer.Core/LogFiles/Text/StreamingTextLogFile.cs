@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.IO;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.Core.LogFiles.Text
 {
 	/// <summary>
 	///     A n<see cref="ILogFile" /> implementation which allows (somewhat) constant time random-access to the lines of a log file without keeping the entire file in memory.
@@ -160,59 +160,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
-		{
-			if (column == null)
-				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
-
-			lock (_syncRoot)
-			{
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
-				{
-					GetIndex(section, (LogLineIndex[])(object)buffer, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LogEntryIndex))
-				{
-					GetIndex(section, (LogEntryIndex[])(object)buffer, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LineNumber) ||
-				         Equals(column, LogFileColumns.OriginalLineNumber))
-				{
-					GetLineNumber(section, (int[])(object)buffer, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.Timestamp))
-				{
-					GetTimestamp(section, (DateTime?[]) (object) buffer, destinationIndex);
-				}
-				else 
-				{
-					lock (_syncRoot)
-					{
-						if (_cache.TryCopyTo(section, column, buffer, destinationIndex))
-							return;
-					}
-
-					ReadEntries(section);
-
-					lock (_syncRoot)
-					{
-						if (!_cache.TryCopyTo(section, column, buffer, destinationIndex))
-						{
-							Log.WarnFormat("Unable to satisfy read request after buffer was filled");
-						}
-					}
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (indices == null)
@@ -265,26 +212,6 @@ namespace Tailviewer.Core.LogFiles
 					{
 						Log.WarnFormat("Unable to satisfy read request after buffer was filled");
 					}
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex, LogFileQueryOptions queryOptions)
-		{
-			lock (_syncRoot)
-			{
-				if (_cache.TryCopyTo(section, buffer, destinationIndex))
-					return;
-			}
-
-			ReadEntries(section);
-
-			lock (_syncRoot)
-			{
-				if (!_cache.TryCopyTo(section, buffer, destinationIndex))
-				{
-					Log.WarnFormat("Unable to satisfy read request after buffer was filled");
 				}
 			}
 		}
@@ -401,179 +328,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		/// <summary>
-		///     Simple <see cref="IReadOnlyLogEntry" /> implementation for unparsed log lines.
-		/// </summary>
-		sealed class RawLogEntry
-			: IReadOnlyLogEntry
-		{
-			private static readonly IReadOnlyList<ILogFileColumnDescriptor> AllColumns = new ILogFileColumnDescriptor[]
-			{
-				LogFileColumns.RawContent,
-				LogFileColumns.Index,
-				LogFileColumns.OriginalIndex,
-				LogFileColumns.LineNumber,
-				LogFileColumns.OriginalLineNumber,
-				LogFileColumns.LogEntryIndex
-			};
-
-			private readonly LogLineIndex _index;
-			private readonly string _rawContent;
-
-			public RawLogEntry(LogLineIndex index,
-			                   string rawContent)
-			{
-				_index = index;
-				_rawContent = rawContent;
-			}
-
-			#region Implementation of IReadOnlyLogEntry
-
-			public string RawContent
-			{
-				get { return _rawContent; }
-			}
-
-			public LogLineIndex Index
-			{
-				get { return _index; }
-			}
-
-			public LogLineIndex OriginalIndex
-			{
-				get { return _index; }
-			}
-
-			public LogEntryIndex LogEntryIndex
-			{
-				get { return (int)_index; }
-			}
-
-			public int LineNumber
-			{
-				get { return _index.Value + 1; }
-			}
-
-			public int OriginalLineNumber
-			{
-				get { return LineNumber; }
-			}
-
-			public string OriginalDataSourceName
-			{
-				get { throw new NotImplementedException(); }
-			}
-
-			public LogLineSourceId SourceId
-			{
-				get { throw new NotImplementedException(); }
-			}
-
-			public LevelFlags LogLevel
-			{
-				get { return LevelFlags.None; }
-			}
-
-			public DateTime? Timestamp
-			{
-				get { return null; }
-			}
-
-			public TimeSpan? ElapsedTime
-			{
-				get { return null; }
-			}
-
-			public TimeSpan? DeltaTime
-			{
-				get { return null; }
-			}
-
-			public T GetValue<T>(ILogFileColumnDescriptor<T> column)
-			{
-				if (!TryGetValue(column, out var value))
-					throw new NoSuchColumnException(column);
-
-				return value;
-			}
-
-			public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
-			{
-				if (TryGetValue(column, out object tmp))
-				{
-					value = (T) tmp;
-					return true;
-				}
-
-				value = default;
-				return false;
-			}
-
-			public object GetValue(ILogFileColumnDescriptor column)
-			{
-				if (!TryGetValue(column, out var value))
-					throw new NoSuchColumnException(column);
-
-				return value;
-			}
-
-			public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
-			{
-				if (Equals(column, LogFileColumns.RawContent))
-				{
-					value = RawContent;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
-				{
-					value = Index;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.LineNumber) ||
-				    Equals(column, LogFileColumns.OriginalLineNumber))
-				{
-					value = LineNumber;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.LogEntryIndex))
-				{
-					value = LogEntryIndex;
-					return true;
-				}
-
-				value = default;
-				return false;
-			}
-
-			public IReadOnlyList<ILogFileColumnDescriptor> Columns
-			{
-				get { return AllColumns; }
-			}
-
-			#endregion
-		}
-
-		private void ReadEntries(LogFileSection section)
-		{
-			// TODO: How can we avoid those two buffer allocations which will happen over and over?
-			var lines = _reader.Read(section);
-
-			lock (_syncRoot)
-			{
-				foreach (var line in lines)
-				{
-					IReadOnlyLogEntry logEntry = new RawLogEntry(_lineCount, line);
-					// Parsers expect the file to be primarily fed sequentially so they can do their magic.
-					if (_parser != null)
-					{
-						logEntry = _parser?.Parse(logEntry);
-						_cache.Add(logEntry);
-					}
-				}
-			}
-		}
-
 		private void ReadEntries(IReadOnlyList<LogLineIndex> indices)
 		{
 			// TODO: How can we avoid those two buffer allocations which will happen over and over?
@@ -583,7 +337,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				foreach (var line in lines)
 				{
-					IReadOnlyLogEntry logEntry = new RawLogEntry(_lineCount, line);
+					IReadOnlyLogEntry logEntry = new RawTextLogEntry(_lineCount, line, _fullFilename);
 					// Parsers expect the file to be primarily fed sequentially so they can do their magic.
 					if (_parser != null)
 					{
@@ -633,7 +387,7 @@ namespace Tailviewer.Core.LogFiles
 
 			foreach (var line in lines)
 			{
-				IReadOnlyLogEntry logEntry = new RawLogEntry(_lineCount, line);
+				IReadOnlyLogEntry logEntry = new RawTextLogEntry(_lineCount, line, _fullFilename);
 				// Parsers expect the file to be primarily fed sequentially so they can do their magic.
 				if (_parser != null)
 				{

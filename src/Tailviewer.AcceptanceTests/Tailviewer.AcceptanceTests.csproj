@@ -105,6 +105,11 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\AbstractStreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryIoScheduler.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryStreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryTextFileReader.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
     <Compile Include="InstallerTest.cs" />
     <Compile Include="ProcessEx.cs" />
@@ -147,6 +152,7 @@
       <Name>Tailviewer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

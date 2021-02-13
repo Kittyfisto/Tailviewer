@@ -100,9 +100,10 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
+    <Compile Include="LogFiles\Text\RawTextLogEntry.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryView.cs" />
-    <Compile Include="LogFiles\StreamingTextLogFile.cs" />
+    <Compile Include="LogFiles\Text\StreamingTextLogFile.cs" />
     <Compile Include="LogFiles\TextLogFileFormat.cs" />
     <Compile Include="SerializableTypeExtensions.cs" />
     <Compile Include="ServiceContainer.cs" />
@@ -172,7 +173,7 @@
     <Compile Include="LogFiles\MultiLineLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogFile.cs" />
     <Compile Include="LogFiles\NoThrowLogLineTranslator.cs" />
-    <Compile Include="LogFiles\TextLogFile.cs" />
+    <Compile Include="LogFiles\Text\TextLogFile.cs" />
     <Compile Include="LogFiles\WellKnownLogFilePropertyDescriptor.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="NullToNotAvailableConverter.cs" />

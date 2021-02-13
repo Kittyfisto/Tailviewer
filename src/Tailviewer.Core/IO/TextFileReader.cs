@@ -458,6 +458,9 @@ namespace Tailviewer.Core.IO
 		private void SetDoesNotExist()
 		{
 			_properties.Reset();
+			_properties.SetValue(LogFileProperties.EndOfSource, true);
+			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			_listener.OnReset(_properties);
 		}
 

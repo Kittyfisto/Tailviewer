@@ -11,6 +11,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 using Certainty = Tailviewer.BusinessLogic.Certainty;

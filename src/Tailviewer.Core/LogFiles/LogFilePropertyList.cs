@@ -224,9 +224,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <exception cref="NotImplementedException"></exception>
 		public void Reset()
 		{
-			foreach (var value in _values.Values)
+			foreach (var pair in _values)
 			{
-				value.Value = null;
+				pair.Value.Value = pair.Key.DefaultValue;
 			}
 		}
 	}

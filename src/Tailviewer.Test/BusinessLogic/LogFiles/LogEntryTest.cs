@@ -9,7 +9,7 @@ using Tailviewer.Core.LogFiles;
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogEntry2Test
+	public sealed class LogEntryTest
 		: AbstractReadOnlyLogEntryTest
 	{
 		[Test]

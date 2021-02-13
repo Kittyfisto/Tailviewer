@@ -50,7 +50,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		bool EndOfSourceReached { get; }
 
 		/// <summary>
-		///     The total number of <see cref="LogLine" />s that are offered by this log file at this moment.
+		///     The total number of <see cref="IReadOnlyLogEntry" />s that are offered by this log file at this moment.
 		///     If the log file is not modified, then it is expected that <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)" /> may be called
 		///     with as many lines as returned by this property.
 		/// </summary>

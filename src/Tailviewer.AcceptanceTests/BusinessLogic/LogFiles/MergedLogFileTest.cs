@@ -7,6 +7,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Test;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles

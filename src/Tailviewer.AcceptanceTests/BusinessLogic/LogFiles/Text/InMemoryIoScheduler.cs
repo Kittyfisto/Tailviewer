@@ -1,36 +1,37 @@
-﻿using System;
+﻿using System.IO;
 using System.Text;
 using System.Threading;
 using Tailviewer.BusinessLogic.Plugins;
+using Tailviewer.Core.IO;
 
-namespace Tailviewer.Core.IO
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	internal sealed class IoScheduler
+	public sealed class InMemoryIoScheduler
 		: IIoScheduler
 	{
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly IFilesystem _fileSystem;
 
-		public IoScheduler(ITaskScheduler taskScheduler)
+		public InMemoryIoScheduler(ITaskScheduler taskScheduler, IFilesystem fileSystem)
 		{
 			_taskScheduler = taskScheduler;
+			_fileSystem = fileSystem;
 		}
 
 		#region Implementation of IDisposable
 
-		/// <inheritdoc />
 		public void Dispose()
 		{}
 
-		/// <inheritdoc />
 		public ITextFileReader OpenReadText(string fileName,
 		                                    ITextFileListener listener,
 		                                    Encoding defaultEncoding,
 		                                    ILogFileFormatMatcher formatMatcher)
 		{
-			return new TextFileReader(_taskScheduler, formatMatcher, fileName, defaultEncoding, listener);
+			return new InMemoryTextFileReader(_taskScheduler, _fileSystem, listener, fileName, defaultEncoding);
 		}
 
 		#endregion

@@ -128,8 +128,8 @@
     <Compile Include="BusinessLogic\Filters\SubstringFilterTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\InMemoryLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntriesViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test.cs" />
-    <Compile Include="BusinessLogic\LogFiles\LogEntry2Test2.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntryTest2.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferAccessorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryBufferTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntryListAccessorTest.cs" />
@@ -150,14 +150,15 @@
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryViewTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\TextLogFileParserTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileParserTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogLineSourceIdTest.cs" />
     <Compile Include="BusinessLogic\LogLineTest.cs" />
     <Compile Include="BusinessLogic\LogLineIndexTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\DataSources\MergedDataSourceTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Merged\MergedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractLogEntryTest.cs" />
     <Compile Include="BusinessLogic\Plugins\FileFormatPluginTest.cs" />
     <Compile Include="BusinessLogic\Plugins\LogFileFormatMatcherPluginTest.cs" />
@@ -218,7 +219,7 @@
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimePresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\DeltaTimes\DeltaTimeColumnPresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\ElapsedTime\ElapsedTimePresenterTest.cs" />
-    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenter.cs" />
+    <Compile Include="Ui\Controls\LogView\LineNumbers\OriginalLineNumberColumnPresenterTest.cs" />
     <Compile Include="Ui\Controls\LogView\PresentationLogFileTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\LogViewMainPanelViewModelTest.cs" />
     <Compile Include="Ui\Controls\MainPanel\Plugins\PluginViewModelTest.cs" />

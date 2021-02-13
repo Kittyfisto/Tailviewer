@@ -21,6 +21,10 @@ namespace Tailviewer.Core.LogFiles
 			: this(id, id, default(T))
 		{}
 
+		public WellKnownLogFilePropertyDescriptor(string id, T defaultValue)
+			: this(new []{id}, id, defaultValue)
+		{}
+
 		public WellKnownLogFilePropertyDescriptor(string id, string displayName)
 			: this(id, displayName, default(T))
 		{}

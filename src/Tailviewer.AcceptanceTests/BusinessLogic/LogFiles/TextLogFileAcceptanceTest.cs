@@ -14,6 +14,7 @@ using log4net;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {

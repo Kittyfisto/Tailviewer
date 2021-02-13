@@ -43,6 +43,19 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 		}
 
+		[Test]
+		[Description("Verifies that values are reset to the default value as specified by their property")]
+		public void TestReset()
+		{
+			var properties = new LogFilePropertyList();
+			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Of(50, 100));
+
+			properties.Reset();
+			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
+			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+		}
+
 		protected override ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties)
 		{
 			var list = new LogFilePropertyList(properties.Select(x => x.Key).ToArray());

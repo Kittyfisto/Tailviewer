@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
