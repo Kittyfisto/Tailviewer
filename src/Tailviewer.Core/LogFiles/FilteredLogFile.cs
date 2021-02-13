@@ -133,46 +133,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (column == null)
-				throw new ArgumentNullException(nameof(column));
-			if (destination == null)
-				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceSection.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
-
-			if (Equals(column, LogFileColumns.Index))
-			{
-				GetIndex(sourceSection, (LogLineIndex[])(object)destination, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.LogEntryIndex))
-			{
-				GetLogEntryIndex(sourceSection, (LogEntryIndex[])(object)destination, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.DeltaTime))
-			{
-				GetDeltaTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.LineNumber))
-			{
-				GetLineNumber(sourceSection, (int[])(object)destination, destinationIndex);
-			}
-			else if (Equals(column, LogFileColumns.OriginalIndex))
-			{
-				GetOriginalIndices(sourceSection, (LogLineIndex[]) (object) destination, destinationIndex);
-			}
-			else
-			{
-				var actualIndices = GetOriginalIndices(sourceSection);
-				_source.GetColumn(actualIndices, column, destination, destinationIndex);
-			}
-		}
-
-		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -187,19 +148,19 @@ namespace Tailviewer.Core.LogFiles
 
 			if (Equals(column, LogFileColumns.Index))
 			{
-				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
+				GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex, queryOptions);
 			}
 			else if (Equals(column, LogFileColumns.LogEntryIndex))
 			{
-				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
+				GetLogEntryIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex, queryOptions);
 			}
 			else if (Equals(column, LogFileColumns.DeltaTime))
 			{
-				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
+				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
 			else if (Equals(column, LogFileColumns.LineNumber))
 			{
-				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
+				GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex, queryOptions);
 			}
 			else if (Equals(column, LogFileColumns.OriginalIndex))
 			{
@@ -208,7 +169,7 @@ namespace Tailviewer.Core.LogFiles
 			else
 			{
 				var actualIndices = GetOriginalIndices(sourceIndices);
-				_source.GetColumn(actualIndices, column, destination, destinationIndex);
+				_source.GetColumn(actualIndices, column, destination, destinationIndex, queryOptions);
 			}
 		}
 
@@ -229,47 +190,18 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-
+		
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
 			foreach (var column in destination.Columns)
 			{
-				destination.CopyFrom(column, destinationIndex, this, sourceSection);
+				destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
-
-		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
-		{
-			// TODO: This can probably be optimized (why are we translating indices each time for every column?!
-			foreach (var column in destination.Columns)
-			{
-				destination.CopyFrom(column, destinationIndex, this, sourceIndices);
-			}
-		}
-
-		private void GetIndex(LogFileSection sourceSection, LogLineIndex[] destination, int destinationIndex)
-		{
-			lock (_indices)
-			{
-				for (int i = 0; i < sourceSection.Count; ++i)
-				{
-					var sourceIndex = sourceSection.Index.Value + i;
-					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
-					{
-						destination[destinationIndex + i] = sourceIndex;
-					}
-					else
-					{
-						destination[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
-					}
-				}
-			}
-		}
-
-		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex)
+		
+		private void GetIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogLineIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -287,29 +219,8 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-
-		private void GetLogEntryIndex(LogFileSection sourceSection, LogEntryIndex[] destination, int destinationIndex)
-		{
-			lock (_indices)
-			{
-				for (int i = 0; i < sourceSection.Count; ++i)
-				{
-					var sourceIndex = sourceSection.Index.Value + i;
-					if (sourceIndex >= 0 && sourceIndex < _indices.Count)
-					{
-						var originalIndex = _indices[sourceIndex];
-						var logEntryIndex = _logEntryIndices[originalIndex];
-						destination[destinationIndex + i] = logEntryIndex;
-					}
-					else
-					{
-						destination[destinationIndex + i] = LogFileColumns.LogEntryIndex.DefaultValue;
-					}
-				}
-			}
-		}
-
-		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex)
+		
+		private void GetLogEntryIndex(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -330,7 +241,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex)
+		private void GetLineNumber(IReadOnlyList<LogLineIndex> indices, int[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_indices)
 			{
@@ -349,40 +260,8 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 		}
-
-		private void GetDeltaTime(LogFileSection section, TimeSpan?[] destination, int destinationIndex)
-		{
-			var actualIndices = new LogLineIndex[section.Count + 1];
-
-			lock (_indices)
-			{
-				var startIndex = section.Index;
-				if (startIndex > 0)
-					actualIndices[0] = _indices[startIndex - 1];
-				else
-					actualIndices[0] = -1;
-
-				for (int i = 0; i < section.Count; ++i)
-				{
-					var filteredIndex = (startIndex + i).Value;
-					if (filteredIndex >= 0 && filteredIndex < _indices.Count)
-						actualIndices[i + 1] = _indices[filteredIndex];
-					else
-						actualIndices[i + 1] = -1;
-				}
-			}
-
-			var timestamps = _source.GetColumn(actualIndices, LogFileColumns.Timestamp);
-			for (int i = 1; i <= section.Count; ++i)
-			{
-				var previousTimestamp = timestamps[i - 1];
-				var currentTimestamp = timestamps[i];
-				var delta = currentTimestamp - previousTimestamp;
-				destination[destinationIndex + i - 1] = delta;
-			}
-		}
-
-		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex)
+		
+		private void GetDeltaTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			// The easiest way to serve random access to this column is to simply retrieve
 			// the timestamp for every requested index as well as for the preceding index.
@@ -391,7 +270,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				for(int i = 0; i < indices.Count; ++i)
 				{
-					var index = indices[0];
+					var index = indices[i];
 					actualIndices[i * 2 + 0] = ToSourceIndex(index - 1);
 					actualIndices[i * 2 + 1] = ToSourceIndex(index);
 				}

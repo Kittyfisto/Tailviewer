@@ -152,66 +152,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (column == null)
-				throw new ArgumentNullException(nameof(column));
-			if (destination == null)
-				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceSection.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
-
-			lock (_syncRoot)
-			{
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
-				{
-					GetIndex(sourceSection, (LogLineIndex[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LogEntryIndex))
-				{
-					GetIndex(sourceSection, (LogEntryIndex[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LineNumber) ||
-				         Equals(column, LogFileColumns.OriginalLineNumber))
-				{
-					GetLineNumber(sourceSection, (int[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LogLevel))
-				{
-					GetLogLevel(sourceSection, (LevelFlags[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.Timestamp))
-				{
-					GetTimestamp(sourceSection, (DateTime?[]) (object) destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.DeltaTime))
-				{
-					GetDeltaTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.ElapsedTime))
-				{
-					GetElapsedTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
-				{
-					GetDataSourceName(sourceSection, (string[]) (object) destination, destinationIndex);
-				}
-				else if(Equals(column, LogFileColumns.RawContent))
-				{
-					GetRawContent(sourceSection, (string[]) (object) destination, destinationIndex);
-				}
-				else 
-				{
-					throw new NoSuchColumnException(column);
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -272,20 +213,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			foreach (var column in destination.Columns)
 			{
-				destination.CopyFrom(column, destinationIndex, this, sourceSection);
-			}
-		}
-
-		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
-		{
-			foreach (var column in destination.Columns)
-			{
-				destination.CopyFrom(column, destinationIndex, this, sourceIndices);
+				destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
 

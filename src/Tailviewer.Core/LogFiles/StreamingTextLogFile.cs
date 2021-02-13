@@ -160,7 +160,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection section, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -213,7 +213,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (indices == null)
 				throw new ArgumentNullException(nameof(indices));
@@ -270,7 +270,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
@@ -290,7 +290,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
@@ -307,28 +307,6 @@ namespace Tailviewer.Core.LogFiles
 					Log.WarnFormat("Unable to satisfy read request after buffer was filled");
 				}
 			}
-		}
-
-		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			if (section.Index < 0)
-				throw new ArgumentOutOfRangeException("section.Index");
-			if (section.Count < 0)
-				throw new ArgumentOutOfRangeException("section.Count");
-			if (dest == null)
-				throw new ArgumentNullException(nameof(dest));
-			if (dest.Length < section.Count)
-				throw new ArgumentOutOfRangeException("section.Count");
-
-			var entries = new LogEntryArray(section.Count, LogFileColumns.Minimum);
-			GetEntries(section, entries, 0);
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />

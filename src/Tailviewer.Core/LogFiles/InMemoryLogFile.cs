@@ -141,7 +141,7 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -154,7 +154,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -169,22 +169,22 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceSection);
+					destination.CopyFrom(column, destinationIndex, this, sourceSection, queryOptions);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
+					destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
 

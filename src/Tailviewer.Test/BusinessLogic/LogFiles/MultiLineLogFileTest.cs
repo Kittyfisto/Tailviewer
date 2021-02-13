@@ -886,12 +886,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var section = new LogFileSection(42, 5);
 			var buffer = new LogEntryArray(3, LogFileColumns.DeltaTime, LogFileColumns.RawContent);
 			var destinationIndex = 2;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 
-			logFile.GetEntries(section, buffer, destinationIndex);
+			logFile.GetEntries(section, buffer, destinationIndex, queryOptions);
 
 			_source.Verify(x => x.GetEntries(section,
 			                                 buffer,
-			                                 destinationIndex),
+			                                 destinationIndex,
+			                                 queryOptions),
 			               Times.Once);
 		}
 
@@ -923,12 +925,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var indices = new LogLineIndex[] { 0, 2, 5 };
 			var buffer = new LogEntryArray(5, LogFileColumns.RawContent);
 			var destinationIndex = 2;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 
-			logFile.GetEntries(indices, buffer, destinationIndex);
+			logFile.GetEntries(indices, buffer, destinationIndex, queryOptions);
 
 			_source.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<ILogEntries>(y => y == buffer),
-			                                 It.Is<int>(y => y == destinationIndex)),
+			                                 buffer,
+			                                 destinationIndex,
+			                                 queryOptions),
 			               Times.Once);
 		}
 

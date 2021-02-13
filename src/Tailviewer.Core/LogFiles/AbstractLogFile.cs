@@ -114,16 +114,10 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int Count { get; }
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
-
-		/// <inheritdoc />
-		public abstract void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);
-
-		/// <inheritdoc />
-		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
+		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
 		#region Index Translation
 

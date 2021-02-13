@@ -303,60 +303,62 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (destination == null)
-				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceSection.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(sourceSection, column, destination, destinationIndex);
+				logFile.GetColumn(sourceSection, column, destination, destinationIndex, queryOptions);
 			}
 			else
 			{
+				if (destination == null)
+					throw new ArgumentNullException(nameof(destination));
+				if (destinationIndex < 0)
+					throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+				if (destinationIndex + sourceSection.Count > destination.Length)
+					throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 				destination.Fill(column.DefaultValue, destinationIndex, sourceSection.Count);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			if (sourceIndices == null)
-				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceIndices.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(sourceIndices, column, destination, destinationIndex);
+				logFile.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 			}
 			else
 			{
+				if (sourceIndices == null)
+					throw new ArgumentNullException(nameof(sourceIndices));
+				if (destinationIndex < 0)
+					throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+				if (destinationIndex + sourceIndices.Count > destination.Length)
+					throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
+
 				destination.Fill(column.DefaultValue, destinationIndex, sourceIndices.Count);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetEntries(sourceSection, destination, destinationIndex);
+				logFile.GetEntries(sourceSection, destination, destinationIndex, queryOptions);
 			}
 			else
 			{
@@ -368,12 +370,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetEntries(sourceIndices, destination, destinationIndex);
+				logFile.GetEntries(sourceIndices, destination, destinationIndex, queryOptions);
 			}
 			else
 			{

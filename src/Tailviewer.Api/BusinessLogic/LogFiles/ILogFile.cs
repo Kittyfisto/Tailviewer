@@ -19,8 +19,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </remarks>
 	/// <remarks>
 	///     Last but not least, an ILogFile holds log entries and allows Tailviewer to access them via one of these following methods (or their overloaded versions):
-	///     - <see cref="GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)"/>
-	///     - <see cref="GetColumn{T}(Tailviewer.BusinessLogic.LogFiles.LogFileSection,ILogFileColumnDescriptor{T},T[],int)"/>
+	///     - <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)"/>
+	///     - <see cref="GetColumn{T}(IReadOnlyList{LogLineIndex},ILogFileColumnDescriptor{T},T[],int,LogFileQueryOptions)"/>
 	///     Tailviewer will call these methods to access portions of the log file. Depending on the size of the log file, Tailviewer might access only a portion of the log file,
 	///     for example 1000 log entries beginning with the 5000th one. And even then, it may only be interested in the Index and RawContent column (ignoring any others).
 	///     Any implementation of this log file must make sure to properly implement this interface if there shall be any success in getting tailviewer to understand a source.
@@ -51,7 +51,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		/// <summary>
 		///     The total number of <see cref="LogLine" />s that are offered by this log file at this moment.
-		///     If the log file is not modified, then it is expected that <see cref="GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)" /> may be called
+		///     If the log file is not modified, then it is expected that <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)" /> may be called
 		///     with as many lines as returned by this property.
 		/// </summary>
 		int Count { get; }
@@ -131,17 +131,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#endregion
 
 		#region Data Retrieval
-
-		/// <summary>
-		///     Retrieves a list of cells for a given column from this log file.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="sourceSection"></param>
-		/// <param name="column"></param>
-		/// <param name="destination"></param>
-		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
-
+		
 		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
@@ -150,25 +140,18 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
-
-		/// <summary>
-		///     Retrieves all entries from the given <paramref name="sourceSection" /> from this log file and copies
-		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
-		/// </summary>
-		/// <param name="sourceSection"></param>
-		/// <param name="destination"></param>
-		/// <param name="destinationIndex"></param>
-		void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);
-
+		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		
 		/// <summary>
 		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
 		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
 		/// </summary>
 		/// <param name="sourceIndices"></param>
 		/// <param name="destination"></param>
-		/// <param name="destinationIndex"></param>
-		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
+		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
+		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
 		/// <summary>
 		///     The relative progress (in between 0 and 1) between the number of lines currently exposed by this log file versus

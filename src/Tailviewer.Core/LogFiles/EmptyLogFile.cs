@@ -80,22 +80,22 @@ namespace Tailviewer.Core.LogFiles
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}

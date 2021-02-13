@@ -141,62 +141,73 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumn1()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[9101];
-			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, 9001)).Should().NotThrow();
+			var destinationIndex = 9001;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => _proxy.GetColumn(section, LogFileColumns.RawContent, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
-			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
-											 It.Is<int>(y => y == 9001)),
+			                                 LogFileColumns.RawContent,
+			                                 buffer,
+			                                 destinationIndex,
+			                                 queryOptions),
 			                Times.Once);
 		}
 
 		[Test]
 		public void TestGetColumn2()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
-			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101)).Should().NotThrow();
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
 			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
-			                                 It.Is<int>(y => y == 101)),
+			                                 It.Is<int>(y => y == 101),
+			                                 queryOptions),
 			                Times.Once);
 		}
 
 		[Test]
 		public void TestGetEntries1()
 		{
-			_logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogEntries>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogEntries>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new Mock<ILogEntries>().Object;
-			new Action(() => _proxy.GetEntries(section, buffer, 9001)).Should().NotThrow();
+			var destinationIndex = 9001;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => _proxy.GetEntries(section, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<LogFileSection>(y => y == section),
 			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),
-			                                 It.Is<int>(y => y == 9001)),
+			                                 destinationIndex,
+			                                 queryOptions),
 			                Times.Once);
 		}
 
 		[Test]
 		public void TestGetEntries2()
 		{
-			_logFile.Setup(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogEntries>(), It.IsAny<int>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetEntries(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogEntries>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] { 1, 2, 3 };
 			var buffer = new Mock<ILogEntries>().Object;
-			new Action(() => _proxy.GetEntries(indices, buffer, 101)).Should().NotThrow();
+			var destinationIndex = 101;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => _proxy.GetEntries(indices, buffer, destinationIndex, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
 			                                 It.Is<ILogEntries>(y => ReferenceEquals(y, buffer)),
-			                                 It.Is<int>(y => y == 101)),
+			                                 destinationIndex,
+			                                 queryOptions),
 			                Times.Once);
 		}
 

@@ -323,11 +323,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[142];
 			var logFile = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object);
-			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, 42);
+			var destinationIndex = 42;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			logFile.GetColumn(section, LogFileColumns.RawContent, buffer, destinationIndex, queryOptions);
 			_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == section),
-			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
-			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
-			                                 It.Is<int>(y => y == 42)),
+			                                 LogFileColumns.RawContent,
+			                                 buffer,
+			                                 destinationIndex,
+			                                 queryOptions),
 			                Times.Once);
 		}
 
@@ -375,16 +378,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var proxy = new LogFileProxy(_scheduler, TimeSpan.Zero, _logFile.Object))
 			{
 				var buffer = new LogLineIndex[100];
+				var destinationIndex = 47;
+				var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 
 				proxy.GetColumn(new LogFileSection(1, 42),
 				                LogFileColumns.OriginalIndex,
 				                buffer,
-				                47);
+				                destinationIndex,
+				                queryOptions);
 
 				_logFile.Verify(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(1, 42)),
-				                                 It.Is<ILogFileColumnDescriptor<LogLineIndex>>(y => y == LogFileColumns.OriginalIndex),
-				                                 It.Is<LogLineIndex[]>(y => y == buffer),
-				                                 It.Is<int>(y => y == 47)),
+				                                 LogFileColumns.OriginalIndex,
+				                                 buffer,
+				                                 destinationIndex,
+				                                 queryOptions),
 				                Times.Once, "because the proxy should simply forward those calls to its source");
 			}
 		}

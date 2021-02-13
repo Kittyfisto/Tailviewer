@@ -61,6 +61,9 @@
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormatRepository.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogEntriesExtensions.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileQueryMode.cs" />
+    <Compile Include="BusinessLogic\LogFiles\LogFileQueryOptions.cs" />
     <Compile Include="BusinessLogic\Plugins\ICustomLogFileFormat.cs" />
     <Compile Include="BusinessLogic\Plugins\ICustomLogFileFormatCreatorPlugin.cs" />
     <Compile Include="BusinessLogic\Plugins\ILogFileFormatMatcher.cs" />

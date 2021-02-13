@@ -77,21 +77,12 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, LogFileSection section)
+		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices, LogFileQueryOptions queryOptions)
 		{
 			if (!_columns.Contains(column))
 				throw new NoSuchColumnException(column);
 
-			_inner.CopyFrom(column, destinationIndex, source, section);
-		}
-
-		/// <inheritdoc />
-		public void CopyFrom(ILogFileColumnDescriptor column, int destinationIndex, ILogFile source, IReadOnlyList<LogLineIndex> sourceIndices)
-		{
-			if (!_columns.Contains(column))
-				throw new NoSuchColumnException(column);
-
-			_inner.CopyFrom(column, destinationIndex, source, sourceIndices);
+			_inner.CopyFrom(column, destinationIndex, source, sourceIndices, queryOptions);
 		}
 
 		/// <inheritdoc />

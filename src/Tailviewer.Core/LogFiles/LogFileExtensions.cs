@@ -18,31 +18,15 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="logFile"></param>
-		/// <param name="sourceSection"></param>
+		/// <param name="sourceIndices"></param>
 		/// <param name="column"></param>
 		/// <param name="destination"></param>
 		public static void GetColumn<T>(this ILogFile logFile,
-		                                LogFileSection sourceSection,
-		                                ILogFileColumnDescriptor<T> column,
-		                                T[] destination)
+										IReadOnlyList<LogLineIndex> sourceIndices,
+										ILogFileColumnDescriptor<T> column,
+										T[] destination)
 		{
-			logFile.GetColumn(sourceSection, column, destination, 0);
-		}
-
-		/// <summary>
-		///     Retrieves a list of cells for a given column from this log file.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="logFile"></param>
-		/// <param name="sourceSection"></param>
-		/// <param name="column"></param>
-		/// <returns></returns>
-		[Pure]
-		public static T[] GetColumn<T>(this ILogFile logFile, LogFileSection sourceSection, ILogFileColumnDescriptor<T> column)
-		{
-			var cells = new T[sourceSection.Count];
-			logFile.GetColumn(sourceSection, column, cells);
-			return cells;
+			logFile.GetColumn(sourceIndices, column, destination, 0, LogFileQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -53,12 +37,32 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="sourceIndices"></param>
 		/// <param name="column"></param>
 		/// <param name="destination"></param>
+		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		public static void GetColumn<T>(this ILogFile logFile,
-										IReadOnlyList<LogLineIndex> sourceIndices,
-										ILogFileColumnDescriptor<T> column,
-										T[] destination)
+		                                IReadOnlyList<LogLineIndex> sourceIndices,
+		                                ILogFileColumnDescriptor<T> column,
+		                                T[] destination,
+		                                LogFileQueryOptions queryOptions)
 		{
-			logFile.GetColumn(sourceIndices, column, destination, 0);
+			logFile.GetColumn(sourceIndices, column, destination, 0, queryOptions);
+		}
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="column"></param>
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex">Configures how the data is to be retrieved</param>
+		public static void GetColumn<T>(this ILogFile logFile,
+		                                IReadOnlyList<LogLineIndex> sourceIndices,
+		                                ILogFileColumnDescriptor<T> column,
+		                                T[] destination,
+		                                int destinationIndex)
+		{
+			logFile.GetColumn(sourceIndices, column, destination, destinationIndex, LogFileQueryOptions.Default);
 		}
 
 		/// <summary>
@@ -72,54 +76,27 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column)
 		{
+			return logFile.GetColumn<T>(sourceIndices, column, LogFileQueryOptions.Default);
+		}
+
+		/// <summary>
+		///     Retrieves a list of cells for a given column from this log file.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="column"></param>
+		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		/// <returns></returns>
+		[Pure]
+		public static T[] GetColumn<T>(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, LogFileQueryOptions queryOptions)
+		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
 
 			var cells = new T[sourceIndices.Count];
-			logFile.GetColumn(sourceIndices, column, cells);
+			logFile.GetColumn(sourceIndices, column, cells, queryOptions);
 			return cells;
-		}
-
-		/// <summary>
-		///     Retrieves all entries from the given <paramref name="sourceSection" /> from this log file and copies
-		///     them into the given <paramref name="destination" />.
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="sourceSection"></param>
-		/// <param name="destination"></param>
-		public static void GetEntries(this ILogFile logFile, LogFileSection sourceSection, ILogEntries destination)
-		{
-			logFile.GetEntries(sourceSection, destination, 0);
-		}
-
-		/// <summary>
-		///     Retrieves all entries for all columns of this log file of the given <paramref name="sourceSection" />:
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="sourceSection"></param>
-		/// <returns></returns>
-		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection)
-		{
-			var buffer = new LogEntryArray(sourceSection.Count, logFile.Columns);
-			GetEntries(logFile, sourceSection, buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		///     Retrieves all entries for the given <paramref name="columns" /> of the given <paramref name="sourceSection" />
-		///     from this log file.
-		/// </summary>
-		/// <param name="logFile"></param>
-		/// <param name="sourceSection"></param>
-		/// <param name="columns"></param>
-		/// <returns></returns>
-		[Pure]
-		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, LogFileSection sourceSection, IEnumerable<ILogFileColumnDescriptor> columns)
-		{
-			var buffer = new LogEntryArray(sourceSection.Count, columns);
-			GetEntries(logFile, sourceSection, buffer);
-			return buffer;
 		}
 
 		/// <summary>
@@ -145,7 +122,33 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="destination"></param>
 		public static void GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination)
 		{
-			logFile.GetEntries(sourceIndices, destination, 0);
+			logFile.GetEntries(sourceIndices, destination, 0, LogFileQueryOptions.Default);
+		}
+
+		/// <summary>
+		///     Retrieves all entries with the given <paramref name="sourceIndices"/> from this log file and copies
+		///     them into the given <paramref name="destination"/>.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
+		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
+		public static void GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, LogFileQueryOptions queryOptions)
+		{
+			logFile.GetEntries(sourceIndices, destination, 0, queryOptions);
+		}
+
+		/// <summary>
+		///     Retrieves all entries with the given <paramref name="sourceIndices"/> from this log file and copies
+		///     them into the given <paramref name="destination"/>.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex"></param>
+		public static void GetEntries(this ILogFile logFile, IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		{
+			logFile.GetEntries(sourceIndices, destination, destinationIndex, LogFileQueryOptions.Default);
 		}
 
 		/// <summary>

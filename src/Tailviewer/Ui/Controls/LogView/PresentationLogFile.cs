@@ -260,19 +260,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (IsIndexedColumn(column))
-			{
-				_indices.CopyTo(column, (int) sourceSection.Index, destination, destinationIndex, sourceSection.Count);
-			}
-			else
-			{
-				_source.GetColumn(sourceSection, column, destination, destinationIndex);
-			}
-		}
-
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -280,16 +268,11 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else
 			{
-				_source.GetColumn(sourceIndices, column, destination, destinationIndex);
+				_source.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 			}
 		}
 
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
