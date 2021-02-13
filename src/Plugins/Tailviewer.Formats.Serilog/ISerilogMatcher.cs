@@ -25,7 +25,7 @@ namespace Tailviewer.Formats.Serilog
 		/// <summary>
 		///     The Tailviewer column into which values of this matcher are to be transformed into.
 		/// </summary>
-		ILogFileColumn Column { get; }
+		ILogFileColumnDescriptor Column { get; }
 
 		/// <summary>
 		///     TODO: Change signature to TryMatchInto to allow for failure without throwing exceptions.

@@ -178,11 +178,11 @@ namespace Tailviewer.Archiver.Plugins
 
 		/// <summary>
 		/// </summary>
-		/// <param name="fname"></param>
+		/// <param name="fileName"></param>
 		/// <returns></returns>
-		public static PluginArchive OpenRead(string fname)
+		public static PluginArchive OpenRead(string fileName)
 		{
-			return new PluginArchive(ZipFile.OpenRead(fname));
+			return new PluginArchive(ZipFile.OpenRead(fileName));
 		}
 
 		/// <summary>

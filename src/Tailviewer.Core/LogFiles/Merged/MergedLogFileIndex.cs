@@ -109,7 +109,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 			return Process(entries);
 		}
 
-		public void GetLogLineIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] buffer, int destinationIndex)
+		public void GetLogLineIndices(IReadOnlyList<LogLineIndex> indices, LogLineIndex[] destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
@@ -118,49 +118,68 @@ namespace Tailviewer.Core.LogFiles.Merged
 					var index = indices[i];
 					if (index >= 0 && index < _indices.Count)
 					{
-						buffer[destinationIndex + i] = index;
+						destination[destinationIndex + i] = index;
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+						destination[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
 					}
 				}
 			}
 		}
 
-		public void GetLogEntryIndices(IReadOnlyList<LogLineIndex> indices, LogEntryIndex[] buffer, int destinationIndex)
+		public void GetLogEntryIndices(IReadOnlyList<LogLineIndex> sourceIndices, LogEntryIndex[] destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				for (int i = 0; i < indices.Count; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
-					var index = indices[i];
+					var index = sourceIndices[i];
 					if (index >= 0 && index < _indices.Count)
 					{
-						buffer[destinationIndex + i] = _indices[index.Value].MergedLogEntryIndex;
+						destination[destinationIndex + i] = _indices[index.Value].MergedLogEntryIndex;
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogEntryIndex.Invalid;
+						destination[destinationIndex + i] = LogEntryIndex.Invalid;
 					}
 				}
 			}
 		}
 
-		public void GetLineNumbers(IReadOnlyList<LogLineIndex> indices, int[] buffer, int destinationIndex)
+		public void GetLineNumbers(IReadOnlyList<LogLineIndex> sourceIndices, int[] destination, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				for (int i = 0; i < indices.Count; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
-					var index = indices[i];
+					var index = sourceIndices[i];
 					if (index >= 0 && index < _indices.Count)
 					{
-						buffer[destinationIndex + i] = (int) (index + 1);
+						destination[destinationIndex + i] = (int) (index + 1);
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+						destination[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+					}
+				}
+			}
+		}
+
+		public void GetSourceIds(IReadOnlyList<LogLineIndex> sourceIndices, LogLineSourceId[] destination, int destinationIndex)
+		{
+			lock (_syncRoot)
+			{
+				for (int i = 0; i < sourceIndices.Count; ++i)
+				{
+					var index = sourceIndices[i].Value;
+					if (index >= 0 && index < _indices.Count)
+					{
+						destination[destinationIndex + i] = new LogLineSourceId(_indices[index].SourceId);
+					}
+					else
+					{
+						destination[destinationIndex + i] = LogFileColumns.SourceId.DefaultValue;
 					}
 				}
 			}
@@ -183,10 +202,10 @@ namespace Tailviewer.Core.LogFiles.Merged
 					{
 						var sourceIndex = _indices[index.Value];
 						Stuff<T> stuff;
-						if (!sourceIndices.TryGetValue(sourceIndex.LogFileIndex, out stuff))
+						if (!sourceIndices.TryGetValue(sourceIndex.SourceId, out stuff))
 						{
 							stuff = new Stuff<T>();
-							sourceIndices.Add(sourceIndex.LogFileIndex, stuff);
+							sourceIndices.Add(sourceIndex.SourceId, stuff);
 						}
 						stuff.Add(i, sourceIndex.SourceLineIndex);
 					}
@@ -249,11 +268,11 @@ namespace Tailviewer.Core.LogFiles.Merged
 				if (pendingModification.Section.IsReset)
 				{
 					var logFileIndex = GetLogFileIndex(pendingModification.LogFile);
-					var firstIndex = _indices.FindIndex(x => x.LogFileIndex == logFileIndex);
+					var firstIndex = _indices.FindIndex(x => x.SourceId == logFileIndex);
 					if (firstIndex >= 0)
 					{
 						changes.InvalidateFrom(firstIndex);
-						_indices.RemoveAll(x => x.LogFileIndex == logFileIndex);
+						_indices.RemoveAll(x => x.SourceId == logFileIndex);
 						if (_indices.Count == 0)
 						{
 							changes.Reset();
@@ -341,7 +360,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		{
 			// Two log lines refer to the same entry if they are from the SAME source
 			// AND if they have the same ORIGINAL log entry index.
-			if (lhs.LogFileIndex != rhs.LogFileIndex)
+			if (lhs.SourceId != rhs.SourceId)
 				return false;
 
 			return lhs.OriginalLogEntryIndex == rhs.OriginalLogEntryIndex;
@@ -422,7 +441,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		private static IReadOnlyList<MergedLogFileSection> GetEntries(
 			IEnumerable<MergedLogFilePendingModification> pendingModifications)
 		{
-			var columns = new ILogFileColumn[]
+			var columns = new ILogFileColumnDescriptor[]
 			{
 				LogFileColumns.Index,
 				LogFileColumns.LogEntryIndex,

@@ -8,7 +8,7 @@ namespace Tailviewer.Ui.Controls.LogView
 	/// </summary>
 	public interface ILogFileColumnPresenter
 	{
-		ILogFileColumn Column { get; }
+		ILogFileColumnDescriptor Column { get; }
 
 		TextSettings TextSettings { get; set; }
 

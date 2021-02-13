@@ -82,7 +82,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _buffer.Count;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns => _buffer.Columns;
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _buffer.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -118,42 +118,30 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
-			_buffer.GetColumn(section, column, buffer, destinationIndex);
+			_buffer.GetColumn(sourceSection, column, destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices,
-		                         ILogFileColumn<T> column,
-		                         T[] buffer,
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
+		                         ILogFileColumnDescriptor<T> column,
+		                         T[] destination,
 		                         int destinationIndex)
 		{
-			_buffer.GetColumn(indices, column, buffer, destinationIndex);
+			_buffer.GetColumn(sourceIndices, column, destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
-			_buffer.GetEntries(section, buffer, destinationIndex);
+			_buffer.GetEntries(sourceSection, destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
-			_buffer.GetEntries(indices, buffer, destinationIndex);
-		}
-
-		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			_buffer.GetSection(section, dest);
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			return _buffer.GetLine(index);
+			_buffer.GetEntries(sourceIndices, destination, destinationIndex);
 		}
 
 		/// <inheritdoc />
@@ -194,7 +182,7 @@ namespace Tailviewer.Core.LogFiles
 					bool first = true;
 					foreach (var line in lines)
 					{
-						var values = new Dictionary<ILogFileColumn, object>
+						var values = new Dictionary<ILogFileColumnDescriptor, object>
 						{
 							{LogFileColumns.RawContent, FormatLine(line, first)},
 							{LogFileColumns.LogLevel, logLevel},

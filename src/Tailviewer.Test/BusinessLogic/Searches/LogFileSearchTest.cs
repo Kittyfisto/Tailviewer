@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.Searches
 {
@@ -15,7 +16,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 	public sealed class LogFileSearchTest
 	{
 		private List<LogLine> _entries;
-		private Mock<ILogFile> _logFile;
 		private List<LogMatch> _matches;
 		private Mock<ILogFileSearchListener> _listener;
 		private ManualTaskScheduler _scheduler;
@@ -25,24 +25,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		{
 			_scheduler = new ManualTaskScheduler();
 			_entries = new List<LogLine>();
-			_logFile = new Mock<ILogFile>();
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-					.Callback(
-						(LogFileSection section, LogLine[] entries) =>
-						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-			        .Callback((ILogFileListener listener, TimeSpan unused, int max) =>
-				        {
-					        for (int i = 0; i < _entries.Count/max+1; ++i)
-					        {
-						        int from = i*max;
-						        int to = Math.Min((i + 1)*max, _entries.Count);
-						        listener.OnLogFileModified(_logFile.Object, new LogFileSection(from, to - from));
-					        }
-				        });
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
-			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 
 			_matches = new List<LogMatch>();
 			_listener = new Mock<ILogFileSearchListener>();
@@ -57,7 +39,8 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestCtor1()
 		{
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "foobar"))
+			var logFile = new InMemoryLogFile();
+			using (var search = new LogFileSearch(_scheduler, logFile, "foobar", TimeSpan.Zero))
 			{
 				search.Matches.Should().BeEmpty("because the source is empty");
 			}
@@ -66,8 +49,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestDispose()
 		{
+			var logFile = new InMemoryLogFile();
 			LogFileSearch search;
-			using (search = new LogFileSearch(_scheduler, _logFile.Object, "foobar"))
+			using (search = new LogFileSearch(_scheduler, logFile, "foobar", TimeSpan.Zero))
 			{
 				search.IsDisposed.Should().BeFalse();
 				_scheduler.PeriodicTaskCount.Should().Be(1);
@@ -80,8 +64,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestCtor2()
 		{
-			Add("Hello World!");
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello World!");
+			using (var search = new LogFileSearch(_scheduler, logFile, "l", TimeSpan.Zero))
 			{
 				_scheduler.RunOnce();
 
@@ -99,8 +84,9 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		[Test]
 		public void TestAddListener1()
 		{
-			Add("Hello World!");
-			using (var search = new LogFileSearch(_scheduler, _logFile.Object, "l"))
+			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("Hello World!");
+			using (var search = new LogFileSearch(_scheduler, logFile, "l", TimeSpan.Zero))
 			{
 				search.AddListener(_listener.Object);
 
@@ -113,13 +99,6 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 						new LogMatch(0, new LogLineMatch(9, 1))
 					});
 			}
-		}
-
-		private void Add(string message)
-		{
-			var index = _entries.Count;
-			var entry = new LogLine(index, index, message, LevelFlags.Other);
-			_entries.Add(entry);
 		}
 	}
 }

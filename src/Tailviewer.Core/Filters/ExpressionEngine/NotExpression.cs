@@ -38,13 +38,13 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(bool);
 
-		public bool Evaluate(IReadOnlyList<LogLine> logEntry)
+		public bool Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			var result = _expression.Evaluate(logEntry);
 			return !result;
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

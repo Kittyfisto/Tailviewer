@@ -7,6 +7,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Provides read-only access to a log entry of a <see cref="ILogFile" />.
 	/// </summary>
 	/// <remarks>
+	///     Plugin users really shouldn't directly implement this interface and instead use one the implementations
+	///     offered by the Tailviewer.Core library instead (namely ReadOnlyLogEntry, LogEntryArray and LogEntryList).
+	///     If a custom implementation isn't avoidable, then the custom implementation should inherit from AbstractLogEntry instead.
+	/// </remarks>
+	/// <remarks>
 	///     This interface is meant to replace <see cref="LogLine" />.
 	///     With its introduction, <see cref="LogLineIndex" /> can be removed and be replaced
 	///     with <see cref="LogEntryIndex" />.
@@ -65,6 +70,24 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		int OriginalLineNumber { get; }
 
 		/// <summary>
+		///     The name of the log entry's original data source.
+		/// </summary>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		string OriginalDataSourceName { get; }
+
+		/// <summary>
+		///     The id of the source the log entry comes from.
+		/// </summary>
+		/// <remarks>
+		///     This column is present when multiple sources are merged together in order to tell which file a particular entry belongs to.
+		/// </remarks>
+		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
+		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
+		LogLineSourceId SourceId { get; }
+
+
+		/// <summary>
 		/// The log level of this entry.
 		/// </summary>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
@@ -100,7 +123,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		T GetValue<T>(ILogFileColumn<T> column);
+		T GetValue<T>(ILogFileColumnDescriptor<T> column);
 
 		/// <summary>
 		///    Tries to lookup the value of this log entry for the given column.
@@ -108,7 +131,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue<T>(ILogFileColumn<T> column, out T value);
+		bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
 
 		/// <summary>
 		///     Returns the value of this log entry for the given column.
@@ -117,7 +140,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <returns></returns>
 		/// <exception cref="NoSuchColumnException">When this column doesn't exist</exception>
 		/// <exception cref="ColumnNotRetrievedException">When this column hasn't been retrieved</exception>
-		object GetValue(ILogFileColumn column);
+		object GetValue(ILogFileColumnDescriptor column);
 
 		/// <summary>
 		///    Tries to lookup the value of this log entry for the given column.
@@ -125,11 +148,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		bool TryGetValue(ILogFileColumn column, out object value);
+		bool TryGetValue(ILogFileColumnDescriptor column, out object value);
 
 		/// <summary>
 		///     The columns offered by this log entry.
 		/// </summary>
-		IReadOnlyList<ILogFileColumn> Columns { get; }
+		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
 	}
 }

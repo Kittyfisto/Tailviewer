@@ -23,11 +23,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_taskScheduler = new ManualTaskScheduler();
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-			        .Callback(
-				        (LogFileSection section, LogLine[] entries) =>
-				        _entries.CopyTo((int) section.Index, entries, 0, section.Count));
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
+			_logFile.SetupGet(x => x.Columns).Returns(LogFileColumns.Minimum);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
 			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 
@@ -64,19 +60,34 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestChangeColumns()
+		{
+			_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[]
+				                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel});
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Debug)))
+			{
+				file.Columns.Should().Contain(new ILogFileColumnDescriptor[]
+					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel});
+
+				var customColumn = new Mock<ILogFileColumnDescriptor>().Object;
+				_logFile.SetupGet(x => x.Columns).Returns(new ILogFileColumnDescriptor[]
+					                                          {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
+				file.Columns.Should().Contain(new ILogFileColumnDescriptor[]
+					                            {LogFileColumns.RawContent, LogFileColumns.LogLevel, customColumn});
+			}
+		}
+
+		[Test]
 		public void TestConstruction()
 		{
-			_logFile.Setup(x => x.Count).Returns(2);
-			_logFile.Setup(x => x.Progress).Returns(1);
-			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-			_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
+			var source = new InMemoryLogFile();
+			source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 				Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				file.Progress.Should().Be(0, "because the filtered log file hasn't consumed anything of its source (yet)");
-
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
 				file.Progress.Should().Be(1, "because the filtered log file has consumed the entire source");
@@ -87,19 +98,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the filtered log file correctly listens to a reset event")]
 		public void TestClear()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "DEBUG: Yikes");
 
 				_taskScheduler.RunOnce();
 
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(2);
 
-				_entries.Clear();
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Reset);
+				source.Clear();
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
@@ -123,22 +132,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestEntryLevelNone()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("ello", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("ello", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, "Hello world!", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				source.AddEntry("Hello world!", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
 
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(1);
-				var section = file.GetSection(new LogFileSection(0, 1));
-				section.Should().HaveCount(1);
-				section[0].LineIndex.Should().Be(0);
-				section[0].OriginalLineIndex.Should().Be(0);
-				section[0].LogEntryIndex.Should().Be(0);
-				section[0].Message.Should().Be("Hello world!");
-				section[0].Level.Should().Be(LevelFlags.Other);
+				var entries = file.GetEntries(new LogFileSection(0, 1), LogFileColumns.Minimum);
+				entries.Should().HaveCount(1);
+				entries[0].Index.Should().Be(0);
+				entries[0].OriginalIndex.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("Hello world!");
+				entries[0].LogLevel.Should().Be(LevelFlags.Other);
 			}
 		}
 
@@ -187,21 +196,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestInvalidate1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				_entries.AddRange(new[]
-					{
-						new LogLine(0, 0, "A", LevelFlags.Info),
-						new LogLine(1, 1, "B", LevelFlags.Info),
-						new LogLine(2, 2, "C", LevelFlags.Info),
-						new LogLine(3, 3, "D", LevelFlags.Info)
-					});
-
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
+				source.AddRange(new[]
+				{
+					new LogEntry { RawContent = "A" },
+					new LogEntry { RawContent = "B" },
+					new LogEntry { RawContent = "C" },
+					new LogEntry { RawContent = "D" }
+				});
+				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
 
@@ -213,27 +221,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestInvalidate2()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				_entries.AddRange(new[]
-					{
-						new LogLine(0, 0, "A", LevelFlags.Info),
-						new LogLine(1, 1, "B", LevelFlags.Info),
-						new LogLine(2, 2, "C", LevelFlags.Info),
-						new LogLine(3, 3, "D", LevelFlags.Info)
-					});
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				source.AddRange(new []
+				{
+					new LogEntry(LogFileColumns.Minimum){RawContent = "A", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "B", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "C", LogLevel = LevelFlags.Info},
+					new LogEntry(LogFileColumns.Minimum){RawContent = "D", LogLevel = LevelFlags.Info},
+				});
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 				file.Count.Should().Be(4);
 
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
+				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
@@ -257,26 +265,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			)]
 		public void TestInvalidate3()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Info)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				_entries.AddRange(new[]
-					{
-						new LogLine(0, 0, "A", LevelFlags.Info),
-						new LogLine(1, 0, "B", LevelFlags.Info),
-						new LogLine(2, 0, "C", LevelFlags.Info),
-						new LogLine(3, 0, "D", LevelFlags.Info)
-					});
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				source.AddMultilineEntry(LevelFlags.Info, null, "A", "B", "C", "D");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(2, 2));
+				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue("Because the filtered log file should be finished");
@@ -306,30 +308,30 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			{
 				logFile.AddRange(new[]
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 195), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.195339; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Some interesting message"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 19, 751), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-19.751428; 0; 0;  0; 129;  0; 145;   1;INFO; ; ; ; ; ; 0; Very interesting stuff"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2;"}
 				});
 
 				_taskScheduler.RunOnce();
 				filtered.Count.Should().Be(2);
-				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
-				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
+				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
+				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
 
 
 				logFile.RemoveFrom(new LogLineIndex(2));
 				logFile.AddRange(new []
 				{
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
-					new LogEntry2{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Other, RawContent = "2017-03-24 11-45-21.708485; 0; 0;  0; 109;  0; 125;   1;PB_CREATE; ; ; 109; 2; Sooo interesting"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 708), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.708599; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; Go on!"},
+					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
 				filtered.Count.Should().Be(4);
-				filtered.GetLine(0).OriginalLineIndex.Should().Be(0);
-				filtered.GetLine(1).OriginalLineIndex.Should().Be(1);
-				filtered.GetLine(2).OriginalLineIndex.Should().Be(3);
-				filtered.GetLine(3).OriginalLineIndex.Should().Be(4);
+				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
+				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
+				filtered.GetEntry(2).OriginalIndex.Should().Be(3);
+				filtered.GetEntry(3).OriginalIndex.Should().Be(4);
 			}
 		}
 
@@ -339,9 +341,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			)]
 		public void TestListener()
 		{
-			_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-			_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
 				var sections = new List<LogFileSection>();
 				var listener = new Mock<ILogFileListener>();
@@ -353,7 +355,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				// the maximum wait time is elapsed.
 				const int batchSize = 10;
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), batchSize);
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				file.OnLogFileModified(source, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
@@ -371,22 +373,25 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that all lines belonging to an entry pass the filter, even though only one line passes it")]
 		public void TestMultiLineLogEntry1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
+			                                      Filter.Create("Test", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
 				file.Count.Should().Be(2);
-				file.GetSection(new LogFileSection(0, 2))
-				    .Should().Equal(new[]
-					    {
-						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
-					    });
+				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
+				entries[0].Index.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("DEBUG: This is a test");
+				entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+				entries[1].Index.Should().Be(1);
+				entries[1].LogEntryIndex.Should().Be(0);
+				entries[1].RawContent.Should().Be("Yikes");
+				entries[1].LogLevel.Should().Be(LevelFlags.Debug);
 			}
 		}
 
@@ -395,22 +400,24 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			"Verifies that all lines belonging to an entry pass the filter, even though only the second line passes it")]
 		public void TestMultiLineLogEntry2()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry( LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
 				file.Count.Should().Be(2);
-				file.GetSection(new LogFileSection(0, 2))
-				    .Should().Equal(new[]
-					    {
-						    new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug),
-						    new LogLine(1, 0, "Yikes", LevelFlags.Other)
-					    });
+				var entries = file.GetEntries(new LogFileSection(0, 2));
+				entries[0].Index.Should().Be(0);
+				entries[0].LogEntryIndex.Should().Be(0);
+				entries[0].RawContent.Should().Be("DEBUG: This is a test");
+				entries[0].LogLevel.Should().Be(LevelFlags.Debug);
+				entries[1].Index.Should().Be(1);
+				entries[1].LogEntryIndex.Should().Be(0);
+				entries[1].RawContent.Should().Be("Yikes");
+				entries[1].LogLevel.Should().Be(LevelFlags.Debug);
 			}
 		}
 
@@ -418,7 +425,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the filtered log file repeatedly calls the listener when the source has been fully read")]
 		public void TestWait()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
 				var sections = new List<LogFileSection>();
 				var listener = new Mock<ILogFileListener>();
@@ -426,9 +434,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				        .Callback((ILogFile logFile, LogFileSection section) => sections.Add(section));
 				file.AddListener(listener.Object, TimeSpan.FromMilliseconds(100), 3);
 
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "DEBUG: Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
@@ -442,72 +448,79 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		[Test]
 		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
-		public void TestGetSection1()
+		public void TestGetEntries1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.Info));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("Yikes", LevelFlags.Info);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				var section = file.GetSection(new LogFileSection(0, 1));
-				section.Should().NotBeNull();
-				section.Length.Should().Be(1);
-				section[0].LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
-				section[0].OriginalLineIndex.Should().Be(1, "because the given line is the second line in the source file");
-				section[0].Message.Should().Be("Yikes");
-				section[0].Level.Should().Be(LevelFlags.Info);
-
-				var line = file.GetLine(0);
-				line.LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
-				line.OriginalLineIndex.Should().Be(1, "because the given line is the second line in the source file");
-				line.Message.Should().Be("Yikes");
-				line.Level.Should().Be(LevelFlags.Info);
+				var entries = file.GetEntries(new LogFileSection(0, 1), file.Columns);
+				entries.Should().NotBeNull();
+				entries.Count.Should().Be(1);
+				entries[0].Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				entries[0].OriginalIndex.Should().Be(1, "because the given line is the second line in the source file");
+				entries[0].RawContent.Should().Be("Yikes");
+				entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			}
 		}
 
 		[Test]
 		[Description("Verifies that filtered log entries present the correct index from the view of the filtered file")]
-		public void TestGetLine1()
+		public void TestGetEntry1()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("yikes", true, LevelFlags.All)))
+			var source = new InMemoryLogFile();
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create("yikes", true, LevelFlags.All)))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "Yikes", LevelFlags.Other));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("Yikes", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
 
-				var line = file.GetLine(0);
-				line.LineIndex.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
-				line.Message.Should().Be("Yikes");
+				var entry = file.GetEntry(0);
+				entry.Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
+				entry.RawContent.Should().Be("Yikes");
 			}
 		}
 
 		[Test]
 		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/154")]
 		[Description("Verifies that filtered log file actually returns the correct source id")]
-		public void TestGetLine2()
+		public void TestGetEntry2()
 		{
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(LevelFlags.Error)))
+			var source = new InMemoryLogFile(LogFileColumns.SourceId);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(LevelFlags.Error)))
 			{
-				_entries.Add(new LogLine(0, 0, new LogLineSourceId(0), "DEBUG: This is a test", LevelFlags.Debug, null));
-				_entries.Add(new LogLine(1, 1, new LogLineSourceId(42), "ERROR: I feel a disturbance in the source", LevelFlags.Error, null));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
+				source.Add(new Dictionary<ILogFileColumnDescriptor, object>
+				{
+					{LogFileColumns.SourceId, new LogLineSourceId(0) },
+					{LogFileColumns.RawContent, "DEBUG: This is a test"},
+					{LogFileColumns.LogLevel, LevelFlags.Debug }
+				});
+
+				source.Add(new Dictionary<ILogFileColumnDescriptor, object>
+				{
+					{LogFileColumns.SourceId, new LogLineSourceId(42) },
+					{LogFileColumns.RawContent, "ERROR: I feel a disturbance in the source"},
+					{LogFileColumns.LogLevel, LevelFlags.Error }
+				});
 
 				_taskScheduler.RunOnce();
 				file.EndOfSourceReached.Should().BeTrue();
+
 				file.Count.Should().Be(1, "because only one line matches the filter");
-				var line = file.GetLine(0);
-				line.LineIndex.Should().Be(0);
-				line.LogEntryIndex.Should().Be(0);
-				line.OriginalLineIndex.Should().Be(1);
-				line.Message.Should().Be("ERROR: I feel a disturbance in the source");
-				line.SourceId.Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
+				var entry = file.GetEntry(0);
+				entry.Index.Should().Be(0);
+				entry.LogEntryIndex.Should().Be(0);
+				entry.OriginalIndex.Should().Be(1);
+				entry.RawContent.Should().Be("ERROR: I feel a disturbance in the source");
+				entry.GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(42), "Because the filtered log file is supposed to simply forward the source id of the log line in question (Issue #154)");
 			}
 		}
 
@@ -515,15 +528,15 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file queries the LogLineFilter for each added entry")]
 		public void TestSingleLineFilter1()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new Mock<ILogLineFilter>();
-			filter.Setup(x => x.PassesFilter(It.IsAny<LogLine>())).Returns(true);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter.Object, null))
+			filter.Setup(x => x.PassesFilter(It.IsAny<IReadOnlyLogEntry>())).Returns(true);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				var logEntry = source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				filter.Verify(x => x.PassesFilter(It.Is<LogLine>(y => Equals(y, _entries[0]))), Times.AtLeastOnce,
+				filter.Verify(x => x.PassesFilter(It.Is<IReadOnlyLogEntry>(y => Equals(y, logEntry))), Times.AtLeastOnce,
 					"because the log file should've used our filter at least once to determine if the given log line should've been added");
 
 				file.Count.Should().Be(1, "because the filter should've passed the only log line");
@@ -534,18 +547,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log file honors the result of the log line filter")]
 		public void TestSingleLineFilter2()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new Mock<ILogLineFilter>();
-			filter.Setup(x => x.PassesFilter(It.IsAny<LogLine>())).Returns(false);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter.Object, null))
+			filter.Setup(x => x.PassesFilter(It.IsAny<IReadOnlyLogEntry>())).Returns(false);
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter.Object, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
 				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
 
-				_entries.Add(new LogLine(1, 0, "INFO: Something mundane", LevelFlags.Info));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(1, 0));
+				source.AddEntry("INFO: Something mundane", LevelFlags.Info);
 				_taskScheduler.RunOnce();
 				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
 			}
@@ -555,14 +567,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the log line filter is used per log line")]
 		public void TestSingleLineFilter3()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 0, "More stuff", LevelFlags.Debug));
-				_entries.Add(new LogLine(2, 0, "", LevelFlags.Debug));
-				_entries.Add(new LogLine(3, 0, "And even more stuff", LevelFlags.Debug));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("More stuff", LevelFlags.Debug);
+				source.AddEntry("", LevelFlags.Debug);
+				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
 				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
@@ -573,22 +585,22 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter4()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
-				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
-				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("More stuff", LevelFlags.Debug);
+				source.AddEntry("", LevelFlags.Debug);
+				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
 				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
-				file.GetLine(0).LogEntryIndex.Should().Be(0, reason);
-				file.GetLine(1).LogEntryIndex.Should().Be(1, reason);
-				file.GetLine(2).LogEntryIndex.Should().Be(2, reason);
+				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
+				file.GetEntry(1).LogEntryIndex.Should().Be(1, reason);
+				file.GetEntry(2).LogEntryIndex.Should().Be(2, reason);
 			}
 		}
 
@@ -596,13 +608,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter5()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
-				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
-				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("More stuff", LevelFlags.Debug);
+				source.AddEntry("", LevelFlags.Debug);
+				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
@@ -613,7 +626,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				_taskScheduler.RunOnce();
 
 				file.Count.Should().Be(1, "because only one line remains in the source");
-				file.GetLine(0).LogEntryIndex.Should().Be(0, "because log entry indices should always start at 0");
+				file.GetEntry(0).LogEntryIndex.Should().Be(0, "because log entry indices should always start at 0");
 			}
 		}
 
@@ -621,30 +634,31 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the filter adjusts log entry indices to be consecutive once again")]
 		public void TestSingleLineFilter6()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new EmptyLogLineFilter();
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "DEBUG: This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "More stuff", LevelFlags.Debug));
-				_entries.Add(new LogLine(2, 2, "", LevelFlags.Debug));
-				_entries.Add(new LogLine(3, 3, "And even more stuff", LevelFlags.Debug));
-				_entries.Add(new LogLine(4, 4, "And even more stuff", LevelFlags.Debug));
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 5));
+				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
+				source.AddEntry("More stuff", LevelFlags.Debug);
+				source.AddEntry("", LevelFlags.Debug);
+				source.AddEntry("And even more stuff", LevelFlags.Debug);
+				source.AddEntry("And even more stuff", LevelFlags.Debug);
+				file.OnLogFileModified(source, new LogFileSection(0, 5));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(_logFile.Object, LogFileSection.Invalidate(3, 2));
+				file.OnLogFileModified(source, LogFileSection.Invalidate(3, 2));
 				_taskScheduler.RunOnce();
 
-				file.OnLogFileModified(_logFile.Object, new LogFileSection(3, 2));
+				file.OnLogFileModified(source, new LogFileSection(3, 2));
 				_taskScheduler.RunOnce();
 				
 				file.Count.Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
-				file.GetLine(0).LogEntryIndex.Should().Be(0, reason);
-				file.GetLine(1).LogEntryIndex.Should().Be(1, reason);
-				file.GetLine(2).LogEntryIndex.Should().Be(2, reason);
-				file.GetLine(3).LogEntryIndex.Should().Be(3, reason);
+				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
+				file.GetEntry(1).LogEntryIndex.Should().Be(1, reason);
+				file.GetEntry(2).LogEntryIndex.Should().Be(2, reason);
+				file.GetEntry(3).LogEntryIndex.Should().Be(3, reason);
 			}
 		}
 
@@ -667,13 +681,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetLogLineIndexOfOriginalLineIndex1()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				source.AddEntry("This is a test", LevelFlags.Debug);
+				source.AddEntry("This is a test", LevelFlags.Info);
+				source.AddEntry("This is a test", LevelFlags.Error);
+				source.AddEntry("This is a test", LevelFlags.Info);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
@@ -691,13 +706,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetOriginalIndicesFrom3()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
+				source.AddEntry("This is a test", LevelFlags.Debug);
+				source.AddEntry("This is a test", LevelFlags.Info);
+				source.AddEntry("This is a test", LevelFlags.Error);
+				source.AddEntry("This is a test", LevelFlags.Info);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 4));
 				_taskScheduler.RunOnce();
 
@@ -709,15 +725,16 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetOriginalIndicesFrom4()
 		{
+			var source = new InMemoryLogFile();
 			var filter = new LevelFilter(LevelFlags.Info);
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, filter, null))
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null))
 			{
-				_entries.Add(new LogLine(0, 0, "This is a test", LevelFlags.Debug));
-				_entries.Add(new LogLine(1, 1, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(2, 2, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(3, 3, "This is a test", LevelFlags.Info));
-				_entries.Add(new LogLine(4, 4, "This is a test", LevelFlags.Error));
-				_entries.Add(new LogLine(5, 5, "This is a test", LevelFlags.Info));
+				source.AddEntry("This is a test", LevelFlags.Debug);
+				source.AddEntry("This is a test", LevelFlags.Info);
+				source.AddEntry("This is a test", LevelFlags.Error);
+				source.AddEntry("This is a test", LevelFlags.Info);
+				source.AddEntry("This is a test", LevelFlags.Error);
+				source.AddEntry("This is a test", LevelFlags.Info);
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 6));
 				_taskScheduler.RunOnce();
 
@@ -735,10 +752,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -753,10 +770,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -778,10 +795,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
@@ -796,10 +813,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var filter = new SubstringFilter("B", true);
 			var source = new InMemoryLogFile();
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "A" });
-			source.Add(new LogEntry2(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "A" });
+			source.Add(new LogEntry(LogFileColumns.Minimum) { RawContent = "B" });
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 

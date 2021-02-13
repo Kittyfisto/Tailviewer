@@ -9,7 +9,7 @@ namespace Tailviewer.BusinessLogic
 	/// </summary>
 	public struct LogLineIndex
 		: IEquatable<LogLineIndex>
-			, IComparable<LogLineIndex>
+		, IComparable<LogLineIndex>
 	{
 		/// <summary>
 		///     Value for an invalid index.

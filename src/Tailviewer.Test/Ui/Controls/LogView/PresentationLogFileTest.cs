@@ -33,7 +33,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		{
 			var logFile = new InMemoryLogFile();
 			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
-			logFile.Add(new LogEntry2 {RawContent = "Hello, World!"});
+			logFile.Add(new LogEntry {RawContent = "Hello, World!"});
 
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(85, 1);
@@ -45,7 +45,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 		{
 			var logFile = new InMemoryLogFile();
 			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
-			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
+			logFile.Add(new LogEntry {RawContent = "Hello,\r\nWorld!"});
 
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(46, 1);
@@ -58,17 +58,17 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var logFile = new InMemoryLogFile();
 			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
-			logFile.Add(new LogEntry2 {RawContent = "Foo"});
+			logFile.Add(new LogEntry {RawContent = "Foo"});
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(19.8, 0.1);
 			index.LineCount.Should().Be(1);
 
-			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
+			logFile.Add(new LogEntry {RawContent = "Hello,\r\nWorld!"});
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
 			index.LineCount.Should().Be(3);
 
-			logFile.Add(new LogEntry2 {RawContent = "Bar"});
+			logFile.Add(new LogEntry {RawContent = "Bar"});
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
 			index.LineCount.Should().Be(4);
@@ -80,12 +80,12 @@ namespace Tailviewer.Test.Ui.Controls.LogView
 			var logFile = new InMemoryLogFile();
 			var index = new PresentationLogFile(_scheduler, logFile, TimeSpan.Zero, TextSettings.Default);
 
-			logFile.Add(new LogEntry2 {RawContent = "Foo"});
+			logFile.Add(new LogEntry {RawContent = "Foo"});
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(19.8, 0.1);
 			index.LineCount.Should().Be(1);
 
-			logFile.Add(new LogEntry2 {RawContent = "Hello,\r\nWorld!"});
+			logFile.Add(new LogEntry {RawContent = "Hello,\r\nWorld!"});
 			_scheduler.RunOnce();
 			index.MaximumWidth.Should().BeApproximately(46.2, 0.1);
 			index.LineCount.Should().Be(3);

@@ -122,7 +122,7 @@ namespace Tailviewer.Core.LogFiles
 		public int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -160,7 +160,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection section, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -213,7 +213,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
 		{
 			if (indices == null)
 				throw new ArgumentNullException(nameof(indices));
@@ -321,7 +321,7 @@ namespace Tailviewer.Core.LogFiles
 			if (dest.Length < section.Count)
 				throw new ArgumentOutOfRangeException("section.Count");
 
-			var entries = new LogEntryBuffer(section.Count, LogFileColumns.Minimum);
+			var entries = new LogEntryArray(section.Count, LogFileColumns.Minimum);
 			GetEntries(section, entries, 0);
 		}
 
@@ -429,7 +429,7 @@ namespace Tailviewer.Core.LogFiles
 		sealed class RawLogEntry
 			: IReadOnlyLogEntry
 		{
-			private static readonly IReadOnlyList<ILogFileColumn> AllColumns = new ILogFileColumn[]
+			private static readonly IReadOnlyList<ILogFileColumnDescriptor> AllColumns = new ILogFileColumnDescriptor[]
 			{
 				LogFileColumns.RawContent,
 				LogFileColumns.Index,
@@ -481,6 +481,16 @@ namespace Tailviewer.Core.LogFiles
 				get { return LineNumber; }
 			}
 
+			public string OriginalDataSourceName
+			{
+				get { throw new NotImplementedException(); }
+			}
+
+			public LogLineSourceId SourceId
+			{
+				get { throw new NotImplementedException(); }
+			}
+
 			public LevelFlags LogLevel
 			{
 				get { return LevelFlags.None; }
@@ -501,7 +511,7 @@ namespace Tailviewer.Core.LogFiles
 				get { return null; }
 			}
 
-			public T GetValue<T>(ILogFileColumn<T> column)
+			public T GetValue<T>(ILogFileColumnDescriptor<T> column)
 			{
 				if (!TryGetValue(column, out var value))
 					throw new NoSuchColumnException(column);
@@ -509,7 +519,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+			public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
 			{
 				if (TryGetValue(column, out object tmp))
 				{
@@ -521,7 +531,7 @@ namespace Tailviewer.Core.LogFiles
 				return false;
 			}
 
-			public object GetValue(ILogFileColumn column)
+			public object GetValue(ILogFileColumnDescriptor column)
 			{
 				if (!TryGetValue(column, out var value))
 					throw new NoSuchColumnException(column);
@@ -529,7 +539,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public bool TryGetValue(ILogFileColumn column, out object value)
+			public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
 			{
 				if (Equals(column, LogFileColumns.RawContent))
 				{
@@ -558,7 +568,7 @@ namespace Tailviewer.Core.LogFiles
 				return false;
 			}
 
-			public IReadOnlyList<ILogFileColumn> Columns
+			public IReadOnlyList<ILogFileColumnDescriptor> Columns
 			{
 				get { return AllColumns; }
 			}

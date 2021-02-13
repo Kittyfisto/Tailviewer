@@ -5,17 +5,41 @@ using System.Diagnostics.Contracts;
 namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
-	///     The interface to represent a list of <see cref="IReadOnlyLogEntry" />s from
-	///     some data source. Such a data source may be a file on disk, a SQL database or whatever.
-	///     On top of that, it also provides a list of <see cref="ILogFilePropertyDescriptor" />s which describe the data source.
+	///     This interface represents a log file (which doesn't have to be a file on disk) and allows the rest of Tailviewer to access the contents thereof.
+	///     An ILogFile consists of columns, log entries and properties.
 	/// </summary>
 	/// <remarks>
-	///     This interface is meant to provide access to the wrapped data source in a coherent way and to notify
-	///     the application of changes to the data source, if necessary.
+	///     An ILogFile should offer (if possible) a minimum set of columns, so Tailviewer may interact with the contents of the log. A log file may offer as many columns
+	///     as it wants and the columns do not have to be known to Tailviewer either: A log file may introduce its own column and simply return it via <see cref="Columns"/>.
 	/// </remarks>
 	/// <remarks>
-	///     TODO: Create separate (simplier) interface for log file sources (to be used by plugins) so they don't have to
-	///     implement that many methods...
+	///     An ILogFile may offer a set of properties which are each described via an <see cref="ILogFilePropertyDescriptor"/> object and which each may hold a single object.
+	///     There exists a set of properties which Tailviewer knows (such as File Size, First Timestamp, Last Modification Time, etc...) but a log file may introduce more properties
+	///     which Tailviewer doesn't know. In the end, these properties will be shown to the user.
+	/// </remarks>
+	/// <remarks>
+	///     Last but not least, an ILogFile holds log entries and allows Tailviewer to access them via one of these following methods (or their overloaded versions):
+	///     - <see cref="GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)"/>
+	///     - <see cref="GetColumn{T}(Tailviewer.BusinessLogic.LogFiles.LogFileSection,ILogFileColumnDescriptor{T},T[],int)"/>
+	///     Tailviewer will call these methods to access portions of the log file. Depending on the size of the log file, Tailviewer might access only a portion of the log file,
+	///     for example 1000 log entries beginning with the 5000th one. And even then, it may only be interested in the Index and RawContent column (ignoring any others).
+	///     Any implementation of this log file must make sure to properly implement this interface if there shall be any success in getting tailviewer to understand a source.
+	///     While tailviewer may hold small portions of the log file in its internal buffers, an <see cref="ILogFile"/> implementation must make sure to guarantee low latencies
+	///     when executing any of its methods or performance will suffer.
+	/// </remarks>
+	/// <remarks>
+	///     Out of boundary access:  
+	///     As agreed upon within this library, accessing rows outside of the boundaries of a log file is allowed and must not throw.
+	///     Instead all invalid cells which are accessed must return their <see cref="ILogFileColumnDescriptor.DefaultValue"/>.
+	///     Callers which are interested in finding out if they have accessed invalid portions of a log file are encouraged to include the Index column in their query
+	///     and to then check if a particular row's Index is set to <see cref="LogLineIndex.Invalid"/>. If it is, then the entire row wasn't part of the data source.
+	///
+	///     The reason for this is two-fold:
+	///     - Log files may shrink in size and due to the asynchronous nature of accessing log files, out of boundary access is quite possible (and sometimes even likely)
+	///     - In the near future, Tailviewer will be ready to continuously stream data into memory when needed (instead of currently where everything is stored in memory)
+	///       and when that point in time comes, it's quite likely that one tries to access a portion of a log file which just isn't streamed into memory yet.
+	///       Depending on the use case, it is quite acceptable to retrieve the portions of the log file which ARE in memory now and to retrieve the rest at a later point
+	///       in time.
 	/// </remarks>
 	public interface ILogFile
 		: IDisposable
@@ -27,7 +51,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		/// <summary>
 		///     The total number of <see cref="LogLine" />s that are offered by this log file at this moment.
-		///     If the log file is not modified, then it is expected that <see cref="GetSection" /> may be called
+		///     If the log file is not modified, then it is expected that <see cref="GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)" /> may be called
 		///     with as many lines as returned by this property.
 		/// </summary>
 		int Count { get; }
@@ -42,13 +66,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The maximum amount of characters of a single <see cref="LogLine" />.
 		/// </summary>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
+		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
 		int MaxCharactersPerLine { get; }
 
 		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
-		IReadOnlyList<ILogFileColumn> Columns { get; }
+		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
 
 		/// <summary>
 		///     Adds a new listener to this log file.
@@ -112,62 +136,39 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="section"></param>
+		/// <param name="sourceSection"></param>
 		/// <param name="column"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="indices"></param>
+		/// <param name="sourceIndices"></param>
 		/// <param name="column"></param>
-		/// <param name="buffer"></param>
-		/// <param name="destinationIndex">The first index into <paramref name="buffer"/> where the first item of the retrieved section is copied to</param>
-		void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		/// <param name="destination"></param>
+		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
+		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <summary>
-		///     Retrieves all entries from the given <paramref name="section" /> from this log file and copies
-		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		///     Retrieves all entries from the given <paramref name="sourceSection" /> from this log file and copies
+		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
 		/// </summary>
-		/// <param name="section"></param>
-		/// <param name="buffer"></param>
+		/// <param name="sourceSection"></param>
+		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
-		void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex);
+		void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);
 
 		/// <summary>
-		///     Retrieves all entries from the given <paramref name="indices" /> from this log file and copies
-		///     them into the given <paramref name="buffer" /> starting at the given <paramref name="destinationIndex"/>.
+		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
+		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.
 		/// </summary>
-		/// <param name="indices"></param>
-		/// <param name="buffer"></param>
+		/// <param name="sourceIndices"></param>
+		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
-		void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex);
-
-		/// <summary>
-		///     Retrieves a list of log lines from this log file.
-		/// </summary>
-		/// <remarks>
-		///     This method is currently expected to block until all lines have been retrieved.
-		/// </remarks>
-		/// <param name="section"></param>
-		/// <param name="dest"></param>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		void GetSection(LogFileSection section, LogLine[] dest);
-
-		/// <summary>
-		///     Retrieves the given log line.
-		/// </summary>
-		/// <remarks>
-		///     This method is currently expected to block until the given line has been retrieved.
-		/// </remarks>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		[Pure]
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2018", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		LogLine GetLine(int index);
+		void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
 
 		/// <summary>
 		///     The relative progress (in between 0 and 1) between the number of lines currently exposed by this log file versus
@@ -175,7 +176,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     of lines in the underlying data source.
 		/// </summary>
 		/// <remarks>
-		///     In case it is unfeasable to determine the number of lines before scanning through the entire source, 1 should be returned.
+		///     In case it is unfeasible to determine the number of lines before scanning through the entire source, 1 should be returned.
 		/// </remarks>
 		double Progress { get; }
 
@@ -184,7 +185,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		#region Indices
 
 		/// <summary>
-		///     Performs a reverse lookup and returns the index o fthe log entry
+		///     Performs a reverse lookup and returns the index of the log entry
 		///     which has the given original index.
 		/// </summary>
 		/// <param name="originalLineIndex"></param>

@@ -12,15 +12,15 @@ namespace Tailviewer.Core.Filters
 		: ILogEntryFilter
 	{
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
-			var message = logLine.Message;
+			var message = logLine.RawContent;
 
 			return !string.IsNullOrWhiteSpace(message);
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			return new List<LogLineMatch>();
 		}
@@ -28,13 +28,13 @@ namespace Tailviewer.Core.Filters
 		#region Implementation of ILogEntryFilter
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 			throw new System.NotImplementedException();
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
 			throw new System.NotImplementedException();
 		}

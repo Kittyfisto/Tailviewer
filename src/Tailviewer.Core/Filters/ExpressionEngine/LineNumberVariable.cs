@@ -17,12 +17,12 @@ namespace Tailviewer.Core.Filters.ExpressionEngine
 
 		public Type ResultType => typeof(long);
 
-		public long Evaluate(IReadOnlyList<LogLine> logEntry)
+		public long Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
-			return logEntry[0].LineIndex + 1;
+			return logEntry[0].LineNumber;
 		}
 
-		object IExpression.Evaluate(IReadOnlyList<LogLine> logEntry)
+		object IExpression.Evaluate(IReadOnlyList<IReadOnlyLogEntry> logEntry)
 		{
 			return Evaluate(logEntry);
 		}

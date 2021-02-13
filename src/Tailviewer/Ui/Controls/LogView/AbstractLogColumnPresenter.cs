@@ -14,7 +14,7 @@ namespace Tailviewer.Ui.Controls.LogView
 	{
 		#region Implementation of ILogFileColumnPresenter
 
-		public abstract ILogFileColumn Column { get; }
+		public abstract ILogFileColumnDescriptor Column { get; }
 		public abstract TextSettings TextSettings { get; set; }
 		public abstract void FetchValues(ILogFile logFile, LogFileSection visibleSection, double yOffset);
 
@@ -27,13 +27,13 @@ namespace Tailviewer.Ui.Controls.LogView
 	public abstract class AbstractLogColumnPresenter<T>
 		: AbstractLogColumnPresenter
 	{
-		private readonly ILogFileColumn<T> _column;
+		private readonly ILogFileColumnDescriptor<T> _column;
 		private readonly List<AbstractLogEntryValueFormatter> _values;
 
 		private double _yOffset;
 		private TextSettings _textSettings;
 
-		protected AbstractLogColumnPresenter(ILogFileColumn<T> column, TextSettings textSettings)
+		protected AbstractLogColumnPresenter(ILogFileColumnDescriptor<T> column, TextSettings textSettings)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -46,7 +46,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		protected IEnumerable<AbstractLogEntryValueFormatter> Values => _values;
 
-		public override ILogFileColumn Column
+		public override ILogFileColumnDescriptor Column
 		{
 			get { return _column; }
 		}

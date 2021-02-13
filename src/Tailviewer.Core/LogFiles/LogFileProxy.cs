@@ -111,7 +111,7 @@ namespace Tailviewer.Core.LogFiles
 
 			// This line is extremely important because listeners are allowed to limit how often they are notified.
 			// This means that even when there is NO modification to the source, we still need to notify the collection
-			// so it can check if enough time has ellapsed to finally notify listener.
+			// so it can check if enough time has elapsed to finally notify listener.
 			_listeners.OnRead(_listeners.CurrentLineIndex);
 
 			if (performedWork)
@@ -209,7 +209,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumn> Columns
+		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get
 			{
@@ -303,98 +303,84 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
+			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(section, column, buffer, destinationIndex);
+				logFile.GetColumn(sourceSection, column, destination, destinationIndex);
 			}
 			else
 			{
-				buffer.Fill(column.DefaultValue, destinationIndex, section.Count);
+				destination.Fill(column.DefaultValue, destinationIndex, sourceSection.Count);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + indices.Count > buffer.Length)
+			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetColumn(indices, column, buffer, destinationIndex);
+				logFile.GetColumn(sourceIndices, column, destination, destinationIndex);
 			}
 			else
 			{
-				buffer.Fill(column.DefaultValue, destinationIndex, indices.Count);
+				destination.Fill(column.DefaultValue, destinationIndex, sourceIndices.Count);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetEntries(section, buffer, destinationIndex);
+				logFile.GetEntries(sourceSection, destination, destinationIndex);
 			}
 			else
 			{
-				foreach (var column in buffer.Columns)
+				foreach (var column in destination.Columns)
 				{
-					buffer.FillDefault(column, destinationIndex, section.Count);
+					destination.FillDefault(column, destinationIndex, sourceSection.Count);
 				}
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
 			ILogFile logFile = _innerLogFile;
 			if (logFile != null)
 			{
-				logFile.GetEntries(indices, buffer, destinationIndex);
+				logFile.GetEntries(sourceIndices, destination, destinationIndex);
 			}
 			else
 			{
-				foreach (var column in buffer.Columns)
+				foreach (var column in destination.Columns)
 				{
-					buffer.FillDefault(column, destinationIndex, indices.Count);
+					destination.FillDefault(column, destinationIndex, sourceIndices.Count);
 				}
-			}
-		}
-
-		/// <inheritdoc />
-		public void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				logFile.GetSection(section, dest);
-			}
-			else
-			{
-				throw new IndexOutOfRangeException();
 			}
 		}
 
@@ -408,18 +394,6 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			return LogLineIndex.Invalid;
-		}
-
-		/// <inheritdoc />
-		public LogLine GetLine(int index)
-		{
-			ILogFile logFile = _innerLogFile;
-			if (logFile != null)
-			{
-				return logFile.GetLine(index);
-			}
-
-			throw new IndexOutOfRangeException();
 		}
 
 		/// <inheritdoc />

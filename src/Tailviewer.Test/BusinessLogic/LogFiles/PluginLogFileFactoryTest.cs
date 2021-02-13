@@ -44,8 +44,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var actualLogFile = factory.Open(fname, out _);
 			actualLogFile.Should().BeOfType<NoThrowLogFile>("because PluginLogFileFactory should protect us from buggy plugin implementations");
 
-			actualLogFile.GetLine(42);
-			logFile.Verify(x => x.GetLine(It.Is<int>(y => y == 42)), Times.Once,
+			var buffer = new LogEntryArray(2);
+			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 0);
+			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 0), Times.Once,
 				"because even though we've been given a proxy, it should nevertheless forward all calls to the actual implementation");
 		}
 
@@ -70,8 +71,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var actualLogFile = factory.Open(filename, out _);
 
 			plugin.Verify(x => x.Open(It.IsAny<IServiceContainer>(), filename), Times.Once);
-			actualLogFile.GetLine(42);
-			logFile.Verify(x => x.GetLine(It.Is<int>(y => y == 42)), Times.Once,
+			var buffer = new LogEntryArray(3);
+			actualLogFile.GetEntries(new LogFileSection(0, 2), buffer, 1);
+			logFile.Verify(x => x.GetEntries(new LogFileSection(0, 2), buffer, 1), Times.Once,
 			               "because even though we've been given a proxy, it should nevertheless forward all calls to the actual implementation");
 		}
 

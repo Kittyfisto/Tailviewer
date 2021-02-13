@@ -16,13 +16,13 @@ namespace Tailviewer.BusinessLogic.Filters
 		/// <param name="logLine"></param>
 		/// <returns>true if the log line passes (and shall be displayed), false otherwise</returns>
 		[Pure]
-		bool PassesFilter(LogLine logLine);
+		bool PassesFilter(IReadOnlyLogEntry logLine);
 
 		/// <summary>
 		/// Looks for matches of this filter in the given line and returns a list of them
 		/// where each entry marks the Start and Length of the match, relative to the start of the line.
 		/// </summary>
 		/// <returns></returns>
-		List<LogLineMatch> Match(LogLine line);
+		List<LogLineMatch> Match(IReadOnlyLogEntry line);
 	}
 }

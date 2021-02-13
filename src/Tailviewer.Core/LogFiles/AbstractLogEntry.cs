@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
 {
 	/// <summary>
-	/// 
+	///    An abstract implementation of <see cref="ILogEntry"/>.
+	///    Delegates all fixed property access calls to <see cref="GetValue{T}"/> and <see cref="SetValue"/>.
 	/// </summary>
+	/// <remarks>
+	///    IF plugin authors desperately need to implement their own <see cref="ILogEntry"/>, then they should
+	///    inherit from this class instead. They don't have to implement all properties and are protected against
+	///    having to re-compile against future additions.
+	/// </remarks>
 	public abstract class AbstractLogEntry
 		: ILogEntry
 	{
@@ -55,6 +60,20 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
+		public string OriginalDataSourceName
+		{
+			get { return GetValue(LogFileColumns.OriginalDataSourceName); }
+			set { SetValue(LogFileColumns.OriginalDataSourceName, value); }
+		}
+
+		/// <inheritdoc />
+		public LogLineSourceId SourceId
+		{
+			get { return GetValue(LogFileColumns.SourceId); }
+			set { SetValue(LogFileColumns.SourceId, value); }
+		}
+
+		/// <inheritdoc />
 		public LevelFlags LogLevel
 		{
 			get { return GetValue(LogFileColumns.LogLevel); }
@@ -83,42 +102,43 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFileColumn<T> column);
+		public abstract T GetValue<T>(ILogFileColumnDescriptor<T> column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue<T>(ILogFileColumn<T> column, out T value);
+		public abstract bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFileColumn column);
+		public abstract object GetValue(ILogFileColumnDescriptor column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue(ILogFileColumn column, out object value);
+		public abstract bool TryGetValue(ILogFileColumnDescriptor column, out object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue(ILogFileColumn column, object value);
+		public abstract void SetValue(ILogFileColumnDescriptor column, object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue<T>(ILogFileColumn<T> column, T value);
+		public abstract void SetValue<T>(ILogFileColumnDescriptor<T> column, T value);
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumn> Columns { get; }
+		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+
+		/// <inheritdoc />
+		public override bool Equals(object obj)
+		{
+			return ReadOnlyLogEntryExtensions.Equals(this, obj as IReadOnlyLogEntry);
+		}
+
+		/// <inheritdoc />
+		public override int GetHashCode()
+		{
+			// TODO: What should we do here?
+			return base.GetHashCode();
+		}
 
 		/// <inheritdoc />
 		public override string ToString()
 		{
-			var stringBuilder = new StringBuilder();
-			foreach (var column in Columns)
-			{
-				object value;
-				if (TryGetValue(column, out value))
-				{
-					if (stringBuilder.Length > 0)
-						stringBuilder.Append(", ");
-
-					stringBuilder.AppendFormat("{0}: {1}", column.Id, value);
-				}
-			}
-			return stringBuilder.ToString();
+			return ReadOnlyLogEntryExtensions.ToString(this);
 		}
 	}
 }

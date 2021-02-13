@@ -19,7 +19,7 @@ namespace Tailviewer.Archiver.Plugins
 		int PluginArchiveVersion { get; }
 
 		/// <summary>
-		///     The id of the plugin. Should be long enough to guarantuee to be unique
+		///     The id of the plugin. Should be long enough to guarantee to be unique
 		///     amongst all other plugins.
 		///     Will not be shown the user.
 		/// </summary>

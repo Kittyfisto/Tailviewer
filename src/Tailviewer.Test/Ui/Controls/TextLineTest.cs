@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Searches;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings;
 using Tailviewer.Ui.Controls.LogView;
 
@@ -20,6 +21,17 @@ namespace Tailviewer.Test.Ui.Controls
 		private HashSet<LogLineIndex> _hovered;
 		private HashSet<LogLineIndex> _selected;
 
+		private static IReadOnlyLogEntry CreateLogEntry(int lineIndex, int logEntryIndex, string message, LevelFlags flags)
+		{
+			return new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>
+			{
+				{LogFileColumns.Index, (LogLineIndex)lineIndex },
+				{LogFileColumns.LogEntryIndex, (LogEntryIndex)logEntryIndex },
+				{LogFileColumns.RawContent, message },
+				{LogFileColumns.LogLevel, flags }
+			});
+		}
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -30,21 +42,21 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestColorByLevel1()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, false);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, false);
 			textLine.ColorByLevel.Should().BeFalse();
 		}
 
 		[Test]
 		public void TestColorByLevel2()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.ColorByLevel.Should().BeTrue();
 		}
 
 		[Test]
 		public void TestColorByLevel3()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.ColorByLevel = false;
 			textLine.ColorByLevel.Should().BeFalse();
 		}
@@ -55,7 +67,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var results = new SearchResults();
 			results.Add(new LogMatch(0, new LogLineMatch(1, 2)));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true)
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true)
 				{
 					SearchResults = results
 				};
@@ -69,7 +81,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Test]
 		public void TestHighlight2()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			var segments = textLine.Segments.ToList();
 			segments.Count.Should().Be(1);
 			segments[0].FormattedText.Text.Should().Be("foobar");
@@ -79,7 +91,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that changing the filter on a TextLine results in segments changing")]
 		public void TestHighlight3()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			textLine.Segments.Count().Should().Be(1);
 			textLine.Segments.First().FormattedText.Text.Should().Be("foobar");
 
@@ -100,7 +112,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var results = new SearchResults();
 			results.Add(new LogMatch(0, new LogLineMatch(28, 4)));
 
-			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
+			var textLine = new TextLine(CreateLogEntry(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
 			                            _selected, true)
 				{
 					SearchResults = results
@@ -119,7 +131,7 @@ namespace Tailviewer.Test.Ui.Controls
 			var results = new SearchResults();
 			results.Add(new LogMatch(0, new LogLineMatch(28, 5)));
 
-			var textLine = new TextLine(new LogLine(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
+			var textLine = new TextLine(CreateLogEntry(0, 0, ".NET Environment: 4.0.30319.42000", LevelFlags.Other), _hovered,
 										_selected, true)
 			{
 				SearchResults = results
@@ -142,7 +154,7 @@ namespace Tailviewer.Test.Ui.Controls
 			const int tabWidth = 4; //< It's important that we run this test with a tabwidth of > 1
 			var textSettings = new TextSettings(tabWidth: tabWidth);
 
-			var textLine = new TextLine(new LogLine(0, 0, message, LevelFlags.Other), _hovered,
+			var textLine = new TextLine(CreateLogEntry(0, 0, message, LevelFlags.Other), _hovered,
 			                            _selected, true, textSettings, new TextBrushes(null))
 			{
 				SearchResults = results
@@ -160,25 +172,25 @@ namespace Tailviewer.Test.Ui.Controls
 			var textSettings = new TextSettings();
 			var textBrushes = new TextBrushes(new LogViewerSettings());
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultFatal.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultError.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultWarning.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultDebug.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Trace), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultTrace.ForegroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.ForegroundBrush).Should().Be(LogViewerSettings.DefaultInfo.ForegroundColor);
 		}
 
@@ -192,7 +204,7 @@ namespace Tailviewer.Test.Ui.Controls
 
 			foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
 			{
-				var textLine = new TextLine(new LogLine(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
+				var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
 				textLine.ForegroundBrush.Should().Be(TextBrushes.SelectedForegroundBrush);
 			}
 		}
@@ -203,22 +215,22 @@ namespace Tailviewer.Test.Ui.Controls
 			var textSettings = new TextSettings();
 			var textBrushes = new TextBrushes(new LogViewerSettings());
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultFatal.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultError.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultWarning.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultInfo.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultDebug.BackgroundColor);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			BrushColor(textLine.BackgroundBrush).Should().Be(LogViewerSettings.DefaultTrace.BackgroundColor);
 		}
 		/*
@@ -230,22 +242,22 @@ namespace Tailviewer.Test.Ui.Controls
 
 			_hovered.Add(new LogLineIndex(0));
 
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Error), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.ErrorHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Warning), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.WarningHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Info), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Debug), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 
-			textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
+			textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Other), _hovered, _selected, true, textSettings, textBrushes);
 			textLine.BackgroundBrush.Should().Be(TextHelper.NormalHighlightBackgroundBrush);
 		}*/
 
@@ -259,7 +271,7 @@ namespace Tailviewer.Test.Ui.Controls
 			
 			foreach (LevelFlags level in Enum.GetValues(typeof(LevelFlags)))
 			{
-				var textLine = new TextLine(new LogLine(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
+				var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", level), _hovered, _selected, true, textSettings, textBrushes);
 				textLine.BackgroundBrush.Should().Be(TextBrushes.SelectedBackgroundBrush);
 			}
 		}
@@ -268,7 +280,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that no exception is thrown when a 'bad' search result was specified")]
 		public void TestIncorrectSearchResult()
 		{
-			var textLine = new TextLine(new LogLine(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, "foobar", LevelFlags.Fatal), _hovered, _selected, true);
 			var searchResults = new SearchResults();
 			searchResults.Add(new LogLineIndex(0), new LogLineMatch(42, 101));
 			
@@ -286,7 +298,7 @@ namespace Tailviewer.Test.Ui.Controls
 		[Description("Verifies that TextLine can deal with a completely empty logline")]
 		public void TestGetSegments1()
 		{
-			var textLine = new TextLine(new LogLine(), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(0, 0, null, LevelFlags.None), _hovered, _selected, true);
 			new Action(() =>
 			{
 				var unused = textLine.Segments;
@@ -301,7 +313,7 @@ namespace Tailviewer.Test.Ui.Controls
 		{
 			var message = new StringBuilder();
 			message.Append('a', 10000);
-			var textLine = new TextLine(new LogLine(1, message.ToString(), LevelFlags.Other, null), _hovered, _selected, true);
+			var textLine = new TextLine(CreateLogEntry(1, 1, message.ToString(), LevelFlags.Other), _hovered, _selected, true);
 			textLine.Segments.Count.Should().BeGreaterThan(1, "because this very long line should've been split up into multiple messages");
 		}
 

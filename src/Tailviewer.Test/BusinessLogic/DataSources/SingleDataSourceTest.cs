@@ -1,10 +1,10 @@
-﻿using System;
+﻿using FluentAssertions;
+using Moq;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using FluentAssertions;
-using Moq;
-using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
@@ -22,26 +22,8 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		{
 			_scheduler = new ManualTaskScheduler();
 			_logFileFactory = new SimplePluginLogFileFactory(_scheduler);
-
-			_logFile = new Mock<ILogFile>();
-			_entries = new List<LogLine>();
-			_listeners = new LogFileListenerCollection(_logFile.Object);
-			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>()))
-				.Callback((ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) => _listeners.AddListener(listener, maximumWaitTime, maximumLineCount));
-			_logFile.Setup(x => x.RemoveListener(It.IsAny<ILogFileListener>()))
-				.Callback((ILogFileListener listener) => _listeners.RemoveListener(listener));
-			_logFile.Setup(x => x.GetSection(It.IsAny<LogFileSection>(), It.IsAny<LogLine[]>()))
-				.Callback(
-					(LogFileSection section, LogLine[] entries) =>
-						_entries.CopyTo((int)section.Index, entries, 0, section.Count));
-			_logFile.Setup(x => x.GetLine(It.IsAny<int>())).Returns((int index) => _entries[index]);
-			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 		}
 
-		private Mock<ILogFile> _logFile;
-		private LogFileListenerCollection _listeners;
-		private List<LogLine> _entries;
 		private ManualTaskScheduler _scheduler;
 		private ILogFileFactory _logFileFactory;
 
@@ -199,10 +181,10 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestSearch1()
 		{
-			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), _logFile.Object, TimeSpan.Zero))
+			var logFile = new InMemoryLogFile();
+			using (var dataSource = new SingleDataSource(_scheduler, CreateDataSource(), logFile, TimeSpan.Zero))
 			{
-				_entries.Add(new LogLine(0, 0, "Hello foobar world!", LevelFlags.Other));
-				_listeners.OnRead(1);
+				logFile.AddEntry("Hello foobar world!");
 				_scheduler.RunOnce();
 				dataSource.SearchTerm = "foobar";
 				_scheduler.Run(10);
@@ -215,8 +197,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestHideEmptyLines1()
 		{
+			var logFile = new InMemoryLogFile();
 			var settings = CreateDataSource();
-			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile.Object, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
 				dataSource.HideEmptyLines.Should().BeFalse();
 				dataSource.HideEmptyLines = true;
@@ -230,8 +213,9 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		[Test]
 		public void TestIsSingleLine()
 		{
+			var logFile = new InMemoryLogFile();
 			var settings = CreateDataSource();
-			using (var dataSource = new SingleDataSource(_scheduler, settings, _logFile.Object, TimeSpan.Zero))
+			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
 				dataSource.IsSingleLine.Should().BeFalse();
 				dataSource.IsSingleLine = true;
@@ -264,7 +248,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 				logFile.AddEntry("Hello!");
 				_scheduler.Run(2);
 				dataSource.FilteredLogFile.Count.Should().Be(1, "because newer log entries should still appear");
-				dataSource.FilteredLogFile.GetLine(0).Message.Should().Be("Hello!");
+				dataSource.FilteredLogFile.GetEntry(0).RawContent.Should().Be("Hello!");
 			}
 		}
 

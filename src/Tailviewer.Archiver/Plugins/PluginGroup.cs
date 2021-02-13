@@ -136,7 +136,7 @@ namespace Tailviewer.Archiver.Plugins
 				_selectedPlugin = new PluginDescription
 				{
 					Id = _id,
-					Error = "The plugin couldn\'t be loaded",
+					Error = "The plugin could not be loaded",
 					PluginImplementations = new IPluginImplementationDescription[0]
 				};
 

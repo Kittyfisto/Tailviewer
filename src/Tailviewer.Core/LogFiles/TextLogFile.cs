@@ -124,7 +124,7 @@ namespace Tailviewer.Core.LogFiles
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumn> Columns => LogFileColumns.Minimum;
+		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
@@ -152,15 +152,15 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + section.Count > buffer.Length)
+			if (destinationIndex + sourceSection.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			lock (_syncRoot)
@@ -168,36 +168,40 @@ namespace Tailviewer.Core.LogFiles
 				if (Equals(column, LogFileColumns.Index) ||
 				    Equals(column, LogFileColumns.OriginalIndex))
 				{
-					GetIndex(section, (LogLineIndex[])(object)buffer, destinationIndex);
+					GetIndex(sourceSection, (LogLineIndex[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LogEntryIndex))
 				{
-					GetIndex(section, (LogEntryIndex[])(object)buffer, destinationIndex);
+					GetIndex(sourceSection, (LogEntryIndex[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LineNumber) ||
 				         Equals(column, LogFileColumns.OriginalLineNumber))
 				{
-					GetLineNumber(section, (int[])(object)buffer, destinationIndex);
+					GetLineNumber(sourceSection, (int[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LogLevel))
 				{
-					GetLogLevel(section, (LevelFlags[])(object)buffer, destinationIndex);
+					GetLogLevel(sourceSection, (LevelFlags[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.Timestamp))
 				{
-					GetTimestamp(section, (DateTime?[]) (object) buffer, destinationIndex);
+					GetTimestamp(sourceSection, (DateTime?[]) (object) destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
-					GetDeltaTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
+					GetDeltaTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.ElapsedTime))
 				{
-					GetElapsedTime(section, (TimeSpan?[])(object)buffer, destinationIndex);
+					GetElapsedTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
+				}
+				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				{
+					GetDataSourceName(sourceSection, (string[]) (object) destination, destinationIndex);
 				}
 				else if(Equals(column, LogFileColumns.RawContent))
 				{
-					GetRawContent(section, (string[]) (object) buffer, destinationIndex);
+					GetRawContent(sourceSection, (string[]) (object) destination, destinationIndex);
 				}
 				else 
 				{
@@ -207,17 +211,17 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
 		{
-			if (indices == null)
-				throw new ArgumentNullException(nameof(indices));
+			if (sourceIndices == null)
+				throw new ArgumentNullException(nameof(sourceIndices));
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
-			if (buffer == null)
-				throw new ArgumentNullException(nameof(buffer));
+			if (destination == null)
+				throw new ArgumentNullException(nameof(destination));
 			if (destinationIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + indices.Count > buffer.Length)
+			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 			lock (_syncRoot)
@@ -225,40 +229,40 @@ namespace Tailviewer.Core.LogFiles
 				if (Equals(column, LogFileColumns.Index) ||
 				    Equals(column, LogFileColumns.OriginalIndex))
 				{
-					GetIndex(indices, (LogLineIndex[])(object)buffer, destinationIndex);
+					GetIndex(sourceIndices, (LogLineIndex[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LogEntryIndex))
 				{
-					GetIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
+					GetIndex(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LineNumber) ||
 				         Equals(column, LogFileColumns.OriginalLineNumber))
 				{
-					GetLineNumber(indices, (int[])(object)buffer, destinationIndex);
+					GetLineNumber(sourceIndices, (int[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.LogLevel))
 				{
-					GetLogLevel(indices, (LevelFlags[])(object)buffer, destinationIndex);
+					GetLogLevel(sourceIndices, (LevelFlags[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.Timestamp))
 				{
-					GetTimestamp(indices, (DateTime?[])(object)buffer, destinationIndex);
+					GetTimestamp(sourceIndices, (DateTime?[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.DeltaTime))
 				{
-					GetDeltaTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+					GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.ElapsedTime))
 				{
-					GetElapsedTime(indices, (TimeSpan?[])(object)buffer, destinationIndex);
+					GetElapsedTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
 				{
-					GetDataSourceName(indices, (string[]) (object) buffer, destinationIndex);
+					GetDataSourceName(sourceIndices, (string[]) (object) destination, destinationIndex);
 				}
 				else if (Equals(column, LogFileColumns.RawContent))
 				{
-					GetRawContent(indices, (string[])(object)buffer, destinationIndex);
+					GetRawContent(sourceIndices, (string[])(object)destination, destinationIndex);
 				}
 				else
 				{
@@ -268,44 +272,20 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex)
+		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
 		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <inheritdoc />
-		public override void GetSection(LogFileSection section, LogLine[] dest)
-		{
-			if (section.Index < 0)
-				throw new ArgumentOutOfRangeException("section.Index");
-			if (section.Count < 0)
-				throw new ArgumentOutOfRangeException("section.Count");
-			if (dest == null)
-				throw new ArgumentNullException(nameof(dest));
-			if (dest.Length < section.Count)
-				throw new ArgumentOutOfRangeException("section.Count");
-
-			lock (_syncRoot)
+			foreach (var column in destination.Columns)
 			{
-				if (section.Index + section.Count > _entries.Count)
-					throw new ArgumentOutOfRangeException(nameof(section));
-
-				_entries.CopyTo((int) section.Index, dest, 0, section.Count);
+				destination.CopyFrom(column, destinationIndex, this, sourceSection);
 			}
 		}
 
 		/// <inheritdoc />
-		public override LogLine GetLine(int index)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
 		{
-			lock (_syncRoot)
+			foreach (var column in destination.Columns)
 			{
-				return _entries[index];
+				destination.CopyFrom(column, destinationIndex, this, sourceIndices);
 			}
 		}
 
@@ -414,7 +394,7 @@ namespace Tailviewer.Core.LogFiles
 									read = true;
 								}
 
-								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine);
+								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine, _fullFilename);
 								if (_parser != null)
 								{
 									var parsedLogEntry = _parser.Parse(logEntry);
@@ -586,21 +566,21 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		private void GetDataSourceName(IReadOnlyList<LogLineIndex> indices, string[] buffer, int destinationIndex)
+		private void GetDataSourceName(IReadOnlyList<LogLineIndex> sourceIndices, string[] buffer, int destinationIndex)
 		{
-			for (int i = 0; i < indices.Count; ++i)
+			for (int i = 0; i < sourceIndices.Count; ++i)
 			{
 				buffer[destinationIndex + i] = _fileName;
 			}
 		}
 
-		private void GetLogLevel(IReadOnlyList<LogLineIndex> indices, LevelFlags[] buffer, int destinationIndex)
+		private void GetLogLevel(IReadOnlyList<LogLineIndex> sourceIndices, LevelFlags[] buffer, int destinationIndex)
 		{
 			lock (_syncRoot)
 			{
-				for (int i = 0; i < indices.Count; ++i)
+				for (int i = 0; i < sourceIndices.Count; ++i)
 				{
-					var index = indices[i];
+					var index = sourceIndices[i];
 					var line = GetLogLine(index);
 					buffer[destinationIndex + i] = line != null
 						? line.Value.Level
@@ -762,7 +742,7 @@ namespace Tailviewer.Core.LogFiles
 		sealed class RawLogEntry
 			: IReadOnlyLogEntry
 		{
-			private static readonly IReadOnlyList<ILogFileColumn> AllColumns = new ILogFileColumn[]
+			private static readonly IReadOnlyList<ILogFileColumnDescriptor> AllColumns = new ILogFileColumnDescriptor[]
 			{
 				LogFileColumns.RawContent,
 				LogFileColumns.Index,
@@ -774,12 +754,15 @@ namespace Tailviewer.Core.LogFiles
 
 			private readonly LogLineIndex _index;
 			private readonly string _rawContent;
+			private readonly string _originalDataSourceName;
 
 			public RawLogEntry(LogLineIndex index,
-			                   string rawContent)
+			                   string rawContent,
+			                   string originalDataSourceName)
 			{
 				_index = index;
 				_rawContent = rawContent;
+				_originalDataSourceName = originalDataSourceName;
 			}
 
 			#region Implementation of IReadOnlyLogEntry
@@ -814,6 +797,16 @@ namespace Tailviewer.Core.LogFiles
 				get { return LineNumber; }
 			}
 
+			public string OriginalDataSourceName
+			{
+				get { return _originalDataSourceName; }
+			}
+
+			public LogLineSourceId SourceId
+			{
+				get { throw new NoSuchColumnException(LogFileColumns.SourceId); }
+			}
+
 			public LevelFlags LogLevel
 			{
 				get { return LevelFlags.None; }
@@ -834,7 +827,7 @@ namespace Tailviewer.Core.LogFiles
 				get { return null; }
 			}
 
-			public T GetValue<T>(ILogFileColumn<T> column)
+			public T GetValue<T>(ILogFileColumnDescriptor<T> column)
 			{
 				if (!TryGetValue(column, out var value))
 					throw new NoSuchColumnException(column);
@@ -842,7 +835,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public bool TryGetValue<T>(ILogFileColumn<T> column, out T value)
+			public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
 			{
 				if (TryGetValue(column, out object tmp))
 				{
@@ -854,7 +847,7 @@ namespace Tailviewer.Core.LogFiles
 				return false;
 			}
 
-			public object GetValue(ILogFileColumn column)
+			public object GetValue(ILogFileColumnDescriptor column)
 			{
 				if (!TryGetValue(column, out var value))
 					throw new NoSuchColumnException(column);
@@ -862,7 +855,7 @@ namespace Tailviewer.Core.LogFiles
 				return value;
 			}
 
-			public bool TryGetValue(ILogFileColumn column, out object value)
+			public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
 			{
 				if (Equals(column, LogFileColumns.RawContent))
 				{
@@ -886,12 +879,17 @@ namespace Tailviewer.Core.LogFiles
 					value = LogEntryIndex;
 					return true;
 				}
+				if (Equals(column, LogFileColumns.OriginalDataSourceName))
+				{
+					value = OriginalDataSourceName;
+					return true;
+				}
 
 				value = default;
 				return false;
 			}
 
-			public IReadOnlyList<ILogFileColumn> Columns
+			public IReadOnlyList<ILogFileColumnDescriptor> Columns
 			{
 				get { return AllColumns; }
 			}

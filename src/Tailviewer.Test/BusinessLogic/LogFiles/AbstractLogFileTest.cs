@@ -22,7 +22,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestDebuggerVisualization1()
 		{
-			var content = new LogEntryBuffer(2, LogFileColumns.Minimum);
+			var content = new LogEntryArray(2, LogFileColumns.Minimum);
 			content[0].Timestamp = new DateTime(2017, 12, 20, 13, 22, 0);
 			content[1].Timestamp = new DateTime(2017, 12, 20, 13, 23, 0);
 			var logFile = CreateFromContent(content);
@@ -45,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestStartEndTimestamp1()
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
 			var logFile = CreateFromContent(content);
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
@@ -57,9 +57,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
 			content.Add(ReadOnlyLogEntry.Empty);
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 12, 0)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 12, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			var logFile = CreateFromContent(content);
 			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
@@ -288,10 +288,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndicesBySection()
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
 			var logFile = CreateFromContent(content);
 
 			var indices = new LogLineIndex[5];
@@ -310,10 +310,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestGetOriginalIndicesByIndices()
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
-			content.Add(new LogEntry2 {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 0)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 1)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 2)});
+			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 0, 0, 3)});
 			var logFile = CreateFromContent(content);
 
 			var indices = new LogLineIndex[5];
@@ -596,7 +596,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Ignore("Still not implemented")]
 		public void TestGetElapsedTimesBySection()
 		{
-			var content = new LogEntryBuffer(5, LogFileColumns.Timestamp);
+			var content = new LogEntryArray(5, LogFileColumns.Timestamp);
 			content.CopyFrom(LogFileColumns.Timestamp, new DateTime?[]
 			{
 				new DateTime(2017, 12, 19, 15, 49, 0),

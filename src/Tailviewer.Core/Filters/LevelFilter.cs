@@ -24,10 +24,10 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(IEnumerable<LogLine> logEntry)
+		public bool PassesFilter(IEnumerable<IReadOnlyLogEntry> logEntry)
 		{
 // ReSharper disable LoopCanBeConvertedToQuery
-			foreach (LogLine logLine in logEntry)
+			foreach (var logLine in logEntry)
 // ReSharper restore LoopCanBeConvertedToQuery
 			{
 				if (PassesFilter(logLine))
@@ -38,25 +38,25 @@ namespace Tailviewer.Core.Filters
 		}
 
 		/// <inheritdoc />
-		public bool PassesFilter(LogLine logLine)
+		public bool PassesFilter(IReadOnlyLogEntry logLine)
 		{
-			if ((logLine.Level & _level) != 0)
+			if ((logLine.LogLevel & _level) != 0)
 				return true;
 
-			if (logLine.Level != LevelFlags.None)
+			if (logLine.LogLevel != LevelFlags.None)
 				return false;
 
 			return true;
 		}
 
 		/// <inheritdoc />
-		public List<LogLineMatch> Match(LogLine line)
+		public List<LogLineMatch> Match(IReadOnlyLogEntry line)
 		{
 			return new List<LogLineMatch>();
 		}
 
 		/// <inheritdoc />
-		public void Match(LogLine line, List<LogLineMatch> matches)
+		public void Match(IReadOnlyLogEntry line, List<LogLineMatch> matches)
 		{
 			
 		}

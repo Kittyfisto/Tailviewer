@@ -59,7 +59,7 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed { get; private set; }
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumn> Columns { get; }
+		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -114,19 +114,16 @@ namespace Tailviewer.Core.LogFiles
 		public abstract int Count { get; }
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		public abstract void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex);
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex);
 
 		/// <inheritdoc />
-		public abstract void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex);
+		public abstract void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex);
 
 		/// <inheritdoc />
-		public abstract void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex);
-
-		/// <inheritdoc />
-		public abstract void GetSection(LogFileSection section, LogLine[] dest);
+		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex);
 
 		#region Index Translation
 
@@ -137,10 +134,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		#endregion
-
-		/// <inheritdoc />
-		public abstract LogLine GetLine(int index);
-
+		
 		/// <inheritdoc />
 		public abstract double Progress { get; }
 
@@ -172,10 +166,10 @@ namespace Tailviewer.Core.LogFiles
 			// Most tests expect that listeners have been notified
 			// of all pending changes when the source enters the
 			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should ellapse between
+			// for listeners specifying a timespan that should elapse between
 			// calls to OnLogFileModified. The listener collection has
 			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has ellapsed.
+			// neither the maximum line count, nor the maximum timespan has elapsed.
 			// Therefore we flush the collection to ensure that ALL listeners have been notified
 			// of ALL changes (even if they didn't want them yet) before we enter the
 			// EndOfSourceReached state.
@@ -191,7 +185,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		///     Any subclass MUST call this method in its constructor (perferably after the log file has been initialized,
+		///     Any subclass MUST call this method in its constructor (preferably after the log file has been initialized,
 		///     as after this call, <see cref="RunOnce" /> will be called.
 		/// </summary>
 		protected void StartTask()

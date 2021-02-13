@@ -100,7 +100,7 @@ namespace Tailviewer.Core
 		public ILogFile CreateFilteredLogFile(TimeSpan maximumWaitTime, ILogFile source, ILogEntryFilter filter)
 		{
 			return new FilteredLogFile(Retrieve<ITaskScheduler>(), maximumWaitTime, source,
-			                           null,
+									   null,
 			                           filter);
 		}
 
@@ -133,9 +133,9 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogFile CreateTextLogFile(string fileName)
 		{
-			return new CachedTextLogFile(this, fileName);
-			/*return new TextLogFile(this,
-			                       fileName);*/
+			//return new CachedTextLogFile(this, fileName);
+			return new TextLogFile(this,
+			                       fileName);
 		}
 
 		/// <inheritdoc />

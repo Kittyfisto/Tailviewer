@@ -15,6 +15,11 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     There cannot be two different properties with the same id.
 		/// </remarks>
 		string Id { get; }
+		
+		/// <summary>
+		///     The human readable name of this property.
+		/// </summary>
+		string DisplayName { get; }
 
 		/// <summary>
 		/// 

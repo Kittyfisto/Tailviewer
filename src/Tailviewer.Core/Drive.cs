@@ -53,7 +53,7 @@ namespace Tailviewer.Core
 		}
 
 		/// <summary>
-		///     Pings the given host and returns true if a successfull response was returned.
+		///     Pings the given host and returns true if a successful response was returned.
 		/// </summary>
 		/// <param name="hostname"></param>
 		/// <param name="timeout"></param>

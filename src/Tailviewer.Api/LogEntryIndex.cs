@@ -224,11 +224,11 @@ namespace Tailviewer
 		///     Returns the minimum value of the two given indices.
 		/// </summary>
 		/// <param name="left"></param>
-		/// <param name="rigth"></param>
+		/// <param name="right"></param>
 		/// <returns></returns>
-		public static LogEntryIndex Min(LogEntryIndex left, LogEntryIndex rigth)
+		public static LogEntryIndex Min(LogEntryIndex left, LogEntryIndex right)
 		{
-			return Math.Min(left.Value, rigth.Value);
+			return Math.Min(left.Value, right.Value);
 		}
 
 		/// <summary>
