@@ -49,7 +49,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					var filter = new SubstringFilter("foo", true);
 					using (var filtered = new FilteredLogFile(_scheduler, TimeSpan.FromMilliseconds(10), merged, null, filter))
 					{
-						filtered.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+						filtered.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 					}
 				}
 			}

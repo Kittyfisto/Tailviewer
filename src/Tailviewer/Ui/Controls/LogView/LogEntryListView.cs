@@ -578,7 +578,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			var logFile = LogFile;
 			if (logFile != null)
 			{
-				var count = logFile.Count;
+				var count = logFile.GetValue(LogFileProperties.LogEntryCount);
 				if (count > 0)
 					FollowTail = logLineIndex >= count - 1;
 			}
@@ -812,7 +812,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void UpdateVerticalScrollbar()
 		{
-			var count = LogFile.Count;
+			var count = LogFile.GetValue(LogFileProperties.LogEntryCount);
 			var totalHeight = count * _textSettings.LineHeight;
 			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)

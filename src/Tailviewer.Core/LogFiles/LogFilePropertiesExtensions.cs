@@ -17,6 +17,19 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="computedProperties"></param>
 		/// <returns></returns>
 		public static ILogFileProperties Except(this ILogFileProperties that,
+		                                        params ILogFilePropertyDescriptor[] computedProperties)
+		{
+			return that.Except((IReadOnlyList<ILogFilePropertyDescriptor>)computedProperties);
+		}
+
+		/// <summary>
+		///     Creates a new view onto the given <paramref name="that" /> which contains only those properties
+		///     in the given <paramref name="computedProperties" /> list.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <param name="computedProperties"></param>
+		/// <returns></returns>
+		public static ILogFileProperties Except(this ILogFileProperties that,
 		                                        IReadOnlyList<ILogFilePropertyDescriptor> computedProperties)
 		{
 			return new LogFilePropertiesView(that, that.Properties.Except(computedProperties).ToList());

@@ -63,40 +63,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool EndOfSourceReached
-		{
-			get
-			{
-				try
-				{
-					return _logFile.EndOfSourceReached;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return true;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public int Count
-		{
-			get
-			{
-				try
-				{
-					return _logFile.Count;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return 0;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get

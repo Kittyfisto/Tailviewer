@@ -46,7 +46,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestOnSizeChanged1()
 		{
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(0);
+			logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Returns(0);
 			_control.LogFile = logFile.Object;
 			_control.CurrentLine = 1;
 
@@ -60,7 +60,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestCalculateVisibleSection1()
 		{
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(1);
+			logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Returns(1);
 
 			_control.LogFile = logFile.Object;
 			_control.CurrentLine = 600;
@@ -73,7 +73,7 @@ namespace Tailviewer.Test.Ui.Controls
 		public void TestUpdateVisibleLine1()
 		{
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.Count).Returns(42);
+			logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Returns(42);
 			_control.LogFile = logFile.Object;
 
 			logFile.Setup(x => x.GetEntries(It.IsAny<LogFileSection>(), It.IsAny<ILogEntries>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>()))

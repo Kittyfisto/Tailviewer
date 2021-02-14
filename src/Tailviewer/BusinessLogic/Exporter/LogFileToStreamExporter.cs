@@ -41,7 +41,7 @@ namespace Tailviewer.BusinessLogic.Exporter
 		{
 			const int bufferSize = 1000;
 			var buffer = new LogEntryArray(bufferSize, LogFileColumns.Index, LogFileColumns.RawContent);
-			var count = _logFile.Count;
+			var count = _logFile.GetValue(LogFileProperties.LogEntryCount);
 			var index = 0;
 
 			using (var writer = new StreamWriter(_stream, Encoding.UTF8, 1024, true))

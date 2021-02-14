@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -1186,10 +1183,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			using (var logFile = CreateFromContent(content))
 			{
-				logFile.Count.Should().Be(3);
+				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(3);
 
 				logFile.Dispose();
-				logFile.Count.Should().Be(0);
+				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 				var entries = logFile.GetEntries(new LogFileSection(0, 3));
 				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");

@@ -248,8 +248,6 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public override int Count => _source.Count;
-
 		public override void GetAllValues(ILogFileProperties destination)
 		{
 			throw new NotImplementedException();

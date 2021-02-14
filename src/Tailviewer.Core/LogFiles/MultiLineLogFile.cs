@@ -40,6 +40,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
 		private readonly LogFilePropertyList _properties;
+		private readonly LogFilePropertyList _propertiesBuffer;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 
@@ -69,6 +70,7 @@ namespace Tailviewer.Core.LogFiles
 
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
+			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
 			_properties = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
 			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
@@ -104,9 +106,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
-
-		/// <inheritdoc />
-		public override int Count => (int) _currentSourceIndex;
 
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -230,8 +229,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			// Now we can perform a block-copy of all properties.
-			_source.GetAllValues(_properties);
+			UpdateProperties();
 
 			if (_indices.Count != _currentSourceIndex)
 			{
@@ -241,7 +239,7 @@ namespace Tailviewer.Core.LogFiles
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_source.EndOfSourceReached && _source.Count == Count)
+			if (_source.GetValue(LogFileProperties.EndOfSourceReached) && _source.GetValue(LogFileProperties.LogEntryCount) == GetValue(LogFileProperties.LogEntryCount))
 			{
 				SetEndOfSourceReached();
 			}
@@ -250,6 +248,51 @@ namespace Tailviewer.Core.LogFiles
 				return TimeSpan.Zero;
 
 			return _maximumWaitTime;
+		}
+
+		private void UpdateProperties()
+		{
+			// Now we can perform a block-copy of all properties and then update our own as desired..
+			_source.GetAllValues(_propertiesBuffer);
+
+			var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(LogFileProperties.LogEntryCount);
+			var ownProgress = sourceCount > 0
+				? Percentage.Of(_indices.Count, sourceCount)
+				: Percentage.HundredPercent;
+			var totalProgress = (sourceProcessed * ownProgress).Clamped();
+			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, (int)_currentSourceIndex);
+
+			// We want to update all properties at once, hence we modify _sourceProperties where necessary and then
+			// move them to our properties in a single call
+			_properties.CopyFrom(_propertiesBuffer);
+		}
+
+		/// <summary>
+		/// </summary>
+		private void SetEndOfSourceReached()
+		{
+			// Now this line is very important:
+			// Most tests expect that listeners have been notified
+			// of all pending changes when the source enters the
+			// "EndOfSourceReached" state. This would be true, if not
+			// for listeners specifying a timespan that should elapse between
+			// calls to OnLogFileModified. The listener collection has
+			// been notified, but the individual listeners may not be, because
+			// neither the maximum line count, nor the maximum timespan has elapsed.
+			// Therefore we flush the collection to ensure that ALL listeners have been notified
+			// of ALL changes (even if they didn't want them yet) before we enter the
+			// EndOfSourceReached state.
+			Listeners.Flush();
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
+		}
+
+		/// <summary>
+		/// </summary>
+		private void ResetEndOfSourceReached()
+		{
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
 		}
 
 		private void Append(LogFileSection section)

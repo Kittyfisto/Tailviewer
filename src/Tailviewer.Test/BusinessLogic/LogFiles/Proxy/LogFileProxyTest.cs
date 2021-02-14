@@ -50,7 +50,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 				proxy.GetValue(LogFileProperties.Size).Should().BeNull();
 				proxy.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue();
 				proxy.GetValue(LogFileProperties.EndTimestamp).Should().NotHaveValue();
-				proxy.Count.Should().Be(0);
+				proxy.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 				proxy.Columns.Should().Equal(LogFileColumns.Minimum);
 
 				proxy.GetEntry(0).Index.Should().Be(LogLineIndex.Invalid);
@@ -178,10 +178,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.Count).Returns(42);
-				proxy.Count.Should().Be(42);
-				_logFile.Setup(x => x.Count).Returns(9001);
-				proxy.Count.Should().Be(9001);
+				_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+				        .Callback((ILogFileProperties destination) =>
+					                  destination.SetValue(LogFileProperties.LogEntryCount, 42));
+				_taskScheduler.RunOnce();
+				proxy.GetValue(LogFileProperties.LogEntryCount).Should().Be(42);
+
+				_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+				        .Callback((ILogFileProperties destination) =>
+					                  destination.SetValue(LogFileProperties.LogEntryCount, 9001));
+				_taskScheduler.RunOnce();
+				proxy.GetValue(LogFileProperties.LogEntryCount).Should().Be(9001);
 			}
 		}
 
@@ -462,6 +469,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			var source = new InMemoryLogFile(content);
 			var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, source);
+			_taskScheduler.RunOnce();
 			return proxy;
 		}
 	}

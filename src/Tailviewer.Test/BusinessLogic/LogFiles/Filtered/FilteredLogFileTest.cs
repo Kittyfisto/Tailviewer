@@ -25,8 +25,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			_logFile = new Mock<ILogFile>();
 			_logFile.SetupGet(x => x.Columns).Returns(LogFileColumns.Minimum);
 			_logFile.SetupGet(x => x.Properties).Returns(new ILogFilePropertyDescriptor[0]);
-			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Returns(() => _entries.Count);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
 
 			_sections = new List<LogFileSection>();
 			_listener = new Mock<ILogFileListener>();
@@ -43,20 +43,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		[Test]
 		public void TestEndOfSourceReached1()
 		{
-			_logFile.Setup(x => x.EndOfSourceReached).Returns(false);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(false);
 
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.EndOfSourceReached.Should().BeFalse("because the filtered log file hasn't even inspected the source yet");
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the filtered log file hasn't even inspected the source yet");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeFalse("because the source isn't at its own end yet");
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the source isn't at its own end yet");
 
-				_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
-				file.EndOfSourceReached.Should().BeFalse("because the filtered log file hasn't processed the latest changes to the source yet");
+				_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the filtered log file hasn't processed the latest changes to the source yet");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue("because the source is finished and the filtered log file has processed all changes from the source");
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue("because the source is finished and the filtered log file has processed all changes from the source");
 			}
 		}
 
@@ -106,14 +106,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 
 				_taskScheduler.RunOnce();
 
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				source.Clear();
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(0);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 			}
 		}
 
@@ -124,8 +124,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			{
 				_taskScheduler.RunOnce();
 
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(0);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
 		}
@@ -140,8 +140,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 
 				_taskScheduler.RunOnce();
 
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(1);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 				var entries = file.GetEntries(new LogFileSection(0, 1), LogFileColumns.Minimum);
 				entries.Should().HaveCount(1);
 				entries[0].Index.Should().Be(0);
@@ -204,7 +204,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				source.AddRange(new[]
 				{
@@ -217,8 +217,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 
 				_taskScheduler.RunOnce();
 
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(2, "because we've invalidated the last 2 out of 4 lines");
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2, "because we've invalidated the last 2 out of 4 lines");
 			}
 		}
 
@@ -231,7 +231,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				source.AddRange(new []
 				{
@@ -242,14 +242,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(4);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
 					{
@@ -275,18 +275,18 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				source.AddMultilineEntry(LevelFlags.Info, null, "A", "B", "C", "D");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue("Because the filtered log file should be finished");
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue("Because the filtered log file should be finished");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
 					{
@@ -318,7 +318,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				filtered.Count.Should().Be(2);
+				filtered.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
 				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
 
@@ -331,7 +331,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 					new LogEntry{Timestamp = new DateTime(2017, 3, 24, 11, 45, 21, 811), LogLevel = LevelFlags.Info, RawContent = "2017-03-24 11-45-21.811838; 0; 0;  0; 108;  0; 124;   1;INFO; ; ; ; ; ; 0; done."}
 				});
 				_taskScheduler.RunOnce();
-				filtered.Count.Should().Be(4);
+				filtered.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
 				filtered.GetEntry(0).OriginalIndex.Should().Be(0);
 				filtered.GetEntry(1).OriginalIndex.Should().Be(1);
 				filtered.GetEntry(2).OriginalIndex.Should().Be(3);
@@ -362,9 +362,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(source, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				sections.Should().Equal(new[]
 					{
 						LogFileSection.Reset,
@@ -384,9 +384,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
@@ -410,9 +410,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry( LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
-				file.Count.Should().Be(2);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				var entries = file.GetEntries(new LogFileSection(0, 2));
 				entries[0].Index.Should().Be(0);
 				entries[0].LogEntryIndex.Should().Be(0);
@@ -441,7 +441,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 				sections.Should().Equal(new object[]
 					{
 						LogFileSection.Reset,
@@ -462,7 +462,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				var entries = file.GetEntries(new LogFileSection(0, 1), file.Columns);
 				entries.Should().NotBeNull();
@@ -485,7 +485,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("Yikes", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
 				var entry = file.GetEntry(0);
 				entry.Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
@@ -516,9 +516,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				file.EndOfSourceReached.Should().BeTrue();
+				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 
-				file.Count.Should().Be(1, "because only one line matches the filter");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because only one line matches the filter");
 				var entry = file.GetEntry(0);
 				entry.Index.Should().Be(0);
 				entry.LogEntryIndex.Should().Be(0);
@@ -543,7 +543,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				filter.Verify(x => x.PassesFilter(It.Is<IReadOnlyLogEntry>(y => Equals(y, logEntry))), Times.AtLeastOnce,
 					"because the log file should've used our filter at least once to determine if the given log line should've been added");
 
-				file.Count.Should().Be(1, "because the filter should've passed the only log line");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because the filter should've passed the only log line");
 			}
 		}
 
@@ -559,11 +559,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("DEBUG: This is a test", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
 
 				source.AddEntry("INFO: Something mundane", LevelFlags.Info);
 				_taskScheduler.RunOnce();
-				file.Count.Should().Be(0, "because the log line filter didn't pass the added line");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0, "because the log line filter didn't pass the added line");
 			}
 		}
 
@@ -581,7 +581,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 			}
 		}
 
@@ -599,7 +599,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("And even more stuff", LevelFlags.Debug);
 				_taskScheduler.RunOnce();
 
-				file.Count.Should().Be(3, "because the log file should've filtered out the one log line that is empty");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(3, "because the log file should've filtered out the one log line that is empty");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
@@ -629,7 +629,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 1));
 				_taskScheduler.RunOnce();
 
-				file.Count.Should().Be(1, "because only one line remains in the source");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because only one line remains in the source");
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, "because log entry indices should always start at 0");
 			}
 		}
@@ -656,7 +656,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(source, new LogFileSection(3, 2));
 				_taskScheduler.RunOnce();
 				
-				file.Count.Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(4, "because the source represents 4 lines (of which the last two changed over its lifetime)");
 
 				const string reason = "because log entry indices are supposed to be consecutive for a data source";
 				file.GetEntry(0).LogEntryIndex.Should().Be(0, reason);
@@ -763,7 +763,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.Count.Should().Be(2);
+			filteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
 			lineNumbers[0].Should().Be(1);
 			lineNumbers[1].Should().Be(2);
@@ -781,7 +781,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.Count.Should().Be(2);
+			filteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
 			lineNumbers[0].Should().Be(2);
 			lineNumbers[1].Should().Be(1);
@@ -806,7 +806,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.Count.Should().Be(2);
+			filteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			var lineNumbers = filteredLogFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(2);
 			lineNumbers[1].Should().Be(4);
@@ -824,7 +824,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			var filteredLogFile = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, filter, null);
 			_taskScheduler.RunOnce();
 
-			filteredLogFile.Count.Should().Be(2);
+			filteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			var lineNumbers = filteredLogFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.OriginalLineNumber);
 			lineNumbers[0].Should().Be(4);
 			lineNumbers[1].Should().Be(2);
@@ -958,6 +958,40 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		}
 
 		#endregion
+
+		#endregion
+
+		#region Well Known Properties
+
+		[Test]
+		public void TestPercentageProcessed()
+		{
+			var source = new Mock<ILogFile>();
+			var sourceProperties = new LogFilePropertyList();
+			sourceProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Zero);
+			source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+			      .Callback((ILogFileProperties destination) => sourceProperties.CopyAllValuesTo(destination));
+			source.Setup(x => x.Properties).Returns(() => sourceProperties.Properties);
+
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source.Object, null,
+			                                      Filter.Create(null, true, LevelFlags.Debug)))
+			{
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
+
+				_taskScheduler.RunOnce();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because even though the filter doesn't have anything to do just yet - it's because its own source hasn't even started");
+
+				sourceProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.FromPercent(42));
+				file.OnLogFileModified(source.Object, new LogFileSection(0, 84));
+				_taskScheduler.RunOnce();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.FromPercent(42), "because now the filtered log file has processed 100% of the data the source sent it, but the original data source is still only at 42%");
+
+				sourceProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+				file.OnLogFileModified(source.Object, new LogFileSection(84, 200));
+				_taskScheduler.RunOnce();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			}
+		}
 
 		#endregion
 

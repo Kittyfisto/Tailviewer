@@ -13,7 +13,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestWellKnown()
 		{
+			LogFileProperties.LogEntryCount.Should().NotBeNull();
+			LogFileProperties.Name.Should().NotBeNull();
+			LogFileProperties.StartTimestamp.Should().NotBeNull();
+			LogFileProperties.EndTimestamp.Should().NotBeNull();
 			LogFileProperties.Duration.Should().NotBeNull();
+			LogFileProperties.LastModified.Should().NotBeNull();
+			LogFileProperties.StartTimestamp.Should().NotBeNull();
+			LogFileProperties.Created.Should().NotBeNull();
+			LogFileProperties.Size.Should().NotBeNull();
+			LogFileProperties.PercentageProcessed.Should().NotBeNull();
+			LogFileProperties.EmptyReason.Should().NotBeNull();
+			LogFileProperties.Format.Should().NotBeNull();
+			LogFileProperties.FormatDetectionCertainty.Should().NotBeNull();
+			LogFileProperties.Encoding.Should().NotBeNull();
 		}
 
 		[Test]

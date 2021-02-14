@@ -83,6 +83,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Size, Size.Zero);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
 			foreach (var pair in properties)
 			{
 				_properties.SetValue(pair.Key, pair.Value);
@@ -101,9 +102,6 @@ namespace Tailviewer.Core.LogFiles
 				_logEntries.Clear();
 			}
 		}
-
-		/// <inheritdoc />
-		public bool EndOfSourceReached => true;
 
 		/// <inheritdoc />
 		public int Count => _logEntries.Count;
@@ -258,6 +256,7 @@ namespace Tailviewer.Core.LogFiles
 				if (_logEntries.Count > 0)
 				{
 					_logEntries.Clear();
+					SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
 					_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
 					_properties.SetValue(LogFileProperties.StartTimestamp, null);
 					_properties.SetValue(LogFileProperties.EndTimestamp, null);
@@ -291,6 +290,7 @@ namespace Tailviewer.Core.LogFiles
 
 				var available = _logEntries.Count - index;
 				_logEntries.RemoveRange((int)index, available);
+				SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
 				_listeners.Invalidate((int)index, available);
 				Touch();
 			}
@@ -396,6 +396,7 @@ namespace Tailviewer.Core.LogFiles
 						DeltaTime = deltaTime
 					};
 					_logEntries.Add(logEntry);
+					SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
 					SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
@@ -483,6 +484,7 @@ namespace Tailviewer.Core.LogFiles
 				finalLogEntry.DeltaTime = deltaTime;
 
 				_logEntries.Add(finalLogEntry);
+				SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
 				SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
 				_listeners.OnRead(_logEntries.Count);

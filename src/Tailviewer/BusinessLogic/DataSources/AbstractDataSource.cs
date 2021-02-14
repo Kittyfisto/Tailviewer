@@ -141,7 +141,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void ClearScreen()
 		{
-			_hideLogLineCount = UnfilteredLogFile?.Count ?? 0;
+			_hideLogLineCount = UnfilteredLogFile?.GetValue(LogFileProperties.LogEntryCount) ?? 0;
 			CreateFilteredLogFile();
 		}
 

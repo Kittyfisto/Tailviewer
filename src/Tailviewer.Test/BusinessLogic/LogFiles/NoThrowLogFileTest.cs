@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -65,25 +64,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestEndOfSourceReached()
-		{
-			_logFile.Setup(x => x.EndOfSourceReached).Throws<SystemException>();
-			new Action(() =>
-			{
-				var unused = _proxy.EndOfSourceReached;
-			}).Should().NotThrow();
-			_logFile.Verify(x => x.EndOfSourceReached, Times.Once);
-		}
-
-		[Test]
 		public void TestCount()
 		{
-			_logFile.Setup(x => x.Count).Throws<SystemException>();
+			_logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.Count;
+				var unused = _proxy.GetValue(LogFileProperties.LogEntryCount);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.Count, Times.Once);
+			_logFile.Verify(x => x.GetValue(LogFileProperties.LogEntryCount), Times.Once);
 		}
 
 		[Test]

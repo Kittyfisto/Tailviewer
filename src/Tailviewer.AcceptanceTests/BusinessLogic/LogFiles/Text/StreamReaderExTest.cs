@@ -19,7 +19,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
 			{
 				var line1 = reader.ReadLine();
-				line1.Should().EndWith("\r\n");
+				line1.Should().EndWith("\n");
 				var trimmedLine1 = line1.TrimEnd();
 				trimmedLine1.Equals(actualLines[0]).Should().BeTrue(); //< Using Should().Be(..) crashes VS because it's unable to print 2 Mb
 				//line1.TrimEnd().Should().Be(actualLines[0]);
@@ -37,13 +37,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
 			{
 				var line1 = reader.ReadLine();
-				line1.Should().EndWith("\r\n");
+				line1.Should().EndWith("\n");
 				var trimmedLine1 = line1.TrimEnd();
 				trimmedLine1.Equals(actualLines[0]).Should().BeTrue(); //< Using Should().Be(..) crashes VS because it's unable to print 2 Mb
 				//line1.TrimEnd().Should().Be(actualLines[0]);
 
 				var line2 = reader.ReadLine();
-				line2.Should().EndWith("\r\n");
+				line2.Should().EndWith("\n");
 				var trimmedLine2 = line2.Trim();
 				trimmedLine2.Equals(actualLines[1]).Should().BeTrue(); //< Using Should().Be(..) crashes VS because it's unable to print 2 Mb
 				//line2.TrimEnd().Should().Be(actualLines[1]);

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -165,7 +164,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			using (var dataSource = new SingleDataSource(_logFileFactory, _scheduler, new DataSource(@"TestData\LevelCounts.txt") { Id = DataSourceId.CreateNew() }))
 			{
 				_scheduler.Run(2);
-				dataSource.UnfilteredLogFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+				dataSource.UnfilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				dataSource.TotalCount.Should().Be(27, "because the data source contains that many lines");
 				dataSource.DebugCount.Should().Be(1, "because the data source contains one debug line");
@@ -237,17 +236,16 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			logFile.AddEntry("Bar");
 			using (var dataSource = new SingleDataSource(_scheduler, settings, logFile, TimeSpan.Zero))
 			{
-				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.Count.Should().Be(2);
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				dataSource.ClearScreen();
-				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.Count.Should().Be(0, "because we've just cleared the screen");
-
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				logFile.AddEntry("Hello!");
-				_scheduler.Run(2);
-				dataSource.FilteredLogFile.Count.Should().Be(1, "because newer log entries should still appear");
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because newer log entries should still appear");
 				dataSource.FilteredLogFile.GetEntry(0).RawContent.Should().Be("Hello!");
 			}
 		}
@@ -267,11 +265,11 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 
 				dataSource.ClearScreen();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.Count.Should().Be(0, "because we've just cleared the screen");
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0, "because we've just cleared the screen");
 
 				dataSource.ShowAll();
 				_scheduler.RunOnce();
-				dataSource.FilteredLogFile.Count.Should().Be(2, "because we've just shown everything again");
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2, "because we've just shown everything again");
 			}
 		}
 

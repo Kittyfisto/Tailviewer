@@ -46,7 +46,7 @@ namespace Tailviewer.AcceptanceTests.Ui.ViewModels
 			{
 				var model = new SingleDataSourceViewModel(dataSource, new Mock<IActionCenter>().Object);
 
-				logFile.Property(x => x.EndOfSourceReached).ShouldEventually().BeTrue();
+				logFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
 
 				model.Property(x =>
 				{

@@ -115,7 +115,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_file = Create(_fname, encoding: Encoding.GetEncoding(1252));
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.RawContent.Should().Be("65°");
 		}
@@ -134,7 +134,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_file = Create(_fname);
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var line = _file.GetEntry(0);
 			line.RawContent.Should().Be("65°");
 		}
@@ -199,7 +199,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 
 			_taskScheduler.RunOnce();
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -219,7 +219,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -243,7 +243,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -277,7 +277,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 				new LogFileSection(0, 1)
 			}, "because the log file should've sent invalidations for the 2nd and 3rd read (because the same line was modified)");
 
-			_file.Count.Should().Be(1);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.Index.Should().Be(0);
 			entry.LogEntryIndex.Should().Be(0);
@@ -288,15 +288,19 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		[Test]
 		public void TestReadTwoLines1()
 		{
+			_file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+
 			_streamWriter.Write("Hello\r\n");
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
+			_file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
 
 			_streamWriter.Write("World!\r\n");
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
+			_file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the log file should have processed the entire file");
 
-			_file.Count.Should().Be(2);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			var entries = _file.GetEntries(new LogFileSection(0, 2));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -317,7 +321,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(2);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 11, 59, 30),
@@ -337,7 +341,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(2);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			_file.GetColumn(new LogLineIndex[] {0,  1}, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				new DateTime(2017, 12, 3, 11, 59, 30),
@@ -363,7 +367,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(2);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
 			{
 				null
@@ -389,7 +393,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_streamWriter.Flush();
 			_taskScheduler.RunOnce();
 
-			_file.Count.Should().Be(2);
+			_file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime).Should().Equal(new object[]
 			{
 				null,
@@ -551,7 +555,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 			var logFile = Create(fname);
 			_taskScheduler.RunOnce();
-			logFile.Count.Should().Be(content.Count);
+			logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(content.Count);
 			return logFile;
 		}
 	}

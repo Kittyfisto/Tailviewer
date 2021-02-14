@@ -134,7 +134,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<ILogFileColumnDescriptor> columns)
 		{
-			var count = logFile.Count;
+			var count = logFile.GetValue(LogFileProperties.LogEntryCount);
 			var buffer = new LogEntryArray(count, columns);
 			GetEntries(logFile, new LogFileSection(0, count), buffer);
 			return buffer;

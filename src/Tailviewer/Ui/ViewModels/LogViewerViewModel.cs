@@ -240,8 +240,8 @@ namespace Tailviewer.Ui.ViewModels
 
 		private void UpdateCounts()
 		{
-			LogEntryCount = _logFile.Count;
-			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.Count;
+			LogEntryCount = _logFile.GetValue(LogFileProperties.LogEntryCount);
+			TotalLogEntryCount = _dataSource.DataSource.UnfilteredLogFile.GetValue(LogFileProperties.LogEntryCount);
 			UpdateNoEntriesExplanation();
 		}
 
@@ -252,7 +252,7 @@ namespace Tailviewer.Ui.ViewModels
 			ILogFile source = dataSource.UnfilteredLogFile;
 			ILogFile filtered = dataSource.FilteredLogFile;
 
-			if (filtered.Count == 0)
+			if (filtered.GetValue(LogFileProperties.LogEntryCount) == 0)
 			{
 				IEnumerable<ILogEntryFilter> chain = dataSource.QuickFilterChain;
 				var emptyReason = source.GetValue(LogFileProperties.EmptyReason);

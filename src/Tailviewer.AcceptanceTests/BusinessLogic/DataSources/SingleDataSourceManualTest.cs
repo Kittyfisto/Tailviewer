@@ -61,8 +61,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.Write("ssss");
 				_writer.Flush();
 
-				_scheduler.Run(2);
-				dataSource.FilteredLogFile.Count.Should().Be(1);
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 				var line = dataSource.FilteredLogFile.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
@@ -81,8 +81,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
 
-				_scheduler.Run(2);
-				dataSource.FilteredLogFile.Count.Should().Be(1);
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 				var line = dataSource.FilteredLogFile.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
@@ -101,14 +101,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.Write("Hello World\r\n");
 				_writer.Flush();
 
-				_scheduler.Run(2);
-				dataSource.FilteredLogFile.Count.Should().Be(1);
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				_stream.SetLength(0);
 				_stream.Flush();
 
-				_scheduler.Run(2);
-				dataSource.FilteredLogFile.Count.Should().Be(0, "because the file on disk has been reset to a length of 0");
+				_scheduler.Run(3);
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0, "because the file on disk has been reset to a length of 0");
 			}
 		}
 
@@ -121,17 +121,17 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			{
 				_writer.Write("A");
 				_writer.Flush();
-				_scheduler.Run(2);
+				_scheduler.Run(3);
 
 				_writer.Write("B");
 				_writer.Flush();
-				_scheduler.Run(2);
+				_scheduler.Run(3);
 
 				_writer.Write("C");
 				_writer.Flush();
-				_scheduler.Run(2);
+				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.Count.Should().Be(1, "because only a single line has been written to disk");
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because only a single line has been written to disk");
 				var line = dataSource.FilteredLogFile.GetEntry(0);
 				line.Index.Should().Be(0);
 				line.LogEntryIndex.Should().Be(0);
@@ -151,9 +151,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");
 				_writer.Flush();
-				_scheduler.Run(2);
+				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
 				var line1 = dataSource.FilteredLogFile.GetEntry(0);
@@ -182,9 +182,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				_writer.WriteLine("2015-10-07 19:50:58,981 INFO Starting");
 				_writer.WriteLine("the application...");
 				_writer.Flush();
-				_scheduler.Run(2);
+				_scheduler.Run(3);
 
-				dataSource.FilteredLogFile.Count.Should().Be(2, "because two lines have been written to the file");
+				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2, "because two lines have been written to the file");
 
 				var t = new DateTime(2015, 10, 7, 19, 50, 58, 981);
 				var line1 = dataSource.FilteredLogFile.GetEntry(0);

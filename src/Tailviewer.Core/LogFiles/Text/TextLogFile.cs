@@ -55,7 +55,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
-		private long _lastPosition;
+		private long _lastStreamPosition;
 		private bool _loggedTimestampWarning;
 
 		#endregion
@@ -112,22 +112,13 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override int Count
-		{
-			get
-			{
-				lock (_syncRoot)
-				{
-					return _entries.Count;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		{
+			get { return _properties.Properties; }
+		}
 
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
@@ -237,6 +228,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
 					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
 					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
+					UpdatePercentageProcessed(_lastStreamPosition, fileSize);
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -273,13 +265,13 @@ namespace Tailviewer.Core.LogFiles.Text
 							// error must be set).
 
 							_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
-							if (stream.Length >= _lastPosition)
+							if (stream.Length >= _lastStreamPosition)
 							{
-								stream.Position = _lastPosition;
+								stream.Position = _lastStreamPosition;
 							}
 							else
 							{
-								OnReset(stream, out _numberOfLinesRead, out _lastPosition);
+								OnReset(stream, out _numberOfLinesRead, out _lastStreamPosition);
 							}
 
 							int numProcessed = 0;
@@ -324,12 +316,14 @@ namespace Tailviewer.Core.LogFiles.Text
 								if (++numProcessed % 100 == 0)
 								{
 									_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
-									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+									_properties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
+									UpdatePercentageProcessed(stream.Position, fileSize);
 								}
 							}
 
-							_lastPosition = stream.Position;
-							_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+							_lastStreamPosition = stream.Position;
+							_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
+							_properties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
 						}
 					}
 
@@ -372,6 +366,33 @@ namespace Tailviewer.Core.LogFiles.Text
 			return TimeSpan.FromMilliseconds(100);
 		}
 
+		/// <summary>
+		/// </summary>
+		private void SetEndOfSourceReached()
+		{
+			// Now this line is very important:
+			// Most tests expect that listeners have been notified
+			// of all pending changes when the source enters the
+			// "EndOfSourceReached" state. This would be true, if not
+			// for listeners specifying a timespan that should elapse between
+			// calls to OnLogFileModified. The listener collection has
+			// been notified, but the individual listeners may not be, because
+			// neither the maximum line count, nor the maximum timespan has elapsed.
+			// Therefore we flush the collection to ensure that ALL listeners have been notified
+			// of ALL changes (even if they didn't want them yet) before we enter the
+			// EndOfSourceReached state.
+			Listeners.Flush();
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+		}
+
+		/// <summary>
+		/// </summary>
+		private void ResetEndOfSourceReached()
+		{
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
+		}
+
 		#region Overrides of AbstractLogFile
 
 		protected override void DisposeAdditional()
@@ -389,10 +410,21 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		#endregion
 
-		[Pure]
-		private Percentage CalculatePercentageProcessed(long streamPosition, long fileSize)
+		private void UpdatePercentageProcessed(long streamPosition, long fileSize)
 		{
-			return Percentage.Of(streamPosition, fileSize).Clamped();
+			// Here's the deal: Since we're processing the file in chunks, we advance the underlying
+			// stream faster than we're actually consuming lines. This means that it's quite likely
+			// that at the end of the file, we have moved the stream to the end, but have not quite
+			// yet processed the underlying buffer from StreamReaderEx. The percentage processed
+			// should be accurate enough so that if it is at 100%, then no more log entries are added.
+			// We can only guarantee that when we have processed all lines and therefore we reserve
+			// setting the percentage to 100% ONLY when we can read no more lines
+			// (See the SetEndOfSourceReached() call below, outside the loop).
+
+			var processed = Percentage.Of(streamPosition, fileSize).Clamped();
+			if (processed >= Percentage.FromPercent(99))
+				processed = Percentage.FromPercent(99);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
 		}
 
 		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
@@ -576,7 +608,7 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void SetDoesNotExist()
 		{
-			OnReset(null, out _numberOfLinesRead, out _lastPosition);
+			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
 			_properties.SetValue(LogFileProperties.Created, null);
 			_properties.SetValue(LogFileProperties.Size, null);
 			_properties.SetValue(LogFileProperties.Format, null);
@@ -605,6 +637,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			_properties.SetValue(LogFileProperties.EndTimestamp, null);
 			_properties.SetValue(LogFileProperties.Duration, null);
 			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
+			_properties.SetValue(LogFileProperties.LogEntryCount, 0);
 
 			_entries.Clear();
 			Listeners.Reset();

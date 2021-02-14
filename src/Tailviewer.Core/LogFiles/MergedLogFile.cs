@@ -40,7 +40,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly LogFilePropertyList _properties;
 		private readonly IReadOnlyList<ILogFile> _sources;
-		private Percentage _progress = Percentage.Zero;
 
 		/// <summary>
 		///     Initializes this object.
@@ -106,18 +105,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFile> Sources => _sources;
-
-		/// <inheritdoc />
-		public override bool EndOfSourceReached
-		{
-			get { return Sources.All(x => x.EndOfSourceReached) & base.EndOfSourceReached; }
-		}
-
-		/// <inheritdoc />
-		public override int Count
-		{
-			get { return _index.Count; }
-		}
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _columns;
@@ -328,8 +315,8 @@ namespace Tailviewer.Core.LogFiles
 				NotifyListeners(changes);
 			}
 
-			_progress = Percentage.HundredPercent;
-			SetEndOfSourceReached();
+			if (_pendingModifications.IsEmpty)
+				SetEndOfSourceReached();
 
 			return _maximumWaitTime;
 		}
@@ -372,6 +359,32 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
+		/// <summary>
+		/// </summary>
+		private void SetEndOfSourceReached()
+		{
+			// Now this line is very important:
+			// Most tests expect that listeners have been notified
+			// of all pending changes when the source enters the
+			// "EndOfSourceReached" state. This would be true, if not
+			// for listeners specifying a timespan that should elapse between
+			// calls to OnLogFileModified. The listener collection has
+			// been notified, but the individual listeners may not be, because
+			// neither the maximum line count, nor the maximum timespan has elapsed.
+			// Therefore we flush the collection to ensure that ALL listeners have been notified
+			// of ALL changes (even if they didn't want them yet) before we enter the
+			// EndOfSourceReached state.
+			Listeners.Flush();
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
+		}
+
+		/// <summary>
+		/// </summary>
+		private void ResetEndOfSourceReached()
+		{
+			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
+		}
+
 		private void UpdateProperties()
 		{
 			Size? size = null;
@@ -405,6 +418,8 @@ namespace Tailviewer.Core.LogFiles
 				processed *= sourceProcessed;
 			}
 
+			// TODO: Keep 2nd copy around and perform block copy instead of indidividual ones
+			_properties.SetValue(LogFileProperties.LogEntryCount, _index.Count);
 			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, maxCharactersPerLine);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
 			_properties.SetValue(LogFileProperties.LastModified, lastModified);

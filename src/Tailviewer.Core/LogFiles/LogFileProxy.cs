@@ -83,8 +83,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			bool performedWork = false;
 
-			KeyValuePair<ILogFile, LogFileSection> pair;
-			while (_pendingSections.TryDequeue(out pair))
+			while (_pendingSections.TryDequeue(out var pair))
 			{
 				var sender = pair.Key;
 				var innerLogFile = _source;
@@ -137,6 +136,11 @@ namespace Tailviewer.Core.LogFiles
 				lock (_properties)
 				{
 					_properties.CopyFrom(_sourceProperties);
+					if (_properties.TryGetValue(LogFileProperties.PercentageProcessed, out var p) &&
+					    p == Percentage.HundredPercent)
+					{
+						Console.WriteLine("What?!");
+					}
 				}
 			}
 			else
@@ -198,32 +202,6 @@ namespace Tailviewer.Core.LogFiles
 		///     Whether or not <see cref="Dispose" /> has been called already.
 		/// </summary>
 		public bool IsDisposed => _isDisposed;
-
-		/// <inheritdoc />
-		public bool EndOfSourceReached
-		{
-			get
-			{
-				ILogFile logFile = _source;
-				if (logFile != null)
-					return logFile.EndOfSourceReached;
-
-				return false;
-			}
-		}
-
-		/// <inheritdoc />
-		public int Count
-		{
-			get
-			{
-				ILogFile logFile = _source;
-				if (logFile != null)
-					return logFile.Count;
-
-				return 0;
-			}
-		}
 
 		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns

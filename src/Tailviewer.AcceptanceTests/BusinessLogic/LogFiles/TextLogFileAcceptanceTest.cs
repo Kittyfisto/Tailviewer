@@ -70,22 +70,22 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var logFile = Create(fname))
 			{
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
-				logFile.Count.Should().Be(1);
+				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 				using (var writer = new StreamWriter(stream))
 				{
 					stream.SetLength(0);
 
-					logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
-					logFile.Count.Should().Be(0);
+					logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 
 					writer.WriteLine("Hello World!");
 					writer.Flush();
 
-					logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+					logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 					var entries = logFile.GetEntries();
 					entries.Count.Should().Be(1);
 					entries[0].Index.Should().Be(0);
@@ -114,13 +114,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				        .Callback((ILogFile log, LogFileSection section) => sections.Add(section));
 				logFile.AddListener(listener.Object, TimeSpan.Zero, 2);
 
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				using (var stream = new FileStream(fname, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
 				{
 					stream.SetLength(0);
 
-					logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
+					logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(0);
 					sections.Should().EndWith(LogFileSection.Reset);
 				}
 			}
@@ -134,7 +134,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			using (var logFile = Create(fname))
 			{
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				new Action(() =>
 					{
@@ -164,7 +164,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				new Action(() => logFile = Create( "dadwdawdw")).Should().NotThrow();
 
-				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
+				logFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist);
 
 				logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "Because the specified file doesn't exist");
@@ -184,7 +184,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				new Action(() => logFile = Create( File2Lines)).Should().NotThrow();
 
-				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
+				logFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None);
 
 				logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None, "Because the specified file does exist");
@@ -201,8 +201,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create( File20Mb))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(15)).BeTrue("because we should be able to read the entire file in a few seconds");
-				file.Count.Should().Be(165342);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent, "because we should be able to read the entire file in a few seconds");
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(165342);
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				var buffer = file.GetEntries(new LogFileSection(0, 10));
@@ -281,11 +281,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var logger = new FileLogger(fname))
 			using (var logFile = Create(fname))
 			{
-				logFile.Count.Should().Be(0);
+				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 
 				Log.Info("Test");
 
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 			}
 		}
 
@@ -300,13 +300,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var logger = new FileLogger(fname))
 			using (var logFile = Create(fname))
 			{
-				logFile.Count.Should().Be(0);
+				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 
 				Log.Info("Hello");
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
 
 				Log.Info("world!");
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(2);
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(2);
 			}
 		}
 
@@ -323,7 +323,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				new Action(() => logFile = Create(fileName)).Should().NotThrow();
 
-				logFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
+				logFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.SourceDoesNotExist,
 				                                                           "Because the specified file doesn't exist");
 
@@ -331,7 +331,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				logFile.Property(x => x.GetValue(LogFileProperties.EmptyReason)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(ErrorFlags.None,
 				                                                          "Because the file has been created now");
-				logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
+				logFile.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1, "Because one line was written to the file");
 
 				var entry = logFile.GetEntry(0);
 				entry.Index.Should().Be(0);
@@ -439,7 +439,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
@@ -470,8 +470,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				file.AddListener(listener.Object, TimeSpan.Zero, 1);
 
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
-				file.Count.Should().Be(165342);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(165342);
 
 				sections[0].Should().Equal(LogFileSection.Reset);
 				for (int i = 1; i < sections.Count; ++i)
@@ -489,9 +489,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(File20Mb))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(20)).Be(Percentage.HundredPercent);
 
-				file.Count.Should().Be(165342);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(165342);
 				file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(218);
 			}
 		}
@@ -501,8 +501,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss_fff.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(1);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, 143, DateTimeKind.Unspecified));
@@ -514,8 +514,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy-MM-dd HH_mm_ss.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(1);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 10, 20, 40, 3, DateTimeKind.Unspecified));
@@ -527,8 +527,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create( @"TestData\Timestamps\HH_mm_ss.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(1);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				var today = DateTime.Today;
@@ -541,8 +541,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(@"TestData\Timestamps\ddd MMM dd HH_mm_ss.fff yyyy.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(1);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 
 				var entry = file.GetEntry(0);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 5, 8, 46, 44, 257, DateTimeKind.Unspecified));
@@ -554,8 +554,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(@"TestData\Timestamps\yyyy MMM dd HH_mm_ss.fff.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(2);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				var entry = file.GetEntry(1);
 				entry.Timestamp.Should().Be(new DateTime(2017, 5, 9, 6, 51, 57, 583, DateTimeKind.Unspecified));
@@ -567,8 +567,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create(@"TestData\Timestamps\HH_mm_ss;s.txt"))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
-				file.Count.Should().Be(2);
+				file.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				var today = DateTime.Today;
 				var entry = file.GetEntry(0);

@@ -45,18 +45,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: IDisposable
 	{
 		/// <summary>
-		///     Whether or not this log file has reached the end of its data source.
-		/// </summary>
-		bool EndOfSourceReached { get; }
-
-		/// <summary>
-		///     The total number of <see cref="IReadOnlyLogEntry" />s that are offered by this log file at this moment.
-		///     If the log file is not modified, then it is expected that <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)" /> may be called
-		///     with as many lines as returned by this property.
-		/// </summary>
-		int Count { get; }
-
-		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
 		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
