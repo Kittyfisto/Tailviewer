@@ -258,9 +258,10 @@ namespace Tailviewer.Core.LogFiles
 			var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
 			var sourceCount = _propertiesBuffer.GetValue(LogFileProperties.LogEntryCount);
 			var ownProgress = sourceCount > 0
-				? Percentage.Of(_indices.Count, sourceCount)
+				? Percentage.Of(_indices.Count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
+
 			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, totalProgress);
 			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, (int)_currentSourceIndex);
 

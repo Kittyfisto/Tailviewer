@@ -417,8 +417,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.Zero, multi0, multi1))
 			{
 				// TODO: Fix - the percentage gets reset because a log file implementation has a slightly botched Percetage calculation
-				//merged.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(1000)).Be(Percentage.HundredPercent);
-				merged.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromSeconds(10)).BeGreaterOrEqualTo(10);
+				merged.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(Percentage.HundredPercent);
 
 				var entries = merged.GetEntries(new LogFileSection(0, 11),
 				                                new ILogFileColumnDescriptor[]

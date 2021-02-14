@@ -118,7 +118,6 @@
     <Compile Include="LogEntryIndex.cs" />
     <Compile Include="LogLineMatch.cs" />
     <Compile Include="NoSuchColumnException.cs" />
-    <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="Percentage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">

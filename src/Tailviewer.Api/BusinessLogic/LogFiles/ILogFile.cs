@@ -100,7 +100,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
 		/// <param name="destination"></param>
-		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
 		void GetAllValues(ILogFileProperties destination);
 
 		#endregion

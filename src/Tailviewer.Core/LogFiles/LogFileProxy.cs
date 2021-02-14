@@ -136,11 +136,6 @@ namespace Tailviewer.Core.LogFiles
 				lock (_properties)
 				{
 					_properties.CopyFrom(_sourceProperties);
-					if (_properties.TryGetValue(LogFileProperties.PercentageProcessed, out var p) &&
-					    p == Percentage.HundredPercent)
-					{
-						Console.WriteLine("What?!");
-					}
 				}
 			}
 			else

@@ -82,8 +82,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			properties.Clear();
 			properties.Properties.Should().BeEmpty();
-			new Action(() => properties.GetValue(LogFileProperties.EmptyReason)).Should().Throw<NoSuchPropertyException>();
-			new Action(() => properties.GetValue(LogFileProperties.PercentageProcessed)).Should().Throw<NoSuchPropertyException>();
+			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
+			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(LogFileProperties.PercentageProcessed.DefaultValue);
 
 			properties.TryGetValue(LogFileProperties.EmptyReason, out _).Should().BeFalse();
 			properties.TryGetValue(LogFileProperties.PercentageProcessed, out _).Should().BeFalse();

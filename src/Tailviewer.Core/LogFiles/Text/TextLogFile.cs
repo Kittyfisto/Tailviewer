@@ -228,7 +228,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
 					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
 					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
-					UpdatePercentageProcessed(_lastStreamPosition, fileSize);
+					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -317,7 +317,16 @@ namespace Tailviewer.Core.LogFiles.Text
 								{
 									_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
 									_properties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
-									UpdatePercentageProcessed(stream.Position, fileSize);
+
+									// Here's the deal: Since we're processing the file in chunks, we advance the underlying
+									// stream faster than we're actually consuming lines. This means that it's quite likely
+									// that at the end of the file, we have moved the stream to the end, but have not quite
+									// yet processed the underlying buffer from StreamReaderEx. The percentage processed
+									// should be accurate enough so that if it is at 100%, then no more log entries are added.
+									// We can only guarantee that when we have processed all lines and therefore we reserve
+									// setting the percentage to 100% ONLY when we can read no more lines
+									// (See the SetEndOfSourceReached() call below, outside the loop).
+									UpdatePercentageProcessed(stream.Position, fileSize, allow100Percent: false);
 								}
 							}
 
@@ -410,19 +419,10 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		#endregion
 
-		private void UpdatePercentageProcessed(long streamPosition, long fileSize)
+		private void UpdatePercentageProcessed(long streamPosition, long fileSize, bool allow100Percent)
 		{
-			// Here's the deal: Since we're processing the file in chunks, we advance the underlying
-			// stream faster than we're actually consuming lines. This means that it's quite likely
-			// that at the end of the file, we have moved the stream to the end, but have not quite
-			// yet processed the underlying buffer from StreamReaderEx. The percentage processed
-			// should be accurate enough so that if it is at 100%, then no more log entries are added.
-			// We can only guarantee that when we have processed all lines and therefore we reserve
-			// setting the percentage to 100% ONLY when we can read no more lines
-			// (See the SetEndOfSourceReached() call below, outside the loop).
-
 			var processed = Percentage.Of(streamPosition, fileSize).Clamped();
-			if (processed >= Percentage.FromPercent(99))
+			if (processed >= Percentage.FromPercent(99) && !allow100Percent)
 				processed = Percentage.FromPercent(99);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
 		}

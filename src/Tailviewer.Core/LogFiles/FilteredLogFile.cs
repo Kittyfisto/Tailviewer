@@ -485,11 +485,6 @@ namespace Tailviewer.Core.LogFiles
 
 			var ownPercentage = Percentage.Of(_currentSourceIndex, _fullSourceSection.Count);
 			var totalPercentage = (ownPercentage * sourcePercentage).Clamped();
-			if (totalPercentage >= Percentage.HundredPercent)
-			{
-				Console.WriteLine("Oops");
-			}
-
 			return totalPercentage;
 		}
 

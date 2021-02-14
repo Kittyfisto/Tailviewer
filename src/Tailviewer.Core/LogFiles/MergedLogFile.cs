@@ -39,6 +39,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly LogFilePropertyList _properties;
+		private readonly LogFilePropertyList _propertiesBuffer;
 		private readonly IReadOnlyList<ILogFile> _sources;
 
 		/// <summary>
@@ -76,6 +77,7 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFileColumns.SourceId}).Distinct().ToList();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.Minimum);
 
 			byte idx = 0;
 			foreach (var logFile in _sources)
@@ -308,12 +310,18 @@ namespace Tailviewer.Core.LogFiles
 			// The following number has been empirically determined
 			// via testing and it felt alright :P
 			const int maxLineCount = 5 * MaximumBatchSizePerSource;
+			bool performedWork = false;
 			while (TryDequeueUpTo(maxLineCount, out var modifications))
 			{
+				performedWork = true;
+
 				var changes = _index.Process(modifications);
 				UpdateProperties();
 				NotifyListeners(changes);
 			}
+
+			if (!performedWork)
+				UpdateProperties();
 
 			if (_pendingModifications.IsEmpty)
 				SetEndOfSourceReached();
@@ -396,37 +404,41 @@ namespace Tailviewer.Core.LogFiles
 			for (int n = 0; n < _sources.Count; ++n)
 			{
 				var source = _sources[n];
+				source.GetAllValues(_propertiesBuffer);
 
-				var sourceSize = source.GetValue(LogFileProperties.Size);
+				var sourceSize = _propertiesBuffer.GetValue(LogFileProperties.Size);
 				if (size == null)
 					size = sourceSize;
 				else if (sourceSize != null)
 					size += sourceSize;
 
-				var last = source.GetValue(LogFileProperties.LastModified);
+				var last = _propertiesBuffer.GetValue(LogFileProperties.LastModified);
 				if (last != null && (last > lastModified || lastModified == null))
 					lastModified = last;
-				var start = source.GetValue(LogFileProperties.StartTimestamp);
+				var start = _propertiesBuffer.GetValue(LogFileProperties.StartTimestamp);
 				if (start != null && (start < startTimestamp || startTimestamp == null))
 					startTimestamp = start;
-				var end = source.GetValue(LogFileProperties.EndTimestamp);
+				var end = _propertiesBuffer.GetValue(LogFileProperties.EndTimestamp);
 				if (end != null && (end > endTimestamp || endTimestamp == null))
 					endTimestamp = end;
-				maxCharactersPerLine = Math.Max(maxCharactersPerLine, source.GetValue(TextLogFileProperties.MaxCharactersInLine));
+				maxCharactersPerLine = Math.Max(maxCharactersPerLine, _propertiesBuffer.GetValue(TextLogFileProperties.MaxCharactersInLine));
 
-				var sourceProcessed = source.GetValue(LogFileProperties.PercentageProcessed);
+				var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
 				processed *= sourceProcessed;
 			}
 
-			// TODO: Keep 2nd copy around and perform block copy instead of indidividual ones
-			_properties.SetValue(LogFileProperties.LogEntryCount, _index.Count);
-			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, maxCharactersPerLine);
-			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
-			_properties.SetValue(LogFileProperties.LastModified, lastModified);
-			_properties.SetValue(LogFileProperties.Size, size);
-			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
-			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
-			_properties.SetValue(LogFileProperties.Duration, endTimestamp - startTimestamp);
+			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, _index.Count);
+			_propertiesBuffer.SetValue(TextLogFileProperties.MaxCharactersInLine, maxCharactersPerLine);
+			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, processed);
+			_propertiesBuffer.SetValue(LogFileProperties.LastModified, lastModified);
+			_propertiesBuffer.SetValue(LogFileProperties.Size, size);
+			_propertiesBuffer.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
+			_propertiesBuffer.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
+			_propertiesBuffer.SetValue(LogFileProperties.Duration, endTimestamp - startTimestamp);
+
+			// We want to ensure that we modify all properties at once so that users of this log file don't
+			// see an inconsistent state of properties when they retrieve them.
+			_properties.CopyFrom(_propertiesBuffer);
 		}
 	}
 }

@@ -160,7 +160,7 @@ namespace Tailviewer.Core.LogFiles
 		public object GetValue(ILogFilePropertyDescriptor property)
 		{
 			if (!TryGetValue(property, out var value))
-				throw new NoSuchPropertyException(property);
+				return property.DefaultValue;
 
 			return value;
 		}
@@ -169,7 +169,7 @@ namespace Tailviewer.Core.LogFiles
 		public T GetValue<T>(ILogFilePropertyDescriptor<T> property)
 		{
 			if (!TryGetValue(property, out var value))
-				throw new NoSuchPropertyException(property);
+				return property.DefaultValue;
 
 			return value;
 		}
