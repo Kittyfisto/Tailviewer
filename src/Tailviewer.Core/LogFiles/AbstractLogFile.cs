@@ -76,13 +76,13 @@ namespace Tailviewer.Core.LogFiles
 		public abstract IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
+		public abstract object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		public abstract T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <inheritdoc />
-		public abstract void GetAllValues(ILogFileProperties destination);
+		public abstract void GetAllProperties(ILogFileProperties destination);
 
 		/// <inheritdoc />
 		public void Dispose()

@@ -26,7 +26,7 @@ namespace Tailviewer.Ui.Controls.LogView.LineNumbers
 		{
 			int lineNumberCharacterCount;
 			if (logFile != null)
-				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.GetValue(TextLogFileProperties.LineCount)));
+				lineNumberCharacterCount = (int) Math.Ceiling(Math.Log10(logFile.GetProperty(TextLogFileProperties.LineCount)));
 			else
 				lineNumberCharacterCount = 0;
 

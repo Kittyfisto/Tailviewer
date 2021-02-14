@@ -132,7 +132,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (_source != null)
 			{
-				_source.GetAllValues(_sourceProperties);
+				_source.GetAllProperties(_sourceProperties);
 				lock (_properties)
 				{
 					_properties.CopyFrom(_sourceProperties);
@@ -254,7 +254,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			lock (_properties)
 			{
@@ -264,7 +264,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			lock (_properties)
 			{
@@ -274,7 +274,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			lock (_properties)
 				_properties.CopyAllValuesTo(destination);

@@ -17,10 +17,10 @@ namespace Tailviewer.Core.LogFiles
 		///     Returns all properties from this log file.
 		/// </summary>
 		/// <returns></returns>
-		public static ILogFileProperties GetAllValues(this ILogFile that)
+		public static ILogFileProperties GetAllProperties(this ILogFile that)
 		{
 			var destination = new LogFilePropertyList();
-			that.GetAllValues(destination);
+			that.GetAllProperties(destination);
 			return destination;
 		}
 
@@ -134,7 +134,7 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<ILogFileColumnDescriptor> columns)
 		{
-			var count = logFile.GetValue(LogFileProperties.LogEntryCount);
+			var count = logFile.GetProperty(LogFileProperties.LogEntryCount);
 			var buffer = new LogEntryArray(count, columns);
 			GetEntries(logFile, new LogFileSection(0, count), buffer);
 			return buffer;

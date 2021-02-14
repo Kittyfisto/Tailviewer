@@ -50,7 +50,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new LogFileSection(0, 6),
 				                               new ILogFileColumnDescriptor[]
 				                               {
@@ -106,7 +106,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new List<LogLineIndex>
 				                               {
 					                               new LogLineIndex(0),
@@ -170,7 +170,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetValue(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 
 				var line = multi.GetEntry(0);
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));

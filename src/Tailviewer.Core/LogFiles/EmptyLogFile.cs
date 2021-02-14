@@ -63,19 +63,19 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}

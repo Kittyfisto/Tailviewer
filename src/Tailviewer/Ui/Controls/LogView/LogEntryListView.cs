@@ -307,7 +307,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			var width = _textSettings.EstimateWidthUpperLimit(logFile.GetValue(TextLogFileProperties.MaxCharactersInLine));
+			var width = _textSettings.EstimateWidthUpperLimit(logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine));
 			var upperWidth = (int) Math.Ceiling(width);
 
 			// Setting an integer is an atomic operation and thus no
@@ -578,7 +578,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			var logFile = LogFile;
 			if (logFile != null)
 			{
-				var count = logFile.GetValue(LogFileProperties.LogEntryCount);
+				var count = logFile.GetProperty(LogFileProperties.LogEntryCount);
 				if (count > 0)
 					FollowTail = logLineIndex >= count - 1;
 			}
@@ -750,7 +750,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(value: 100), maximumLineCount: 10000);
 
-				_maxLineWidth = (int) Math.Ceiling(_textSettings.EstimateWidthUpperLimit(newValue.GetValue(TextLogFileProperties.MaxCharactersInLine)));
+				_maxLineWidth = (int) Math.Ceiling(_textSettings.EstimateWidthUpperLimit(newValue.GetProperty(TextLogFileProperties.MaxCharactersInLine)));
 				UpdateScrollViewerRegions();
 				PartTextCanvas.DetermineVerticalOffset();
 				PartTextCanvas.UpdateVisibleSection();
@@ -812,7 +812,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		private void UpdateVerticalScrollbar()
 		{
-			var count = LogFile.GetValue(LogFileProperties.LogEntryCount);
+			var count = LogFile.GetProperty(LogFileProperties.LogEntryCount);
 			var totalHeight = count * _textSettings.LineHeight;
 			var usableHeight = PartTextCanvas.ActualHeight;
 			if (totalHeight > usableHeight)

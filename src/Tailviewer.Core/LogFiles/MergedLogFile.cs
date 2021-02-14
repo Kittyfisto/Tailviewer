@@ -110,21 +110,21 @@ namespace Tailviewer.Core.LogFiles
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
@@ -241,7 +241,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="queryOptions"></param>
 		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			var start = GetValue(LogFileProperties.StartTimestamp);
+			var start = GetProperty(LogFileProperties.StartTimestamp);
 			var timestamps = new DateTime?[indices.Count];
 			GetColumn(indices, LogFileColumns.Timestamp, timestamps, 0, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
@@ -372,7 +372,7 @@ namespace Tailviewer.Core.LogFiles
 			for (int n = 0; n < _sources.Count; ++n)
 			{
 				var source = _sources[n];
-				source.GetAllValues(_propertiesBuffer);
+				source.GetAllProperties(_propertiesBuffer);
 
 				var sourceSize = _propertiesBuffer.GetValue(LogFileProperties.Size);
 				if (size == null)

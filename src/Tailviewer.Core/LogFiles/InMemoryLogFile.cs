@@ -126,7 +126,7 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			object value;
 			_properties.TryGetValue(propertyDescriptor, out value);
@@ -134,7 +134,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			T value;
 			_properties.TryGetValue(propertyDescriptor, out value);
@@ -142,7 +142,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
@@ -396,7 +396,7 @@ namespace Tailviewer.Core.LogFiles
 					};
 					_logEntries.Add(logEntry);
 					SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
-					SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), line.Length));
+					SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetProperty(TextLogFileProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
@@ -484,7 +484,7 @@ namespace Tailviewer.Core.LogFiles
 
 				_logEntries.Add(finalLogEntry);
 				SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
-				SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
+				SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetProperty(TextLogFileProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
 

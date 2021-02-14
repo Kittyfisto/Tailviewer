@@ -132,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestCtor3()
 		{
 			_merged.UnfilteredLogFile.Should().NotBeNull("Because a log file should be present at all times");
-			_merged.UnfilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
+			_merged.UnfilteredLogFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(0);
 		}
 
 		[Test]

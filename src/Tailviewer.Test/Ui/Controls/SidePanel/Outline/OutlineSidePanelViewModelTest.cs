@@ -85,7 +85,7 @@ namespace Tailviewer.Test.Ui.Controls.SidePanel.Outline
 		{
 			var dataSource = new Mock<IDataSource>();
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.GetValue(LogFileProperties.Format)).Returns(format);
+			logFile.Setup(x => x.GetProperty(LogFileProperties.Format)).Returns(format);
 			dataSource.Setup(x => x.UnfilteredLogFile).Returns(logFile.Object);
 			return dataSource.Object;
 		}

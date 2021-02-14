@@ -16,12 +16,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new EmptyLogFile();
 			logFile.EndOfSourceReached.Should().BeTrue();
-			logFile.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.GetValue((ILogFilePropertyDescriptor)TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty((ILogFilePropertyDescriptor)TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
 			logFile.Progress.Should().Be(1);
 			logFile.Count.Should().Be(0);
-			logFile.GetValue(TextLogFileProperties.LineCount).Should().Be(0);
-			logFile.GetValue((ILogFilePropertyDescriptor)TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty(TextLogFileProperties.LineCount).Should().Be(0);
+			logFile.GetProperty((ILogFilePropertyDescriptor)TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
 			logFile.Columns.Should().BeEquivalentTo(LogFileColumns.Minimum);
 		}
 

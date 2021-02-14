@@ -39,8 +39,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestStartEndTimestampEmptyLogFile()
 		{
 			var logFile = CreateEmpty();
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().BeNull();
 		}
 
 		[Test]
@@ -50,8 +50,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var content = new LogEntryList(LogFileColumns.Timestamp);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
 			var logFile = CreateFromContent(content);
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
 		}
 
 		[Test]
@@ -65,8 +65,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			var logFile = CreateFromContent(content);
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
 		}
 
 		#region Well Known Columns
@@ -1160,9 +1160,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				var customDefaultValue = "Shazarm!";
 				var myTypedProperty = new WellKnownLogFilePropertyDescriptor<string>("My current movie", "", customDefaultValue);
 
-				logFile.GetValue(myTypedProperty).Should().Be(customDefaultValue,
+				logFile.GetProperty(myTypedProperty).Should().Be(customDefaultValue,
 				                                                "because the log doesn't have that property and should returns default value instead");
-				logFile.GetValue((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
+				logFile.GetProperty((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
 				                                                "because the log doesn't have that property and should returns default value instead");
 			}
 		}
@@ -1183,20 +1183,20 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			using (var logFile = CreateFromContent(content))
 			{
-				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(3);
+				logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(3);
 
 				logFile.Dispose();
-				logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
+				logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(0);
 				var entries = logFile.GetEntries(new LogFileSection(0, 3));
 				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[2].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 
 				logFile.Properties.Should().BeEmpty();
-				var values = logFile.GetAllValues();
+				var values = logFile.GetAllProperties();
 				values.Properties.Should().BeEmpty();
 
-				logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+				logFile.GetProperty(LogFileProperties.PercentageProcessed).Should()
 				       .Be(LogFileProperties.PercentageProcessed.DefaultValue);
 			}
 		}

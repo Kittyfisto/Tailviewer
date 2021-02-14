@@ -82,7 +82,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
+		object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves the value for the given property.
@@ -94,13 +94,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
 		/// <param name="destination"></param>
-		void GetAllValues(ILogFileProperties destination);
+		void GetAllProperties(ILogFileProperties destination);
 
 		#endregion
 

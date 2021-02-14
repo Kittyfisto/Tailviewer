@@ -94,21 +94,21 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _buffer.Properties;
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _buffer.GetValue(propertyDescriptor);
+			return _buffer.GetProperty(propertyDescriptor);
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _buffer.GetValue(propertyDescriptor);
+			return _buffer.GetProperty(propertyDescriptor);
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
-			_buffer.GetAllValues(destination);
+			_buffer.GetAllProperties(destination);
 		}
 
 		/// <inheritdoc />

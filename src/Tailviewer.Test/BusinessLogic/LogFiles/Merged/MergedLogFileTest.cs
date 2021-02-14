@@ -133,7 +133,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			var merged = new MergedLogFile(_taskScheduler, TimeSpan.Zero, new[] {source1, source2});
 			_taskScheduler.RunOnce();
 
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			var entries = merged.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.RawContent, LogFileColumns.Timestamp, LogFileColumns.SourceId, myCustomColumn});
 			entries.Count.Should().Be(2);
 			entries[0].RawContent.Should().Be("Everything");
@@ -188,7 +188,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("foobar", LevelFlags.Info, new DateTime(2019, 5, 28, 20, 31, 1));
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(1);
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -209,7 +209,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("b", LevelFlags.Debug, new DateTime(2019, 5, 28, 22, 0, 0));
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -241,13 +241,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source0.AddEntry("a", LevelFlags.Info, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			merged.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			source1.AddEntry("b", LevelFlags.Debug, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
 			entries[0].OriginalIndex.Should().Be(0);
@@ -279,7 +279,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("c", LevelFlags.Error, new DateTime(2019, 5, 28, 22, 41, 0));
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
 			entries[0].OriginalIndex.Should().Be(0);
@@ -311,13 +311,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source0.AddEntry("a", LevelFlags.Warning, later);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			merged.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			source1.AddEntry("c", LevelFlags.Error, earlier);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
@@ -358,7 +358,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("Hello World", LevelFlags.Info, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			merged.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(0);
@@ -393,7 +393,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("bar", LevelFlags.Warning, t3);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(4);
 			var entries = merged.GetEntries(new[]
 			{
 				new LogLineIndex(0), new LogLineIndex(1), new LogLineIndex(2), new LogLineIndex(3)
@@ -445,7 +445,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			_taskScheduler.RunOnce();
 			var entries = merged.GetEntries(new LogFileSection(0, 4));
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(4);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
 			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
@@ -494,9 +494,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source2.AddMultilineEntry(LevelFlags.Debug, t2, "Hello,", "World!");
 			_taskScheduler.RunOnce();
 
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(4);
 			var entries = merged.GetEntries(new LogFileSection(0, 4));
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(4);
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
 			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
@@ -536,7 +536,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			});
 			_taskScheduler.RunOnce();
 
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var entries = merged.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
 				new ILogFileColumnDescriptor[]
@@ -580,7 +580,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			_taskScheduler.RunOnce();
 
 			// For once, we expect the content of the merged data source to be as expected...
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(sourceCount, "because every source added one line");
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(sourceCount, "because every source added one line");
 
 			var buffer = merged.GetEntries(new LogFileSection(0, sourceCount));
 			for (byte i = 0; i < sourceCount; ++i)
@@ -625,7 +625,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			_taskScheduler.RunOnce();
 
 			// For once, we expect the content of the merged data source to be as expected...
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(sourceCount, "because every source added one line");
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(sourceCount, "because every source added one line");
 			var entries = merged.GetEntries(new LogFileSection(0, sourceCount));
 			for (int i = 0; i < sourceCount; ++i)
 			{
@@ -668,7 +668,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			});
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			merged.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 			var entries = merged.GetEntries(new LogFileSection(0, 2));
 			entries[0].GetValue(LogFileColumns.OriginalDataSourceName).Should().Be("rubbish.log");
 			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(new LogLineSourceId(1));
@@ -722,7 +722,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.Index);
 			lineNumbers[0].Should().Be(0);
@@ -744,7 +744,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.Index);
 			lineNumbers[0].Should().Be(1);
@@ -770,7 +770,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var lineNumbers = logFile.GetColumn(new LogFileSection(0, 2), LogFileColumns.LineNumber);
 			lineNumbers[0].Should().Be(1);
@@ -792,7 +792,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 
 			var logFile = new MergedLogFile(_taskScheduler, TimeSpan.Zero, source1, source2);
 			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+			logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var lineNumbers = logFile.GetColumn(new LogLineIndex[] {1, 0}, LogFileColumns.LineNumber);
 			lineNumbers[0].Should().Be(2);

@@ -88,21 +88,21 @@ namespace Tailviewer.Core.LogFiles
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
@@ -252,7 +252,7 @@ namespace Tailviewer.Core.LogFiles
 		private void UpdateProperties()
 		{
 			// Now we can perform a block-copy of all properties and then update our own as desired..
-			_source.GetAllValues(_propertiesBuffer);
+			_source.GetAllProperties(_propertiesBuffer);
 
 			var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
 			var sourceCount = _propertiesBuffer.GetValue(LogFileProperties.LogEntryCount);

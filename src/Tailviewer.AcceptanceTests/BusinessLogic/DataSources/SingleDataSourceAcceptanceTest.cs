@@ -37,9 +37,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 				dataSource.FilteredLogFile.Property(x =>
 				{
 					_scheduler.RunOnce();
-					return x.GetValue(LogFileProperties.LogEntryCount) >= 6;
+					return x.GetProperty(LogFileProperties.LogEntryCount) >= 6;
 				}).ShouldEventually().BeTrue();
-				dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
+				dataSource.FilteredLogFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(6, "because the file consists of 6 lines");
 
 				var entries = dataSource.FilteredLogFile.GetEntries(new LogFileSection(0, 6));
 				entries[0].RawContent.Should().Be("DEBUG ERROR WARN FATAL INFO");

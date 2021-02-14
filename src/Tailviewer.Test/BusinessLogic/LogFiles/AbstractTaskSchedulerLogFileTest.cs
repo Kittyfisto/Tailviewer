@@ -33,11 +33,11 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var logFile = CreateEmpty())
 			{
-				logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the log file didn't have enough time to check the source");
+				logFile.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the log file didn't have enough time to check the source");
 
 				_taskScheduler.RunOnce();
 
-				logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+				logFile.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
 			}
 		}
 

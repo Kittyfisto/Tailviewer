@@ -36,42 +36,42 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestStartTimestamp()
 		{
-			_logFile.Setup(x => x.GetValue(LogFileProperties.StartTimestamp)).Throws<SystemException>();
-			_proxy.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
-			_logFile.Verify(x => x.GetValue(LogFileProperties.StartTimestamp), Times.Once);
+			_logFile.Setup(x => x.GetProperty(LogFileProperties.StartTimestamp)).Throws<SystemException>();
+			_proxy.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
+			_logFile.Verify(x => x.GetProperty(LogFileProperties.StartTimestamp), Times.Once);
 		}
 
 		[Test]
 		public void TestLastModified()
 		{
-			_logFile.Setup(x => x.GetValue(LogFileProperties.LastModified)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(LogFileProperties.LastModified)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetValue(LogFileProperties.LastModified);
+				var unused = _proxy.GetProperty(LogFileProperties.LastModified);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetValue(LogFileProperties.LastModified), Times.Once);
+			_logFile.Verify(x => x.GetProperty(LogFileProperties.LastModified), Times.Once);
 		}
 
 		[Test]
 		public void TestExists()
 		{
-			_logFile.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(LogFileProperties.EmptyReason)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetValue(LogFileProperties.EmptyReason);
+				var unused = _proxy.GetProperty(LogFileProperties.EmptyReason);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetValue(LogFileProperties.EmptyReason), Times.Once);
+			_logFile.Verify(x => x.GetProperty(LogFileProperties.EmptyReason), Times.Once);
 		}
 
 		[Test]
 		public void TestCount()
 		{
-			_logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Throws<SystemException>();
+			_logFile.Setup(x => x.GetProperty(LogFileProperties.LogEntryCount)).Throws<SystemException>();
 			new Action(() =>
 			{
-				var unused = _proxy.GetValue(LogFileProperties.LogEntryCount);
+				var unused = _proxy.GetProperty(LogFileProperties.LogEntryCount);
 			}).Should().NotThrow();
-			_logFile.Verify(x => x.GetValue(LogFileProperties.LogEntryCount), Times.Once);
+			_logFile.Verify(x => x.GetProperty(LogFileProperties.LogEntryCount), Times.Once);
 		}
 
 		[Test]

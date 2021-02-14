@@ -30,7 +30,7 @@ namespace Tailviewer.Core.LogFiles
 			{
 				var properties = new List<LogFileProperty>(_logFile.Properties.Count);
 				foreach (var property in _logFile.Properties)
-					properties.Add(new LogFileProperty(property, _logFile.GetValue(property)));
+					properties.Add(new LogFileProperty(property, _logFile.GetProperty(property)));
 
 				return properties.ToArray();
 			}
@@ -43,7 +43,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				var count = _logFile.GetValue(LogFileProperties.LogEntryCount);
+				var count = _logFile.GetProperty(LogFileProperties.LogEntryCount);
 				var buffer = new LogEntryArray(count, _logFile.Columns);
 				_logFile.GetEntries(new LogFileSection(0, count), buffer);
 				return buffer.ToArray<IReadOnlyLogEntry>();

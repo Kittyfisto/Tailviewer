@@ -123,11 +123,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.GetValue(propertyDescriptor);
+				return _logFile.GetProperty(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
@@ -137,11 +137,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.GetValue(propertyDescriptor);
+				return _logFile.GetProperty(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
@@ -151,11 +151,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			try
 			{
-				_logFile.GetAllValues(destination);
+				_logFile.GetAllProperties(destination);
 			}
 			catch (Exception e)
 			{
