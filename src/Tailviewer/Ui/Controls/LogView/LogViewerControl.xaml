@@ -36,6 +36,7 @@
             <converters1:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <logView:NonMergedDataSourceToVisibilityCollapsedConverter x:Key="NonMergedDataSourceToVisibilityCollapsedConverter" />
             <logView:AdjustingDoubleConverter x:Key="AdjustingDoubleConverter" />
+            <logView:DoubleOneToHiddenConverter x:Key="DoubleOneToHiddenConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -322,7 +323,7 @@
                     <ColumnDefinition Width="25" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
-                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal"
@@ -344,16 +345,18 @@
                 <Grid Grid.Column="3"
                       Margin="4">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Progress: "
-                               VerticalAlignment="Center" />
-                    <controls:FlatProgressBar Grid.Column="1"
-                                              Minimum="0"
-                                              Maximum="1"
-                                              Height="14"
-                                              Value="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource AdjustingDoubleConverter}}" />
+                    <TextBlock Text="Working"
+                               VerticalAlignment="Center"
+                               Margin="0,0,4,0"
+                               Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}}"/>
+                    <controls:CircularProgressBar Grid.Column="1"
+                                                  Height="14"
+                                                  Width="14"
+                                                  Visibility="{Binding DataSource.Progress, Mode=OneWay, ElementName=This, Converter={StaticResource DoubleOneToHiddenConverter}}"
+                                                  IsIndeterminate="True" />
                 </Grid>
 
             </Grid>

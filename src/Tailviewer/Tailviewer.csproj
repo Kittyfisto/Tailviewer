@@ -226,6 +226,7 @@
     <Compile Include="Ui\Controls\FlatImage.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\Any\AnyFormatter.cs" />
+    <Compile Include="Ui\Controls\LogView\DoubleOneToHiddenConverter.cs" />
     <Compile Include="Ui\Controls\LogView\ILogFileColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LogLevelColumnPresenter.cs" />
     <Compile Include="Ui\Controls\LogView\LogLevels\LevelFormatter.cs" />
