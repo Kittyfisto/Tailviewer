@@ -63,7 +63,7 @@ namespace Tailviewer
 		{
 			var features = new string[]
 			{};
-			var bugfixes = new string[]
+			var bugfixes = new[]
 			{
 				"The file format property of a generic text log is displayed empty [#277](https://github.com/Kittyfisto/Tailviewer/issues/277)",
 				"Deleted Serilog custom format entries show up again after Tailviewer is restarted [#278](https://github.com/Kittyfisto/Tailviewer/issues/278)",
@@ -72,8 +72,10 @@ namespace Tailviewer
 				"Tailviewer deadlocks sometimes when removing a data source [#281](https://github.com/Kittyfisto/Tailviewer/issues/281)",
 				"Memory used to read text log files is never reclaimed [#282](https://github.com/Kittyfisto/Tailviewer/issues/282)"
 			};
-			var misc = new string[]
-			{};
+			var misc = new[]
+			{
+				"Introduce service container [#198](https://github.com/Kittyfisto/Tailviewer/issues/198)"
+			};
 			var releaseDate = new DateTime(2021, 3, 1);
 			var version = new Version(1, 0, 0);
 			var change = new Change(releaseDate, version, features, bugfixes, misc);

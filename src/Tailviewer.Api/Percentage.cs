@@ -28,6 +28,7 @@ namespace Tailviewer
 		static Percentage()
 		{
 			Zero = new Percentage(value: 0);
+			FiftyPercent = new Percentage(value: 0.5f);
 			HundredPercent = new Percentage(value: 1);
 		}
 

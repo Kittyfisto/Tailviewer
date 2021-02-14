@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -31,9 +30,8 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 10000;
 
-		private readonly IReadOnlyList<ILogFilePropertyDescriptor> _computedProperties;
-		private readonly LogFilePropertyList _properties;
-		private readonly LogFilePropertyList _sourceProperties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
+		private readonly LogFilePropertyList _propertiesBuffer;
 		private readonly ILogLineFilter _logLineFilter;
 		private readonly ILogEntryFilter _logEntryFilter;
 		private readonly List<int> _indices;
@@ -66,9 +64,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 
-			_computedProperties = new[] {LogFileProperties.PercentageProcessed};
-			_properties = new LogFilePropertyList(_computedProperties.Concat(source.Properties).Distinct());
-			_sourceProperties = new LogFilePropertyList(); //< Will be used as temporary storage to hold the properties from the source
+			_properties = new ConcurrentLogFilePropertyCollection(source.Properties);
+			_propertiesBuffer = new LogFilePropertyList(); //< Will be used as temporary storage to hold the properties from the source
 
 			_logLineFilter = logLineFilter ?? new NoFilter();
 			_logEntryFilter = logEntryFilter ?? new NoFilter();
@@ -96,23 +93,8 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			_properties.Clear();
-			_sourceProperties.Clear();
+			_propertiesBuffer.Clear();
 		}
-
-		/// <inheritdoc />
-		public override int Count
-		{
-			get
-			{
-				lock (_indices)
-				{
-					return _indices.Count;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.CombineWithMinimum(_source.Columns);
@@ -121,21 +103,21 @@ namespace Tailviewer.Core.LogFiles
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
@@ -146,7 +128,6 @@ namespace Tailviewer.Core.LogFiles
 			Log.DebugFormat("OnLogFileModified({0})", section);
 
 			_pendingModifications.Enqueue(section);
-			ResetEndOfSourceReached();
 		}
 
 		/// <inheritdoc />
@@ -425,28 +406,37 @@ namespace Tailviewer.Core.LogFiles
 				_currentSourceIndex += nextCount;
 			}
 
-			UpdateProperties();
-
 			// Now that we've processes all newly added log entries, we can check if we're at the end just yet...
 			if (_fullSourceSection.IsEndOfSection(_currentSourceIndex))
 			{
 				TryAddLogEntry(_lastLogEntry);
+				UpdateProperties(); //< we need to update our own properties after we've added the last entry, but before we notify listeners...
 				Listeners.OnRead(_indices.Count);
 
-				if (_source.EndOfSourceReached)
+				if (_properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
 				{
-					SetEndOfSourceReached();
+					Listeners.Flush();
 				}
+			}
+			else
+			{
+				UpdateProperties();
 			}
 		}
 
 		private void UpdateProperties()
 		{
-			_source.GetAllValues(_sourceProperties);
-			_sourceProperties.Except(_computedProperties).CopyAllValuesTo(_properties);
+			// First we want to retrieve all properties from the source
+			_source.GetAllProperties(_propertiesBuffer);
 
-			// Now we can compute our properties...
-			_properties.SetValue(LogFileProperties.PercentageProcessed, ComputePercentageProcessed());
+			// Then we'll add / overwrite properties 
+			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, ComputePercentageProcessed());
+			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, _indices.Count);
+
+			// And last but not least we'll update our own properties to the new values
+			// It's important we do this in one go so clients can retrieve all those properties
+			// in a consistent state
+			_properties.CopyFrom(_propertiesBuffer);
 		}
 
 		/// <summary>
@@ -457,14 +447,15 @@ namespace Tailviewer.Core.LogFiles
 		[Pure]
 		private Percentage ComputePercentageProcessed()
 		{
+			if (!_propertiesBuffer.TryGetValue(LogFileProperties.PercentageProcessed, out var sourcePercentage))
+				return Percentage.Zero;
+
 			if (_fullSourceSection.Count <= 0)
-				return Percentage.HundredPercent;
+				return sourcePercentage;
 
 			var ownPercentage = Percentage.Of(_currentSourceIndex, _fullSourceSection.Count);
-			if (!_sourceProperties.TryGetValue(LogFileProperties.PercentageProcessed, out var sourcePercentage))
-				return ownPercentage;
-
-			return (ownPercentage * sourcePercentage).Clamped();
+			var totalPercentage = (ownPercentage * sourcePercentage).Clamped();
+			return totalPercentage;
 		}
 
 		private static void RemoveInvalidatedLines(LogEntryList lastLogEntry, int currentSourceIndex)

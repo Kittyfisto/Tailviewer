@@ -5,7 +5,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;

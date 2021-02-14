@@ -45,24 +45,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		: IDisposable
 	{
 		/// <summary>
-		///     Whether or not this log file has reached the end of its data source.
-		/// </summary>
-		bool EndOfSourceReached { get; }
-
-		/// <summary>
-		///     The total number of <see cref="IReadOnlyLogEntry" />s that are offered by this log file at this moment.
-		///     If the log file is not modified, then it is expected that <see cref="GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)" /> may be called
-		///     with as many lines as returned by this property.
-		/// </summary>
-		int Count { get; }
-
-		/// <summary>
-		///     The maximum amount of characters of a single <see cref="LogLine" />.
-		/// </summary>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		int MaxCharactersPerLine { get; }
-
-		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
 		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
@@ -100,7 +82,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
+		object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves the value for the given property.
@@ -112,18 +94,17 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="propertyDescriptor"></param>
 		/// <returns></returns>
-		T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <summary>
 		///     Retrieves all values from all properties of this log file and stores them in the given buffer.
 		/// </summary>
 		/// <param name="destination"></param>
-		/// <exception cref="NoSuchPropertyException">When this log file doesn't offer the given property</exception>
-		void GetAllValues(ILogFileProperties destination);
+		void GetAllProperties(ILogFileProperties destination);
 
 		#endregion
 
-		#region Data Retrieval
+		#region Log Entries
 		
 		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
@@ -135,7 +116,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
-		
+
 		/// <summary>
 		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
 		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.

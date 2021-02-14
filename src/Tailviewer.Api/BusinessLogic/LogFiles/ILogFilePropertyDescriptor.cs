@@ -19,12 +19,10 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The human readable name of this property.
 		/// </summary>
+		/// <remarks>
+		///     Properties without display name will not be shown to users.
+		/// </remarks>
 		string DisplayName { get; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		IReadOnlyList<string> Path { get; }
 
 		/// <summary>
 		///     The type of the data provided by this column.

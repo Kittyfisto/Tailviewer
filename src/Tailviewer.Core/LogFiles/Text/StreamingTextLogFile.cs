@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		private readonly LogEntryCache _cache;
 		private readonly LogEntryList _index;
 		private readonly object _syncRoot;
-		private readonly ILogFileProperties _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private int _maxCharactersPerLine;
 
 		#endregion
@@ -91,7 +91,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
 			_cache = new LogEntryCache(LogFileColumns.LogLevel, LogFileColumns.RawContent);
 			_index = new LogEntryList(LogFileColumns.Timestamp);
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
 			_syncRoot = new object();
 
@@ -139,7 +139,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			object value;
 			_properties.TryGetValue(propertyDescriptor, out value);
@@ -147,7 +147,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			T value;
 			_properties.TryGetValue(propertyDescriptor, out value);
@@ -155,7 +155,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}

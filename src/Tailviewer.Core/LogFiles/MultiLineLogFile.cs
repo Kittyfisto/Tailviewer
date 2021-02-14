@@ -39,12 +39,12 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
+		private readonly LogFilePropertyList _propertiesBuffer;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 
 		private LogFileSection _fullSourceSection;
-		private int _maxCharactersPerLine;
 
 		/// <summary>
 		///     Initializes this object.
@@ -70,8 +70,11 @@ namespace Tailviewer.Core.LogFiles
 
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
-			_properties = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
+			_propertiesBuffer.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.CombineWithMinimum(source.Properties));
+			_properties.CopyFrom(_propertiesBuffer);
 
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 
@@ -81,36 +84,30 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
-
-		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _source.Columns;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
-
-		/// <inheritdoc />
-		public override int Count => (int) _currentSourceIndex;
 
 		/// <inheritdoc />
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
@@ -118,7 +115,6 @@ namespace Tailviewer.Core.LogFiles
 			Log.DebugFormat("OnLogFileModified({0})", section);
 
 			_pendingModifications.EnqueueMany(section.Split(MaximumBatchSize));
-			ResetEndOfSourceReached();
 		}
 
 		/// <inheritdoc />
@@ -234,10 +230,7 @@ namespace Tailviewer.Core.LogFiles
 				}
 			}
 
-			// Now we can perform a block-copy of all properties.
-			_source.GetAllValues(_properties);
-
-			_maxCharactersPerLine = _source.MaxCharactersPerLine;
+			UpdateProperties();
 
 			if (_indices.Count != _currentSourceIndex)
 			{
@@ -247,15 +240,35 @@ namespace Tailviewer.Core.LogFiles
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_source.EndOfSourceReached && _source.Count == Count)
+			if (_properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
 			{
-				SetEndOfSourceReached();
+				Listeners.Flush();
 			}
 
 			if (performedWork)
 				return TimeSpan.Zero;
 
 			return _maximumWaitTime;
+		}
+
+		private void UpdateProperties()
+		{
+			// Now we can perform a block-copy of all properties and then update our own as desired..
+			_source.GetAllProperties(_propertiesBuffer);
+
+			var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(LogFileProperties.LogEntryCount);
+			var ownProgress = sourceCount > 0
+				? Percentage.Of(_indices.Count, sourceCount).Clamped()
+				: Percentage.HundredPercent;
+			var totalProgress = (sourceProcessed * ownProgress).Clamped();
+
+			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, (int)_currentSourceIndex);
+
+			// We want to update all properties at once, hence we modify _sourceProperties where necessary and then
+			// move them to our properties in a single call
+			_properties.CopyFrom(_propertiesBuffer);
 		}
 
 		private void Append(LogFileSection section)

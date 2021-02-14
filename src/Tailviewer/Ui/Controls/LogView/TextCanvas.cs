@@ -421,10 +421,10 @@ namespace Tailviewer.Ui.Controls.LogView
 
 			double maxLinesInViewport = (ActualHeight - _yOffset)/_textSettings.LineHeight;
 			var maxCount = (int) Math.Ceiling(maxLinesInViewport);
-			var logLineCount = LogFile.Count;
+			var logLineCount = LogFile.GetProperty(LogFileProperties.LogEntryCount);
 			// Somebody may have specified that he wants to view line X, but if the source
 			// doesn't offer this line (yet), then we must show something else...
-			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, LogFile.Count - maxCount) : _currentLine;
+			var actualCurrentLine = _currentLine >= logLineCount ? Math.Max(0, logLineCount - maxCount) : _currentLine;
 			int linesLeft = logLineCount - actualCurrentLine;
 			int count = Math.Min(linesLeft, maxCount);
 			if (count < 0)
@@ -510,7 +510,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				int count = _logFile.Count;
+				int count = _logFile.GetProperty(LogFileProperties.LogEntryCount);
 				if (_selectedIndices.Count > 0 && _lastSelection < count - 1)
 				{
 					LogLineIndex newIndex;
@@ -585,7 +585,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				return;
 
 			var next = last + 1;
-			if (next >= _logFile.Count)
+			if (next >= _logFile.GetProperty(LogFileProperties.LogEntryCount))
 				return;
 
 			var indices = LogLineIndex.Range(first, next);
@@ -603,7 +603,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		{
 			try
 			{
-				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.Count - 1)
+				if (_selectedIndices.Count > 0 && _lastSelection < _logFile.GetProperty(LogFileProperties.LogEntryCount) - 1)
 				{
 					LogLineIndex newIndex = _lastSelection + 1;
 					ChangeSelectionAndBringIntoView(newIndex);
@@ -635,7 +635,7 @@ namespace Tailviewer.Ui.Controls.LogView
 				ILogFile logFile = _logFile;
 				if (logFile != null)
 				{
-					var count = logFile.Count;
+					var count = logFile.GetProperty(LogFileProperties.LogEntryCount);
 					if (count > 0)
 					{
 						var newIndex = new LogLineIndex(count - 1);

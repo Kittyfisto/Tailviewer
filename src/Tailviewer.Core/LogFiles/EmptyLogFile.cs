@@ -37,16 +37,6 @@ namespace Tailviewer.Core.LogFiles
 			get { return 0; }
 		}
 
-		public int OriginalCount
-		{
-			get { return 0; }
-		}
-
-		public int MaxCharactersPerLine
-		{
-			get { return 0; }
-		}
-
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get { return LogFileColumns.Minimum; }
@@ -73,17 +63,19 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _properties.GetValue(propertyDescriptor);
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _properties.GetValue(propertyDescriptor);
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}

@@ -6,6 +6,7 @@ using System.Reflection;
 using log4net;
 using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 using Tailviewer.Settings.Bookmarks;
 
 namespace Tailviewer.BusinessLogic.Bookmarks
@@ -116,7 +117,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 					return null;
 
-				if (logLineIndex >= logFile.Count)
+				if (logLineIndex >= logFile.GetProperty(LogFileProperties.LogEntryCount))
 					return null;
 
 				Bookmark bookmark = new Bookmark(dataSource, logLineIndex);

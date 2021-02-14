@@ -248,14 +248,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		public override int MaxCharactersPerLine
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public override int Count => _source.Count;
-
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			throw new NotImplementedException();
 		}
@@ -306,14 +299,14 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
 
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			return _source.GetValue(propertyDescriptor);
+			return _source.GetProperty(propertyDescriptor);
 		}
 
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			return _source.GetValue(propertyDescriptor);
+			return _source.GetProperty(propertyDescriptor);
 		}
 	}
 }

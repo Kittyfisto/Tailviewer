@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public void Update()
 		{
-			_logFile.GetAllValues(_propertyValues);
+			_logFile.GetAllProperties(_propertyValues);
 			foreach (var property in _propertyValues.Properties)
 			{
 				if (!_viewModelsByProperty.TryGetValue(property, out var viewModel))

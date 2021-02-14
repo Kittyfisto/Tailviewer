@@ -63,57 +63,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool EndOfSourceReached
-		{
-			get
-			{
-				try
-				{
-					return _logFile.EndOfSourceReached;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return true;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public int Count
-		{
-			get
-			{
-				try
-				{
-					return _logFile.Count;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return 0;
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public int MaxCharactersPerLine
-		{
-			get
-			{
-				try
-				{
-					return _logFile.MaxCharactersPerLine;
-				}
-				catch (Exception e)
-				{
-					BlameExceptionOnPlugin(e);
-					return 0;
-				}
-			}
-		}
-
-		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get
@@ -174,11 +123,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.GetValue(propertyDescriptor);
+				return _logFile.GetProperty(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
@@ -188,11 +137,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			try
 			{
-				return _logFile.GetValue(propertyDescriptor);
+				return _logFile.GetProperty(propertyDescriptor);
 			}
 			catch (Exception e)
 			{
@@ -202,11 +151,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetAllValues(ILogFileProperties destination)
+		public void GetAllProperties(ILogFileProperties destination)
 		{
 			try
 			{
-				_logFile.GetAllValues(destination);
+				_logFile.GetAllProperties(destination);
 			}
 			catch (Exception e)
 			{

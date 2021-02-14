@@ -33,7 +33,7 @@ namespace Tailviewer.Core.IO
 		private readonly List<long> _lineOffsets;
 		private readonly List<string> _listenerOnReadBuffer;
 		private readonly ConcurrentQueue<IReadRequest> _readRequests;
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly CancellationToken _cancellationToken;
 		private readonly Encoding _defaultEncoding;
@@ -53,7 +53,7 @@ namespace Tailviewer.Core.IO
 			_formatMatcher = formatMatcher;
 			_fileName = fileName;
 			_defaultEncoding = defaultEncoding ?? throw new ArgumentNullException(nameof(defaultEncoding));
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Encoding, defaultEncoding);
 			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
 			_listener = new NoThrowTextFileListener(listener);

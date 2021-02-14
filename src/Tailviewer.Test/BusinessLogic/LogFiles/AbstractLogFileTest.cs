@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
-using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
@@ -42,23 +39,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestStartEndTimestampEmptyLogFile()
 		{
 			var logFile = CreateEmpty();
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().BeNull();
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().BeNull();
 		}
 
 		[Test]
-		[Ignore("Not implemented yet")]
 		public void TestStartEndTimestamp1()
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 11, 0)});
 			var logFile = CreateFromContent(content);
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 11, 0));
 		}
 
 		[Test]
-		[Ignore("Not implemented yet")]
 		public void TestStartEndTimestamp2()
 		{
 			var content = new LogEntryList(LogFileColumns.Timestamp);
@@ -68,8 +63,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			content.Add(new LogEntry {Timestamp = new DateTime(2017, 12, 21, 14, 13, 0)});
 			content.Add(ReadOnlyLogEntry.Empty);
 			var logFile = CreateFromContent(content);
-			logFile.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
-			logFile.GetValue(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
+			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 12, 0));
+			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().Be(new DateTime(2017, 12, 21, 14, 13, 0));
 		}
 
 		#region Well Known Columns
@@ -899,27 +894,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		[Ignore("Still not implemented")]
 		public void TestGetElapsedTimesBySection()
 		{
 			var content = new LogEntryArray(5, LogFileColumns.Timestamp);
 			content.CopyFrom(LogFileColumns.Timestamp, new DateTime?[]
 			{
-				new DateTime(2017, 12, 19, 15, 49, 0),
-				new DateTime(2017, 12, 19, 15, 49, 2),
-				new DateTime(2017, 12, 19, 15, 49, 4),
-				new DateTime(2017, 12, 19, 15, 49, 8),
-				new DateTime(2017, 12, 19, 15, 49, 16)
+				new DateTime(2017, 12, 19, 15, 49, 1),
+				new DateTime(2017, 12, 19, 15, 49, 3),
+				new DateTime(2017, 12, 19, 15, 49, 5),
+				new DateTime(2017, 12, 19, 15, 49, 9),
+				new DateTime(2017, 12, 19, 15, 49, 17)
 			});
 			var logFile = CreateFromContent(content);
 			var values = logFile.GetColumn(new LogFileSection(0, 5), LogFileColumns.ElapsedTime);
 			values.Should().Equal(new object[]
 			{
-				null,
-				TimeSpan.FromSeconds(2),
+				TimeSpan.FromSeconds(0),
 				TimeSpan.FromSeconds(2),
 				TimeSpan.FromSeconds(4),
-				TimeSpan.FromSeconds(8)
+				TimeSpan.FromSeconds(8),
+				TimeSpan.FromSeconds(16)
 			});
 		}
 
@@ -1044,9 +1038,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
 			{
-				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
-				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
-				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
 			};
 
 			using (var logFile = CreateFromContent(content))
@@ -1163,9 +1157,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				var customDefaultValue = "Shazarm!";
 				var myTypedProperty = new WellKnownLogFilePropertyDescriptor<string>("My current movie", "", customDefaultValue);
 
-				logFile.GetValue(myTypedProperty).Should().Be(customDefaultValue,
+				logFile.GetProperty(myTypedProperty).Should().Be(customDefaultValue,
 				                                                "because the log doesn't have that property and should returns default value instead");
-				logFile.GetValue((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
+				logFile.GetProperty((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
 				                                                "because the log doesn't have that property and should returns default value instead");
 			}
 		}
@@ -1179,27 +1173,27 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
 			{
-				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
-				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
-				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
 			};
 
 			using (var logFile = CreateFromContent(content))
 			{
-				logFile.Count.Should().Be(3);
+				logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(3);
 
 				logFile.Dispose();
-				logFile.Count.Should().Be(0);
+				logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(0);
 				var entries = logFile.GetEntries(new LogFileSection(0, 3));
 				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 				entries[2].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
 
 				logFile.Properties.Should().BeEmpty();
-				var values = logFile.GetAllValues();
+				var values = logFile.GetAllProperties();
 				values.Properties.Should().BeEmpty();
 
-				logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+				logFile.GetProperty(LogFileProperties.PercentageProcessed).Should()
 				       .Be(LogFileProperties.PercentageProcessed.DefaultValue);
 			}
 		}

@@ -19,7 +19,7 @@ namespace Tailviewer.Ui.Controls.LogView.ElapsedTime
 			if (logFile != null)
 			{
 				var culture = CultureInfo.CurrentCulture;
-				var maximum = ElapsedTimeFormatter.ToString(logFile.GetValue(LogFileProperties.EndTimestamp) - logFile.GetValue(LogFileProperties.StartTimestamp), culture);
+				var maximum = ElapsedTimeFormatter.ToString(logFile.GetProperty(LogFileProperties.EndTimestamp) - logFile.GetProperty(LogFileProperties.StartTimestamp), culture);
 				var maximumWidth = textSettings.EstimateWidthUpperLimit(maximum);
 				Width = maximumWidth;
 			}

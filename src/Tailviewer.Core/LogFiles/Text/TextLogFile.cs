@@ -34,8 +34,6 @@ namespace Tailviewer.Core.LogFiles.Text
 		private readonly Encoding _encoding;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private readonly LogFilePropertyList _properties;
-		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
 		#endregion
@@ -56,8 +54,34 @@ namespace Tailviewer.Core.LogFiles.Text
 		private int _numberOfLinesRead;
 		private bool _lastLineHadNewline;
 		private string _untrimmedLastLine;
-		private long _lastPosition;
+		private long _lastStreamPosition;
 		private bool _loggedTimestampWarning;
+
+		#endregion
+
+		#region Properties
+
+		private DateTime? _startTimestamp;
+		private DateTime? _endTimestamp;
+		private DateTime? _lastModified;
+		private TimeSpan? _duration;
+		private int _maxCharactersInLine;
+
+		/// <summary>
+		///    This object exists to hold all properties we want to eventually forward to the user.
+		///    It is to be copied to <see cref="_properties"/> in *one* operation when we want the user to
+		///    see its values.
+		/// </summary>
+		/// <remarks>
+		///    This object should only be modified from the Task which executes RunOnce() and not from any other
+		///    thread or there be demons.
+		/// </remarks>
+		private readonly LogFilePropertyList _localProperties;
+
+		/// <summary>
+		///    These are the properties the user gets to see. They are only updated when we deem it necessary.
+		/// </summary>
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 
 		#endregion
 
@@ -87,9 +111,16 @@ namespace Tailviewer.Core.LogFiles.Text
 			_formatMatcher = serviceContainer.Retrieve<ILogFileFormatMatcher>();
 			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
 			_entries = new List<LogLine>();
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.Name, _fileName);
-			_properties.SetValue(TextLogFileProperties.LineCount, 0);
+
+			_localProperties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_localProperties.SetValue(LogFileProperties.Name, _fileName);
+			_localProperties.Add(TextLogFileProperties.LineCount);
+			_localProperties.Add(TextLogFileProperties.MaxCharactersInLine);
+			_localProperties.SetValue(TextLogFileProperties.LineCount, 0);
+			_localProperties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
+
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
+			SynchronizePropertiesWithUser();
 			_syncRoot = new object();
 
 			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
@@ -109,39 +140,31 @@ namespace Tailviewer.Core.LogFiles.Text
 			return _fileName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public IEnumerable<LogLine> Entries => _entries;
-
-		/// <inheritdoc />
-		public override int Count => _entries.Count;
-
-		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
-
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		{
+			get { return _properties.Properties; }
+		}
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
 			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetAllValues(ILogFileProperties destination)
+		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			_properties.CopyAllValuesTo(destination);
 		}
@@ -231,17 +254,19 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					var info = new FileInfo(_fileName);
 					var fileSize = info.Length;
-					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
-					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
-					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
+					_localProperties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
+					_localProperties.SetValue(LogFileProperties.Created, info.CreationTime);
+					_localProperties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
+					UpdatePercentageProcessed(_lastStreamPosition, fileSize, allow100Percent: true);
+					SynchronizePropertiesWithUser();
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
 						FileAccess.Read,
 						FileShare.ReadWrite))
 					{
-						var format = _properties.GetValue(LogFileProperties.Format);
-						var certainty = _properties.GetValue(LogFileProperties.FormatDetectionCertainty);
+						var format = _localProperties.GetValue(LogFileProperties.Format);
+						var certainty = _localProperties.GetValue(LogFileProperties.FormatDetectionCertainty);
 						if (format == null || certainty != Certainty.Sure)
 						{
 							format = TryFindFormat(stream, out certainty);
@@ -256,12 +281,12 @@ namespace Tailviewer.Core.LogFiles.Text
 								}
 							}
 
-							_properties.SetValue(LogFileProperties.Format, format);
-							_properties.SetValue(LogFileProperties.FormatDetectionCertainty, certainty);
+							_localProperties.SetValue(LogFileProperties.Format, format);
+							_localProperties.SetValue(LogFileProperties.FormatDetectionCertainty, certainty);
 						}
 
 						var encoding = format?.Encoding ?? _encoding;
-						_properties.SetValue(LogFileProperties.Encoding, encoding);
+						_localProperties.SetValue(LogFileProperties.Encoding, encoding);
 						using (var reader = new StreamReaderEx(stream, encoding))
 						{
 							// We change the error flag explicitly AFTER opening
@@ -269,14 +294,14 @@ namespace Tailviewer.Core.LogFiles.Text
 							// not allowed to access the file (in which case a different
 							// error must be set).
 
-							_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
-							if (stream.Length >= _lastPosition)
+							_localProperties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
+							if (stream.Length >= _lastStreamPosition)
 							{
-								stream.Position = _lastPosition;
+								stream.Position = _lastStreamPosition;
 							}
 							else
 							{
-								OnReset(stream, out _numberOfLinesRead, out _lastPosition);
+								OnReset(stream, out _numberOfLinesRead, out _lastStreamPosition);
 							}
 
 							int numProcessed = 0;
@@ -284,8 +309,6 @@ namespace Tailviewer.Core.LogFiles.Text
 							while ((currentLine = reader.ReadLine()) != null)
 							{
 								token.ThrowIfCancellationRequested();
-
-								ResetEndOfSourceReached();
 
 								bool lastLineHadNewline = _lastLineHadNewline;
 								var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
@@ -318,15 +341,25 @@ namespace Tailviewer.Core.LogFiles.Text
 								    _numberOfLinesRead,
 								    logEntry.Timestamp);
 
-								if (++numProcessed % 100 == 0)
+								if (++numProcessed % 1000 == 0)
 								{
-									_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
-									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+									// Here's the deal: Since we're processing the file in chunks, we advance the underlying
+									// stream faster than we're actually consuming lines. This means that it's quite likely
+									// that at the end of the file, we have moved the stream to the end, but have not quite
+									// yet processed the underlying buffer from StreamReaderEx. The percentage processed
+									// should be accurate enough so that if it is at 100%, then no more log entries are added.
+									// We can only guarantee that when we have processed all lines and therefore we reserve
+									// setting the percentage to 100% ONLY when we can read no more lines
+									// (See the SetEndOfSourceReached() call below, outside the loop).
+									UpdatePercentageProcessed(stream.Position, fileSize, allow100Percent: false);
+
+									SynchronizePropertiesWithUser();
 								}
 							}
 
-							_lastPosition = stream.Position;
-							_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+							_lastStreamPosition = stream.Position;
+							_localProperties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
+							_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
 						}
 					}
 
@@ -369,6 +402,26 @@ namespace Tailviewer.Core.LogFiles.Text
 			return TimeSpan.FromMilliseconds(100);
 		}
 
+		/// <summary>
+		/// </summary>
+		private void SetEndOfSourceReached()
+		{
+			// Now this line is very important:
+			// Most tests expect that listeners have been notified
+			// of all pending changes when the source enters the
+			// "EndOfSourceReached" state. This would be true, if not
+			// for listeners specifying a timespan that should elapse between
+			// calls to OnLogFileModified. The listener collection has
+			// been notified, but the individual listeners may not be, because
+			// neither the maximum line count, nor the maximum timespan has elapsed.
+			// Therefore we flush the collection to ensure that ALL listeners have been notified
+			// of ALL changes (even if they didn't want them yet) before we enter the
+			// EndOfSourceReached state.
+			Listeners.Flush();
+			_localProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			SynchronizePropertiesWithUser();
+		}
+
 		#region Overrides of AbstractLogFile
 
 		protected override void DisposeAdditional()
@@ -377,19 +430,22 @@ namespace Tailviewer.Core.LogFiles.Text
 			{
 				_entries.Clear();
 				_entries.Capacity = 0;
-			}
 
-			_properties.Clear();
+				_localProperties.Clear();
+				_properties.Clear();
+			}
 
 			base.DisposeAdditional();
 		}
 
 		#endregion
 
-		[Pure]
-		private Percentage CalculatePercentageProcessed(long streamPosition, long fileSize)
+		private void UpdatePercentageProcessed(long streamPosition, long fileSize, bool allow100Percent)
 		{
-			return Percentage.Of(streamPosition, fileSize).Clamped();
+			var processed = Percentage.Of(streamPosition, fileSize).Clamped();
+			if (processed >= Percentage.FromPercent(99) && !allow100Percent)
+				processed = Percentage.FromPercent(99);
+			_localProperties.SetValue(LogFileProperties.PercentageProcessed, processed);
 		}
 
 		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
@@ -494,7 +550,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		{
 			lock (_syncRoot)
 			{
-				_properties.TryGetValue(LogFileProperties.StartTimestamp, out var startTimestamp);
+				var startTimestamp = _startTimestamp;
 				if (startTimestamp != null)
 				{
 					for (int i = 0; i < indices.Count; ++i)
@@ -573,19 +629,20 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void SetDoesNotExist()
 		{
-			OnReset(null, out _numberOfLinesRead, out _lastPosition);
-			_properties.SetValue(LogFileProperties.Created, null);
-			_properties.SetValue(LogFileProperties.Size, null);
-			_properties.SetValue(LogFileProperties.Format, null);
-			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
-			_properties.SetValue(LogFileProperties.Encoding, null);
-			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_localProperties.SetValue(LogFileProperties.Created, null);
+			_localProperties.SetValue(LogFileProperties.Size, null);
+			_localProperties.SetValue(LogFileProperties.Format, null);
+			_localProperties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
+			_localProperties.SetValue(LogFileProperties.Encoding, null);
+			_localProperties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			OnReset(null, out _numberOfLinesRead, out _lastStreamPosition);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 
 		private void SetError(ErrorFlags error)
 		{
-			_properties.SetValue(LogFileProperties.EmptyReason, error);
+			_localProperties.SetValue(LogFileProperties.EmptyReason, error);
+			SynchronizePropertiesWithUser();
 			SetEndOfSourceReached();
 		}
 
@@ -598,47 +655,48 @@ namespace Tailviewer.Core.LogFiles.Text
 				stream.Position = 0;
 
 			numberOfLinesRead = 0;
-			_properties.SetValue(LogFileProperties.StartTimestamp, null);
-			_properties.SetValue(LogFileProperties.EndTimestamp, null);
-			_properties.SetValue(LogFileProperties.Duration, null);
-			_maxCharactersPerLine = 0;
-
+			_startTimestamp = null;
+			_endTimestamp = null;
+			_duration = null;
+			_maxCharactersInLine = 0;
 			_entries.Clear();
+			SynchronizePropertiesWithUser();
+
 			Listeners.Reset();
 		}
 
 		private void Add(string line, LevelFlags level, int numberOfLinesRead, DateTime? timestamp)
 		{
-			if (_properties.GetValue(LogFileProperties.StartTimestamp) == null)
-				_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
-			if (timestamp != null)
-				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
-
-			var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
-			_properties.SetValue(LogFileProperties.Duration, duration);
-
-
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
 				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
 				var translated = Translate(logLine);
 				_entries.Add(translated);
-				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, translated.Message?.Length ?? 0);
 
+				// For huge log files, updating properties is somewhat expensive.
+				// We'll update our fields all the time, but only write back our properties
+				// when it's necessary.
+				_maxCharactersInLine = Math.Max(_maxCharactersInLine, translated.Message?.Length ?? 0);
 				if (timestamp != null)
 				{
-					UpdateLastModifiedIfNecessary(timestamp.Value);
+					if (_startTimestamp == null)
+						_startTimestamp = timestamp;
+					_endTimestamp = timestamp;
+					_duration = _endTimestamp - _startTimestamp;
+					if (TryGetLastBetterModified(timestamp.Value, out var newLastModified))
+						_lastModified = newLastModified;
 				}
+
 			}
 
 			Listeners.OnRead(numberOfLinesRead);
 		}
 
-		private void UpdateLastModifiedIfNecessary(DateTime timestamp)
+		private bool TryGetLastBetterModified(DateTime timestamp, out DateTime lastModified)
 		{
-			var lastModified = _properties.GetValue(LogFileProperties.LastModified);
-			var difference = timestamp - lastModified;
+			var currentLastModified = _lastModified;
+			var difference = timestamp - currentLastModified;
 			if (difference >= TimeSpan.FromSeconds(10))
 			{
 				// I've had this issue occur on one system and I can't really explain it.
@@ -653,14 +711,33 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					Log.InfoFormat(
 						"FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
-						lastModified,
+						currentLastModified,
 						timestamp
 					);
 					_loggedTimestampWarning = true;
 				}
 
-				_properties.SetValue(LogFileProperties.LastModified, timestamp);
+				lastModified = timestamp;
+				return true;
 			}
+
+			lastModified = default;
+			return false;
+		}
+
+		private void SynchronizePropertiesWithUser()
+		{
+			_localProperties.SetValue(TextLogFileProperties.MaxCharactersInLine, _maxCharactersInLine);
+			_localProperties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
+			_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
+			_localProperties.SetValue(LogFileProperties.StartTimestamp, _startTimestamp);
+			_localProperties.SetValue(LogFileProperties.EndTimestamp, _endTimestamp);
+			_localProperties.SetValue(LogFileProperties.Duration, _duration);
+			_localProperties.SetValue(LogFileProperties.LogEntryCount, _entries.Count);
+
+			// We want to update the user-facing properties in a single synchronized OP
+			// so that the properties as retrieved by the user are in sync
+			_properties.CopyFrom(_localProperties);
 		}
 
 		[Pure]

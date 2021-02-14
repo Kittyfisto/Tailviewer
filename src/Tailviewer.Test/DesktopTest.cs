@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Metrolib;
 using NUnit.Framework;
 using Tailviewer.Settings;
 using Size = System.Windows.Size;

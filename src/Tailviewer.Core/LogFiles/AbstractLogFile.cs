@@ -23,7 +23,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly CancellationTokenSource _cancellationTokenSource;
 
 		private readonly ITaskScheduler _scheduler;
-		private volatile bool _endOfSourceReached;
 		private IPeriodicTask _readTask;
 
 		/// <summary>
@@ -77,13 +76,13 @@ namespace Tailviewer.Core.LogFiles
 		public abstract IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFilePropertyDescriptor propertyDescriptor);
+		public abstract object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		public abstract T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
 
 		/// <inheritdoc />
-		public abstract void GetAllValues(ILogFileProperties destination);
+		public abstract void GetAllProperties(ILogFileProperties destination);
 
 		/// <inheritdoc />
 		public void Dispose()
@@ -103,15 +102,6 @@ namespace Tailviewer.Core.LogFiles
 			IsDisposed = true;
 			_scheduler.StopPeriodic(_readTask);
 		}
-
-		/// <inheritdoc />
-		public abstract int MaxCharactersPerLine { get; }
-
-		/// <inheritdoc />
-		public virtual bool EndOfSourceReached => _endOfSourceReached;
-
-		/// <inheritdoc />
-		public abstract int Count { get; }
 
 		/// <inheritdoc />
 		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
@@ -147,32 +137,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			var token = _cancellationTokenSource.Token;
 			return RunOnce(token);
-		}
-
-		/// <summary>
-		/// </summary>
-		protected void SetEndOfSourceReached()
-		{
-			// Now this line is very important:
-			// Most tests expect that listeners have been notified
-			// of all pending changes when the source enters the
-			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should elapse between
-			// calls to OnLogFileModified. The listener collection has
-			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has elapsed.
-			// Therefore we flush the collection to ensure that ALL listeners have been notified
-			// of ALL changes (even if they didn't want them yet) before we enter the
-			// EndOfSourceReached state.
-			Listeners.Flush();
-			_endOfSourceReached = true;
-		}
-
-		/// <summary>
-		/// </summary>
-		protected void ResetEndOfSourceReached()
-		{
-			_endOfSourceReached = false;
 		}
 
 		/// <summary>

@@ -126,7 +126,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 			}
 		}
 
-		public DateTime? LastModified => UnfilteredLogFile.GetValue(LogFileProperties.LastModified);
+		public DateTime? LastModified => UnfilteredLogFile.GetProperty(LogFileProperties.LastModified);
 
 		public DateTime LastViewed
 		{
@@ -141,7 +141,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public void ClearScreen()
 		{
-			_hideLogLineCount = UnfilteredLogFile?.Count ?? 0;
+			_hideLogLineCount = UnfilteredLogFile?.GetProperty(LogFileProperties.LogEntryCount) ?? 0;
 			CreateFilteredLogFile();
 		}
 
@@ -246,7 +246,7 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public int TotalCount => _counter.Total.LogLineCount;
 
-		public Size? FileSize => UnfilteredLogFile.GetValue(LogFileProperties.Size);
+		public Size? FileSize => UnfilteredLogFile.GetProperty(LogFileProperties.Size);
 
 		public bool ColorByLevel
 		{

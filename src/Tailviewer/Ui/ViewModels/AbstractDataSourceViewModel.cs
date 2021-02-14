@@ -663,12 +663,12 @@ namespace Tailviewer.Ui.ViewModels
 			FatalCount = _dataSource.FatalCount;
 			TotalCount = _dataSource.TotalCount;
 			FileSize = _dataSource.FileSize;
-			Exists = _dataSource.UnfilteredLogFile?.GetValue(LogFileProperties.EmptyReason)
+			Exists = _dataSource.UnfilteredLogFile?.GetProperty(LogFileProperties.EmptyReason)
 			         == ErrorFlags.None;
 			NoTimestampCount = _dataSource.NoTimestampCount;
 			LastWrittenAge = DateTime.Now - _dataSource.LastModified;
 			SearchResultCount = (_dataSource.Search?.Count) ?? 0;
-			Progress = _dataSource.FilteredLogFile?.GetValue(LogFileProperties.PercentageProcessed).RelativeValue ?? 1;
+			Progress = _dataSource.FilteredLogFile?.GetProperty(LogFileProperties.PercentageProcessed).RelativeValue ?? 1;
 
 			if (NewLogLineCount != newBefore)
 			{

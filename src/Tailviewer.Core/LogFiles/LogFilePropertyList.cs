@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -38,7 +39,13 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _propertyDescriptors;
+		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		{
+			get
+			{
+				return _propertyDescriptors;
+			}
+		}
 
 		/// <inheritdoc />
 		public void CopyFrom(ILogFileProperties properties)
@@ -99,15 +106,14 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				((PropertyStorage<T>)_values[property]).Value = value;
+				((PropertyStorage<T>) _values[property]).Value = value;
 			}
 		}
 
 		/// <inheritdoc />
 		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
 		{
-			IPropertyStorage storage;
-			if (!_values.TryGetValue(property, out storage))
+			if (!_values.TryGetValue(property, out var storage))
 			{
 				value = property.DefaultValue;
 				return false;
@@ -120,23 +126,21 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
 		{
-			IPropertyStorage storage;
-			if (!_values.TryGetValue(property, out storage))
+			if (!_values.TryGetValue(property, out var storage))
 			{
 				value = property.DefaultValue;
 				return false;
 			}
 
-			value = ((PropertyStorage<T>)storage).Value;
+			value = ((PropertyStorage<T>) storage).Value;
 			return true;
 		}
 
 		/// <inheritdoc />
 		public object GetValue(ILogFilePropertyDescriptor property)
 		{
-			object value;
-			if (!TryGetValue(property, out value))
-				throw new NoSuchPropertyException(property);
+			if (!TryGetValue(property, out var value))
+				return property.DefaultValue;
 
 			return value;
 		}
@@ -144,9 +148,8 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public T GetValue<T>(ILogFilePropertyDescriptor<T> property)
 		{
-			T value;
-			if (!TryGetValue(property, out value))
-				throw new NoSuchPropertyException(property);
+			if (!TryGetValue(property, out var value))
+				return property.DefaultValue;
 
 			return value;
 		}
@@ -240,6 +243,19 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_propertyDescriptors.Clear();
 			_values.Clear();
+		}
+
+		/// <summary>
+		/// Adds the given property to this list.
+		/// </summary>
+		/// <param name="property"></param>
+		public void Add<T>(ILogFilePropertyDescriptor<T> property)
+		{
+			if (!_values.ContainsKey(property))
+			{
+				_values.Add(property, new PropertyStorage<T>(property));
+				_propertyDescriptors.Add(property);
+			}
 		}
 	}
 }

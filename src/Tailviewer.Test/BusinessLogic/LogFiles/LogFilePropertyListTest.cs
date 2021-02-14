@@ -21,6 +21,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestAdd()
+		{
+			var properties = new LogFilePropertyList();
+			properties.Properties.Should().BeEmpty();
+
+			properties.Add(LogFileProperties.Created);
+			properties.Properties.Should().Equal(new object[]{LogFileProperties.Created});
+
+			properties.SetValue(LogFileProperties.Created, new DateTime(2021, 02, 14, 12, 13, 01));
+			new Action(()=> properties.Add(LogFileProperties.Created)).Should().NotThrow("because adding properties again should be tolerate and just not do anything");
+			properties.Properties.Should().Equal(new object[] {LogFileProperties.Created});
+			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2021, 02, 14, 12, 13, 01));
+		}
+
+		[Test]
 		[Description("Verifies that values can be overwritten")]
 		public void TestSetValue5()
 		{
@@ -67,8 +82,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			properties.Clear();
 			properties.Properties.Should().BeEmpty();
-			new Action(() => properties.GetValue(LogFileProperties.EmptyReason)).Should().Throw<NoSuchPropertyException>();
-			new Action(() => properties.GetValue(LogFileProperties.PercentageProcessed)).Should().Throw<NoSuchPropertyException>();
+			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
+			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(LogFileProperties.PercentageProcessed.DefaultValue);
 
 			properties.TryGetValue(LogFileProperties.EmptyReason, out _).Should().BeFalse();
 			properties.TryGetValue(LogFileProperties.PercentageProcessed, out _).Should().BeFalse();

@@ -85,6 +85,7 @@
     <Compile Include="IO\ITextFileListener.cs" />
     <Compile Include="IO\IIoScheduler.cs" />
     <Compile Include="IO\TextFileReaderExtensions.cs" />
+    <Compile Include="LogFiles\ConcurrentLogFilePropertyCollection.cs" />
     <Compile Include="LogFiles\EmptyLogFile.cs" />
     <Compile Include="LogFiles\EventLogFile.cs" />
     <Compile Include="LogFiles\Issues\LogFileIssue.cs" />

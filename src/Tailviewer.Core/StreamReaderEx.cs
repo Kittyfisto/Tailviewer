@@ -18,12 +18,30 @@ namespace Tailviewer.Core
 		private readonly Stream _stream;
 		private int _nextSearchStartIndex;
 
+		// We want to avoid allocating an array which is so big that it has to be placed in the large object heap because it would introduce a bit more memory fragmentation.
+		// The total number of characters we may allocate here has been guesstimated using various sources on the internet.
+		private const int MaxSmallObjectSize = 85000;
+		private const int ObjectSize = 24;
+		private const int EstimatedArraySize = 4;
+		private const int CharSize = 2;
+		private const int DefaultBufferSize = (MaxSmallObjectSize - ObjectSize - EstimatedArraySize - 1) / CharSize;
+
 		/// <summary>
 		///     Initializes this enhanced stream reader.
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <param name="encoding"></param>
 		public StreamReaderEx(Stream stream, Encoding encoding)
+			: this(stream, encoding, DefaultBufferSize)
+		{}
+
+		/// <summary>
+		///     Initializes this enhanced stream reader.
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <param name="encoding"></param>
+		/// <param name="bufferSize"></param>
+		public StreamReaderEx(Stream stream, Encoding encoding, int bufferSize)
 		{
 			if (stream == null)
 				throw new ArgumentNullException(nameof(stream));
@@ -32,14 +50,6 @@ namespace Tailviewer.Core
 
 			_stream = stream;
 			_reader = new StreamReader(_stream, encoding, detectEncodingFromByteOrderMarks: true);
-
-			// We want to avoid allocating an array which is so big that it has to be placed in the large object heap because it would introduce a bit more memory fragmentation.
-			// The total number of characters we may allocate here has been guesstimated using various sources on the internet.
-			const int maxSmallObjectSize = 85000;
-			const int objectSize = 24;
-			const int estimatedArraySize = 4;
-			const int charSize = 2;
-			const int bufferSize = (maxSmallObjectSize - objectSize - estimatedArraySize - 1) / charSize;
 
 			_readBuffer = new char[bufferSize];
 			_contentBuffer = new StringBuilder();
