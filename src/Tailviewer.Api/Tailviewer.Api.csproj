@@ -92,7 +92,6 @@
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueListener.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssuesPlugin.cs" />
     <Compile Include="Ui\Properties\IPropertyPresenter.cs" />
-    <Compile Include="Ui\Properties\IPropertyPresenterPlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlinePlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlineViewModel.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersion.cs" />
@@ -128,6 +127,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ServiceAttribute.cs" />
+    <Compile Include="Ui\Properties\IPropertyPresenterPlugin.cs" />
     <Compile Include="WillBeRemoved.cs" />
   </ItemGroup>
   <ItemGroup>

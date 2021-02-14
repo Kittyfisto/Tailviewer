@@ -15,14 +15,13 @@ namespace Tailviewer.Core.LogFiles
 		, IWellKnownReadOnlyPropertyDescriptor
 	{
 		private readonly string _id;
-		private readonly string _displayName;
 		private readonly T _defaultValue;
 
-		public WellKnownReadOnlyProperty(string id, string displayName = null, T defaultValue = default)
-			: this(new []{id}, displayName, defaultValue)
+		public WellKnownReadOnlyProperty(string id, T defaultValue = default)
+			: this(new []{id}, defaultValue)
 		{}
 
-		public WellKnownReadOnlyProperty(IEnumerable<string> path, string displayName = null, T defaultValue = default)
+		public WellKnownReadOnlyProperty(IEnumerable<string> path, T defaultValue = default)
 		{
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
@@ -30,13 +29,10 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentException();
 
 			_id = string.Join(".", path);
-			_displayName = displayName;
 			_defaultValue = defaultValue;
 		}
 
 		public string Id => _id;
-
-		public string DisplayName => _displayName;
 
 		public Type DataType => typeof(T);
 

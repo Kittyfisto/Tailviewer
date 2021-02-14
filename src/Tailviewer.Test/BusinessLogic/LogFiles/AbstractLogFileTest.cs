@@ -1154,8 +1154,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			using (var logFile = CreateEmpty())
 			{
-				var customDefaultValue = "Shazarm!";
-				var myTypedProperty = new WellKnownReadOnlyProperty<string>("My current movie", "", customDefaultValue);
+				var customDefaultValue = "Shazam!";
+				var myTypedProperty = new WellKnownReadOnlyProperty<string>("My current movie", customDefaultValue);
 
 				logFile.GetProperty(myTypedProperty).Should().Be(customDefaultValue,
 				                                                "because the log doesn't have that property and should returns default value instead");

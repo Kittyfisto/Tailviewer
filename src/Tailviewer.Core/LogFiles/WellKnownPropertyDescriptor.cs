@@ -11,12 +11,12 @@ namespace Tailviewer.Core.LogFiles
 		: WellKnownReadOnlyProperty<T>
 		, IPropertyDescriptor<T>
 	{
-		public WellKnownPropertyDescriptor(string id, string displayName = null, T defaultValue = default)
-			: base(new []{id}, displayName, defaultValue)
+		public WellKnownPropertyDescriptor(string id, T defaultValue = default)
+			: base(new []{id}, defaultValue)
 		{}
 
-		public WellKnownPropertyDescriptor(IEnumerable<string> path, string displayName = null, T defaultValue = default)
-			: base(path, displayName, defaultValue)
+		public WellKnownPropertyDescriptor(IEnumerable<string> path, T defaultValue = default)
+			: base(path, defaultValue)
 		{}
 	}
 }

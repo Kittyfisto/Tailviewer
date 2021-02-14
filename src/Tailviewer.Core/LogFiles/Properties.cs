@@ -95,19 +95,19 @@ namespace Tailviewer.Core.LogFiles
 			var category = "general";
 
 			LogEntryCount = new WellKnownReadOnlyProperty<int>(new[] {category, "log_entry_count"});
-			Name = new WellKnownReadOnlyProperty<string>(new []{category, "name"}, "Name");
-			StartTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "start_timestamp"}, "Start Time");
-			EndTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "end_timestamp"}, "End Time");
-			Duration = new WellKnownReadOnlyProperty<TimeSpan?>(new []{category, "duration"}, "Duration");
-			LastModified = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "last_modified"}, "Last Modified");
-			Created = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "created"}, "Created");
-			Size = new WellKnownReadOnlyProperty<Size?>(new []{category, "size"}, "Size");
+			Name = new WellKnownReadOnlyProperty<string>(new []{category, "name"});
+			StartTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "start_timestamp"});
+			EndTimestamp = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "end_timestamp"});
+			Duration = new WellKnownReadOnlyProperty<TimeSpan?>(new []{category, "duration"});
+			LastModified = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "last_modified"});
+			Created = new WellKnownReadOnlyProperty<DateTime?>(new []{category, "created"});
+			Size = new WellKnownReadOnlyProperty<Size?>(new []{category, "size"});
 
-			PercentageProcessed = new WellKnownReadOnlyProperty<Percentage>(new []{category, "percentage_processed"}, "Processed", Percentage.Zero);
-			EmptyReason = new WellKnownReadOnlyProperty<ErrorFlags>(new []{category, "empty_reason"}, "Empty");
-			Format = new WellKnownReadOnlyProperty<ILogFileFormat>(new []{category, "format"}, "Format");
-			FormatDetectionCertainty = new WellKnownReadOnlyProperty<Certainty>(new []{category, "FormatDetectionCertainty"});
-			Encoding = new WellKnownPropertyDescriptor<Encoding>(new []{category, "encoding"}, "Encoding");
+			PercentageProcessed = new WellKnownReadOnlyProperty<Percentage>(new []{category, "percentage_processed"}, Percentage.Zero);
+			EmptyReason = new WellKnownReadOnlyProperty<ErrorFlags>(new []{category, "empty_reason"});
+			Format = new WellKnownReadOnlyProperty<ILogFileFormat>(new []{category, "format"});
+			FormatDetectionCertainty = new WellKnownReadOnlyProperty<Certainty>(new []{category, "format_detection_certainty"});
+			Encoding = new WellKnownPropertyDescriptor<Encoding>(new []{category, "encoding"});
 
 			Minimum = new IReadOnlyPropertyDescriptor[]
 			{

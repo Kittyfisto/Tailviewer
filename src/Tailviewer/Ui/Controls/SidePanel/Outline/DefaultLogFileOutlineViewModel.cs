@@ -20,15 +20,19 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private readonly LogFilePropertyList _propertyValues;
 		private readonly Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter> _presentersByProperty;
 		private readonly ObservableCollection<IPropertyPresenter> _presenters;
-		private readonly DefaultPropertyPresenterPlugin _plugin;
+		private readonly IPropertyPresenterPlugin _registry;
 
-		public DefaultLogFileOutlineViewModel(ILogFile logFile)
+		public DefaultLogFileOutlineViewModel(IServiceContainer serviceContainer, ILogFile logFile)
 		{
 			_logFile = logFile;
 			_propertyValues = new LogFilePropertyList();
 			_presentersByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter>();
 			_presenters = new ObservableCollection<IPropertyPresenter>();
-			_plugin = new DefaultPropertyPresenterPlugin();
+			_registry = serviceContainer.TryRetrieve<IPropertyPresenterPlugin>();
+			if (_registry == null)
+			{
+				Log.WarnFormat("Registry is missing: No properties will be displayed...");
+			}
 		}
 
 		public IReadOnlyList<IPropertyPresenter> Properties
@@ -86,7 +90,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		{
 			try
 			{
-				return _plugin.TryCreatePresenterFor(property);
+				return _registry?.TryCreatePresenterFor(property);
 			}
 			catch (Exception e)
 			{

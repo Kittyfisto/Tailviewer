@@ -28,7 +28,7 @@ namespace Tailviewer.Core.LogFiles
 		static TextProperties()
 		{
 			var category = "text";
-			LineCount = new WellKnownReadOnlyProperty<long>(new []{category, "line_count"}, "Lines");
+			LineCount = new WellKnownReadOnlyProperty<long>(new []{category, "line_count"});
 			MaxCharactersInLine = new WellKnownReadOnlyProperty<int>(new []{category, "max_characters_in_line"});
 		}
 	}

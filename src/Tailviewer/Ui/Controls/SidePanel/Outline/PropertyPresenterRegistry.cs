@@ -1,17 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using log4net;
+using Tailviewer.Archiver.Plugins;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Ui.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
-	public sealed class DefaultPropertyPresenterPlugin
+	public sealed class PropertyPresenterRegistry
 		: IPropertyPresenterPlugin
 	{
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+		private readonly IReadOnlyList<IPropertyPresenterPlugin> _plugins;
 		private readonly IReadOnlyDictionary<IReadOnlyPropertyDescriptor, string> _displayNames;
 
-		public DefaultPropertyPresenterPlugin()
+		public PropertyPresenterRegistry(IPluginLoader pluginSystem)
 		{
+			_plugins = pluginSystem.LoadAllOfType<IPropertyPresenterPlugin>();
+
 			_displayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
 				{ Core.LogFiles.Properties.LogEntryCount, "Count" },
@@ -33,6 +42,20 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public IPropertyPresenter TryCreatePresenterFor(IReadOnlyPropertyDescriptor property)
 		{
+			foreach (var plugin in _plugins)
+			{
+				try
+				{
+					var presenter = plugin.TryCreatePresenterFor(property);
+					if (presenter != null)
+						return presenter;
+				}
+				catch (Exception e)
+				{
+					Log.WarnFormat("Caught unexpected exception: {0}", e);
+				}
+			}
+
 			if (property is IWellKnownReadOnlyPropertyDescriptor wellKnownProperty)
 			{
 				if (!_displayNames.TryGetValue(property, out var displayName))
