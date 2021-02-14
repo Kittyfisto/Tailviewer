@@ -57,7 +57,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		//[Repeat(10)]
 		//public void TestReadAll_FileReadAllText()
 		//{
-		//	File.ReadAllText(@"C:\Users\Simon\Documents\GitHub\Tailviewer\src\Tailviewer.Test\TestData\1Mb_1Line.txt");
+		//	File.ReadAllText(TextLogFileAcceptanceTest.File1Mb_1Line);
 		//}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		public void TestReadLine_Performance()
 		{
 			using (var stream =
-				File.OpenRead(@"C:\Users\Simon\Documents\GitHub\Tailviewer\src\Tailviewer.Test\TestData\1Mb_1Line.txt"))
+				File.OpenRead(TextLogFileAcceptanceTest.File1Mb_1Line))
 			using (var reader = new StreamReaderEx(stream, Encoding.Default))
 			{
 				reader.ExecutionTimeOf(x => x.ReadLine()).Should().BeLessThan(TimeSpan.FromSeconds(0.5));
