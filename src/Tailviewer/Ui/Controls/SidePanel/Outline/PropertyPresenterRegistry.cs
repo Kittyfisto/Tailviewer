@@ -15,13 +15,14 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IReadOnlyList<IPropertyPresenterPlugin> _plugins;
-		private readonly IReadOnlyDictionary<IReadOnlyPropertyDescriptor, string> _displayNames;
+		private readonly IReadOnlyDictionary<IReadOnlyPropertyDescriptor, string> _wellKnownDisplayNames;
+		private readonly IReadOnlyDictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>> _wellKnownPresenters;
 
 		public PropertyPresenterRegistry(IPluginLoader pluginSystem)
 		{
 			_plugins = pluginSystem.LoadAllOfType<IPropertyPresenterPlugin>();
 
-			_displayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
+			_wellKnownDisplayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
 				{ Core.LogFiles.Properties.LogEntryCount, "Count" },
 				{ Core.LogFiles.Properties.Name, "Name" },
@@ -35,6 +36,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 				{ Core.LogFiles.Properties.PercentageProcessed, "Processed" },
 				{ Core.LogFiles.Properties.Format, "Format" },
 				{ Core.LogFiles.Properties.Encoding, "Encoding" }
+			};
+			_wellKnownPresenters = new Dictionary<IReadOnlyPropertyDescriptor, Func<string, IPropertyPresenter>>
+			{
+				{Core.LogFiles.Properties.Encoding, displayName => new EncodingPropertyPresenter(displayName)}
 			};
 		}
 
@@ -58,12 +63,16 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 			if (property is IWellKnownReadOnlyPropertyDescriptor wellKnownProperty)
 			{
-				if (!_displayNames.TryGetValue(property, out var displayName))
-					return null;
+				if (!_wellKnownDisplayNames.TryGetValue(property, out var displayName))
+					return null; //< Well known properties without a display name are not intended to be shown...
 
-				return new DefaultPropertyPresenter(displayName);
+				if (_wellKnownPresenters.TryGetValue(property, out var factory))
+					return factory(displayName); //< For some properties, we offer specialized presenters
+
+				return new DefaultPropertyPresenter(displayName); //< But for most, the default will do
 			}
 
+			// As far as other properties are concerned, we will just display them.
 			return new DefaultPropertyPresenter(property.Id);
 		}
 

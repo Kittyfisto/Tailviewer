@@ -27,12 +27,15 @@
                                    FontWeight="Bold"
                                    Margin="0,0,4,0"
                                    Grid.Column="0" />
-                        <TextBlock Text="{Binding Value, Converter={StaticResource LogFilePropertyConverter}}"
+                        <ContentPresenter Grid.Column="1"
+                                          Content="{Binding Value}"
+                                          MaxWidth="180" />
+                        <!--<TextBlock Text="{Binding Value, Converter={StaticResource LogFilePropertyConverter}}"
                                    MaxWidth="180"
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"
                                    Margin="0,0,0,0"
-                                   Grid.Column="1" />
+                                   Grid.Column="1" /> -->
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
