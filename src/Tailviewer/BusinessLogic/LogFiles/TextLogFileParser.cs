@@ -18,6 +18,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		static TextLogFileParser()
 		{
 			// We will remove every character from ASCII [0-31] besides the tab character from the line because we can't display them anways.
+			// Whenever you modify this collection, pay attention to to also modify the detection loop below. Checking for insertion was a huge
+			// hot-spot and I had to unroll one of the loops to make it less so.
 			RemovableCharacters = Enumerable.Range(0, 32).Select(x => new string((char) x, 1)).Where(y => y != "\t")
 			                                .Concat(new []{"\u007f"}).ToArray();
 		}
@@ -200,13 +202,20 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		{
 			bool found = false;
 
-			// foreach allocates a bunch of memory and we don't want that here...
+			// Do NOT build this back into a nested loop which checks for presence in the
+			// list... It is awfully slow and a huge hot-spot for something which only happens
+			// once in a blue moon because some application cannot be bothered to sanitize their
+			// goddamn log file.
+
 			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < RemovableCharacters.Length; ++i)
+			for (int i = 0; i < line.Length; ++i)
 			{
-				var @char = RemovableCharacters[i];
-				if (line.Contains(@char))
+				var @char = line[i];
+				if ((@char < 32 | @char == '\u007f') & @char != '\t')
+				{
 					found = true;
+					break;
+				}
 			}
 
 			// We want to AVOID creating a full stringbuilder for every line so we (because it's construction is AWFULLY slow).
