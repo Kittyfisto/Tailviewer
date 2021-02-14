@@ -54,6 +54,11 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<Size?> Size;
 
 		/// <summary>
+		///     The percentage of the file which has been fully processed already.
+		/// </summary>
+		public static readonly ILogFilePropertyDescriptor<Percentage> PercentageProcessed;
+
+		/// <summary>
 		///     The error, if any, which describes why this log file is empty.
 		/// </summary>
 		public static readonly ILogFilePropertyDescriptor<ErrorFlags> EmptyReason;
@@ -89,6 +94,8 @@ namespace Tailviewer.Core.LogFiles
 			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
 			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
 			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
+
+			PercentageProcessed = new WellKnownLogFilePropertyDescriptor<Percentage>("PercentageProcessed", Percentage.Zero);
 			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
 			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");
 			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>("FormatDetectionCertainty");
@@ -103,6 +110,7 @@ namespace Tailviewer.Core.LogFiles
 				LastModified,
 				Created,
 				Size,
+				PercentageProcessed,
 				EmptyReason,
 				Format,
 				FormatDetectionCertainty,

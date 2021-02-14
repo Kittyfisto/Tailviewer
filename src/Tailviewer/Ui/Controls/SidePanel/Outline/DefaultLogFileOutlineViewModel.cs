@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
+using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -15,20 +17,21 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ILogFile _logFile;
-		private readonly IReadOnlyList<ILogFilePropertyViewModel> _properties;
+		private readonly ILogFileProperties _propertyValues;
+		private readonly Dictionary<ILogFilePropertyDescriptor, ILogFilePropertyViewModel> _viewModelsByProperty;
+		private readonly ObservableCollection<ILogFilePropertyViewModel> _viewModels;
 
 		public DefaultLogFileOutlineViewModel(ILogFile logFile)
 		{
 			_logFile = logFile;
-			var properties = logFile.Properties ?? Enumerable.Empty<ILogFilePropertyDescriptor>();
-			_properties = properties.Select(TryCreateViewModel)
-			                     .Where(x => x != null)
-			                     .ToList();
+			_propertyValues = new LogFilePropertyList();
+			_viewModelsByProperty = new Dictionary<ILogFilePropertyDescriptor, ILogFilePropertyViewModel>();
+			_viewModels = new ObservableCollection<ILogFilePropertyViewModel>();
 		}
 
 		public IReadOnlyList<ILogFilePropertyViewModel> Properties
 		{
-			get { return _properties; }
+			get { return _viewModels; }
 		}
 
 		#region Implementation of INotifyPropertyChanged
@@ -65,8 +68,17 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		public void Update()
 		{
-			foreach (var property in _properties)
-				property.Update(_logFile);
+			_logFile.GetAllValues(_propertyValues);
+			foreach (var property in _propertyValues.Properties)
+			{
+				if (!_viewModelsByProperty.TryGetValue(property, out var viewModel))
+				{
+					viewModel = TryCreateViewModel(property);
+					_viewModelsByProperty.Add(property, viewModel);
+					_viewModels.Add(viewModel);
+				}
+				viewModel.Update(_propertyValues);
+			}
 		}
 
 		public FrameworkElement TryCreateContent()

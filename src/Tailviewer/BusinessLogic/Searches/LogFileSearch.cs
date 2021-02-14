@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using Tailviewer.BusinessLogic.LogFiles;
 using log4net;
+using Tailviewer.Core;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 
@@ -23,7 +24,7 @@ namespace Tailviewer.BusinessLogic.Searches
 		private readonly LogFileSearchListenerCollection _listeners;
 		private readonly SubstringFilter _filter;
 		private readonly ILogFile _logFile;
-		private readonly LogEntryArray _logLinesArray;
+		private LogEntryArray _logLinesArray;
 		private readonly List<LogMatch> _matches;
 		private readonly List<LogLineMatch> _matchesBuffer;
 		private readonly TimeSpan _maximumWaitTime;
@@ -70,6 +71,20 @@ namespace Tailviewer.BusinessLogic.Searches
 		{
 			_logFile.RemoveListener(this);
 			_scheduler.StopPeriodic(_task);
+
+			lock (_syncRoot)
+			{
+				_matches.Clear();
+				_matches.Capacity = 0;
+
+				_matchesBuffer.Clear();
+				_matchesBuffer.Capacity = 0;
+
+				_logLinesArray = null;
+
+				_pendingModifications.Clear();
+			}
+
 			_isDisposed = true;
 		}
 

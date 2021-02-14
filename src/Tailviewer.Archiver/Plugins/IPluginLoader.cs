@@ -8,6 +8,7 @@ namespace Tailviewer.Archiver.Plugins
 	/// <summary>
 	/// 
 	/// </summary>
+	[Service]
 	public interface IPluginLoader
 	{
 		/// <summary>

@@ -9,7 +9,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 {
 	[TestFixture]
 	public sealed class MultiLineLogFileTest
@@ -138,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.EmptyReason)).Returns(ErrorFlags.None);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.None);
@@ -163,7 +163,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
@@ -188,7 +188,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var timestamp = new DateTime(2017, 3, 15, 22, 40, 0);
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.LastModified)).Returns(timestamp);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 				       properties.SetValue(LogFileProperties.LastModified, timestamp);
@@ -214,7 +214,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var size = Size.FromGigabytes(42);
 			_lines.Add(new LogLine());
 			_source.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(size);
-			_source.Setup(x => x.GetValues(It.IsAny<ILogFileProperties>()))
+			_source.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
 			       .Callback((ILogFileProperties properties) =>
 			       {
 					   properties.SetValue(LogFileProperties.Size, size);
@@ -886,12 +886,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var section = new LogFileSection(42, 5);
 			var buffer = new LogEntryArray(3, LogFileColumns.DeltaTime, LogFileColumns.RawContent);
 			var destinationIndex = 2;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 
-			logFile.GetEntries(section, buffer, destinationIndex);
+			logFile.GetEntries(section, buffer, destinationIndex, queryOptions);
 
 			_source.Verify(x => x.GetEntries(section,
 			                                 buffer,
-			                                 destinationIndex),
+			                                 destinationIndex,
+			                                 queryOptions),
 			               Times.Once);
 		}
 
@@ -923,12 +925,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var indices = new LogLineIndex[] { 0, 2, 5 };
 			var buffer = new LogEntryArray(5, LogFileColumns.RawContent);
 			var destinationIndex = 2;
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
 
-			logFile.GetEntries(indices, buffer, destinationIndex);
+			logFile.GetEntries(indices, buffer, destinationIndex, queryOptions);
 
 			_source.Verify(x => x.GetEntries(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<ILogEntries>(y => y == buffer),
-			                                 It.Is<int>(y => y == destinationIndex)),
+			                                 buffer,
+			                                 destinationIndex,
+			                                 queryOptions),
 			               Times.Once);
 		}
 

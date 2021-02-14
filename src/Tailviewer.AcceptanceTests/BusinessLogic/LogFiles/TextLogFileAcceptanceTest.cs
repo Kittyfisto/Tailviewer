@@ -14,12 +14,15 @@ using log4net;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 {
 	[TestFixture]
 	public sealed class TextLogFileAcceptanceTest
 	{
+		public const string File1Mb_1Line = @"TestData\1Mb_1Line.txt";
+		public const string File1Mb_2Lines = @"TestData\1Mb_2Lines.txt";
 		public const string File2Mb = @"TestData\2Mb.txt";
 		public const string File20Mb = @"TestData\20Mb.txt";
 		public const string File2Lines = @"TestData\2Lines.txt";
@@ -197,7 +200,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			using (var file = Create( File20Mb))
 			{
-				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue("because we should be able to read the entire file in a few seconds");
+				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(15)).BeTrue("because we should be able to read the entire file in a few seconds");
 				file.Count.Should().Be(165342);
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
@@ -313,7 +316,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			TextLogFile logFile = null;
 			try
 			{
-				string fileName = Path.GetTempFileName();
+				string fileName = PathEx.GetTempFileName();
 				if (File.Exists(fileName))
 					File.Delete(fileName);
 
@@ -436,8 +439,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var file = Create(File20Mb))
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
-
-				file.Dispose();
 
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 

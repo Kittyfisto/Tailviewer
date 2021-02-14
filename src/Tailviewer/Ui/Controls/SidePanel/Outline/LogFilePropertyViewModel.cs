@@ -22,9 +22,9 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			get { return _value; }
 		}
 
-		public void Update(ILogFile logFile)
+		public void Update(ILogFileProperties properties)
 		{
-			var newValue = logFile.GetValue(_descriptor);
+			properties.TryGetValue(_descriptor, out var newValue);
 			if (!Equals(newValue, _value))
 			{
 				_value = newValue;

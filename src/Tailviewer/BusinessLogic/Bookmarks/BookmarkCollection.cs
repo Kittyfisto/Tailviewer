@@ -64,12 +64,13 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 
 		public void RemoveDataSource(IDataSource dataSource)
 		{
+			var logFile = dataSource.UnfilteredLogFile;
+			logFile.RemoveListener(this);
+
 			lock (_syncRoot)
 			{
-				var logFile = dataSource.UnfilteredLogFile;
 				if (_dataSourcesByLogFile.Remove(logFile))
 				{
-					logFile.RemoveListener(this);
 					Remove(_bookmarks.Keys.Where(x => x.DataSource == dataSource).ToList());
 				}
 			}

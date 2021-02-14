@@ -11,17 +11,18 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Test;
 using Tailviewer.Test.BusinessLogic.LogFiles;
 using Certainty = Tailviewer.BusinessLogic.Certainty;
 
-namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
+namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
 	[TestFixture]
 	public sealed class TextLogFileTest
 		: AbstractLogFileTest
 	{
-		private ManualTaskScheduler _scheduler;
+		private ManualTaskScheduler _taskScheduler;
 		private string _fname;
 		private FileStream _stream;
 		private StreamWriter _streamWriter;
@@ -33,8 +34,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		[SetUp]
 		public void Setup()
 		{
-			_scheduler = new ManualTaskScheduler();
-			_fname = Path.GetTempFileName();
+			_taskScheduler = new ManualTaskScheduler();
+			_fname = PathEx.GetTempFileName();
 			if (File.Exists(_fname))
 				File.Delete(_fname);
 
@@ -67,7 +68,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		                           ITextLogFileParserPlugin parser = null)
 		{
 			var serviceContainer = new ServiceContainer();
-			serviceContainer.RegisterInstance<ITaskScheduler>(_scheduler);
+			serviceContainer.RegisterInstance<ITaskScheduler>(_taskScheduler);
 			if (encoding != null)
 				serviceContainer.RegisterInstance<Encoding>(encoding);
 			if (translator != null)
@@ -93,7 +94,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.None);
 
 			var info = new FileInfo(_fname);
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.GetValue(LogFileProperties.LastModified).Should().Be(info.LastWriteTime);
 			_file.GetValue(LogFileProperties.Created).Should().Be(info.CreationTime);
@@ -112,7 +113,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Flush();
 
 			_file = Create(_fname, encoding: Encoding.GetEncoding(1252));
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
 			var entry = _file.GetEntry(0);
@@ -131,7 +132,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_binaryWriter.Flush();
 
 			_file = Create(_fname);
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
 			var line = _file.GetEntry(0);
@@ -147,7 +148,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 			_streamWriter.Write("Foo");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			translator.Verify(x => x.Translate(It.Is<ILogFile>(y => y == _file), It.IsAny<LogLine>()),
 				Times.Once);
@@ -157,7 +158,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		public void TestDoesNotExist()
 		{
 			_file = Create(_fname);
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
 			_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
 			_file.GetValue(LogFileProperties.Format).Should().Be(LogFileFormats.GenericText);
@@ -166,7 +167,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter?.Dispose();
 			_stream?.Dispose();
 			File.Delete(_fname);
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 			_file.GetValue(LogFileProperties.Created).Should().BeNull();
@@ -183,7 +184,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var stream = new FileStream(_fname, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
 			{
 				_file = Create(_fname);
-				_scheduler.RunOnce();
+				_taskScheduler.RunOnce();
 
 				_file.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 				_file.GetValue(LogFileProperties.Created).Should().NotBe(DateTime.MinValue);
@@ -197,7 +198,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter.Write("Foo");
 			_streamWriter.Flush();
 
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			_file.Count.Should().Be(1);
 			var entry = _file.GetEntry(0);
 			entry.Index.Should().Be(0);
@@ -212,11 +213,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_streamWriter.Write("Hello ");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("World!");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
 			var entry = _file.GetEntry(0);
@@ -232,15 +233,15 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_streamWriter.Write("A");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("B");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("C");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(1);
 			var entry = _file.GetEntry(0);
@@ -256,15 +257,15 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_streamWriter.Write("A");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("B");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("C");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_changes.Should().Equal(new object[]
 			{
@@ -289,11 +290,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_streamWriter.Write("Hello\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_streamWriter.Write("World!\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
 			var entries = _file.GetEntries(new LogFileSection(0, 2));
@@ -314,7 +315,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
 			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.Timestamp).Should().Equal(new object[]
@@ -334,7 +335,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
 			_file.GetColumn(new LogLineIndex[] {0,  1}, LogFileColumns.Timestamp).Should().Equal(new object[]
@@ -360,7 +361,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
 			_file.GetColumn(new LogLineIndex[] { -1 }, LogFileColumns.Timestamp).Should().Equal(new object[]
@@ -386,7 +387,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 			_streamWriter.Write("2017-12-03 12:00:00 INFO Bar\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.Count.Should().Be(2);
 			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime).Should().Equal(new object[]
@@ -405,7 +406,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		{
 			_streamWriter.Write("2017-12-03 11:59:30 INFO Foo\r\n");
 			_streamWriter.Flush();
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 
 			_file.GetColumn(new LogFileSection(0, 2), LogFileColumns.DeltaTime).Should().Equal(new object[]
 			{
@@ -463,7 +464,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			_file = Create(_fname, matcher: matcher, parser: parser.Object);
 
 			_streamWriter.WriteLine("Hello, World!");
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
 			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
 			matcher.NumTries.Should().Be(1);
@@ -477,7 +478,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			// and we expect the log file to still invoke the matcher, but NOT create a new parser
 			// since the format itself hasn't changed, even if its still uncertain.
 			_streamWriter.WriteLine("Second line");
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
 			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
 			matcher.NumTries.Should().Be(2, "because the log file should perform another match since the first one wasn't certain");
@@ -491,7 +492,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			// We expect the log file to create a new parser to accomodate this!
 			matcher.Format = LogFileFormats.Csv;
 			_streamWriter.WriteLine("This is interesting, it's a CSV now!");
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			_file.GetValue(LogFileProperties.Format).Should().Be(matcher.Format);
 			_file.GetValue(LogFileProperties.FormatDetectionCertainty).Should().Be(Certainty.Uncertain);
 			matcher.NumTries.Should().Be(3, "because the log file should perform another match since the file is still too small to be certain");
@@ -506,13 +507,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 		protected override ILogFile CreateEmpty()
 		{
 			var logFile = Create("fawwaaw");
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
 			return logFile;
 		}
 
 		protected override ILogFile CreateFromContent(IReadOnlyLogEntries content)
 		{
-			var fname = Path.GetTempFileName();
+			var fname = PathEx.GetTempFileName();
 			using (var stream = File.OpenWrite(fname))
 			using(var writer = new StreamWriter(stream))
 			{
@@ -524,7 +525,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			}
 
 			var logFile = Create(fname);
-			_scheduler.RunOnce();
+			_taskScheduler.RunOnce();
+			logFile.Count.Should().Be(content.Count);
 			return logFile;
 		}
 	}

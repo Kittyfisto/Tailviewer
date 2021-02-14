@@ -5,7 +5,7 @@ using Tailviewer.Core.LogFiles;
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
 	[TestFixture]
-	public sealed class LogEntry2Test2
+	public sealed class LogEntryTest2
 		: AbstractLogEntryTest
 	{
 		#region Overrides of AbstractLogEntryTest

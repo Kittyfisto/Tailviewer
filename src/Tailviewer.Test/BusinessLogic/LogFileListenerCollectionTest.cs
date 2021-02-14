@@ -116,5 +116,34 @@ namespace Tailviewer.Test.BusinessLogic
 					new LogFileSection(1, 1)
 				});
 		}
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
+		public void TestClear()
+		{
+			var collection = new LogFileListenerCollection(new Mock<ILogFile>().Object);
+
+			var listener = new Mock<ILogFileListener>();
+			var sections = new List<LogFileSection>();
+			listener.Setup(x => x.OnLogFileModified(It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()))
+			        .Callback((ILogFile file, LogFileSection y) => sections.Add(y));
+
+			collection.AddListener(listener.Object, TimeSpan.FromHours(1), 1000);
+			collection.OnRead(1);
+			collection.Flush();
+			sections.Should().Equal(new object[]
+			{
+				LogFileSection.Reset,
+				new LogFileSection(0, 1),
+			});
+
+			collection.Clear();
+			sections.Clear();
+
+			collection.OnRead(2);
+			collection.Flush();
+			sections.Should()
+			        .BeEmpty("because the collection should have removed all listeners and thus we may not have been notified anymore");
+		}
 	}
 }

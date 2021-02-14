@@ -5,7 +5,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.Parsers;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.LogFiles.Text
 {
 	[TestFixture]
 	public sealed class TextLogFileParserTest

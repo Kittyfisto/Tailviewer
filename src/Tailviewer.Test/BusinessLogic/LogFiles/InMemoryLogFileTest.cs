@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using FluentAssertions;
 using Metrolib;
 using Moq;
@@ -41,6 +42,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.GetValue(LogFileProperties.EndTimestamp).Should().BeNull();
 			logFile.GetValue(LogFileProperties.Duration).Should().BeNull();
 			logFile.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			logFile.EndOfSourceReached.Should().BeTrue();
 			logFile.Count.Should().Be(0);
 		}

@@ -355,6 +355,32 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			indices[7].SourceLineIndex.Should().Be(7);
 		}
 
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
+		public void TestClear()
+		{
+			var source = new InMemoryLogFile();
+			source.AddEntry("A", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 053));
+			source.AddEntry("B", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+			source.AddEntry("C", LevelFlags.Other, new DateTime(2017, 9, 20, 15, 09, 02, 100));
+
+			var index = new MergedLogFileIndex(source);
+			index.Process(new MergedLogFilePendingModification(source, new LogFileSection(0, 3)));
+
+			index.Count.Should().Be(3);
+			var indices = index.Get(new LogFileSection(0, 3));
+			indices[0].SourceLineIndex.Should().Be(0);
+			indices[1].SourceLineIndex.Should().Be(1);
+			indices[2].SourceLineIndex.Should().Be(2);
+
+			index.Clear();
+			index.Count.Should().Be(0);
+			indices = index.Get(new LogFileSection(0, 3));
+			indices[0].SourceLineIndex.Should().Be(-1);
+			indices[1].SourceLineIndex.Should().Be(-1);
+			indices[2].SourceLineIndex.Should().Be(-1);
+		}
+
 		#region Skip log lines without timestamp
 
 		[Test]

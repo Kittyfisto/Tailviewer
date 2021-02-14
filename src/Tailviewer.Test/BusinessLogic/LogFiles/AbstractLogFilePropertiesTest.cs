@@ -18,7 +18,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDebuggerVisualization1()
 		{
 			var properties = Create();
-			var view = new LogFilePropertiesView(properties);
+			var view = new LogFilePropertiesDebuggerView(properties);
 			view.Items.Should().BeEmpty();
 		}
 
@@ -29,12 +29,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 12, 50, 0)),
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Size, Size.FromGigabytes(1))
 			                        );
-			var view = new LogFilePropertiesView(properties);
+			var view = new LogFilePropertiesDebuggerView(properties);
+			var items = view.Items;
 			view.Items.Should().HaveCount(2);
-			view.Items[0].PropertyDescriptor.Should().Be(LogFileProperties.Created);
-			view.Items[0].Value.Should().Be(new DateTime(2017, 12, 29, 12, 50, 0));
-			view.Items[1].PropertyDescriptor.Should().Be(LogFileProperties.Size);
-			view.Items[1].Value.Should().Be(Size.FromGigabytes(1));
+			items.Should().ContainKey(LogFileProperties.Created);
+			items[LogFileProperties.Created].Should().Be(new DateTime(2017, 12, 29, 12, 50, 0));
+			items.Should().ContainKey(LogFileProperties.Size);
+			items[LogFileProperties.Size].Should().Be(Size.FromGigabytes(1));
 		}
 
 		[Test]
@@ -106,46 +107,59 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestGetValues1()
+		public void TestCopyAllValuesTo1()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
-			new Action(() => properties.GetValues(null)).Should().Throw<ArgumentNullException>();
+			new Action(() => properties.CopyAllValuesTo(null)).Should().Throw<ArgumentNullException>();
+		}
+
+		[Test]
+		public void TestCopyAllValuesTo2()
+		{
+			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+
+			var buffer = new LogFilePropertyList();
+			properties.CopyAllValuesTo(buffer);
+			buffer.Properties.Should().Equal(properties.Properties);
+			buffer.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2017, 12, 29, 13, 1, 0));
+			buffer.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
 		}
 
 		[Test]
 		[Description("Verifies that it's possible to retrieve a subset of values from a properties object")]
-		public void TestGetValues2()
+		public void TestCopyAllValuesTo3()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
 			                    new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList();
-			properties.GetValues(buffer);
+			properties.Except(LogFileProperties.Minimum).CopyAllValuesTo(buffer);
 			buffer.Properties.Should().BeEmpty();
 		}
 
 		[Test]
 		[Description("Verifies that it's possible to retrieve a subset of values from a properties object")]
-		public void TestGetValues3()
+		public void TestCopyAllValuesTo4()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp);
-			properties.GetValues(buffer);
+			properties.CopyAllValuesTo(buffer);
 			buffer.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
 		}
 
 		[Test]
 		[Description("Verifies that accessing non existing properties is allowed and returns their default value")]
-		public void TestGetValues4()
+		public void TestCopyAllValuesTo5()
 		{
 			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
 			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp, LogFileProperties.EmptyReason);
-			properties.GetValues(buffer);
+			properties.CopyAllValuesTo(buffer);
 			buffer.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 12, 29, 13, 3, 0));
 			buffer.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
 		}

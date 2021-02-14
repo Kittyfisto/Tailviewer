@@ -101,11 +101,18 @@
     <Compile Include="BusinessLogic\LogFiles\FilteredLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.CustomTimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\MultiLineLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\TextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\AbstractStreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryIoScheduler.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryStreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\InMemoryTextFileReader.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileTest2.cs" />
     <Compile Include="BusinessLogic\Searches\LogFileSearchProxyTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\StreamReaderExTest.cs" />
     <Compile Include="InstallerTest.cs" />
     <Compile Include="ProcessEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -147,6 +154,7 @@
       <Name>Tailviewer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

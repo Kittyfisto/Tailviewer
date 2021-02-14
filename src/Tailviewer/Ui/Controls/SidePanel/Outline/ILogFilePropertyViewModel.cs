@@ -8,6 +8,6 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 	{
 		string Title { get; }
 		object Value { get; }
-		void Update(ILogFile logFile);
+		void Update(ILogFileProperties properties);
 	}
 }

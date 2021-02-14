@@ -126,5 +126,16 @@ namespace Tailviewer.Core.LogFiles
 					notifier.Flush(CurrentLineIndex, DateTime.Now);
 			}
 		}
+
+		/// <summary>
+		///     Removes all listeners from this collection.
+		/// </summary>
+		public void Clear()
+		{
+			lock (_listeners)
+			{
+				_listeners.Clear();
+			}
+		}
 	}
 }

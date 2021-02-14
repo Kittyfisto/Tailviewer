@@ -25,6 +25,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		/// <param name="id"></param>
+		/// <param name="defaultValue"></param>
+		public WellKnownLogFileColumnDescriptor(string id, T defaultValue)
+			: this(id, id, defaultValue)
+		{}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="id"></param>
 		/// <param name="displayName"></param>
 		public WellKnownLogFileColumnDescriptor(string id, string displayName)
 			: this(id, displayName, default(T))

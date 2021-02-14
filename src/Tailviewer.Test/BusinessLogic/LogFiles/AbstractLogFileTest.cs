@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Tailviewer.BusinessLogic;
+using Tailviewer.BusinessLogic.ActionCenter;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
 namespace Tailviewer.Test.BusinessLogic.LogFiles
 {
+	/// <summary>
+	/// This class is responsible for testing all <see cref="ILogFile"/> implementations.
+	/// </summary>
 	public abstract class AbstractLogFileTest
 	{
 		protected abstract ILogFile CreateEmpty();
@@ -157,6 +163,58 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Index
 
 		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetIndexPartiallyInvalidBySection()
+		{
+			// Index is a computed column (based on the index of the data itself), therefore even if we specify it here, the log file implementation
+			// will calculate it based on its own index. We specify it here so that the test assertion below is more understandable.
+			// If you (for some reason) need to modify the contents, simply let the index start at 0 and have the line number be index + 1
+			// and you're golden.
+			//
+			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
+			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new LogLineIndex[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = i + 9001;
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.Index,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(content[1].Index, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].Index, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.Index.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
+
+		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetIndexEmptyBySection([Range(from: 0, to: 2)] int count,
 											   [Range(from: 0, to: 2)] int offset,
@@ -221,6 +279,58 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#endregion
 
 		#region Original Index
+		
+		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetOriginalIndexPartiallyInvalidBySection()
+		{
+			// OriginalIndex is a computed column (based on the index of the data itself), therefore even if we specify it here, the log file implementation
+			// will calculate it based on its own index. We specify it here so that the test assertion below is more understandable.
+			// If you (for some reason) need to modify the contents, simply let the index start at 0 and have the line number be index + 1
+			// and you're golden.
+			//
+			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
+			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
+			var content = new LogEntryList(LogFileColumns.OriginalIndex, LogFileColumns.Timestamp)
+			{
+				new LogEntry {OriginalIndex = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {OriginalIndex = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {OriginalIndex = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new LogLineIndex[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = i + 9001;
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.OriginalIndex,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(content[1].OriginalIndex, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].OriginalIndex, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.OriginalIndex.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
 
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
@@ -333,6 +443,58 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Line Number
 
 		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetLineNumberPartiallyInvalidBySection()
+		{
+			// LineNumber is a computed column (based on the log index), therefore even if we specify it here, the log file implementation
+			// will calculate it based on its own index. We specify it here so that the test assertion below is more understandable.
+			// If you (for some reason) need to modify the contents, simply let the index start at 0 and have the line number be index + 1
+			// and you're golden.
+			//
+			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
+			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.LineNumber, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, LineNumber = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, LineNumber = 2, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, LineNumber = 3, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new int[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = i + 9001;
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.LineNumber,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(content[1].LineNumber, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].LineNumber, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.LineNumber.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
+
+		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetLineNumberEmptyBySection([Range(from: 0, to: 2)] int count,
 		                                            [Range(from: 0, to: 2)] int offset,
@@ -399,6 +561,58 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Original Line Number
 
 		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetOriginalLineNumberPartiallyInvalidBySection()
+		{
+			// OriginalLineNumber is a computed column (based on the original log index), therefore even if we specify it here, the log file implementation
+			// will calculate it based on its own index. We specify it here so that the test assertion below is more understandable.
+			// If you (for some reason) need to modify the contents, simply let the index start at 0 and have the line number be index + 1
+			// and you're golden.
+			//
+			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
+			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.OriginalLineNumber, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, OriginalLineNumber = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, OriginalLineNumber = 2, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, OriginalLineNumber = 3, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new int[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = i + 9001;
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.OriginalLineNumber,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(content[1].OriginalLineNumber, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].OriginalLineNumber, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.OriginalLineNumber.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(i + 9001, "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
+
+		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
 		public void TestGetOriginalLineNumberEmptyBySection([Range(from: 0, to: 2)] int count,
 		                                                    [Range(from: 0, to: 2)] int offset,
@@ -463,6 +677,53 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#endregion
 
 		#region Log Level
+		
+		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetLogLevelPartiallyInvalidBySection()
+		{
+			// Due to testing lots of ILogFile implementations, we have to offer more rows and prepare its values so they definitely show up
+			// as individual log entries in the source (mostly because of MultiLineLogFile as well as TextLogFile).
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.Timestamp, LogFileColumns.RawContent, LogFileColumns.LogLevel)
+			{
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 20, 41), RawContent = "INFO: A", LogLevel = LevelFlags.Info},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 20, 59), RawContent = "WARNING: B", LogLevel = LevelFlags.Warning},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 21, 08), RawContent = "DEBUG: C", LogLevel = LevelFlags.Debug}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new LevelFlags[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = LevelFlags.Trace;
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.LogLevel,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i] = LevelFlags.Trace;
+				}
+
+				buffer[offset + 0].Should().Be(content[1].LogLevel, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].LogLevel, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.LogLevel.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = LevelFlags.Trace;
+				}
+			}
+		}
 
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
@@ -529,6 +790,51 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#endregion
 
 		#region Elapsed Time
+		
+		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetElapsedTimesPartiallyInvalidBySection()
+		{
+			// The ElapsedTime column values are computed by subtracting the timestamps of neighboring log entries,
+			// therefore in order to create a log file which offers the ElapsedTime column to us, we have to fill it
+			// with log entries containing a timestamp.
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 47, 41)},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 47, 59)},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 49, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 5;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new TimeSpan?[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = TimeSpan.FromDays(1);
+				}
+
+				logFile.GetColumn(new LogFileSection(1, count), LogFileColumns.ElapsedTime, buffer, offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(TimeSpan.FromSeconds(18), "because we wanted to copy the elapsed difference between the second and first log entry");
+				buffer[offset + 1].Should().Be(TimeSpan.FromSeconds(87), "because we wanted to copy the time difference between the third and first entry of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.DeltaTime.DefaultValue,
+				                               "because source doesn't have a fourth entry and the buffer should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
 
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
@@ -620,6 +926,51 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#endregion
 
 		#region Delta Time
+		
+		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetDeltaTimesPartiallyInvalidBySection()
+		{
+			// The DeltaTime column values are computed by subtracting the timestamps of neighboring log entries,
+			// therefore in order to create a log file which offers the DeltaTime column to us, we have to fill it
+			// with log entries containing a timestamp.
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, Timestamp = new DateTime(2021, 02, 13, 13, 41, 41)},
+				new LogEntry {Index = 1, Timestamp = new DateTime(2021, 02, 13, 13, 41, 59)},
+				new LogEntry {Index = 2, Timestamp = new DateTime(2021, 02, 13, 13, 42, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 4;
+				const int count = 3;
+				const int surplus = 2;
+
+				var buffer = new TimeSpan?[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = TimeSpan.FromDays(1);
+				}
+
+				logFile.GetColumn(new LogFileSection(1, count), LogFileColumns.DeltaTime, buffer, offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(TimeSpan.FromSeconds(18), "because we wanted to copy the time difference between the first and second entry of the source");
+				buffer[offset + 1].Should().Be(TimeSpan.FromSeconds(9), "because we wanted to copy the time difference between the third and second entry of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.DeltaTime.DefaultValue,
+				                               "because source doesn't have a fourth entry and the buffer should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(TimeSpan.FromDays(1), "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
 
 		[Test]
 		[Description("Verifies that retrieving a region that is out of range from an empty file simply zeroes out values")]
@@ -688,6 +1039,51 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		#region Timestamp
 
 		[Test]
+		[Description("Verifies that values may be retrieved even when some requested entries are not available")]
+		public void TestGetTimestampPartiallyInvalidBySection()
+		{
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				const int offset = 2;
+				const int count = 3;
+				const int surplus = 4;
+
+				var buffer = new DateTime?[offset + count + surplus];
+				for (int i = 0; i < offset + count + surplus; ++i)
+				{
+					buffer[i] = new DateTime(2017, 12, 18, 10, 53, 0);
+				}
+
+				logFile.GetColumn(new LogFileSection(1, 3), // We'll access rows 1 through 3 which means the last access is invalid
+				                  LogFileColumns.Timestamp,
+				                  buffer,
+				                  offset);
+
+				for (int i = 0; i < offset; ++i)
+				{
+					buffer[i].Should().Be(new DateTime(2017, 12, 18, 10, 53, 0), "because we've specified an offset and thus values before that offset shouldn't have been touched");
+				}
+
+				buffer[offset + 0].Should().Be(content[1].Timestamp, "because we wanted to copy the entry at index 1 of the source");
+				buffer[offset + 1].Should().Be(content[2].Timestamp, "because we wanted to copy the entry at index 2 of the source");
+				buffer[offset + 2].Should().Be(LogFileColumns.Timestamp.DefaultValue,
+				                               "because even though we wanted to copy the entry at index 3 of the source, that row doesn't exist and should have been filled with the default value for that");
+
+				for (int i = offset + count; i < offset + count + surplus; ++i)
+				{
+					buffer[i].Should().Be(new DateTime(2017, 12, 18, 10, 53, 0), "because we've specified a count and thus values after shouldn't have been touched");
+				}
+			}
+		}
+
+		[Test]
 		[Description("Verifies that accessing not-available rows returns default values for that particular column")]
 		public void TestGetTimestampEmptyBySection([Values(-1, 0, 1)] int invalidStartIndex,
 		                                           [Range(from: 0, to: 2)] int count,
@@ -713,7 +1109,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				}
 				for (int i = 0; i < count; ++i)
 				{
-					buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
+					buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should have been copied to the buffer");
 				}
 				for (int i = offset + count; i < offset + count + surplus; ++i)
 				{
@@ -748,7 +1144,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				}
 				for (int i = 0; i < count; ++i)
 				{
-					buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should've been copied to the buffer");
+					buffer[offset + i].Should().BeNull("because we've accessed a region which is out of range and therefore the default value should have been copied to the buffer");
 				}
 				for (int i = offset + count; i < offset + count + surplus; ++i)
 				{
@@ -759,6 +1155,53 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		#endregion
 
+		[Test]
+		public void TestUnknownProperty()
+		{
+			using (var logFile = CreateEmpty())
+			{
+				var customDefaultValue = "Shazarm!";
+				var myTypedProperty = new WellKnownLogFilePropertyDescriptor<string>("My current movie", "", customDefaultValue);
+
+				logFile.GetValue(myTypedProperty).Should().Be(customDefaultValue,
+				                                                "because the log doesn't have that property and should returns default value instead");
+				logFile.GetValue((ILogFilePropertyDescriptor)myTypedProperty).Should().Be(customDefaultValue,
+				                                                "because the log doesn't have that property and should returns default value instead");
+			}
+		}
+
 		#endregion
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
+		[Description("Verifies that the log file implementation appears totally empty after Dispose() has been called")]
+		public void TestDisposeData()
+		{
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				logFile.Count.Should().Be(3);
+
+				logFile.Dispose();
+				logFile.Count.Should().Be(0);
+				var entries = logFile.GetEntries(new LogFileSection(0, 3));
+				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+				entries[2].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+
+				logFile.Properties.Should().BeEmpty();
+				var values = logFile.GetAllValues();
+				values.Properties.Should().BeEmpty();
+
+				logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+				       .Be(LogFileProperties.PercentageProcessed.DefaultValue);
+			}
+		}
 	}
 }

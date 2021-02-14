@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -41,6 +42,36 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
+		}
+
+		[Test]
+		[Description("Verifies that values are reset to the default value as specified by their property")]
+		public void TestReset()
+		{
+			var properties = new LogFilePropertyList();
+			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Of(50, 100));
+
+			properties.Reset();
+			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(LogFileProperties.EmptyReason.DefaultValue);
+			properties.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero);
+		}
+
+		[Test]
+		[Description("Verifies that all properties are removed from the list")]
+		public void TestClear()
+		{
+			var properties = new LogFilePropertyList();
+			properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.Of(50, 100));
+
+			properties.Clear();
+			properties.Properties.Should().BeEmpty();
+			new Action(() => properties.GetValue(LogFileProperties.EmptyReason)).Should().Throw<NoSuchPropertyException>();
+			new Action(() => properties.GetValue(LogFileProperties.PercentageProcessed)).Should().Throw<NoSuchPropertyException>();
+
+			properties.TryGetValue(LogFileProperties.EmptyReason, out _).Should().BeFalse();
+			properties.TryGetValue(LogFileProperties.PercentageProcessed, out _).Should().BeFalse();
 		}
 
 		protected override ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties)

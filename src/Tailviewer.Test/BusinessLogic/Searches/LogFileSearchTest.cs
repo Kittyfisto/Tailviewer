@@ -50,14 +50,19 @@ namespace Tailviewer.Test.BusinessLogic.Searches
 		public void TestDispose()
 		{
 			var logFile = new InMemoryLogFile();
+			logFile.AddEntry("What's a foobar?");
 			LogFileSearch search;
 			using (search = new LogFileSearch(_scheduler, logFile, "foobar", TimeSpan.Zero))
 			{
 				search.IsDisposed.Should().BeFalse();
 				_scheduler.PeriodicTaskCount.Should().Be(1);
+
+				_scheduler.RunOnce();
+				search.Count.Should().Be(1);
 			}
 
 			search.IsDisposed.Should().BeTrue();
+			search.Count.Should().Be(0);
 			_scheduler.PeriodicTaskCount.Should().Be(0);
 		}
 

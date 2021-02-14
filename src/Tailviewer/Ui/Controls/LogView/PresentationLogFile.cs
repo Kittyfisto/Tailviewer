@@ -255,24 +255,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public override int Count => _source.Count;
 
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (IsIndexedColumn(column))
-			{
-				_indices.CopyTo(column, (int) sourceSection.Index, destination, destinationIndex, sourceSection.Count);
-			}
-			else
-			{
-				_source.GetColumn(sourceSection, column, destination, destinationIndex);
-			}
-		}
-
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -280,26 +268,14 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 			else
 			{
-				_source.GetColumn(sourceIndices, column, destination, destinationIndex);
+				_source.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 			}
 		}
 
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
-
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override double Progress => _source.Progress * MyProgress;
-
-		/// <summary>
-		///     TODO: Add better estimation.
-		/// </summary>
-		private double MyProgress => 1;
 
 		protected override TimeSpan RunOnce(CancellationToken token)
 		{

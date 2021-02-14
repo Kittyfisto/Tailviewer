@@ -70,9 +70,6 @@ namespace Tailviewer.Core.LogFiles
 		#region Overrides of AbstractLogFile
 
 		/// <inheritdoc />
-		public int OriginalCount => _buffer.OriginalCount;
-
-		/// <inheritdoc />
 		public int MaxCharactersPerLine => _buffer.MaxCharactersPerLine;
 
 		/// <inheritdoc />
@@ -112,36 +109,37 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			_buffer.GetValues(properties);
+			_buffer.GetAllValues(destination);
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			_buffer.GetColumn(sourceSection, column, destination, destinationIndex);
+			_buffer.GetColumn(sourceSection, column, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
 		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices,
 		                         ILogFileColumnDescriptor<T> column,
 		                         T[] destination,
-		                         int destinationIndex)
+		                         int destinationIndex,
+		                         LogFileQueryOptions queryOptions)
 		{
-			_buffer.GetColumn(sourceIndices, column, destination, destinationIndex);
+			_buffer.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			_buffer.GetEntries(sourceSection, destination, destinationIndex);
+			_buffer.GetEntries(sourceSection, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			_buffer.GetEntries(sourceIndices, destination, destinationIndex);
+			_buffer.GetEntries(sourceIndices, destination, destinationIndex, queryOptions);
 		}
 
 		/// <inheritdoc />

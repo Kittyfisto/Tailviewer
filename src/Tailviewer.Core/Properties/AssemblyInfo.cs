@@ -7,11 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Core library for Tailviewer, the free log file viewer")]
 [assembly: AssemblyDescription("Core library for Tailviewer, the free log file viewer")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

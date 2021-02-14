@@ -57,8 +57,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var view = new LogEntriesView(inner.Object, LogFileColumns.LogLevel, LogFileColumns.Message);
 
 			var source = new Mock<ILogFile>();
-			view.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98));
-			inner.Verify(x => x.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98)), Times.Once);
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			view.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions);
+			inner.Verify(x => x.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, new LogFileSection(2, 98), queryOptions), Times.Once);
 		}
 
 		[Test]
@@ -68,8 +69,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var view = new LogEntriesView(inner.Object, LogFileColumns.LogLevel, LogFileColumns.Message);
 
 			var source = new Mock<ILogFile>();
-			new Action(() => view.CopyFrom(LogFileColumns.Timestamp, 42, source.Object, new LogFileSection(2, 98))).Should().Throw<NoSuchColumnException>();
-			inner.Verify(x => x.CopyFrom(LogFileColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogFile>(), It.IsAny<LogFileSection>()), Times.Never);
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => view.CopyFrom(LogFileColumns.Timestamp, 42, source.Object, new LogFileSection(2, 98), queryOptions)).Should().Throw<NoSuchColumnException>();
+			inner.Verify(x => x.CopyFrom(LogFileColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogFile>(), It.IsAny<LogFileSection>(), It.IsAny<LogFileQueryOptions>()), Times.Never);
 		}
 
 		[Test]
@@ -80,8 +82,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var source = new Mock<ILogFile>();
 			var sourceIndices = new[] {new LogLineIndex(1), new LogLineIndex(42)};
-			view.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, sourceIndices);
-			inner.Verify(x => x.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, sourceIndices), Times.Once);
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			view.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, sourceIndices, queryOptions);
+			inner.Verify(x => x.CopyFrom(LogFileColumns.LogLevel, 42, source.Object, sourceIndices, queryOptions), Times.Once);
 		}
 
 		[Test]
@@ -92,8 +95,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			var source = new Mock<ILogFile>();
 			var sourceIndices = new[] {new LogLineIndex(1), new LogLineIndex(42)};
-			new Action(() => view.CopyFrom(LogFileColumns.Timestamp, 42, source.Object, sourceIndices)).Should().Throw<NoSuchColumnException>();
-			inner.Verify(x => x.CopyFrom(LogFileColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogFile>(), It.IsAny<IReadOnlyList<LogLineIndex>>()), Times.Never);
+			var queryOptions = new LogFileQueryOptions(LogFileQueryMode.FromCacheOnly);
+			new Action(() => view.CopyFrom(LogFileColumns.Timestamp, 42, source.Object, sourceIndices, queryOptions)).Should().Throw<NoSuchColumnException>();
+			inner.Verify(x => x.CopyFrom(LogFileColumns.Timestamp, It.IsAny<int>(), It.IsAny<ILogFile>(), It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<LogFileQueryOptions>()), Times.Never);
 		}
 
 		[Test]

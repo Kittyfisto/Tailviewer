@@ -9,6 +9,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <remarks>
 	///     This interface may be implemented in plugins
 	/// </remarks>
+	[Service]
 	public interface ILogLineTranslator
 	{
 		/// <summary>

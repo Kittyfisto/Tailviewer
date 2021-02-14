@@ -10,6 +10,16 @@ namespace Tailviewer.Core
 	public static class ConcurrentQueueExtensions
 	{
 		/// <summary>
+		///    Clears this queue of all entries.
+		/// </summary>
+		/// <param name="that"></param>
+		/// <typeparam name="T"></typeparam>
+		public static void Clear<T>(this ConcurrentQueue<T> that)
+		{
+			while(that.TryDequeue(out var _)){}
+		}
+
+		/// <summary>
 		///     En-queues many items into the given queue.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

@@ -21,7 +21,7 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly LogEntryList _logEntries;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private readonly LogFileListenerCollection _listeners;
 
 		private readonly object _syncRoot;
@@ -31,6 +31,13 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		public InMemoryLogFile()
 			: this(LogFileColumns.Minimum)
+		{ }
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		public InMemoryLogFile(IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
+			: this(LogFileColumns.Minimum, properties)
 		{ }
 
 		/// <summary>
@@ -56,6 +63,15 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="columns"></param>
 		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns)
+			: this(columns, new Dictionary<ILogFilePropertyDescriptor, object>())
+		{ }
+
+		/// <summary>
+		///     Initializes this object.
+		/// </summary>
+		/// <param name="columns"></param>
+		/// <param name="properties"></param>
+		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns, IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
@@ -66,11 +82,24 @@ namespace Tailviewer.Core.LogFiles
 
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Size, Size.Zero);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			foreach (var pair in properties)
+			{
+				_properties.SetValue(pair.Key, pair.Value);
+			}
 		}
 
 		/// <inheritdoc />
 		public void Dispose()
 		{
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			_listeners.Clear();
+			_properties.Clear();
+
+			lock (_syncRoot)
+			{
+				_logEntries.Clear();
+			}
 		}
 
 		/// <inheritdoc />
@@ -78,9 +107,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public int Count => _logEntries.Count;
-
-		/// <inheritdoc />
-		public int OriginalCount => Count;
 
 		/// <inheritdoc />
 		public int MaxCharactersPerLine { get; private set; }
@@ -122,9 +148,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetValues(ILogFileProperties properties)
+		public void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <summary>
@@ -141,7 +167,7 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -154,7 +180,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -169,22 +195,22 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceSection);
+					destination.CopyFrom(column, destinationIndex, this, sourceSection, queryOptions);
 			}
 		}
 
 		/// <inheritdoc />
-		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
+		public void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			lock (_syncRoot)
 			{
 				foreach (var column in destination.Columns)
-					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
+					destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
 

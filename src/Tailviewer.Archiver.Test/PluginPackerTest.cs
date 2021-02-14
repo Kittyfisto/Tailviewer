@@ -22,7 +22,7 @@ namespace Tailviewer.Archiver.Test
 		[SetUp]
 		public void Setup()
 		{
-			_fname = Path.GetTempFileName();
+			_fname = PathEx.GetTempFileName();
 			Console.WriteLine("Plugin: {0}", _fname);
 			if (File.Exists(_fname))
 				File.Delete(_fname);
@@ -69,8 +69,8 @@ namespace Tailviewer.Archiver.Test
 		{
 			using (var packer = CreatePacker(_fname))
 			{
-				var fname = Path.Combine(_testData, "Managed", "x64", "ClassLibrary1.dll");
-				new Action(() => packer.AddFile("ClassLibrary1.dll", fname))
+				var fileName = Path.Combine(_testData, "Managed", "x64", "ClassLibrary1.dll");
+				new Action(() => packer.AddFile("ClassLibrary1.dll", fileName))
 					.Should().Throw<PackException>()
 					.WithMessage("Assemblies must be compiled for x86 or AnyCPU");
 			}

@@ -56,7 +56,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		{
 			_dataSource.LevelFilter = LevelFlags.Info;
 			_dataSource.FilteredLogFile.Should().NotBeNull();
-			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(5)).BeTrue();
+			_dataSource.FilteredLogFile.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(15)).BeTrue();
 
 			// TODO: Find the bug in the EndOfSourceReached implementation!!!!
 			Thread.Sleep(1000);

@@ -6,6 +6,7 @@ using log4net;
 using Tailviewer.BusinessLogic.Filters;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 
 namespace Tailviewer.Core
 {
@@ -133,6 +134,7 @@ namespace Tailviewer.Core
 		/// <inheritdoc />
 		public ILogFile CreateTextLogFile(string fileName)
 		{
+			//return new StreamingTextLogFile(this, fileName);
 			return new TextLogFile(this,
 			                       fileName);
 		}

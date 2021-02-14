@@ -33,7 +33,8 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 			_logFile.Verify(x => x.GetColumn(It.IsAny<LogFileSection>(),
 			                                 It.IsAny<ILogFileColumnDescriptor<TimeSpan?>>(),
 			                                 It.IsAny<TimeSpan?[]>(),
-			                                 It.IsAny<int>()),
+			                                 It.IsAny<int>(),
+											 It.IsAny<LogFileQueryOptions>()),
 			                Times.Never, "because the control is invisible and thus no data should've been retrieved");
 		}
 	}

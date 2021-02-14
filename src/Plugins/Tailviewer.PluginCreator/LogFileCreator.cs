@@ -38,8 +38,8 @@ namespace Tailviewer.PluginCreator
 			builder.AppendLine("\tpublic object GetValue(ILogFilePropertyDescriptor propertyDescriptor) {return null;}");
 			builder.AppendLine("\tpublic T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor) { throw new NotImplementedException();}");
 			builder.AppendLine("\tpublic void GetValues(ILogFileProperties properties) {}");
-			builder.AppendLine("\tpublic void GetColumn<T>(LogFileSection section, ILogFileColumn<T> column, T[] buffer, int destinationIndex) {}");
-			builder.AppendLine("\tpublic void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumn<T> column, T[] buffer, int destinationIndex) {}");
+			builder.AppendLine("\tpublic void GetColumn<T>(LogFileSection section, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex) {}");
+			builder.AppendLine("\tpublic void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex) {}");
 			builder.AppendLine("\tpublic void GetEntries(LogFileSection section, ILogEntries buffer, int destinationIndex) {}");
 			builder.AppendLine("\tpublic void GetEntries(IReadOnlyList<LogLineIndex> indices, ILogEntries buffer, int destinationIndex) {}");
 			builder.AppendLine("\tpublic double Progress => 0;");

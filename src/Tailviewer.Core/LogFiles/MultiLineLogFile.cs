@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 
@@ -92,23 +92,21 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
@@ -127,31 +125,21 @@ namespace Tailviewer.Core.LogFiles
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);
-		}
+			_pendingModifications.Clear();
 
-		/// <inheritdoc />
-		public override int OriginalCount => _source.OriginalCount;
-
-		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (column == null)
-				throw new ArgumentNullException(nameof(column));
-			if (destination == null)
-				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceSection.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
-
-			if (!TryGetSpecialColumn(sourceSection, column, destination, destinationIndex))
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			lock (_syncRoot)
 			{
-				_source.GetColumn(sourceSection, column, destination, destinationIndex);
+				_indices.Clear();
+				_indices.Capacity = 0;
+				_currentSourceIndex = 0;
 			}
+
+			_properties.Clear();
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -164,22 +152,28 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (!TryGetSpecialColumn(sourceIndices, column, destination, destinationIndex))
+			if (!TryGetSpecialColumn(sourceIndices, column, destination, destinationIndex, queryOptions))
 			{
-				_source.GetColumn(sourceIndices, column, destination, destinationIndex);
+				_source.GetColumn(sourceIndices, column, destination, destinationIndex, queryOptions);
 			}
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
+			if (IsDisposed)
+			{
+				destination.FillDefault(destinationIndex, sourceIndices.Count);
+				return;
+			}
+
 			var remainingColumns = new List<ILogFileColumnDescriptor>();
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)
 			{
 				if (_specialColumns.Contains(column))
 				{
-					destination.CopyFrom(column, destinationIndex, this, sourceSection);
+					destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 					partiallyRetrieved = true;
 				}
 				else
@@ -193,49 +187,14 @@ namespace Tailviewer.Core.LogFiles
 				if (partiallyRetrieved)
 				{
 					var view = new LogEntriesView(destination, remainingColumns);
-					_source.GetEntries(sourceSection, view, destinationIndex);
+					_source.GetEntries(sourceIndices, view, destinationIndex, queryOptions);
 				}
 				else
 				{
-					_source.GetEntries(sourceSection, destination, destinationIndex);
+					_source.GetEntries(sourceIndices, destination, destinationIndex, queryOptions);
 				}
 			}
 		}
-
-		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
-		{
-			var remainingColumns = new List<ILogFileColumnDescriptor>();
-			bool partiallyRetrieved = false;
-			foreach (var column in destination.Columns)
-			{
-				if (_specialColumns.Contains(column))
-				{
-					destination.CopyFrom(column, destinationIndex, this, sourceIndices);
-					partiallyRetrieved = true;
-				}
-				else
-				{
-					remainingColumns.Add(column);
-				}
-			}
-
-			if (remainingColumns.Count > 0)
-			{
-				if (partiallyRetrieved)
-				{
-					var view = new LogEntriesView(destination, remainingColumns);
-					_source.GetEntries(sourceIndices, view, destinationIndex);
-				}
-				else
-				{
-					_source.GetEntries(sourceIndices, destination, destinationIndex);
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public override double Progress => 1;
 
 		/// <inheritdoc />
 		public override string ToString()
@@ -276,7 +235,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 
 			// Now we can perform a block-copy of all properties.
-			_source.GetValues(_properties);
+			_source.GetAllValues(_properties);
 
 			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 
@@ -388,13 +347,13 @@ namespace Tailviewer.Core.LogFiles
 			Listeners.OnRead(-1);
 		}
 
-		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
+		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (Equals(column, LogFileColumns.Timestamp) ||
 			    Equals(column, LogFileColumns.LogLevel))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);
-				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex);
+				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex, queryOptions);
 				return true;
 			}
 

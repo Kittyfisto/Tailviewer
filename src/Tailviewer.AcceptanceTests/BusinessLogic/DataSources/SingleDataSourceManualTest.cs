@@ -8,6 +8,7 @@ using Tailviewer.BusinessLogic.DataSources;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Settings;
 using Tailviewer.Test;
 
@@ -26,7 +27,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[SetUp]
 		public void SetUp()
 		{
-			_fname = Path.GetTempFileName();
+			_fname = PathEx.GetTempFileName();
 			if (File.Exists(_fname))
 				File.Delete(_fname);
 			_scheduler = new ManualTaskScheduler();

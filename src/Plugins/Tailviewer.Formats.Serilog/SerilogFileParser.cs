@@ -115,7 +115,7 @@ namespace Tailviewer.Formats.Serilog
 				return false;
 			}
 
-			var parsedLogEntry = new SerilogEntry();
+			var parsedLogEntry = new SerilogEntry(rawContent);
 			foreach (var matcher in _matchers) matcher.MatchInto(match, parsedLogEntry);
 
 			logEntry = parsedLogEntry;

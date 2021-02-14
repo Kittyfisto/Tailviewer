@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using Moq;
@@ -13,15 +14,15 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 {
 	[TestFixture]
 	[RequiresThread(ApartmentState.STA)]
-	public sealed class OriginalLineNumberColumnPresenter
+	public sealed class OriginalLineNumberColumnPresenterTest
 	{
-		private Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter _column;
+		private OriginalLineNumberColumnPresenter _column;
 		private InMemoryLogFile _logFile;
 
 		[SetUp]
 		public void Setup()
 		{
-			_column = new Tailviewer.Ui.Controls.LogView.LineNumbers.OriginalLineNumberColumnPresenter(TextSettings.Default);
+			_column = new OriginalLineNumberColumnPresenter(TextSettings.Default);
 
 			_logFile = new InMemoryLogFile();
 		}
@@ -45,12 +46,13 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		{
 			var logFile = new Mock<ILogFile>();
 			logFile.Setup(x => x.Count).Returns(4);
-			logFile.Setup(x => x.OriginalCount).Returns(1000);
+			logFile.Setup(x => x.GetValue(TextLogFileProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
 			                               It.Is<ILogFileColumnDescriptor<int>>(y => y == LogFileColumns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
-			                               It.IsAny<int>()))
-				.Callback((LogFileSection section, ILogFileColumnDescriptor<int> unused, int[] indices, int unused2) =>
+			                               It.IsAny<int>(),
+			                               It.IsAny<LogFileQueryOptions>()))
+				.Callback((IReadOnlyList<LogLineIndex> section, ILogFileColumnDescriptor<int> unused, int[] indices, int unused2,LogFileQueryOptions unused3) =>
 				{
 					indices[0] = 42;
 					indices[1] = 101;

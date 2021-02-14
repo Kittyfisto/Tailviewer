@@ -7,11 +7,7 @@ using Tailviewer.BusinessLogic.Plugins;
 // associated with an assembly.
 [assembly: AssemblyTitle("Tailviewer.Serilog")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Tailviewer.Serilog")]
-[assembly: AssemblyCopyright("Copyright © Simon Mießler 2020")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

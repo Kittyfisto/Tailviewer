@@ -5,6 +5,7 @@ namespace Tailviewer.BusinessLogic.Plugins
 	/// <summary>
 	///     Responsible for matching log files to a particular format.
 	/// </summary>
+	[Service]
 	public interface ILogFileFormatMatcher
 	{
 		/// <summary>

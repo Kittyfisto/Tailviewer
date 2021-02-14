@@ -10,7 +10,7 @@ using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 {
 	[TestFixture]
 	public sealed class MergedLogFileTest

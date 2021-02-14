@@ -8,7 +8,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 {
 	/// <summary>
 	///     Basically a handle to a specific portion of the logfile.
-	///     Call <see cref="ILogFile.GetEntries(Tailviewer.BusinessLogic.LogFiles.LogFileSection,Tailviewer.BusinessLogic.LogFiles.ILogEntries,int)" /> to actually obtain the data for that portion.
+	///     Call <see cref="ILogFile.GetEntries(IReadOnlyList{LogLineIndex},Tailviewer.BusinessLogic.LogFiles.ILogEntries,int,LogFileQueryOptions)" /> to actually obtain the data for that portion.
 	/// </summary>
 	/// <remarks>
 	/// TODO: Rename to LogEntryRange as it will soon describe a range of log entries, see #140
@@ -145,6 +145,26 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return string.Format("Invalidated [{0}, #{1}]", Index, Count);
 
 			return string.Format("Changed [{0}, #{1}]", Index, Count);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		[Pure]
+		public LogFileSection? Intersect(LogFileSection other)
+		{
+			var greatestStart = Index > other.Index ? Index : other.Index;
+			int smallestEnd = LastIndex < other.LastIndex ? LastIndex : other.LastIndex;
+
+			//no intersection
+			if (greatestStart > smallestEnd)
+			{
+				return null;
+			}
+
+			return new LogFileSection(greatestStart, smallestEnd - greatestStart + 1);
 		}
 
 		/// <summary>

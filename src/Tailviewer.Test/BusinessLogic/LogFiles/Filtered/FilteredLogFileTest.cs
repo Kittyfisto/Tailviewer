@@ -11,7 +11,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.Filters;
 using Tailviewer.Core.LogFiles;
 
-namespace Tailviewer.Test.BusinessLogic.LogFiles
+namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 {
 	[TestFixture]
 	public sealed class FilteredLogFileTest
@@ -24,6 +24,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.SetupGet(x => x.Columns).Returns(LogFileColumns.Minimum);
+			_logFile.SetupGet(x => x.Properties).Returns(new ILogFilePropertyDescriptor[0]);
 			_logFile.Setup(x => x.Count).Returns(() => _entries.Count);
 			_logFile.Setup(x => x.EndOfSourceReached).Returns(true);
 
@@ -87,10 +88,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 				Filter.Create(null, true, LevelFlags.Debug)))
 			{
-				file.Progress.Should().Be(0, "because the filtered log file hasn't consumed anything of its source (yet)");
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.Zero, "because the filtered log file hasn't consumed anything of its source (yet)");
 
 				_taskScheduler.RunOnce();
-				file.Progress.Should().Be(1, "because the filtered log file has consumed the entire source");
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because the filtered log file has consumed the entire source");
 			}
 		}
 
@@ -155,9 +156,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestCreated()
 		{
 			var created = new DateTime(2017, 12, 21, 20, 51, 0);
-			_logFile.Setup(x => x.GetValue(LogFileProperties.Created)).Returns(created);
+			var props = new Dictionary<ILogFilePropertyDescriptor, object> {[LogFileProperties.Created] = created};
+			var source = new InMemoryLogFile(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
@@ -169,9 +171,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLastModified()
 		{
 			var lastModified = new DateTime(2017, 12, 21, 20, 52, 0);
-			_logFile.Setup(x => x.GetValue(LogFileProperties.LastModified)).Returns(lastModified);
+			var props = new Dictionary<ILogFilePropertyDescriptor, object> {[LogFileProperties.LastModified] = lastModified};
+			var source = new InMemoryLogFile(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
@@ -183,9 +186,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSize()
 		{
 			var size = Size.FromGigabytes(5);
-			_logFile.Setup(x => x.GetValue(LogFileProperties.Size)).Returns(size);
+			var props = new Dictionary<ILogFilePropertyDescriptor, object> {[LogFileProperties.Size] = size};
+			var source = new InMemoryLogFile(props);
 
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null,
+			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null,
 			                                      Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();

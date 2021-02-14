@@ -7,11 +7,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("LogViewer.Test")]
 [assembly: AssemblyDescription("Tailviewer Plugin sample")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LogViewer.Test")]
-[assembly: AssemblyCopyright("Copyright © Simon Miessler 2017")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

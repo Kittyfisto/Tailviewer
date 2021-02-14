@@ -106,5 +106,20 @@ namespace Tailviewer.Test.BusinessLogic
 			reader.ReadLine().Should().Be("Foobar");
 			reader.ReadLine().Should().BeNull();
 		}
+
+		[Test]
+		public void TestReadLine8()
+		{
+			_writer.Write("Foo\r\n");
+			_writer.Write("Bar\r\n");
+			_writer.Write("Shazam\r\n");
+			_writer.Flush();
+			_stream.Position = 0;
+
+			var reader = new StreamReaderEx(_stream, Encoding.UTF8);
+			reader.ReadLine().Should().Be("Foo\r\n");
+			reader.ReadLine().Should().Be("Bar\r\n");
+			reader.ReadLine().Should().Be("Shazam\r\n");
+		}
 	}
 }

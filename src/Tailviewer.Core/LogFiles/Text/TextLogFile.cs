@@ -13,7 +13,7 @@ using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.Settings;
 
-namespace Tailviewer.Core.LogFiles
+namespace Tailviewer.Core.LogFiles.Text
 {
 	/// <summary>
 	///     The bread-and-butter <see cref="ILogFile" /> implementation for Tailviewer.
@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly Encoding _encoding;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -89,8 +89,8 @@ namespace Tailviewer.Core.LogFiles
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
+			_properties.SetValue(TextLogFileProperties.LineCount, 0);
 			_syncRoot = new object();
-
 
 			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
 			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
@@ -118,9 +118,6 @@ namespace Tailviewer.Core.LogFiles
 		public override int Count => _entries.Count;
 
 		/// <inheritdoc />
-		public override int OriginalCount => Count;
-
-		/// <inheritdoc />
 		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
@@ -132,86 +129,25 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override void GetValues(ILogFileProperties properties)
+		public override void GetAllValues(ILogFileProperties destination)
 		{
-			_properties.GetValues(properties);
+			_properties.CopyAllValuesTo(destination);
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
-		{
-			if (column == null)
-				throw new ArgumentNullException(nameof(column));
-			if (destination == null)
-				throw new ArgumentNullException(nameof(destination));
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(destinationIndex));
-			if (destinationIndex + sourceSection.Count > destination.Length)
-				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
-
-			lock (_syncRoot)
-			{
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
-				{
-					GetIndex(sourceSection, (LogLineIndex[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LogEntryIndex))
-				{
-					GetIndex(sourceSection, (LogEntryIndex[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LineNumber) ||
-				         Equals(column, LogFileColumns.OriginalLineNumber))
-				{
-					GetLineNumber(sourceSection, (int[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.LogLevel))
-				{
-					GetLogLevel(sourceSection, (LevelFlags[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.Timestamp))
-				{
-					GetTimestamp(sourceSection, (DateTime?[]) (object) destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.DeltaTime))
-				{
-					GetDeltaTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.ElapsedTime))
-				{
-					GetElapsedTime(sourceSection, (TimeSpan?[])(object)destination, destinationIndex);
-				}
-				else if (Equals(column, LogFileColumns.OriginalDataSourceName))
-				{
-					GetDataSourceName(sourceSection, (string[]) (object) destination, destinationIndex);
-				}
-				else if(Equals(column, LogFileColumns.RawContent))
-				{
-					GetRawContent(sourceSection, (string[]) (object) destination, destinationIndex);
-				}
-				else 
-				{
-					throw new NoSuchColumnException(column);
-				}
-			}
-		}
-
-		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -272,38 +208,11 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetEntries(LogFileSection sourceSection, ILogEntries destination, int destinationIndex)
+		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			foreach (var column in destination.Columns)
 			{
-				destination.CopyFrom(column, destinationIndex, this, sourceSection);
-			}
-		}
-
-		/// <inheritdoc />
-		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex)
-		{
-			foreach (var column in destination.Columns)
-			{
-				destination.CopyFrom(column, destinationIndex, this, sourceIndices);
-			}
-		}
-
-		/// <inheritdoc />
-		public override double Progress
-		{
-			get
-			{
-				var fileSize = _properties.GetValue(LogFileProperties.Size);
-				var position = _lastPosition;
-				if (fileSize == null)
-					return 1; //< We've fully read the non-existant file...
-
-				var progress = (double) fileSize.Value.Bytes / position;
-				// Since we've performed two reads, it's possible that they have inconsistent values
-				// and therefore we should perform a sanity check on the resulting progress value
-				// so it stays within the expected boundaries. (It's just not worth a lock)
-				return MathEx.Saturate(progress);
+				destination.CopyFrom(column, destinationIndex, this, sourceIndices, queryOptions);
 			}
 		}
 
@@ -321,9 +230,10 @@ namespace Tailviewer.Core.LogFiles
 				else
 				{
 					var info = new FileInfo(_fileName);
+					var fileSize = info.Length;
 					_properties.SetValue(LogFileProperties.LastModified, info.LastWriteTime);
 					_properties.SetValue(LogFileProperties.Created, info.CreationTime);
-					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(info.Length));
+					_properties.SetValue(LogFileProperties.Size, Size.FromBytes(fileSize));
 
 					using (var stream = new FileStream(_fileName,
 						FileMode.Open,
@@ -369,6 +279,7 @@ namespace Tailviewer.Core.LogFiles
 								OnReset(stream, out _numberOfLinesRead, out _lastPosition);
 							}
 
+							int numProcessed = 0;
 							string currentLine;
 							while ((currentLine = reader.ReadLine()) != null)
 							{
@@ -394,7 +305,7 @@ namespace Tailviewer.Core.LogFiles
 									read = true;
 								}
 
-								IReadOnlyLogEntry logEntry = new RawLogEntry(_entries.Count, trimmedLine, _fullFilename);
+								IReadOnlyLogEntry logEntry = new RawTextLogEntry(_entries.Count, trimmedLine, _fullFilename);
 								if (_parser != null)
 								{
 									var parsedLogEntry = _parser.Parse(logEntry);
@@ -406,9 +317,16 @@ namespace Tailviewer.Core.LogFiles
 								    logEntry.LogLevel,
 								    _numberOfLinesRead,
 								    logEntry.Timestamp);
+
+								if (++numProcessed % 100 == 0)
+								{
+									_properties.SetValue(TextLogFileProperties.LineCount, _entries.Count);
+									_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
+								}
 							}
 
 							_lastPosition = stream.Position;
+							_properties.SetValue(LogFileProperties.PercentageProcessed, CalculatePercentageProcessed(stream.Position, fileSize));
 						}
 					}
 
@@ -449,6 +367,29 @@ namespace Tailviewer.Core.LogFiles
 				return TimeSpan.Zero;
 
 			return TimeSpan.FromMilliseconds(100);
+		}
+
+		#region Overrides of AbstractLogFile
+
+		protected override void DisposeAdditional()
+		{
+			lock (_syncRoot)
+			{
+				_entries.Clear();
+				_entries.Capacity = 0;
+			}
+
+			_properties.Clear();
+
+			base.DisposeAdditional();
+		}
+
+		#endregion
+
+		[Pure]
+		private Percentage CalculatePercentageProcessed(long streamPosition, long fileSize)
+		{
+			return Percentage.Of(streamPosition, fileSize).Clamped();
 		}
 
 		private ILogFileFormat TryFindFormat(FileStream stream, out Certainty certainty)
@@ -553,16 +494,27 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				var startTimestamp = _properties.GetValue(LogFileProperties.StartTimestamp);
-
-				for (int i = 0; i < indices.Count; ++i)
+				_properties.TryGetValue(LogFileProperties.StartTimestamp, out var startTimestamp);
+				if (startTimestamp != null)
 				{
-					var index = indices[i];
-					var line = GetLogLine(index);
-					buffer[destinationIndex + i] = line != null
-						? line.Value.Timestamp - startTimestamp
-						: LogFileColumns.ElapsedTime.DefaultValue;
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						var index = indices[i];
+						var line = GetLogLine(index);
+						buffer[destinationIndex + i] = line != null
+							? line.Value.Timestamp - startTimestamp
+							: LogFileColumns.ElapsedTime.DefaultValue;
+					}
 				}
+				else
+				{
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						buffer[destinationIndex + i] = LogFileColumns.ElapsedTime.DefaultValue;
+					}
+				}
+
+				
 			}
 		}
 
@@ -627,6 +579,7 @@ namespace Tailviewer.Core.LogFiles
 			_properties.SetValue(LogFileProperties.Format, null);
 			_properties.SetValue(LogFileProperties.FormatDetectionCertainty, Certainty.None);
 			_properties.SetValue(LogFileProperties.Encoding, null);
+			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			SetError(ErrorFlags.SourceDoesNotExist);
 		}
 
@@ -734,167 +687,6 @@ namespace Tailviewer.Core.LogFiles
 				_entries.RemoveAt(index);
 			}
 			Listeners.Invalidate(index, 1);
-		}
-
-		/// <summary>
-		///     Simple <see cref="IReadOnlyLogEntry" /> implementation for unparsed log lines.
-		/// </summary>
-		sealed class RawLogEntry
-			: IReadOnlyLogEntry
-		{
-			private static readonly IReadOnlyList<ILogFileColumnDescriptor> AllColumns = new ILogFileColumnDescriptor[]
-			{
-				LogFileColumns.RawContent,
-				LogFileColumns.Index,
-				LogFileColumns.OriginalIndex,
-				LogFileColumns.LineNumber,
-				LogFileColumns.OriginalLineNumber,
-				LogFileColumns.LogEntryIndex
-			};
-
-			private readonly LogLineIndex _index;
-			private readonly string _rawContent;
-			private readonly string _originalDataSourceName;
-
-			public RawLogEntry(LogLineIndex index,
-			                   string rawContent,
-			                   string originalDataSourceName)
-			{
-				_index = index;
-				_rawContent = rawContent;
-				_originalDataSourceName = originalDataSourceName;
-			}
-
-			#region Implementation of IReadOnlyLogEntry
-
-			public string RawContent
-			{
-				get { return _rawContent; }
-			}
-
-			public LogLineIndex Index
-			{
-				get { return _index; }
-			}
-
-			public LogLineIndex OriginalIndex
-			{
-				get { return _index; }
-			}
-
-			public LogEntryIndex LogEntryIndex
-			{
-				get { return (int)_index; }
-			}
-
-			public int LineNumber
-			{
-				get { return _index.Value + 1; }
-			}
-
-			public int OriginalLineNumber
-			{
-				get { return LineNumber; }
-			}
-
-			public string OriginalDataSourceName
-			{
-				get { return _originalDataSourceName; }
-			}
-
-			public LogLineSourceId SourceId
-			{
-				get { throw new NoSuchColumnException(LogFileColumns.SourceId); }
-			}
-
-			public LevelFlags LogLevel
-			{
-				get { return LevelFlags.None; }
-			}
-
-			public DateTime? Timestamp
-			{
-				get { return null; }
-			}
-
-			public TimeSpan? ElapsedTime
-			{
-				get { return null; }
-			}
-
-			public TimeSpan? DeltaTime
-			{
-				get { return null; }
-			}
-
-			public T GetValue<T>(ILogFileColumnDescriptor<T> column)
-			{
-				if (!TryGetValue(column, out var value))
-					throw new NoSuchColumnException(column);
-
-				return value;
-			}
-
-			public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
-			{
-				if (TryGetValue(column, out object tmp))
-				{
-					value = (T) tmp;
-					return true;
-				}
-
-				value = default;
-				return false;
-			}
-
-			public object GetValue(ILogFileColumnDescriptor column)
-			{
-				if (!TryGetValue(column, out var value))
-					throw new NoSuchColumnException(column);
-
-				return value;
-			}
-
-			public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
-			{
-				if (Equals(column, LogFileColumns.RawContent))
-				{
-					value = RawContent;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.Index) ||
-				    Equals(column, LogFileColumns.OriginalIndex))
-				{
-					value = Index;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.LineNumber) ||
-				    Equals(column, LogFileColumns.OriginalLineNumber))
-				{
-					value = LineNumber;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.LogEntryIndex))
-				{
-					value = LogEntryIndex;
-					return true;
-				}
-				if (Equals(column, LogFileColumns.OriginalDataSourceName))
-				{
-					value = OriginalDataSourceName;
-					return true;
-				}
-
-				value = default;
-				return false;
-			}
-
-			public IReadOnlyList<ILogFileColumnDescriptor> Columns
-			{
-				get { return AllColumns; }
-			}
-
-			#endregion
 		}
 	}
 }
