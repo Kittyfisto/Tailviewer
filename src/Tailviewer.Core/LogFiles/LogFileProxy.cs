@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -33,7 +32,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly LogFileListenerCollection _listeners;
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private readonly LogFilePropertyList _sourceProperties;
 		private readonly ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>> _pendingSections;
 		private readonly IPeriodicTask _task;
@@ -52,7 +51,7 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(taskScheduler));
 
 			_taskScheduler = taskScheduler;
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
 			_sourceProperties = new LogFilePropertyList();
@@ -133,17 +132,11 @@ namespace Tailviewer.Core.LogFiles
 			if (_source != null)
 			{
 				_source.GetAllProperties(_sourceProperties);
-				lock (_properties)
-				{
-					_properties.CopyFrom(_sourceProperties);
-				}
+				_properties.CopyFrom(_sourceProperties);
 			}
 			else
 			{
-				lock (_properties)
-				{
-					_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
-				}
+				_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
 			}
 		}
 
@@ -160,10 +153,7 @@ namespace Tailviewer.Core.LogFiles
 
 				_source = value;
 
-				lock (_properties)
-				{
-					_properties.Reset();
-				}
+				_properties.Reset();
 
 				// We're now representing a different log file.
 				// To the outside, we model this as a simple reset, followed
@@ -184,10 +174,7 @@ namespace Tailviewer.Core.LogFiles
 			// https://github.com/Kittyfisto/Tailviewer/issues/282
 			_listeners.Clear();
 
-			lock (_properties)
-			{
-				_properties.Clear();
-			}
+			_properties.Clear();
 
 			_source = null;
 			_isDisposed = true;
@@ -246,37 +233,27 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				lock (_properties)
-				{
-					return _properties.Properties.ToList();
-				}
+				return _properties.Properties;
 			}
 		}
 
 		/// <inheritdoc />
 		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			lock (_properties)
-			{
-				_properties.TryGetValue(propertyDescriptor, out var value);
-				return value;
-			}
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
 		/// <inheritdoc />
 		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			lock (_properties)
-			{
-				_properties.TryGetValue(propertyDescriptor, out var value);
-				return value;
-			}
+			_properties.TryGetValue(propertyDescriptor, out var value);
+			return value;
 		}
 
 		/// <inheritdoc />
 		public void GetAllProperties(ILogFileProperties destination)
 		{
-			lock (_properties)
 				_properties.CopyAllValuesTo(destination);
 		}
 

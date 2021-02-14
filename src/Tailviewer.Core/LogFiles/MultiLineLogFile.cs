@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private readonly LogFilePropertyList _propertiesBuffer;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
@@ -71,8 +71,10 @@ namespace Tailviewer.Core.LogFiles
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
 			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
-			_properties = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_propertiesBuffer.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.CombineWithMinimum(source.Properties));
+			_properties.CopyFrom(_propertiesBuffer);
 
 			_currentLogEntry = new LogEntryInfo(-1, 0);
 

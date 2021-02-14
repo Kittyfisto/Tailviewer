@@ -9,7 +9,7 @@ namespace Tailviewer.Test
 		: CategoryAttribute
 	{
 		public RequiresElevation(string description)
-			: base("Requires UAC")
+			: base("RequiresElevation")
 		{
 		}
 	}

@@ -30,7 +30,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 10000;
 
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private readonly LogFilePropertyList _propertiesBuffer;
 		private readonly ILogLineFilter _logLineFilter;
 		private readonly ILogEntryFilter _logEntryFilter;
@@ -64,7 +64,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 
-			_properties = new LogFilePropertyList(source.Properties);
+			_properties = new ConcurrentLogFilePropertyCollection(source.Properties);
 			_propertiesBuffer = new LogFilePropertyList(); //< Will be used as temporary storage to hold the properties from the source
 
 			_logLineFilter = logLineFilter ?? new NoFilter();

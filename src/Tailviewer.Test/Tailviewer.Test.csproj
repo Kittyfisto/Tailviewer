@@ -124,6 +124,7 @@
     <Compile Include="BusinessLogic\LogFiles\AbstractAggregatedLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\AbstractTaskSchedulerLogFileTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ConcurrentLogFilePropertyCollectionTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\CustomLogFileColumnTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\EmptyLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Filtered\FilteredLogFileTest.cs" />

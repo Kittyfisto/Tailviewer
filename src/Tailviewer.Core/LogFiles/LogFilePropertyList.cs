@@ -13,7 +13,6 @@ namespace Tailviewer.Core.LogFiles
 	public sealed class LogFilePropertyList
 		: ILogFileProperties
 	{
-		private readonly object _syncRoot;
 		private readonly List<ILogFilePropertyDescriptor> _propertyDescriptors;
 		private readonly Dictionary<ILogFilePropertyDescriptor, IPropertyStorage> _values;
 
@@ -33,7 +32,6 @@ namespace Tailviewer.Core.LogFiles
 			if (properties == null)
 				throw new ArgumentNullException(nameof(properties));
 
-			_syncRoot = new object();
 			_propertyDescriptors = new List<ILogFilePropertyDescriptor>(properties);
 			_values = new Dictionary<ILogFilePropertyDescriptor, IPropertyStorage>();
 			foreach (var propertyDescriptor in _propertyDescriptors)
@@ -45,33 +43,27 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				lock (_syncRoot)
-				{
-					return _propertyDescriptors.ToList();
-				}
+				return _propertyDescriptors;
 			}
 		}
 
 		/// <inheritdoc />
 		public void CopyFrom(ILogFileProperties properties)
 		{
-			lock (_syncRoot)
+			foreach (var propertyDescriptor in properties.Properties)
 			{
-				foreach (var propertyDescriptor in properties.Properties)
+				// By performing a virtual call (CopyFrom) into the typed storage,
+				// we can avoid any and all boxing / unboxing of value types.
+				if (!_values.ContainsKey(propertyDescriptor))
 				{
-					// By performing a virtual call (CopyFrom) into the typed storage,
-					// we can avoid any and all boxing / unboxing of value types.
-					if (!_values.ContainsKey(propertyDescriptor))
-					{
-						_propertyDescriptors.Add(propertyDescriptor);
-						var storage = CreateValueStorage(propertyDescriptor);
-						storage.CopyFrom(properties);
-						_values.Add(propertyDescriptor, storage);
-					}
-					else
-					{
-						_values[propertyDescriptor].CopyFrom(properties);
-					}
+					_propertyDescriptors.Add(propertyDescriptor);
+					var storage = CreateValueStorage(propertyDescriptor);
+					storage.CopyFrom(properties);
+					_values.Add(propertyDescriptor, storage);
+				}
+				else
+				{
+					_values[propertyDescriptor].CopyFrom(properties);
 				}
 			}
 		}
@@ -84,19 +76,16 @@ namespace Tailviewer.Core.LogFiles
 			if (!LogFileProperty.IsAssignableFrom(property, value))
 				throw new ArgumentException();
 
-			lock (_syncRoot)
+			if (!_values.ContainsKey(property))
 			{
-				if (!_values.ContainsKey(property))
-				{
-					_propertyDescriptors.Add(property);
-					var storage = CreateValueStorage(property);
-					storage.Value = value;
-					_values.Add(property, storage);
-				}
-				else
-				{
-					_values[property].Value = value;
-				}
+				_propertyDescriptors.Add(property);
+				var storage = CreateValueStorage(property);
+				storage.Value = value;
+				_values.Add(property, storage);
+			}
+			else
+			{
+				_values[property].Value = value;
 			}
 		}
 
@@ -108,52 +97,43 @@ namespace Tailviewer.Core.LogFiles
 			if (!LogFileProperty.IsAssignableFrom(property, value))
 				throw new ArgumentException();
 
-			lock (_syncRoot)
+			if (!_values.ContainsKey(property))
 			{
-				if (!_values.ContainsKey(property))
-				{
-					_propertyDescriptors.Add(property);
-					var storage = CreateValueStorage(property);
-					storage.Value = value;
-					_values.Add(property, storage);
-				}
-				else
-				{
-					((PropertyStorage<T>)_values[property]).Value = value;
-				}
+				_propertyDescriptors.Add(property);
+				var storage = CreateValueStorage(property);
+				storage.Value = value;
+				_values.Add(property, storage);
+			}
+			else
+			{
+				((PropertyStorage<T>) _values[property]).Value = value;
 			}
 		}
 
 		/// <inheritdoc />
 		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
 		{
-			lock (_syncRoot)
+			if (!_values.TryGetValue(property, out var storage))
 			{
-				if (!_values.TryGetValue(property, out var storage))
-				{
-					value = property.DefaultValue;
-					return false;
-				}
-
-				value = storage.Value;
-				return true;
+				value = property.DefaultValue;
+				return false;
 			}
+
+			value = storage.Value;
+			return true;
 		}
 
 		/// <inheritdoc />
 		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
 		{
-			lock (_syncRoot)
+			if (!_values.TryGetValue(property, out var storage))
 			{
-				if (!_values.TryGetValue(property, out var storage))
-				{
-					value = property.DefaultValue;
-					return false;
-				}
-
-				value = ((PropertyStorage<T>)storage).Value;
-				return true;
+				value = property.DefaultValue;
+				return false;
 			}
+
+			value = ((PropertyStorage<T>) storage).Value;
+			return true;
 		}
 
 		/// <inheritdoc />
@@ -180,12 +160,9 @@ namespace Tailviewer.Core.LogFiles
 			if (destination == null)
 				throw new ArgumentNullException(nameof(destination));
 
-			lock (_syncRoot)
+			foreach (var pair in _values)
 			{
-				foreach (var pair in _values)
-				{
-					pair.Value.CopyTo(destination);
-				}
+				pair.Value.CopyTo(destination);
 			}
 		}
 

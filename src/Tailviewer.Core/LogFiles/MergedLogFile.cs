@@ -38,7 +38,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
-		private readonly LogFilePropertyList _properties;
+		private readonly ConcurrentLogFilePropertyCollection _properties;
 		private readonly LogFilePropertyList _propertiesBuffer;
 		private readonly IReadOnlyList<ILogFile> _sources;
 
@@ -75,8 +75,8 @@ namespace Tailviewer.Core.LogFiles
 			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
 			_maximumWaitTime = maximumWaitTime;
 			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFileColumns.SourceId}).Distinct().ToList();
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
 
 			foreach (var logFile in _sources)
 			{
