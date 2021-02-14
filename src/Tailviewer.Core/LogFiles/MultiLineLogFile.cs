@@ -44,7 +44,6 @@ namespace Tailviewer.Core.LogFiles
 		private LogLineIndex _currentSourceIndex;
 
 		private LogFileSection _fullSourceSection;
-		private int _maxCharactersPerLine;
 
 		/// <summary>
 		///     Initializes this object.
@@ -79,9 +78,6 @@ namespace Tailviewer.Core.LogFiles
 			_source.AddListener(this, maximumWaitTime, MaximumBatchSize);
 			StartTask();
 		}
-
-		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _source.Columns;
@@ -236,8 +232,6 @@ namespace Tailviewer.Core.LogFiles
 
 			// Now we can perform a block-copy of all properties.
 			_source.GetAllValues(_properties);
-
-			_maxCharactersPerLine = _source.MaxCharactersPerLine;
 
 			if (_indices.Count != _currentSourceIndex)
 			{

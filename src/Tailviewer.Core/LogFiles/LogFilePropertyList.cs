@@ -241,5 +241,18 @@ namespace Tailviewer.Core.LogFiles
 			_propertyDescriptors.Clear();
 			_values.Clear();
 		}
+
+		/// <summary>
+		/// Adds the given property to this list.
+		/// </summary>
+		/// <param name="property"></param>
+		public void Add<T>(ILogFilePropertyDescriptor<T> property)
+		{
+			if (!_values.ContainsKey(property))
+			{
+				_values.Add(property, new PropertyStorage<T>(property));
+				_propertyDescriptors.Add(property);
+			}
+		}
 	}
 }

@@ -109,9 +109,6 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _logEntries.Count;
 
 		/// <inheritdoc />
-		public int MaxCharactersPerLine { get; private set; }
-
-		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _logEntries.Columns;
 
 		/// <inheritdoc />
@@ -261,7 +258,7 @@ namespace Tailviewer.Core.LogFiles
 				if (_logEntries.Count > 0)
 				{
 					_logEntries.Clear();
-					MaxCharactersPerLine = 0;
+					_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
 					_properties.SetValue(LogFileProperties.StartTimestamp, null);
 					_properties.SetValue(LogFileProperties.EndTimestamp, null);
 					_properties.SetValue(LogFileProperties.Size, Size.Zero);
@@ -399,7 +396,7 @@ namespace Tailviewer.Core.LogFiles
 						DeltaTime = deltaTime
 					};
 					_logEntries.Add(logEntry);
-					MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, line.Length);
+					SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
@@ -486,7 +483,7 @@ namespace Tailviewer.Core.LogFiles
 				finalLogEntry.DeltaTime = deltaTime;
 
 				_logEntries.Add(finalLogEntry);
-				MaxCharactersPerLine = Math.Max(MaxCharactersPerLine, finalLogEntry.RawContent?.Length ?? 0);
+				SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetValue(TextLogFileProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
 

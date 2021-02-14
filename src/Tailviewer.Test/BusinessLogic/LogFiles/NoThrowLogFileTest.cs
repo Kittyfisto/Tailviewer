@@ -87,17 +87,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
-		public void TestMaxCharactersPerLine()
-		{
-			_logFile.Setup(x => x.MaxCharactersPerLine).Throws<SystemException>();
-			new Action(() =>
-			{
-				var unused = _proxy.MaxCharactersPerLine;
-			}).Should().NotThrow();
-			_logFile.Verify(x => x.MaxCharactersPerLine, Times.Once);
-		}
-
-		[Test]
 		public void TestAddListener()
 		{
 			_logFile.Setup(x => x.AddListener(It.IsAny<ILogFileListener>(), It.IsAny<TimeSpan>(), It.IsAny<int>())).Throws<SystemException>();

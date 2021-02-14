@@ -21,6 +21,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		[Test]
+		public void TestAdd()
+		{
+			var properties = new LogFilePropertyList();
+			properties.Properties.Should().BeEmpty();
+
+			properties.Add(LogFileProperties.Created);
+			properties.Properties.Should().Equal(new object[]{LogFileProperties.Created});
+
+			properties.SetValue(LogFileProperties.Created, new DateTime(2021, 02, 14, 12, 13, 01));
+			new Action(()=> properties.Add(LogFileProperties.Created)).Should().NotThrow("because adding properties again should be tolerate and just not do anything");
+			properties.Properties.Should().Equal(new object[] {LogFileProperties.Created});
+			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2021, 02, 14, 12, 13, 01));
+		}
+
+		[Test]
 		[Description("Verifies that values can be overwritten")]
 		public void TestSetValue5()
 		{

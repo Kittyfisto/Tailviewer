@@ -35,7 +35,6 @@ namespace Tailviewer.Core.LogFiles.Text
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
 		private readonly LogFilePropertyList _properties;
-		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
 		#endregion
@@ -89,7 +88,10 @@ namespace Tailviewer.Core.LogFiles.Text
 			_entries = new List<LogLine>();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Name, _fileName);
+			_properties.Add(TextLogFileProperties.LineCount);
+			_properties.Add(TextLogFileProperties.MaxCharactersInLine);
 			_properties.SetValue(TextLogFileProperties.LineCount, 0);
+			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
 			_syncRoot = new object();
 
 			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
@@ -109,16 +111,17 @@ namespace Tailviewer.Core.LogFiles.Text
 			return _fileName;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public IEnumerable<LogLine> Entries => _entries;
-
 		/// <inheritdoc />
-		public override int Count => _entries.Count;
-
-		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
+		public override int Count
+		{
+			get
+			{
+				lock (_syncRoot)
+				{
+					return _entries.Count;
+				}
+			}
+		}
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
@@ -601,7 +604,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			_properties.SetValue(LogFileProperties.StartTimestamp, null);
 			_properties.SetValue(LogFileProperties.EndTimestamp, null);
 			_properties.SetValue(LogFileProperties.Duration, null);
-			_maxCharactersPerLine = 0;
+			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
 
 			_entries.Clear();
 			Listeners.Reset();
@@ -617,20 +620,21 @@ namespace Tailviewer.Core.LogFiles.Text
 			var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
 			_properties.SetValue(LogFileProperties.Duration, duration);
 
-
+			LogLine translated;
 			lock (_syncRoot)
 			{
 				int lineIndex = _entries.Count;
 				var logLine = new LogLine(lineIndex, lineIndex, line, level, timestamp);
-				var translated = Translate(logLine);
+				translated = Translate(logLine);
 				_entries.Add(translated);
-				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, translated.Message?.Length ?? 0);
 
 				if (timestamp != null)
 				{
 					UpdateLastModifiedIfNecessary(timestamp.Value);
 				}
 			}
+
+			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(_properties.GetValue(TextLogFileProperties.MaxCharactersInLine), translated.Message?.Length ?? 0));
 
 			Listeners.OnRead(numberOfLinesRead);
 		}

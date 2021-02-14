@@ -118,13 +118,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			var source = new InMemoryLogFile();
 			var logFile = new MultiLineLogFile(_taskScheduler, source, TimeSpan.Zero);
 			_taskScheduler.RunOnce();
-			logFile.MaxCharactersPerLine.Should().Be(0);
+			logFile.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
 
 			source.AddEntry("Hi, I’m new to driving and I need to move ");
-			logFile.MaxCharactersPerLine.Should().Be(0, "because the change shouldn't have been applied yet");
+			logFile.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0, "because the change shouldn't have been applied yet");
 
 			_taskScheduler.RunOnce();
-			logFile.MaxCharactersPerLine.Should().Be(42, "because the change should have been applied by now");
+			logFile.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(42, "because the change should have been applied by now");
 		}
 
 		[Test]

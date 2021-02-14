@@ -87,19 +87,21 @@ namespace Tailviewer.Core.LogFiles
 
 		static LogFileProperties()
 		{
-			Name = new WellKnownLogFilePropertyDescriptor<string>("Name");
-			StartTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("StartTimestamp");
-			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>("EndTimestamp");
-			Duration = new WellKnownLogFilePropertyDescriptor<TimeSpan?>("Duration");
-			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>("LastModified");
-			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>("Created");
-			Size = new WellKnownLogFilePropertyDescriptor<Size?>("Size");
+			var category = "general";
 
-			PercentageProcessed = new WellKnownLogFilePropertyDescriptor<Percentage>("PercentageProcessed", Percentage.Zero);
-			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>("EmptyReason");
-			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>("Format");
-			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>("FormatDetectionCertainty");
-			Encoding = new WellKnownLogFilePropertyDescriptor<Encoding>("Encoding");
+			Name = new WellKnownLogFilePropertyDescriptor<string>(new []{category, "Name"}, "Name");
+			StartTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>(new []{category, "start_timestamp"}, "Start Time");
+			EndTimestamp = new WellKnownLogFilePropertyDescriptor<DateTime?>(new []{category, "end_timestamp"}, "End Time");
+			Duration = new WellKnownLogFilePropertyDescriptor<TimeSpan?>(new []{category, "duration"}, "Duration");
+			LastModified = new WellKnownLogFilePropertyDescriptor<DateTime?>(new []{category, "last_modified"}, "Last Modified");
+			Created = new WellKnownLogFilePropertyDescriptor<DateTime?>(new []{category, "created"}, "Created");
+			Size = new WellKnownLogFilePropertyDescriptor<Size?>(new []{category, "size"}, "Size");
+
+			PercentageProcessed = new WellKnownLogFilePropertyDescriptor<Percentage>(new []{category, "percentage_processed"}, "Processed", Percentage.Zero);
+			EmptyReason = new WellKnownLogFilePropertyDescriptor<ErrorFlags>(new []{category, "empty_reason"}, "Empty");
+			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>(new []{category, "Format"}, "Format");
+			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>(new []{category, "FormatDetectionCertainty"});
+			Encoding = new WellKnownLogFilePropertyDescriptor<Encoding>(new []{category, "Encoding"}, "Encoding");
 
 			Minimum = new ILogFilePropertyDescriptor[]
 			{

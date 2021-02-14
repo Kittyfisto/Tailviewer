@@ -13,16 +13,16 @@ namespace Tailviewer.Core.LogFiles
 	internal sealed class WellKnownLogFilePropertyDescriptor<T>
 		: ILogFilePropertyDescriptor<T>
 	{
-		private readonly string[] _path;
-		private string _displayName;
+		private readonly string _id;
+		private readonly string _displayName;
 		private readonly T _defaultValue;
 
 		public WellKnownLogFilePropertyDescriptor(string id)
-			: this(id, id, default(T))
+			: this(id, default(T))
 		{}
 
 		public WellKnownLogFilePropertyDescriptor(string id, T defaultValue)
-			: this(new []{id}, id, defaultValue)
+			: this(new []{id}, defaultValue)
 		{}
 
 		public WellKnownLogFilePropertyDescriptor(string id, string displayName)
@@ -32,6 +32,14 @@ namespace Tailviewer.Core.LogFiles
 		public WellKnownLogFilePropertyDescriptor(string id, string displayName, T defaultValue)
 			: this(new []{id}, displayName, defaultValue)
 		{}
+
+		public WellKnownLogFilePropertyDescriptor(IEnumerable<string> path)
+			: this(path, null, default)
+		{ }
+
+		public WellKnownLogFilePropertyDescriptor(IEnumerable<string> path, T defaultValue)
+			: this(path, null, defaultValue)
+		{ }
 
 		public WellKnownLogFilePropertyDescriptor(IEnumerable<string> path, string displayName)
 			: this(path, displayName, default)
@@ -44,16 +52,14 @@ namespace Tailviewer.Core.LogFiles
 			if (path.Any(string.IsNullOrEmpty))
 				throw new ArgumentException();
 
-			_path = path.ToArray();
+			_id = string.Join(".", path);
 			_displayName = displayName;
 			_defaultValue = defaultValue;
 		}
 
-		public string Id => string.Join(".", _path);
+		public string Id => _id;
 
 		public string DisplayName => _displayName;
-
-		public IReadOnlyList<string> Path => _path;
 
 		public Type DataType => typeof(T);
 

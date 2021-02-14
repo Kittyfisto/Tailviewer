@@ -40,7 +40,6 @@ namespace Tailviewer.Core.LogFiles
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly LogFilePropertyList _properties;
 		private readonly IReadOnlyList<ILogFile> _sources;
-		private int _maxCharactersPerLine;
 		private Percentage _progress = Percentage.Zero;
 
 		/// <summary>
@@ -119,9 +118,6 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get { return _index.Count; }
 		}
-
-		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _columns;
@@ -403,19 +399,19 @@ namespace Tailviewer.Core.LogFiles
 				var end = source.GetValue(LogFileProperties.EndTimestamp);
 				if (end != null && (end > endTimestamp || endTimestamp == null))
 					endTimestamp = end;
-				maxCharactersPerLine = Math.Max(maxCharactersPerLine, source.MaxCharactersPerLine);
+				maxCharactersPerLine = Math.Max(maxCharactersPerLine, source.GetValue(TextLogFileProperties.MaxCharactersInLine));
 
 				var sourceProcessed = source.GetValue(LogFileProperties.PercentageProcessed);
 				processed *= sourceProcessed;
 			}
 
+			_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, maxCharactersPerLine);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, processed);
 			_properties.SetValue(LogFileProperties.LastModified, lastModified);
 			_properties.SetValue(LogFileProperties.Size, size);
 			_properties.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
 			_properties.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
 			_properties.SetValue(LogFileProperties.Duration, endTimestamp - startTimestamp);
-			_maxCharactersPerLine = maxCharactersPerLine;
 		}
 	}
 }

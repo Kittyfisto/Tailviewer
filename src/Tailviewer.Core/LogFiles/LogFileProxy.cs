@@ -226,19 +226,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public int MaxCharactersPerLine
-		{
-			get
-			{
-				ILogFile logFile = _source;
-				if (logFile != null)
-					return logFile.MaxCharactersPerLine;
-
-				return 0;
-			}
-		}
-
-		/// <inheritdoc />
 		public IReadOnlyList<ILogFileColumnDescriptor> Columns
 		{
 			get

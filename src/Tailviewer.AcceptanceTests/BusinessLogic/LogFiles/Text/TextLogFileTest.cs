@@ -424,6 +424,31 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		}
 
 		[Test]
+		public void TestMaxCharactersInLine()
+		{
+			_file = Create(_fname, encoding: Encoding.GetEncoding(1252));
+			_file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0, "because the file didn't do any processing and thus should default to 0");
+
+			_taskScheduler.RunOnce();
+			_file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0, "because the file is empty");
+
+			_streamWriter.WriteLine("Hello");
+			_streamWriter.Flush();
+			_taskScheduler.RunOnce();
+			_file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(5);
+
+			_streamWriter.WriteLine("you");
+			_streamWriter.Flush();
+			_taskScheduler.RunOnce();
+			_file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(5, "because we're interested in the maximum amount of characters of the greatest line which is still 5");
+
+			_streamWriter.WriteLine("Good morning");
+			_streamWriter.Flush();
+			_taskScheduler.RunOnce();
+			_file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(12, "because we've now written a larger line");
+		}
+
+		[Test]
 		public void Test()
 		{
 			_file.GetValue(LogFileProperties.Name).Should().Be(_fname);

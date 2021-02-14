@@ -111,7 +111,37 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <summary>
-		///     Retrieves all entries for all columns of this log file of the given <paramref name="sourceIndices" />:
+		///     Retrieves all entries for all columns of this log file.
+		/// </summary>
+		/// <remarks>
+		///     This fetches the entire log file into memory.
+		///     KNOW what you're doing.
+		/// </remarks>
+		/// <param name="logFile"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile)
+		{
+			return logFile.GetEntries(logFile.Columns);
+		}
+
+		/// <summary>
+		///     Retrieves all entries for all columns of this log file.
+		/// </summary>
+		/// <param name="logFile"></param>
+		/// <param name="columns"></param>
+		/// <returns></returns>
+		[Pure]
+		public static IReadOnlyLogEntries GetEntries(this ILogFile logFile, IReadOnlyList<ILogFileColumnDescriptor> columns)
+		{
+			var count = logFile.Count;
+			var buffer = new LogEntryArray(count, columns);
+			GetEntries(logFile, new LogFileSection(0, count), buffer);
+			return buffer;
+		}
+
+		/// <summary>
+		///     Retrieves all entries for all columns of this log file of the given <paramref name="sourceIndices" />.
 		/// </summary>
 		/// <param name="logFile"></param>
 		/// <param name="sourceIndices"></param>

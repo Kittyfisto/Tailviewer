@@ -45,7 +45,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero))
 			{
 				proxy.InnerLogFile.Should().BeNull();
-				proxy.MaxCharactersPerLine.Should().Be(0);
+				proxy.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
 				proxy.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 				proxy.GetValue(LogFileProperties.Size).Should().BeNull();
 				proxy.GetValue(LogFileProperties.StartTimestamp).Should().NotHaveValue();
@@ -213,10 +213,21 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Proxy
 		{
 			using (var proxy = new LogFileProxy(_taskScheduler, TimeSpan.Zero, _logFile.Object))
 			{
-				_logFile.Setup(x => x.MaxCharactersPerLine).Returns(101);
-				proxy.MaxCharactersPerLine.Should().Be(101);
-				_logFile.Setup(x => x.MaxCharactersPerLine).Returns(42);
-				proxy.MaxCharactersPerLine.Should().Be(42);
+				_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+				        .Callback((ILogFileProperties destination) =>
+				        {
+					        destination.SetValue(TextLogFileProperties.MaxCharactersInLine, 101);
+				        });
+				_taskScheduler.RunOnce();
+				proxy.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(101);
+				
+				_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+				        .Callback((ILogFileProperties destination) =>
+				        {
+					        destination.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
+				        });
+				_taskScheduler.RunOnce();
+				proxy.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
 			}
 		}
 

@@ -30,7 +30,6 @@ namespace Tailviewer.PluginCreator
 			builder.AppendLine("\tpublic bool EndOfSourceReached => false;");
 			builder.AppendLine("\tpublic int Count => 0;");
 			builder.AppendLine("\tpublic int OriginalCount => 0;");
-			builder.AppendLine("\tpublic int MaxCharactersPerLine => 0;");
 			builder.AppendLine("\tpublic IReadOnlyList<ILogFileColumn> Columns => null;");
 			builder.AppendLine("\tpublic void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount) {}");
 			builder.AppendLine("\tpublic void RemoveListener(ILogFileListener listener) {}");

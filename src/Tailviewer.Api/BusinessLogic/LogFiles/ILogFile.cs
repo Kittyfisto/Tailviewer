@@ -57,12 +57,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		int Count { get; }
 
 		/// <summary>
-		///     The maximum amount of characters of a single <see cref="LogLine" />.
-		/// </summary>
-		[WillBeRemoved("LogLine will be removed and so will this method sometime in 2021", "https://github.com/Kittyfisto/Tailviewer/issues/143")]
-		int MaxCharactersPerLine { get; }
-
-		/// <summary>
 		///     The columns offered by this log file.
 		/// </summary>
 		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
@@ -123,7 +117,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 		#endregion
 
-		#region Data Retrieval
+		#region Log Entries
 		
 		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
@@ -135,7 +129,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex">The first index into <paramref name="destination"/> where the first item of the retrieved section is copied to</param>
 		/// <param name="queryOptions">Configures how the data is to be retrieved</param>
 		void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
-		
+
 		/// <summary>
 		///     Retrieves all entries from the given <paramref name="sourceIndices" /> from this log file and copies
 		///     them into the given <paramref name="destination" /> starting at the given <paramref name="destinationIndex"/>.

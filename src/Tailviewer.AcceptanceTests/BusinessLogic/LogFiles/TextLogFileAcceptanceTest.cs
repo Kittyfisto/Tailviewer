@@ -86,10 +86,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 					writer.Flush();
 
 					logFile.Property(x => x.Count).ShouldAfter(TimeSpan.FromSeconds(5)).Be(1);
-					logFile.Entries.Should().Equal(new[]
-						{
-							new LogLine(0, "Hello World!", LevelFlags.Other)
-						});
+					var entries = logFile.GetEntries();
+					entries.Count.Should().Be(1);
+					entries[0].Index.Should().Be(0);
+					entries[0].RawContent.Should().Be("Hello World!");
+					entries[0].LogLevel.Should().Be(LevelFlags.Other);
 				}
 			}
 		}
@@ -442,16 +443,18 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
-				List<LogLine> entries = file.Entries.ToList();
+				var entries = file.GetEntries();
 				entries.Count.Should().Be(165342);
-				entries[0].Should()
-				          .Be(new LogLine(0,
-				                          "2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver",
-				                          LevelFlags.Info, new DateTime(2015, 10, 7, 19, 50, 58, 982)));
-				entries[entries.Count - 1].Should()
-				                          .Be(new LogLine(165341,
-				                                          "2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...",
-				                                          LevelFlags.Info, new DateTime(2015, 10, 7, 19, 51, 42, 483)));
+				entries[0].Index.Should().Be(0);
+				entries[0].LogLevel.Should().Be(LevelFlags.Info);
+				entries[0].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
+				entries[0].RawContent.Should().Be("2015-10-07 19:50:58,982 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
+
+				entries[entries.Count - 1].Index.Should().Be(165341);
+				entries[entries.Count - 1].LogLevel.Should().Be(LevelFlags.Info);
+				entries[entries.Count - 1].Timestamp.Should().Be(new DateTime(2015, 10, 7, 19, 51, 42, 483));
+				entries[entries.Count - 1].RawContent.Should()
+				                          .Be("2015-10-07 19:51:42,483 [8092, 6] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Parent process terminated unexpectedly (exit code: -1), shutting down...");
 			}
 		}
 
@@ -489,7 +492,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
 
 				file.Count.Should().Be(165342);
-				file.MaxCharactersPerLine.Should().Be(218);
+				file.GetValue(TextLogFileProperties.MaxCharactersInLine).Should().Be(218);
 			}
 		}
 

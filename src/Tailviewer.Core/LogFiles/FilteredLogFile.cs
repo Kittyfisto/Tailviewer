@@ -112,9 +112,6 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override int MaxCharactersPerLine => _maxCharactersPerLine;
-
-		/// <inheritdoc />
 		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.CombineWithMinimum(_source.Columns);
 
 		/// <inheritdoc />

@@ -307,7 +307,7 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
 		{
-			var width = _textSettings.EstimateWidthUpperLimit(logFile.MaxCharactersPerLine);
+			var width = _textSettings.EstimateWidthUpperLimit(logFile.GetValue(TextLogFileProperties.MaxCharactersInLine));
 			var upperWidth = (int) Math.Ceiling(width);
 
 			// Setting an integer is an atomic operation and thus no
@@ -750,7 +750,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			{
 				newValue.AddListener(this, TimeSpan.FromMilliseconds(value: 100), maximumLineCount: 10000);
 
-				_maxLineWidth = (int) Math.Ceiling(_textSettings.EstimateWidthUpperLimit(newValue.MaxCharactersPerLine));
+				_maxLineWidth = (int) Math.Ceiling(_textSettings.EstimateWidthUpperLimit(newValue.GetValue(TextLogFileProperties.MaxCharactersInLine)));
 				UpdateScrollViewerRegions();
 				PartTextCanvas.DetermineVerticalOffset();
 				PartTextCanvas.UpdateVisibleSection();
