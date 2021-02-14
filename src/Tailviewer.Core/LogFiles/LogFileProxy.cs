@@ -51,8 +51,8 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(taskScheduler));
 
 			_taskScheduler = taskScheduler;
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
+			_properties.SetValue(LogFiles.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
 			_sourceProperties = new LogFilePropertyList();
 			_pendingSections = new ConcurrentQueue<KeyValuePair<ILogFile, LogFileSection>>();
@@ -136,7 +136,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 			else
 			{
-				_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+				_properties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
 			}
 		}
 
@@ -194,7 +194,7 @@ namespace Tailviewer.Core.LogFiles
 				if (logFile != null)
 					return logFile.Columns;
 
-				return LogFileColumns.Minimum;
+				return LogFiles.Columns.Minimum;
 			}
 		}
 

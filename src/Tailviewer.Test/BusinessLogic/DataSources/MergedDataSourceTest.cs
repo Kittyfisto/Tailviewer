@@ -132,7 +132,7 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 		public void TestCtor3()
 		{
 			_merged.UnfilteredLogFile.Should().NotBeNull("Because a log file should be present at all times");
-			_merged.UnfilteredLogFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(0);
+			_merged.UnfilteredLogFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 		}
 
 		[Test]
@@ -244,25 +244,25 @@ namespace Tailviewer.Test.BusinessLogic.DataSources
 			var entries = _merged.FilteredLogFile.GetEntries(new LogFileSection(0, 4));
 			entries[0].Index.Should().Be(0);
 			entries[0].LogEntryIndex.Should().Be(0);
-			entries[0].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[0].GetValue(Columns.SourceId).Should().Be(source1Id);
 			entries[0].RawContent.Should().Be("Hello, World!");
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(t1);
 			entries[1].Index.Should().Be(1);
 			entries[1].LogEntryIndex.Should().Be(1);
-			entries[1].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[1].GetValue(Columns.SourceId).Should().Be(source2Id);
 			entries[1].RawContent.Should().Be("foo");
 			entries[1].LogLevel.Should().Be(LevelFlags.Trace);
 			entries[1].Timestamp.Should().Be(t2);
 			entries[2].Index.Should().Be(2);
 			entries[2].LogEntryIndex.Should().Be(1);
-			entries[2].GetValue(LogFileColumns.SourceId).Should().Be(source2Id);
+			entries[2].GetValue(Columns.SourceId).Should().Be(source2Id);
 			entries[2].RawContent.Should().Be("bar");
 			entries[2].LogLevel.Should().Be(LevelFlags.Trace);
 			entries[2].Timestamp.Should().Be(t2);
 			entries[3].Index.Should().Be(3);
 			entries[3].LogEntryIndex.Should().Be(2);
-			entries[3].GetValue(LogFileColumns.SourceId).Should().Be(source1Id);
+			entries[3].GetValue(Columns.SourceId).Should().Be(source1Id);
 			entries[3].RawContent.Should().Be("Houston, we have a problem");
 			entries[3].LogLevel.Should().Be(LevelFlags.Warning);
 			entries[3].Timestamp.Should().Be(t3);

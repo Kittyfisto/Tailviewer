@@ -15,8 +15,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.RawContent, LogFileColumns.Index);
-			view.Columns.Should().Equal(new object[] {LogFileColumns.RawContent, LogFileColumns.Index});
+			var view = new LogEntryView(entry.Object, Columns.RawContent, Columns.Index);
+			view.Columns.Should().Equal(new object[] {Columns.RawContent, Columns.Index});
 			entry.VerifyGet(x => x.Columns, Times.Never);
 		}
 
@@ -24,7 +24,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestRawContent_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.RawContent);
+			var view = new LogEntryView(entry.Object, Columns.RawContent);
 
 			entry.SetupProperty(x => x.RawContent);
 			entry.Object.RawContent = "I want a clondyke bar, I'm hungry";
@@ -38,7 +38,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestRawContent_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -54,7 +54,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Index);
+			var view = new LogEntryView(entry.Object, Columns.Index);
 
 			entry.SetupProperty(x => x.Index);
 			entry.Object.Index = new LogLineIndex(101);
@@ -68,7 +68,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -84,7 +84,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.OriginalIndex);
+			var view = new LogEntryView(entry.Object, Columns.OriginalIndex);
 
 			entry.SetupProperty(x => x.OriginalIndex);
 			entry.Object.OriginalIndex = new LogLineIndex(101);
@@ -98,7 +98,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -114,7 +114,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalDataSourceName_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.OriginalDataSourceName);
+			var view = new LogEntryView(entry.Object, Columns.OriginalDataSourceName);
 
 			entry.SetupProperty(x => x.OriginalDataSourceName);
 			entry.Object.OriginalDataSourceName = "F:\\important.txt";
@@ -128,7 +128,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalDataSourceName_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -144,7 +144,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSourceId_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.SourceId);
+			var view = new LogEntryView(entry.Object, Columns.SourceId);
 
 			entry.SetupProperty(x => x.SourceId);
 			entry.Object.SourceId = new LogLineSourceId(101);
@@ -158,7 +158,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSourceId_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -174,7 +174,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLogEntryIndex_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.LogEntryIndex);
+			var view = new LogEntryView(entry.Object, Columns.LogEntryIndex);
 
 			entry.SetupProperty(x => x.LogEntryIndex);
 			entry.Object.LogEntryIndex = new LogEntryIndex(101);
@@ -188,7 +188,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLogEntryIndex_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -204,7 +204,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.LineNumber);
+			var view = new LogEntryView(entry.Object, Columns.LineNumber);
 
 			entry.SetupProperty(x => x.LineNumber);
 			entry.Object.LineNumber = 101;
@@ -218,7 +218,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -234,7 +234,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalLineNumber_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.OriginalLineNumber);
+			var view = new LogEntryView(entry.Object, Columns.OriginalLineNumber);
 
 			entry.SetupProperty(x => x.OriginalLineNumber);
 			entry.Object.OriginalLineNumber = 101;
@@ -248,7 +248,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestOriginalLineNumber_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -264,7 +264,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLogLevel_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.LogLevel);
+			var view = new LogEntryView(entry.Object, Columns.LogLevel);
 
 			entry.SetupProperty(x => x.LogLevel);
 			entry.Object.LogLevel = LevelFlags.Error;
@@ -278,7 +278,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestLogLevel_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -294,7 +294,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestTimestamp_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Timestamp);
+			var view = new LogEntryView(entry.Object, Columns.Timestamp);
 
 			entry.SetupProperty(x => x.Timestamp);
 			entry.Object.Timestamp = new DateTime(2021, 02, 11, 15, 42, 1);
@@ -308,7 +308,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestTimestamp_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -324,7 +324,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestElapsedTime_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.ElapsedTime);
+			var view = new LogEntryView(entry.Object, Columns.ElapsedTime);
 
 			entry.SetupProperty(x => x.ElapsedTime);
 			entry.Object.ElapsedTime = TimeSpan.FromSeconds(42);
@@ -338,7 +338,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestElapsedTime_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{
@@ -354,7 +354,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDeltaTime_ColumnAvailable()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.DeltaTime);
+			var view = new LogEntryView(entry.Object, Columns.DeltaTime);
 
 			entry.SetupProperty(x => x.DeltaTime);
 			entry.Object.DeltaTime = TimeSpan.FromSeconds(42);
@@ -368,7 +368,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDeltaTime_NoSuchColumn()
 		{
 			var entry = new Mock<ILogEntry>();
-			var view = new LogEntryView(entry.Object, LogFileColumns.Message);
+			var view = new LogEntryView(entry.Object, Columns.Message);
 
 			new Action(() =>
 			{

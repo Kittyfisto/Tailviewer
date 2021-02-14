@@ -11,7 +11,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     Maintains a collection of well-known log file properties.
 	/// </summary>
-	public static class LogFileProperties
+	public static class Properties
 	{
 		/// <summary>
 		///     The number of log entries in the log file.
@@ -90,7 +90,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		public static readonly IReadOnlyList<IReadOnlyPropertyDescriptor> Minimum;
 
-		static LogFileProperties()
+		static Properties()
 		{
 			var category = "general";
 

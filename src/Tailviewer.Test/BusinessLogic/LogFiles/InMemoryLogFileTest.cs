@@ -33,23 +33,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestConstruction1()
 		{
 			var logFile = new InMemoryLogFile();
-			logFile.Columns.Should().Equal(LogFileColumns.Minimum);
-			logFile.GetProperty(LogFileProperties.Size).Should().Be(Size.Zero);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.GetProperty(LogFileProperties.LastModified).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.Duration).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
-			logFile.GetProperty(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
+			logFile.Columns.Should().Equal(Columns.Minimum);
+			logFile.GetProperty(Properties.Size).Should().Be(Size.Zero);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty(Properties.LastModified).Should().BeNull();
+			logFile.GetProperty(Properties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Properties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(Properties.Duration).Should().BeNull();
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			logFile.Count.Should().Be(0);
 		}
 
 		[Test]
 		public void TestConstruction2()
 		{
-			var logFile = new InMemoryLogFile(LogFileColumns.ElapsedTime);
-			logFile.Columns.Should().Equal(LogFileColumns.Minimum, "because a log file should never offer less columns than the minimum set");
+			var logFile = new InMemoryLogFile(Columns.ElapsedTime);
+			logFile.Columns.Should().Equal(Columns.Minimum, "because a log file should never offer less columns than the minimum set");
 		}
 
 		[Test]
@@ -58,8 +58,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.Count.Should().Be(1);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(13);
-			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(13);
+			logFile.GetProperty(Properties.StartTimestamp).Should().BeNull();
 
 			var entry = logFile.GetEntry(0);
 			entry.ElapsedTime.Should().BeNull("because this entry doesn't have any timestamp and thus its elapsed time must be null");
@@ -87,8 +87,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entry2.RawContent.Should().Be(" World!");
 			entry2.Timestamp.Should().Be(new DateTime(2017, 4, 29, 14, 56, 2));
 
-			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
-			logFile.GetProperty(LogFileProperties.Duration).Should().Be(TimeSpan.FromSeconds(2));
+			logFile.GetProperty(Properties.StartTimestamp).Should().Be(new DateTime(2017, 4, 29, 14, 56, 0));
+			logFile.GetProperty(Properties.Duration).Should().Be(TimeSpan.FromSeconds(2));
 		}
 
 		[Test]
@@ -98,7 +98,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
 			logFile.AddEntry("Hi", LevelFlags.Info);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(13);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(13);
 		}
 
 		[Test]
@@ -107,9 +107,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hi", LevelFlags.Info);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(2);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(2);
 			logFile.AddEntry("Hello, World!", LevelFlags.Info);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(13);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(13);
 		}
 
 		[Test]
@@ -130,7 +130,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestAddEntry6()
 		{
-			var logFile = new InMemoryLogFile(LogFileColumns.LogLevel);
+			var logFile = new InMemoryLogFile(Columns.LogLevel);
 
 			var logEntry = new LogEntry
 			{
@@ -138,7 +138,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			};
 			logFile.Add(logEntry);
 
-			var buffer = new LogEntryArray(1, LogFileColumns.LogLevel);
+			var buffer = new LogEntryArray(1, Columns.LogLevel);
 			logFile.GetEntries(new LogFileSection(0, 1), buffer);
 			buffer[0].LogLevel.Should().Be(LevelFlags.Error);
 		}
@@ -301,13 +301,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.Clear();
-			logFile.GetProperty(LogFileProperties.Size).Should().Be(Size.Zero);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
-			logFile.GetProperty(LogFileProperties.LastModified).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.EndTimestamp).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.Duration).Should().BeNull();
-			logFile.GetProperty(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.None);
+			logFile.GetProperty(Properties.Size).Should().Be(Size.Zero);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty(Properties.LastModified).Should().BeNull();
+			logFile.GetProperty(Properties.StartTimestamp).Should().BeNull();
+			logFile.GetProperty(Properties.EndTimestamp).Should().BeNull();
+			logFile.GetProperty(Properties.Duration).Should().BeNull();
+			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.None);
 			logFile.Count.Should().Be(0);
 		}
 
@@ -328,9 +328,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hi", LevelFlags.Info);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(2);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(2);
 			logFile.Clear();
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(0);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(0);
 		}
 
 		[Test]
@@ -339,7 +339,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("Hi", LevelFlags.Info);
-			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(2);
+			logFile.GetProperty(TextProperties.MaxCharactersInLine).Should().Be(2);
 
 			logFile.AddListener(_listener.Object, TimeSpan.Zero, 1);
 			logFile.Clear();
@@ -384,9 +384,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			var logFile = new InMemoryLogFile();
 			logFile.AddEntry("foobar");
-			var entries = logFile.GetEntries(new LogFileSection(0, 1), new[]{LogFileColumns.RawContent});
+			var entries = logFile.GetEntries(new LogFileSection(0, 1), new[]{Columns.RawContent});
 			entries.Count.Should().Be(1);
-			entries.Columns.Should().Equal(new object[] {LogFileColumns.RawContent}, "because we've only retrieved that column");
+			entries.Columns.Should().Equal(new object[] {Columns.RawContent}, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("foobar");
 		}
 
@@ -397,9 +397,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("foo");
 			logFile.AddEntry("bar");
 			logFile.AddEntry("some lazy fox");
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new[]{LogFileColumns.RawContent});
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), new[]{Columns.RawContent});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { LogFileColumns.RawContent }, "because we've only retrieved that column");
+			entries.Columns.Should().Equal(new object[] { Columns.RawContent }, "because we've only retrieved that column");
 			entries[0].RawContent.Should().Be("bar");
 			entries[1].RawContent.Should().Be("some lazy fox");
 		}
@@ -412,9 +412,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{Columns.LogLevel, Columns.Timestamp});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] {LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			entries.Columns.Should().Equal(new object[] {Columns.LogLevel, Columns.Timestamp});
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -429,9 +429,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{Columns.LogLevel, Columns.Timestamp});
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
+			entries.Columns.Should().Equal(new object[] { Columns.LogLevel, Columns.Timestamp });
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -446,9 +446,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), LogFileColumns.Minimum);
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), Columns.Minimum);
 			entries.Count.Should().Be(2);
-			entries.Columns.Should().Equal(LogFileColumns.Minimum);
+			entries.Columns.Should().Equal(Columns.Minimum);
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
 			entries[0].Timestamp.Should().Be(null);
 			entries[1].LogLevel.Should().Be(LevelFlags.Error);
@@ -465,9 +465,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 20, 17, 01, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(0, 5), new []{LogFileColumns.ElapsedTime});
+			var entries = logFile.GetEntries(new LogFileSection(0, 5), new []{Columns.ElapsedTime});
 			entries.Count.Should().Be(5);
-			entries.Columns.Should().Equal(LogFileColumns.ElapsedTime);
+			entries.Columns.Should().Equal(Columns.ElapsedTime);
 			entries[0].ElapsedTime.Should().Be(null);
 			entries[1].ElapsedTime.Should().Be(TimeSpan.Zero);
 			entries[2].ElapsedTime.Should().Be(null);

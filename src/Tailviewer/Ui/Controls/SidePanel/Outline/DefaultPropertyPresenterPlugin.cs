@@ -14,18 +14,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		{
 			_displayNames = new Dictionary<IReadOnlyPropertyDescriptor, string>
 			{
-				{ LogFileProperties.LogEntryCount, "Count" },
-				{ LogFileProperties.Name, "Name" },
-				{ LogFileProperties.StartTimestamp, "First Timestamp" },
-				{ LogFileProperties.EndTimestamp, "Last Timestamp" },
-				{ LogFileProperties.Duration, "Duration" },
-				{ LogFileProperties.LastModified, "Last Modified" },
-				{ LogFileProperties.Created, "Created" },
-				{ LogFileProperties.Size, "Size" },
+				{ Core.LogFiles.Properties.LogEntryCount, "Count" },
+				{ Core.LogFiles.Properties.Name, "Name" },
+				{ Core.LogFiles.Properties.StartTimestamp, "First Timestamp" },
+				{ Core.LogFiles.Properties.EndTimestamp, "Last Timestamp" },
+				{ Core.LogFiles.Properties.Duration, "Duration" },
+				{ Core.LogFiles.Properties.LastModified, "Last Modified" },
+				{ Core.LogFiles.Properties.Created, "Created" },
+				{ Core.LogFiles.Properties.Size, "Size" },
 
-				{ LogFileProperties.PercentageProcessed, "Processed" },
-				{ LogFileProperties.Format, "Format" },
-				{ LogFileProperties.Encoding, "Encoding" }
+				{ Core.LogFiles.Properties.PercentageProcessed, "Processed" },
+				{ Core.LogFiles.Properties.Format, "Format" },
+				{ Core.LogFiles.Properties.Encoding, "Encoding" }
 			};
 		}
 

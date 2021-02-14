@@ -128,12 +128,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			public T GetValue<T>(IColumnDescriptor<T> column)
 			{
-				if (Equals(column, LogFileColumns.Timestamp))
+				if (Equals(column, Core.LogFiles.Columns.Timestamp))
 				{
 					return (T)(object)_timestamp;
 				}
 
-				if (Equals(column, LogFileColumns.LogLevel))
+				if (Equals(column, Core.LogFiles.Columns.LogLevel))
 				{
 					return (T)(object)_logLevel;
 				}
@@ -143,13 +143,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
-				if (Equals(column, LogFileColumns.Timestamp))
+				if (Equals(column, Core.LogFiles.Columns.Timestamp))
 				{
 					value = (T)(object)_timestamp;
 					return true;
 				}
 
-				if (Equals(column, LogFileColumns.LogLevel))
+				if (Equals(column, Core.LogFiles.Columns.LogLevel))
 				{
 					value = (T)(object)_logLevel;
 					return true;
@@ -160,12 +160,12 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			public object GetValue(IColumnDescriptor column)
 			{
-				if (Equals(column, LogFileColumns.Timestamp))
+				if (Equals(column, Core.LogFiles.Columns.Timestamp))
 				{
 					return _timestamp;
 				}
 
-				if (Equals(column, LogFileColumns.LogLevel))
+				if (Equals(column, Core.LogFiles.Columns.LogLevel))
 				{
 					return _logLevel;
 				}
@@ -175,13 +175,13 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			public bool TryGetValue(IColumnDescriptor column, out object value)
 			{
-				if (Equals(column, LogFileColumns.Timestamp))
+				if (Equals(column, Core.LogFiles.Columns.Timestamp))
 				{
 					value = _timestamp;
 					return true;
 				}
 
-				if (Equals(column, LogFileColumns.LogLevel))
+				if (Equals(column, Core.LogFiles.Columns.LogLevel))
 				{
 					value = _logLevel;
 					return true;
@@ -192,7 +192,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 
 			public IReadOnlyList<IColumnDescriptor> Columns
 			{
-				get { return _inner.Columns.Concat(new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp}).ToList(); }
+				get { return _inner.Columns.Concat(new IColumnDescriptor[]{Core.LogFiles.Columns.LogLevel, Core.LogFiles.Columns.Timestamp}).ToList(); }
 			}
 
 			#endregion

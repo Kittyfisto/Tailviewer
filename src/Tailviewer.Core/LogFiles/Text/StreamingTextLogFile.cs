@@ -89,10 +89,10 @@ namespace Tailviewer.Core.LogFiles.Text
 				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
 			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
-			_cache = new LogEntryCache(LogFileColumns.LogLevel, LogFileColumns.RawContent);
-			_index = new LogEntryList(LogFileColumns.Timestamp);
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.Name, _fileName);
+			_cache = new LogEntryCache(LogFiles.Columns.LogLevel, LogFiles.Columns.RawContent);
+			_index = new LogEntryList(LogFiles.Columns.Timestamp);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
+			_properties.SetValue(LogFiles.Properties.Name, _fileName);
 			_syncRoot = new object();
 
 			_reader = scheduler.OpenReadText(_fullFilename, this, encoding, formatMatcher);
@@ -123,7 +123,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		public int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public IReadOnlyList<IColumnDescriptor> Columns => LogFileColumns.Minimum;
+		public IReadOnlyList<IColumnDescriptor> Columns => LogFiles.Columns.Minimum;
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -185,25 +185,25 @@ namespace Tailviewer.Core.LogFiles.Text
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
 
-			if (Equals(column, LogFileColumns.Index) ||
-			    Equals(column, LogFileColumns.OriginalIndex))
+			if (Equals(column, LogFiles.Columns.Index) ||
+			    Equals(column, LogFiles.Columns.OriginalIndex))
 			{
 				GetIndex(indices, (LogLineIndex[])(object)buffer, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			else if (Equals(column, LogFiles.Columns.LogEntryIndex))
 			{
 				GetIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.LineNumber) ||
-			         Equals(column, LogFileColumns.OriginalLineNumber))
+			else if (Equals(column, LogFiles.Columns.LineNumber) ||
+			         Equals(column, LogFiles.Columns.OriginalLineNumber))
 			{
 				GetLineNumber(indices, (int[])(object)buffer, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.OriginalDataSourceName))
+			else if (Equals(column, LogFiles.Columns.OriginalDataSourceName))
 			{
 				GetDataSourceName(indices, (string[])(object)buffer, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.Timestamp))
+			else if (Equals(column, LogFiles.Columns.Timestamp))
 			{
 				GetTimestamp(indices, (DateTime?[]) (object) buffer, destinationIndex);
 			}
@@ -276,7 +276,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.Index.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.Index.DefaultValue;
 					}
 				}
 			}
@@ -295,7 +295,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.LogEntryIndex.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.LogEntryIndex.DefaultValue;
 					}
 				}
 			}
@@ -323,7 +323,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					}
 					else
 					{
-						buffer[destinationIndex + i] = LogFileColumns.LineNumber.DefaultValue;
+						buffer[destinationIndex + i] = LogFiles.Columns.LineNumber.DefaultValue;
 					}
 				}
 			}
@@ -335,7 +335,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		{
 			lock (_syncRoot)
 			{
-				_index.CopyTo(LogFileColumns.Timestamp, indices, buffer, destinationIndex);
+				_index.CopyTo(LogFiles.Columns.Timestamp, indices, buffer, destinationIndex);
 			}
 		}
 
@@ -413,9 +413,9 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void UpdateProperties(ILogFileProperties properties)
 		{
-			var previousFormat = _properties.GetValue(LogFileProperties.Format);
+			var previousFormat = _properties.GetValue(LogFiles.Properties.Format);
 			_properties.CopyFrom(properties);
-			var format = _properties.GetValue(LogFileProperties.Format);
+			var format = _properties.GetValue(LogFiles.Properties.Format);
 
 			if (!Equals(format, previousFormat))
 			{
@@ -432,13 +432,13 @@ namespace Tailviewer.Core.LogFiles.Text
 		private void Add(IReadOnlyLogEntry logEntry)
 		{
 			var timestamp = logEntry.Timestamp;
-			if (_properties.GetValue(LogFileProperties.StartTimestamp) == null)
-				_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
+			if (_properties.GetValue(LogFiles.Properties.StartTimestamp) == null)
+				_properties.SetValue(LogFiles.Properties.StartTimestamp, timestamp);
 			if (timestamp != null)
-				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
+				_properties.SetValue(LogFiles.Properties.EndTimestamp, timestamp);
 
-			var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
-			_properties.SetValue(LogFileProperties.Duration, duration);
+			var duration = timestamp - _properties.GetValue(LogFiles.Properties.StartTimestamp);
+			_properties.SetValue(LogFiles.Properties.Duration, duration);
 
 			if (timestamp != null)
 			{
@@ -455,7 +455,7 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void UpdateLastModifiedIfNecessary(DateTime timestamp)
 		{
-			var lastModified = _properties.GetValue(LogFileProperties.LastModified);
+			var lastModified = _properties.GetValue(LogFiles.Properties.LastModified);
 			var difference = timestamp - lastModified;
 			if (difference >= TimeSpan.FromSeconds(10))
 			{
@@ -477,7 +477,7 @@ namespace Tailviewer.Core.LogFiles.Text
 					_loggedTimestampWarning = true;
 				}
 
-				_properties.SetValue(LogFileProperties.LastModified, timestamp);
+				_properties.SetValue(LogFiles.Properties.LastModified, timestamp);
 			}
 		}
 

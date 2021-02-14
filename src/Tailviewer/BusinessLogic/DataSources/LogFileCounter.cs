@@ -41,12 +41,12 @@ namespace Tailviewer.BusinessLogic.DataSources
 			NoTimestamp = new Counter();
 			Total = new Counter();
 
-			_entries = new LogEntryList(LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
+			_entries = new LogEntryList(Columns.LogEntryIndex, Columns.Timestamp, Columns.LogLevel);
 			_emptyLine = new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.LogEntryIndex, new LogEntryIndex(-1) },
-				{LogFileColumns.Timestamp, null },
-				{LogFileColumns.LogLevel, LevelFlags.None}
+				{Columns.LogEntryIndex, new LogEntryIndex(-1) },
+				{Columns.Timestamp, null },
+				{Columns.LogLevel, LevelFlags.None}
 			});
 		}
 

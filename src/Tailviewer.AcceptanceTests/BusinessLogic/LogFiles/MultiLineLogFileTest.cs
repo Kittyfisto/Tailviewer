@@ -50,51 +50,51 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new LogFileSection(0, 6),
 				                               new IColumnDescriptor[]
 				                               {
-					                               LogFileColumns.Timestamp,
-					                               LogFileColumns.LogEntryIndex,
-					                               LogFileColumns.LineNumber,
-					                               LogFileColumns.RawContent
+					                               Columns.Timestamp,
+					                               Columns.LogEntryIndex,
+					                               Columns.LineNumber,
+					                               Columns.RawContent
 				                               });
 
 				var line = entries[0];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(1);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
+				line.GetValue(Columns.LineNumber).Should().Be(1);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
 
 				line = entries[1];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(2);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("Started BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
+				line.GetValue(Columns.LineNumber).Should().Be(2);
+				line.GetValue(Columns.RawContent).Should().Be("Started BTPVM3372 05:30:00 6060");
 
 				line = entries[2];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(3);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
+				line.GetValue(Columns.LineNumber).Should().Be(3);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
 
 				line = entries[3];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(4);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("preferences Started BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
+				line.GetValue(Columns.LineNumber).Should().Be(4);
+				line.GetValue(Columns.RawContent).Should().Be("preferences Started BTPVM3372 05:30:00 6060");
 
 				line = entries[4];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(5);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
+				line.GetValue(Columns.LineNumber).Should().Be(5);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
 
 				line = entries[5];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(6);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
+				line.GetValue(Columns.LineNumber).Should().Be(6);
+				line.GetValue(Columns.RawContent).Should().Be("BTPVM3372 05:30:00 6060");
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 				var entries = multi.GetEntries(new List<LogLineIndex>
 				                               {
 					                               new LogLineIndex(0),
@@ -118,47 +118,47 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				                               },
 				                               new IColumnDescriptor[]
 				                               {
-					                               LogFileColumns.Timestamp,
-					                               LogFileColumns.LogEntryIndex,
-					                               LogFileColumns.LineNumber,
-					                               LogFileColumns.RawContent
+					                               Columns.Timestamp,
+					                               Columns.LogEntryIndex,
+					                               Columns.LineNumber,
+					                               Columns.RawContent
 				                               });
 
 				var line = entries[0];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(1);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
+				line.GetValue(Columns.LineNumber).Should().Be(1);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:177 1 00:00:00:0000000 Information Initialize Globals");
 
 				line = entries[1];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(2);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("Started BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(0));
+				line.GetValue(Columns.LineNumber).Should().Be(2);
+				line.GetValue(Columns.RawContent).Should().Be("Started BTPVM3372 05:30:00 6060");
 
 				line = entries[2];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(3);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
+				line.GetValue(Columns.LineNumber).Should().Be(3);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:313 1 00:00:00:0000000 Information   Loading");
 
 				line = entries[3];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(4);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("preferences Started BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 313));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(1));
+				line.GetValue(Columns.LineNumber).Should().Be(4);
+				line.GetValue(Columns.RawContent).Should().Be("preferences Started BTPVM3372 05:30:00 6060");
 
 				line = entries[4];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(5);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
+				line.GetValue(Columns.LineNumber).Should().Be(5);
+				line.GetValue(Columns.RawContent).Should().Be("2019-03-18 14:09:54:551 1 00:00:00:0000000 Information    RMClientURL:");
 
 				line = entries[5];
-				line.GetValue(LogFileColumns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
-				line.GetValue(LogFileColumns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
-				line.GetValue(LogFileColumns.LineNumber).Should().Be(6);
-				line.GetValue(LogFileColumns.RawContent).Should().Be("BTPVM3372 05:30:00 6060");
+				line.GetValue(Columns.Timestamp).Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 551));
+				line.GetValue(Columns.LogEntryIndex).Should().Be(new LogEntryIndex(2));
+				line.GetValue(Columns.LineNumber).Should().Be(6);
+				line.GetValue(Columns.RawContent).Should().Be("BTPVM3372 05:30:00 6060");
 			}
 		}
 
@@ -170,7 +170,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.MultilineNoLogLevel1, new CustomTimestampParser()))
 			using (var multi = new MultiLineLogFile(_scheduler, source, TimeSpan.Zero))
 			{
-				multi.Property(x => x.GetProperty(LogFileProperties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
+				multi.Property(x => x.GetProperty(Properties.LogEntryCount)).ShouldAfter(TimeSpan.FromMinutes(5)).Be(6);
 
 				var line = multi.GetEntry(0);
 				line.Timestamp.Should().Be(new DateTime(2019, 3, 18, 14, 9, 54, 177));

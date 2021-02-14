@@ -9,13 +9,13 @@ namespace Tailviewer.Core.LogFiles
 	internal sealed class EmptyLogFile
 		: ILogFile
 	{
-		private readonly LogFilePropertyList _properties = new LogFilePropertyList(LogFileProperties.Minimum);
+		private readonly LogFilePropertyList _properties = new LogFilePropertyList(LogFiles.Properties.Minimum);
 		private readonly HashSet<ILogFileListener> _listeners = new HashSet<ILogFileListener>();
 
 		public EmptyLogFile()
 		{
-			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
-			_properties.SetValue(LogFileProperties.Size, Size.Zero);
+			_properties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
+			_properties.SetValue(LogFiles.Properties.Size, Size.Zero);
 		}
 
 		#region Implementation of IDisposable
@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 
 		public IReadOnlyList<IColumnDescriptor> Columns
 		{
-			get { return LogFileColumns.Minimum; }
+			get { return LogFiles.Columns.Minimum; }
 		}
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)

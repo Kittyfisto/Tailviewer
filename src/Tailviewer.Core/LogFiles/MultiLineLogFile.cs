@@ -65,15 +65,15 @@ namespace Tailviewer.Core.LogFiles
 			_maximumWaitTime = maximumWaitTime;
 			_pendingModifications = new ConcurrentQueue<LogFileSection>();
 			_syncRoot = new object();
-			_specialColumns = new HashSet<IColumnDescriptor>{LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp, LogFileColumns.LogLevel};
+			_specialColumns = new HashSet<IColumnDescriptor>{LogFiles.Columns.LogEntryIndex, LogFiles.Columns.Timestamp, LogFiles.Columns.LogLevel};
 			_indices = new List<LogEntryInfo>();
 
 			// The log file we were given might offer even more properties than the minimum set and we
 			// want to expose those as well.
-			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.CombineWithMinimum(source.Properties));
-			_propertiesBuffer.SetValue(LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			_propertiesBuffer = new LogFilePropertyList(LogFiles.Properties.CombineWithMinimum(source.Properties));
+			_propertiesBuffer.SetValue(LogFiles.Properties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.CombineWithMinimum(source.Properties));
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.CombineWithMinimum(source.Properties));
 			_properties.CopyFrom(_propertiesBuffer);
 
 			_currentLogEntry = new LogEntryInfo(-1, 0);
@@ -250,7 +250,7 @@ namespace Tailviewer.Core.LogFiles
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
+			if (_properties.GetValue(LogFiles.Properties.PercentageProcessed) == Percentage.HundredPercent)
 			{
 				Listeners.Flush();
 			}
@@ -266,15 +266,15 @@ namespace Tailviewer.Core.LogFiles
 			// Now we can perform a block-copy of all properties and then update our own as desired..
 			_source.GetAllProperties(_propertiesBuffer);
 
-			var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
-			var sourceCount = _propertiesBuffer.GetValue(LogFileProperties.LogEntryCount);
+			var sourceProcessed = _propertiesBuffer.GetValue(LogFiles.Properties.PercentageProcessed);
+			var sourceCount = _propertiesBuffer.GetValue(LogFiles.Properties.LogEntryCount);
 			var ownProgress = sourceCount > 0
 				? Percentage.Of(_indices.Count, sourceCount).Clamped()
 				: Percentage.HundredPercent;
 			var totalProgress = (sourceProcessed * ownProgress).Clamped();
 
-			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, totalProgress);
-			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, (int)_currentSourceIndex);
+			_propertiesBuffer.SetValue(LogFiles.Properties.PercentageProcessed, totalProgress);
+			_propertiesBuffer.SetValue(LogFiles.Properties.LogEntryCount, (int)_currentSourceIndex);
 
 			// We want to update all properties at once, hence we modify _sourceProperties where necessary and then
 			// move them to our properties in a single call
@@ -283,7 +283,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Append(LogFileSection section)
 		{
-			var buffer = new LogEntryArray(section.Count, LogFileColumns.Index, LogFileColumns.Timestamp, LogFileColumns.LogLevel);
+			var buffer = new LogEntryArray(section.Count, LogFiles.Columns.Index, LogFiles.Columns.Timestamp, LogFiles.Columns.LogLevel);
 			_source.GetEntries(section, buffer);
 
 			lock (_syncRoot)
@@ -372,15 +372,15 @@ namespace Tailviewer.Core.LogFiles
 
 		private bool TryGetSpecialColumn<T>(IReadOnlyList<LogLineIndex> indices, IColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			if (Equals(column, LogFileColumns.Timestamp) ||
-			    Equals(column, LogFileColumns.LogLevel))
+			if (Equals(column, LogFiles.Columns.Timestamp) ||
+			    Equals(column, LogFiles.Columns.LogLevel))
 			{
 				var firstLineIndices = GetFirstLineIndices(indices);
 				_source.GetColumn(firstLineIndices, column, buffer, destinationIndex, queryOptions);
 				return true;
 			}
 
-			if (Equals(column, LogFileColumns.LogEntryIndex))
+			if (Equals(column, LogFiles.Columns.LogEntryIndex))
 			{
 				GetLogEntryIndex(indices, (LogEntryIndex[])(object)buffer, destinationIndex);
 				return true;

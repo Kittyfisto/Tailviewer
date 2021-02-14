@@ -74,9 +74,9 @@ namespace Tailviewer.Core.LogFiles
 			_index = new MergedLogFileIndex(sources);
 			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
 			_maximumWaitTime = maximumWaitTime;
-			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFileColumns.SourceId}).Distinct().ToList();
-			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.Minimum);
-			_properties = new ConcurrentLogFilePropertyCollection(LogFileProperties.Minimum);
+			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFiles.Columns.SourceId}).Distinct().ToList();
+			_propertiesBuffer = new LogFilePropertyList(LogFiles.Properties.Minimum);
+			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
 
 			foreach (var logFile in _sources)
 			{
@@ -168,29 +168,29 @@ namespace Tailviewer.Core.LogFiles
 			if (destinationIndex + sourceIndices.Count > destination.Length)
 				throw new ArgumentException("The given buffer must have an equal or greater length than destinationIndex+length");
 
-			if (Equals(column, LogFileColumns.ElapsedTime))
+			if (Equals(column, LogFiles.Columns.ElapsedTime))
 			{
 				GetElapsedTime(sourceIndices, (TimeSpan?[]) (object) destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, LogFileColumns.DeltaTime))
+			else if (Equals(column, LogFiles.Columns.DeltaTime))
 			{
 				GetDeltaTime(sourceIndices, (TimeSpan?[])(object)destination, destinationIndex, queryOptions);
 			}
-			else if (Equals(column, LogFileColumns.Index) ||
-			         Equals(column, LogFileColumns.OriginalIndex))
+			else if (Equals(column, LogFiles.Columns.Index) ||
+			         Equals(column, LogFiles.Columns.OriginalIndex))
 			{
 				_index.GetLogLineIndices(sourceIndices, (LogLineIndex[]) (object) destination, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.LogEntryIndex))
+			else if (Equals(column, LogFiles.Columns.LogEntryIndex))
 			{
 				_index.GetLogEntryIndices(sourceIndices, (LogEntryIndex[])(object)destination, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.LineNumber) ||
-			         Equals(column, LogFileColumns.OriginalLineNumber))
+			else if (Equals(column, LogFiles.Columns.LineNumber) ||
+			         Equals(column, LogFiles.Columns.OriginalLineNumber))
 			{
 				_index.GetLineNumbers(sourceIndices, (int[]) (object) destination, destinationIndex);
 			}
-			else if (Equals(column, LogFileColumns.SourceId))
+			else if (Equals(column, LogFiles.Columns.SourceId))
 			{
 				_index.GetSourceIds(sourceIndices, (LogLineSourceId[]) (object) destination, destinationIndex);
 			}
@@ -257,9 +257,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="queryOptions"></param>
 		private void GetElapsedTime(IReadOnlyList<LogLineIndex> indices, TimeSpan?[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
-			var start = GetProperty(LogFileProperties.StartTimestamp);
+			var start = GetProperty(LogFiles.Properties.StartTimestamp);
 			var timestamps = new DateTime?[indices.Count];
-			GetColumn(indices, LogFileColumns.Timestamp, timestamps, 0, queryOptions);
+			GetColumn(indices, LogFiles.Columns.Timestamp, timestamps, 0, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var current = timestamps[i];
@@ -290,7 +290,7 @@ namespace Tailviewer.Core.LogFiles
 				timestampIndices[i * 2 + 0] = indices[i] - 1;
 				timestampIndices[i * 2 + 1] = indices[i];
 			}
-			GetColumn(timestampIndices, LogFileColumns.Timestamp, timestamps, 0, queryOptions);
+			GetColumn(timestampIndices, LogFiles.Columns.Timestamp, timestamps, 0, queryOptions);
 			for (int i = 0; i < indices.Count; ++i)
 			{
 				var previous = timestamps[i * 2 + 0];
@@ -333,7 +333,7 @@ namespace Tailviewer.Core.LogFiles
 			if (!performedWork)
 				UpdateProperties();
 
-			if (_pendingModifications.IsEmpty && _properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
+			if (_pendingModifications.IsEmpty && _properties.GetValue(LogFiles.Properties.PercentageProcessed) == Percentage.HundredPercent)
 				Listeners.Flush();
 
 			return _maximumWaitTime;
@@ -390,35 +390,35 @@ namespace Tailviewer.Core.LogFiles
 				var source = _sources[n];
 				source.GetAllProperties(_propertiesBuffer);
 
-				var sourceSize = _propertiesBuffer.GetValue(LogFileProperties.Size);
+				var sourceSize = _propertiesBuffer.GetValue(LogFiles.Properties.Size);
 				if (size == null)
 					size = sourceSize;
 				else if (sourceSize != null)
 					size += sourceSize;
 
-				var last = _propertiesBuffer.GetValue(LogFileProperties.LastModified);
+				var last = _propertiesBuffer.GetValue(LogFiles.Properties.LastModified);
 				if (last != null && (last > lastModified || lastModified == null))
 					lastModified = last;
-				var start = _propertiesBuffer.GetValue(LogFileProperties.StartTimestamp);
+				var start = _propertiesBuffer.GetValue(LogFiles.Properties.StartTimestamp);
 				if (start != null && (start < startTimestamp || startTimestamp == null))
 					startTimestamp = start;
-				var end = _propertiesBuffer.GetValue(LogFileProperties.EndTimestamp);
+				var end = _propertiesBuffer.GetValue(LogFiles.Properties.EndTimestamp);
 				if (end != null && (end > endTimestamp || endTimestamp == null))
 					endTimestamp = end;
-				maxCharactersPerLine = Math.Max(maxCharactersPerLine, _propertiesBuffer.GetValue(TextLogFileProperties.MaxCharactersInLine));
+				maxCharactersPerLine = Math.Max(maxCharactersPerLine, _propertiesBuffer.GetValue(TextProperties.MaxCharactersInLine));
 
-				var sourceProcessed = _propertiesBuffer.GetValue(LogFileProperties.PercentageProcessed);
+				var sourceProcessed = _propertiesBuffer.GetValue(LogFiles.Properties.PercentageProcessed);
 				processed *= sourceProcessed;
 			}
 
-			_propertiesBuffer.SetValue(LogFileProperties.LogEntryCount, _index.Count);
-			_propertiesBuffer.SetValue(TextLogFileProperties.MaxCharactersInLine, maxCharactersPerLine);
-			_propertiesBuffer.SetValue(LogFileProperties.PercentageProcessed, processed);
-			_propertiesBuffer.SetValue(LogFileProperties.LastModified, lastModified);
-			_propertiesBuffer.SetValue(LogFileProperties.Size, size);
-			_propertiesBuffer.SetValue(LogFileProperties.StartTimestamp, startTimestamp);
-			_propertiesBuffer.SetValue(LogFileProperties.EndTimestamp, endTimestamp);
-			_propertiesBuffer.SetValue(LogFileProperties.Duration, endTimestamp - startTimestamp);
+			_propertiesBuffer.SetValue(LogFiles.Properties.LogEntryCount, _index.Count);
+			_propertiesBuffer.SetValue(TextProperties.MaxCharactersInLine, maxCharactersPerLine);
+			_propertiesBuffer.SetValue(LogFiles.Properties.PercentageProcessed, processed);
+			_propertiesBuffer.SetValue(LogFiles.Properties.LastModified, lastModified);
+			_propertiesBuffer.SetValue(LogFiles.Properties.Size, size);
+			_propertiesBuffer.SetValue(LogFiles.Properties.StartTimestamp, startTimestamp);
+			_propertiesBuffer.SetValue(LogFiles.Properties.EndTimestamp, endTimestamp);
+			_propertiesBuffer.SetValue(LogFiles.Properties.Duration, endTimestamp - startTimestamp);
 
 			// We want to ensure that we modify all properties at once so that users of this log file don't
 			// see an inconsistent state of properties when they retrieve them.

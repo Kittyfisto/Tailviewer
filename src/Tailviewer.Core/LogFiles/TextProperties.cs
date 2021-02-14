@@ -5,7 +5,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <summary>
 	///     Maintains a collection of well-known log file properties only applicable to text-based log files.
 	/// </summary>
-	public static class TextLogFileProperties
+	public static class TextProperties
 	{
 		/// <summary>
 		///     The number of lines the original source consists of.
@@ -25,7 +25,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </remarks>
 		public static readonly IReadOnlyPropertyDescriptor<int> MaxCharactersInLine;
 
-		static TextLogFileProperties()
+		static TextProperties()
 		{
 			var category = "text";
 			LineCount = new WellKnownReadOnlyProperty<long>(new []{category, "line_count"}, "Lines");

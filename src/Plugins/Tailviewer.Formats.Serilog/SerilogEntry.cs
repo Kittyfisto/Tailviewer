@@ -86,12 +86,12 @@ namespace Tailviewer.Formats.Serilog
 
 		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			if (Equals(column, LogFileColumns.RawContent))
+			if (Equals(column, Core.LogFiles.Columns.RawContent))
 			{
 				return (T) (object) _rawContent;
 			}
 
-			if (Equals(column, LogFileColumns.Message))
+			if (Equals(column, Core.LogFiles.Columns.Message))
 			{
 				return (T)(object)Message;
 			}

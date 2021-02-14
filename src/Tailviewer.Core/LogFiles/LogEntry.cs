@@ -19,7 +19,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		public LogEntry()
-			: this(LogFileColumns.Minimum)
+			: this(LogFiles.Columns.Minimum)
 		{}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void SetValue(IColumnDescriptor column, object value)
 		{
-			if (!LogFileColumn.IsAssignableFrom(column, value))
+			if (!ColumnDescriptorExtensions.IsAssignableFrom(column, value))
 				throw new ArgumentException(string.Format("The value '{0}' of type '{1}' cannot be assigned to column '{2}' of type '{3}'",
 				                                          value, value?.GetType(),
 				                                          column, column.DataType));

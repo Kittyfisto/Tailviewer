@@ -104,7 +104,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndex.cs" />
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
-    <Compile Include="LogFiles\TextLogFileProperties.cs" />
+    <Compile Include="LogFiles\TextProperties.cs" />
     <Compile Include="LogFiles\Text\RawTextLogEntry.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryView.cs" />
@@ -161,8 +161,8 @@
     <Compile Include="LogFiles\LogEntryArray.cs" />
     <Compile Include="LogFiles\LogEntryList.cs" />
     <Compile Include="LogFiles\Int32View.cs" />
-    <Compile Include="LogFiles\LogFileColumn.cs" />
-    <Compile Include="LogFiles\LogFileProperties.cs" />
+    <Compile Include="LogFiles\ColumnDescriptorExtensions.cs" />
+    <Compile Include="LogFiles\Properties.cs" />
     <Compile Include="LogFiles\LogFilePropertiesDebuggerView.cs" />
     <Compile Include="LogFiles\LogFileProperty.cs" />
     <Compile Include="LogFiles\LogFilePropertyList.cs" />
@@ -170,7 +170,7 @@
     <Compile Include="LogFiles\ReadOnlyLogEntriesEnumerator.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntry.cs" />
     <Compile Include="LogFiles\WellKnownColumnDescriptor.cs" />
-    <Compile Include="LogFiles\LogFileColumns.cs" />
+    <Compile Include="LogFiles\Columns.cs" />
     <Compile Include="LogFiles\LogFileExtensions.cs" />
     <Compile Include="LogFiles\LogFileListenerCollection.cs" />
     <Compile Include="LogFiles\LogFileListenerNotifier.cs" />

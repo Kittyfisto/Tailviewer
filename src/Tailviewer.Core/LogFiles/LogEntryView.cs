@@ -48,15 +48,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.RawContent))
-					throw new NoSuchColumnException(LogFileColumns.RawContent);
+				if (!_columns.Contains(LogFiles.Columns.RawContent))
+					throw new NoSuchColumnException(LogFiles.Columns.RawContent);
 
 				return _logEntry.RawContent;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.RawContent))
-					throw new NoSuchColumnException(LogFileColumns.RawContent);
+				if (!_columns.Contains(LogFiles.Columns.RawContent))
+					throw new NoSuchColumnException(LogFiles.Columns.RawContent);
 
 				_logEntry.RawContent = value;
 			}
@@ -67,15 +67,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.Index))
-					throw new NoSuchColumnException(LogFileColumns.Index);
+				if (!_columns.Contains(LogFiles.Columns.Index))
+					throw new NoSuchColumnException(LogFiles.Columns.Index);
 
 				return _logEntry.Index;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.Index))
-					throw new NoSuchColumnException(LogFileColumns.Index);
+				if (!_columns.Contains(LogFiles.Columns.Index))
+					throw new NoSuchColumnException(LogFiles.Columns.Index);
 
 				_logEntry.Index = value;
 			}
@@ -86,15 +86,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalIndex))
-					throw new NoSuchColumnException(LogFileColumns.OriginalIndex);
+				if (!_columns.Contains(LogFiles.Columns.OriginalIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalIndex);
 
 				return _logEntry.OriginalIndex;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalIndex))
-					throw new NoSuchColumnException(LogFileColumns.OriginalIndex);
+				if (!_columns.Contains(LogFiles.Columns.OriginalIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalIndex);
 
 				_logEntry.OriginalIndex = value;
 			}
@@ -105,15 +105,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LogEntryIndex))
-					throw new NoSuchColumnException(LogFileColumns.LogEntryIndex);
+				if (!_columns.Contains(LogFiles.Columns.LogEntryIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.LogEntryIndex);
 
 				return _logEntry.LogEntryIndex;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.LogEntryIndex))
-					throw new NoSuchColumnException(LogFileColumns.LogEntryIndex);
+				if (!_columns.Contains(LogFiles.Columns.LogEntryIndex))
+					throw new NoSuchColumnException(LogFiles.Columns.LogEntryIndex);
 
 				_logEntry.LogEntryIndex = value;
 			}
@@ -124,15 +124,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LineNumber))
-					throw new NoSuchColumnException(LogFileColumns.LineNumber);
+				if (!_columns.Contains(LogFiles.Columns.LineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.LineNumber);
 
 				return _logEntry.LineNumber;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.LineNumber))
-					throw new NoSuchColumnException(LogFileColumns.LineNumber);
+				if (!_columns.Contains(LogFiles.Columns.LineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.LineNumber);
 
 				_logEntry.LineNumber = value;
 			}
@@ -143,15 +143,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(LogFileColumns.OriginalLineNumber);
+				if (!_columns.Contains(LogFiles.Columns.OriginalLineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalLineNumber);
 
 				return _logEntry.OriginalLineNumber;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalLineNumber))
-					throw new NoSuchColumnException(LogFileColumns.OriginalLineNumber);
+				if (!_columns.Contains(LogFiles.Columns.OriginalLineNumber))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalLineNumber);
 
 				_logEntry.OriginalLineNumber = value;
 			}
@@ -162,15 +162,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+				if (!_columns.Contains(LogFiles.Columns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalDataSourceName);
 
 				return _logEntry.OriginalDataSourceName;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.OriginalDataSourceName))
-					throw new NoSuchColumnException(LogFileColumns.OriginalDataSourceName);
+				if (!_columns.Contains(LogFiles.Columns.OriginalDataSourceName))
+					throw new NoSuchColumnException(LogFiles.Columns.OriginalDataSourceName);
 
 				_logEntry.OriginalDataSourceName = value;
 			}
@@ -181,15 +181,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.SourceId))
-					throw new NoSuchColumnException(LogFileColumns.SourceId);
+				if (!_columns.Contains(LogFiles.Columns.SourceId))
+					throw new NoSuchColumnException(LogFiles.Columns.SourceId);
 
 				return _logEntry.SourceId;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.SourceId))
-					throw new NoSuchColumnException(LogFileColumns.SourceId);
+				if (!_columns.Contains(LogFiles.Columns.SourceId))
+					throw new NoSuchColumnException(LogFiles.Columns.SourceId);
 
 				_logEntry.SourceId = value;
 			}
@@ -200,15 +200,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.LogLevel))
-					throw new NoSuchColumnException(LogFileColumns.LogLevel);
+				if (!_columns.Contains(LogFiles.Columns.LogLevel))
+					throw new NoSuchColumnException(LogFiles.Columns.LogLevel);
 
 				return _logEntry.LogLevel;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.LogLevel))
-					throw new NoSuchColumnException(LogFileColumns.LogLevel);
+				if (!_columns.Contains(LogFiles.Columns.LogLevel))
+					throw new NoSuchColumnException(LogFiles.Columns.LogLevel);
 
 				_logEntry.LogLevel = value;
 			}
@@ -219,15 +219,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.Timestamp))
-					throw new NoSuchColumnException(LogFileColumns.Timestamp);
+				if (!_columns.Contains(LogFiles.Columns.Timestamp))
+					throw new NoSuchColumnException(LogFiles.Columns.Timestamp);
 
 				return _logEntry.Timestamp;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.Timestamp))
-					throw new NoSuchColumnException(LogFileColumns.Timestamp);
+				if (!_columns.Contains(LogFiles.Columns.Timestamp))
+					throw new NoSuchColumnException(LogFiles.Columns.Timestamp);
 
 				_logEntry.Timestamp = value;
 			}
@@ -238,15 +238,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.ElapsedTime))
-					throw new NoSuchColumnException(LogFileColumns.ElapsedTime);
+				if (!_columns.Contains(LogFiles.Columns.ElapsedTime))
+					throw new NoSuchColumnException(LogFiles.Columns.ElapsedTime);
 
 				return _logEntry.ElapsedTime;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.ElapsedTime))
-					throw new NoSuchColumnException(LogFileColumns.ElapsedTime);
+				if (!_columns.Contains(LogFiles.Columns.ElapsedTime))
+					throw new NoSuchColumnException(LogFiles.Columns.ElapsedTime);
 
 				_logEntry.ElapsedTime = value;
 			}
@@ -257,15 +257,15 @@ namespace Tailviewer.Core.LogFiles
 		{
 			get
 			{
-				if (!_columns.Contains(LogFileColumns.DeltaTime))
-					throw new NoSuchColumnException(LogFileColumns.DeltaTime);
+				if (!_columns.Contains(LogFiles.Columns.DeltaTime))
+					throw new NoSuchColumnException(LogFiles.Columns.DeltaTime);
 
 				return _logEntry.DeltaTime;
 			}
 			set
 			{
-				if (!_columns.Contains(LogFileColumns.DeltaTime))
-					throw new NoSuchColumnException(LogFileColumns.DeltaTime);
+				if (!_columns.Contains(LogFiles.Columns.DeltaTime))
+					throw new NoSuchColumnException(LogFiles.Columns.DeltaTime);
 
 				_logEntry.DeltaTime = value;
 			}

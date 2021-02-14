@@ -168,8 +168,8 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -216,8 +216,8 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -246,8 +246,8 @@ namespace Tailviewer.Test.Ui.Controls
 			{
 				entries.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 				{
-					{LogFileColumns.RawContent, "Foobar" },
-					{LogFileColumns.LogLevel, LevelFlags.Info }
+					{Columns.RawContent, "Foobar" },
+					{Columns.LogLevel, LevelFlags.Info }
 				}));
 			}
 			_logFile.AddRange(entries);
@@ -259,8 +259,8 @@ namespace Tailviewer.Test.Ui.Controls
 			_control.FollowTail = true;
 			_logFile.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>
 			{
-				{LogFileColumns.RawContent, "Foobar" },
-				{LogFileColumns.LogLevel, LevelFlags.Info }
+				{Columns.RawContent, "Foobar" },
+				{Columns.LogLevel, LevelFlags.Info }
 			}));
 			_control.OnLogFileModified(_logFile, new LogFileSection(0, _logFile.Count));
 			Thread.Sleep((int)(2 * LogEntryListView.MaximumRefreshInterval.TotalMilliseconds));

@@ -30,14 +30,14 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogFile()
-			: this(LogFileColumns.Minimum)
+			: this(LogFiles.Columns.Minimum)
 		{ }
 
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
 		public InMemoryLogFile(IReadOnlyDictionary<IReadOnlyPropertyDescriptor, object> properties)
-			: this(LogFileColumns.Minimum, properties)
+			: this(LogFiles.Columns.Minimum, properties)
 		{ }
 
 		/// <summary>
@@ -77,12 +77,12 @@ namespace Tailviewer.Core.LogFiles
 				throw new ArgumentNullException(nameof(columns));
 
 			_syncRoot = new object();
-			_logEntries = new LogEntryList(LogFileColumns.CombineWithMinimum(columns));
+			_logEntries = new LogEntryList(LogFiles.Columns.CombineWithMinimum(columns));
 			_listeners = new LogFileListenerCollection(this);
 
-			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
-			_properties.SetValue(LogFileProperties.Size, Size.Zero);
-			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
+			_properties = new LogFilePropertyList(LogFiles.Properties.Minimum);
+			_properties.SetValue(LogFiles.Properties.Size, Size.Zero);
+			_properties.SetValue(LogFiles.Properties.PercentageProcessed, Percentage.HundredPercent);
 			foreach (var pair in properties)
 			{
 				_properties.SetValue(pair.Key, pair.Value);
@@ -267,11 +267,11 @@ namespace Tailviewer.Core.LogFiles
 				if (_logEntries.Count > 0)
 				{
 					_logEntries.Clear();
-					SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
-					_properties.SetValue(TextLogFileProperties.MaxCharactersInLine, 0);
-					_properties.SetValue(LogFileProperties.StartTimestamp, null);
-					_properties.SetValue(LogFileProperties.EndTimestamp, null);
-					_properties.SetValue(LogFileProperties.Size, Size.Zero);
+					SetValue(LogFiles.Properties.LogEntryCount, _logEntries.Count);
+					_properties.SetValue(TextProperties.MaxCharactersInLine, 0);
+					_properties.SetValue(LogFiles.Properties.StartTimestamp, null);
+					_properties.SetValue(LogFiles.Properties.EndTimestamp, null);
+					_properties.SetValue(LogFiles.Properties.Size, Size.Zero);
 					Touch();
 
 					_listeners.Reset();
@@ -301,7 +301,7 @@ namespace Tailviewer.Core.LogFiles
 
 				var available = _logEntries.Count - index;
 				_logEntries.RemoveRange((int)index, available);
-				SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
+				SetValue(LogFiles.Properties.LogEntryCount, _logEntries.Count);
 				_listeners.Invalidate((int)index, available);
 				Touch();
 			}
@@ -309,7 +309,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private void Touch()
 		{
-			_properties.SetValue(LogFileProperties.LastModified, DateTime.Now);
+			_properties.SetValue(LogFiles.Properties.LastModified, DateTime.Now);
 		}
 
 		/// <summary>
@@ -389,8 +389,8 @@ namespace Tailviewer.Core.LogFiles
 						DeltaTime = deltaTime
 					};
 					_logEntries.Add(logEntry);
-					SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
-					SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetProperty(TextLogFileProperties.MaxCharactersInLine), line.Length));
+					SetValue(LogFiles.Properties.LogEntryCount, _logEntries.Count);
+					SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), line.Length));
 				}
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
@@ -427,7 +427,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				entry.TryGetValue(LogFileColumns.Timestamp, out var timestamp);
+				entry.TryGetValue(LogFiles.Columns.Timestamp, out var timestamp);
 				UpdateTimestampProperties(timestamp);
 				var logEntryIndex = GetLogEntryIndex(timestamp, out var elapsed, out var deltaTime);
 
@@ -455,8 +455,8 @@ namespace Tailviewer.Core.LogFiles
 				finalLogEntry.DeltaTime = deltaTime;
 
 				_logEntries.Add(finalLogEntry);
-				SetValue(LogFileProperties.LogEntryCount, _logEntries.Count);
-				SetValue(TextLogFileProperties.MaxCharactersInLine, Math.Max(GetProperty(TextLogFileProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
+				SetValue(LogFiles.Properties.LogEntryCount, _logEntries.Count);
+				SetValue(TextProperties.MaxCharactersInLine, Math.Max(GetProperty(TextProperties.MaxCharactersInLine), finalLogEntry.RawContent?.Length ?? 0));
 				Touch();
 				_listeners.OnRead(_logEntries.Count);
 
@@ -492,7 +492,7 @@ namespace Tailviewer.Core.LogFiles
 				logEntryIndex = 0;
 			}
 
-			elapsed = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
+			elapsed = timestamp - _properties.GetValue(LogFiles.Properties.StartTimestamp);
 			deltaTime = timestamp - lastTimestamp;
 			return logEntryIndex;
 		}
@@ -501,18 +501,18 @@ namespace Tailviewer.Core.LogFiles
 		{
 			if (timestamp != null)
 			{
-				var startTimestamp = _properties.GetValue(LogFileProperties.StartTimestamp);
+				var startTimestamp = _properties.GetValue(LogFiles.Properties.StartTimestamp);
 				if (startTimestamp == null)
 				{
-					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
-					_properties.SetValue(LogFileProperties.Duration, TimeSpan.Zero);
+					_properties.SetValue(LogFiles.Properties.StartTimestamp, timestamp);
+					_properties.SetValue(LogFiles.Properties.Duration, TimeSpan.Zero);
 				}
 				else
 				{
-					_properties.SetValue(LogFileProperties.Duration, timestamp - startTimestamp);
+					_properties.SetValue(LogFiles.Properties.Duration, timestamp - startTimestamp);
 				}
 
-				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
+				_properties.SetValue(LogFiles.Properties.EndTimestamp, timestamp);
 			}
 		}
 	}

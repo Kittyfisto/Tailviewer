@@ -114,11 +114,11 @@ namespace Tailviewer.Ui.Controls.LogView.DataSource
 				}
 
 				_dataSourcesPerLogLine.Clear();
-				var entries = new LogEntryArray(visibleSection.Count, new[] {LogFileColumns.SourceId});
+				var entries = new LogEntryArray(visibleSection.Count, new[] {Columns.SourceId});
 				multi.FilteredLogFile.GetEntries(visibleSection, entries);
 				foreach (var logEntry in entries)
 				{
-					var dataSourceId = (int) logEntry.GetValue(LogFileColumns.SourceId);
+					var dataSourceId = (int) logEntry.GetValue(Columns.SourceId);
 					if (dataSourceId >= 0 && dataSourceId < texts.Length)
 					{
 						var text = texts[dataSourceId];

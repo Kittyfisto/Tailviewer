@@ -117,7 +117,7 @@ namespace Tailviewer.BusinessLogic.Bookmarks
 				if (!_dataSourcesByLogFile.ContainsKey(logFile))
 					return null;
 
-				if (logLineIndex >= logFile.GetProperty(LogFileProperties.LogEntryCount))
+				if (logLineIndex >= logFile.GetProperty(Properties.LogEntryCount))
 					return null;
 
 				Bookmark bookmark = new Bookmark(dataSource, logLineIndex);

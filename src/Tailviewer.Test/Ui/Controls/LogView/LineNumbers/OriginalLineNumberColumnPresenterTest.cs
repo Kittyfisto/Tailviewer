@@ -45,10 +45,10 @@ namespace Tailviewer.Test.Ui.Controls.LogView.LineNumbers
 		public void TestUpdateLineNumbers2()
 		{
 			var logFile = new Mock<ILogFile>();
-			logFile.Setup(x => x.GetProperty(LogFileProperties.LogEntryCount)).Returns(4);
-			logFile.Setup(x => x.GetProperty(TextLogFileProperties.LineCount)).Returns(1000);
+			logFile.Setup(x => x.GetProperty(Properties.LogEntryCount)).Returns(4);
+			logFile.Setup(x => x.GetProperty(TextProperties.LineCount)).Returns(1000);
 			logFile.Setup(x => x.GetColumn(It.Is<LogFileSection>(y => y == new LogFileSection(0, 4)),
-			                               It.Is<IColumnDescriptor<int>>(y => y == LogFileColumns.OriginalLineNumber),
+			                               It.Is<IColumnDescriptor<int>>(y => y == Columns.OriginalLineNumber),
 										   It.IsAny<int[]>(),
 			                               It.IsAny<int>(),
 			                               It.IsAny<LogFileQueryOptions>()))
