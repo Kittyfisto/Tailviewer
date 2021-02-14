@@ -163,7 +163,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			return value;
 		}
 
-		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public override void SetProperty(IPropertyDescriptor property, object value)
 		{
 			throw new NotImplementedException();
 		}

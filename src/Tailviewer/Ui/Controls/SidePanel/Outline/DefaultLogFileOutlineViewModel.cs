@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using log4net;
 using Tailviewer.BusinessLogic.LogFiles;
 using Tailviewer.Core.LogFiles;
+using Tailviewer.Ui.Properties;
 
 namespace Tailviewer.Ui.Controls.SidePanel.Outline
 {
@@ -17,21 +17,45 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ILogFile _logFile;
-		private readonly ILogFileProperties _propertyValues;
-		private readonly Dictionary<IReadOnlyPropertyDescriptor, ILogFilePropertyViewModel> _viewModelsByProperty;
-		private readonly ObservableCollection<ILogFilePropertyViewModel> _viewModels;
+		private readonly LogFilePropertyList _propertyValues;
+		private readonly Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter> _presentersByProperty;
+		private readonly ObservableCollection<IPropertyPresenter> _presenters;
+		private readonly DefaultPropertyPresenterPlugin _plugin;
 
 		public DefaultLogFileOutlineViewModel(ILogFile logFile)
 		{
 			_logFile = logFile;
 			_propertyValues = new LogFilePropertyList();
-			_viewModelsByProperty = new Dictionary<IReadOnlyPropertyDescriptor, ILogFilePropertyViewModel>();
-			_viewModels = new ObservableCollection<ILogFilePropertyViewModel>();
+			_presentersByProperty = new Dictionary<IReadOnlyPropertyDescriptor, IPropertyPresenter>();
+			_presenters = new ObservableCollection<IPropertyPresenter>();
+			_plugin = new DefaultPropertyPresenterPlugin();
 		}
 
-		public IReadOnlyList<ILogFilePropertyViewModel> Properties
+		public IReadOnlyList<IPropertyPresenter> Properties
 		{
-			get { return _viewModels; }
+			get { return _presenters; }
+		}
+
+		public void Update()
+		{
+			_logFile.GetAllProperties(_propertyValues);
+			foreach (var property in _propertyValues.Properties)
+			{
+				if (!_presentersByProperty.TryGetValue(property, out var presenter
+				                                      ))
+				{
+					presenter = TryCreateViewModel(property);
+					_presentersByProperty.Add(property, presenter
+					                         );
+
+					if (presenter != null)
+						_presenters.Add(presenter);
+				}
+
+				// Some properties just don't have presenters and we want to avoid trying to create one over and over,
+				// so we simply remember those that don't have one
+				presenter?.Update(_propertyValues.GetValue(property));
+			}
 		}
 
 		#region Implementation of INotifyPropertyChanged
@@ -42,43 +66,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		#endregion
 
-		private ILogFilePropertyViewModel TryCreateViewModel(IReadOnlyPropertyDescriptor x)
-		{
-			try
-			{
-				return (ILogFilePropertyViewModel) CreateViewModel((dynamic) x);
-			}
-			catch (Exception e)
-			{
-				Log.ErrorFormat("Caught unexpected exception: {0}", e);
-				return null;
-			}
-		}
-
-		private LogFilePropertyViewModel<T> CreateViewModel<T>(IReadOnlyPropertyDescriptor<T> descriptor)
-		{
-			return new LogFilePropertyViewModel<T>(descriptor);
-		}
-
 		#region Implementation of IDisposable
 
 		public void Dispose()
 		{
-		}
-
-		public void Update()
-		{
-			_logFile.GetAllProperties(_propertyValues);
-			foreach (var property in _propertyValues.Properties)
-			{
-				if (!_viewModelsByProperty.TryGetValue(property, out var viewModel))
-				{
-					viewModel = TryCreateViewModel(property);
-					_viewModelsByProperty.Add(property, viewModel);
-					_viewModels.Add(viewModel);
-				}
-				viewModel.Update(_propertyValues);
-			}
 		}
 
 		public FrameworkElement TryCreateContent()
@@ -90,5 +81,18 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 		}
 
 		#endregion
+
+		private IPropertyPresenter TryCreateViewModel(IReadOnlyPropertyDescriptor property)
+		{
+			try
+			{
+				return _plugin.TryCreatePresenterFor(property);
+			}
+			catch (Exception e)
+			{
+				Log.ErrorFormat("Caught unexpected exception: {0}", e);
+				return null;
+			}
+		}
 	}
 }

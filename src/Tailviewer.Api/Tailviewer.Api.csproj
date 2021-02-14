@@ -61,7 +61,7 @@
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormatRepository.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFilePropertyDescriptor.cs" />
+    <Compile Include="BusinessLogic\LogFiles\IPropertyDescriptor.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntriesExtensions.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileQueryMode.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileQueryOptions.cs" />
@@ -91,6 +91,8 @@
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueAnalyser.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssueListener.cs" />
     <Compile Include="BusinessLogic\Plugins\Issues\ILogFileIssuesPlugin.cs" />
+    <Compile Include="Ui\Properties\IPropertyPresenter.cs" />
+    <Compile Include="Ui\Properties\IPropertyPresenterPlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlinePlugin.cs" />
     <Compile Include="Ui\Outline\ILogFileOutlineViewModel.cs" />
     <Compile Include="BusinessLogic\Plugins\PluginInterfaceVersion.cs" />

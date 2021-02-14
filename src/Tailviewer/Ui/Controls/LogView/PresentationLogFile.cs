@@ -314,7 +314,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			return _source.GetProperty(property);
 		}
 
-		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public override void SetProperty(IPropertyDescriptor property, object value)
 		{
 			_source.SetProperty(property, value);
 		}

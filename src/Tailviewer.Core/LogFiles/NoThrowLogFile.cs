@@ -150,7 +150,7 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public void SetProperty(IPropertyDescriptor property, object value)
 		{
 			try
 			{

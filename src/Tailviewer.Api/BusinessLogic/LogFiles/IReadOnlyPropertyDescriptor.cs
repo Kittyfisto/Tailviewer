@@ -1,4 +1,5 @@
 ﻿using System;
+using Tailviewer.Ui.Properties;
 
 namespace Tailviewer.BusinessLogic.LogFiles
 {
@@ -7,7 +8,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	/// <remarks>
 	///     By default, properties are read-only as far as the user is concerned, e.g. properties may change their values over time,
-	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="ILogFilePropertyDescriptor"/> on top of this one
+	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="IPropertyDescriptor"/> on top of this one
 	///     to mark it as non read-only.
 	/// </remarks>
 	public interface IReadOnlyPropertyDescriptor
@@ -19,14 +20,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		///     There cannot be two different properties with the same id.
 		/// </remarks>
 		string Id { get; }
-
-		/// <summary>
-		///     The human readable name of this property.
-		/// </summary>
-		/// <remarks>
-		///     Properties without display name will not be shown to users.
-		/// </remarks>
-		string DisplayName { get; }
 
 		/// <summary>
 		///     The type of the data provided by this column.
@@ -44,7 +37,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// </summary>
 	/// <remarks>
 	///     By default, properties are read-only as far as the user is concerned, e.g. properties may change their values over time,
-	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="ILogFilePropertyDescriptor"/> on top of this one
+	///     but the user cannot change them back. If this is desired, then the property should implement <see cref="IPropertyDescriptor"/> on top of this one
 	///     to mark it as non read-only.
 	/// </remarks>
 	/// <typeparam name="T"></typeparam>

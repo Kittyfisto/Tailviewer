@@ -12,6 +12,7 @@ namespace Tailviewer.Core.LogFiles
 	/// <typeparam name="T"></typeparam>
 	internal class WellKnownReadOnlyProperty<T>
 		: IReadOnlyPropertyDescriptor<T>
+		, IWellKnownReadOnlyPropertyDescriptor
 	{
 		private readonly string _id;
 		private readonly string _displayName;

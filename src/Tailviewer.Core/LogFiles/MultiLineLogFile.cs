@@ -103,7 +103,7 @@ namespace Tailviewer.Core.LogFiles
 			return value;
 		}
 
-		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public override void SetProperty(IPropertyDescriptor property, object value)
 		{
 			_source.SetProperty(property, value);
 		}

@@ -82,7 +82,7 @@ namespace Tailviewer.Core.LogFiles
 		public abstract T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property);
 
 		/// <inheritdoc />
-		public abstract void SetProperty(ILogFilePropertyDescriptor property, object value);
+		public abstract void SetProperty(IPropertyDescriptor property, object value);
 
 		/// <inheritdoc />
 		public abstract void SetProperty<T>(IPropertyDescriptor<T> property, T value);

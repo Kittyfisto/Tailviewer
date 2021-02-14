@@ -105,7 +105,7 @@ namespace Tailviewer.Core.LogFiles
 			return _buffer.GetProperty(property);
 		}
 
-		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public void SetProperty(IPropertyDescriptor property, object value)
 		{
 			throw new NotImplementedException();
 		}

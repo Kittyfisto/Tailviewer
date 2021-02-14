@@ -45,8 +45,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 				file.SetProperty(LogFileProperties.Encoding, Encoding.BigEndianUnicode);
 				source.Verify(x => x.SetProperty(LogFileProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
 
-				file.SetProperty((ILogFilePropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode);
-				source.Verify(x => x.SetProperty((ILogFilePropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
+				file.SetProperty((IPropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode);
+				source.Verify(x => x.SetProperty((IPropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
 			}
 		}
 

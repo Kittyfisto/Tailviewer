@@ -102,7 +102,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="property"></param>
 		/// <param name="value"></param>
 		/// <exception cref="NoSuchPropertyException">When the given property does not belong to this log file</exception>
-		void SetProperty(ILogFilePropertyDescriptor property, object value);
+		void SetProperty(IPropertyDescriptor property, object value);
 
 		/// <summary>
 		///     Retrieves the value for the given property.

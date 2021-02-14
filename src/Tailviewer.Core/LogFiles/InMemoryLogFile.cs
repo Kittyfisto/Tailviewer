@@ -142,7 +142,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		public void SetProperty(IPropertyDescriptor property, object value)
 		{
 			_properties.SetValue(property, value);
 		}
