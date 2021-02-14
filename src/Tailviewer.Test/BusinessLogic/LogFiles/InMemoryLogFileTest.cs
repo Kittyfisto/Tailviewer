@@ -60,6 +60,9 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.Count.Should().Be(1);
 			logFile.GetProperty(TextLogFileProperties.MaxCharactersInLine).Should().Be(13);
 			logFile.GetProperty(LogFileProperties.StartTimestamp).Should().BeNull();
+
+			var entry = logFile.GetEntry(0);
+			entry.ElapsedTime.Should().BeNull("because this entry doesn't have any timestamp and thus its elapsed time must be null");
 		}
 
 		[Test]
@@ -466,7 +469,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			entries.Count.Should().Be(5);
 			entries.Columns.Should().Equal(LogFileColumns.ElapsedTime);
 			entries[0].ElapsedTime.Should().Be(null);
-			entries[1].ElapsedTime.Should().Be(null);
+			entries[1].ElapsedTime.Should().Be(TimeSpan.Zero);
 			entries[2].ElapsedTime.Should().Be(null);
 			entries[3].ElapsedTime.Should().Be(TimeSpan.FromMinutes(1));
 			entries[4].ElapsedTime.Should().Be(TimeSpan.FromDays(8)+TimeSpan.FromHours(16)+TimeSpan.FromMinutes(50));

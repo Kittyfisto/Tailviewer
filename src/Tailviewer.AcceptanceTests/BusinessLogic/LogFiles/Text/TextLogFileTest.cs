@@ -548,6 +548,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			{
 				foreach (var logEntry in content)
 				{
+					if(logEntry.TryGetValue(LogFileColumns.Timestamp, out var timestamp) && timestamp != null)
+					{
+						// Let's write the timestamp in a format everybody recognizes
+						writer.Write("{0:yyyy-MM-dd HH:mm:ss.fffffff}", timestamp);
+					}
 					writer.Write(logEntry.ToString());
 					writer.WriteLine();
 				}

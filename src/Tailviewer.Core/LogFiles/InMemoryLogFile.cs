@@ -358,26 +358,8 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				LogEntryIndex logEntryIndex;
-				TimeSpan? elapsed, deltaTime;
-				if (_logEntries.Count > 0)
-				{
-					var first = _logEntries[0];
-					var last = _logEntries[_logEntries.Count - 1];
-
-					logEntryIndex = last.LogEntryIndex + 1;
-					elapsed = timestamp - first.Timestamp;
-					deltaTime = timestamp - last.Timestamp;
-				}
-				else
-				{
-					logEntryIndex = 0;
-					elapsed = null;
-					deltaTime = null;
-
-					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
-				}
-				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
+				UpdateTimestampProperties(timestamp);
+				var logEntryIndex = GetLogEntryIndex(timestamp, out var elapsed, out var deltaTime);
 
 				foreach (var line in lines)
 				{
@@ -433,31 +415,9 @@ namespace Tailviewer.Core.LogFiles
 		{
 			lock (_syncRoot)
 			{
-				DateTime? timestamp;
-				entry.TryGetValue(LogFileColumns.Timestamp, out timestamp);
-				LogEntryIndex logEntryIndex;
-				TimeSpan? elapsed, deltaTime;
-				if (_logEntries.Count > 0)
-				{
-					var last = _logEntries[_logEntries.Count - 1];
-
-					logEntryIndex = last.LogEntryIndex + 1;
-					elapsed = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
-					deltaTime = timestamp - last.Timestamp;
-				}
-				else
-				{
-					logEntryIndex = 0;
-					elapsed = null;
-					deltaTime = null;
-				}
-
-				if (_properties.GetValue(LogFileProperties.StartTimestamp) == null)
-					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
-				if (timestamp != null)
-					_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
-				var duration = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
-				_properties.SetValue(LogFileProperties.Duration, duration);
+				entry.TryGetValue(LogFileColumns.Timestamp, out var timestamp);
+				UpdateTimestampProperties(timestamp);
+				var logEntryIndex = GetLogEntryIndex(timestamp, out var elapsed, out var deltaTime);
 
 				// The user supplies us with a list of properties to add, however we will
 				// never allow the user to supply us things like index or line number.
@@ -502,6 +462,45 @@ namespace Tailviewer.Core.LogFiles
 			foreach (var entry in entries)
 			{
 				Add(entry);
+			}
+		}
+
+		private LogEntryIndex GetLogEntryIndex(DateTime? timestamp, out TimeSpan? elapsed, out TimeSpan? deltaTime)
+		{
+			LogEntryIndex logEntryIndex;
+			DateTime? lastTimestamp = null;
+			if (_logEntries.Count > 0)
+			{
+				var last = _logEntries[_logEntries.Count - 1];
+				logEntryIndex = last.LogEntryIndex + 1;
+				lastTimestamp = last.Timestamp;
+			}
+			else
+			{
+				logEntryIndex = 0;
+			}
+
+			elapsed = timestamp - _properties.GetValue(LogFileProperties.StartTimestamp);
+			deltaTime = timestamp - lastTimestamp;
+			return logEntryIndex;
+		}
+
+		private void UpdateTimestampProperties(DateTime? timestamp)
+		{
+			if (timestamp != null)
+			{
+				var startTimestamp = _properties.GetValue(LogFileProperties.StartTimestamp);
+				if (startTimestamp == null)
+				{
+					_properties.SetValue(LogFileProperties.StartTimestamp, timestamp);
+					_properties.SetValue(LogFileProperties.Duration, TimeSpan.Zero);
+				}
+				else
+				{
+					_properties.SetValue(LogFileProperties.Duration, timestamp - startTimestamp);
+				}
+
+				_properties.SetValue(LogFileProperties.EndTimestamp, timestamp);
 			}
 		}
 	}
