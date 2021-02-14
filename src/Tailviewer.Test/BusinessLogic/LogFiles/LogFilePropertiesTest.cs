@@ -44,7 +44,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestCombineWithMinimum3()
 		{
-			var property = new Mock<ILogFilePropertyDescriptor>().Object;
+			var property = new Mock<IReadOnlyPropertyDescriptor>().Object;
 			LogFileProperties.CombineWithMinimum(property).Should().Equal(LogFileProperties.Minimum
 			                                                                               .Concat(new [] {property}));
 		}

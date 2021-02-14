@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Text;
+using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -28,8 +29,26 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			var logFile = Create(_taskScheduler, source);
 			return logFile;
 		}
-
+		
 		#region Well Known Properties
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/284")]
+		[Description("Verifies that aggregated log files pass SetProperty calls down to their source(s)")]
+		public void TestSetEncoding()
+		{
+			var source = new Mock<ILogFile>();
+			source.Setup(x => x.Columns).Returns(LogFileColumns.Minimum);
+			source.Setup(x => x.Properties).Returns(LogFileProperties.Minimum);
+			using (var file = Create(source.Object))
+			{
+				file.SetProperty(LogFileProperties.Encoding, Encoding.BigEndianUnicode);
+				source.Verify(x => x.SetProperty(LogFileProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
+
+				file.SetProperty((ILogFilePropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode);
+				source.Verify(x => x.SetProperty((ILogFilePropertyDescriptor)LogFileProperties.Encoding, Encoding.BigEndianUnicode), Times.Once);
+			}
+		}
 
 		#region PercentageProcessed
 

@@ -19,15 +19,15 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		/// </summary>
 		/// <param name="propertiesDescriptor"></param>
-		public ConcurrentLogFilePropertyCollection(params ILogFilePropertyDescriptor[] propertiesDescriptor)
-			: this((IEnumerable<ILogFilePropertyDescriptor>) propertiesDescriptor)
+		public ConcurrentLogFilePropertyCollection(params IReadOnlyPropertyDescriptor[] propertiesDescriptor)
+			: this((IEnumerable<IReadOnlyPropertyDescriptor>) propertiesDescriptor)
 		{
 		}
 
 		/// <summary>
 		/// </summary>
 		/// <param name="properties"></param>
-		public ConcurrentLogFilePropertyCollection(IEnumerable<ILogFilePropertyDescriptor> properties)
+		public ConcurrentLogFilePropertyCollection(IEnumerable<IReadOnlyPropertyDescriptor> properties)
 		{
 			if (properties == null)
 				throw new ArgumentNullException(nameof(properties));
@@ -37,7 +37,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get
 			{
@@ -58,7 +58,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(ILogFilePropertyDescriptor property, object value)
+		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			lock (_syncRoot)
 			{
@@ -67,7 +67,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(ILogFilePropertyDescriptor<T> property, T value)
+		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			lock (_syncRoot)
 			{
@@ -76,7 +76,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public bool TryGetValue(IReadOnlyPropertyDescriptor property, out object value)
 		{
 			lock (_syncRoot)
 			{
@@ -85,7 +85,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public bool TryGetValue<T>(IReadOnlyPropertyDescriptor<T> property, out T value)
 		{
 			lock (_syncRoot)
 			{
@@ -94,7 +94,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor property)
+		public object GetValue(IReadOnlyPropertyDescriptor property)
 		{
 			lock (_syncRoot)
 			{
@@ -103,7 +103,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> property)
+		public T GetValue<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			lock (_syncRoot)
 			{

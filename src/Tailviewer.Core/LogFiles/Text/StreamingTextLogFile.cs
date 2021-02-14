@@ -123,7 +123,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		public int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
+		public IReadOnlyList<IColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
 		{
@@ -136,22 +136,32 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
 			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(property, out value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(property, out value);
 			return value;
+		}
+
+		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -161,7 +171,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> indices, IColumnDescriptor<T> column, T[] buffer, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (indices == null)
 				throw new ArgumentNullException(nameof(indices));

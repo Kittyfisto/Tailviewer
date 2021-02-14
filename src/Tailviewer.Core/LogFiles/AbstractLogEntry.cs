@@ -102,25 +102,25 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFileColumnDescriptor<T> column);
+		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
+		public abstract bool TryGetValue<T>(IColumnDescriptor<T> column, out T value);
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFileColumnDescriptor column);
+		public abstract object GetValue(IColumnDescriptor column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue(ILogFileColumnDescriptor column, out object value);
+		public abstract bool TryGetValue(IColumnDescriptor column, out object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue(ILogFileColumnDescriptor column, object value);
+		public abstract void SetValue(IColumnDescriptor column, object value);
 
 		/// <inheritdoc />
-		public abstract void SetValue<T>(ILogFileColumnDescriptor<T> column, T value);
+		public abstract void SetValue<T>(IColumnDescriptor<T> column, T value);
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)

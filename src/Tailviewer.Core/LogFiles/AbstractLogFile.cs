@@ -58,7 +58,7 @@ namespace Tailviewer.Core.LogFiles
 		public bool IsDisposed { get; private set; }
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -73,13 +73,19 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFilePropertyDescriptor> Properties { get; }
+		public abstract IReadOnlyList<IReadOnlyPropertyDescriptor> Properties { get; }
 
 		/// <inheritdoc />
-		public abstract object GetProperty(ILogFilePropertyDescriptor propertyDescriptor);
+		public abstract object GetProperty(IReadOnlyPropertyDescriptor property);
 
 		/// <inheritdoc />
-		public abstract T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor);
+		public abstract T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property);
+
+		/// <inheritdoc />
+		public abstract void SetProperty(ILogFilePropertyDescriptor property, object value);
+
+		/// <inheritdoc />
+		public abstract void SetProperty<T>(IPropertyDescriptor<T> property, T value);
 
 		/// <inheritdoc />
 		public abstract void GetAllProperties(ILogFileProperties destination);
@@ -104,7 +110,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
+		public abstract void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions);
 
 		/// <inheritdoc />
 		public abstract void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions);

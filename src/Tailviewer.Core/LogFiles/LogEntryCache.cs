@@ -12,8 +12,8 @@ namespace Tailviewer.Core.LogFiles
 	/// </summary>
 	internal sealed class LogEntryCache
 	{
-		private static readonly ILogFileColumnDescriptor<DateTime> LastAccessed =
-			new WellKnownLogFileColumnDescriptor<DateTime>("LastAccessed", DateTime.MinValue);
+		private static readonly IColumnDescriptor<DateTime> LastAccessed =
+			new WellKnownColumnDescriptor<DateTime>("LastAccessed", DateTime.MinValue);
 
 		private readonly LogEntryList _buffer;
 		private readonly Dictionary<LogLineIndex, int> _bufferIndexByLineIndex;
@@ -21,7 +21,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly KeyValuePair<int, DateTime>[] _vacuumBuffer1;
 		private readonly int[] _vacuumBuffer2;
 
-		public LogEntryCache(params ILogFileColumnDescriptor[] columns)
+		public LogEntryCache(params IColumnDescriptor[] columns)
 		{
 			_maxSize = 10000;
 			_vacuumBuffer1 = new KeyValuePair<int, DateTime>[_maxSize];
@@ -46,7 +46,7 @@ namespace Tailviewer.Core.LogFiles
 			return true;
 		}
 
-		public bool TryCopyTo<T>(IReadOnlyList<LogLineIndex> indices, ILogFileColumnDescriptor<T> column, T[] buffer, int destinationIndex)
+		public bool TryCopyTo<T>(IReadOnlyList<LogLineIndex> indices, IColumnDescriptor<T> column, T[] buffer, int destinationIndex)
 		{
 			if (!TryTranslateToBufferIndices(indices, out var bufferIndices))
 				return false;

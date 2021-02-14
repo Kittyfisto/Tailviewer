@@ -412,7 +412,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new ILogFileColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(new object[] {LogFileColumns.LogLevel, LogFileColumns.Timestamp});
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);
@@ -429,7 +429,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			logFile.AddEntry("", LevelFlags.Info);
 			logFile.AddEntry("", LevelFlags.Error, new DateTime(2017, 12, 12, 00, 12, 0));
 
-			var entries = logFile.GetEntries(new LogFileSection(1, 2), new ILogFileColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
+			var entries = logFile.GetEntries(new LogFileSection(1, 2), new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp});
 			entries.Count.Should().Be(2);
 			entries.Columns.Should().Equal(new object[] { LogFileColumns.LogLevel, LogFileColumns.Timestamp });
 			entries[0].LogLevel.Should().Be(LevelFlags.Info);

@@ -929,7 +929,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 			logFile.GetProperty(LogFileProperties.LogEntryCount).Should().Be(2);
 
 			var entries = logFile.GetEntries(new[] { new LogLineIndex(0), new LogLineIndex(1) },
-				new ILogFileColumnDescriptor[]
+				new IColumnDescriptor[]
 				{
 					LogFileColumns.LineNumber, LogFileColumns.LogEntryIndex, LogFileColumns.Timestamp,
 					LogFileColumns.RawContent

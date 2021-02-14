@@ -11,7 +11,7 @@ namespace Tailviewer.Core.LogFiles.Text
 	internal sealed class RawTextLogEntry
 		: IReadOnlyLogEntry
 	{
-		private static readonly IReadOnlyList<ILogFileColumnDescriptor> AllColumns = new ILogFileColumnDescriptor[]
+		private static readonly IReadOnlyList<IColumnDescriptor> AllColumns = new IColumnDescriptor[]
 		{
 			LogFileColumns.RawContent,
 			LogFileColumns.Index,
@@ -88,7 +88,7 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		public TimeSpan? DeltaTime => null;
 
-		public T GetValue<T>(ILogFileColumnDescriptor<T> column)
+		public T GetValue<T>(IColumnDescriptor<T> column)
 		{
 			if (!TryGetValue(column, out var value))
 				throw new NoSuchColumnException(column);
@@ -96,7 +96,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			return value;
 		}
 
-		public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+		public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 		{
 			if (TryGetValue(column, out object tmp))
 			{
@@ -108,7 +108,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			return false;
 		}
 
-		public object GetValue(ILogFileColumnDescriptor column)
+		public object GetValue(IColumnDescriptor column)
 		{
 			if (!TryGetValue(column, out var value))
 				throw new NoSuchColumnException(column);
@@ -116,7 +116,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			return value;
 		}
 
-		public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+		public bool TryGetValue(IColumnDescriptor column, out object value)
 		{
 			if (Equals(column, LogFileColumns.RawContent))
 			{
@@ -148,7 +148,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			return false;
 		}
 
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return AllColumns; }
 		}

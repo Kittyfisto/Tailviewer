@@ -128,14 +128,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 			new Action(() => view.FillDefault(LogFileColumns.DeltaTime, 123, 456))
 				.Should().Throw<NoSuchColumnException>();
-			inner.Verify(x => x.FillDefault(It.IsAny<ILogFileColumnDescriptor>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+			inner.Verify(x => x.FillDefault(It.IsAny<IColumnDescriptor>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 		}
 
 		[Test]
 		public void TestEnumerable()
 		{
 			var inner = new LogEntryList(LogFileColumns.Minimum);
-			inner.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello!"}, {LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 18, 49, 32)}}));
+			inner.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello!"}, {LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 18, 49, 32)}}));
 			var view = new LogEntriesView(inner, LogFileColumns.RawContent);
 
 			var logEntries = view.ToList<ILogEntry>();
@@ -152,7 +152,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestReadOnlyEnumerable()
 		{
 			var inner = new LogEntryList(LogFileColumns.Minimum);
-			inner.Add(new ReadOnlyLogEntry(new Dictionary<ILogFileColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello!"}, {LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 18, 49, 32)}}));
+			inner.Add(new ReadOnlyLogEntry(new Dictionary<IColumnDescriptor, object>{{LogFileColumns.RawContent, "Hello!"}, {LogFileColumns.Timestamp, new DateTime(2021, 02, 11, 18, 49, 32)}}));
 			var view = new LogEntriesView(inner, LogFileColumns.RawContent);
 
 			var logEntries = view.ToList<IReadOnlyLogEntry>();

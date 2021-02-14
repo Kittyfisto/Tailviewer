@@ -453,7 +453,7 @@ namespace Tailviewer.Core.LogFiles.Merged
 		private static IReadOnlyList<MergedLogFileSection> GetEntries(
 			IEnumerable<MergedLogFilePendingModification> pendingModifications)
 		{
-			var columns = new ILogFileColumnDescriptor[]
+			var columns = new IColumnDescriptor[]
 			{
 				LogFileColumns.Index,
 				LogFileColumns.LogEntryIndex,

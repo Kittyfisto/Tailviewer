@@ -29,7 +29,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 			get { return 1; }
 		}
 
-		public ILogFileColumnDescriptor Column
+		public IColumnDescriptor Column
 		{
 			get { return LogFileColumns.Message; }
 		}

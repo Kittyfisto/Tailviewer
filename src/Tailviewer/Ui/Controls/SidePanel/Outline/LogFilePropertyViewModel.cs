@@ -7,10 +7,10 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 	sealed class LogFilePropertyViewModel<T>
 		: ILogFilePropertyViewModel
 	{
-		private readonly ILogFilePropertyDescriptor<T> _descriptor;
+		private readonly IReadOnlyPropertyDescriptor<T> _descriptor;
 		private T _value;
 
-		public LogFilePropertyViewModel(ILogFilePropertyDescriptor<T> descriptor)
+		public LogFilePropertyViewModel(IReadOnlyPropertyDescriptor<T> descriptor)
 		{
 			_descriptor = descriptor;
 		}

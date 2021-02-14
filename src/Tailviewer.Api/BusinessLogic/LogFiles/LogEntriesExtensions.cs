@@ -19,7 +19,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="source">The log file from which data should be copied from</param>
 		/// <param name="sourceIndices">The non-contiguous section of the log file from which to copy from (e.g. from index 5, 10 entries)</param>
 		public static void CopyFrom(this ILogEntries that,
-		                            ILogFileColumnDescriptor column,
+		                            IColumnDescriptor column,
 		                            ILogFile source,
 		                            IReadOnlyList<LogLineIndex> sourceIndices,
 		                            LogFileQueryOptions queryOptions)
@@ -39,7 +39,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="source">The log file from which data should be copied from</param>
 		/// <param name="sourceIndices">The non-contiguous section of the log file from which to copy from (e.g. from index 5, 10 entries)</param>
 		public static void CopyFrom(this ILogEntries that,
-		                            ILogFileColumnDescriptor column,
+		                            IColumnDescriptor column,
 		                            int destinationIndex,
 		                            ILogFile source,
 		                            IReadOnlyList<LogLineIndex> sourceIndices)

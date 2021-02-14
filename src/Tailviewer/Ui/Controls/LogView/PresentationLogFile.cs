@@ -68,7 +68,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		}
 
 		[Pure]
-		private static bool IsIndexedColumn(ILogFileColumnDescriptor column)
+		private static bool IsIndexedColumn(IColumnDescriptor column)
 		{
 			return IndexedColumns.Contains(column);
 		}
@@ -76,7 +76,7 @@ namespace Tailviewer.Ui.Controls.LogView
 		/// <summary>
 		///     The columns which are actually stored in this log file.
 		/// </summary>
-		private static IReadOnlyList<ILogFileColumnDescriptor> IndexedColumns => new ILogFileColumnDescriptor[]
+		private static IReadOnlyList<IColumnDescriptor> IndexedColumns => new IColumnDescriptor[]
 		{
 			LogFileColumns.PresentationStartingLineNumber,
 			LogFileColumns.PresentationLineCount,
@@ -248,12 +248,17 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_source.SetProperty(property, value);
+		}
+
 		public override void GetAllProperties(ILogFileProperties destination)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (IsIndexedColumn(column))
 			{
@@ -295,18 +300,23 @@ namespace Tailviewer.Ui.Controls.LogView
 				: _maximumWaitTime;
 		}
 
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
+		public override IReadOnlyList<IColumnDescriptor> Columns => LogFileColumns.Combine(_source.Columns, IndexedColumns);
 
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _source.Properties;
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _source.Properties;
 
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			return _source.GetProperty(propertyDescriptor);
+			return _source.GetProperty(property);
 		}
 
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			return _source.GetProperty(propertyDescriptor);
+			return _source.GetProperty(property);
+		}
+
+		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			_source.SetProperty(property, value);
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction1([Values("stuff", "foo")] string id)
 		{
-			var column = new CustomLogFileColumnDescriptor<DateTime>(id);
+			var column = new CustomColumnDescriptor<DateTime>(id);
 			column.Id.Should().Be(id);
 			column.DataType.Should().Be<DateTime>();
 		}
@@ -20,7 +20,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestConstruction2()
 		{
-			var column = new CustomLogFileColumnDescriptor<TimeSpan>("foo");
+			var column = new CustomColumnDescriptor<TimeSpan>("foo");
 			column.Id.Should().Be("foo");
 			column.DataType.Should().Be<TimeSpan>();
 		}
@@ -30,10 +30,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEquality1()
 		{
 			const string id = "foo";
-			var column = new CustomLogFileColumnDescriptor<string>(id);
+			var column = new CustomColumnDescriptor<string>(id);
 			column.Equals(column).Should().BeTrue();
 
-			var equalColumn = new CustomLogFileColumnDescriptor<string>(id);
+			var equalColumn = new CustomColumnDescriptor<string>(id);
 			column.Equals(equalColumn).Should().BeTrue();
 			column.GetHashCode().Should().Be(equalColumn.GetHashCode());
 		}
@@ -44,10 +44,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		{
 			const string id1 = "foo";
 			const string id2 = "bar";
-			var column = new CustomLogFileColumnDescriptor<string>(id1);
+			var column = new CustomColumnDescriptor<string>(id1);
 			column.Equals(column).Should().BeTrue();
 
-			var otherColumn = new CustomLogFileColumnDescriptor<string>(id2);
+			var otherColumn = new CustomColumnDescriptor<string>(id2);
 			column.Equals(otherColumn).Should().BeFalse();
 		}
 
@@ -56,7 +56,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestEquality3()
 		{
 			var index = LogFileColumns.Index;
-			var column = new CustomLogFileColumnDescriptor<LogLineIndex>(index.Id);
+			var column = new CustomColumnDescriptor<LogLineIndex>(index.Id);
 			column.Equals(index).Should().BeFalse("because a well-known-column is fundamentally different from a custom column and thus the two may never be equal");
 		}
 	}

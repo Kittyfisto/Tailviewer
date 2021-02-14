@@ -35,7 +35,7 @@ namespace Tailviewer.Core.LogFiles
 
 		private readonly MergedLogFileIndex _index;
 		private readonly TimeSpan _maximumWaitTime;
-		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
+		private readonly IReadOnlyList<IColumnDescriptor> _columns;
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
 		private readonly ConcurrentLogFilePropertyCollection _properties;
@@ -104,23 +104,39 @@ namespace Tailviewer.Core.LogFiles
 		public IReadOnlyList<ILogFile> Sources => _sources;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _columns;
+		public override IReadOnlyList<IColumnDescriptor> Columns => _columns;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			foreach (var source in _sources)
+			{
+				source.SetProperty(property, value);
+			}
+		}
+
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			foreach (var source in _sources)
+			{
+				source.SetProperty(property, value);
+			}
 		}
 
 		/// <inheritdoc />
@@ -139,7 +155,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -188,7 +204,7 @@ namespace Tailviewer.Core.LogFiles
 
 		#region Retrieving Column Values from source files
 
-		private void GetSourceColumnValues<T>(ILogFileColumnDescriptor<T> column, Dictionary<int, Stuff<T>> originalBuffers, LogFileQueryOptions queryOptions)
+		private void GetSourceColumnValues<T>(IColumnDescriptor<T> column, Dictionary<int, Stuff<T>> originalBuffers, LogFileQueryOptions queryOptions)
 		{
 			foreach (var pair in originalBuffers)
 			{

@@ -126,7 +126,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				get { return _inner.DeltaTime; }
 			}
 
-			public T GetValue<T>(ILogFileColumnDescriptor<T> column)
+			public T GetValue<T>(IColumnDescriptor<T> column)
 			{
 				if (Equals(column, LogFileColumns.Timestamp))
 				{
@@ -141,7 +141,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return _inner.GetValue(column);
 			}
 
-			public bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+			public bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 			{
 				if (Equals(column, LogFileColumns.Timestamp))
 				{
@@ -158,7 +158,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return _inner.TryGetValue(column, out value);
 			}
 
-			public object GetValue(ILogFileColumnDescriptor column)
+			public object GetValue(IColumnDescriptor column)
 			{
 				if (Equals(column, LogFileColumns.Timestamp))
 				{
@@ -173,7 +173,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return _inner.GetValue(column);
 			}
 
-			public bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+			public bool TryGetValue(IColumnDescriptor column, out object value)
 			{
 				if (Equals(column, LogFileColumns.Timestamp))
 				{
@@ -190,9 +190,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 				return _inner.TryGetValue(column, out value);
 			}
 
-			public IReadOnlyList<ILogFileColumnDescriptor> Columns
+			public IReadOnlyList<IColumnDescriptor> Columns
 			{
-				get { return _inner.Columns.Concat(new ILogFileColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp}).ToList(); }
+				get { return _inner.Columns.Concat(new IColumnDescriptor[]{LogFileColumns.LogLevel, LogFileColumns.Timestamp}).ToList(); }
 			}
 
 			#endregion

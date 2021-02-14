@@ -31,7 +31,7 @@ namespace Tailviewer.Test.Ui.Controls.LogView.DeltaTimes
 
 			_column.FetchValues(_logFile.Object, new LogFileSection(0, 1), 0);
 			_logFile.Verify(x => x.GetColumn(It.IsAny<LogFileSection>(),
-			                                 It.IsAny<ILogFileColumnDescriptor<TimeSpan?>>(),
+			                                 It.IsAny<IColumnDescriptor<TimeSpan?>>(),
 			                                 It.IsAny<TimeSpan?[]>(),
 			                                 It.IsAny<int>(),
 											 It.IsAny<LogFileQueryOptions>()),

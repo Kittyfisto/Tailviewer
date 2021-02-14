@@ -97,23 +97,33 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.CombineWithMinimum(_source.Columns);
+		public override IReadOnlyList<IColumnDescriptor> Columns => LogFileColumns.CombineWithMinimum(_source.Columns);
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			_source.SetProperty(property, value);
+		}
+
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_source.SetProperty(property, value);
 		}
 
 		/// <inheritdoc />
@@ -131,7 +141,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));

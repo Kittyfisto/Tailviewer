@@ -57,7 +57,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			/// <summary>
 			/// </summary>
-			public readonly ILogFilePropertyDescriptor PropertyDescriptor;
+			public readonly IReadOnlyPropertyDescriptor PropertyDescriptor;
 
 			/// <summary>
 			/// </summary>
@@ -67,7 +67,7 @@ namespace Tailviewer.Core.LogFiles
 			/// </summary>
 			/// <param name="property"></param>
 			/// <param name="value"></param>
-			public LogFileProperty(ILogFilePropertyDescriptor property, object value)
+			public LogFileProperty(IReadOnlyPropertyDescriptor property, object value)
 			{
 				PropertyDescriptor = property;
 				Value = value;

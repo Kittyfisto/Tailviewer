@@ -83,12 +83,12 @@ namespace Tailviewer.Ui.Controls.LogView
 
 		public static readonly TimeSpan MaximumRefreshInterval = TimeSpan.FromMilliseconds(value: 33);
 
-		private readonly IReadOnlyDictionary<ILogFileColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
+		private readonly IReadOnlyDictionary<IColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
 			_columnPresenterFactories;
-		private readonly Dictionary<ILogFileColumnDescriptor, AbstractLogColumnPresenter> _columnPresenters;
-		private readonly Dictionary<ILogFileColumnDescriptor, ColumnDefinition> _columnDefinitionsByColumn;
-		private readonly Dictionary<ColumnDefinition, ILogFileColumnDescriptor> _columnsByColumnDefinition;
-		private readonly IReadOnlyList<ILogFileColumnDescriptor> _fixedColumns;
+		private readonly Dictionary<IColumnDescriptor, AbstractLogColumnPresenter> _columnPresenters;
+		private readonly Dictionary<IColumnDescriptor, ColumnDefinition> _columnDefinitionsByColumn;
+		private readonly Dictionary<ColumnDefinition, IColumnDescriptor> _columnsByColumnDefinition;
+		private readonly IReadOnlyList<IColumnDescriptor> _fixedColumns;
 		private readonly ColumnDefinition _messageColumnDefinition;
 
 		private readonly DataSourceCanvas _dataSourceCanvas;
@@ -140,7 +140,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			_horizontalScrollBar.SetValue(ColumnProperty, value: 0);
 			_horizontalScrollBar.SetValue(ColumnSpanProperty, value: 6);
 
-			_columnPresenterFactories = new Dictionary<ILogFileColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
+			_columnPresenterFactories = new Dictionary<IColumnDescriptor, Func<TextSettings, AbstractLogColumnPresenter>>
 			{
 				{LogFileColumns.DeltaTime, settings => new DeltaTimeColumnPresenter(settings)},
 				{LogFileColumns.ElapsedTime, settings => new ElapsedTimeColumnPresenter(settings) },
@@ -149,9 +149,9 @@ namespace Tailviewer.Ui.Controls.LogView
 				{LogFileColumns.Message, settings => new MessageColumnPresenter(settings) },
 				{LogFileColumns.Timestamp, settings => new TimestampColumnPresenter(settings)}
 			};
-			_columnPresenters = new Dictionary<ILogFileColumnDescriptor, AbstractLogColumnPresenter>();
-			_columnDefinitionsByColumn = new Dictionary<ILogFileColumnDescriptor, ColumnDefinition>();
-			_columnsByColumnDefinition = new Dictionary<ColumnDefinition, ILogFileColumnDescriptor>();
+			_columnPresenters = new Dictionary<IColumnDescriptor, AbstractLogColumnPresenter>();
+			_columnDefinitionsByColumn = new Dictionary<IColumnDescriptor, ColumnDefinition>();
+			_columnsByColumnDefinition = new Dictionary<ColumnDefinition, IColumnDescriptor>();
 
 			_lineNumberColumn = (OriginalLineNumberColumnPresenter) AddColumn(LogFileColumns.OriginalLineNumber);
 			_lineNumberColumn.SetValue(MarginProperty, new Thickness(left: 5, top: 0, right: 5, bottom: 0));
@@ -355,7 +355,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			}
 		}
 
-		private AbstractLogColumnPresenter CreatePresenterFor(ILogFileColumnDescriptor column)
+		private AbstractLogColumnPresenter CreatePresenterFor(IColumnDescriptor column)
 		{
 			if (_columnPresenterFactories.TryGetValue(column, out var factory))
 			{
@@ -367,7 +367,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			return presenter;
 		}
 
-		private AbstractLogColumnPresenter AddColumn(ILogFileColumnDescriptor column)
+		private AbstractLogColumnPresenter AddColumn(IColumnDescriptor column)
 		{
 			var columnPresenter = CreatePresenterFor(column);
 
@@ -409,7 +409,7 @@ namespace Tailviewer.Ui.Controls.LogView
 			return columnPresenter;
 		}
 
-		private void RemoveColumn(ILogFileColumnDescriptor column)
+		private void RemoveColumn(IColumnDescriptor column)
 		{
 			if (!_columnPresenters.Remove(column))
 			{

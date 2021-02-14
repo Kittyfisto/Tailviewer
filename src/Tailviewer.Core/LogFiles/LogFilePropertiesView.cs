@@ -18,14 +18,14 @@ namespace Tailviewer.Core.LogFiles
 	public sealed class LogFilePropertiesView
 		: ILogFileProperties
 	{
-		private readonly IReadOnlyList<ILogFilePropertyDescriptor> _properties;
+		private readonly IReadOnlyList<IReadOnlyPropertyDescriptor> _properties;
 		private readonly ILogFileProperties _source;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="properties"></param>
-		public LogFilePropertiesView(ILogFileProperties source, IReadOnlyList<ILogFilePropertyDescriptor> properties)
+		public LogFilePropertiesView(ILogFileProperties source, IReadOnlyList<IReadOnlyPropertyDescriptor> properties)
 		{
 			_source = source;
 			_properties = properties;
@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles
 		#region Implementation of ILogFileProperties
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get { return _properties; }
 		}
@@ -46,7 +46,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(ILogFilePropertyDescriptor property, object value)
+		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			if (!_properties.Contains(property))
 				return;
@@ -55,7 +55,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(ILogFilePropertyDescriptor<T> property, T value)
+		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			if (!_properties.Contains(property))
 				return;
@@ -64,7 +64,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue(ILogFilePropertyDescriptor property, out object value)
+		public bool TryGetValue(IReadOnlyPropertyDescriptor property, out object value)
 		{
 			if (!_properties.Contains(property))
 			{
@@ -76,7 +76,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public bool TryGetValue<T>(ILogFilePropertyDescriptor<T> property, out T value)
+		public bool TryGetValue<T>(IReadOnlyPropertyDescriptor<T> property, out T value)
 		{
 			if (!_properties.Contains(property))
 			{
@@ -88,7 +88,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public object GetValue(ILogFilePropertyDescriptor property)
+		public object GetValue(IReadOnlyPropertyDescriptor property)
 		{
 			if (!_properties.Contains(property))
 				return property.DefaultValue;
@@ -97,7 +97,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public T GetValue<T>(ILogFilePropertyDescriptor<T> property)
+		public T GetValue<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			if (!_properties.Contains(property))
 				return property.DefaultValue;

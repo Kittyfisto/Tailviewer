@@ -14,7 +14,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 
 		public abstract ILogEntry CreateEmpty();
 
-		public abstract ILogEntry Create(params ILogFileColumnDescriptor[] columns);
+		public abstract ILogEntry Create(params IColumnDescriptor[] columns);
 
 		[Test]
 		public void TestSetLogLevel()

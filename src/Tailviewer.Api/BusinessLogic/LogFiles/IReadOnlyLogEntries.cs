@@ -15,7 +15,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <summary>
 		///     The list of columns to store in this buffer.
 		/// </summary>
-		IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <summary>
 		///     Tests if this buffer contains the given column.
@@ -23,7 +23,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="column"></param>
 		/// <returns></returns>
 		[Pure]
-		bool Contains(ILogFileColumnDescriptor column);
+		bool Contains(IColumnDescriptor column);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.
@@ -35,7 +35,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destinationIndex"></param>
 		/// <param name="length"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length);
+		void CopyTo<T>(IColumnDescriptor<T> column, int sourceIndex, T[] destination, int destinationIndex, int length);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.
@@ -46,7 +46,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex);
+		void CopyTo<T>(IColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, T[] destination, int destinationIndex);
 
 		/// <summary>
 		///     Copies values from the given <paramref name="column" /> into the given <paramref name="destination" />.
@@ -57,6 +57,6 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <param name="destination"></param>
 		/// <param name="destinationIndex"></param>
 		/// <exception cref="NoSuchColumnException"></exception>
-		void CopyTo<T>(ILogFileColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, IList<T> destination, int destinationIndex);
+		void CopyTo<T>(IColumnDescriptor<T> column, IReadOnlyList<int> sourceIndices, IList<T> destination, int destinationIndex);
 	}
 }

@@ -36,7 +36,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <summary>
 		///     Initializes this object.
 		/// </summary>
-		public InMemoryLogFile(IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
+		public InMemoryLogFile(IReadOnlyDictionary<IReadOnlyPropertyDescriptor, object> properties)
 			: this(LogFileColumns.Minimum, properties)
 		{ }
 
@@ -44,8 +44,8 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="columns"></param>
-		public InMemoryLogFile(params ILogFileColumnDescriptor[] columns)
-			: this((IEnumerable < ILogFileColumnDescriptor > )columns)
+		public InMemoryLogFile(params IColumnDescriptor[] columns)
+			: this((IEnumerable < IColumnDescriptor > )columns)
 		{}
 
 		/// <summary>
@@ -62,8 +62,8 @@ namespace Tailviewer.Core.LogFiles
 		///     Initializes this object.
 		/// </summary>
 		/// <param name="columns"></param>
-		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns)
-			: this(columns, new Dictionary<ILogFilePropertyDescriptor, object>())
+		public InMemoryLogFile(IEnumerable<IColumnDescriptor> columns)
+			: this(columns, new Dictionary<IReadOnlyPropertyDescriptor, object>())
 		{ }
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="columns"></param>
 		/// <param name="properties"></param>
-		public InMemoryLogFile(IEnumerable<ILogFileColumnDescriptor> columns, IReadOnlyDictionary<ILogFilePropertyDescriptor, object> properties)
+		public InMemoryLogFile(IEnumerable<IColumnDescriptor> columns, IReadOnlyDictionary<IReadOnlyPropertyDescriptor, object> properties)
 		{
 			if (columns == null)
 				throw new ArgumentNullException(nameof(columns));
@@ -106,7 +106,7 @@ namespace Tailviewer.Core.LogFiles
 		public int Count => _logEntries.Count;
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns => _logEntries.Columns;
+		public IReadOnlyList<IColumnDescriptor> Columns => _logEntries.Columns;
 
 		/// <inheritdoc />
 		public void AddListener(ILogFileListener listener, TimeSpan maximumWaitTime, int maximumLineCount)
@@ -123,22 +123,34 @@ namespace Tailviewer.Core.LogFiles
 		#region Properties
 
 		/// <inheritdoc />
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties => _properties.Properties;
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties => _properties.Properties;
 
 		/// <inheritdoc />
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
 			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(property, out value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
 			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(property, out value);
 			return value;
+		}
+
+		/// <inheritdoc />
+		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			_properties.SetValue(property, value);
+		}
+
+		/// <inheritdoc />
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_properties.SetValue(property, value);
 		}
 
 		/// <inheritdoc />
@@ -153,7 +165,7 @@ namespace Tailviewer.Core.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="propertyDescriptor"></param>
 		/// <param name="value"></param>
-		public void SetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor, T value)
+		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> propertyDescriptor, T value)
 		{
 			_properties.SetValue(propertyDescriptor, value);
 		}
@@ -161,7 +173,7 @@ namespace Tailviewer.Core.LogFiles
 		#endregion
 
 		/// <inheritdoc />
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (column == null)
 				throw new ArgumentNullException(nameof(column));
@@ -174,7 +186,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));
@@ -401,7 +413,7 @@ namespace Tailviewer.Core.LogFiles
 		/// 
 		/// </summary>
 		/// <param name="entry"></param>
-		public void Add(IReadOnlyDictionary<ILogFileColumnDescriptor, object> entry)
+		public void Add(IReadOnlyDictionary<IColumnDescriptor, object> entry)
 		{
 			Add(new ReadOnlyLogEntry(entry));
 		}

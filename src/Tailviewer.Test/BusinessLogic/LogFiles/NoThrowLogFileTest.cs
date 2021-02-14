@@ -108,7 +108,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumn1()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<LogFileSection>(), It.IsAny<IColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var section = new LogFileSection(42, 100);
 			var buffer = new string[9101];
@@ -127,7 +127,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetColumn2()
 		{
-			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<ILogFileColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
+			_logFile.Setup(x => x.GetColumn(It.IsAny<IReadOnlyList<LogLineIndex>>(), It.IsAny<IColumnDescriptor<string>>(), It.IsAny<string[]>(), It.IsAny<int>(), It.IsAny<LogFileQueryOptions>())).Throws<SystemException>();
 
 			var indices = new LogLineIndex[] {1, 2, 3};
 			var buffer = new string[201];
@@ -135,7 +135,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			new Action(() => _proxy.GetColumn(indices, LogFileColumns.RawContent, buffer, 101, queryOptions)).Should().NotThrow();
 
 			_logFile.Verify(x => x.GetColumn(It.Is<IReadOnlyList<LogLineIndex>>(y => y == indices),
-			                                 It.Is<ILogFileColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
+			                                 It.Is<IColumnDescriptor<string>>(y => Equals(y, LogFileColumns.RawContent)),
 			                                 It.Is<string[]>(y => ReferenceEquals(y, buffer)),
 			                                 It.Is<int>(y => y == 101),
 			                                 queryOptions),

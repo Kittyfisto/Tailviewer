@@ -37,7 +37,7 @@ namespace Tailviewer.Core.LogFiles
 			get { return 0; }
 		}
 
-		public IReadOnlyList<ILogFileColumnDescriptor> Columns
+		public IReadOnlyList<IColumnDescriptor> Columns
 		{
 			get { return LogFileColumns.Minimum; }
 		}
@@ -55,7 +55,7 @@ namespace Tailviewer.Core.LogFiles
 			_listeners.Remove(listener);
 		}
 
-		public IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get
 			{
@@ -63,16 +63,26 @@ namespace Tailviewer.Core.LogFiles
 			}
 		}
 
-		public object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
-		public T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			_properties.SetValue(property, value);
+		}
+
+		public void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			_properties.SetValue(property, value);
 		}
 
 		public void GetAllProperties(ILogFileProperties destination)
@@ -80,12 +90,12 @@ namespace Tailviewer.Core.LogFiles
 			_properties.CopyAllValuesTo(destination);
 		}
 
-		public void GetColumn<T>(LogFileSection sourceSection, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(LogFileSection sourceSection, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			throw new NotImplementedException();
 		}

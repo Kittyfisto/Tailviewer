@@ -89,7 +89,7 @@ namespace Tailviewer.Formats.Serilog.Matchers
 			get { return _numGroups; }
 		}
 
-		public ILogFileColumnDescriptor Column
+		public IColumnDescriptor Column
 		{
 			get { return LogFileColumns.Timestamp; }
 		}

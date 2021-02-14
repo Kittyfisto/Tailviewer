@@ -52,10 +52,10 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetValue6()
 		{
 			var properties = new LogFilePropertyList();
-			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
+			properties.SetValue((IReadOnlyPropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceDoesNotExist);
 			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist);
 
-			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
+			properties.SetValue((IReadOnlyPropertyDescriptor)LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed);
 			properties.GetValue(LogFileProperties.EmptyReason).Should().Be(ErrorFlags.SourceCannotBeAccessed);
 		}
 
@@ -89,7 +89,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 			properties.TryGetValue(LogFileProperties.PercentageProcessed, out _).Should().BeFalse();
 		}
 
-		protected override ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties)
+		protected override ILogFileProperties Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties)
 		{
 			var list = new LogFilePropertyList(properties.Select(x => x.Key).ToArray());
 			foreach (var pair in properties)

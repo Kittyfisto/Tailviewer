@@ -61,6 +61,7 @@
     <Compile Include="BusinessLogic\Filters\ILogLineFilter.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormat.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileFormatRepository.cs" />
+    <Compile Include="BusinessLogic\LogFiles\ILogFilePropertyDescriptor.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntriesExtensions.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileQueryMode.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogFileQueryOptions.cs" />
@@ -72,15 +73,16 @@
     <Compile Include="BusinessLogic\Plugins\Issues\Severity.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParser.cs" />
     <Compile Include="BusinessLogic\Plugins\ITextLogFileParserPlugin.cs" />
+    <Compile Include="NoSuchPropertyException.cs" />
     <Compile Include="Ui\INavigationService.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProperties.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFilePropertyDescriptor.cs" />
+    <Compile Include="BusinessLogic\LogFiles\IReadOnlyPropertyDescriptor.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogFileProxy.cs" />
     <Compile Include="BusinessLogic\LogFiles\IMergedLogFile.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntry.cs" />
     <Compile Include="BusinessLogic\LogFiles\ILogEntries.cs" />
-    <Compile Include="BusinessLogic\LogFiles\ILogFileColumnDescriptor.cs" />
+    <Compile Include="BusinessLogic\LogFiles\IColumnDescriptor.cs" />
     <Compile Include="BusinessLogic\LogFiles\IReadOnlyLogEntries.cs" />
     <Compile Include="BusinessLogic\LogFiles\ITimestampParser.cs" />
     <Compile Include="BusinessLogic\LogFiles\LogEntrySectionExtensions.cs" />

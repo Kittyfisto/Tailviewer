@@ -18,14 +18,14 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		private readonly ILogFile _logFile;
 		private readonly ILogFileProperties _propertyValues;
-		private readonly Dictionary<ILogFilePropertyDescriptor, ILogFilePropertyViewModel> _viewModelsByProperty;
+		private readonly Dictionary<IReadOnlyPropertyDescriptor, ILogFilePropertyViewModel> _viewModelsByProperty;
 		private readonly ObservableCollection<ILogFilePropertyViewModel> _viewModels;
 
 		public DefaultLogFileOutlineViewModel(ILogFile logFile)
 		{
 			_logFile = logFile;
 			_propertyValues = new LogFilePropertyList();
-			_viewModelsByProperty = new Dictionary<ILogFilePropertyDescriptor, ILogFilePropertyViewModel>();
+			_viewModelsByProperty = new Dictionary<IReadOnlyPropertyDescriptor, ILogFilePropertyViewModel>();
 			_viewModels = new ObservableCollection<ILogFilePropertyViewModel>();
 		}
 
@@ -42,7 +42,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 
 		#endregion
 
-		private ILogFilePropertyViewModel TryCreateViewModel(ILogFilePropertyDescriptor x)
+		private ILogFilePropertyViewModel TryCreateViewModel(IReadOnlyPropertyDescriptor x)
 		{
 			try
 			{
@@ -55,7 +55,7 @@ namespace Tailviewer.Ui.Controls.SidePanel.Outline
 			}
 		}
 
-		private LogFilePropertyViewModel<T> CreateViewModel<T>(ILogFilePropertyDescriptor<T> descriptor)
+		private LogFilePropertyViewModel<T> CreateViewModel<T>(IReadOnlyPropertyDescriptor<T> descriptor)
 		{
 			return new LogFilePropertyViewModel<T>(descriptor);
 		}

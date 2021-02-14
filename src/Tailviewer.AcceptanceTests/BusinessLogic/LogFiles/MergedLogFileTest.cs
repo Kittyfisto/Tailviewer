@@ -419,7 +419,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 				merged.Property(x => x.GetProperty(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(10)).Be(Percentage.HundredPercent);
 
 				var entries = merged.GetEntries(new LogFileSection(0, 11),
-				                                new ILogFileColumnDescriptor[]
+				                                new IColumnDescriptor[]
 				                                {
 					                                LogFileColumns.Timestamp,
 					                                LogFileColumns.LogEntryIndex,

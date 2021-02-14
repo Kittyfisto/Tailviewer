@@ -5,7 +5,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	/// <summary>
 	///     Describes a column of a log file.
 	/// </summary>
-	public interface ILogFileColumnDescriptor
+	public interface IColumnDescriptor
 	{
 		/// <summary>
 		///     Id of this column, two columns are the same if they have the same id.
@@ -33,8 +33,8 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///     Describes a column of a log file.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public interface ILogFileColumnDescriptor<out T>
-		: ILogFileColumnDescriptor
+	public interface IColumnDescriptor<out T>
+		: IColumnDescriptor
 	{
 		/// <summary>
 		///     The value used when an invalid row is accessed or

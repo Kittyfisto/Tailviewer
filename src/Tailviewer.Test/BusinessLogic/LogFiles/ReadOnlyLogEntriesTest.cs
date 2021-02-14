@@ -12,12 +12,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public abstract class ReadOnlyLogEntriesTest
 	{
-		private IReadOnlyLogEntries CreateEmpty(params ILogFileColumnDescriptor[] columns)
+		private IReadOnlyLogEntries CreateEmpty(params IColumnDescriptor[] columns)
 		{
-			return CreateEmpty((IEnumerable<ILogFileColumnDescriptor>)columns);
+			return CreateEmpty((IEnumerable<IColumnDescriptor>)columns);
 		}
 
-		protected abstract IReadOnlyLogEntries CreateEmpty(IEnumerable<ILogFileColumnDescriptor> columns);
+		protected abstract IReadOnlyLogEntries CreateEmpty(IEnumerable<IColumnDescriptor> columns);
 
 		private IReadOnlyLogEntries Create(params IReadOnlyLogEntry[] entries)
 		{
@@ -248,7 +248,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestAccessAllColumnsByLogEntry()
 		{
-			var columns = new List<ILogFileColumnDescriptor>();
+			var columns = new List<IColumnDescriptor>();
 			var values = new List<object>();
 
 			columns.Add(LogFileColumns.RawContent);

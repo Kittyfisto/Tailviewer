@@ -48,19 +48,19 @@ namespace Tailviewer.Core.LogFiles
 		public TimeSpan? DeltaTime => GetValue(LogFileColumns.DeltaTime);
 
 		/// <inheritdoc />
-		public abstract T GetValue<T>(ILogFileColumnDescriptor<T> column);
+		public abstract T GetValue<T>(IColumnDescriptor<T> column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value);
+		public abstract bool TryGetValue<T>(IColumnDescriptor<T> column, out T value);
 
 		/// <inheritdoc />
-		public abstract object GetValue(ILogFileColumnDescriptor column);
+		public abstract object GetValue(IColumnDescriptor column);
 
 		/// <inheritdoc />
-		public abstract bool TryGetValue(ILogFileColumnDescriptor column, out object value);
+		public abstract bool TryGetValue(IColumnDescriptor column, out object value);
 
 		/// <inheritdoc />
-		public abstract IReadOnlyList<ILogFileColumnDescriptor> Columns { get; }
+		public abstract IReadOnlyList<IColumnDescriptor> Columns { get; }
 
 		/// <inheritdoc />
 		public override bool Equals(object obj)

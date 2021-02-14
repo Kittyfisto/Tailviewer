@@ -141,26 +141,36 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => LogFileColumns.Minimum;
+		public override IReadOnlyList<IColumnDescriptor> Columns => LogFileColumns.Minimum;
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFilePropertyDescriptor> Properties
+		public override IReadOnlyList<IReadOnlyPropertyDescriptor> Properties
 		{
 			get { return _properties.Properties; }
 		}
 
 		/// <inheritdoc />
-		public override object GetProperty(ILogFilePropertyDescriptor propertyDescriptor)
+		public override object GetProperty(IReadOnlyPropertyDescriptor property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
-		public override T GetProperty<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
+		public override T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property)
 		{
-			_properties.TryGetValue(propertyDescriptor, out var value);
+			_properties.TryGetValue(property, out var value);
 			return value;
+		}
+
+		public override void SetProperty(ILogFilePropertyDescriptor property, object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void SetProperty<T>(IPropertyDescriptor<T> property, T value)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc />
@@ -170,7 +180,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		}
 
 		/// <inheritdoc />
-		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, ILogFileColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
+		public override void GetColumn<T>(IReadOnlyList<LogLineIndex> sourceIndices, IColumnDescriptor<T> column, T[] destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
 			if (sourceIndices == null)
 				throw new ArgumentNullException(nameof(sourceIndices));

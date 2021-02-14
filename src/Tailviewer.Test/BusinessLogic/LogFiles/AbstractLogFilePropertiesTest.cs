@@ -12,7 +12,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 	[TestFixture]
 	public abstract class AbstractLogFilePropertiesTest
 	{
-		protected abstract ILogFileProperties Create(params KeyValuePair<ILogFilePropertyDescriptor, object>[] properties);
+		protected abstract ILogFileProperties Create(params KeyValuePair<IReadOnlyPropertyDescriptor, object>[] properties);
 
 		[Test]
 		public void TestDebuggerVisualization1()
@@ -26,8 +26,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestDebuggerVisualization2()
 		{
 			var properties = Create(
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 12, 50, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Size, Size.FromGigabytes(1))
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 12, 50, 0)),
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Size, Size.FromGigabytes(1))
 			                        );
 			var view = new LogFilePropertiesDebuggerView(properties);
 			var items = view.Items;
@@ -59,7 +59,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestTryGetValue3()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.EmptyReason, ErrorFlags.SourceCannotBeAccessed));
 			DateTime? lastModified;
 			properties.TryGetValue(LogFileProperties.LastModified, out lastModified).Should().BeFalse();
 			lastModified.Should().Be(LogFileProperties.LastModified.DefaultValue);
@@ -68,14 +68,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestGetValue1()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 0, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 0, 0)));
 			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2017, 12, 29, 13, 0, 0));
 		}
 
 		[Test]
 		public void TestSetValue1()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)));
 			properties.SetValue(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 2, 0));
 			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2017, 12, 29, 13, 2, 0));
 		}
@@ -84,8 +84,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that the non-generic overload works as well")]
 		public void TestSetValue2()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)));
-			properties.SetValue((ILogFilePropertyDescriptor)LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 2, 0));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)));
+			properties.SetValue((IReadOnlyPropertyDescriptor)LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 2, 0));
 			properties.GetValue(LogFileProperties.Created).Should().Be(new DateTime(2017, 12, 29, 13, 2, 0));
 		}
 
@@ -102,23 +102,23 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		public void TestSetValue4()
 		{
 			var properties = Create();
-			new Action(() => properties.SetValue((ILogFilePropertyDescriptor) null, new DateTime(2017, 12, 29, 13, 2, 0)))
+			new Action(() => properties.SetValue((IReadOnlyPropertyDescriptor) null, new DateTime(2017, 12, 29, 13, 2, 0)))
 				.Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestCopyAllValuesTo1()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 			new Action(() => properties.CopyAllValuesTo(null)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
 		public void TestCopyAllValuesTo2()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList();
 			properties.CopyAllValuesTo(buffer);
@@ -131,8 +131,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that it's possible to retrieve a subset of values from a properties object")]
 		public void TestCopyAllValuesTo3()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                    new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                    new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList();
 			properties.Except(LogFileProperties.Minimum).CopyAllValuesTo(buffer);
@@ -143,8 +143,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that it's possible to retrieve a subset of values from a properties object")]
 		public void TestCopyAllValuesTo4()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp);
 			properties.CopyAllValuesTo(buffer);
@@ -155,8 +155,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Description("Verifies that accessing non existing properties is allowed and returns their default value")]
 		public void TestCopyAllValuesTo5()
 		{
-			var properties = Create(new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
-			                        new KeyValuePair<ILogFilePropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
+			var properties = Create(new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.Created, new DateTime(2017, 12, 29, 13, 1, 0)),
+			                        new KeyValuePair<IReadOnlyPropertyDescriptor, object>(LogFileProperties.StartTimestamp, new DateTime(2017, 12, 29, 13, 3, 0)));
 
 			var buffer = new LogFilePropertyList(LogFileProperties.StartTimestamp, LogFileProperties.EmptyReason);
 			properties.CopyAllValuesTo(buffer);

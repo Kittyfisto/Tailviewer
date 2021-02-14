@@ -10,7 +10,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		[Test]
 		public void TestToString1()
 		{
-			var column = new WellKnownLogFileColumnDescriptor<string>("foobar");
+			var column = new WellKnownColumnDescriptor<string>("foobar");
 			column.ToString().Should().Be("foobar: String");
 		}
 	}

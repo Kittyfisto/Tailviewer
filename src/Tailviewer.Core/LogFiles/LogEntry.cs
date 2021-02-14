@@ -13,8 +13,8 @@ namespace Tailviewer.Core.LogFiles
 	public sealed class LogEntry
 		: AbstractLogEntry
 	{
-		private readonly List<ILogFileColumnDescriptor> _columns;
-		private readonly Dictionary<ILogFileColumnDescriptor, object> _values;
+		private readonly List<IColumnDescriptor> _columns;
+		private readonly Dictionary<IColumnDescriptor, object> _values;
 
 		/// <summary>
 		/// </summary>
@@ -24,17 +24,17 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		/// </summary>
-		public LogEntry(params ILogFileColumnDescriptor[] columns)
-			: this((IEnumerable<ILogFileColumnDescriptor>) columns)
+		public LogEntry(params IColumnDescriptor[] columns)
+			: this((IEnumerable<IColumnDescriptor>) columns)
 		{
 		}
 
 		/// <summary>
 		/// </summary>
-		public LogEntry(IEnumerable<ILogFileColumnDescriptor> columns)
+		public LogEntry(IEnumerable<IColumnDescriptor> columns)
 		{
-			_columns = new List<ILogFileColumnDescriptor>(columns);
-			_values = new Dictionary<ILogFileColumnDescriptor, object>(_columns.Count);
+			_columns = new List<IColumnDescriptor>(columns);
+			_values = new Dictionary<IColumnDescriptor, object>(_columns.Count);
 			foreach (var column in _columns)
 			{
 				_values.Add(column, column.DefaultValue);
@@ -43,7 +43,7 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <summary>
 		/// </summary>
-		public LogEntry(IReadOnlyDictionary<ILogFileColumnDescriptor, object> columnValues)
+		public LogEntry(IReadOnlyDictionary<IColumnDescriptor, object> columnValues)
 			: this(columnValues.Keys)
 		{
 			foreach (var pair in columnValues)
@@ -53,13 +53,13 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override IReadOnlyList<ILogFileColumnDescriptor> Columns => _columns;
+		public override IReadOnlyList<IColumnDescriptor> Columns => _columns;
 
 		/// <summary>
 		///     Adds a new column to this log entry.
 		/// </summary>
 		/// <param name="column"></param>
-		public void Add(ILogFileColumnDescriptor column)
+		public void Add(IColumnDescriptor column)
 		{
 			Add(column, column.DefaultValue);
 			;
@@ -70,7 +70,7 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		/// <param name="column"></param>
 		/// <param name="value"></param>
-		public void Add(ILogFileColumnDescriptor column, object value)
+		public void Add(IColumnDescriptor column, object value)
 		{
 			_values.Add(column, value);
 			_columns.Add(column);
@@ -82,20 +82,20 @@ namespace Tailviewer.Core.LogFiles
 		/// <param name="column"></param>
 		/// <param name="value"></param>
 		/// <typeparam name="T"></typeparam>
-		public void Add<T>(ILogFileColumnDescriptor<T> column, T value)
+		public void Add<T>(IColumnDescriptor<T> column, T value)
 		{
 			_values.Add(column, value);
 			_columns.Add(column);
 		}
 
 		/// <inheritdoc />
-		public override T GetValue<T>(ILogFileColumnDescriptor<T> column)
+		public override T GetValue<T>(IColumnDescriptor<T> column)
 		{
-			return (T) GetValue((ILogFileColumnDescriptor) column);
+			return (T) GetValue((IColumnDescriptor) column);
 		}
 
 		/// <inheritdoc />
-		public override bool TryGetValue<T>(ILogFileColumnDescriptor<T> column, out T value)
+		public override bool TryGetValue<T>(IColumnDescriptor<T> column, out T value)
 		{
 			object tmp;
 			if (!TryGetValue(column, out tmp))
@@ -109,7 +109,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override object GetValue(ILogFileColumnDescriptor column)
+		public override object GetValue(IColumnDescriptor column)
 		{
 			object value;
 			if (!TryGetValue(column, out value))
@@ -119,7 +119,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override bool TryGetValue(ILogFileColumnDescriptor column, out object value)
+		public override bool TryGetValue(IColumnDescriptor column, out object value)
 		{
 			if (!_values.TryGetValue(column, out value))
 			{
@@ -131,7 +131,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void SetValue(ILogFileColumnDescriptor column, object value)
+		public override void SetValue(IColumnDescriptor column, object value)
 		{
 			if (!LogFileColumn.IsAssignableFrom(column, value))
 				throw new ArgumentException(string.Format("The value '{0}' of type '{1}' cannot be assigned to column '{2}' of type '{3}'",
@@ -150,9 +150,9 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public override void SetValue<T>(ILogFileColumnDescriptor<T> column, T value)
+		public override void SetValue<T>(IColumnDescriptor<T> column, T value)
 		{
-			SetValue((ILogFileColumnDescriptor)column, (object)value);
+			SetValue((IColumnDescriptor)column, (object)value);
 		}
 	}
 }
