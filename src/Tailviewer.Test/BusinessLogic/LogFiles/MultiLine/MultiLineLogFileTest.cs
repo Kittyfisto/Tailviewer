@@ -68,37 +68,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.MultiLine
 		}
 
 		[Test]
-		[Description("Verifies that the EndOfSourceReached flag is reset as soon as a modification is forwarded")]
-		public void TestEndOfSourceReached1()
-		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_source.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
-			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
-
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
-			logFile.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse();
-		}
-
-		[Test]
-		[Description("Verifies that the EndOfSourceReached flag is only set to true when the source is too")]
-		public void TestEndOfSourceReached2()
-		{
-			var logFile = new MultiLineLogFile(_taskScheduler, _source.Object, TimeSpan.Zero);
-			_source.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(false);
-			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the source isn't finished yet");
-
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
-			logFile.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the source isn't finished yet");
-
-			logFile.OnLogFileModified(_source.Object, LogFileSection.Reset);
-			_source.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
-			_taskScheduler.RunOnce();
-			logFile.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue("because the log file has processed all events AND the source is finished");
-		}
-
-		[Test]
 		[Description("Verifies that MaxCharactersPerLine is changed once a modification is applied")]
 		public void TestOneModification2()
 		{

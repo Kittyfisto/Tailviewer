@@ -113,7 +113,6 @@ namespace Tailviewer.Core.LogFiles
 			Log.DebugFormat("OnLogFileModified({0})", section);
 
 			_pendingModifications.EnqueueMany(section.Split(MaximumBatchSize));
-			ResetEndOfSourceReached();
 		}
 
 		/// <inheritdoc />
@@ -239,9 +238,9 @@ namespace Tailviewer.Core.LogFiles
 
 			Listeners.OnRead((int)_currentSourceIndex);
 
-			if (_source.GetValue(LogFileProperties.EndOfSourceReached) && _source.GetValue(LogFileProperties.LogEntryCount) == GetValue(LogFileProperties.LogEntryCount))
+			if (_properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
 			{
-				SetEndOfSourceReached();
+				Listeners.Flush();
 			}
 
 			if (performedWork)
@@ -268,32 +267,6 @@ namespace Tailviewer.Core.LogFiles
 			// We want to update all properties at once, hence we modify _sourceProperties where necessary and then
 			// move them to our properties in a single call
 			_properties.CopyFrom(_propertiesBuffer);
-		}
-
-		/// <summary>
-		/// </summary>
-		private void SetEndOfSourceReached()
-		{
-			// Now this line is very important:
-			// Most tests expect that listeners have been notified
-			// of all pending changes when the source enters the
-			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should elapse between
-			// calls to OnLogFileModified. The listener collection has
-			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has elapsed.
-			// Therefore we flush the collection to ensure that ALL listeners have been notified
-			// of ALL changes (even if they didn't want them yet) before we enter the
-			// EndOfSourceReached state.
-			Listeners.Flush();
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
-		}
-
-		/// <summary>
-		/// </summary>
-		private void ResetEndOfSourceReached()
-		{
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
 		}
 
 		private void Append(LogFileSection section)

@@ -48,9 +48,8 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			using (var source = Create(TextLogFileAcceptanceTest.File20Mb))
 			using (var merged = new MergedLogFile(_scheduler, TimeSpan.FromMilliseconds(1), source))
 			{
-				source.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
-
-				merged.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldEventually().Be(Percentage.HundredPercent);
+				source.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
+				merged.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 				merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(source.GetValue(LogFileProperties.LogEntryCount));
 				merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(165342);

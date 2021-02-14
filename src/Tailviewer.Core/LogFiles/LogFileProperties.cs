@@ -86,14 +86,6 @@ namespace Tailviewer.Core.LogFiles
 		public static readonly ILogFilePropertyDescriptor<Encoding> Encoding;
 
 		/// <summary>
-		///     When set to true, then the log file has processed its entire source.
-		/// </summary>
-		/// <remarks>
-		///     Internal property only used for testing.
-		/// </remarks>
-		internal static readonly ILogFilePropertyDescriptor<bool> EndOfSourceReached;
-
-		/// <summary>
 		///     The minimum set of properties a log file is expected to provide.
 		/// </summary>
 		public static readonly IReadOnlyList<ILogFilePropertyDescriptor> Minimum;
@@ -116,8 +108,6 @@ namespace Tailviewer.Core.LogFiles
 			Format = new WellKnownLogFilePropertyDescriptor<ILogFileFormat>(new []{category, "format"}, "Format");
 			FormatDetectionCertainty = new WellKnownLogFilePropertyDescriptor<Certainty>(new []{category, "FormatDetectionCertainty"});
 			Encoding = new WellKnownLogFilePropertyDescriptor<Encoding>(new []{category, "encoding"}, "Encoding");
-
-			EndOfSourceReached = new WellKnownLogFilePropertyDescriptor<bool>(new[] {"end_of_source_reached"});
 
 			Minimum = new ILogFilePropertyDescriptor[]
 			{

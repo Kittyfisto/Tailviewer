@@ -280,8 +280,6 @@ namespace Tailviewer.Core.LogFiles.Text
 							{
 								token.ThrowIfCancellationRequested();
 
-								ResetEndOfSourceReached();
-
 								bool lastLineHadNewline = _lastLineHadNewline;
 								var trimmedLine = currentLine.TrimNewlineEnd(out _lastLineHadNewline);
 								var entryCount = _entries.Count;
@@ -391,15 +389,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			// of ALL changes (even if they didn't want them yet) before we enter the
 			// EndOfSourceReached state.
 			Listeners.Flush();
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
-		}
-
-		/// <summary>
-		/// </summary>
-		private void ResetEndOfSourceReached()
-		{
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
 		}
 
 		#region Overrides of AbstractLogFile

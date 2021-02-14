@@ -73,19 +73,14 @@ namespace Tailviewer.Core.LogFiles
 			_sources = sources;
 			_index = new MergedLogFileIndex(sources);
 			_pendingModifications = new ConcurrentQueue<MergedLogFilePendingModification>();
-			var logFileIndices = new Dictionary<ILogFile, byte>();
 			_maximumWaitTime = maximumWaitTime;
 			_columns = sources.SelectMany(x => x.Columns).Concat(new[] {LogFileColumns.SourceId}).Distinct().ToList();
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_propertiesBuffer = new LogFilePropertyList(LogFileProperties.Minimum);
 
-			byte idx = 0;
 			foreach (var logFile in _sources)
 			{
 				logFile.AddListener(this, maximumWaitTime, MaximumBatchSizePerSource);
-				logFileIndices.Add(logFile, idx);
-
-				++idx;
 			}
 			StartTask();
 		}
@@ -141,7 +136,6 @@ namespace Tailviewer.Core.LogFiles
 				Log.DebugFormat("OnLogFileModified({0}, {1})", logFile, section);
 
 			_pendingModifications.Enqueue(new MergedLogFilePendingModification(logFile, section));
-			ResetEndOfSourceReached();
 		}
 
 		/// <inheritdoc />
@@ -323,8 +317,8 @@ namespace Tailviewer.Core.LogFiles
 			if (!performedWork)
 				UpdateProperties();
 
-			if (_pendingModifications.IsEmpty)
-				SetEndOfSourceReached();
+			if (_pendingModifications.IsEmpty && _properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
+				Listeners.Flush();
 
 			return _maximumWaitTime;
 		}
@@ -365,32 +359,6 @@ namespace Tailviewer.Core.LogFiles
 					Listeners.OnRead((int) (section.Index + section.Count));
 				}
 			}
-		}
-
-		/// <summary>
-		/// </summary>
-		private void SetEndOfSourceReached()
-		{
-			// Now this line is very important:
-			// Most tests expect that listeners have been notified
-			// of all pending changes when the source enters the
-			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should elapse between
-			// calls to OnLogFileModified. The listener collection has
-			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has elapsed.
-			// Therefore we flush the collection to ensure that ALL listeners have been notified
-			// of ALL changes (even if they didn't want them yet) before we enter the
-			// EndOfSourceReached state.
-			Listeners.Flush();
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
-		}
-
-		/// <summary>
-		/// </summary>
-		private void ResetEndOfSourceReached()
-		{
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
 		}
 
 		private void UpdateProperties()

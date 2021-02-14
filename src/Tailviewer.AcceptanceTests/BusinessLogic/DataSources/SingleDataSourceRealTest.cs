@@ -43,7 +43,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Test]
 		public void TestCtor()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			_dataSource.UnfilteredLogFile.Should().NotBeNull();
 			_dataSource.FilteredLogFile.Should().NotBeNull();
@@ -74,7 +74,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 			_dataSource.QuickFilterChain = new[] {new SubstringFilter("info", true)};
 			_dataSource.FilteredLogFile.Should().NotBeNull();
 
-			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			_dataSource.FilteredLogFile.GetValue(LogFileProperties.LogEntryCount).Should().Be(5);
 		}
@@ -84,7 +84,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.DataSources
 		[Description("Verifies that the levels are counted correctly")]
 		public void TestLevelCount1()
 		{
-			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(5)).Be(Percentage.HundredPercent);
+			_dataSource.FilteredLogFile.Property(x => x.GetValue(LogFileProperties.PercentageProcessed)).ShouldAfter(TimeSpan.FromSeconds(15)).Be(Percentage.HundredPercent);
 
 			_dataSource.Property(x => x.TotalCount).ShouldEventually().Be(165342);
 			_dataSource.DebugCount.Should().Be(165337);

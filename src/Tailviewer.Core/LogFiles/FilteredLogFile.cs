@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
@@ -31,7 +30,6 @@ namespace Tailviewer.Core.LogFiles
 
 		private const int BatchSize = 10000;
 
-		private readonly IReadOnlyList<ILogFilePropertyDescriptor> _computedProperties;
 		private readonly LogFilePropertyList _properties;
 		private readonly LogFilePropertyList _propertiesBuffer;
 		private readonly ILogLineFilter _logLineFilter;
@@ -66,8 +64,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			_source = source ?? throw new ArgumentNullException(nameof(source));
 
-			_computedProperties = new ILogFilePropertyDescriptor[] {LogFileProperties.EndOfSourceReached};
-			_properties = new LogFilePropertyList(_computedProperties.Concat(source.Properties).Distinct());
+			_properties = new LogFilePropertyList(source.Properties);
 			_propertiesBuffer = new LogFilePropertyList(); //< Will be used as temporary storage to hold the properties from the source
 
 			_logLineFilter = logLineFilter ?? new NoFilter();
@@ -131,7 +128,6 @@ namespace Tailviewer.Core.LogFiles
 			Log.DebugFormat("OnLogFileModified({0})", section);
 
 			_pendingModifications.Enqueue(section);
-			ResetEndOfSourceReached();
 		}
 
 		/// <inheritdoc />
@@ -417,41 +413,15 @@ namespace Tailviewer.Core.LogFiles
 				UpdateProperties(); //< we need to update our own properties after we've added the last entry, but before we notify listeners...
 				Listeners.OnRead(_indices.Count);
 
-				if (_source.GetValue(LogFileProperties.EndOfSourceReached))
+				if (_properties.GetValue(LogFileProperties.PercentageProcessed) == Percentage.HundredPercent)
 				{
-					SetEndOfSourceReached();
+					Listeners.Flush();
 				}
 			}
 			else
 			{
 				UpdateProperties();
 			}
-		}
-
-		/// <summary>
-		/// </summary>
-		private void SetEndOfSourceReached()
-		{
-			// Now this line is very important:
-			// Most tests expect that listeners have been notified
-			// of all pending changes when the source enters the
-			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should elapse between
-			// calls to OnLogFileModified. The listener collection has
-			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has elapsed.
-			// Therefore we flush the collection to ensure that ALL listeners have been notified
-			// of ALL changes (even if they didn't want them yet) before we enter the
-			// EndOfSourceReached state.
-			Listeners.Flush();
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
-		}
-
-		/// <summary>
-		/// </summary>
-		private void ResetEndOfSourceReached()
-		{
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, false);
 		}
 
 		private void UpdateProperties()
@@ -466,7 +436,7 @@ namespace Tailviewer.Core.LogFiles
 			// And last but not least we'll update our own properties to the new values
 			// It's important we do this in one go so clients can retrieve all those properties
 			// in a consistent state
-			_propertiesBuffer.Except(_computedProperties).CopyAllValuesTo(_properties);
+			_properties.CopyFrom(_propertiesBuffer);
 		}
 
 		/// <summary>

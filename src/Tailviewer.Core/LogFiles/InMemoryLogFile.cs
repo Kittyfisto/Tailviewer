@@ -83,7 +83,6 @@ namespace Tailviewer.Core.LogFiles
 			_properties = new LogFilePropertyList(LogFileProperties.Minimum);
 			_properties.SetValue(LogFileProperties.Size, Size.Zero);
 			_properties.SetValue(LogFileProperties.PercentageProcessed, Percentage.HundredPercent);
-			_properties.SetValue(LogFileProperties.EndOfSourceReached, true);
 			foreach (var pair in properties)
 			{
 				_properties.SetValue(pair.Key, pair.Value);

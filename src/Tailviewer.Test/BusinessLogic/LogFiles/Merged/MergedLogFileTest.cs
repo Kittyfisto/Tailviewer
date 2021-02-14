@@ -241,12 +241,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source0.AddEntry("a", LevelFlags.Info, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			source1.AddEntry("b", LevelFlags.Debug, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
@@ -311,12 +311,12 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source0.AddEntry("a", LevelFlags.Warning, later);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			source1.AddEntry("c", LevelFlags.Error, earlier);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			merged.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 			entries.Count.Should().Be(2);
 			entries[0].Index.Should().Be(0);
@@ -358,7 +358,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Merged
 			source1.AddEntry("Hello World", LevelFlags.Info, timestamp);
 
 			_taskScheduler.RunOnce();
-			merged.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+			merged.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			entries.Count.Should().Be(1);
 			entries[0].Index.Should().Be(0);

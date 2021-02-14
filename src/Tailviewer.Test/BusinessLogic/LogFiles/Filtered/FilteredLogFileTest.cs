@@ -24,9 +24,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			_entries = new List<LogLine>();
 			_logFile = new Mock<ILogFile>();
 			_logFile.SetupGet(x => x.Columns).Returns(LogFileColumns.Minimum);
-			_logFile.SetupGet(x => x.Properties).Returns(new ILogFilePropertyDescriptor[0]);
+			_logFile.SetupGet(x => x.Properties).Returns(new ILogFilePropertyDescriptor[]{LogFileProperties.LogEntryCount, LogFileProperties.PercentageProcessed});
 			_logFile.Setup(x => x.GetValue(LogFileProperties.LogEntryCount)).Returns(() => _entries.Count);
-			_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
+			_logFile.Setup(x => x.GetValue(LogFileProperties.PercentageProcessed)).Returns(Percentage.HundredPercent);
+			_logFile.Setup(x => x.GetAllValues(It.IsAny<ILogFileProperties>()))
+			        .Callback((ILogFileProperties destination) =>
+			        {
+				        destination.SetValue(LogFileProperties.LogEntryCount,
+				                             _logFile.Object.GetValue(LogFileProperties.LogEntryCount));
+				        destination.SetValue(LogFileProperties.PercentageProcessed,
+				                             _logFile.Object.GetValue(LogFileProperties.PercentageProcessed));
+			        });
 
 			_sections = new List<LogFileSection>();
 			_listener = new Mock<ILogFileListener>();
@@ -39,26 +47,6 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 		private List<LogFileSection> _sections;
 		private Mock<ILogFileListener> _listener;
 		private ManualTaskScheduler _taskScheduler;
-
-		[Test]
-		public void TestEndOfSourceReached1()
-		{
-			_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(false);
-
-			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create(null, true, LevelFlags.Debug)))
-			{
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the filtered log file hasn't even inspected the source yet");
-
-				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the source isn't at its own end yet");
-
-				_logFile.Setup(x => x.GetValue(LogFileProperties.EndOfSourceReached)).Returns(true);
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeFalse("because the filtered log file hasn't processed the latest changes to the source yet");
-
-				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue("because the source is finished and the filtered log file has processed all changes from the source");
-			}
-		}
 
 		[Test]
 		public void TestChangeColumns()
@@ -106,14 +94,14 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 
 				_taskScheduler.RunOnce();
 
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.Clear();
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 			}
 		}
 
@@ -123,8 +111,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, _logFile.Object, null, Filter.Create("Test", true, LevelFlags.All)))
 			{
 				_taskScheduler.RunOnce();
-
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(0);
 				file.GetLogLineIndexOfOriginalLineIndex(new LogLineIndex(0)).Should().Be(LogLineIndex.Invalid);
 			}
@@ -139,8 +127,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("Hello world!", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
-
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1);
 				var entries = file.GetEntries(new LogFileSection(0, 1), LogFileColumns.Minimum);
 				entries.Should().HaveCount(1);
@@ -204,7 +192,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 			using (var file = new FilteredLogFile(_taskScheduler, TimeSpan.Zero, source, null, Filter.Create(null, true, LevelFlags.Info)))
 			{
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddRange(new[]
 				{
@@ -216,8 +204,8 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2, "because we've invalidated the last 2 out of 4 lines");
 			}
 		}
@@ -231,7 +219,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddRange(new []
 				{
@@ -242,13 +230,13 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(4);
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
@@ -275,17 +263,17 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.AddListener(_listener.Object, TimeSpan.Zero, 1);
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.AddMultilineEntry(LevelFlags.Info, null, "A", "B", "C", "D");
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				source.RemoveFrom(2);
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue("Because the filtered log file should be finished");
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "Because the filtered log file should be finished");
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 
 				_sections.Should().Equal(new[]
@@ -362,7 +350,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(source, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				sections.Should().Equal(new[]
@@ -384,7 +372,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				var entries = file.GetEntries(new LogFileSection(0, 2), new ILogFileColumnDescriptor[]{LogFileColumns.Index, LogFileColumns.LogEntryIndex, LogFileColumns.RawContent, LogFileColumns.LogLevel});
@@ -410,7 +398,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry( LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(2);
 				var entries = file.GetEntries(new LogFileSection(0, 2));
@@ -441,7 +429,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddMultilineEntry(LevelFlags.Debug, null, "DEBUG: This is a test", "Yikes");
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 				sections.Should().Equal(new object[]
 					{
 						LogFileSection.Reset,
@@ -462,7 +450,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				file.OnLogFileModified(_logFile.Object, new LogFileSection(0, 2));
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				var entries = file.GetEntries(new LogFileSection(0, 1), file.Columns);
 				entries.Should().NotBeNull();
@@ -485,7 +473,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				source.AddEntry("Yikes", LevelFlags.Other);
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				var entry = file.GetEntry(0);
 				entry.Index.Should().Be(0, "because the filtered log file only represents a file with one line, thus the only entry should have an index of 0, not 1, which is the original index");
@@ -516,7 +504,7 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles.Filtered
 				});
 
 				_taskScheduler.RunOnce();
-				file.GetValue(LogFileProperties.EndOfSourceReached).Should().BeTrue();
+				file.GetValue(LogFileProperties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 				file.GetValue(LogFileProperties.LogEntryCount).Should().Be(1, "because only one line matches the filter");
 				var entry = file.GetEntry(0);
