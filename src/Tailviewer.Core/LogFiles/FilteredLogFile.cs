@@ -87,6 +87,16 @@ namespace Tailviewer.Core.LogFiles
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);
+
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			lock (_indices)
+			{
+				_indices.Clear();
+				_indices.Capacity = 0;
+			}
+
+			_properties.Clear();
+			_sourceProperties.Clear();
 		}
 
 		/// <inheritdoc />

@@ -39,7 +39,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly TimeSpan _maximumWaitTime;
 		private readonly ConcurrentQueue<LogFileSection> _pendingModifications;
 		private readonly ILogFile _source;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private LogEntryInfo _currentLogEntry;
 		private LogLineIndex _currentSourceIndex;
 
@@ -92,16 +92,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override object GetValue(ILogFilePropertyDescriptor propertyDescriptor)
 		{
-			object value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
 		/// <inheritdoc />
 		public override T GetValue<T>(ILogFilePropertyDescriptor<T> propertyDescriptor)
 		{
-			T value;
-			_properties.TryGetValue(propertyDescriptor, out value);
+			_properties.TryGetValue(propertyDescriptor, out var value);
 			return value;
 		}
 
@@ -127,6 +125,17 @@ namespace Tailviewer.Core.LogFiles
 		protected override void DisposeAdditional()
 		{
 			_source.RemoveListener(this);
+			_pendingModifications.Clear();
+
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			lock (_syncRoot)
+			{
+				_indices.Clear();
+				_indices.Capacity = 0;
+				_currentSourceIndex = 0;
+			}
+
+			_properties.Clear();
 		}
 
 		/// <inheritdoc />
@@ -152,6 +161,12 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public override void GetEntries(IReadOnlyList<LogLineIndex> sourceIndices, ILogEntries destination, int destinationIndex, LogFileQueryOptions queryOptions)
 		{
+			if (IsDisposed)
+			{
+				destination.FillDefault(destinationIndex, sourceIndices.Count);
+				return;
+			}
+
 			var remainingColumns = new List<ILogFileColumnDescriptor>();
 			bool partiallyRetrieved = false;
 			foreach (var column in destination.Columns)

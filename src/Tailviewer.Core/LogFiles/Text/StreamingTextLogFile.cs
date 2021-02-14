@@ -107,7 +107,8 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			_listeners.Clear();
 		}
 
 		public bool EndOfSourceReached => _endOfSourceReached;

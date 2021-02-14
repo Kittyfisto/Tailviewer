@@ -21,7 +21,7 @@ namespace Tailviewer.Core.LogFiles
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 		private readonly LogEntryList _logEntries;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private readonly LogFileListenerCollection _listeners;
 
 		private readonly object _syncRoot;
@@ -92,6 +92,14 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void Dispose()
 		{
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			_listeners.Clear();
+			_properties.Clear();
+
+			lock (_syncRoot)
+			{
+				_logEntries.Clear();
+			}
 		}
 
 		/// <inheritdoc />
@@ -99,9 +107,6 @@ namespace Tailviewer.Core.LogFiles
 
 		/// <inheritdoc />
 		public int Count => _logEntries.Count;
-
-		/// <inheritdoc />
-		public int OriginalCount => Count;
 
 		/// <inheritdoc />
 		public int MaxCharactersPerLine { get; private set; }

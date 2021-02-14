@@ -70,9 +70,6 @@ namespace Tailviewer.Core.LogFiles
 		#region Overrides of AbstractLogFile
 
 		/// <inheritdoc />
-		public int OriginalCount => _buffer.OriginalCount;
-
-		/// <inheritdoc />
 		public int MaxCharactersPerLine => _buffer.MaxCharactersPerLine;
 
 		/// <inheritdoc />

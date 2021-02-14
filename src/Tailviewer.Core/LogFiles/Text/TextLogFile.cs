@@ -34,7 +34,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		private readonly Encoding _encoding;
 		private readonly List<LogLine> _entries;
 		private readonly object _syncRoot;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private int _maxCharactersPerLine;
 		private readonly NoThrowLogLineTranslator _translator;
 
@@ -369,6 +369,23 @@ namespace Tailviewer.Core.LogFiles.Text
 			return TimeSpan.FromMilliseconds(100);
 		}
 
+		#region Overrides of AbstractLogFile
+
+		protected override void DisposeAdditional()
+		{
+			lock (_syncRoot)
+			{
+				_entries.Clear();
+				_entries.Capacity = 0;
+			}
+
+			_properties.Clear();
+
+			base.DisposeAdditional();
+		}
+
+		#endregion
+
 		[Pure]
 		private Percentage CalculatePercentageProcessed(long streamPosition, long fileSize)
 		{
@@ -477,16 +494,27 @@ namespace Tailviewer.Core.LogFiles.Text
 		{
 			lock (_syncRoot)
 			{
-				var startTimestamp = _properties.GetValue(LogFileProperties.StartTimestamp);
-
-				for (int i = 0; i < indices.Count; ++i)
+				_properties.TryGetValue(LogFileProperties.StartTimestamp, out var startTimestamp);
+				if (startTimestamp != null)
 				{
-					var index = indices[i];
-					var line = GetLogLine(index);
-					buffer[destinationIndex + i] = line != null
-						? line.Value.Timestamp - startTimestamp
-						: LogFileColumns.ElapsedTime.DefaultValue;
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						var index = indices[i];
+						var line = GetLogLine(index);
+						buffer[destinationIndex + i] = line != null
+							? line.Value.Timestamp - startTimestamp
+							: LogFileColumns.ElapsedTime.DefaultValue;
+					}
 				}
+				else
+				{
+					for (int i = 0; i < indices.Count; ++i)
+					{
+						buffer[destinationIndex + i] = LogFileColumns.ElapsedTime.DefaultValue;
+					}
+				}
+
+				
 			}
 		}
 

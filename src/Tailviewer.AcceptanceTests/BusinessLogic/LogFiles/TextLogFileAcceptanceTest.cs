@@ -440,8 +440,6 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles
 			{
 				file.Property(x => x.EndOfSourceReached).ShouldAfter(TimeSpan.FromSeconds(20)).BeTrue();
 
-				file.Dispose();
-
 				file.GetValue(LogFileProperties.StartTimestamp).Should().Be(new DateTime(2015, 10, 7, 19, 50, 58, 982));
 
 				List<LogLine> entries = file.Entries.ToList();

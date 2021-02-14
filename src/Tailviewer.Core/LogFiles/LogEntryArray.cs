@@ -14,8 +14,8 @@ namespace Tailviewer.Core.LogFiles
 		: ILogEntries
 	{
 		private readonly int _length;
-		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
-		private readonly IReadOnlyDictionary<ILogFileColumnDescriptor, IColumnData> _dataByColumn;
+		private IReadOnlyList<ILogFileColumnDescriptor> _columns;
+		private IReadOnlyDictionary<ILogFileColumnDescriptor, IColumnData> _dataByColumn;
 
 		/// <summary>
 		/// </summary>

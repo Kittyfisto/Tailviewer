@@ -250,18 +250,27 @@ namespace Tailviewer.BusinessLogic.DataSources
 
 		public bool Remove(IDataSource dataSource)
 		{
+			bool removed;
 			lock (_syncRoot)
 			{
-				_settings.Remove(dataSource.Settings);
-				if (_dataSources.Remove(dataSource))
-				{
-					_bookmarks.RemoveDataSource(dataSource);
-					dataSource.Dispose();
-					return true;
-				}
-
-				return false;
+				removed = RemoveNoLock(dataSource);
 			}
+
+			GC.Collect(3, GCCollectionMode.Forced);
+			return removed;
+		}
+
+		private bool RemoveNoLock(IDataSource dataSource)
+		{
+			_settings.Remove(dataSource.Settings);
+			if (_dataSources.Remove(dataSource))
+			{
+				_bookmarks.RemoveDataSource(dataSource);
+				dataSource.Dispose();
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

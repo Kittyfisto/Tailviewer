@@ -38,7 +38,7 @@ namespace Tailviewer.Core.LogFiles
 		private readonly IReadOnlyList<ILogFileColumnDescriptor> _columns;
 
 		private readonly ConcurrentQueue<MergedLogFilePendingModification> _pendingModifications;
-		private readonly ILogFileProperties _properties;
+		private readonly LogFilePropertyList _properties;
 		private readonly IReadOnlyList<ILogFile> _sources;
 		private int _maxCharactersPerLine;
 		private Percentage _progress = Percentage.Zero;
@@ -97,6 +97,10 @@ namespace Tailviewer.Core.LogFiles
 			{
 				source.RemoveListener(this);
 			}
+
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			_index.Clear();
+			_properties.Clear();
 
 			base.DisposeAdditional();
 		}

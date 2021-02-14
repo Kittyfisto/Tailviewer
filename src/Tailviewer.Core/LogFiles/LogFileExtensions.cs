@@ -14,6 +14,17 @@ namespace Tailviewer.Core.LogFiles
 	public static class LogFileExtensions
 	{
 		/// <summary>
+		///     Returns all properties from this log file.
+		/// </summary>
+		/// <returns></returns>
+		public static ILogFileProperties GetAllValues(this ILogFile that)
+		{
+			var destination = new LogFilePropertyList();
+			that.GetAllValues(destination);
+			return destination;
+		}
+
+		/// <summary>
 		///     Retrieves a list of cells for a given column from this log file.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

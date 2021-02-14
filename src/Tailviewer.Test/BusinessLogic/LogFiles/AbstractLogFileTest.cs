@@ -1171,5 +1171,37 @@ namespace Tailviewer.Test.BusinessLogic.LogFiles
 		}
 
 		#endregion
+
+		[Test]
+		[Issue("https://github.com/Kittyfisto/Tailviewer/issues/282")]
+		[Description("Verifies that the log file implementation appears totally empty after Dispose() has been called")]
+		public void TestDisposeData()
+		{
+			var content = new LogEntryList(LogFileColumns.Index, LogFileColumns.RawContent, LogFileColumns.Timestamp)
+			{
+				new LogEntry {Index = 0, RawContent = "2021-02-13 13:20:41", Timestamp = new DateTime(2021, 02, 13, 13, 20, 41)},
+				new LogEntry {Index = 1, RawContent = "2021-02-13 13:20:59", Timestamp = new DateTime(2021, 02, 13, 13, 20, 59)},
+				new LogEntry {Index = 2, RawContent = "2021-02-13 13:21:08", Timestamp = new DateTime(2021, 02, 13, 13, 21, 08)}
+			};
+
+			using (var logFile = CreateFromContent(content))
+			{
+				logFile.Count.Should().Be(3);
+
+				logFile.Dispose();
+				logFile.Count.Should().Be(0);
+				var entries = logFile.GetEntries(new LogFileSection(0, 3));
+				entries[0].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+				entries[1].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+				entries[2].Index.Should().Be(LogLineIndex.Invalid, "because the log entry shouldn't be present in memory anymore");
+
+				logFile.Properties.Should().BeEmpty();
+				var values = logFile.GetAllValues();
+				values.Properties.Should().BeEmpty();
+
+				logFile.GetValue(LogFileProperties.PercentageProcessed).Should()
+				       .Be(LogFileProperties.PercentageProcessed.DefaultValue);
+			}
+		}
 	}
 }

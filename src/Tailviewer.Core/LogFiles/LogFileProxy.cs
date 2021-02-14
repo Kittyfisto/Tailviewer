@@ -181,6 +181,16 @@ namespace Tailviewer.Core.LogFiles
 			ILogFile logFile = _source;
 			logFile?.Dispose();
 			_taskScheduler.StopPeriodic(_task);
+
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			_listeners.Clear();
+
+			lock (_properties)
+			{
+				_properties.Clear();
+			}
+
+			_source = null;
 			_isDisposed = true;
 		}
 

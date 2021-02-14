@@ -88,6 +88,9 @@ namespace Tailviewer.Core.LogFiles
 		/// <inheritdoc />
 		public void Dispose()
 		{
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			Listeners.Clear();
+
 			try
 			{
 				DisposeAdditional();

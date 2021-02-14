@@ -46,6 +46,18 @@ namespace Tailviewer.Core.LogFiles.Merged
 			}
 		}
 
+		public void Clear()
+		{
+			// https://github.com/Kittyfisto/Tailviewer/issues/282
+			lock (_syncRoot)
+			{
+				_indices.Clear();
+				_indices.Capacity = 0;
+
+				_logFileIndices.Clear();
+			}
+		}
+
 		public MergedLogLineIndex this[LogLineIndex index]
 		{
 			get
