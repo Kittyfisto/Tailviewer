@@ -44,11 +44,11 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		internal abstract StreamingTextLogFile Create(ServiceContainer serviceContainer, string fileName);
 
 		[Test]
+		[Ignore("not finished")]
 		public void TestFileDoesNotExist()
 		{
 			var logFile = Create();
-			logFile.Count.Should().Be(0);
-			logFile.OriginalCount.Should().Be(0);
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(Properties.Size).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(Properties.Created).Should().BeNull("because the log file didn't even have enough time to check the source");
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.Zero);
@@ -56,7 +56,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 			_taskScheduler.RunOnce();
 
-			logFile.Count.Should().Be(0);
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(Properties.Size).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(Properties.Created).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");

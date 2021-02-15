@@ -26,7 +26,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="property"></param>
 		/// <param name="value"></param>
-		void SetValue(IReadOnlyPropertyDescriptor property, object value);
+		bool SetValue(IReadOnlyPropertyDescriptor property, object value);
 
 		/// <summary>
 		///     Sets the value of the given property.
@@ -37,7 +37,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="property"></param>
 		/// <param name="value"></param>
-		void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value);
+		bool SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value);
 
 		/// <summary>
 		///    Tries to retrieve the given property. Sets <paramref name="value"/> to either the value of the property

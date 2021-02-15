@@ -34,7 +34,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			var taskScheduler = serviceContainer.Retrieve<ITaskScheduler>();
 			_ioScheduler = new IoScheduler(taskScheduler);
 			serviceContainer.RegisterInstance<IIoScheduler>(_ioScheduler);
-			return new StreamingTextLogFile(serviceContainer, fileName);
+			return new StreamingTextLogFile(serviceContainer, fileName, TimeSpan.Zero, null, null);
 		}
 
 		#endregion

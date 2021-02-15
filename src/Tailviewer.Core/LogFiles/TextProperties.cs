@@ -25,11 +25,21 @@ namespace Tailviewer.Core.LogFiles
 		/// </remarks>
 		public static readonly IReadOnlyPropertyDescriptor<int> MaxCharactersInLine;
 
+		/// <summary>
+		///    Whether or not the text log file is a multi-line log file.
+		/// </summary>
+		/// <remarks>
+		///    In multi-line log files, log entries may span multiple lines.
+		///    In single-line log files, every line is its own log entry, always.
+		/// </remarks>
+		public static readonly IReadOnlyPropertyDescriptor<bool> IsMultiline;
+
 		static TextProperties()
 		{
 			var category = "text";
 			LineCount = new WellKnownReadOnlyProperty<long>(new []{category, "line_count"});
 			MaxCharactersInLine = new WellKnownReadOnlyProperty<int>(new []{category, "max_characters_in_line"});
+			IsMultiline = new WellKnownPropertyDescriptor<bool>(new[] {category, "is_multiline"});
 		}
 	}
 }

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using log4net;
 using Tailviewer.BusinessLogic;
 using Tailviewer.BusinessLogic.LogFiles;
-using Tailviewer.BusinessLogic.Plugins;
 using Tailviewer.Core.IO;
-using Tailviewer.Core.Settings;
 
 namespace Tailviewer.Core.LogFiles.Text
 {
@@ -19,19 +16,14 @@ namespace Tailviewer.Core.LogFiles.Text
 	[DebuggerTypeProxy(typeof(LogFileView))]
 	internal sealed class StreamingTextLogFile
 		: ILogFile
-		, ITextFileListener
+		, ILogFileListener
 	{
 		private static readonly ILog Log =
 			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly IServiceContainer _serviceContainer;
+		private readonly TimeSpan _maximumWaitTime;
 		private readonly LogFileListenerCollection _listeners;
-
-		#region Reading
-
-		private readonly ITextFileReader _reader;
-
-		#endregion
 
 		#region Data
 
@@ -40,24 +32,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		private readonly LogEntryList _index;
 		private readonly object _syncRoot;
 		private readonly ConcurrentLogFilePropertyCollection _properties;
-		private int _maxCharactersPerLine;
-
-		#endregion
-
-		#region Parsing
-
-		private readonly ITextLogFileParserPlugin _parserPlugin;
-		private ITextLogFileParser _parser;
-		private ILogFileFormat _parserFormat;
-
-		#endregion
-
-		#region Listeners
-
-		private readonly string _fileName;
-		private readonly string _fullFilename;
-		private bool _loggedTimestampWarning;
-		private bool _endOfSourceReached;
+		private string _fileName;
 
 		#endregion
 
@@ -70,33 +45,26 @@ namespace Tailviewer.Core.LogFiles.Text
 		/// </remarks>
 		/// <param name="serviceContainer"></param>
 		/// <param name="fileName"></param>
+		/// <param name="maximumWaitTime"></param>
+		/// <param name="format"></param>
+		/// <param name="encoding"></param>
 		internal StreamingTextLogFile(IServiceContainer serviceContainer,
-		                           string fileName)
+		                              string fileName,
+		                              TimeSpan maximumWaitTime,
+		                              ILogFileFormat format,
+		                              Encoding encoding)
 		{
 			_serviceContainer = serviceContainer;
+			_maximumWaitTime = maximumWaitTime;
 
 			_listeners = new LogFileListenerCollection(this);
 
-			var scheduler = serviceContainer.Retrieve<IIoScheduler>();
-			var defaultEncoding = serviceContainer.TryRetrieve<ILogFileSettings>()?.DefaultEncoding;
-			var overwrittenEncoding = serviceContainer.TryRetrieve<Encoding>();
-			var encoding = overwrittenEncoding ?? defaultEncoding ?? Encoding.UTF8;
-			var formatMatcher = serviceContainer.Retrieve<ILogFileFormatMatcher>();
-
 			_fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
-			_fullFilename = fileName;
-			if (!Path.IsPathRooted(_fullFilename))
-				_fullFilename = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-
-			_parserPlugin = serviceContainer.Retrieve<ITextLogFileParserPlugin>();
 			_cache = new LogEntryCache(LogFiles.Columns.LogLevel, LogFiles.Columns.RawContent);
 			_index = new LogEntryList(LogFiles.Columns.Timestamp);
 			_properties = new ConcurrentLogFilePropertyCollection(LogFiles.Properties.Minimum);
 			_properties.SetValue(LogFiles.Properties.Name, _fileName);
 			_syncRoot = new object();
-
-			_reader = scheduler.OpenReadText(_fullFilename, this, encoding, formatMatcher);
-			_reader.Start();
 		}
 
 		/// <inheritdoc />
@@ -105,22 +73,16 @@ namespace Tailviewer.Core.LogFiles.Text
 			return _fileName;
 		}
 
+		public void OnLogFileModified(ILogFile logFile, LogFileSection section)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Dispose()
 		{
 			// https://github.com/Kittyfisto/Tailviewer/issues/282
 			_listeners.Clear();
 		}
-
-		public bool EndOfSourceReached => _endOfSourceReached;
-
-		/// <inheritdoc />
-		public int Count => _lineCount;
-
-		/// <inheritdoc />
-		public int OriginalCount => Count;
-
-		/// <inheritdoc />
-		public int MaxCharactersPerLine => _maxCharactersPerLine;
 
 		/// <inheritdoc />
 		public IReadOnlyList<IColumnDescriptor> Columns => LogFiles.Columns.Minimum;
@@ -341,145 +303,9 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void ReadEntries(IReadOnlyList<LogLineIndex> indices)
 		{
-			// TODO: How can we avoid those two buffer allocations which will happen over and over?
-			var lines = _reader.Read(indices);
-
-			lock (_syncRoot)
-			{
-				foreach (var line in lines)
-				{
-					IReadOnlyLogEntry logEntry = new RawTextLogEntry(_lineCount, line, _fullFilename);
-					// Parsers expect the file to be primarily fed sequentially so they can do their magic.
-					if (_parser != null)
-					{
-						logEntry = _parser?.Parse(logEntry);
-						_cache.Add(logEntry);
-					}
-				}
-			}
 		}
 
 		#region Sequential file scan
-
-		public void OnReset(ILogFileProperties properties)
-		{
-			UpdateProperties(properties);
-			Reset();
-		}
-
-		public void OnEndOfSourceReached(ILogFileProperties properties)
-		{
-			UpdateProperties(properties);
-
-			// Now this line is very important:
-			// Most tests expect that listeners have been notified
-			// of all pending changes when the source enters the
-			// "EndOfSourceReached" state. This would be true, if not
-			// for listeners specifying a timespan that should ellapse between
-			// calls to OnLogFileModified. The listener collection has
-			// been notified, but the individual listeners may not be, because
-			// neither the maximum line count, nor the maximum timespan has ellapsed.
-			// Therefore we flush the collection to ensure that ALL listeners have been notified
-			// of ALL changes (even if they didn't want them yet) before we enter the
-			// EndOfSourceReached state.
-			_listeners.Flush();
-			_endOfSourceReached = true;
-		}
-
-		public void OnRead(ILogFileProperties properties, LogFileSection readSection, IReadOnlyList<string> lines)
-		{
-			UpdateProperties(properties);
-
-			var intersection = new LogFileSection(0, _lineCount).Intersect(readSection);
-			if (intersection != null)
-			{
-				Remove(intersection.Value);
-			}
-
-			foreach (var line in lines)
-			{
-				IReadOnlyLogEntry logEntry = new RawTextLogEntry(_lineCount, line, _fullFilename);
-				// Parsers expect the file to be primarily fed sequentially so they can do their magic.
-				if (_parser != null)
-				{
-					logEntry = _parser?.Parse(logEntry);
-				}
-
-				Add(logEntry);
-			}
-
-			_listeners.OnRead(_lineCount);
-		}
-
-		private void UpdateProperties(ILogFileProperties properties)
-		{
-			var previousFormat = _properties.GetValue(LogFiles.Properties.Format);
-			_properties.CopyFrom(properties);
-			var format = _properties.GetValue(LogFiles.Properties.Format);
-
-			if (!Equals(format, previousFormat))
-			{
-				// We only need to create a new parser when we don't have one already or we've changed out minds
-				if (_parser == null || !Equals(format, _parserFormat))
-				{
-					_parser = _parserPlugin.CreateParser(_serviceContainer, format);
-					_parserFormat = format;
-					// TODO: IF we have already interpreted parts of the file, then we should restart from the beginning because now we might get vastly different results.
-				}
-			}
-		}
-
-		private void Add(IReadOnlyLogEntry logEntry)
-		{
-			var timestamp = logEntry.Timestamp;
-			if (_properties.GetValue(LogFiles.Properties.StartTimestamp) == null)
-				_properties.SetValue(LogFiles.Properties.StartTimestamp, timestamp);
-			if (timestamp != null)
-				_properties.SetValue(LogFiles.Properties.EndTimestamp, timestamp);
-
-			var duration = timestamp - _properties.GetValue(LogFiles.Properties.StartTimestamp);
-			_properties.SetValue(LogFiles.Properties.Duration, duration);
-
-			if (timestamp != null)
-			{
-				UpdateLastModifiedIfNecessary(timestamp.Value);
-			}
-
-			lock (_syncRoot)
-			{
-				_cache.Add(logEntry);
-				_maxCharactersPerLine = Math.Max(_maxCharactersPerLine, logEntry.RawContent?.Length ?? 0);
-				++_lineCount;
-			}
-		}
-
-		private void UpdateLastModifiedIfNecessary(DateTime timestamp)
-		{
-			var lastModified = _properties.GetValue(LogFiles.Properties.LastModified);
-			var difference = timestamp - lastModified;
-			if (difference >= TimeSpan.FromSeconds(10))
-			{
-				// I've had this issue occur on one system and I can't really explain it.
-				// For some reason, new FileInfo(...).LastWriteTime will not give correct
-				// results when we can see that the bloody file is being written to as we speak.
-				// As a work around, we'll just use the timestamp of the log file as lastModifed
-				// if that happens to be newer.
-				//
-				// This might be related to files being consumed from a network share. Anyways,
-				// this quick fix should improve user feedback...
-				if (!_loggedTimestampWarning)
-				{
-					Log.InfoFormat(
-					               "FileInfo.LastWriteTime results in a time stamp that is less than the parsed timestamp (LastWriteTime={0}, Parsed={1}), using parsed instead",
-					               lastModified,
-					               timestamp
-					              );
-					_loggedTimestampWarning = true;
-				}
-
-				_properties.SetValue(LogFiles.Properties.LastModified, timestamp);
-			}
-		}
 
 		private void Remove(LogFileSection intersection)
 		{
@@ -494,14 +320,6 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private void Reset()
 		{
-			lock (_syncRoot)
-			{
-				_maxCharactersPerLine = 0;
-				_cache.Clear();
-				_lineCount = 0;
-			}
-
-			_listeners.Reset();
 		}
 
 		#endregion

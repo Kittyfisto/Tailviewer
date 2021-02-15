@@ -46,21 +46,21 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
+		public bool SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			if (!_properties.Contains(property))
-				return;
+				return false;
 
-			_source.SetValue(property, value);
+			return _source.SetValue(property, value);
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
+		public bool SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			if (!_properties.Contains(property))
-				return;
+				return false;
 
-			_source.SetValue(property, value);
+			return _source.SetValue(property, value);
 		}
 
 		/// <inheritdoc />

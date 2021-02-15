@@ -41,6 +41,9 @@ namespace Tailviewer.BusinessLogic.LogFiles
 	///       Depending on the use case, it is quite acceptable to retrieve the portions of the log file which ARE in memory now and to retrieve the rest at a later point
 	///       in time.
 	/// </remarks>
+	/// <remarks>
+	///    TODO: Rename to ILogSource?
+	/// </remarks>
 	public interface ILogFile
 		: IDisposable
 	{
@@ -82,6 +85,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// </remarks>
 		/// <param name="property"></param>
 		/// <returns></returns>
+		[Pure]
 		object GetProperty(IReadOnlyPropertyDescriptor property);
 
 		/// <summary>
@@ -94,6 +98,7 @@ namespace Tailviewer.BusinessLogic.LogFiles
 		/// <typeparam name="T"></typeparam>
 		/// <param name="property"></param>
 		/// <returns></returns>
+		[Pure]
 		T GetProperty<T>(IReadOnlyPropertyDescriptor<T> property);
 
 		/// <summary>

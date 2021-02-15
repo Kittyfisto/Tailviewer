@@ -58,20 +58,20 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
+		public bool SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			lock (_syncRoot)
 			{
-				_storage.SetValue(property, value);
+				return _storage.SetValue(property, value);
 			}
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
+		public bool SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			lock (_syncRoot)
 			{
-				_storage.SetValue(property, value);
+				return _storage.SetValue(property, value);
 			}
 		}
 

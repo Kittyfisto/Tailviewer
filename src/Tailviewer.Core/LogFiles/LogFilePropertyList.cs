@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Tailviewer.BusinessLogic.LogFiles;
 
 namespace Tailviewer.Core.LogFiles
@@ -69,7 +68,7 @@ namespace Tailviewer.Core.LogFiles
 		}
 
 		/// <inheritdoc />
-		public void SetValue(IReadOnlyPropertyDescriptor property, object value)
+		public bool SetValue(IReadOnlyPropertyDescriptor property, object value)
 		{
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -80,17 +79,18 @@ namespace Tailviewer.Core.LogFiles
 			{
 				_propertyDescriptors.Add(property);
 				var storage = CreateValueStorage(property);
-				storage.Value = value;
+				bool changed = storage.SetValue(value);
 				_values.Add(property, storage);
+				return changed;
 			}
 			else
 			{
-				_values[property].Value = value;
+				return _values[property].SetValue(value);
 			}
 		}
 
 		/// <inheritdoc />
-		public void SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
+		public bool SetValue<T>(IReadOnlyPropertyDescriptor<T> property, T value)
 		{
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
@@ -101,12 +101,13 @@ namespace Tailviewer.Core.LogFiles
 			{
 				_propertyDescriptors.Add(property);
 				var storage = CreateValueStorage(property);
-				storage.Value = value;
+				bool changed = storage.SetValue(value);
 				_values.Add(property, storage);
+				return changed;
 			}
 			else
 			{
-				((PropertyStorage<T>) _values[property]).Value = value;
+				return ((PropertyStorage<T>) _values[property]).SetValue(value);
 			}
 		}
 
@@ -182,9 +183,11 @@ namespace Tailviewer.Core.LogFiles
 		/// </summary>
 		private interface IPropertyStorage
 		{
-			object Value { get; set; }
+			object Value { get; }
+			bool SetValue(object value);
 			void CopyFrom(ILogFileProperties properties);
 			void CopyTo(ILogFileProperties destination);
+			void Reset();
 		}
 
 		/// <summary>
@@ -205,7 +208,24 @@ namespace Tailviewer.Core.LogFiles
 			public T Value
 			{
 				get { return _value; }
-				set { _value = value; }
+			}
+
+			public bool SetValue(object value)
+			{
+				if (Equals(value, _value))
+					return false;
+
+				_value = (T) value;
+				return true;
+			}
+
+			public bool SetValue(T value)
+			{
+				if (Equals(value, _value))
+					return false;
+
+				_value = value;
+				return true;
 			}
 
 			public void CopyFrom(ILogFileProperties properties)
@@ -218,10 +238,14 @@ namespace Tailviewer.Core.LogFiles
 				destination.SetValue(_property, _value);
 			}
 
+			public void Reset()
+			{
+				_value = _property.DefaultValue;
+			}
+
 			object IPropertyStorage.Value
 			{
 				get { return Value; }
-				set { Value = (T) value; }
 			}
 		}
 
@@ -232,7 +256,7 @@ namespace Tailviewer.Core.LogFiles
 		{
 			foreach (var pair in _values)
 			{
-				pair.Value.Value = pair.Key.DefaultValue;
+				pair.Value.Reset();
 			}
 		}
 
