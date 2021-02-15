@@ -79,6 +79,7 @@
     <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="DisposableExtensions.cs" />
     <Compile Include="LogFiles\SingleColumnLogEntryView.cs" />
+    <Compile Include="LogFiles\Text\EncodingDetector.cs" />
     <Compile Include="LogFiles\Text\FileFingerprint.cs" />
     <Compile Include="LogFiles\Text\FileFormatDetector.cs" />
     <Compile Include="LogFiles\Text\FileLogFile.cs" />

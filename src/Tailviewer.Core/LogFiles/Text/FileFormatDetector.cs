@@ -15,6 +15,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly ILogFileFormatMatcher _formatMatcher;
+		private readonly EncodingDetector _encodingDetector;
 		private readonly string _fileName;
 		private readonly Encoding _defaultEncoding;
 		private ILogFileFormat _format;
@@ -27,6 +28,8 @@ namespace Tailviewer.Core.LogFiles.Text
 		                          Encoding defaultEncoding)
 		{
 			_formatMatcher = formatMatcher;
+			// TODO: move up
+			_encodingDetector = new EncodingDetector(null);
 			_fileName = fileName;
 			_defaultEncoding = defaultEncoding;
 			_encoding = defaultEncoding;
@@ -85,7 +88,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			if (_format == null || _detectionCertainty != Certainty.Sure)
 			{
 				_format = TryFindFormatOf(stream, out _detectionCertainty);
-				_encoding = PickEncoding(_format, TryFindEncodingOf(stream));
+				_encoding = PickEncoding(_format, _encodingDetector.TryFindEncoding(stream));
 			}
 		}
 
@@ -109,27 +112,6 @@ namespace Tailviewer.Core.LogFiles.Text
 			return LogFileFormats.GenericText;
 		}
 
-		private Encoding TryFindEncodingOf(FileStream stream)
-		{
-			stream.Position = 0;
-			byte[] buffer = new byte[5];
-			stream.Read(buffer, 0, 5);
-
-			if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
-				return Encoding.UTF8;
-
-			if (buffer[0] == 0xfe && buffer[1] == 0xff)
-				return Encoding.Unicode;
-
-			if (buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xfe && buffer[3] == 0xff)
-				return Encoding.UTF32;
-
-			if (buffer[0] == 0x2b && buffer[1] == 0x2f && buffer[2] == 0x76)
-				return Encoding.UTF7;
-
-			return null;
-		}
-
 		[Pure]
 		private Encoding PickEncoding(ILogFileFormat format, Encoding detectedEncoding)
 		{
@@ -148,7 +130,11 @@ namespace Tailviewer.Core.LogFiles.Text
 				return formatEncoding;
 			}
 
-			return detectedEncoding;
+			if (detectedEncoding != null)
+				return detectedEncoding;
+
+			Log.DebugFormat("File {0}: No encoding could be determined, falling back to {1}", _fileName, _defaultEncoding);
+			return _defaultEncoding;
 		}
 	}
 }

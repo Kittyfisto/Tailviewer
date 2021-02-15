@@ -33,6 +33,12 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 		public static IReadOnlyList<Encoding> Encodings => LineOffsetDetectorTest.Encodings;
 
+		public static IReadOnlyList<string> ReferenceFiles => new[]
+		{
+			@"TestData\2MB.txt",
+			@"TestData\20MB.txt",
+		};
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -60,6 +66,16 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		private StreamingTextLogFile Create(string fileName, Encoding encoding)
 		{
 			return new StreamingTextLogFile(_serviceContainer, fileName, encoding);
+		}
+
+		private IReadOnlyLogEntry GetEntry(StreamingTextLogFile logFile, LogLineIndex index)
+		{
+			var readTask = Task.Factory.StartNew(() => logFile.GetEntry(index));
+			logFile.Property(x => x.HasPendingReadRequests).ShouldEventually().BeTrue();
+			_taskScheduler.RunOnce();
+			readTask.Wait();
+			//readTask.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue("because the task should have been finished now that we've let the scheduler run");
+			return readTask.Result;
 		}
 
 		private IReadOnlyLogEntries GetEntries(StreamingTextLogFile logFile)
@@ -103,6 +119,18 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			logFile.GetProperty(Properties.LastModified).Should().BeNull("because the source file does not exist");
 			logFile.GetProperty(Properties.EmptyReason).Should().Be(ErrorFlags.SourceDoesNotExist, "because the source file does not exist");
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent, "because we've checked that the source doesn't exist and thus there's nothing more to process");
+		}
+
+		[Test]
+		public void TestAccessInvalidRegion()
+		{
+			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
+			_taskScheduler.RunOnce();
+
+			var entries = GetEntries(logFile, new LogFileSection(0, 1));
+			entries.Count.Should().Be(1);
+			entries[0].Index.Should().Be(LogLineIndex.Invalid);
+			entries[0].RawContent.Should().Be(Columns.RawContent.DefaultValue);
 		}
 
 		[Test]
@@ -205,15 +233,34 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			entries[0].RawContent.Should().Be(line);
 		}
 
-		#endregion
+		[Test]
+		public void TestSkipPreambleIfMissing()
+		{
+			var writtenEncoding = new UTF8Encoding(false);
+
+			var line = "Hello, World!";
+			var fileName = GetUniqueNonExistingFileName();
+			using (var stream = File.OpenWrite(fileName))
+			using (var writer = new StreamWriter(stream, writtenEncoding))
+			{
+				writer.Write(line);
+			}
+
+			var logFile = Create(fileName, new UTF8Encoding(true));
+			_taskScheduler.RunOnce();
+
+			var entries = GetEntries(logFile);
+			entries.Count.Should().Be(1);
+			entries[0].RawContent.Should().Be(line);
+		}
+
+		#region Reference Files
 
 		[Test]
-		public void TestRead2MB()
+		public void TestRead_AccesAll([ValueSource(nameof(ReferenceFiles))] string fileName)
 		{
-			var fileName = @"TestData\2MB.txt";
 			var actualLines = File.ReadAllText(fileName).Split(new []{"\n"}, StringSplitOptions.None).Select(x => x.TrimEnd('\r')).ToList();
-
-			var encoding = new UTF8Encoding(false);
+			var encoding = DetectEncoding(fileName);
 			var logFile = Create(fileName, encoding);
 			_taskScheduler.RunOnce();
 
@@ -232,6 +279,115 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 					entry.RawContent.Should().BeNullOrEmpty($"because line {i+1} should have been read in correctly");
 				}
 			}
+		}
+
+		[Test]
+		public void TestRead_AccessRandom_Ascending([ValueSource(nameof(ReferenceFiles))] string fileName)
+		{
+			var actualLines = File.ReadAllText(fileName).Split(new []{"\n"}, StringSplitOptions.None).Select(x => x.TrimEnd('\r')).ToList();
+
+			var encoding = DetectEncoding(fileName);
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+
+			// Next, let us try random access
+			for (int i = 0; i < actualLines.Count; i += 124)
+			{
+				var entry = GetEntry(logFile, i);
+				var actualContent = actualLines[i];
+				if (actualContent.Length > 0)
+				{
+					entry.RawContent.Should().Be(actualContent, $"because line {i+1} should have been read in correctly");
+				}
+				else
+				{
+					entry.RawContent.Should().BeNullOrEmpty($"because line {i+1} should have been read in correctly");
+				}
+			}
+		}
+
+		[Test]
+		public void TestRead_AccessRandom_Descending([ValueSource(nameof(ReferenceFiles))] string fileName)
+		{
+			var actualLines = File.ReadAllText(fileName).Split(new []{"\n"}, StringSplitOptions.None).Select(x => x.TrimEnd('\r')).ToList();
+
+			var encoding = DetectEncoding(fileName);
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+
+			// Next, let us try random access
+			for (int i = actualLines.Count - 1; i >= 0; i -= 124)
+			{
+				var entry = GetEntry(logFile, i);
+				var actualContent = actualLines[i];
+				if (actualContent.Length > 0)
+				{
+					entry.RawContent.Should().Be(actualContent, $"because line {i+1} should have been read in correctly");
+				}
+				else
+				{
+					entry.RawContent.Should().BeNullOrEmpty($"because line {i+1} should have been read in correctly");
+				}
+			}
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Dynamic Data
+
+		[Test]
+		public void TestTail_WriteTwoLines()
+		{
+			var encoding = Encoding.UTF32;
+			var fileName = GetUniqueNonExistingFileName();
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the file doesn't even exist yet");
+
+			var line1 = "The sky crawlers";
+			var line2 = "is awesome!";
+			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read))
+			using (var writer = new StreamWriter(stream, encoding))
+			{
+				writer.Write(line1 + "\r\n");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				var index = logFile.GetColumn(new LogFileSection(0, 2), Columns.LineOffsetInBytes);
+				index[0].Should().Be(encoding.GetPreamble().Length);
+				index[1].Should().Be(76);
+
+				var entries = GetEntries(logFile);
+				entries.Count.Should().Be(2);
+				entries[0].RawContent.Should().Be(line1);
+				entries[1].RawContent.Should().BeNullOrEmpty();
+
+
+				writer.Write(line2 + "\r\n");
+				writer.Flush();
+				_taskScheduler.RunOnce();
+
+				index = logFile.GetColumn(new LogFileSection(0, 3), Columns.LineOffsetInBytes);
+				index[0].Should().Be(encoding.GetPreamble().Length);
+				index[1].Should().Be(76);
+				index[2].Should().Be(128);
+
+				entries = GetEntries(logFile);
+				entries.Count.Should().Be(3);
+				entries[0].RawContent.Should().Be(line1);
+				entries[1].RawContent.Should().Be(line2);
+				entries[2].RawContent.Should().BeNullOrEmpty();
+			}
+		}
+
+		#endregion
+
+		private Encoding DetectEncoding(string fileName)
+		{
+			var detector = new EncodingDetector(null);
+			return detector.TryFindEncoding(fileName) ?? Encoding.UTF8;
 		}
 	}
 }

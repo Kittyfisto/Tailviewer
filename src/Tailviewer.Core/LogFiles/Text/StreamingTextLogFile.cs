@@ -285,14 +285,26 @@ namespace Tailviewer.Core.LogFiles.Text
 			if (stream.Length <= 0)
 				return;
 
+			// As far as we're concerned, the first line starts right after the preamble, which
+			// might be an offset of anything in between 0 and 4 bytes.
+			var preamble = _encoding.GetPreamble();
+			var firstLineOffset = 0;
+			if (preamble.Length > 0)
+			{
+				var buffer = new byte[preamble.Length];
+				var bytesRead = stream.Read(buffer, 0, buffer.Length);
+				if (bytesRead >= buffer.Length && ArrayExtensions.Equals(preamble, buffer))
+				{
+					firstLineOffset = preamble.Length;
+				}
+			}
+
 			lock (_index)
 			{
 				if (_index.Count > 0)
 					return;
 
-				// As far as we're concerned, the first line starts right after the preamble, which
-				// might be an offset of anything in between 0 and 4 bytes.
-				AddLine(_encoding.GetPreamble().Length);
+				AddLine(firstLineOffset);
 			}
 		}
 
@@ -466,36 +478,20 @@ namespace Tailviewer.Core.LogFiles.Text
 			return request;
 		}
 
-		private TimeSpan RunFileRead(CancellationToken token)
+		private TimeSpan RunFileRead(CancellationToken cancellationToken)
 		{
 			try
 			{
-				
-				if (File.Exists(_fileName))
+				// We need to serve read requests even (or may be specially) when the file cannot be accessed
+				// or else we're gonna get stuck. Therefore we try to open the stream, but if we cannot, 
+				// still process all pending requests, with the caveat that we simply cancel them instead.
+				using (var reader = TryOpenRead())
 				{
-					if (ReadFromFile(token))
+					var requests = GetPendingReadRequests(reader);
+					ServeReadRequests(reader, requests, cancellationToken);
+					if (requests.Count > 0)
 						return TimeSpan.Zero;
 				}
-			}
-			catch (FileNotFoundException e)
-			{
-				Log.Debug(e);
-			}
-			catch (DirectoryNotFoundException e)
-			{
-				Log.Debug(e);
-			}
-			catch (OperationCanceledException e)
-			{
-				Log.Debug(e);
-			}
-			catch (UnauthorizedAccessException e)
-			{
-				Log.Debug(e);
-			}
-			catch (IOException e)
-			{
-				Log.Debug(e);
 			}
 			catch (Exception e)
 			{
@@ -505,18 +501,26 @@ namespace Tailviewer.Core.LogFiles.Text
 			return TimeSpan.FromMilliseconds(100);
 		}
 
-		private bool ReadFromFile(CancellationToken cancellationToken)
+		private StreamReader TryOpenRead()
 		{
-			using (var stream = new FileStream(_fileName,
-			                                   FileMode.Open,
-			                                   FileAccess.Read,
-			                                   FileShare.ReadWrite))
-			using (var reader = new StreamReader(stream, _encoding, _encoding.GetPreamble().Length > 0))
+			try
 			{
-				var requests = GetPendingReadRequests(cancellationToken);
-				ServeReadRequests(reader, requests, cancellationToken);
-				return requests.Count > 0;
+				if (!File.Exists(_fileName))
+					return null;
+
+				var stream = new FileStream(_fileName,
+				                            FileMode.Open,
+				                            FileAccess.Read,
+				                            FileShare.ReadWrite);
+				var reader = new StreamReader(stream, _encoding, _encoding.GetPreamble().Length > 0);
+				return reader;
 			}
+			catch (Exception e)
+			{
+				Log.Debug(e);
+			}
+
+			return null;
 		}
 
 		private void ServeReadRequests(StreamReader streamReader,
@@ -560,8 +564,9 @@ namespace Tailviewer.Core.LogFiles.Text
 		/// <summary>
 		///   Consumes all pending read requests and returns an equivalent, but optimized list of requests
 		/// </summary>
+		/// <param name="streamReader"/>
 		/// <returns></returns>
-		private List<IReadRequest> GetPendingReadRequests(CancellationToken cancellationToken)
+		private List<IReadRequest> GetPendingReadRequests(StreamReader streamReader)
 		{
 			var requests = new List<IReadRequest>();
 			try
@@ -570,7 +575,14 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					try
 					{
-						requests.Add(request);
+						if (streamReader != null)
+						{
+							requests.Add(request);
+						}
+						else
+						{
+							request.Complete(linesRead: 0);
+						}
 					}
 					catch (Exception e)
 					{
@@ -596,6 +608,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			void Serve(LogEntryList index, StreamReader reader);
 			void Cancel();
 			int NumLinesRead { get; }
+			void Complete(int linesRead);
 		}
 
 		abstract class AbstractReadRequest
@@ -631,8 +644,7 @@ namespace Tailviewer.Core.LogFiles.Text
 				try
 				{
 					var linesRead = ReadLines(index, reader);
-					if (!_taskSource.TrySetResult(linesRead))
-						Log.WarnFormat("Unable to set result for pending task (why though?!)");
+					Complete(linesRead);
 				}
 				catch (Exception e)
 				{
@@ -661,6 +673,12 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					return _taskSource.Task.Result;
 				}
+			}
+
+			public void Complete(int linesRead)
+			{
+				if (!_taskSource.TrySetResult(linesRead))
+					Log.WarnFormat("Unable to set result for pending task (why though?!)");
 			}
 
 			#endregion
