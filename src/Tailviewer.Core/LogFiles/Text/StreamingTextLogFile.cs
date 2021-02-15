@@ -755,7 +755,9 @@ namespace Tailviewer.Core.LogFiles.Text
 				{
 					var line = reader.ReadLine();
 					if (line == null)
+					{
 						break;
+					}
 
 					destination[i] = line;
 				}
@@ -810,7 +812,9 @@ namespace Tailviewer.Core.LogFiles.Text
 					reader.BaseStream.Position = lineOffsets[i];
 					var line = reader.ReadLine();
 					if (line == null)
+					{
 						break;
+					}
 
 					destination[i] = line;
 				}

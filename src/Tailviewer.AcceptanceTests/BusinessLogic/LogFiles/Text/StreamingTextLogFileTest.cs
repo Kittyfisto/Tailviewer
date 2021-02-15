@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -160,7 +161,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
-			logFile.GetProperty(Properties.Size).Should().Be(Size.FromBytes(274));
+			logFile.GetProperty(Properties.Size).Should().Be(Size.FromBytes(new FileInfo(fileName).Length)); //< Git fucks with the file length due to replacing line endings => we can't hard code it here
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			var indices = logFile.GetColumn(new LogFileSection(0, 3), Columns.LineOffsetInBytes);
@@ -204,5 +205,32 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		}
 
 		#endregion
+
+		[Test]
+		public void TestRead2MB()
+		{
+			var fileName = @"TestData\2MB.txt";
+			var actualLines = File.ReadAllText(fileName).Split(new []{"\r\n"}, StringSplitOptions.None);
+
+			var encoding = new UTF8Encoding(false);
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+
+			var entries = GetEntries(logFile);
+			entries.Count.Should().Be(actualLines.Length);
+			for (int i = 0; i < actualLines.Length; ++i)
+			{
+				var entry = entries[i];
+				var actualContent = actualLines[i];
+				if (actualContent.Length > 0)
+				{
+					entry.RawContent.Should().Be(actualContent, $"because line {i+1} should have been read in correctly");
+				}
+				else
+				{
+					entry.RawContent.Should().BeNullOrEmpty($"because line {i+1} should have been read in correctly");
+				}
+			}
+		}
 	}
 }
