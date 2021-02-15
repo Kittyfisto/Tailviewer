@@ -290,7 +290,9 @@ namespace Tailviewer.Core.LogFiles.Text
 				if (_index.Count > 0)
 					return;
 
-				AddLine(0);
+				// As far as we're concerned, the first line starts right after the preamble, which
+				// might be an offset of anything in between 0 and 4 bytes.
+				AddLine(_encoding.GetPreamble().Length);
 			}
 		}
 
@@ -509,7 +511,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			                                   FileMode.Open,
 			                                   FileAccess.Read,
 			                                   FileShare.ReadWrite))
-			using (var reader = new StreamReader(stream, _encoding, false))
+			using (var reader = new StreamReader(stream, _encoding, _encoding.GetPreamble().Length > 0))
 			{
 				var requests = GetPendingReadRequests(cancellationToken);
 				ServeReadRequests(reader, requests, cancellationToken);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -15,6 +14,7 @@ using Tailviewer.Core.IO;
 using Tailviewer.Core.LogFiles;
 using Tailviewer.Core.LogFiles.Text;
 using Tailviewer.Test;
+using Tailviewer.Test.BusinessLogic.LogFiles.Text;
 
 namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 {
@@ -28,7 +28,9 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		private ManualTaskScheduler _taskScheduler;
 		private SimpleLogFileFormatMatcher _formatMatcher;
 		private SimpleTextLogFileParserPlugin _textLogFileParserPlugin;
-		
+
+		public static IReadOnlyList<Encoding> Encodings => LineOffsetDetectorTest.Encodings;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -88,10 +90,10 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		#region Static data
 
 		[Test]
-		public void TestFileDoesNotExist()
+		public void TestFileDoesNotExist([Values(1, 2, 3)] int numReadOperations)
 		{
 			var logFile = Create(GetUniqueNonExistingFileName(), Encoding.Default);
-			_taskScheduler.RunOnce();
+			_taskScheduler.Run(numReadOperations);
 
 			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0);
 			logFile.GetProperty(Properties.Size).Should().BeNull("because the source file does not exist");
@@ -102,14 +104,14 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		}
 
 		[Test]
-		public void TestEmptyFile()
+		[Description("Verifies that reading an empty file once yields correct ")]
+		public void TestEmptyFile([Values(1, 2, 3)] int numReadOperations)
 		{
 			var fileName = @"TestData\Empty.txt";
 			var info = FileFingerprint.FromFile(fileName);
 
 			var logFile = Create(fileName, Encoding.Default);
-			_taskScheduler.RunOnce();
-
+			_taskScheduler.Run(numReadOperations);
 			logFile.GetProperty(Properties.LogEntryCount).Should().Be(0, "because the file is empty");
 			logFile.GetProperty(Properties.Size).Should().Be(Size.Zero, "because the file is empty");
 			logFile.GetProperty(Properties.Created).Should().Be(info.Created);
@@ -125,13 +127,13 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		}
 
 		[Test]
-		public void Test1Line()
+		public void Test1Line([Values(1, 2, 3)] int numReadOperations)
 		{
 			var fileName = @"TestData\1Line.txt";
 			var info = FileFingerprint.FromFile(fileName);
 
 			var logFile = Create(fileName, Encoding.Default);
-			_taskScheduler.RunOnce();
+			_taskScheduler.Run(numReadOperations);
 
 			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
 			logFile.GetProperty(Properties.Size).Should().Be(Size.FromBytes(109));
@@ -154,7 +156,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			var fileName = @"TestData\2Lines.txt";
 			var info = FileFingerprint.FromFile(fileName);
 
-			var logFile = Create(fileName, Encoding.Default);
+			var logFile = Create(fileName, Encoding.UTF8);
 			_taskScheduler.RunOnce();
 
 			logFile.GetProperty(Properties.LogEntryCount).Should().Be(3);
@@ -162,7 +164,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			logFile.GetProperty(Properties.PercentageProcessed).Should().Be(Percentage.HundredPercent);
 
 			var indices = logFile.GetColumn(new LogFileSection(0, 3), Columns.LineOffsetInBytes);
-			indices[0].Should().Be(0, "because the first line starts at an offset of 0 bytes wrt the start of the file");
+			indices[0].Should().Be(3, "because the first line starts right after the preamble (also called byte order mark, BOM), which, for UTF-8, is 3 bytes long");
 			indices[1].Should().Be(166L);
 
 			var entries = GetEntries(logFile);
@@ -172,6 +174,33 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 			entries[0].RawContent.Should().Be("2015-10-07 19:50:58,981 [8092, 1] INFO  SharpRemote.Hosting.OutOfProcessSiloServer (null) - Silo Server starting, args (1): \"14056\", without custom type resolver");
 			entries[1].Index.Should().Be(1);
 			entries[1].RawContent.Should().Be("2015-10-07 19:50:58,997 [8092, 1] DEBUG SharpRemote.Hosting.OutOfProcessSiloServer (null) - Args.Length: 1");
+		}
+
+		[Test]
+		public void TestReadOneSentence([ValueSource(nameof(Encodings))] Encoding encoding)
+		{
+			var line = "that feeling when you bite into a pickle and it's a little squishier than you expected";
+
+			var fileName = GetUniqueNonExistingFileName();
+			using (var stream = File.OpenWrite(fileName))
+			using (var writer = new StreamWriter(stream, encoding))
+			{
+				writer.Write(line);
+			}
+
+			var logFile = Create(fileName, encoding);
+			_taskScheduler.RunOnce();
+
+			logFile.GetProperty(Properties.LogEntryCount).Should().Be(1);
+			var indices = logFile.GetColumn(new LogFileSection(0, 2), Columns.LineOffsetInBytes);
+			var expectedOffset = encoding.GetPreamble().Length;
+			indices[0].Should().Be(expectedOffset, "");
+			indices[1].Should().Be(-1);
+
+			var entries = GetEntries(logFile);
+			entries.Should().HaveCount(1);
+			entries[0].Index.Should().Be(0);
+			entries[0].RawContent.Should().Be(line);
 		}
 
 		#endregion
