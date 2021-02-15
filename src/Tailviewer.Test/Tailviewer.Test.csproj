@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="AbstractIdTest.cs" />
     <Compile Include="Appender.cs" />
+    <Compile Include="ArrayExtensionsTest.cs" />
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ActionCenterTest.cs" />
     <Compile Include="BusinessLogic\ActionCenter\ExportActionTest.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntriesTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\ReadOnlyLogEntryViewTest.cs" />
+    <Compile Include="BusinessLogic\LogFiles\Text\EncodingDetectorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\LineOffsetDetectorTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\TextLogFileParserTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\WellKnownLogFileColumnTest.cs" />

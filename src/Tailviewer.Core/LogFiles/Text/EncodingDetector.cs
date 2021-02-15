@@ -1,17 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Tailviewer.Core.LogFiles.Text
 {
 	internal sealed class EncodingDetector
 	{
-		private readonly Encoding[] _encodings;
+		private readonly List<KeyValuePair<byte[], Encoding>> _encodingsByPreamble;
 
-
-		public EncodingDetector(Encoding[] encodings)
+		public EncodingDetector()
 		{
-			_encodings = encodings;
+			var encodings = new []
+			{
+				Encoding.UTF32,
+				Encoding.UTF8,
+				Encoding.BigEndianUnicode,
+				Encoding.Unicode,
+			};
+			_encodingsByPreamble = encodings.Select(x => new KeyValuePair<byte[], Encoding>(x.GetPreamble(), x))
+			                                .Where(x => x.Key != null && x.Key.Length > 0)
+			                                .OrderByDescending(x => x.Key.Length)
+			                                .ToList();
 		}
 
 		public Encoding TryFindEncoding(string fileName)
@@ -29,23 +40,17 @@ namespace Tailviewer.Core.LogFiles.Text
 			}
 		}
 
-		public Encoding TryFindEncoding(FileStream stream)
+		public Encoding TryFindEncoding(Stream stream)
 		{
 			stream.Position = 0;
 			byte[] buffer = new byte[5];
-			stream.Read(buffer, 0, 5);
+			int bytesRead = stream.Read(buffer, 0, 5);
 
-			if (buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
-				return Encoding.UTF8;
-
-			if (buffer[0] == 0xfe && buffer[1] == 0xff)
-				return Encoding.Unicode;
-
-			if (buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xfe && buffer[3] == 0xff)
-				return Encoding.UTF32;
-
-			if (buffer[0] == 0x2b && buffer[1] == 0x2f && buffer[2] == 0x76)
-				return Encoding.UTF7;
+			foreach (var pair in _encodingsByPreamble)
+			{
+				if (bytesRead >= pair.Key.Length && ArrayExtensions.StartsWith(buffer, pair.Key))
+					return pair.Value;
+			}
 
 			return null;
 		}

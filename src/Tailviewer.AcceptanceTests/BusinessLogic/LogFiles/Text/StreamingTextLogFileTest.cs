@@ -386,7 +386,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 		private Encoding DetectEncoding(string fileName)
 		{
-			var detector = new EncodingDetector(null);
+			var detector = new EncodingDetector();
 			return detector.TryFindEncoding(fileName) ?? Encoding.UTF8;
 		}
 	}

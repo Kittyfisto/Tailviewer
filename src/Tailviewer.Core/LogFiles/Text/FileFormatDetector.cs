@@ -29,7 +29,7 @@ namespace Tailviewer.Core.LogFiles.Text
 		{
 			_formatMatcher = formatMatcher;
 			// TODO: move up
-			_encodingDetector = new EncodingDetector(null);
+			_encodingDetector = new EncodingDetector();
 			_fileName = fileName;
 			_defaultEncoding = defaultEncoding;
 			_encoding = defaultEncoding;
