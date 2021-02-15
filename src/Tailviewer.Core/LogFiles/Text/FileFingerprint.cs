@@ -9,7 +9,7 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		private bool Equals(FileFingerprint other)
 		{
-			return _created.Equals(other._created) && _modified.Equals(other._modified) && _size == other._size;
+			return _created.Equals(other._created) && _lastModified.Equals(other._lastModified) && _size == other._size;
 		}
 
 		public override bool Equals(object obj)
@@ -22,7 +22,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			unchecked
 			{
 				var hashCode = _created.GetHashCode();
-				hashCode = (hashCode * 397) ^ _modified.GetHashCode();
+				hashCode = (hashCode * 397) ^ _lastModified.GetHashCode();
 				hashCode = (hashCode * 397) ^ _size.GetHashCode();
 				return hashCode;
 			}
@@ -41,13 +41,30 @@ namespace Tailviewer.Core.LogFiles.Text
 		#endregion
 
 		private readonly DateTime _created;
-		private readonly DateTime _modified;
+
+		public DateTime Created
+		{
+			get { return _created; }
+		}
+
+		private readonly DateTime _lastModified;
+
+		public DateTime LastModified
+		{
+			get { return _lastModified; }
+		}
+
 		private readonly long _size;
 
-		public FileFingerprint(DateTime created, DateTime modified, long size)
+		public long Size
+		{
+			get { return _size; }
+		}
+
+		public FileFingerprint(DateTime created, DateTime lastModified, long size)
 		{
 			_created = created;
-			_modified = modified;
+			_lastModified = lastModified;
 			_size = size;
 		}
 
@@ -61,7 +78,7 @@ namespace Tailviewer.Core.LogFiles.Text
 
 		public override string ToString()
 		{
-			return $"Size: {_size}, Created: {_created}, Modified: {_modified}";
+			return $"Size: {_size}, Created: {_created}, Modified: {_lastModified}";
 		}
 
 		#endregion

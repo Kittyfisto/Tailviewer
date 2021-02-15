@@ -106,7 +106,6 @@
     <Compile Include="BusinessLogic\LogFiles\LogFileProxyTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\TextLogFileAcceptanceTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\MergedLogFileTest.cs" />
-    <Compile Include="BusinessLogic\LogFiles\Text\AbstractStreamingTextLogFileTest.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\InMemoryIoScheduler.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\InMemoryTextFileReader.cs" />
     <Compile Include="BusinessLogic\LogFiles\Text\StreamingTextLogFileTest.cs" />

@@ -237,7 +237,7 @@ namespace Tailviewer.Core.LogFiles.Text
 			_streamingTextLogFile?.TryDispose();
 			if (format.IsText)
 			{
-				_streamingTextLogFile = new StreamingTextLogFile(_services, _fullFilename, _maximumWaitTime, format, encoding);
+				_streamingTextLogFile = new StreamingTextLogFile(_services, _fullFilename, encoding);
 				CreateTextLogFile();
 			}
 			else

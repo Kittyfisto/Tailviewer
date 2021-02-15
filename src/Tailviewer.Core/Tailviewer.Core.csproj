@@ -78,6 +78,7 @@
     <Compile Include="Filters\ExpressionEngine\DateTimeLiteral.cs" />
     <Compile Include="Filters\RangeFilter.cs" />
     <Compile Include="DisposableExtensions.cs" />
+    <Compile Include="LogFiles\SingleColumnLogEntryView.cs" />
     <Compile Include="LogFiles\Text\FileFingerprint.cs" />
     <Compile Include="LogFiles\Text\FileFormatDetector.cs" />
     <Compile Include="LogFiles\Text\FileLogFile.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="LogFiles\Merged\MergedLogLineIndexComparer.cs" />
     <Compile Include="LogFiles\Merged\Stuff.cs" />
     <Compile Include="LogFiles\TextProperties.cs" />
+    <Compile Include="LogFiles\Text\LineOffsetDetector.cs" />
     <Compile Include="LogFiles\Text\RawTextLogEntry.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryExtensions.cs" />
     <Compile Include="LogFiles\ReadOnlyLogEntryView.cs" />
