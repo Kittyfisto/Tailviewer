@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -166,7 +167,7 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 
 			var indices = logFile.GetColumn(new LogFileSection(0, 3), Columns.LineOffsetInBytes);
 			indices[0].Should().Be(3, "because the first line starts right after the preamble (also called byte order mark, BOM), which, for UTF-8, is 3 bytes long");
-			indices[1].Should().Be(166L);
+			indices[1].Should().BeInRange(165L, 166L, "because git fucks with line endings and thus the offset might differ");
 
 			var entries = GetEntries(logFile);
 			entries.Should().HaveCount(3);
@@ -210,15 +211,15 @@ namespace Tailviewer.AcceptanceTests.BusinessLogic.LogFiles.Text
 		public void TestRead2MB()
 		{
 			var fileName = @"TestData\2MB.txt";
-			var actualLines = File.ReadAllText(fileName).Split(new []{"\r\n"}, StringSplitOptions.None);
+			var actualLines = File.ReadAllText(fileName).Split(new []{"\n"}, StringSplitOptions.None).Select(x => x.TrimEnd('\r')).ToList();
 
 			var encoding = new UTF8Encoding(false);
 			var logFile = Create(fileName, encoding);
 			_taskScheduler.RunOnce();
 
 			var entries = GetEntries(logFile);
-			entries.Count.Should().Be(actualLines.Length);
-			for (int i = 0; i < actualLines.Length; ++i)
+			entries.Count.Should().Be(actualLines.Count);
+			for (int i = 0; i < actualLines.Count; ++i)
 			{
 				var entry = entries[i];
 				var actualContent = actualLines[i];
